@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/u3h1665qqneo98bh/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xsystemsecurity/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/mxn453y284eab8li/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xsqlserver/branch/master)
 
 # xSQLServer
 
