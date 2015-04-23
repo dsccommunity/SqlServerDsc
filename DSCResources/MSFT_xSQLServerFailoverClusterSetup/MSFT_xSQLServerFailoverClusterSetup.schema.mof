@@ -46,4 +46,3 @@ class MSFT_xSQLServerFailoverClusterSetup : OMI_BaseResource
     [Read, Description("Output username for the Integration Services service.")] String ISSvcAccountUsername;
     [Write, Description("File system folder for Integration Services.")] String ISFileSystemFolder;
 };
-

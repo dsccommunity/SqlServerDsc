@@ -7,4 +7,3 @@ class MSFT_xSQLServerRSConfig : OMI_BaseResource
     [Required, EmbeddedInstance("MSFT_Credential"), Description("Credential to be used to perform the configuration.")] String SQLAdminCredential;
     [Read, Description("Is the Reporting Services instance initialized.")] Boolean IsInitialized;
 };
-

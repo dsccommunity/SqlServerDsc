@@ -144,3 +144,4 @@ foreach($Node in $ConfigurationData.AllNodes)
 SQLSA -ConfigurationData $ConfigurationData
 Set-DscLocalConfigurationManager -Path .\SQLSA -Verbose
 Start-DscConfiguration -Path .\SQLSA -Verbose -Wait -Force
+

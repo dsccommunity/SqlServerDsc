@@ -45,4 +45,3 @@ class MSFT_xSQLServerSetup : OMI_BaseResource
     [Write, EmbeddedInstance("MSFT_Credential"), Description("Service account for Integration Services service.")] String ISSvcAccount;
     [Read, Description("Output username for the Integration Services service.")] String ISSvcAccountUsername;
 };
-

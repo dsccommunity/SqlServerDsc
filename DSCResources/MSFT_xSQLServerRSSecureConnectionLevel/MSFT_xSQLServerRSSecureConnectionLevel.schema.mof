@@ -5,4 +5,3 @@ class MSFT_xSQLServerRSSecureConnectionLevel : OMI_BaseResource
     [Key, Description("SQL Server Reporting Service secure connection level.")] Uint16 SecureConnectionLevel;
     [Required, EmbeddedInstance("MSFT_Credential"), Description("Credential with administrative permissions to the SQL instance.")] String SQLAdminCredential;
 };
-

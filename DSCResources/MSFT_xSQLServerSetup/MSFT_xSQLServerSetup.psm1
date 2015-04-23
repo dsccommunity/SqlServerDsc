@@ -784,4 +784,3 @@ function GetFirstItemPropertyValue
 
 
 Export-ModuleMember -Function *-TargetResource
-

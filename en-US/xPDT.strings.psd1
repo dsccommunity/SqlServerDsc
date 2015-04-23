@@ -8,4 +8,3 @@ FailureWaitingForProcessesToStart=Failed to wait for processes to start
 ProcessStarted=Process matching path '{0}' started in process ID {1}
 ProcessAlreadyStarted=Process matching path '{0}' already started in process ID {1}
 '@
-

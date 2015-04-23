@@ -949,4 +949,3 @@ function ConvertDecimalIP
 
 
 Export-ModuleMember -Function *-TargetResource
-

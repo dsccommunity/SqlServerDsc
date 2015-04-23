@@ -462,4 +462,3 @@ function New-FirewallRule
 
 
 Export-ModuleMember -Function *-TargetResource
-

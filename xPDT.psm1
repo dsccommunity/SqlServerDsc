@@ -644,7 +644,7 @@ function WaitForWin32ProcessStart
     do
     {
         $value = @(GetWin32Process @GetArguments).Count -ge 1
-    } while(!$value -and ([DateTime]::Now - $start).TotalMilliseconds -lt 10000)
+    } while(!$value -and ([DateTime]::Now - $start).TotalMilliseconds -lt 60000)
     
     return $value
 }
