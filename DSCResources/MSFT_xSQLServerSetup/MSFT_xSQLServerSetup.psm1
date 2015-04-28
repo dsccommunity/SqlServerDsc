@@ -342,6 +342,9 @@ function Set-TargetResource
     $SQLData = Get-TargetResource -SourcePath $SourcePath -SourceFolder $SourceFolder -SetupCredential $SetupCredential -Features $Features -InstanceName $InstanceName
     $InstanceName = $InstanceName.ToUpper()
 
+    #@mikefrobbins: The contains method is case sensitive so the specified features have to be in upper case to match the case specified in this function.
+    $Features = $Features.ToUpper()
+
     Import-Module $PSScriptRoot\..\..\xPDT.psm1
 
     $Path = Join-Path -Path (Join-Path -Path $SourcePath -ChildPath $SourceFolder) -ChildPath "setup.exe"
