@@ -138,6 +138,11 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ## Versions
 
+### 1.3.0.0
+
+* xSqlServerSetup: 
+    - Make Features case-insensitive.
+
 ### 1.2.1.0
 
 * Increased timeout for setup process to start to 60 seconds.
