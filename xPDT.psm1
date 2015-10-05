@@ -695,11 +695,11 @@ function NetUse
 
         if ($Ensure -eq "Absent")
         {
-            $cmd = "net.exe use $SourcePath /del"
+            $cmd = "net.exe use `"$SourcePath`" /del"
         }
         else 
         {
-            $cmd = "net.exe use $SourcePath $($Credential.GetNetworkCredential().Password) /user:$($Credential.GetNetworkCredential().Domain)\$($Credential.GetNetworkCredential().UserName)"
+            $cmd = "net.exe use `"$SourcePath`" `"$($Credential.GetNetworkCredential().Password)`" /user:`"$($Credential.GetNetworkCredential().Domain)\$($Credential.GetNetworkCredential().UserName)`""
         }
         Invoke-Expression $cmd
     }
