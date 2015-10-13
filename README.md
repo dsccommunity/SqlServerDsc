@@ -138,6 +138,14 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ## Versions
 
+### Unreleased
+
+* xSqlServerSetup:
+    - Only pass the UpdateSource parameter to setup.exe when UpdateEnabled = True 
+
+* General:
+    - Quote parameters to net use in xPDT.psm1 to support paths with spaces and passwords with reserved characters (e.g. &) 
+
 ### 1.3.0.0
 
 * xSqlServerSetup: 
