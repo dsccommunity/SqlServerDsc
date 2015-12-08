@@ -121,6 +121,8 @@ function Get-TargetResource
             $ASServer.Connect("localhost\$InstanceName")
         }
         $ASCollation = ($ASServer.ServerProperties | Where-Object {$_.Name -eq "CollationName"}).Value
+        $ASSERVERMODE =  $(IF ($($ASServer.ServerMode) -eq 'Default') {'MULTIDIMENSIONAL'}
+                            Else {$($ASServer.ServerMode)})
         $ASSysAdminAccounts = @(($ASServer.Roles | Where-Object {$_.Name -eq "Administrators"}).Members.Name)
         $ASDataDir = ($ASServer.ServerProperties | Where-Object {$_.Name -eq "DataDir"}).Value
         $ASTempDir = ($ASServer.ServerProperties | Where-Object {$_.Name -eq "TempDir"}).Value
@@ -206,6 +208,7 @@ function Get-TargetResource
         RSSvcAccountUsername = $RSSvcAccountUsername
         ASSvcAccountUsername = $ASSvcAccountUsername
         ASCollation = $ASCollation
+        ASSERVERMODE = $ASSERVERMODE
         ASSysAdminAccounts = $ASSysAdminAccounts
         ASDataDir = $ASDataDir
         ASLogDir = $ASLogDir
@@ -316,6 +319,9 @@ function Set-TargetResource
 
         [System.String]
         $ASCollation,
+
+        [System.String]
+        $ASSERVERMODE,
 
         [System.String[]]
         $ASSysAdminAccounts,
@@ -512,6 +518,10 @@ function Set-TargetResource
             "ASTempDir",
             "ASConfigDir"
         )
+        IF ((Get-Variable -Name "ASSERVERMODE" -ErrorAction Continue))
+        {
+            $ArgumentVars += @("ASSERVERMODE")
+        }
         if($PSBoundParameters.ContainsKey("ASSvcAccount"))
         {
             if($ASSvcAccount.UserName -eq "SYSTEM")
@@ -712,6 +722,9 @@ function Test-TargetResource
 
         [System.String]
         $ASCollation,
+
+        [System.String]
+        $ASSERVERMODE,
 
         [System.String[]]
         $ASSysAdminAccounts,

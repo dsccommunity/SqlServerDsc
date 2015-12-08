@@ -36,6 +36,7 @@ class MSFT_xSQLServerSetup : OMI_BaseResource
     [Write, EmbeddedInstance("MSFT_Credential"), Description("Service account for Analysus Services service.")] String ASSvcAccount;
     [Read, Description("Output username for the Analysis Services service.")] String ASSvcAccountUsername;
     [Write, Description("Collation for Analysis Services.")] String ASCollation;
+    [Write, Description("Analysis Services Server Mode")] String ASSERVERMODE;
     [Write, Description("Array of accounts to be made Analysis Services admins.")] String ASSysAdminAccounts[];
     [Write, Description("Path for Analysis Services data files.")] String ASDataDir;
     [Write, Description("Path for Analysis Services log files.")] String ASLogDir;
