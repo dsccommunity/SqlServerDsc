@@ -518,7 +518,7 @@ function Set-TargetResource
             "ASTempDir",
             "ASConfigDir"
         )
-        IF ((Get-Variable -Name "ASSERVERMODE" -ErrorAction Continue))
+        IF ((Get-Variable -Name "ASSERVERMODE" -ErrorAction SilentlyContinue))
         {
             $ArgumentVars += @("ASSERVERMODE")
         }
