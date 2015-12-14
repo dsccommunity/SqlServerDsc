@@ -1,4 +1,19 @@
-﻿Import-LocalizedData LocalizedData -filename xPDT.strings.psd1
+data LocalizedData
+{
+    ConvertFrom-StringData @'
+
+FileNotFound=File not found in the environment path
+AbsolutePathOrFileName=Absolute path or file name expected
+InvalidArgument=Invalid argument: '{0}' with value: '{1}'
+InvalidArgumentAndMessage={0} {1}
+ErrorStarting=Failure starting process matching path '{0}'. Message: {1}
+FailureWaitingForProcessesToStart=Failed to wait for processes to start
+ProcessStarted=Process matching path '{0}' started in process ID {1}
+ProcessAlreadyStarted=Process matching path '{0}' already started in process ID {1}
+'@
+}
+
+Import-LocalizedData LocalizedData -filename xPDT.strings.psd1
 
 function ThrowInvalidArgumentError
 {
@@ -36,15 +51,6 @@ function ResolvePath
     $Path = [Environment]::ExpandEnvironmentVariables($Path)
     if(IsRootedPath $Path)
     {
-        if(!(Test-Path $Path -PathType Leaf))
-        {
-            ThrowInvalidArgumentError "CannotFindRootedPath" ($LocalizedData.InvalidArgumentAndMessage -f ($LocalizedData.InvalidArgument -f "Path",$Path), $LocalizedData.FileNotFound)
-        }
-        return $Path
-    }
-    else
-    {
-        $Path = (Get-Item -Path $Path -ErrorAction SilentlyContinue).FullName
         if(!(Test-Path $Path -PathType Leaf))
         {
             ThrowInvalidArgumentError "CannotFindRootedPath" ($LocalizedData.InvalidArgumentAndMessage -f ($LocalizedData.InvalidArgument -f "Path",$Path), $LocalizedData.FileNotFound)
@@ -212,7 +218,6 @@ namespace Source
             LOGON32_PROVIDER_WINNT40,
             LOGON32_PROVIDER_WINNT50
         }
-
         [StructLayout(LayoutKind.Sequential)]
         public struct SECURITY_ATTRIBUTES
         {
@@ -421,7 +426,7 @@ namespace Source
                 {
                     CloseHandle(pi.hProcess);
                 }
-                if (hDupedToken != IntPtr.Zero)
+                 if (hDupedToken != IntPtr.Zero)
                 {
                     CloseHandle(hDupedToken);
                 }
@@ -491,7 +496,7 @@ function GetWin32ProcessOwner
     }
     catch
     {}
-    if(($owner.Domain -ne $null) -and ($owner.Domain -ne $env:COMPUTERNAME))
+    if($owner.Domain -ne $null)
     {
         return $Owner.Domain + "\" + $Owner.User
     }
@@ -606,7 +611,7 @@ function StartWin32Process
         }
         if (!(WaitForWin32ProcessStart @GetArguments))
         {
-#            ThrowInvalidArgumentError "FailureWaitingForProcessesToStart" ($LocalizedData.ErrorStarting -f $Path,$LocalizedData.FailureWaitingForProcessesToStart)
+            ThrowInvalidArgumentError "FailureWaitingForProcessesToStart" ($LocalizedData.ErrorStarting -f $Path,$LocalizedData.FailureWaitingForProcessesToStart)
         }
     }
     else
@@ -631,10 +636,7 @@ function WaitForWin32ProcessStart
         $Arguments,
 
         [PSCredential]
-        $Credential,
-
-        [Int]
-        $Delay = 60000
+        $Credential
     )
 
     $start = [DateTime]::Now
@@ -642,7 +644,7 @@ function WaitForWin32ProcessStart
     do
     {
         $value = @(GetWin32Process @GetArguments).Count -ge 1
-    } while(!$value -and ([DateTime]::Now - $start).TotalMilliseconds -lt $Delay)
+    } while(!$value -and ([DateTime]::Now - $start).TotalMilliseconds -lt 60000)
     
     return $value
 }
@@ -665,11 +667,11 @@ function WaitForWin32ProcessEnd
     )
 
     $GetArguments = ExtractArguments $PSBoundParameters ("Path","Arguments","Credential")
-    While (WaitForWin32ProcessStart @GetArguments -Delay 1000)
+    While (WaitForWin32ProcessStart @GetArguments)
     {
         Start-Sleep 1
     }
-    Get-ScheduledTask | Where-Object {($_.TaskName.StartsWith("xPDT")) -and ($_.Actions.Execute -eq $Path) -and ($_.Actions.Arguments -eq $Arguments)} | Where-Object {$_ -ne $null} | Unregister-ScheduledTask -Confirm:$false
+    Get-ScheduledTask | Where-Object {($_.TaskName.Length -ge 4) -and ($_.TaskName.Substring(0,4) -eq "xPDT") -and ($_.Actions.Execute -eq $Path) -and ($_.Actions.Arguments -eq $Arguments)} | Where-Object {$_ -ne $null} | Unregister-ScheduledTask -Confirm:$false
 }
 
 function NetUse
@@ -685,7 +687,6 @@ function NetUse
         $Credential,
         
         [string]
-        [ValidateSet("Present","Absent")]
         $Ensure = "Present"
     )
 
@@ -704,32 +705,4 @@ function NetUse
     }
 }
 
-function GetxPDTVariable
-{
-    param
-    (
-        [parameter(Mandatory = $true)]
-        [System.String]
-        $Component,
-
-        [parameter(Mandatory = $true)]
-        [System.String]
-        $Version,
-
-        [parameter(Mandatory = $true)]
-        [System.String]
-        $Role,
-
-        [parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
-        
-        [System.String]
-        $Update = "Latest"
-    )
-
-    $xPDT = [XML](Get-Content "$PSScriptRoot\xPDT.xml")
-    $xPDT.SelectSingleNode("//xPDT/Component[@Name='$Component' and @Version='$Version']/Role[@Name='$Role']/Update[@Name='$Update']/Variable[@Name='$Name']").Value
-}
-
-Export-ModuleMember ResolvePath,StartWin32Process,WaitForWin32ProcessEnd,NetUse,GetxPDTVariable
+Export-ModuleMember ResolvePath,StartWin32Process,WaitForWin32ProcessEnd,NetUse
