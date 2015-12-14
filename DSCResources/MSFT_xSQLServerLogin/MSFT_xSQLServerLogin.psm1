@@ -1,4 +1,4 @@
-﻿$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Write-Debug -Message "CurrentPath: $currentPath"
 
 # Load Common Code
@@ -12,11 +12,11 @@ function ConnectSQL
 {
     param
     (
-		[System.String]
-		$SQLServer = $env:COMPUTERNAME,
+        [System.String]
+        $SQLServer = $env:COMPUTERNAME,
 
-		[System.String]
-		$SQLInstanceName = "MSSQLSERVER"
+        [System.String]
+        $SQLInstanceName = "MSSQLSERVER"
     )
     
     $null = [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.Smo')
@@ -47,31 +47,31 @@ function ConnectSQL
 
 function Get-TargetResource
 {
-	[CmdletBinding()]
-	[OutputType([System.Collections.Hashtable])]
-	param
-	(
-		[ValidateSet("Present","Absent")]
-		[System.String]
-		$Ensure,
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [ValidateSet("Present","Absent")]
+        [System.String]
+        $Ensure,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Name,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Name,
 
-		[System.Management.Automation.PSCredential]
-		$LoginCredential,
+        [System.Management.Automation.PSCredential]
+        $LoginCredential,
 
-		[ValidateSet("SqlLogin","WindowsUser","WindowsGroup")]
-		[System.String]
-		$LoginType,
+        [ValidateSet("SqlLogin","WindowsUser","WindowsGroup")]
+        [System.String]
+        $LoginType,
 
-		[System.String]
-		$SQLServer = $env:COMPUTERNAME,
+        [System.String]
+        $SQLServer = $env:COMPUTERNAME,
 
-		[System.String]
-		$SQLInstanceName = "MSSQLSERVER"
-	)
+        [System.String]
+        $SQLInstanceName = "MSSQLSERVER"
+    )
 
     if(!$SQL)
     {
@@ -108,44 +108,44 @@ function Get-TargetResource
         $Ensure = "Absent"
     }
 
-	$returnValue = @{
-		Ensure = $Ensure
-		Name = $Name
-		LoginType = $LoginType
-		SQLServer = $SQLServer
-		SQLInstanceName = $SQLInstanceName
-	}
+    $returnValue = @{
+        Ensure = $Ensure
+        Name = $Name
+        LoginType = $LoginType
+        SQLServer = $SQLServer
+        SQLInstanceName = $SQLInstanceName
+    }
 
-	$returnValue
+    $returnValue
 }
 
 
 function Set-TargetResource
 {
-	[CmdletBinding()]
-	param
-	(
-		[ValidateSet("Present","Absent")]
-		[System.String]
-		$Ensure = "Present",
+    [CmdletBinding()]
+    param
+    (
+        [ValidateSet("Present","Absent")]
+        [System.String]
+        $Ensure = "Present",
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Name,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Name,
 
-		[System.Management.Automation.PSCredential]
-		$LoginCredential,
+        [System.Management.Automation.PSCredential]
+        $LoginCredential,
 
-		[ValidateSet("SqlLogin","WindowsUser","WindowsGroup")]
-		[System.String]
-		$LoginType = "WindowsUser",
+        [ValidateSet("SqlLogin","WindowsUser","WindowsGroup")]
+        [System.String]
+        $LoginType = "WindowsUser",
 
-		[System.String]
-		$SQLServer = $env:COMPUTERNAME,
+        [System.String]
+        $SQLServer = $env:COMPUTERNAME,
 
-		[System.String]
-		$SQLInstanceName = "MSSQLSERVER"
-	)
+        [System.String]
+        $SQLInstanceName = "MSSQLSERVER"
+    )
 
     if(($Ensure -eq "Present") -and ($LoginType -eq "SqlLogin") -and !$PSBoundParameters.ContainsKey('LoginCredential'))
     {
@@ -208,37 +208,37 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
-	[CmdletBinding()]
-	[OutputType([System.Boolean])]
-	param
-	(
-		[ValidateSet("Present","Absent")]
-		[System.String]
-		$Ensure = "Present",
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [ValidateSet("Present","Absent")]
+        [System.String]
+        $Ensure = "Present",
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Name,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Name,
 
-		[System.Management.Automation.PSCredential]
-		$LoginCredential,
+        [System.Management.Automation.PSCredential]
+        $LoginCredential,
 
-		[ValidateSet("SqlLogin","WindowsUser","WindowsGroup")]
-		[System.String]
-		$LoginType = "WindowsUser",
+        [ValidateSet("SqlLogin","WindowsUser","WindowsGroup")]
+        [System.String]
+        $LoginType = "WindowsUser",
 
-		[System.String]
-		$SQLServer = $env:COMPUTERNAME,
+        [System.String]
+        $SQLServer = $env:COMPUTERNAME,
 
-		[System.String]
-		$SQLInstanceName = "MSSQLSERVER"
-	)
+        [System.String]
+        $SQLInstanceName = "MSSQLSERVER"
+    )
 
     $SQLServerLogin = Get-TargetResource @PSBoundParameters
 
-	$result = ($SQLServerLogin.Ensure -eq $Ensure) -and ($SQLServerLogin.LoginType -eq $LoginType)
-	
-	$result
+    $result = ($SQLServerLogin.Ensure -eq $Ensure) -and ($SQLServerLogin.LoginType -eq $LoginType)
+    
+    $result
 }
 
 

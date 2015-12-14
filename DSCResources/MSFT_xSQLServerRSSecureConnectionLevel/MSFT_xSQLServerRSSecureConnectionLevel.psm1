@@ -1,4 +1,4 @@
-﻿$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Write-Debug -Message "CurrentPath: $currentPath"
 
 # Load Common Code
@@ -6,22 +6,22 @@ Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAct
 
 function Get-TargetResource
 {
-	[CmdletBinding()]
-	[OutputType([System.Collections.Hashtable])]
-	param
-	(
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
         [parameter(Mandatory = $true)]
-		[System.String]
-		$InstanceName,
-		
+        [System.String]
+        $InstanceName,
+        
         [parameter(Mandatory = $true)]
-		[System.UInt16]
-		$SecureConnectionLevel,
+        [System.UInt16]
+        $SecureConnectionLevel,
 
-		[parameter(Mandatory = $true)]
-		[System.Management.Automation.PSCredential]
-		$SQLAdminCredential
-	)
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $SQLAdminCredential
+    )
 
     if(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS" -Name $InstanceName -ErrorAction SilentlyContinue)
     {
@@ -39,32 +39,32 @@ function Get-TargetResource
         throw New-TerminatingError -ErrorType SSRSNotFound -FormatArgs @($InstanceName) -ErrorCategory ObjectNotFound
     }
 
-	$returnValue = @{
+    $returnValue = @{
         InstanceName = $InstanceName
-		SecureConnectionLevel = $SecureConnectionLevel
-	}
+        SecureConnectionLevel = $SecureConnectionLevel
+    }
 
-	$returnValue
+    $returnValue
 }
 
 
 function Set-TargetResource
 {
-	[CmdletBinding()]
-	param
-	(
+    [CmdletBinding()]
+    param
+    (
         [parameter(Mandatory = $true)]
-		[System.String]
-		$InstanceName,
-		
-		[parameter(Mandatory = $true)]
-		[System.UInt16]
-		$SecureConnectionLevel,
+        [System.String]
+        $InstanceName,
+        
+        [parameter(Mandatory = $true)]
+        [System.UInt16]
+        $SecureConnectionLevel,
 
-		[parameter(Mandatory = $true)]
-		[System.Management.Automation.PSCredential]
-		$SQLAdminCredential
-	)
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $SQLAdminCredential
+    )
 
     if(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS" -Name $InstanceName -ErrorAction SilentlyContinue)
     {
@@ -88,22 +88,22 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
-	[CmdletBinding()]
-	[OutputType([System.Boolean])]
-	param
-	(
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
         [parameter(Mandatory = $true)]
-		[System.String]
-		$InstanceName,
-		
-		[parameter(Mandatory = $true)]
-		[System.UInt16]
-		$SecureConnectionLevel,
+        [System.String]
+        $InstanceName,
+        
+        [parameter(Mandatory = $true)]
+        [System.UInt16]
+        $SecureConnectionLevel,
 
-		[parameter(Mandatory = $true)]
-		[System.Management.Automation.PSCredential]
-		$SQLAdminCredential
-	)
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $SQLAdminCredential
+    )
 
     $result = ((Get-TargetResource @PSBoundParameters).SecureConnectionLevel -eq $SecureConnectionLevel)
 

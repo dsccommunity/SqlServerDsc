@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xPDT>
   <Component Name="SCVMM" Version="Default">
     <Role Name="Agent">
@@ -165,9 +165,9 @@
         <Variable Name="IdentifyingNumber" Value="{C92727BE-BD12-4140-96A6-276BA4F60AC1}" />
         <Variable Name="PatchID" Value="{C61BC742-A505-4DE9-96C9-21E4218C8B0A}" />
         <Variable Name="UpdateFile" Value="KB3064919-AMD64-Server.msp" />
-		<Variable Name="DatabaseFile" Value="update_rollup_mom_db.sql" />
-		<Variable Name="DWDatabaseFile" Value="UR_Datawarehouse.sql" />
-		<Variable Name="DWRetentionPolicy" Value="SetRetentionPolicy.sql" />
+        <Variable Name="DatabaseFile" Value="update_rollup_mom_db.sql" />
+        <Variable Name="DWDatabaseFile" Value="UR_Datawarehouse.sql" />
+        <Variable Name="DWRetentionPolicy" Value="SetRetentionPolicy.sql" />
         <Variable Name="Update" Value="Update Rollup 7" />
         <Variable Name="InstallRegVersion" Value="12" />
         <Variable Name="RegVersion" Value="3.0" />

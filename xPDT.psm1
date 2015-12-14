@@ -1,4 +1,4 @@
-﻿Import-LocalizedData LocalizedData -filename xPDT.strings.psd1
+Import-LocalizedData LocalizedData -filename xPDT.strings.psd1
 
 function ThrowInvalidArgumentError
 {

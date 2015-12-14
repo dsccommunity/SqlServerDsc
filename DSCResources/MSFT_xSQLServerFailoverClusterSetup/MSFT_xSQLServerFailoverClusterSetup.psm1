@@ -1,4 +1,4 @@
-﻿# NOTE: This resource requires WMF5 and PsDscRunAsCredential
+# NOTE: This resource requires WMF5 and PsDscRunAsCredential
 
 $currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Write-Debug -Message "CurrentPath: $currentPath"
@@ -8,146 +8,146 @@ Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAct
 
 function Get-TargetResource
 {
-	[CmdletBinding()]
-	[OutputType([System.Collections.Hashtable])]
-	param
-	(
-		[parameter(Mandatory = $true)]
-		[ValidateSet("Prepare","Complete")]
-		[System.String]
-		$Action,
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [parameter(Mandatory = $true)]
+        [ValidateSet("Prepare","Complete")]
+        [System.String]
+        $Action,
 
-		[System.String]
-		$SourcePath = "$PSScriptRoot\..\..\",
+        [System.String]
+        $SourcePath = "$PSScriptRoot\..\..\",
 
-		[System.String]
-		$SourceFolder = "Source",
+        [System.String]
+        $SourceFolder = "Source",
 
-		[parameter(Mandatory = $true)]
-		[System.Management.Automation.PSCredential]
-		$SetupCredential,
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $SetupCredential,
 
-		[System.Management.Automation.PSCredential]
-		$SourceCredential,
+        [System.Management.Automation.PSCredential]
+        $SourceCredential,
 
-		[System.Boolean]
-		$SuppressReboot,
+        [System.Boolean]
+        $SuppressReboot,
 
-		[System.Boolean]
-		$ForceReboot,
+        [System.Boolean]
+        $ForceReboot,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Features,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Features,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$InstanceName,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
 
-		[System.String]
-		$InstanceID = $InstanceName,
+        [System.String]
+        $InstanceID = $InstanceName,
 
-		[System.String]
-		$PID,
+        [System.String]
+        $PID,
 
-		[System.String]
-		$UpdateEnabled = $True,
+        [System.String]
+        $UpdateEnabled = $True,
 
-		[System.String]
-		$UpdateSource = ".\Updates",
+        [System.String]
+        $UpdateSource = ".\Updates",
 
-		[System.String]
-		$SQMReporting,
+        [System.String]
+        $SQMReporting,
 
-		[System.String]
-		$ErrorReporting,
+        [System.String]
+        $ErrorReporting,
 
-		[System.String]
-		$FailoverClusterGroup = "SQL Server ($InstanceName)",
+        [System.String]
+        $FailoverClusterGroup = "SQL Server ($InstanceName)",
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$FailoverClusterNetworkName,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $FailoverClusterNetworkName,
 
-		[System.String]
-		$FailoverClusterIPAddress,
+        [System.String]
+        $FailoverClusterIPAddress,
 
-		[System.String]
-		$InstallSharedDir,
+        [System.String]
+        $InstallSharedDir,
 
-		[System.String]
-		$InstallSharedWOWDir,
+        [System.String]
+        $InstallSharedWOWDir,
 
-		[System.String]
-		$InstanceDir,
+        [System.String]
+        $InstanceDir,
 
-		[parameter(Mandatory = $true)]
-		[System.Management.Automation.PSCredential]
-		$SQLSvcAccount,
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $SQLSvcAccount,
 
-		[System.Management.Automation.PSCredential]
-		$AgtSvcAccount = $SQLSvcAccount,
+        [System.Management.Automation.PSCredential]
+        $AgtSvcAccount = $SQLSvcAccount,
 
-		[System.String]
-		$SQLCollation,
+        [System.String]
+        $SQLCollation,
 
-		[System.String[]]
-		$SQLSysAdminAccounts,
+        [System.String[]]
+        $SQLSysAdminAccounts,
 
-		[System.String]
-		$SecurityMode,
+        [System.String]
+        $SecurityMode,
 
-		[System.Management.Automation.PSCredential]
-		$SAPwd = $SetupCredential,
+        [System.Management.Automation.PSCredential]
+        $SAPwd = $SetupCredential,
 
-		[System.String]
-		$InstallSQLDataDir,
+        [System.String]
+        $InstallSQLDataDir,
 
-		[System.String]
-		$SQLUserDBDir,
+        [System.String]
+        $SQLUserDBDir,
 
-		[System.String]
-		$SQLUserDBLogDir,
+        [System.String]
+        $SQLUserDBLogDir,
 
-		[System.String]
-		$SQLTempDBDir,
+        [System.String]
+        $SQLTempDBDir,
 
-		[System.String]
-		$SQLTempDBLogDir,
+        [System.String]
+        $SQLTempDBLogDir,
 
-		[System.String]
-		$SQLBackupDir,
+        [System.String]
+        $SQLBackupDir,
 
-		[System.Management.Automation.PSCredential]
-		$ASSvcAccount = $SQLSvcAccount,
+        [System.Management.Automation.PSCredential]
+        $ASSvcAccount = $SQLSvcAccount,
 
-		[System.String]
-		$ASCollation,
+        [System.String]
+        $ASCollation,
 
-		[System.String[]]
-		$ASSysAdminAccounts,
+        [System.String[]]
+        $ASSysAdminAccounts,
 
-		[System.String]
-		$ASDataDir,
+        [System.String]
+        $ASDataDir,
 
-		[System.String]
-		$ASLogDir,
+        [System.String]
+        $ASLogDir,
 
-		[System.String]
-		$ASBackupDir,
+        [System.String]
+        $ASBackupDir,
 
-		[System.String]
-		$ASTempDir,
+        [System.String]
+        $ASTempDir,
 
-		[System.String]
-		$ASConfigDir,
+        [System.String]
+        $ASConfigDir,
 
-		[System.Management.Automation.PSCredential]
-		$ISSvcAccount = $SQLSvcAccount,
+        [System.Management.Automation.PSCredential]
+        $ISSvcAccount = $SQLSvcAccount,
 
-		[System.String]
-		$ISFileSystemFolder
-	)
+        [System.String]
+        $ISFileSystemFolder
+    )
 
     $InstanceName = $InstanceName.ToUpper()
 
@@ -265,170 +265,170 @@ function Get-TargetResource
         }
     }
 
-	$returnValue = @{
-		Action = $Action
-		SourcePath = $SourcePath
-		SourceFolder = $SourceFolder
-		Features = $Features
-		InstanceName = $InstanceName
-		InstanceID = $InstanceID
-		FailoverClusterGroup = $FailoverClusterGroup
-		FailoverClusterNetworkName = $FailoverClusterNetworkName
-		FailoverClusterIPAddress = $FailoverClusterIPAddress
-		InstallSharedDir = $InstallSharedDir
-		InstallSharedWOWDir = $InstallSharedWOWDir
-		InstanceDir = $InstanceDir
-		SQLSvcAccountUsername = $SQLSvcAccountUsername
-		AgtSvcAccountUsername = $AgtSvcAccountUsername
-		ASSvcAccountUsername = $ASSvcAccountUsername
-		ISSvcAccountUsername = $ISSvcAccountUsername
-	}
+    $returnValue = @{
+        Action = $Action
+        SourcePath = $SourcePath
+        SourceFolder = $SourceFolder
+        Features = $Features
+        InstanceName = $InstanceName
+        InstanceID = $InstanceID
+        FailoverClusterGroup = $FailoverClusterGroup
+        FailoverClusterNetworkName = $FailoverClusterNetworkName
+        FailoverClusterIPAddress = $FailoverClusterIPAddress
+        InstallSharedDir = $InstallSharedDir
+        InstallSharedWOWDir = $InstallSharedWOWDir
+        InstanceDir = $InstanceDir
+        SQLSvcAccountUsername = $SQLSvcAccountUsername
+        AgtSvcAccountUsername = $AgtSvcAccountUsername
+        ASSvcAccountUsername = $ASSvcAccountUsername
+        ISSvcAccountUsername = $ISSvcAccountUsername
+    }
 
-	$returnValue
+    $returnValue
 }
 
 
 function Set-TargetResource
 {
-	[CmdletBinding()]
-	param
-	(
-		[parameter(Mandatory = $true)]
-		[ValidateSet("Prepare","Complete")]
-		[System.String]
-		$Action,
+    [CmdletBinding()]
+    param
+    (
+        [parameter(Mandatory = $true)]
+        [ValidateSet("Prepare","Complete")]
+        [System.String]
+        $Action,
 
-		[System.String]
-		$SourcePath = "$PSScriptRoot\..\..\",
+        [System.String]
+        $SourcePath = "$PSScriptRoot\..\..\",
 
-		[System.String]
-		$SourceFolder = "Source",
+        [System.String]
+        $SourceFolder = "Source",
 
-		[parameter(Mandatory = $true)]
-		[System.Management.Automation.PSCredential]
-		$SetupCredential,
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $SetupCredential,
 
-		[System.Management.Automation.PSCredential]
-		$SourceCredential,
+        [System.Management.Automation.PSCredential]
+        $SourceCredential,
 
-		[System.Boolean]
-		$SuppressReboot,
+        [System.Boolean]
+        $SuppressReboot,
 
-		[System.Boolean]
-		$ForceReboot,
+        [System.Boolean]
+        $ForceReboot,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Features,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Features,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$InstanceName,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
 
-		[System.String]
-		$InstanceID = $InstanceName,
+        [System.String]
+        $InstanceID = $InstanceName,
 
-		[System.String]
-		$PID,
+        [System.String]
+        $PID,
 
-		[System.String]
-		$UpdateEnabled = $True,
+        [System.String]
+        $UpdateEnabled = $True,
 
-		[System.String]
-		$UpdateSource = ".\Updates",
+        [System.String]
+        $UpdateSource = ".\Updates",
 
-		[System.String]
-		$SQMReporting,
+        [System.String]
+        $SQMReporting,
 
-		[System.String]
-		$ErrorReporting,
+        [System.String]
+        $ErrorReporting,
 
-		[System.String]
-		$FailoverClusterGroup = "SQL Server ($InstanceName)",
+        [System.String]
+        $FailoverClusterGroup = "SQL Server ($InstanceName)",
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$FailoverClusterNetworkName,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $FailoverClusterNetworkName,
 
-		[System.String]
-		$FailoverClusterIPAddress,
+        [System.String]
+        $FailoverClusterIPAddress,
 
-		[System.String]
-		$InstallSharedDir,
+        [System.String]
+        $InstallSharedDir,
 
-		[System.String]
-		$InstallSharedWOWDir,
+        [System.String]
+        $InstallSharedWOWDir,
 
-		[System.String]
-		$InstanceDir,
+        [System.String]
+        $InstanceDir,
 
-		[parameter(Mandatory = $true)]
-		[System.Management.Automation.PSCredential]
-		$SQLSvcAccount,
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $SQLSvcAccount,
 
-		[System.Management.Automation.PSCredential]
-		$AgtSvcAccount = $SQLSvcAccount,
+        [System.Management.Automation.PSCredential]
+        $AgtSvcAccount = $SQLSvcAccount,
 
-		[System.String]
-		$SQLCollation,
+        [System.String]
+        $SQLCollation,
 
-		[System.String[]]
-		$SQLSysAdminAccounts,
+        [System.String[]]
+        $SQLSysAdminAccounts,
 
-		[System.String]
-		$SecurityMode,
+        [System.String]
+        $SecurityMode,
 
-		[System.Management.Automation.PSCredential]
-		$SAPwd = $SetupCredential,
+        [System.Management.Automation.PSCredential]
+        $SAPwd = $SetupCredential,
 
-		[System.String]
-		$InstallSQLDataDir,
+        [System.String]
+        $InstallSQLDataDir,
 
-		[System.String]
-		$SQLUserDBDir,
+        [System.String]
+        $SQLUserDBDir,
 
-		[System.String]
-		$SQLUserDBLogDir,
+        [System.String]
+        $SQLUserDBLogDir,
 
-		[System.String]
-		$SQLTempDBDir,
+        [System.String]
+        $SQLTempDBDir,
 
-		[System.String]
-		$SQLTempDBLogDir,
+        [System.String]
+        $SQLTempDBLogDir,
 
-		[System.String]
-		$SQLBackupDir,
+        [System.String]
+        $SQLBackupDir,
 
-		[System.Management.Automation.PSCredential]
-		$ASSvcAccount = $SQLSvcAccount,
+        [System.Management.Automation.PSCredential]
+        $ASSvcAccount = $SQLSvcAccount,
 
-		[System.String]
-		$ASCollation,
+        [System.String]
+        $ASCollation,
 
-		[System.String[]]
-		$ASSysAdminAccounts,
+        [System.String[]]
+        $ASSysAdminAccounts,
 
-		[System.String]
-		$ASDataDir,
+        [System.String]
+        $ASDataDir,
 
-		[System.String]
-		$ASLogDir,
+        [System.String]
+        $ASLogDir,
 
-		[System.String]
-		$ASBackupDir,
+        [System.String]
+        $ASBackupDir,
 
-		[System.String]
-		$ASTempDir,
+        [System.String]
+        $ASTempDir,
 
-		[System.String]
-		$ASConfigDir,
+        [System.String]
+        $ASConfigDir,
 
-		[System.Management.Automation.PSCredential]
-		$ISSvcAccount = $SQLSvcAccount,
+        [System.Management.Automation.PSCredential]
+        $ISSvcAccount = $SQLSvcAccount,
 
-		[System.String]
-		$ISFileSystemFolder
-	)
+        [System.String]
+        $ISFileSystemFolder
+    )
 
     $InstanceName = $InstanceName.ToUpper()
 
@@ -763,7 +763,7 @@ function Set-TargetResource
     
     if($ForceReboot -or ((Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue) -ne $null))
     {
-	    if(!($SuppressReboot))
+        if(!($SuppressReboot))
         {
             $global:DSCMachineStatus = 1
         }
@@ -782,146 +782,146 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
-	[CmdletBinding()]
-	[OutputType([System.Boolean])]
-	param
-	(
-		[parameter(Mandatory = $true)]
-		[ValidateSet("Prepare","Complete")]
-		[System.String]
-		$Action,
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [parameter(Mandatory = $true)]
+        [ValidateSet("Prepare","Complete")]
+        [System.String]
+        $Action,
 
-		[System.String]
-		$SourcePath = "$PSScriptRoot\..\..\",
+        [System.String]
+        $SourcePath = "$PSScriptRoot\..\..\",
 
-		[System.String]
-		$SourceFolder = "Source",
+        [System.String]
+        $SourceFolder = "Source",
 
-		[parameter(Mandatory = $true)]
-		[System.Management.Automation.PSCredential]
-		$SetupCredential,
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $SetupCredential,
 
-		[System.Management.Automation.PSCredential]
-		$SourceCredential,
+        [System.Management.Automation.PSCredential]
+        $SourceCredential,
 
-		[System.Boolean]
-		$SuppressReboot,
+        [System.Boolean]
+        $SuppressReboot,
 
-		[System.Boolean]
-		$ForceReboot,
+        [System.Boolean]
+        $ForceReboot,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Features,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Features,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$InstanceName,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
 
-		[System.String]
-		$InstanceID = $InstanceName,
+        [System.String]
+        $InstanceID = $InstanceName,
 
-		[System.String]
-		$PID,
+        [System.String]
+        $PID,
 
-		[System.String]
-		$UpdateEnabled = $True,
+        [System.String]
+        $UpdateEnabled = $True,
 
-		[System.String]
-		$UpdateSource = ".\Updates",
+        [System.String]
+        $UpdateSource = ".\Updates",
 
-		[System.String]
-		$SQMReporting,
+        [System.String]
+        $SQMReporting,
 
-		[System.String]
-		$ErrorReporting,
+        [System.String]
+        $ErrorReporting,
 
-		[System.String]
-		$FailoverClusterGroup = "SQL Server ($InstanceName)",
+        [System.String]
+        $FailoverClusterGroup = "SQL Server ($InstanceName)",
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$FailoverClusterNetworkName,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $FailoverClusterNetworkName,
 
-		[System.String]
-		$FailoverClusterIPAddress,
+        [System.String]
+        $FailoverClusterIPAddress,
 
-		[System.String]
-		$InstallSharedDir,
+        [System.String]
+        $InstallSharedDir,
 
-		[System.String]
-		$InstallSharedWOWDir,
+        [System.String]
+        $InstallSharedWOWDir,
 
-		[System.String]
-		$InstanceDir,
+        [System.String]
+        $InstanceDir,
 
-		[parameter(Mandatory = $true)]
-		[System.Management.Automation.PSCredential]
-		$SQLSvcAccount,
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $SQLSvcAccount,
 
-		[System.Management.Automation.PSCredential]
-		$AgtSvcAccount = $SQLSvcAccount,
+        [System.Management.Automation.PSCredential]
+        $AgtSvcAccount = $SQLSvcAccount,
 
-		[System.String]
-		$SQLCollation,
+        [System.String]
+        $SQLCollation,
 
-		[System.String[]]
-		$SQLSysAdminAccounts,
+        [System.String[]]
+        $SQLSysAdminAccounts,
 
-		[System.String]
-		$SecurityMode,
+        [System.String]
+        $SecurityMode,
 
-		[System.Management.Automation.PSCredential]
-		$SAPwd = $SetupCredential,
+        [System.Management.Automation.PSCredential]
+        $SAPwd = $SetupCredential,
 
-		[System.String]
-		$InstallSQLDataDir,
+        [System.String]
+        $InstallSQLDataDir,
 
-		[System.String]
-		$SQLUserDBDir,
+        [System.String]
+        $SQLUserDBDir,
 
-		[System.String]
-		$SQLUserDBLogDir,
+        [System.String]
+        $SQLUserDBLogDir,
 
-		[System.String]
-		$SQLTempDBDir,
+        [System.String]
+        $SQLTempDBDir,
 
-		[System.String]
-		$SQLTempDBLogDir,
+        [System.String]
+        $SQLTempDBLogDir,
 
-		[System.String]
-		$SQLBackupDir,
+        [System.String]
+        $SQLBackupDir,
 
-		[System.Management.Automation.PSCredential]
-		$ASSvcAccount = $SQLSvcAccount,
+        [System.Management.Automation.PSCredential]
+        $ASSvcAccount = $SQLSvcAccount,
 
-		[System.String]
-		$ASCollation,
+        [System.String]
+        $ASCollation,
 
-		[System.String[]]
-		$ASSysAdminAccounts,
+        [System.String[]]
+        $ASSysAdminAccounts,
 
-		[System.String]
-		$ASDataDir,
+        [System.String]
+        $ASDataDir,
 
-		[System.String]
-		$ASLogDir,
+        [System.String]
+        $ASLogDir,
 
-		[System.String]
-		$ASBackupDir,
+        [System.String]
+        $ASBackupDir,
 
-		[System.String]
-		$ASTempDir,
+        [System.String]
+        $ASTempDir,
 
-		[System.String]
-		$ASConfigDir,
+        [System.String]
+        $ASConfigDir,
 
-		[System.Management.Automation.PSCredential]
-		$ISSvcAccount = $SQLSvcAccount,
+        [System.Management.Automation.PSCredential]
+        $ISSvcAccount = $SQLSvcAccount,
 
-		[System.String]
-		$ISFileSystemFolder
-	)
+        [System.String]
+        $ISFileSystemFolder
+    )
 
     switch($Action)
     {
@@ -950,8 +950,8 @@ function Test-TargetResource
             }
         }
     }
-	
-	$result
+    
+    $result
 }
 
 

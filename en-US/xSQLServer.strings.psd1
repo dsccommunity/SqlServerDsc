@@ -1,4 +1,4 @@
-﻿ConvertFrom-StringData @'
+ConvertFrom-StringData @'
 ###PSLOC 
 # Common
 NoKeyFound = No Localization key found for ErrorType: '{0}'.

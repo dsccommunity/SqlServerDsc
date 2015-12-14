@@ -1,4 +1,4 @@
-﻿ConvertFrom-StringData @'
+ConvertFrom-StringData @'
 ###PSLOC
 FileNotFound=File not found in the environment path
 AbsolutePathOrFileName=Absolute path or file name expected

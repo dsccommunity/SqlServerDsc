@@ -1,4 +1,4 @@
-﻿$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Write-Debug -Message "CurrentPath: $currentPath"
 
 # Load Common Code
@@ -6,24 +6,24 @@ Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAct
 
 function Get-TargetResource
 {
-	[CmdletBinding()]
-	[OutputType([System.Collections.Hashtable])]
-	param
-	(
-		[System.String]
-		$SourcePath = "$PSScriptRoot\..\..\",
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [System.String]
+        $SourcePath = "$PSScriptRoot\..\..\",
 
-		[System.String]
-		$SourceFolder = "Source",
+        [System.String]
+        $SourceFolder = "Source",
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Features,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Features,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$InstanceName
-	)
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName
+    )
 
     $InstanceName = $InstanceName.ToUpper()
 
@@ -144,46 +144,46 @@ function Get-TargetResource
     }
     $FeaturesInstalled = $FeaturesInstalled.Trim(",")
 
-	$returnValue = @{
-		Ensure = $Ensure
+    $returnValue = @{
+        Ensure = $Ensure
         SourcePath = $SourcePath
         SourceFolder = $SourceFolder
-		Features = $FeaturesInstalled
-		InstanceName = $InstanceName
+        Features = $FeaturesInstalled
+        InstanceName = $InstanceName
         DatabaseEngineFirewall = $DatabaseEngineFirewall
         BrowserFirewall = $BrowserFirewall
         ReportingServicesFirewall = $ReportingServicesFirewall
         AnalysisServicesFirewall = $AnalysisServicesFirewall
         IntegrationServicesFirewall = $IntegrationServicesFirewall
-	}
+    }
 
-	$returnValue
+    $returnValue
 }
 
 
 function Set-TargetResource
 {
-	[CmdletBinding()]
-	param
-	(
-		[ValidateSet("Present","Absent")]
-		[System.String]
-		$Ensure = "Present",
+    [CmdletBinding()]
+    param
+    (
+        [ValidateSet("Present","Absent")]
+        [System.String]
+        $Ensure = "Present",
 
-		[System.String]
-		$SourcePath = "$PSScriptRoot\..\..\",
+        [System.String]
+        $SourcePath = "$PSScriptRoot\..\..\",
 
-		[System.String]
-		$SourceFolder = "Source",
+        [System.String]
+        $SourceFolder = "Source",
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Features,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Features,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$InstanceName
-	)
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName
+    )
 
     $InstanceName = $InstanceName.ToUpper()
 
@@ -285,32 +285,32 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
-	[CmdletBinding()]
-	[OutputType([System.Boolean])]
-	param
-	(
-		[ValidateSet("Present","Absent")]
-		[System.String]
-		$Ensure = "Present",
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [ValidateSet("Present","Absent")]
+        [System.String]
+        $Ensure = "Present",
 
-		[System.String]
-		$SourcePath = "$PSScriptRoot\..\..\",
+        [System.String]
+        $SourcePath = "$PSScriptRoot\..\..\",
 
-		[System.String]
-		$SourceFolder = "Source",
+        [System.String]
+        $SourceFolder = "Source",
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Features,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Features,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$InstanceName
-	)
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName
+    )
 
-	$result = ((Get-TargetResource -SourcePath $SourcePath -SourceFolder $SourceFolder -Features $Features -InstanceName $InstanceName).Ensure -eq $Ensure)
-	
-	$result
+    $result = ((Get-TargetResource -SourcePath $SourcePath -SourceFolder $SourceFolder -Features $Features -InstanceName $InstanceName).Ensure -eq $Ensure)
+    
+    $result
 }
 
 

@@ -1,4 +1,4 @@
-﻿$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Write-Debug -Message "CurrentPath: $currentPath"
 
 # Load Common Code
@@ -6,26 +6,26 @@ Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAct
 
 function Get-TargetResource
 {
-	[CmdletBinding()]
-	[OutputType([System.Collections.Hashtable])]
-	param
-	(
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$InstanceName,
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$RSSQLServer,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $RSSQLServer,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$RSSQLInstanceName,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $RSSQLInstanceName,
 
-		[parameter(Mandatory = $true)]
-		[System.Management.Automation.PSCredential]
-		$SQLAdminCredential
-	)
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $SQLAdminCredential
+    )
 
     if(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS" -Name $InstanceName -ErrorAction SilentlyContinue)
     {
@@ -55,37 +55,37 @@ function Get-TargetResource
     }
 
     $returnValue = @{
-		InstanceName = $InstanceName
-		RSSQLServer = $RSSQLServer
-		RSSQLInstanceName = $RSSQLInstanceName
+        InstanceName = $InstanceName
+        RSSQLServer = $RSSQLServer
+        RSSQLInstanceName = $RSSQLInstanceName
         IsInitialized = $IsInitialized
-	}
+    }
 
-	$returnValue
+    $returnValue
 }
 
 
 function Set-TargetResource
 {
-	[CmdletBinding()]
-	param
-	(
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$InstanceName,
+    [CmdletBinding()]
+    param
+    (
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$RSSQLServer,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $RSSQLServer,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$RSSQLInstanceName,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $RSSQLInstanceName,
 
-		[parameter(Mandatory = $true)]
-		[System.Management.Automation.PSCredential]
-		$SQLAdminCredential
-	)
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $SQLAdminCredential
+    )
 
     if(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS" -Name $InstanceName -ErrorAction SilentlyContinue)
     {
@@ -199,30 +199,30 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
-	[CmdletBinding()]
-	[OutputType([System.Boolean])]
-	param
-	(
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$InstanceName,
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$RSSQLServer,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $RSSQLServer,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$RSSQLInstanceName,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $RSSQLInstanceName,
 
-		[parameter(Mandatory = $true)]
-		[System.Management.Automation.PSCredential]
-		$SQLAdminCredential
-	)
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $SQLAdminCredential
+    )
 
-	$result = (Get-TargetResource @PSBoundParameters).IsInitialized
-	
-	$result
+    $result = (Get-TargetResource @PSBoundParameters).IsInitialized
+    
+    $result
 }
 
 

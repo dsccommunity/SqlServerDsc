@@ -1,4 +1,4 @@
-﻿$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Write-Debug -Message "CurrentPath: $currentPath"
 
 # Load Common Code
@@ -12,11 +12,11 @@ function ConnectSQL
 {
     param
     (
-		[System.String]
-		$SQLServer = $env:COMPUTERNAME,
+        [System.String]
+        $SQLServer = $env:COMPUTERNAME,
 
-		[System.String]
-		$SQLInstanceName = "MSSQLSERVER"
+        [System.String]
+        $SQLInstanceName = "MSSQLSERVER"
     )
     
     $null = [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.Smo')
@@ -47,24 +47,24 @@ function ConnectSQL
 
 function Get-TargetResource
 {
-	[CmdletBinding()]
-	[OutputType([System.Collections.Hashtable])]
-	param
-	(
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Database,
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Database,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Name,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Name,
 
-		[System.String]
-		$SQLServer = $env:COMPUTERNAME,
+        [System.String]
+        $SQLServer = $env:COMPUTERNAME,
 
-		[System.String]
-		$SQLInstanceName = "MSSQLSERVER"
-	)
+        [System.String]
+        $SQLInstanceName = "MSSQLSERVER"
+    )
 
     if(!$SQL)
     {
@@ -86,36 +86,36 @@ function Get-TargetResource
         $Name = $null
     }
 
-	$returnValue = @{
-		Database = $Database
-		Name = $Name
-		SQLServer = $SQLServer
-		SQLInstanceName = $SQLInstanceName
-	}
+    $returnValue = @{
+        Database = $Database
+        Name = $Name
+        SQLServer = $SQLServer
+        SQLInstanceName = $SQLInstanceName
+    }
 
-	$returnValue
+    $returnValue
 }
 
 
 function Set-TargetResource
 {
-	[CmdletBinding()]
-	param
-	(
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Database,
+    [CmdletBinding()]
+    param
+    (
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Database,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Name,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Name,
 
-		[System.String]
-		$SQLServer = $env:COMPUTERNAME,
+        [System.String]
+        $SQLServer = $env:COMPUTERNAME,
 
-		[System.String]
-		$SQLInstanceName = "MSSQLSERVER"
-	)
+        [System.String]
+        $SQLInstanceName = "MSSQLSERVER"
+    )
 
     if(!$SQL)
     {
@@ -137,28 +137,28 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
-	[CmdletBinding()]
-	[OutputType([System.Boolean])]
-	param
-	(
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Database,
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Database,
 
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Name,
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Name,
 
-		[System.String]
-		$SQLServer = $env:COMPUTERNAME,
+        [System.String]
+        $SQLServer = $env:COMPUTERNAME,
 
-		[System.String]
-		$SQLInstanceName = "MSSQLSERVER"
-	)
+        [System.String]
+        $SQLInstanceName = "MSSQLSERVER"
+    )
 
-	$result = ((Get-TargetResource @PSBoundParameters).Name -eq $Name)
-	
-	$result
+    $result = ((Get-TargetResource @PSBoundParameters).Name -eq $Name)
+    
+    $result
 }
 
 
