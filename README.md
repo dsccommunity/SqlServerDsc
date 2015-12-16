@@ -20,6 +20,9 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerDatabasePermissions** resource to manage SQL database permissions
 * **xSQLServerDatabaseOwner** resource to manage SQL database owners
 * **xSQLDatabaseRecoveryModel** resource to manage database recovery model
+* **xSQLServerMaxDop** resource to manage MaxDegree of Parallism for SQL Server
+* **xSQLServerMemory** resource to manage Memory for SQL Server
+* **xSQLServerPowerPlan** resource to manage windows powerplan on SQL Server
 
 
 ### xSQLServerSetup
@@ -180,6 +183,23 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **SQLServerInstance**: (Required) The SQL server and instance
 * **RecoveryModel**: (Required) Recovery Model (Full, Simple, BulkLogged)
 
+###xSQLServerMaxDop
+* **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
+* **DyamicAlloc**: (key) Flag to indicate if MaxDop is dynamically configured
+* **MaxDop**: Numeric value to configure MaxDop to
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database
+
+###xSQLServerMemory
+* **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
+* **DyamicAlloc**: (key) Flag to indicate if Memory is dynamically configured
+* **MinMemory**: Minimum memory value to set SQL Server memory to
+* **MaxMemory**: Maximum memory value to set SQL Server memory to
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database
+
+###xSQLServerPowerPlan
+* **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
 
 ## Versions
 
@@ -206,6 +226,9 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
    - xSQLServerDatabasePermissions
    - xSQLServerDatabaseRole
    - xSQLServerLogin
+   - xSQLServerMaxDop
+   - xSQLServerMemory
+   - xSQLServerPowerPlan
 
 ### 1.3.0.0
 
