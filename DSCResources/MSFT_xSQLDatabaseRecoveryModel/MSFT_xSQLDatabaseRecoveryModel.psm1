@@ -23,7 +23,8 @@ function Get-TargetResource
         [System.String]
         $DatabaseName
     )
-
+    
+    $SqlServerInstance = $SqlServerInstance.Replace('\MSSQLSERVER','')  
     Write-Verbose -Message "Checking Database $DatabaseName recovery mode for $RecoveryModel." -Verbose    
 
     $db = Get-SqlDatabase -ServerInstance $SqlServerInstance -Name $DatabaseName
@@ -58,7 +59,8 @@ function Set-TargetResource
         [System.String]
         $DatabaseName
     )  
-
+ 
+    $SqlServerInstance = $SqlServerInstance.Replace('\MSSQLSERVER','')  
     $db = Get-SqlDatabase -ServerInstance $SqlServerInstance -Name $DatabaseName    
     Write-Verbose -Message "Database $DatabaseName recovery mode is $db.RecoveryModel." -Verbose
     
@@ -96,7 +98,7 @@ function Test-TargetResource
         [System.String]
         $DatabaseName
     )   
-
+    $SqlServerInstance = $SqlServerInstance.Replace('\MSSQLSERVER','')  
     $result = ((Get-TargetResource @PSBoundParameters).RecoveryModel -eq $RecoveryModel)
     
     $result

@@ -6,4 +6,3 @@ class MSFT_xSQLDatabaseRecoveryModel : OMI_BaseResource
     [Required, Description("The SQL server and instance.")] String SqlServerInstance;
     [Required, Description("Recovery Model"), ValueMap{"Full","Simple","BulkLogged"}, Values{"Full","Simple","BulkLogged"}]  String RecoveryModel;
 };
-
