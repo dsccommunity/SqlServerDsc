@@ -423,7 +423,6 @@ function Set-TargetResource
         "InstanceName",
         "InstanceID",
         "UpdateEnabled",
-        "UpdateSource",
         "Features",
         "PID",
         "SQMReporting",
@@ -432,6 +431,12 @@ function Set-TargetResource
         "InstallSharedWOWDir",
         "InstanceDir"
     )
+    if($UpdateEnabled -eq 'True')
+    {
+        $ArgumentVars += @(
+            "UpdateSource"
+        )
+    }
     if($Features.Contains("SQLENGINE"))
     {
         $ArgumentVars += @(
