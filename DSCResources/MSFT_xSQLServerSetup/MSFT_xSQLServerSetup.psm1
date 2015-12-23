@@ -9,14 +9,14 @@ function Get-TargetResource
         $SourcePath,
 
         [System.String]
-        $SourceFolder = "\SQLServer2012.en",
+        $SourceFolder,
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
         [System.String]
-        $Features = "SQLENGINE",
+        $Features,
 
         [parameter(Mandatory = $true)]
         [System.String]
@@ -58,6 +58,18 @@ function Get-TargetResource
         $SQLSvcAccountUsername = (Get-WmiObject -Class Win32_Service | Where-Object {$_.Name -eq $DBServiceName}).StartName
         $AgtSvcAccountUsername = (Get-WmiObject -Class Win32_Service | Where-Object {$_.Name -eq $AgtServiceName}).StartName
         $FullInstanceID = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' -Name $InstanceName).$InstanceName
+
+		#test if Replication sub component is configured for this instance
+		Write-Verbose "Detecting replication feature"
+		Write-Verbose "Reading registry key HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$FullInstanceID\ConfigurationState"
+		$IsReplicationInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$FullInstanceID\ConfigurationState").SQL_Replication_Core_Inst
+        Write-Verbose "Registry entry SQL_Replication_Core_Inst = $IsReplicationInstalled"
+		IF($IsReplicationInstalled -eq 1)
+		{
+			Write-Verbose "Replication feature detected"
+			$Features += "REPLICATION,"
+		}
+
         $InstanceID = $FullInstanceID.Split(".")[1]
         $InstanceDir = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$FullInstanceID\Setup" -Name 'SqlProgramDir').SqlProgramDir.Trim("\")
         $null = [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO')
@@ -133,9 +145,14 @@ function Get-TargetResource
         $Features += "IS,"
         $ISSvcAccountUsername = (Get-WmiObject -Class Win32_Service | Where-Object {$_.Name -eq $ISServiceName}).StartName
     }
+
     $Products = Get-WmiObject -Class Win32_Product
     switch($SQLVersion)
     {
+        "10"
+        {
+            $IdentifyingNumber = "{72AB7E6F-BC24-481E-8C45-1AB5B3DD795D}"
+        }
         "11"
         {
             $IdentifyingNumber = "{A7037EB2-F953-4B12-B843-195F4D988DA1}"
@@ -149,8 +166,13 @@ function Get-TargetResource
     {
         $Features += "SSMS,"
     }
+
     switch($SQLVersion)
     {
+        "10"
+        {
+            $IdentifyingNumber = "{B5FE23CC-0151-4595-84C3-F1DE6F44FE9B}"
+        }
         "11"
         {
             $IdentifyingNumber = "{7842C220-6E9A-4D5A-AE70-0E138271F883}"
@@ -164,11 +186,18 @@ function Get-TargetResource
     {
         $Features += "ADV_SSMS,"
     }
+
     $Features = $Features.Trim(",")
     if($Features -ne "")
     {
         switch($SQLVersion)
         {
+            "10"
+            {
+                $InstallSharedDir = (GetFirstItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components" -Name "0D1F366D0FE0E404F8C15EE4F1C15094")
+                $InstallSharedWOWDir = (GetFirstItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components" -Name "C90BFAC020D87EA46811C836AD3C507F")
+            }
+
             "11"
             {
                 $InstallSharedDir = (GetFirstItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components" -Name "FEE2E540D20152D4597229B6CFBC0A69")
@@ -229,14 +258,14 @@ function Set-TargetResource
         $SourcePath,
 
         [System.String]
-        $SourceFolder = "\SQLServer2012.en",
+        $SourceFolder,
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
         [System.String]
-        $Features = "SQLENGINE",
+        $Features,
 
         [parameter(Mandatory = $true)]
         [System.String]
@@ -249,10 +278,10 @@ function Set-TargetResource
         $PID,
 
         [System.String]
-        $UpdateEnabled = "True",
+        $UpdateEnabled,
 
         [System.String]
-        $UpdateSource = ".\Updates",
+        $UpdateSource,
 
         [System.String]
         $SQMReporting,
@@ -336,7 +365,11 @@ function Set-TargetResource
         $ASConfigDir,
 
         [System.Management.Automation.PSCredential]
-        $ISSvcAccount
+        $ISSvcAccount,
+
+        [System.String]
+		[ValidateSet("Automatic", "Disabled", "Manual")]
+        $BrowserSvcStartupType
     )
 
     $SQLData = Get-TargetResource -SourcePath $SourcePath -SourceFolder $SourceFolder -SetupCredential $SetupCredential -Features $Features -InstanceName $InstanceName
@@ -384,6 +417,17 @@ function Set-TargetResource
     # If SQL shared components already installed, clear InstallShared*Dir variables
     switch($SQLVersion)
     {
+        "10"
+        {
+            if((Get-Variable -Name "InstallSharedDir" -ErrorAction SilentlyContinue) -and (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\0D1F366D0FE0E404F8C15EE4F1C15094" -ErrorAction SilentlyContinue))
+            {
+                Set-Variable -Name "InstallSharedDir" -Value ""
+            }
+            if((Get-Variable -Name "InstallSharedWOWDir" -ErrorAction SilentlyContinue) -and (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\C90BFAC020D87EA46811C836AD3C507F" -ErrorAction SilentlyContinue))
+            {
+                Set-Variable -Name "InstallSharedWOWDir" -Value ""
+            }
+        }
         "11"
         {
             if((Get-Variable -Name "InstallSharedDir" -ErrorAction SilentlyContinue) -and (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\30AE1F084B1CF8B4797ECB3CCAA3B3B6" -ErrorAction SilentlyContinue))
@@ -432,6 +476,12 @@ function Set-TargetResource
         "InstallSharedWOWDir",
         "InstanceDir"
     )
+
+    if($BrowserSvcStartupType -ne $null)
+    {
+        $ArgumentVars += "BrowserSvcStartupType"
+    }
+
     if($Features.Contains("SQLENGINE"))
     {
         $ArgumentVars += @(
@@ -625,14 +675,14 @@ function Test-TargetResource
         $SourcePath,
 
         [System.String]
-        $SourceFolder = "\SQLServer2012.en",
+        $SourceFolder,
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
         [System.String]
-        $Features = "SQLENGINE",
+        $Features,
 
         [parameter(Mandatory = $true)]
         [System.String]
@@ -645,10 +695,10 @@ function Test-TargetResource
         $PID,
 
         [System.String]
-        $UpdateEnabled = "True",
+        $UpdateEnabled,
 
         [System.String]
-        $UpdateSource = ".\Updates",
+        $UpdateSource,
 
         [System.String]
         $SQMReporting,
@@ -732,7 +782,11 @@ function Test-TargetResource
         $ASConfigDir,
 
         [System.Management.Automation.PSCredential]
-        $ISSvcAccount
+        $ISSvcAccount,
+
+        [System.String]
+		[ValidateSet("Automatic", "Disabled", "Manual")]
+        $BrowserSvcStartupType
     )
 
     $SQLData = Get-TargetResource -SourcePath $SourcePath -SourceFolder $SourceFolder -SetupCredential $SetupCredential -Features $Features -InstanceName $InstanceName
