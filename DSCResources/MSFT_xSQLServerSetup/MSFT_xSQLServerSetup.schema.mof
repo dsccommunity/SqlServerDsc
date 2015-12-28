@@ -1,4 +1,4 @@
-﻿[ClassVersion("1.0.0.0"), FriendlyName("xSQLServerSetup")]
+[ClassVersion("1.0.0.0"), FriendlyName("xSQLServerSetup")]
 class MSFT_xSQLServerSetup : OMI_BaseResource
 {
     [Required, Description("UNC path to the root of the source files for installation.")] String SourcePath;
