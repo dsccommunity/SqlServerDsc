@@ -176,6 +176,7 @@ Function Test-TargetResource
         $InstanceName,
 
         [parameter(Mandatory = $true)]
+        [ValidateSet("tcp")]
         [System.String]
         $ProtocolName,
 
