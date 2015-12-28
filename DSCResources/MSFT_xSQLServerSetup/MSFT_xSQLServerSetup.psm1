@@ -59,16 +59,16 @@ function Get-TargetResource
         $AgtSvcAccountUsername = (Get-WmiObject -Class Win32_Service | Where-Object {$_.Name -eq $AgtServiceName}).StartName
         $FullInstanceID = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' -Name $InstanceName).$InstanceName
 
-		#test if Replication sub component is configured for this instance
-		Write-Verbose "Detecting replication feature"
-		Write-Verbose "Reading registry key HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$FullInstanceID\ConfigurationState"
-		$IsReplicationInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$FullInstanceID\ConfigurationState").SQL_Replication_Core_Inst
+        #test if Replication sub component is configured for this instance
+        Write-Verbose "Detecting replication feature"
+        Write-Verbose "Reading registry key HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$FullInstanceID\ConfigurationState"
+        $IsReplicationInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$FullInstanceID\ConfigurationState").SQL_Replication_Core_Inst
         Write-Verbose "Registry entry SQL_Replication_Core_Inst = $IsReplicationInstalled"
-		IF($IsReplicationInstalled -eq 1)
-		{
-			Write-Verbose "Replication feature detected"
-			$Features += "REPLICATION,"
-		}
+        IF($IsReplicationInstalled -eq 1)
+        {
+            Write-Verbose "Replication feature detected"
+            $Features += "REPLICATION,"
+        }
 
         $InstanceID = $FullInstanceID.Split(".")[1]
         $InstanceDir = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$FullInstanceID\Setup" -Name 'SqlProgramDir').SqlProgramDir.Trim("\")
@@ -368,7 +368,7 @@ function Set-TargetResource
         $ISSvcAccount,
 
         [System.String]
-		[ValidateSet("Automatic", "Disabled", "Manual")]
+        [ValidateSet("Automatic", "Disabled", "Manual")]
         $BrowserSvcStartupType
     )
 
@@ -785,7 +785,7 @@ function Test-TargetResource
         $ISSvcAccount,
 
         [System.String]
-		[ValidateSet("Automatic", "Disabled", "Manual")]
+        [ValidateSet("Automatic", "Disabled", "Manual")]
         $BrowserSvcStartupType
     )
 
