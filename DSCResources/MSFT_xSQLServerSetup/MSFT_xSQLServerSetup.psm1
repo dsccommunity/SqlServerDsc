@@ -780,7 +780,7 @@ function GetFirstItemPropertyValue
 
     if(Get-ItemProperty -Path "$Path\$Name" -ErrorAction SilentlyContinue)
     {
-        $FirstName = ((Get-ItemProperty -Path "$Path\$Name") | Get-Member -MemberType NoteProperty | Where-Object {$_.Name.Substring(0,2) -ne "PS"}).Name[0]
+        $FirstName = @(((Get-ItemProperty -Path "$Path\$Name") | Get-Member -MemberType NoteProperty | Where-Object {$_.Name.Substring(0,2) -ne "PS"}).Name)[0]
         (Get-ItemProperty -Path "$Path\$Name" -Name $FirstName).$FirstName.TrimEnd("\")
     }
 }
