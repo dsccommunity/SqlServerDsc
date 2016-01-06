@@ -138,6 +138,11 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ## Versions
 
+### Unreleased
+
+* xSQLServerSetup:
+	- Corrected bug in GetFirstItemPropertyValue to correctly handle registry keys with only one value.
+
 ### 1.3.0.0
 
 * xSqlServerSetup: 
