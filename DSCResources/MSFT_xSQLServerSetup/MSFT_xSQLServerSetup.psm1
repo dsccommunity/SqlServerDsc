@@ -23,9 +23,11 @@ function Get-TargetResource
         $InstanceName
     )
 
-    $InstanceName = $InstanceName.ToUpper()
-
     Import-Module $PSScriptRoot\..\..\xPDT.psm1
+
+    NetUse -SourcePath $SourcePath -Credential $SetupCredential -Ensure "Present"
+
+    $InstanceName = $InstanceName.ToUpper()
 
     $Path = Join-Path -Path (Join-Path -Path $SourcePath -ChildPath $SourceFolder) -ChildPath "setup.exe"
     $Path = ResolvePath $Path
@@ -211,6 +213,8 @@ function Get-TargetResource
         }
     }
 
+    NetUse -SourcePath $SourcePath -Credential $SetupCredential -Ensure "Absent"
+
     $returnValue = @{
         SourcePath = $SourcePath
         SourceFolder = $SourceFolder
@@ -372,13 +376,15 @@ function Set-TargetResource
         $BrowserSvcStartupType
     )
 
+    Import-Module $PSScriptRoot\..\..\xPDT.psm1
+
+    NetUse -SourcePath $SourcePath -Credential $SetupCredential -Ensure "Present"
+
     $SQLData = Get-TargetResource -SourcePath $SourcePath -SourceFolder $SourceFolder -SetupCredential $SetupCredential -Features $Features -InstanceName $InstanceName
     $InstanceName = $InstanceName.ToUpper()
 
     #@mikefrobbins: The contains method is case sensitive so the specified features have to be in upper case to match the case specified in this function.
     $Features = $Features.ToUpper()
-
-    Import-Module $PSScriptRoot\..\..\xPDT.psm1
 
     $Path = Join-Path -Path (Join-Path -Path $SourcePath -ChildPath $SourceFolder) -ChildPath "setup.exe"
     $Path = ResolvePath $Path
@@ -643,8 +649,7 @@ function Set-TargetResource
         }
     }
     Write-Verbose "Arguments: $Log"
-
-    NetUse -SourcePath $SourcePath -Credential $SetupCredential -Ensure "Present"
+    
     $Process = StartWin32Process -Path $Path -Arguments $Arguments
     Write-Verbose $Process
     WaitForWin32ProcessEnd -Path $Path -Arguments $Arguments
@@ -814,7 +819,11 @@ function GetSQLVersion
         $Path
     )
 
+    
+
     (Get-Item -Path $Path).VersionInfo.ProductVersion.Split(".")[0]
+
+    
 }
 
 
