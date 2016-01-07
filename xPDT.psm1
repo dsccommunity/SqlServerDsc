@@ -692,16 +692,17 @@ function NetUse
 
     if(($SourcePath.Length -ge 2) -and ($SourcePath.Substring(0,2) -eq "\\"))
     {
-
+        $args = @()
         if ($Ensure -eq "Absent")
         {
-            $cmd = "net.exe use $SourcePath /del"
+            $args += "use", $SourcePath, "/del"
         }
         else 
         {
-            $cmd = "net.exe use $SourcePath $($Credential.GetNetworkCredential().Password) /user:$($Credential.GetNetworkCredential().Domain)\$($Credential.GetNetworkCredential().UserName)"
+            $args += "use", $SourcePath, $($Credential.GetNetworkCredential().Password), "/user:$($Credential.GetNetworkCredential().Domain)\$($Credential.GetNetworkCredential().UserName)"
         }
-        Invoke-Expression $cmd
+
+        &"net" $args
     }
 }
 
