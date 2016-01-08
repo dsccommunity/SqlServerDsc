@@ -19,7 +19,7 @@
     Write-Verbose "Parameters: InstanceName = $InstanceName; ProtocolName = $ProtocolName"
 
     # create isolated appdomain to load version specific libs, this needed if you have multiple versions of SQL server in the same configuration
-    $dom = [System.AppDomain]::CreateDomain("xSQLServerNetwork_Get_$InstanceName")
+    $dom_get = [System.AppDomain]::CreateDomain("xSQLServerNetwork_Get_$InstanceName")
 
     Try
     {
@@ -30,10 +30,10 @@
             throw "Unable to resolve SQL version for instance"
         }
         
-        $Smo = $dom.Load("Microsoft.SqlServer.Smo, Version=$Version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
-        $SqlWmiManagement = $dom.Load("Microsoft.SqlServer.SqlWmiManagement, Version=$Version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+        $Smo = $dom_get.Load("Microsoft.SqlServer.Smo, Version=$Version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+        $SqlWmiManagement = $dom_get.Load("Microsoft.SqlServer.SqlWmiManagement, Version=$Version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
 
-        Write-Verbose "Loading [Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer] wmi object"
+        Write-Verbose "Creating [Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer] object"
         $wmi = new-object $SqlWmiManagement.GetType("Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer")
 
         Write-Verbose "Getting [$ProtocolName] network protocol for [$InstanceName] SQL instance"
@@ -53,7 +53,7 @@
     }
     Finally
     {
-        [System.AppDomain]::Unload($dom)
+        [System.AppDomain]::Unload($dom_get)
     }
     
     return $returnValue
@@ -88,8 +88,11 @@ Function Set-TargetResource
     Write-Verbose "xSQLServerNetwork.Set-TargetResource ..."
     Write-Verbose "Parameters: InstanceName = $InstanceName; ProtocolName = $ProtocolName; IsEnabled=$IsEnabled; TCPDynamicPorts = $TCPDynamicPorts; TCPPort = $TCPPort; RestartService=$RestartService;"
 
+    Write-Verbose "Calling xSQLServerNetwork.Get-TargetResource ..."
+    $currentState = Get-TargetResource -InstanceName $InstanceName -ProtocolName $ProtocolName
+
     # create isolated appdomain to load version specific libs, this needed if you have multiple versions of SQL server in the same configuration
-    $dom = [System.AppDomain]::CreateDomain("xSQLServerNetwork_Set_$InstanceName")
+    $dom_set = [System.AppDomain]::CreateDomain("xSQLServerNetwork_Set_$InstanceName")
 
     Try
     {
@@ -100,8 +103,8 @@ Function Set-TargetResource
             throw "Unable to resolve SQL version for instance"
         }
         
-        $Smo = $dom.Load("Microsoft.SqlServer.Smo, Version=$Version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
-        $SqlWmiManagement = $dom.Load("Microsoft.SqlServer.SqlWmiManagement, Version=$Version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+        $Smo = $dom_set.Load("Microsoft.SqlServer.Smo, Version=$Version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+        $SqlWmiManagement = $dom_set.Load("Microsoft.SqlServer.SqlWmiManagement, Version=$Version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
 
         $desiredState = @{
             InstanceName = $InstanceName
@@ -110,12 +113,9 @@ Function Set-TargetResource
             TCPDynamicPorts = $TCPDynamicPorts
             TCPPort = $TCPPort
         }
-    
-        Write-Verbose "Calling xSQLServerNetwork.Get-TargetResource ..."
-        $currentState = Get-TargetResource -InstanceName $InstanceName -Version $Version -ProtocolName $ProtocolName
 
-        Write-Verbose "Loading [Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer] wmi object"
-        $wmi = new-object new-object $SqlWmiManagement.GetType("Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer")
+        Write-Verbose "Creating [Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer] object"
+        $wmi = new-object $SqlWmiManagement.GetType("Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer")
 
         Write-Verbose "Getting [$ProtocolName] network protocol for [$InstanceName] SQL instance"
         $tcp = $wmi.ServerInstances[$InstanceName].ServerProtocols[$ProtocolName]
@@ -204,7 +204,7 @@ Function Set-TargetResource
     }
     Finally
     {
-        [System.AppDomain]::Unload($dom)
+        [System.AppDomain]::Unload($dom_set)
     }
     
 }
