@@ -149,6 +149,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ### Unreleased
 
 * xSQLServerSetup:
+  - Corrected bug in GetFirstItemPropertyValue to correctly handle registry keys with only one value.
   - Added support for SQL Server 2008 R2 installation
   - Removed default values for parameters, to avoid compatibility issues and setup errors
   - Added Replication sub feature detection
@@ -163,8 +164,6 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - Allows to set custom or dynamic port values
 
 * Updated example files to use correct DebugMode parameter value ForceModuleImport, this is not boolean in WMF 5.0 RTM
-
-
 
 ### 1.3.0.0
 
