@@ -1,7 +1,4 @@
-﻿[reflection.assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo")
-[reflection.assembly]::LoadWithPartialName("Microsoft.SqlServer.SqlWmiManagement")
-
-Function Get-TargetResource
+﻿Function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -11,31 +8,53 @@ Function Get-TargetResource
         $InstanceName,
 
         # for now support is just for tcp protocol
-        # possible future feature to support aditional protocols
+        # possible future feature to support additional protocols
         [parameter(Mandatory = $true)]
         [ValidateSet("tcp")]
         [System.String]
         $ProtocolName
     )
+
     Write-Verbose "xSQLServerNetwork.Get-TargetResourece ..."
     Write-Verbose "Parameters: InstanceName = $InstanceName; ProtocolName = $ProtocolName"
 
-    Write-Verbose "Loading [Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer] wmi object"
-    $wmi = new-object Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer
+    # create isolated appdomain to load version specific libs, this needed if you have multiple versions of SQL server in the same configuration
+    $dom = [System.AppDomain]::CreateDomain("xSQLServerNetwork_Get_$InstanceName")
 
-    Write-Verbose "Getting [$ProtocolName] network protocol for [$InstanceName] SQL instance"
-    $tcp = $wmi.ServerInstances[$InstanceName].ServerProtocols[$ProtocolName]
+    Try
+    {
+        $Version = GetVersion -InstanceName $InstanceName
 
-    Write-Verbose "Reading state values:"
-    $returnValue = @{
-        InstanceName = $InstanceName
-        ProtocolName = $ProtocolName
-        IsEnabled = $tcp.IsEnabled
-        TCPDynamicPorts = $tcp.IPAddresses["IPAll"].IPAddressProperties["TcpDynamicPorts"].Value
-        TCPPort = $tcp.IPAddresses["IPAll"].IPAddressProperties["TcpPort"].Value
+        if([string]::IsNullOrEmpty($Version))
+        {
+            throw "Unable to resolve SQL version for instance"
+        }
+        
+        $Smo = $dom.Load("Microsoft.SqlServer.Smo, Version=$Version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+        $SqlWmiManagement = $dom.Load("Microsoft.SqlServer.SqlWmiManagement, Version=$Version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+
+        Write-Verbose "Loading [Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer] wmi object"
+        $wmi = new-object $SqlWmiManagement.GetType("Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer")
+
+        Write-Verbose "Getting [$ProtocolName] network protocol for [$InstanceName] SQL instance"
+        $tcp = $wmi.ServerInstances[$InstanceName].ServerProtocols[$ProtocolName]
+
+        Write-Verbose "Reading state values:"
+        $returnValue = @{
+            InstanceName = $InstanceName
+            ProtocolName = $ProtocolName
+            IsEnabled = $tcp.IsEnabled
+            TCPDynamicPorts = $tcp.IPAddresses["IPAll"].IPAddressProperties["TcpDynamicPorts"].Value
+            TCPPort = $tcp.IPAddresses["IPAll"].IPAddressProperties["TcpPort"].Value
+        }
+
+        $returnValue.Keys | % { Write-Verbose "$_ = $($returnValue[$_])" }
+
     }
-
-    $returnValue.Keys | % { Write-Verbose "$_ = $($returnValue[$_])" }
+    Finally
+    {
+        [System.AppDomain]::Unload($dom)
+    }
     
     return $returnValue
 }
@@ -68,100 +87,124 @@ Function Set-TargetResource
     )
     Write-Verbose "xSQLServerNetwork.Set-TargetResource ..."
     Write-Verbose "Parameters: InstanceName = $InstanceName; ProtocolName = $ProtocolName; IsEnabled=$IsEnabled; TCPDynamicPorts = $TCPDynamicPorts; TCPPort = $TCPPort; RestartService=$RestartService;"
-      
-    $serviceSate = [Microsoft.SqlServer.Management.Smo.Wmi.ServiceState]
 
-    $desiredState = @{
-        InstanceName = $InstanceName
-        ProtocolName = $ProtocolName
-        IsEnabled = $IsEnabled
-        TCPDynamicPorts = $TCPDynamicPorts
-        TCPPort = $TCPPort
-    }
+    # create isolated appdomain to load version specific libs, this needed if you have multiple versions of SQL server in the same configuration
+    $dom = [System.AppDomain]::CreateDomain("xSQLServerNetwork_Set_$InstanceName")
+
+    Try
+    {
+        $Version = GetVersion -InstanceName $InstanceName
+
+        if([string]::IsNullOrEmpty($Version))
+        {
+            throw "Unable to resolve SQL version for instance"
+        }
+        
+        $Smo = $dom.Load("Microsoft.SqlServer.Smo, Version=$Version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+        $SqlWmiManagement = $dom.Load("Microsoft.SqlServer.SqlWmiManagement, Version=$Version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+
+        $desiredState = @{
+            InstanceName = $InstanceName
+            ProtocolName = $ProtocolName
+            IsEnabled = $IsEnabled
+            TCPDynamicPorts = $TCPDynamicPorts
+            TCPPort = $TCPPort
+        }
     
-    Write-Verbose "Calling xSQLServerNetwork.Get-TargetResource ..."
-    $currentState = Get-TargetResource -InstanceName $InstanceName -ProtocolName $ProtocolName
+        Write-Verbose "Calling xSQLServerNetwork.Get-TargetResource ..."
+        $currentState = Get-TargetResource -InstanceName $InstanceName -Version $Version -ProtocolName $ProtocolName
 
-    Write-Verbose "Loading [Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer] wmi object"
-    $wmi = new-object Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer
+        Write-Verbose "Loading [Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer] wmi object"
+        $wmi = new-object new-object $SqlWmiManagement.GetType("Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer")
 
-    Write-Verbose "Getting [$ProtocolName] network protocol for [$InstanceName] SQL instance"
-    $tcp = $wmi.ServerInstances[$InstanceName].ServerProtocols[$ProtocolName]
+        Write-Verbose "Getting [$ProtocolName] network protocol for [$InstanceName] SQL instance"
+        $tcp = $wmi.ServerInstances[$InstanceName].ServerProtocols[$ProtocolName]
 
-    Write-Verbose "Checking [IsEnabled] property ..."
-    if($desiredState["IsEnabled"] -ine $currentState["IsEnabled"])
-    {
-        Write-Verbose "Updating [IsEnabled] from $($currentState["IsEnabled"]) to $($desiredState["IsEnabled"])"
-        $tcp.IsEnabled = $desiredState["IsEnabled"]
-    }
-
-    Write-Verbose "Checking [TCPDynamicPorts] property ..."
-    if($desiredState["TCPDynamicPorts"] -ine $currentState["TCPDynamicPorts"])
-    {
-        Write-Verbose "Updating [TCPDynamicPorts] from $($currentState["TCPDynamicPorts"]) to $($desiredState["TCPDynamicPorts"])"
-        $tcp.IPAddresses["IPAll"].IPAddressProperties["TcpDynamicPorts"].Value = $desiredState["TCPDynamicPorts"]
-    }
-
-    Write-Verbose "Checking [TCPPort property] ..."
-    if($desiredState["TCPPort"] -ine $currentState["TCPPort"])
-    {
-        Write-Verbose "Updating [TCPPort] from $($currentState["TCPPort"]) to $($desiredState["TCPPort"])"
-        $tcp.IPAddresses["IPAll"].IPAddressProperties["TcpPort"].Value = $desiredState["TCPPort"]
-    }
-
-    Write-Verbose "Saving changes ..."
-    $tcp.Alter()
-
-    if($RestartService)
-    {
-        Write-Verbose "SQL Service will be restarted ..."
-        if($InstanceName -eq "MSSQLSERVER")
+        Write-Verbose "Checking [IsEnabled] property ..."
+        if($desiredState["IsEnabled"] -ine $currentState["IsEnabled"])
         {
-            $DBServiceName = "MSSQLSERVER"
-            $AgtServiceName = "SQLSERVERAGENT"
-        }
-        else
-        {
-            $DBServiceName = "MSSQL`$$InstanceName"
-            $AgtServiceName = "SQLAgent`$$InstanceName"
+            Write-Verbose "Updating [IsEnabled] from $($currentState["IsEnabled"]) to $($desiredState["IsEnabled"])"
+            $tcp.IsEnabled = $desiredState["IsEnabled"]
         }
 
-        $sqlService = $wmi.Services[$DBServiceName]
-        $agentService = $wmi.Services[$AgtServiceName]
-        $startAgent = ($agentService.ServiceState -eq $serviceSate::Running)
-
-        Write-Verbose "Stopping [$DBServiceName] service ..."
-        $sqlService.Stop()
-
-        while($sqlService.ServiceState -ne $serviceSate::Stopped)
+        Write-Verbose "Checking [TCPDynamicPorts] property ..."
+        if($desiredState["TCPDynamicPorts"] -ine $currentState["TCPDynamicPorts"])
         {
-            Start-Sleep -Milliseconds 500
-            $sqlService.Refresh()
+            Write-Verbose "Updating [TCPDynamicPorts] from $($currentState["TCPDynamicPorts"]) to $($desiredState["TCPDynamicPorts"])"
+            $tcp.IPAddresses["IPAll"].IPAddressProperties["TcpDynamicPorts"].Value = $desiredState["TCPDynamicPorts"]
         }
-        Write-Verbose "[$DBServiceName] service stopped"
 
-        Write-Verbose "Starting [$DBServiceName] service ..."
-        $sqlService.Start()
-
-        while($sqlService.ServiceState -ne $serviceSate::Running)
+        Write-Verbose "Checking [TCPPort property] ..."
+        if($desiredState["TCPPort"] -ine $currentState["TCPPort"])
         {
-            Start-Sleep -Milliseconds 500
-            $sqlService.Refresh()
+            Write-Verbose "Updating [TCPPort] from $($currentState["TCPPort"]) to $($desiredState["TCPPort"])"
+            $tcp.IPAddresses["IPAll"].IPAddressProperties["TcpPort"].Value = $desiredState["TCPPort"]
         }
-        Write-Verbose "[$DBServiceName] service started"
 
-        if ($startAgent)
+        Write-Verbose "Saving changes ..."
+        $tcp.Alter()
+
+        if($RestartService)
         {
-            Write-Verbose "Staring [$AgtServiceName] service ..."
-            $agentService.Start()
-            while($agentService.ServiceState -ne $serviceSate::Running)
+            Write-Verbose "SQL Service will be restarted ..."
+            if($InstanceName -eq "MSSQLSERVER")
+            {
+                $DBServiceName = "MSSQLSERVER"
+                $AgtServiceName = "SQLSERVERAGENT"
+            }
+            else
+            {
+                $DBServiceName = "MSSQL`$$InstanceName"
+                $AgtServiceName = "SQLAgent`$$InstanceName"
+            }
+
+            $sqlService = $wmi.Services[$DBServiceName]
+            $agentService = $wmi.Services[$AgtServiceName]
+            $startAgent = ($agentService.ServiceState -eq "Running")
+
+            if ($sqlService -eq $null)
+            {
+                throw "$DBServiceName service was not found, restart service failed"
+            }   
+
+            Write-Verbose "Stopping [$DBServiceName] service ..."
+            $sqlService.Stop()
+
+            while($sqlService.ServiceState -ne "Stopped")
             {
                 Start-Sleep -Milliseconds 500
-                $agentService.Refresh()
+                $sqlService.Refresh()
             }
-            Write-Verbose "[$AgtServiceName] service started"
+            Write-Verbose "[$DBServiceName] service stopped"
+
+            Write-Verbose "Starting [$DBServiceName] service ..."
+            $sqlService.Start()
+
+            while($sqlService.ServiceState -ne "Running")
+            {
+                Start-Sleep -Milliseconds 500
+                $sqlService.Refresh()
+            }
+            Write-Verbose "[$DBServiceName] service started"
+
+            if ($startAgent)
+            {
+                Write-Verbose "Staring [$AgtServiceName] service ..."
+                $agentService.Start()
+                while($agentService.ServiceState -ne "Running")
+                {
+                    Start-Sleep -Milliseconds 500
+                    $agentService.Refresh()
+                }
+                Write-Verbose "[$AgtServiceName] service started"
+            }
+
         }
 
+    }
+    Finally
+    {
+        [System.AppDomain]::Unload($dom)
     }
     
 }
@@ -227,6 +270,19 @@ Function Test-TargetResource
 
     Write-Verbose "States match"        
     return $true
+}
+
+Function GetVersion
+{
+    param(
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName
+    )
+
+    $InstanceId = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL").$InstanceName
+    $SQLVersion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$InstanceId\Setup").Version
+    $SQLVersion.Split(".")[0]
 }
 
 Export-ModuleMember -Function *-TargetResource
