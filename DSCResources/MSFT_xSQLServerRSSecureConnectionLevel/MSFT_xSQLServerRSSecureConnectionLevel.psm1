@@ -1,3 +1,9 @@
+$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+Write-Debug -Message "CurrentPath: $currentPath"
+
+# Load Common Code
+Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
+
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -30,7 +36,7 @@ function Get-TargetResource
     }
     else
     {
-        Throw "SQL Reporting Services instance $InstanceName does not exist!"
+        throw New-TerminatingError -ErrorType SSRSNotFound -FormatArgs @($InstanceName) -ErrorCategory ObjectNotFound
     }
 
     $returnValue = @{
@@ -75,7 +81,7 @@ function Set-TargetResource
 
     if(!(Test-TargetResource @PSBoundParameters))
     {
-        throw "Set-TargetResouce failed"
+        throw New-TerminatingError -ErrorType TestFailedAfterSet -ErrorCategory InvalidResult
     }
 }
 

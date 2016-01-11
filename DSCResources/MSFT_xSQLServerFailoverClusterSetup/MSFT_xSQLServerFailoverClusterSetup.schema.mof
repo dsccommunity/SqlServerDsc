@@ -2,9 +2,12 @@
 class MSFT_xSQLServerFailoverClusterSetup : OMI_BaseResource
 {
     [Key, Description("Prepare or Complete."), ValueMap{"Prepare","Complete"}, Values{"Prepare","Complete"}] String Action;
-    [Required, Description("UNC path to the root of the source files for installation.")] String SourcePath;
+    [Write, Description("UNC path to the root of the source files for installation.")] String SourcePath;
     [Write, Description("Folder within the source path containing the source files for installation.")] String SourceFolder;
     [Required, EmbeddedInstance("MSFT_Credential"), Description("Credential to be used to perform the installation.")] String SetupCredential;
+    [Write, EmbeddedInstance("MSFT_Credential"), Description("Credential to be used to access SourcePath.")] String SourceCredential;
+    [Write, Description("Suppress reboot.")] Boolean SuppressReboot;
+    [Write, Description("Force reboot.")] Boolean ForceReboot;
     [Required, Description("SQL features to be installed.")] String Features;
     [Key, Description("SQL instance to be installed.")] String InstanceName;
     [Write, Description("SQL instance ID, if different from InstanceName.")] String InstanceID;
