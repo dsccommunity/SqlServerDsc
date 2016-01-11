@@ -203,6 +203,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ## Versions
 
+<<<<<<< HEAD
 ### 1.4.0
 * xSQLServerSetup
    - Change SourceFolder to Source to allow for multiversion Support
@@ -229,6 +230,12 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
    - xSQLServerMaxDop
    - xSQLServerMemory
    - xSQLServerPowerPlan
+=======
+### Unreleased
+
+* xSQLServerSetup:
+	- Corrected bug in GetFirstItemPropertyValue to correctly handle registry keys with only one value.
+>>>>>>> cd039bfd72f5a433a527cef05634382050a4e356
 
 ### 1.3.0.0
 
@@ -254,4 +261,4 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ## Examples
 
-Examples for use of this resource can be found with the System Center resources, such as **xSCVMM**, **xSCSMA**, and **xSCOM**.
+Examples for use of this resource can be found with the System Center resources, such as **xSCVMM**, **xSCSMA**, and **xSCOM**. 
