@@ -1,6 +1,8 @@
 $currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Write-Debug -Message "CurrentPath: $currentPath"
 
+# DSC resource to manage SQL Server Instance Memory Dynamically or Statically
+
 # Load Common Code
 Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
 
