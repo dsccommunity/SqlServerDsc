@@ -130,7 +130,7 @@ function Get-TargetResource
         $ASConfigDir,
 
         [System.Management.Automation.PSCredential]
-        $ISSvcAccount
+        $ISSvcAccount,
         
         [System.String]
         [ValidateSet("Automatic", "Disabled", "Manual")]
