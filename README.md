@@ -23,6 +23,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerMaxDop** resource to manage MaxDegree of Parallism for SQL Server
 * **xSQLServerMemory** resource to manage Memory for SQL Server
 * **xSQLServerPowerPlan** resource to manage windows powerplan on SQL Server
+* **xSQLAlias** resource to manage SQL Server client Aliases
 
 
 ### xSQLServerSetup
@@ -200,6 +201,14 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ###xSQLServerPowerPlan
 * **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
+
+### xSqlAlias
+
+* **SQLServerName**: The name of Alias (e.g. svr01\inst01).
+* **ServerName**: The name of real server.
+* **Protocol**: The protocol of either tcp or np (named pipes).
+* **RetryCount**: Maximum number of retries to check HA group existency.
+* **TCPPort**: The tcp port of the instance.
 
 ## Versions
 
