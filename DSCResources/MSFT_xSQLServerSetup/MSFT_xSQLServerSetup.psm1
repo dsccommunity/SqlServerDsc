@@ -1,38 +1,158 @@
+$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+Write-Debug -Message "CurrentPath: $currentPath"
+
+# Load Common Code
+Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
+
 function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
         [System.String]
-        $SourcePath,
+        $SourcePath = "$PSScriptRoot\..\..\",
 
         [System.String]
-        $SourceFolder,
+        $SourceFolder = "Source",
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
+
+        [System.Management.Automation.PSCredential]
+        $SourceCredential,
+
+        [System.Boolean]
+        $SuppressReboot,
+
+        [System.Boolean]
+        $ForceReboot,
 
         [System.String]
         $Features,
 
         [parameter(Mandatory = $true)]
         [System.String]
-        $InstanceName
+        $InstanceName,
+
+        [System.String]
+        $InstanceID,
+
+        [System.String]
+        $PID,
+
+        [System.String]
+        $UpdateEnabled,
+
+        [System.String]
+        $UpdateSource,
+
+        [System.String]
+        $SQMReporting,
+
+        [System.String]
+        $ErrorReporting,
+
+        [System.String]
+        $InstallSharedDir,
+
+        [System.String]
+        $InstallSharedWOWDir,
+
+        [System.String]
+        $InstanceDir,
+
+        [System.Management.Automation.PSCredential]
+        $SQLSvcAccount,
+
+        [System.Management.Automation.PSCredential]
+        $AgtSvcAccount,
+
+        [System.String]
+        $SQLCollation,
+
+        [System.String[]]
+        $SQLSysAdminAccounts,
+
+        [System.String]
+        $SecurityMode,
+
+        [System.Management.Automation.PSCredential]
+        $SAPwd,
+
+        [System.String]
+        $InstallSQLDataDir,
+
+        [System.String]
+        $SQLUserDBDir,
+
+        [System.String]
+        $SQLUserDBLogDir,
+
+        [System.String]
+        $SQLTempDBDir,
+
+        [System.String]
+        $SQLTempDBLogDir,
+
+        [System.String]
+        $SQLBackupDir,
+
+        [System.Management.Automation.PSCredential]
+        $FTSvcAccount,
+
+        [System.Management.Automation.PSCredential]
+        $RSSvcAccount,
+
+        [System.Management.Automation.PSCredential]
+        $ASSvcAccount,
+
+        [System.String]
+        $ASCollation,
+
+        [System.String[]]
+        $ASSysAdminAccounts,
+
+        [System.String]
+        $ASDataDir,
+
+        [System.String]
+        $ASLogDir,
+
+        [System.String]
+        $ASBackupDir,
+
+        [System.String]
+        $ASTempDir,
+
+        [System.String]
+        $ASConfigDir,
+
+        [System.Management.Automation.PSCredential]
+        $ISSvcAccount
+        
+        [System.String]
+        [ValidateSet("Automatic", "Disabled", "Manual")]
+        $BrowserSvcStartupType
     )
-
-    Import-Module $PSScriptRoot\..\..\xPDT.psm1
-
-    NetUse -SourcePath $SourcePath -Credential $SetupCredential -Ensure "Present"
 
     $InstanceName = $InstanceName.ToUpper()
 
+    Import-Module $PSScriptRoot\..\..\xPDT.psm1
+
+    if($SourceCredential)
+    {
+        NetUse -SourcePath $SourcePath -Credential $SourceCredential -Ensure "Present"
+    }
     $Path = Join-Path -Path (Join-Path -Path $SourcePath -ChildPath $SourceFolder) -ChildPath "setup.exe"
     $Path = ResolvePath $Path
     Write-Verbose "Path: $Path"
     $SQLVersion = GetSQLVersion -Path $Path
+    if($SourceCredential)
+    {
+        NetUse -SourcePath $SourcePath -Credential $SourceCredential -Ensure "Absent"
+    }
     
     if($InstanceName -eq "MSSQLSERVER")
     {
@@ -213,8 +333,6 @@ function Get-TargetResource
         }
     }
 
-    NetUse -SourcePath $SourcePath -Credential $SetupCredential -Ensure "Absent"
-
     $returnValue = @{
         SourcePath = $SourcePath
         SourceFolder = $SourceFolder
@@ -257,16 +375,24 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
         [System.String]
-        $SourcePath,
+        $SourcePath = "$PSScriptRoot\..\..\",
 
         [System.String]
-        $SourceFolder,
+        $SourceFolder = "Source",
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
+
+        [System.Management.Automation.PSCredential]
+        $SourceCredential,
+
+        [System.Boolean]
+        $SuppressReboot,
+
+        [System.Boolean]
+        $ForceReboot,
 
         [System.String]
         $Features,
@@ -376,16 +502,19 @@ function Set-TargetResource
         $BrowserSvcStartupType
     )
 
-    Import-Module $PSScriptRoot\..\..\xPDT.psm1
-
-    NetUse -SourcePath $SourcePath -Credential $SetupCredential -Ensure "Present"
-
-    $SQLData = Get-TargetResource -SourcePath $SourcePath -SourceFolder $SourceFolder -SetupCredential $SetupCredential -Features $Features -InstanceName $InstanceName
+    $SQLData = Get-TargetResource @PSBoundParameters
     $InstanceName = $InstanceName.ToUpper()
 
-    #@mikefrobbins: The contains method is case sensitive so the specified features have to be in upper case to match the case specified in this function.
-    $Features = $Features.ToUpper()
+    Import-Module $PSScriptRoot\..\..\xPDT.psm1
 
+    if($SourceCredential)
+    {
+        NetUse -SourcePath $SourcePath -Credential $SourceCredential -Ensure "Present"
+        $TempFolder = [IO.Path]::GetTempPath()
+        & robocopy.exe (Join-Path -Path $SourcePath -ChildPath $SourceFolder) (Join-Path -Path $TempFolder -ChildPath $SourceFolder) /e
+        $SourcePath = $TempFolder
+        NetUse -SourcePath $SourcePath -Credential $SourceCredential -Ensure "Absent"
+    }
     $Path = Join-Path -Path (Join-Path -Path $SourcePath -ChildPath $SourceFolder) -ChildPath "setup.exe"
     $Path = ResolvePath $Path
     Write-Verbose "Path: $Path"
@@ -649,22 +778,26 @@ function Set-TargetResource
         }
     }
     Write-Verbose "Arguments: $Log"
-    
+
     $Process = StartWin32Process -Path $Path -Arguments $Arguments
     Write-Verbose $Process
     WaitForWin32ProcessEnd -Path $Path -Arguments $Arguments
-    NetUse -SourcePath $SourcePath -Credential $SetupCredential -Ensure "Absent"
 
-    if((Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue) -ne $null)
+    if($ForceReboot -or ((Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue) -ne $null))
     {
-        $global:DSCMachineStatus = 1
-    }
-    else
-    {
-        if(!(Test-TargetResource -SourcePath $SourcePath -SourceFolder $SourceFolder -SetupCredential $SetupCredential -Features $Features -InstanceName $InstanceName))
+        if(!($SuppressReboot))
         {
-            throw "Set-TargetResouce failed"
+            $global:DSCMachineStatus = 1
         }
+        else
+        {
+            Write-Verbose "Suppressing reboot"
+        }
+    }
+
+    if(!(Test-TargetResource @PSBoundParameters))
+    {
+        throw New-TerminatingError -ErrorType TestFailedAfterSet -ErrorCategory InvalidResult
     }
 }
 
@@ -675,16 +808,24 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
         [System.String]
-        $SourcePath,
+        $SourcePath = "$PSScriptRoot\..\..\",
 
         [System.String]
-        $SourceFolder,
+        $SourceFolder = "Source",
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
+
+        [System.Management.Automation.PSCredential]
+        $SourceCredential,
+
+        [System.Boolean]
+        $SuppressReboot,
+
+        [System.Boolean]
+        $ForceReboot,
 
         [System.String]
         $Features,
@@ -794,7 +935,7 @@ function Test-TargetResource
         $BrowserSvcStartupType
     )
 
-    $SQLData = Get-TargetResource -SourcePath $SourcePath -SourceFolder $SourceFolder -SetupCredential $SetupCredential -Features $Features -InstanceName $InstanceName
+    $SQLData = Get-TargetResource @PSBoundParameters
 
     $result = $true
     foreach($Feature in $Features.Split(","))
@@ -819,11 +960,7 @@ function GetSQLVersion
         $Path
     )
 
-    
-
     (Get-Item -Path $Path).VersionInfo.ProductVersion.Split(".")[0]
-
-    
 }
 
 

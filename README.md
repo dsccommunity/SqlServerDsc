@@ -15,12 +15,24 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerRSSecureConnectionLevel** sets the secure connection level for SQL Server Reporting Services.
 * **xSQLServerFailoverClusterSetup** installs SQL Server failover cluster instances.
 * **xSQLServerRSConfig** configures SQL Server Reporting Services to use a database engine in another instance.
+* **xSQLServerLogin** resource to manage SQL logins
+* **xSQLServerDatabaseRole** resource to manage SQL database roles
+* **xSQLServerDatabasePermissions** resource to manage SQL database permissions
+* **xSQLServerDatabaseOwner** resource to manage SQL database owners
+* **xSQLDatabaseRecoveryModel** resource to manage database recovery model
+* **xSQLServerMaxDop** resource to manage MaxDegree of Parallism for SQL Server
+* **xSQLServerMemory** resource to manage Memory for SQL Server
+* **xSQLServerPowerPlan** resource to manage windows powerplan on SQL Server
+
 
 ### xSQLServerSetup
 
 * **SourcePath**: (Required) UNC path to the root of the source files for installation.
 * **SourceFolder**: Folder within the source path containing the source files for installation.
 * **SetupCredential**: (Required) Credential to be used to perform the installation.
+* **SourceCredential**: Credential used to access SourcePath
+* **SuppressReboot**: Supresses reboot
+* **ForceReboot**: Forces Reboot
 * **Features**: (Key) SQL features to be installed.
 * **InstanceName**: (Key) SQL instance to be installed.
 * **InstanceID**: SQL instance ID, if different from InstanceName.
@@ -86,7 +98,10 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **Action**: (Key) { Prepare | Complete }
 * **SourcePath**: (Required) UNC path to the root of the source files for installation.
 * **SourceFolder**: Folder within the source path containing the source files for installation.
-* **Credential**: (Required) Credential to be used to perform the installation.
+* **SetupCredential**: (Required) Credential to be used to perform the installation.
+* **SourceCredential**: Credential to be used to access SourcePath
+* **SuppressReboot**: Supresses reboot
+* **ForceReboot**: Forces Reboot
 * **Features**: (Required) SQL features to be installed.
 * **InstanceName**: (Key) SQL instance to be installed.
 * **InstanceID**: SQL instance ID, if different from InstanceName.
@@ -136,6 +151,56 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **SQLAdminCredential**: (Required) Credential to be used to perform the configuration.
 * **IsInitialized**: Output is the Reporting Services instance initialized.
 
+### xSQLServerLogin
+* **Name**: (Key) Name of the SQL Login to create
+* **LoginCredential**: PowerShell Credential for the SQL Login to be created
+* **LoginType**: Type of SQL login to create.(SQL, WindowsUser, WindowsGroup)
+* **SQLServer**: SQL Server where login should be created
+* **SQLInstance**: SQL Instance for the login
+
+### xSQLServerDatabaseRole
+* **Name**: (Key) Name of the SQL Login or the role on the database
+* **SQLServer**: The SQL Server for the database
+* **SQLInstanceName**: The SQL Instance for the database
+* **Database**: The SQL Database for the role
+* **Role**: The SQL role for the database
+
+###xSQLServerDatabasePermissions
+* **Database**: (Key) The SQL Database
+* **Name**: (Required) The name of permissions for the SQL database
+* **Permissions**: (Required) The set of Permissions for the SQL database
+* **SQLServer**: The SQL Server for the database
+* **SQLInstanceName**: The SQL instance for the database
+
+###xSQLServerDatabaseOwner
+* **Database**: (Key) The SQL Database
+* **Name**: (Required) The name of the SQL login for the owner
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database
+
+###xSQLDatabaseRecoveryModel
+* **DatabaseName**: (key) The SQL database name
+* **SQLServerInstance**: (Required) The SQL server and instance
+* **RecoveryModel**: (Required) Recovery Model (Full, Simple, BulkLogged)
+
+###xSQLServerMaxDop
+* **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
+* **DyamicAlloc**: (key) Flag to indicate if MaxDop is dynamically configured
+* **MaxDop**: Numeric value to configure MaxDop to
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database
+
+###xSQLServerMemory
+* **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
+* **DyamicAlloc**: (key) Flag to indicate if Memory is dynamically configured
+* **MinMemory**: Minimum memory value to set SQL Server memory to
+* **MaxMemory**: Maximum memory value to set SQL Server memory to
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database
+
+###xSQLServerPowerPlan
+* **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
+
 ### xSQLServerNetwork
 * **InstanceName**: (Key) name of SQL Server instance for which network will be configured.
 * **ProtocolName**: (Required) Name of network protocol to be configured. Only tcp is currently supported.
@@ -146,6 +211,34 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ## Versions
 
+<<<<<<< HEAD
+### 1.4.0
+* xSQLServerSetup
+   - Change SourceFolder to Source to allow for multiversion Support
+   - Add Source Credential for accessing source files
+   - Add Paramaters for SQL Server configuration
+   - Add Paramaters to SuppressReboot or ForceReboot
+* xSQLServerRSSecureConnectionLevel
+   - Additional of SQLHelper Function and error handling
+* xSQLServerRSConfig
+   - Additional of SQLHelper Function and error handling
+* xSQLServerFirewall
+   - Additional of SQLHelper Function and error handling
+   - Change SourceFolder to Source to allow for multiversion Support
+* xSQLServerFailoverClusterSetup
+   - Additional of SQLHelper Function and error handling
+   - Change SourceFolder to Source to allow for multiversion Support
+   - Add Paramaters to SuppressReboot or ForceReboot
+* Resources Added
+   - xSQLDatabaseReoveryModeAdded
+   - xSQLServerDatabaseOwner
+   - xSQLServerDatabasePermissions
+   - xSQLServerDatabaseRole
+   - xSQLServerLogin
+   - xSQLServerMaxDop
+   - xSQLServerMemory
+   - xSQLServerPowerPlan
+=======
 ### Unreleased
 
 * xSQLServerSetup:
