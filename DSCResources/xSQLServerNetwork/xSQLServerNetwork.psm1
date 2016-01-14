@@ -23,18 +23,18 @@
 
     Try
     {
-        $Version = GetVersion -InstanceName $InstanceName
+        $version = GetVersion -InstanceName $InstanceName
 
-        if([string]::IsNullOrEmpty($Version))
+        if([string]::IsNullOrEmpty($version))
         {
             throw "Unable to resolve SQL version for instance"
         }
         
-        $Smo = $dom_get.Load("Microsoft.SqlServer.Smo, Version=$Version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
-        $SqlWmiManagement = $dom_get.Load("Microsoft.SqlServer.SqlWmiManagement, Version=$Version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+        $smo = $dom_get.Load("Microsoft.SqlServer.Smo, Version=$version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+        $sqlWmiManagement = $dom_get.Load("Microsoft.SqlServer.SqlWmiManagement, Version=$version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
 
         Write-Verbose "Creating [Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer] object"
-        $wmi = new-object $SqlWmiManagement.GetType("Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer")
+        $wmi = new-object $sqlWmiManagement.GetType("Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer")
 
         Write-Verbose "Getting [$ProtocolName] network protocol for [$InstanceName] SQL instance"
         $tcp = $wmi.ServerInstances[$InstanceName].ServerProtocols[$ProtocolName]
@@ -85,6 +85,7 @@ Function Set-TargetResource
         [System.Boolean]
         $RestartService = $false
     )
+
     Write-Verbose "xSQLServerNetwork.Set-TargetResource ..."
     Write-Verbose "Parameters: InstanceName = $InstanceName; ProtocolName = $ProtocolName; IsEnabled=$IsEnabled; TCPDynamicPorts = $TCPDynamicPorts; TCPPort = $TCPPort; RestartService=$RestartService;"
 
@@ -96,15 +97,15 @@ Function Set-TargetResource
 
     Try
     {
-        $Version = GetVersion -InstanceName $InstanceName
+        $version = GetVersion -InstanceName $InstanceName
 
-        if([string]::IsNullOrEmpty($Version))
+        if([string]::IsNullOrEmpty($version))
         {
             throw "Unable to resolve SQL version for instance"
         }
         
-        $Smo = $dom_set.Load("Microsoft.SqlServer.Smo, Version=$Version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
-        $SqlWmiManagement = $dom_set.Load("Microsoft.SqlServer.SqlWmiManagement, Version=$Version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+        $smo = $dom_set.Load("Microsoft.SqlServer.Smo, Version=$version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+        $sqlWmiManagement = $dom_set.Load("Microsoft.SqlServer.SqlWmiManagement, Version=$version.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
 
         $desiredState = @{
             InstanceName = $InstanceName
@@ -115,7 +116,7 @@ Function Set-TargetResource
         }
 
         Write-Verbose "Creating [Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer] object"
-        $wmi = new-object $SqlWmiManagement.GetType("Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer")
+        $wmi = new-object $sqlWmiManagement.GetType("Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer")
 
         Write-Verbose "Getting [$ProtocolName] network protocol for [$InstanceName] SQL instance"
         $tcp = $wmi.ServerInstances[$InstanceName].ServerProtocols[$ProtocolName]
@@ -149,25 +150,25 @@ Function Set-TargetResource
             Write-Verbose "SQL Service will be restarted ..."
             if($InstanceName -eq "MSSQLSERVER")
             {
-                $DBServiceName = "MSSQLSERVER"
-                $AgtServiceName = "SQLSERVERAGENT"
+                $dbServiceName = "MSSQLSERVER"
+                $agtServiceName = "SQLSERVERAGENT"
             }
             else
             {
-                $DBServiceName = "MSSQL`$$InstanceName"
-                $AgtServiceName = "SQLAgent`$$InstanceName"
+                $dbServiceName = "MSSQL`$$InstanceName"
+                $agtServiceName = "SQLAgent`$$InstanceName"
             }
 
-            $sqlService = $wmi.Services[$DBServiceName]
-            $agentService = $wmi.Services[$AgtServiceName]
+            $sqlService = $wmi.Services[$dbServiceName]
+            $agentService = $wmi.Services[$agtServiceName]
             $startAgent = ($agentService.ServiceState -eq "Running")
 
             if ($sqlService -eq $null)
             {
-                throw "$DBServiceName service was not found, restart service failed"
+                throw "$dbServiceName service was not found, restart service failed"
             }   
 
-            Write-Verbose "Stopping [$DBServiceName] service ..."
+            Write-Verbose "Stopping [$dbServiceName] service ..."
             $sqlService.Stop()
 
             while($sqlService.ServiceState -ne "Stopped")
@@ -175,9 +176,9 @@ Function Set-TargetResource
                 Start-Sleep -Milliseconds 500
                 $sqlService.Refresh()
             }
-            Write-Verbose "[$DBServiceName] service stopped"
+            Write-Verbose "[$dbServiceName] service stopped"
 
-            Write-Verbose "Starting [$DBServiceName] service ..."
+            Write-Verbose "Starting [$dbServiceName] service ..."
             $sqlService.Start()
 
             while($sqlService.ServiceState -ne "Running")
@@ -185,28 +186,25 @@ Function Set-TargetResource
                 Start-Sleep -Milliseconds 500
                 $sqlService.Refresh()
             }
-            Write-Verbose "[$DBServiceName] service started"
+            Write-Verbose "[$dbServiceName] service started"
 
             if ($startAgent)
             {
-                Write-Verbose "Staring [$AgtServiceName] service ..."
+                Write-Verbose "Staring [$agtServiceName] service ..."
                 $agentService.Start()
                 while($agentService.ServiceState -ne "Running")
                 {
                     Start-Sleep -Milliseconds 500
                     $agentService.Refresh()
                 }
-                Write-Verbose "[$AgtServiceName] service started"
+                Write-Verbose "[$agtServiceName] service started"
             }
-
         }
-
     }
     Finally
     {
         [System.AppDomain]::Unload($dom_set)
     }
-    
 }
 
 Function Test-TargetResource
@@ -236,6 +234,7 @@ Function Test-TargetResource
         [System.Boolean]
         $RestartService = $false
     )
+
     Write-Verbose "xSQLServerNetwork.Test-TargetResource ..."
     Write-Verbose "Parameters: InstanceName = $InstanceName; ProtocolName = $ProtocolName; IsEnabled=$IsEnabled; TCPDynamicPorts = $TCPDynamicPorts; TCPPort = $TCPPort; RestartService=$RestartService;"
 
@@ -280,9 +279,9 @@ Function GetVersion
         $InstanceName
     )
 
-    $InstanceId = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL").$InstanceName
-    $SQLVersion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$InstanceId\Setup").Version
-    $SQLVersion.Split(".")[0]
+    $instanceId = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL").$InstanceName
+    $sqlVersion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\Setup").Version
+    $sqlVersion.Split(".")[0]
 }
 
 Export-ModuleMember -Function *-TargetResource
