@@ -184,9 +184,9 @@ function Get-TargetResource
         #test if Replication sub component is configured for this instance
         Write-Verbose "Detecting replication feature"
         Write-Verbose "Reading registry key HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$FullInstanceID\ConfigurationState"
-        $IsReplicationInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$FullInstanceID\ConfigurationState").SQL_Replication_Core_Inst
-        Write-Verbose "Registry entry SQL_Replication_Core_Inst = $IsReplicationInstalled"
-        IF($IsReplicationInstalled -eq 1)
+        $isReplicationInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$FullInstanceID\ConfigurationState").SQL_Replication_Core_Inst
+        Write-Verbose "Registry entry SQL_Replication_Core_Inst = $isReplicationInstalled"
+        IF($isReplicationInstalled -eq 1)
         {
             Write-Verbose "Replication feature detected"
             $Features += "REPLICATION,"
