@@ -201,6 +201,14 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ###xSQLServerPowerPlan
 * **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
 
+### xSQLServerNetwork
+* **InstanceName**: (Key) name of SQL Server instance for which network will be configured.
+* **ProtocolName**: (Required) Name of network protocol to be configured. Only tcp is currently supported.
+* **IsEnabled**: Enables/Disables network protocol.
+* **TCPDynamicPorts**: 0 if Dynamic ports should be used otherwise empty.
+* **TCPPort**: Custom TCP port.
+* **RestartService**: If true will restart SQL Service instance service after update. Default false.
+
 ## Versions
 
 <<<<<<< HEAD
@@ -234,8 +242,21 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ### Unreleased
 
 * xSQLServerSetup:
-	- Corrected bug in GetFirstItemPropertyValue to correctly handle registry keys with only one value.
->>>>>>> cd039bfd72f5a433a527cef05634382050a4e356
+  - Corrected bug in GetFirstItemPropertyValue to correctly handle registry keys with only one value.
+  - Added support for SQL Server 2008 R2 installation
+  - Removed default values for parameters, to avoid compatibility issues and setup errors
+  - Added Replication sub feature detection
+  - Added setup parameter BrowserSvcStartupType
+* xSQLServerFirewall
+  - Removed default values for parameters, to avoid compatibility issues
+  - Updated firewall rule name to not use 2012 version, since package supports 2008, 2012 and 2014 versions
+* xSQLServerNetwork
+  - Added new resource that configures network settings.
+  - Currently supports only tcp network protocol
+  - Allows to enable and disable network protocol for specified instance service
+  - Allows to set custom or dynamic port values
+
+* Updated example files to use correct DebugMode parameter value ForceModuleImport, this is not boolean in WMF 5.0 RTM
 
 ### 1.3.0.0
 
@@ -261,4 +282,4 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ## Examples
 
-Examples for use of this resource can be found with the System Center resources, such as **xSCVMM**, **xSCSMA**, and **xSCOM**. 
+Examples for use of this resource can be found with the System Center resources, such as **xSCVMM**, **xSCSMA**, and **xSCOM**.
