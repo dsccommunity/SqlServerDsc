@@ -211,7 +211,6 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ## Versions
 
-<<<<<<< HEAD
 ### 1.4.0
 * xSQLServerSetup
    - Change SourceFolder to Source to allow for multiversion Support
@@ -238,7 +237,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
    - xSQLServerMaxDop
    - xSQLServerMemory
    - xSQLServerPowerPlan
-=======
+
 ### Unreleased
 
 * xSQLServerSetup:
