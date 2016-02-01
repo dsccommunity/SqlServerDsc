@@ -1,4 +1,4 @@
-#requires -Version 5
+﻿#requires -Version 5
 $computers = 'OHSQL1016'
 $OutputPath = 'D:\DSCLocal'
 $cim = New-CimSession -ComputerName $computers
@@ -136,6 +136,11 @@ Configuration SQLSA
                 Database = "Model"
                 Name = "TestUser1"
                 Permissions ="SELECT","DELETE"
+           }
+           xSQLServerDatabase($Node.Nodename)
+           {
+                Database = "Test3"
+                Ensure = "Present"
            }
         }
     }
