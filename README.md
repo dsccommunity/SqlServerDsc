@@ -23,7 +23,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerMaxDop** resource to manage MaxDegree of Parallism for SQL Server
 * **xSQLServerMemory** resource to manage Memory for SQL Server
 * **xSQLServerPowerPlan** resource to manage windows powerplan on SQL Server
-
+* **xSQLServerDatabse** resource to manage ensure database is present or absent
 
 ### xSQLServerSetup
 
@@ -200,6 +200,12 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ###xSQLServerPowerPlan
 * **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
+
+###xSQLServerDatbase
+* **Database**: (key) Database to be created or dropped
+* **Ensure**: An enumerated value that describes if Database is to be present or absent.
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database 
 
 ## Versions
 
