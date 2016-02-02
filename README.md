@@ -211,49 +211,45 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ## Versions
 
-### 1.4.0
-* xSQLServerSetup
-   - Change SourceFolder to Source to allow for multiversion Support
-   - Add Source Credential for accessing source files
-   - Add Paramaters for SQL Server configuration
-   - Add Paramaters to SuppressReboot or ForceReboot
-* xSQLServerRSSecureConnectionLevel
-   - Additional of SQLHelper Function and error handling
-* xSQLServerRSConfig
-   - Additional of SQLHelper Function and error handling
-* xSQLServerFirewall
-   - Additional of SQLHelper Function and error handling
-   - Change SourceFolder to Source to allow for multiversion Support
-* xSQLServerFailoverClusterSetup
-   - Additional of SQLHelper Function and error handling
-   - Change SourceFolder to Source to allow for multiversion Support
-   - Add Paramaters to SuppressReboot or ForceReboot
-* Resources Added
-   - xSQLDatabaseReoveryModeAdded
-   - xSQLServerDatabaseOwner
-   - xSQLServerDatabasePermissions
-   - xSQLServerDatabaseRole
-   - xSQLServerLogin
-   - xSQLServerMaxDop
-   - xSQLServerMemory
-   - xSQLServerPowerPlan
-
 ### Unreleased
 
+* Resources Added
+  - xSQLDatabaseReoveryModeAdded
+  - xSQLServerDatabaseOwner
+  - xSQLServerDatabasePermissions
+  - xSQLServerDatabaseRole
+  - xSQLServerLogin
+  - xSQLServerMaxDop
+  - xSQLServerMemory
+  - xSQLServerPowerPlan
 * xSQLServerSetup:
   - Corrected bug in GetFirstItemPropertyValue to correctly handle registry keys with only one value.
   - Added support for SQL Server 2008 R2 installation
   - Removed default values for parameters, to avoid compatibility issues and setup errors
   - Added Replication sub feature detection
   - Added setup parameter BrowserSvcStartupType
+  - Change SourceFolder to Source to allow for multiversion Support
+  - Add Source Credential for accessing source files
+  - Add Paramaters for SQL Server configuration
+  - Add Paramaters to SuppressReboot or ForceReboot
 * xSQLServerFirewall
   - Removed default values for parameters, to avoid compatibility issues
   - Updated firewall rule name to not use 2012 version, since package supports 2008, 2012 and 2014 versions
+  - Additional of SQLHelper Function and error handling
+  - Change SourceFolder to Source to allow for multiversion Support
 * xSQLServerNetwork
   - Added new resource that configures network settings.
   - Currently supports only tcp network protocol
   - Allows to enable and disable network protocol for specified instance service
   - Allows to set custom or dynamic port values
+* xSQLServerRSSecureConnectionLevel
+  - Additional of SQLHelper Function and error handling
+* xSQLServerRSConfig
+  - Additional of SQLHelper Function and error handling
+* xSQLServerFailoverClusterSetup
+  - Additional of SQLHelper Function and error handling
+  - Change SourceFolder to Source to allow for multiversion Support
+  - Add Paramaters to SuppressReboot or ForceReboot
 * Examples
   - Updated example files to use correct DebugMode parameter value ForceModuleImport, this is not boolean in WMF 5.0 RTM
   - Added xSQLServerNetwork example
