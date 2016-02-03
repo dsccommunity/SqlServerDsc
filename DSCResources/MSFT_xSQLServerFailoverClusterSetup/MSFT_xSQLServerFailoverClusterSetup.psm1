@@ -1,3 +1,11 @@
+# NOTE: This resource requires WMF5 and PsDscRunAsCredential
+
+$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+Write-Debug -Message "CurrentPath: $currentPath"
+
+# Load Common Code
+Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
+
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -9,16 +17,24 @@ function Get-TargetResource
         [System.String]
         $Action,
 
-        [parameter(Mandatory = $true)]
         [System.String]
-        $SourcePath,
+        $SourcePath = "$PSScriptRoot\..\..\",
 
         [System.String]
-        $SourceFolder = "\SQLServer2012.en",
+        $SourceFolder = "Source",
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
+
+        [System.Management.Automation.PSCredential]
+        $SourceCredential,
+
+        [System.Boolean]
+        $SuppressReboot,
+
+        [System.Boolean]
+        $ForceReboot,
 
         [parameter(Mandatory = $true)]
         [System.String]
@@ -29,7 +45,7 @@ function Get-TargetResource
         $InstanceName,
 
         [System.String]
-        $InstanceID,
+        $InstanceID = $InstanceName,
 
         [System.String]
         $PID,
@@ -137,10 +153,18 @@ function Get-TargetResource
 
     Import-Module $PSScriptRoot\..\..\xPDT.psm1
 
+    if($SourceCredential)
+    {
+        NetUse -SourcePath $SourcePath -Credential $SourceCredential -Ensure "Present"
+    }
     $Path = Join-Path -Path (Join-Path -Path $SourcePath -ChildPath $SourceFolder) -ChildPath "setup.exe"
     $Path = ResolvePath $Path
     Write-Verbose "Path: $Path"
     $SQLVersion = GetSQLVersion -Path $Path
+    if($SourceCredential)
+    {
+        NetUse -SourcePath $SourcePath -Credential $SourceCredential -Ensure "Absent"
+    }
     
     if($InstanceName -eq "MSSQLSERVER")
     {
@@ -274,16 +298,24 @@ function Set-TargetResource
         [System.String]
         $Action,
 
-        [parameter(Mandatory = $true)]
         [System.String]
-        $SourcePath,
+        $SourcePath = "$PSScriptRoot\..\..\",
 
         [System.String]
-        $SourceFolder = "\SQLServer2012.en",
+        $SourceFolder = "Source",
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
+
+        [System.Management.Automation.PSCredential]
+        $SourceCredential,
+
+        [System.Boolean]
+        $SuppressReboot,
+
+        [System.Boolean]
+        $ForceReboot,
 
         [parameter(Mandatory = $true)]
         [System.String]
@@ -294,7 +326,7 @@ function Set-TargetResource
         $InstanceName,
 
         [System.String]
-        $InstanceID,
+        $InstanceID = $InstanceName,
 
         [System.String]
         $PID,
@@ -402,7 +434,15 @@ function Set-TargetResource
 
     Import-Module $PSScriptRoot\..\..\xPDT.psm1
         
-    $Path = $SourcePath + $SourceFolder + "\setup.exe"
+    if($SourceCredential)
+    {
+        NetUse -SourcePath $SourcePath -Credential $SourceCredential -Ensure "Present"
+        $TempFolder = [IO.Path]::GetTempPath()
+        & robocopy.exe (Join-Path -Path $SourcePath -ChildPath $SourceFolder) (Join-Path -Path $TempFolder -ChildPath $SourceFolder) /e
+        $SourcePath = $TempFolder
+        NetUse -SourcePath $SourcePath -Credential $SourceCredential -Ensure "Absent"
+    }
+    $Path = Join-Path -Path (Join-Path -Path $SourcePath -ChildPath $SourceFolder) -ChildPath "setup.exe"
     $Path = ResolvePath $Path
     $SQLVersion = GetSQLVersion -Path $Path
     
@@ -642,7 +682,17 @@ function Set-TargetResource
     Write-Verbose "Path: $Path"
     Write-Verbose "Arguments: $Log"
 
-    $Process = StartWin32Process -Path $Path -Arguments $Arguments -Credential $SetupCredential -AsTask
+    switch($Action)
+    {
+        'Prepare'
+        {
+            $Process = StartWin32Process -Path $Path -Arguments $Arguments -Credential $SetupCredential -AsTask
+        }
+        'Complete'
+        {
+            $Process = StartWin32Process -Path $Path -Arguments $Arguments
+        }
+    }
     Write-Verbose $Process
     WaitForWin32ProcessEnd -Path $Path -Arguments $Arguments -Credential $SetupCredential
 
@@ -711,16 +761,21 @@ function Set-TargetResource
         }
     }
     
-    if((Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue) -ne $null)
+    if($ForceReboot -or ((Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue) -ne $null))
     {
-        $global:DSCMachineStatus = 1
-    }
-    else
-    {
-        if(!(Test-TargetResource @PSBoundParameters))
+        if(!($SuppressReboot))
         {
-            throw "Set-TargetResouce failed"
+            $global:DSCMachineStatus = 1
         }
+        else
+        {
+            Write-Verbose "Suppressing reboot"
+        }
+    }
+
+    if(!(Test-TargetResource @PSBoundParameters))
+    {
+        throw New-TerminatingError -ErrorType TestFailedAfterSet -ErrorCategory InvalidResult
     }
 }
 
@@ -736,16 +791,24 @@ function Test-TargetResource
         [System.String]
         $Action,
 
-        [parameter(Mandatory = $true)]
         [System.String]
-        $SourcePath,
+        $SourcePath = "$PSScriptRoot\..\..\",
 
         [System.String]
-        $SourceFolder = "\SQLServer2012.en",
+        $SourceFolder = "Source",
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
+
+        [System.Management.Automation.PSCredential]
+        $SourceCredential,
+
+        [System.Boolean]
+        $SuppressReboot,
+
+        [System.Boolean]
+        $ForceReboot,
 
         [parameter(Mandatory = $true)]
         [System.String]
@@ -756,7 +819,7 @@ function Test-TargetResource
         $InstanceName,
 
         [System.String]
-        $InstanceID,
+        $InstanceID = $InstanceName,
 
         [System.String]
         $PID,

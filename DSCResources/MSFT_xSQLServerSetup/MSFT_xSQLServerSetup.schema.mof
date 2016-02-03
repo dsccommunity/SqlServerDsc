@@ -1,9 +1,12 @@
 [ClassVersion("1.0.0.0"), FriendlyName("xSQLServerSetup")]
 class MSFT_xSQLServerSetup : OMI_BaseResource
 {
-    [Required, Description("UNC path to the root of the source files for installation.")] String SourcePath;
+    [Write, Description("UNC path to the root of the source files for installation.")] String SourcePath;
     [Write, Description("Folder within the source path containing the source files for installation.")] String SourceFolder;
     [Required, EmbeddedInstance("MSFT_Credential"), Description("Credential to be used to perform the installation.")] String SetupCredential;
+    [Write, EmbeddedInstance("MSFT_Credential"), Description("Credential to be used to access SourcePath.")] String SourceCredential;
+    [Write, Description("Suppress reboot.")] Boolean SuppressReboot;
+    [Write, Description("Force reboot.")] Boolean ForceReboot;
     [Write, Description("SQL features to be installed.")] String Features;
     [Key, Description("SQL instance to be installed.")] String InstanceName;
     [Write, Description("SQL instance ID, if different from InstanceName.")] String InstanceID;
@@ -44,4 +47,5 @@ class MSFT_xSQLServerSetup : OMI_BaseResource
     [Write, Description("Path for Analysis Services config.")] String ASConfigDir;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("Service account for Integration Services service.")] String ISSvcAccount;
     [Read, Description("Output username for the Integration Services service.")] String ISSvcAccountUsername;
+    [Write, Description("Specifies the startup mode for SQL Server Browser service"), ValueMap{"Automatic", "Disabled", "Manual"}, Values{"Automatic", "Disabled", "Manual"}] String BrowserSvcStartupType;
 };
