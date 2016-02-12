@@ -23,7 +23,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerMaxDop** resource to manage MaxDegree of Parallism for SQL Server
 * **xSQLServerMemory** resource to manage Memory for SQL Server
 * **xSQLServerPowerPlan** resource to manage windows powerplan on SQL Server
-
+* **xSQLServerNetwork** resource to manage SQL Server Network Protocols
+* **xSQLServerDatabase** resource to manage ensure database is present or absent
 
 ### xSQLServerSetup
 
@@ -209,6 +210,11 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **TCPPort**: Custom TCP port.
 * **RestartService**: If true will restart SQL Service instance service after update. Default false.
 
+###xSQLServerDatabase
+* **Database**: (key) Database to be created or dropped
+* **Ensure**: An enumerated value that describes if Database is to be present or absent.
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database 
 ## Versions
 
 ### Unreleased
@@ -246,12 +252,10 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - Allows to set custom or dynamic port values
 * xSQLServerRSSecureConnectionLevel
   - Additional of SQLHelper Function and error handling
-* xSQLServerRSConfig
   - Additional of SQLHelper Function and error handling
 * xSQLServerFailoverClusterSetup
   - Additional of SQLHelper Function and error handling
   - Change SourceFolder to Source to allow for multiversion Support
-  - Add Paramaters to SuppressReboot or ForceReboot
 * Examples
   - Updated example files to use correct DebugMode parameter value ForceModuleImport, this is not boolean in WMF 5.0 RTM
   - Added xSQLServerNetwork example
@@ -281,3 +285,4 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Examples
 
 Examples for use of this resource can be found with the System Center resources, such as **xSCVMM**, **xSCSMA**, and **xSCOM**.
+

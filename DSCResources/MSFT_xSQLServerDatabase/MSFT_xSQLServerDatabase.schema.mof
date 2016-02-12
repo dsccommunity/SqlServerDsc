@@ -1,0 +1,10 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xSQLServerDatabase")]
+class MSFT_xSQLServerDatabase : OMI_BaseResource
+{
+    [Key] String Database;
+    [Write, ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write] String SQLServer;
+    [Write] String SQLInstanceName;
+};
+
