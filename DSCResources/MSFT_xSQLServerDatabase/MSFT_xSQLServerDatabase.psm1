@@ -71,6 +71,7 @@ function Get-TargetResource
     }
         $returnValue = @{
         Database = $Database
+        Ensure = $Present
         SQLServer = $SQLServer
         SQLInstanceName = $SQLInstanceName
     }
