@@ -258,6 +258,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * xSQLServerFailoverClusterSetup
   - Additional of SQLHelper Function and error handling
   - Change SourceFolder to Source to allow for multiversion Support
+  - Add Paramaters to SuppressReboot or ForceReboot 
 * Examples
   - Updated example files to use correct DebugMode parameter value ForceModuleImport, this is not boolean in WMF 5.0 RTM
   - Added xSQLServerNetwork example
