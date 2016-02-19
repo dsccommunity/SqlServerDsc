@@ -230,9 +230,11 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerMaxDop
   - xSQLServerMemory
   - xSQLServerPowerPlan
+  - xSQLServerDatabase
 * xSQLServerSetup:
   - Corrected bug in GetFirstItemPropertyValue to correctly handle registry keys with only one value.
-  - Added support for SQL Server 2008 R2 installation
+  - Added support for SQL Server 
+  - 2008 R2 installation
   - Removed default values for parameters, to avoid compatibility issues and setup errors
   - Added Replication sub feature detection
   - Added setup parameter BrowserSvcStartupType
@@ -252,7 +254,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - Allows to set custom or dynamic port values
 * xSQLServerRSSecureConnectionLevel
   - Additional of SQLHelper Function and error handling
-  - Additional of SQLHelper Function and error handling
+* xSqlServerRSConfig
 * xSQLServerFailoverClusterSetup
   - Additional of SQLHelper Function and error handling
   - Change SourceFolder to Source to allow for multiversion Support
