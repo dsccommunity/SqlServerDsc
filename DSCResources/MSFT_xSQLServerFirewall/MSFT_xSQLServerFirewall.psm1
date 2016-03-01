@@ -63,7 +63,7 @@ function Get-TargetResource
                 if($Services | Where-Object {$_.Name -eq $DBServiceName})
                 {
                     $FeaturesInstalled += "SQLENGINE,"
-                    if(Get-FirewallRule -DisplayName ("SQL Server 2012 Database Engine instance " + $InstanceName) -Application ((GetSQLPath -Feature "SQLENGINE" -InstanceName $InstanceName) + "\sqlservr.exe"))
+                    if(Get-FirewallRule -DisplayName ("SQL Server Database Engine instance " + $InstanceName) -Application ((GetSQLPath -Feature "SQLENGINE" -InstanceName $InstanceName) + "\sqlservr.exe"))
                     {
                         $DatabaseEngineFirewall = $true
                     }
@@ -88,7 +88,7 @@ function Get-TargetResource
                 if($Services | Where-Object {$_.Name -eq $RSServiceName})
                 {
                     $FeaturesInstalled += "RS,"
-                    if((Get-FirewallRule -DisplayName "SQL Server 2012 Reporting Services 80" -Port "TCP/80") -and (Get-FirewallRule -DisplayName "SQL Server 2012 Reporting Services 443" -Port "TCP/443"))
+                    if((Get-FirewallRule -DisplayName "SQL Server Reporting Services 80" -Port "TCP/80") -and (Get-FirewallRule -DisplayName "SQL Server Reporting Services 443" -Port "TCP/443"))
                     {
                         $ReportingServicesFirewall = $true
                     }
@@ -104,7 +104,7 @@ function Get-TargetResource
                 if($Services | Where-Object {$_.Name -eq $ASServiceName})
                 {
                     $FeaturesInstalled += "AS,"
-                    if(Get-FirewallRule -DisplayName "SQL Server 2012 Analysis Services instance $InstanceName" -Service $ASServiceName)
+                    if(Get-FirewallRule -DisplayName "SQL Server Analysis Services instance $InstanceName" -Service $ASServiceName)
                     {
                         $AnalysisServicesFirewall = $true
                     }
@@ -129,7 +129,7 @@ function Get-TargetResource
                 if($Services | Where-Object {$_.Name -eq $ISServiceName})
                 {
                     $FeaturesInstalled += "IS,"
-                    if((Get-FirewallRule -DisplayName "SQL Server 2012 Integration Services Application" -Application ((GetSQLPath -Feature "IS" -SQLVersion $SQLVersion) + "Binn\MsDtsSrvr.exe")) -and (Get-FirewallRule -DisplayName "SQL Server 2012 Integration Services Port" -Port "TCP/135"))
+                    if((Get-FirewallRule -DisplayName "SQL Server Integration Services Application" -Application ((GetSQLPath -Feature "IS" -SQLVersion $SQLVersion) + "Binn\MsDtsSrvr.exe")) -and (Get-FirewallRule -DisplayName "SQL Server Integration Services Port" -Port "TCP/135"))
                     {
                         $IntegrationServicesFirewall = $true
                     }
@@ -220,9 +220,9 @@ function Set-TargetResource
             "SQLENGINE"
             {
                 if(!($SQLData.DatabaseEngineFirewall)){
-                    if(!(Get-FirewallRule -DisplayName ("SQL Server 2012 Database Engine instance " + $InstanceName) -Application ((GetSQLPath -Feature "SQLENGINE" -InstanceName $InstanceName) + "\sqlservr.exe")))
+                    if(!(Get-FirewallRule -DisplayName ("SQL Server Database Engine instance " + $InstanceName) -Application ((GetSQLPath -Feature "SQLENGINE" -InstanceName $InstanceName) + "\sqlservr.exe")))
                     {
-                        New-FirewallRule -DisplayName ("SQL Server 2012 Database Engine instance " + $InstanceName) -Application ((GetSQLPath -Feature "SQLENGINE" -InstanceName $InstanceName) + "\sqlservr.exe")
+                        New-FirewallRule -DisplayName ("SQL Server Database Engine instance " + $InstanceName) -Application ((GetSQLPath -Feature "SQLENGINE" -InstanceName $InstanceName) + "\sqlservr.exe")
                     }
                 }
                 if(!($SQLData.BrowserFirewall)){
@@ -235,22 +235,22 @@ function Set-TargetResource
             "RS"
             {
                 if(!($SQLData.ReportingServicesFirewall)){
-                    if(!(Get-FirewallRule -DisplayName "SQL Server 2012 Reporting Services 80" -Port "TCP/80"))
+                    if(!(Get-FirewallRule -DisplayName "SQL Server Reporting Services 80" -Port "TCP/80"))
                     {
-                        New-FirewallRule -DisplayName "SQL Server 2012 Reporting Services 80" -Port "TCP/80"
+                        New-FirewallRule -DisplayName "SQL Server Reporting Services 80" -Port "TCP/80"
                     }
-                    if(!(Get-FirewallRule -DisplayName "SQL Server 2012 Reporting Services 443" -Port "TCP/443"))
+                    if(!(Get-FirewallRule -DisplayName "SQL Server Reporting Services 443" -Port "TCP/443"))
                     {
-                        New-FirewallRule -DisplayName "SQL Server 2012 Reporting Services 443" -Port "TCP/443"
+                        New-FirewallRule -DisplayName "SQL Server Reporting Services 443" -Port "TCP/443"
                     }
                 }
             }
             "AS"
             {
                 if(!($SQLData.AnalysisServicesFirewall)){
-                    if(!(Get-FirewallRule -DisplayName "SQL Server 2012 Analysis Services instance $InstanceName" -Service $ASServiceName))
+                    if(!(Get-FirewallRule -DisplayName "SQL Server Analysis Services instance $InstanceName" -Service $ASServiceName))
                     {
-                        New-FirewallRule -DisplayName "SQL Server 2012 Analysis Services instance $InstanceName" -Service $ASServiceName
+                        New-FirewallRule -DisplayName "SQL Server Analysis Services instance $InstanceName" -Service $ASServiceName
                     }
                 }
                 if(!($SQLData.BrowserFirewall)){
@@ -263,13 +263,13 @@ function Set-TargetResource
             "IS"
             {
                 if(!($SQLData.IntegrationServicesFirewall)){
-                    if(!(Get-FirewallRule -DisplayName "SQL Server 2012 Integration Services Application" -Application ((GetSQLPath -Feature "IS" -SQLVersion $SQLVersion) + "Binn\MsDtsSrvr.exe")))
+                    if(!(Get-FirewallRule -DisplayName "SQL Server Integration Services Application" -Application ((GetSQLPath -Feature "IS" -SQLVersion $SQLVersion) + "Binn\MsDtsSrvr.exe")))
                     {
-                        New-FirewallRule -DisplayName "SQL Server 2012 Integration Services Application" -Application ((GetSQLPath -Feature "IS" -SQLVersion $SQLVersion) + "Binn\MsDtsSrvr.exe")
+                        New-FirewallRule -DisplayName "SQL Server Integration Services Application" -Application ((GetSQLPath -Feature "IS" -SQLVersion $SQLVersion) + "Binn\MsDtsSrvr.exe")
                     }
-                    if(!(Get-FirewallRule -DisplayName "SQL Server 2012 Integration Services Port" -Port "TCP/135"))
+                    if(!(Get-FirewallRule -DisplayName "SQL Server Integration Services Port" -Port "TCP/135"))
                     {
-                        New-FirewallRule -DisplayName "SQL Server 2012 Integration Services Port" -Port "TCP/135"
+                        New-FirewallRule -DisplayName "SQL Server Integration Services Port" -Port "TCP/135"
                     }
                 }
             }

@@ -32,7 +32,7 @@ Configuration SQLSA
         # Set LCM to reboot if needed
         LocalConfigurationManager
         {
-            DebugMode = $true
+            DebugMode = "ForceModuleImport"
             RebootNodeIfNeeded = $true
         }
 

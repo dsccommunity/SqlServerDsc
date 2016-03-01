@@ -47,4 +47,5 @@ class MSFT_xSQLServerSetup : OMI_BaseResource
     [Write, Description("Path for Analysis Services config.")] String ASConfigDir;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("Service account for Integration Services service.")] String ISSvcAccount;
     [Read, Description("Output username for the Integration Services service.")] String ISSvcAccountUsername;
+    [Write, Description("Specifies the startup mode for SQL Server Browser service"), ValueMap{"Automatic", "Disabled", "Manual"}, Values{"Automatic", "Disabled", "Manual"}] String BrowserSvcStartupType;
 };

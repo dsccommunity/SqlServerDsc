@@ -23,8 +23,13 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerMaxDop** resource to manage MaxDegree of Parallism for SQL Server
 * **xSQLServerMemory** resource to manage Memory for SQL Server
 * **xSQLServerPowerPlan** resource to manage windows powerplan on SQL Server
+<<<<<<< HEAD
 * **xSQLAlias** resource to manage SQL Server client Aliases
 
+=======
+* **xSQLServerNetwork** resource to manage SQL Server Network Protocols
+* **xSQLServerDatabase** resource to manage ensure database is present or absent
+>>>>>>> refs/remotes/PowerShell/dev
 
 ### xSQLServerSetup
 
@@ -202,6 +207,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ###xSQLServerPowerPlan
 * **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
 
+<<<<<<< HEAD
 ### xSqlAlias
 
 * **SQLServerName**: The name of Alias (e.g. svr01\inst01).
@@ -210,41 +216,68 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **RetryCount**: Maximum number of retries to check HA group existency.
 * **TCPPort**: The tcp port of the instance.
 
+=======
+### xSQLServerNetwork
+* **InstanceName**: (Key) name of SQL Server instance for which network will be configured.
+* **ProtocolName**: (Required) Name of network protocol to be configured. Only tcp is currently supported.
+* **IsEnabled**: Enables/Disables network protocol.
+* **TCPDynamicPorts**: 0 if Dynamic ports should be used otherwise empty.
+* **TCPPort**: Custom TCP port.
+* **RestartService**: If true will restart SQL Service instance service after update. Default false.
+
+###xSQLServerDatabase
+* **Database**: (key) Database to be created or dropped
+* **Ensure**: An enumerated value that describes if Database is to be present or absent.
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database 
+>>>>>>> refs/remotes/PowerShell/dev
 ## Versions
 
-<<<<<<< HEAD
-### 1.4.0
-* xSQLServerSetup
-   - Change SourceFolder to Source to allow for multiversion Support
-   - Add Source Credential for accessing source files
-   - Add Paramaters for SQL Server configuration
-   - Add Paramaters to SuppressReboot or ForceReboot
-* xSQLServerRSSecureConnectionLevel
-   - Additional of SQLHelper Function and error handling
-* xSQLServerRSConfig
-   - Additional of SQLHelper Function and error handling
-* xSQLServerFirewall
-   - Additional of SQLHelper Function and error handling
-   - Change SourceFolder to Source to allow for multiversion Support
-* xSQLServerFailoverClusterSetup
-   - Additional of SQLHelper Function and error handling
-   - Change SourceFolder to Source to allow for multiversion Support
-   - Add Paramaters to SuppressReboot or ForceReboot
-* Resources Added
-   - xSQLDatabaseReoveryModeAdded
-   - xSQLServerDatabaseOwner
-   - xSQLServerDatabasePermissions
-   - xSQLServerDatabaseRole
-   - xSQLServerLogin
-   - xSQLServerMaxDop
-   - xSQLServerMemory
-   - xSQLServerPowerPlan
-=======
 ### Unreleased
 
+### 1.4.0.0
+
+* Resources Added
+  - xSQLDatabaseReoveryModeAdded
+  - xSQLServerDatabaseOwner
+  - xSQLServerDatabasePermissions
+  - xSQLServerDatabaseRole
+  - xSQLServerLogin
+  - xSQLServerMaxDop
+  - xSQLServerMemory
+  - xSQLServerPowerPlan
+  - xSQLServerDatabase
 * xSQLServerSetup:
-	- Corrected bug in GetFirstItemPropertyValue to correctly handle registry keys with only one value.
->>>>>>> cd039bfd72f5a433a527cef05634382050a4e356
+  - Corrected bug in GetFirstItemPropertyValue to correctly handle registry keys with only one value.
+  - Added support for SQL Server 
+  - 2008 R2 installation
+  - Removed default values for parameters, to avoid compatibility issues and setup errors
+  - Added Replication sub feature detection
+  - Added setup parameter BrowserSvcStartupType
+  - Change SourceFolder to Source to allow for multiversion Support
+  - Add Source Credential for accessing source files
+  - Add Paramaters for SQL Server configuration
+  - Add Paramaters to SuppressReboot or ForceReboot
+* xSQLServerFirewall
+  - Removed default values for parameters, to avoid compatibility issues
+  - Updated firewall rule name to not use 2012 version, since package supports 2008, 2012 and 2014 versions
+  - Additional of SQLHelper Function and error handling
+  - Change SourceFolder to Source to allow for multiversion Support
+* xSQLServerNetwork
+  - Added new resource that configures network settings.
+  - Currently supports only tcp network protocol
+  - Allows to enable and disable network protocol for specified instance service
+  - Allows to set custom or dynamic port values
+* xSQLServerRSSecureConnectionLevel
+  - Additional of SQLHelper Function and error handling
+* xSqlServerRSConfig
+* xSQLServerFailoverClusterSetup
+  - Additional of SQLHelper Function and error handling
+  - Change SourceFolder to Source to allow for multiversion Support
+  - Add Paramaters to SuppressReboot or ForceReboot 
+* Examples
+  - Updated example files to use correct DebugMode parameter value ForceModuleImport, this is not boolean in WMF 5.0 RTM
+  - Added xSQLServerNetwork example
 
 ### 1.3.0.0
 
@@ -270,4 +303,5 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ## Examples
 
-Examples for use of this resource can be found with the System Center resources, such as **xSCVMM**, **xSCSMA**, and **xSCOM**. 
+Examples for use of this resource can be found with the System Center resources, such as **xSCVMM**, **xSCSMA**, and **xSCOM**.
+
