@@ -238,6 +238,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ### 1.4.0.0
 
 * Resources Added
+  - xSqlAlias
   - xSQLDatabaseReoveryModeAdded
   - xSQLServerDatabaseOwner
   - xSQLServerDatabasePermissions
