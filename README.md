@@ -219,6 +219,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ### Unreleased
 
+### 1.5.0.0
+
 ### 1.4.0.0
 
 * Resources Added
