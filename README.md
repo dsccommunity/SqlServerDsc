@@ -221,6 +221,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ### 1.5.0.0
 
+* Added new resource xSQLServerDatabase that allows adding an empty database to a server
+
 ### 1.4.0.0
 
 * Resources Added
