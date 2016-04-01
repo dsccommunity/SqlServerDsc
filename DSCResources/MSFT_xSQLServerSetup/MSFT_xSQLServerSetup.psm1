@@ -936,12 +936,18 @@ function Test-TargetResource
     )
 
     $SQLData = Get-TargetResource @PSBoundParameters
+    Write-Verbose "Features found: '$($SQLData.Features)'"
 
     $result = $true
     foreach($Feature in $Features.Split(","))
     {
+        # given that all the returned features are uppercase, make sure that the feature to search for
+        # is also uppercase
+        $Feature = $Feature.ToUpperInvariant();
+
         if(!($SQLData.Features.Contains($Feature)))
         {
+            Write-Verbose "Unable to find feature '$Feature' in '$($SQLData.Features)'"
             $result = $false
         }
     }
