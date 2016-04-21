@@ -1,5 +1,5 @@
 $currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-Write-Debug -Message "CurrentPath: $currentPath"
+Write-Verbose -Message "CurrentPath: $currentPath"
 
 # Load Common Code
 Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
@@ -7,43 +7,6 @@ Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAct
 # DSC resource to manage SQL database roles
 
 # NOTE: This resource requires WMF5 and PsDscRunAsCredential
-
-function ConnectSQL
-{
-    param
-    (
-        [System.String]
-        $SQLServer = $env:COMPUTERNAME,
-
-        [System.String]
-        $SQLInstanceName = "MSSQLSERVER"
-    )
-    
-    $null = [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.Smo')
-    
-    if($SQLInstanceName -eq "MSSQLSERVER")
-    {
-        $ConnectSQL = $SQLServer
-    }
-    else
-    {
-        $ConnectSQL = "$SQLServer\$SQLInstanceName"
-    }
-
-    Write-Verbose "Connecting to SQL $ConnectSQL"
-    $SQL = New-Object Microsoft.SqlServer.Management.Smo.Server $ConnectSQL
-
-    if($SQL)
-    {
-        Write-Verbose "Connected to SQL $ConnectSQL"
-        $SQL
-    }
-    else
-    {
-        Write-Verbose "Failed connecting to SQL $ConnectSQL"
-    }
-}
-
 
 function Get-TargetResource
 {
@@ -68,7 +31,7 @@ function Get-TargetResource
 
     if(!$SQL)
     {
-        $SQL = ConnectSQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
 
     if($SQL)
@@ -119,7 +82,7 @@ function Set-TargetResource
 
     if(!$SQL)
     {
-        $SQL = ConnectSQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
 
     if($SQL)

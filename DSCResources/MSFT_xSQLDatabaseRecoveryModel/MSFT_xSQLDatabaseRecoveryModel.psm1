@@ -1,5 +1,5 @@
 $currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-Write-Debug -Message "CurrentPath: $currentPath"
+Write-Verbose -Message "CurrentPath: $currentPath"
 
 # Load Common Code
 Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
@@ -25,11 +25,11 @@ function Get-TargetResource
     )
     
     $SqlServerInstance = $SqlServerInstance.Replace('\MSSQLSERVER','')  
-    Write-Verbose -Message "Checking Database $DatabaseName recovery mode for $RecoveryModel." -Verbose    
+    New-VerboseMessage -Message "Checking Database $DatabaseName recovery mode for $RecoveryModel"
 
     $db = Get-SqlDatabase -ServerInstance $SqlServerInstance -Name $DatabaseName
     $value = ($db.RecoveryModel -eq $RecoveryModel)
-    Write-Verbose -Message "Database $DatabaseName recovery mode comparison $value." -Verbose
+    New-VerboseMessage -Message "Database $DatabaseName recovery mode comparison $value."
     
     $returnValue = @{
         RecoveryModel = $db.RecoveryModel
@@ -62,14 +62,13 @@ function Set-TargetResource
  
     $SqlServerInstance = $SqlServerInstance.Replace('\MSSQLSERVER','')  
     $db = Get-SqlDatabase -ServerInstance $SqlServerInstance -Name $DatabaseName    
-    Write-Verbose -Message "Database $DatabaseName recovery mode is $db.RecoveryModel." -Verbose
+    New-VerboseMessage -Message "Database $DatabaseName recovery mode is $db.RecoveryModel."
     
     if($db.RecoveryModel -ne $RecoveryModel)
     {
-        Write-Verbose -Message "Changing $DatabaseName recovery mode to $RecoveryModel." -Verbose
         $db.RecoveryModel = $RecoveryModel;
         $db.Alter();
-        Write-Verbose -Message "DB $DatabaseName recovery mode is changed to $RecoveryModel." -Verbose
+        New-VerboseMessage -Message "DB $DatabaseName recovery mode is changed to $RecoveryModel."
     }
     
     if(!(Test-TargetResource @PSBoundParameters))
