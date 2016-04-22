@@ -65,8 +65,9 @@ function Get-TargetResource
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
+        [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName= "MSSQLSERVER"
+        $SQLInstanceName #= "MSSQLSERVER"
     )
 
         if(!$SQL)
@@ -114,7 +115,7 @@ function Set-TargetResource
         $DynamicAlloc,
 
         [System.Int32]
-        $MinMemory,
+        $MinMemory = -1,
 
         [System.Int32]
         $MaxMemory,
@@ -122,8 +123,9 @@ function Set-TargetResource
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
+        [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName= "MSSQLSERVER"
+        $SQLInstanceName #= "MSSQLSERVER"
     )
 
     if(!$SQL)
@@ -171,7 +173,7 @@ function Set-TargetResource
                 }
                 else
                 {
-                    if (!$MaxMemory -xor !$MinMemory)
+                    if (!$MaxMemory)
                     {
                         Throw "Dynamic Allocation is not set and Min and Max memory were not passed."
                         Exit
@@ -184,8 +186,9 @@ function Set-TargetResource
             Write-Verbose -message "Dynamic Alloc is $DynamicAlloc. MaxMem will be set to $MaxMemory."
             Write-Verbose -message "Server Memory is $serverMem and should be capped."
             $sql.Configuration.MaxServerMemory.ConfigValue = $MaxMemory
-            if($MinMemory)
+            if($MinMemory -ge 0)
             {
+                Write-Verbose -message "MinMem will be set to $MinMemory."
                 $sql.Configuration.MinServerMemory.ConfigValue = $MinMemory
             }
             $sql.alter()
@@ -213,16 +216,17 @@ function Test-TargetResource
         $DynamicAlloc,
 
         [System.Int32]
-        $MinMemory,
+        $MinMemory = -1,
 
         [System.Int32]
         $MaxMemory,
 
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
-
+        
+        [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName= "MSSQLSERVER"
+        $SQLInstanceName #= "MSSQLSERVER"
     )
 
     if(!$SQL)
@@ -269,7 +273,7 @@ function Test-TargetResource
              }
              else
              {
-                 If($MinMemory -ne $GetMinMemory -or $MaxMemory -ne $GetMaxMemory)
+                 If(($MinMemory -ge 0 -and $MinMemory -ne $GetMinMemory) -or $MaxMemory -ne $GetMaxMemory)
                  {
                     Write-Verbose -Message "Current Max Memory is $GetMaxMemory. Min Memory is $GetMinMemory"
                     return $false
