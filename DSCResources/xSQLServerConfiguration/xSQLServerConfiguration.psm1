@@ -4,19 +4,19 @@
     [OutputType([System.Collections.Hashtable])]
     param(
         [parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $InstanceName,
 
         [parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $OptionName,
 
         [parameter(Mandatory = $true)]
-        [Int32]
+        [System.Int32]
         $OptionValue,
 
         [ValidateSet('Present', 'Absent')]
-        [String]
+        [System.String]
         $Ensure = 'Present'
     )
 
@@ -44,19 +44,19 @@ Function Set-TargetResource
     [CmdletBinding()]
     param(
         [parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $InstanceName,
 
         [parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $OptionName,
 
         [parameter(Mandatory = $true)]
-        [Int32]
+        [System.Int32]
         $OptionValue,
 
         [ValidateSet('Present', 'Absent')]
-        [String]
+        [System.String]
         $Ensure = 'Present'
     )
 
@@ -84,22 +84,22 @@ Function Set-TargetResource
 Function Test-TargetResource
 {
     [CmdletBinding()]
-    [OutputType([Boolean])]
+    [OutputType([System.Boolean])]
     param(
         [parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $InstanceName,
 
         [parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $OptionName,
 
         [parameter(Mandatory = $true)]
-        [Int32]
+        [System.Int32]
         $OptionValue,
 
         [ValidateSet('Present', 'Absent')]
-        [String]
+        [System.String]
         $Ensure = 'Present'
     )
 
@@ -121,10 +121,10 @@ Function Test-TargetResource
 Function Get-SqlServerMajorVersion
 {
     [CmdletBinding()]
-    [OutputType([String])]
+    [OutputType([System.String])]
     param(
         [parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $InstanceName
     )
 
@@ -142,7 +142,7 @@ Function Get-SqlServerObject
 {
     param(
         [parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $InstanceName
     )
 
