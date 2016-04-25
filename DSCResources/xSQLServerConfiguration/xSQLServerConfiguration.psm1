@@ -104,7 +104,7 @@ Function Test-TargetResource
     return ($option.ConfigValue -eq $OptionValue)
 }
 
-Get-SqlServerConfigurationOption
+Function Get-SqlServerConfigurationOption
 {
     [CmdletBinding()]
     [OutputType([Microsoft.SqlServer.Management.Smo.ConfigProperty])]
