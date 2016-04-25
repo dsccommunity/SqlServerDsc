@@ -42,7 +42,6 @@
 Function Set-TargetResource
 {
     [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
     param(
         [parameter(Mandatory = $true)]
         [String]
@@ -78,7 +77,7 @@ Function Set-TargetResource
     }
     else
     {
-        Write-Verbose "Configuration option will be updated when SQL Server is restarted."
+        Write-Warning "Configuration option will be updated when SQL Server is restarted."
     }
 }
 
