@@ -78,7 +78,7 @@ Function Set-TargetResource
     }
     else
     {
-        Write-Warning "Configuration option will be updated when SQL Server is restarted."
+        Write-Verbose "Configuration option will be updated when SQL Server is restarted."
     }
 }
 
