@@ -25,6 +25,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerPowerPlan** resource to manage windows powerplan on SQL Server
 * **xSQLServerNetwork** resource to manage SQL Server Network Protocols
 * **xSQLServerDatabase** resource to manage ensure database is present or absent
+* **xSQLServerConfiguration** resource to manage [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
 
 ### xSQLServerSetup
 
@@ -215,9 +216,19 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **Ensure**: An enumerated value that describes if Database is to be present or absent.
 * **SQLServer**: The SQL Server for the database
 * **SQLInstance**: The SQL instance for the database 
+
+###xSQLServerConfiguration
+* **InstanceName**: (Key) nave of SQL Server instance for which configuration options will be configured.
+* **OptionName**: (Key) SQL Server option name. For all possible values reference [MSDN](https://msdn.microsoft.com/en-us/library/ms189631.aspx) or run sp_configure.
+* **OptionValue**: (Required) SQL Server option value to be set.
+* **Ensure**: An enumerated value that describes if configuration should be set. This is only used in Get-TargetResource to report current state. Has no effect for Set-TargetResource.
+
 ## Versions
 
 ### Unreleased
+
+* Added new resource xSQLServerConfiguration
+* Added example for xSQLServerConfiguration resource
 
 ### 1.5.0.0
 
