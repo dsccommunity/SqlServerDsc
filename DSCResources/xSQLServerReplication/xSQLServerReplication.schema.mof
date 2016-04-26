@@ -3,12 +3,11 @@ class xSQLServerReplication : OMI_BaseResource
 {
     [Key, Description("SQL Server instance name of which configuration will be managed")] String InstanceName;
     [Write, ValueMap{"Present", "Absent"}, Values{"Present", "Absent"}] String Ensure;
-    [Required, Description("Distributor role should be configured")] Boolean IsDistributor;
-    [Required, Description("Publisher role should be configured")] Boolean IsPublisher;
+    [Required, ValueMap{"Local", "Remote"}, Values{"Local", "Remote"}] String DistributorMode;
     [Required, EmbeddedInstance("MSFT_Credential"), Description("Distributor administration link password")] String AdminLinkCredentials;
     [Write, Description("Distribution database name")] String DistributionDBName;
-    [Write, Description("Distributor server name if configuring publisher with remote distributor")] String PublisherDistributor;
-    [Write, Description("Publisher working directory")] String PublisherWorkingDirectory;
-    [Write, Description("Publisher security mode")] Boolean PublisherTrustedConnection;
+    [Write, Description("Distributor server name if configuring publisher with remote distributor")] String RemoteDistributor;
+    [Required, Description("Publisher working directory")] String WorkingDirectory;
+    [Write, Description("Publisher security mode")] Boolean UseTrustedConnection;
     [Write, Description("Force flag for uninstall procedure")] Boolean UninstallWithForce;
 };

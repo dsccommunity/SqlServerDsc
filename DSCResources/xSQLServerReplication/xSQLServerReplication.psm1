@@ -12,12 +12,9 @@
         $Ensure = 'Present',
 
         [parameter(Mandatory = $true)]
-        [System.Boolean]
-        $IsDistributor,
-
-        [parameter(Mandatory = $true)]
-        [System.Boolean]
-        $IsPublisher,
+        [ValidateSet('Local', 'Remote')]
+        [System.String]
+        $DistributorMode,
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
@@ -27,19 +24,20 @@
         $DistributionDBName = 'distribution',
 
         [System.String]
-        $PublisherDistributor,
+        $RemoteDistributor,
 
+        [parameter(Mandatory = $true)]
         [System.String]
-        $PublisherWorkingDirectory,
+        $WorkingDirectory,
 
         [System.Boolean]
-        $PublisherTrustedConnection = $false,
+        $UseTrustedConnection = $true,
 
         [System.Boolean]
-        $UninstallWithForce = $false
+        $UninstallWithForce = $true
     )
 
-    if(Test-TargetResource $InstanceName $Ensure $IsDistributor $IsPublisher $AdminLinkCredentials $DistributionDBName $PublisherDistributor $PublisherWorkingDirectory $PublisherTrustedConnection $UninstallWithForce)
+    if(Test-TargetResource $InstanceName $Ensure $DistributorMode $AdminLinkCredentials $DistributionDBName $RemoteDistributor $WorkingDirectory $UseTrustedConnection $UninstallWithForce)
     {
         $Ensure = 'Present'
     }
@@ -51,13 +49,12 @@
     $returnValue = @{
         InstanceName = $InstanceName
         Ensure = $Ensure
-        IsDistributor = $IsDistributor
-        IsPublisher = $IsPublisher
+        DistributorMode = $DistributorMode
         AdminLinkCredentials = $AdminLinkCredentials
         DistributionDBName = $DistributionDBName
-        PublisherDistributor = $PublisherDistributor
-        PublisherWorkingDirectory = $PublisherWorkingDirectory
-        PublisherTrustedConnection = $PublisherTrustedConnection
+        RemoteDistributor = $RemoteDistributor
+        WorkingDirectory = $WorkingDirectory
+        UseTrustedConnection = $UseTrustedConnection
         UninstallWithForce = $UninstallWithForce
     }
     
@@ -77,12 +74,9 @@ Function Set-TargetResource
         $Ensure = 'Present',
 
         [parameter(Mandatory = $true)]
-        [System.Boolean]
-        $IsDistributor,
-
-        [parameter(Mandatory = $true)]
-        [System.Boolean]
-        $IsPublisher,
+        [ValidateSet('Local', 'Remote')]
+        [System.String]
+        $DistributorMode,
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
@@ -92,17 +86,23 @@ Function Set-TargetResource
         $DistributionDBName = 'distribution',
 
         [System.String]
-        $PublisherDistributor,
+        $RemoteDistributor,
 
+        [parameter(Mandatory = $true)]
         [System.String]
-        $PublisherWorkingDirectory,
+        $WorkingDirectory,
 
         [System.Boolean]
-        $PublisherTrustedConnection = $false,
+        $UseTrustedConnection = $true,
 
         [System.Boolean]
-        $UninstallWithForce = $false
+        $UninstallWithForce = $true
     )
+
+    if($DistributorMode -eq 'Remote' -and !$RemoteDistributor)
+    {
+        throw "RemoteDistributor parameter cannot be empty when DistributorMode = 'Remote'!"
+    }
 
     $sqlMajorVersion = Get-SqlServerMajorVersion $InstanceName
 
@@ -114,51 +114,52 @@ Function Set-TargetResource
 
         if($InstanceName -eq "MSSQLSERVER")
         {
-            $connectSQL = $env:COMPUTERNAME
+            $localSqlName = $env:COMPUTERNAME
         }
         else
         {
-            $connectSQL = "$($env:COMPUTERNAME)\$InstanceName"
+            $localSqlName = "$($env:COMPUTERNAME)\$InstanceName"
         }
 
-        $serverConnection = New-Object $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') $connectSQL
-        $replicationServer = New-Object $rmo.GetType('Microsoft.SqlServer.Replication.ReplicationServer') $serverConnection
+        $localConnection = New-Object $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') $localSqlName
+        $localReplicationServer = New-Object $rmo.GetType('Microsoft.SqlServer.Replication.ReplicationServer') $localConnection
 
         if($Ensure -eq 'Present')
         {
-            Write-Verbose "Distribution will be configured ..."
-            if($IsDistributor -eq $true -and $replicationServer.IsDistributor -eq $false)
+            if($DistributorMode -eq 'Local' -and $localReplicationServer.IsDistributor -eq $false)
             {
-                Write-Verbose "Distributor role will be configured ..."
-                $distributionDB = New-Object $rmo.GetType('Microsoft.SqlServer.Replication.DistributionDatabase') $DistributionDBName, $serverConnection
-                $replicationServer.InstallDistributor($AdminLinkCredentials.Password, $distributionDB)
+                Write-Verbose "Local distribution will be configured ..."
+                $distributionDB = New-Object $rmo.GetType('Microsoft.SqlServer.Replication.DistributionDatabase') $DistributionDBName, $localConnection
+                $localReplicationServer.InstallDistributor($AdminLinkCredentials.Password, $distributionDB)
+
+                $distributorPublisher = New-object $rmo.GetType('Microsoft.SqlServer.Replication.DistributionPublisher') $localSqlName, $localConnection
+                $distributorPublisher.DistributionDatabase = $DistributionDBName
+                $distributorPublisher.WorkingDirectory = $WorkingDirectory
+                $distributorPublisher.PublisherSecurity.WindowsAuthentication = $UseTrustedConnection
+                $distributorPublisher.Create()
             }
-
-            if($IsPublisher -eq $true -and $replicationServer.IsPublisher -eq $false)
+            
+            if($DistributorMode -eq 'Remote' -and $localReplicationServer.IsPublisher -eq $false)
             {
-                Write-Verbose "Publisher role will be configured ..."
-                if($PublisherDistributor)
-                {
-                    $distributorConnection = New-Object $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') $PublisherDistributor
-                }
-                else
-                {
-                    $distributorConnection = $serverConnection
-                }
+                Write-Verbose "Remote distribution will be configured ..."
 
-                $publisher = New-object $rmo.GetType('Microsoft.SqlServer.Replication.DistributionPublisher') $connectSQL, $distributorConnection
-                $publisher.DistributionDatabase = $DistributionDBName
-                $publisher.WorkingDirectory = $PublisherWorkingDirectory
-                $publisher.PublisherSecurity.WindowsAuthentication = $PublisherTrustedConnection
-                $publisher.Create()
+                $remoteConnection = New-Object $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') $RemoteDistributor
+
+                $distributorPublisher = New-object $rmo.GetType('Microsoft.SqlServer.Replication.DistributionPublisher') $localSqlName, $remoteConnection
+                $distributorPublisher.DistributionDatabase = $DistributionDBName
+                $distributorPublisher.WorkingDirectory = $WorkingDirectory
+                $distributorPublisher.PublisherSecurity.WindowsAuthentication = $UseTrustedConnection
+                $distributorPublisher.Create()
+
+                $localReplicationServer.InstallDistributor($RemoteDistributor, $AdminLinkCredentials.Password)
             }
         }
         else #'Absent'
         {
-            if($replicationServer.IsDistributor -eq $true -or $replicationServer.IsPublisher -eq $true)
+            if($localReplicationServer.IsDistributor -eq $true -or $localReplicationServer.IsPublisher -eq $true)
             {
                 Write-Verbose "Distribution will be removed ..."
-                $replicationServer.UninstallDistributor($UninstallWithForce)
+                $localReplicationServer.UninstallDistributor($UninstallWithForce)
             }
             else
             {
@@ -186,12 +187,9 @@ Function Test-TargetResource
         $Ensure = 'Present',
 
         [parameter(Mandatory = $true)]
-        [System.Boolean]
-        $IsDistributor,
-
-        [parameter(Mandatory = $true)]
-        [System.Boolean]
-        $IsPublisher,
+        [ValidateSet('Local', 'Remote')]
+        [System.String]
+        $DistributorMode,
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
@@ -201,16 +199,17 @@ Function Test-TargetResource
         $DistributionDBName = 'distribution',
 
         [System.String]
-        $PublisherDistributor,
+        $RemoteDistributor,
 
+        [parameter(Mandatory = $true)]
         [System.String]
-        $PublisherWorkingDirectory,
+        $WorkingDirectory,
 
         [System.Boolean]
-        $PublisherTrustedConnection = $false,
+        $UseTrustedConnection = $true,
 
         [System.Boolean]
-        $UninstallWithForce = $false
+        $UninstallWithForce = $true
     )
 
     $sqlMajorVersion = Get-SqlServerMajorVersion $InstanceName
@@ -224,19 +223,24 @@ Function Test-TargetResource
 
         if($InstanceName -eq "MSSQLSERVER")
         {
-            $connectSQL = $env:COMPUTERNAME
+            $localSqlName = $env:COMPUTERNAME
         }
         else
         {
-            $connectSQL = "$($env:COMPUTERNAME)\$InstanceName"
+            $localSqlName = "$($env:COMPUTERNAME)\$InstanceName"
         }
 
-        $serverConnection = New-Object $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') $connectSQL
-        $replicationServer = New-Object $rmo.GetType('Microsoft.SqlServer.Replication.ReplicationServer') $serverConnection
+        $localConnection = New-Object $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') $localSqlName
+        $localReplicationServer = New-Object $rmo.GetType('Microsoft.SqlServer.Replication.ReplicationServer') $localConnection
 
-        if($Ensure = 'Present')
+        if($Ensure -eq 'Present')
         {
-            if($replicationServer.IsDistributor -eq $IsDistributor -and $replicationServer.IsPublisher -eq $IsPublisher)
+            if($DistributorMode -eq 'Local' -and $localReplicationServer.IsDistributor -eq $true)
+            {
+                $result = $true
+            }
+
+            if($DistributorMode -eq 'Remote' -and $localReplicationServer.IsPublisher -eq $true)
             {
                 $result = $true
             }
@@ -244,7 +248,7 @@ Function Test-TargetResource
         }
         else #Absent
         {
-            if($replicationServer.IsDistributor -eq $false -and $replicationServer.IsPublisher -eq $false)
+            if($localReplicationServer.IsDistributor -eq $false -and $localReplicationServer.IsPublisher -eq $false)
             {
                 $result = $true
             }
