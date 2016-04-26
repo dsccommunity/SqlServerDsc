@@ -159,6 +159,7 @@ function Set-TargetResource
                     $Replica.EndpointUrl = "TCP://$($node):5022"
                     $Replica.FailoverMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaFailoverMode]::Automatic
                     $Replica.AvailabilityMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaAvailabilityMode]::SynchronousCommit
+                    #Backup Priority Gives the ability to set a priority of one secondany over another valid values are from 1 - 100
                     $Replica.BackupPriority = 50
                     $Replica.ConnectionModeInPrimaryRole =  $ConnectionModeInPrimary
                     $replica.ConnectionModeInSecondaryRole = $ConnectionModeInSecondaryRole 
