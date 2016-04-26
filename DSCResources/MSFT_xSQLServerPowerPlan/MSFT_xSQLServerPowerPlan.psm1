@@ -1,3 +1,9 @@
+$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+Write-Verbose -Message "CurrentPath: $currentPath"
+
+# Load Common Code
+Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
+
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -57,12 +63,12 @@ function Set-TargetResource
         {$PlanName = "Balanced"}    
     }
 
-    Write-Verbose -Message "Setting Powerplan to $PlanName" 
     Try 
     {
         $ReqPerf = powercfg -l | %{if($_.contains($PlanName)) {$_.split()[3]}}
         $CurrPlan = $(powercfg -getactivescheme).split()[3]
         if ($CurrPlan -ne $ReqPerf) {powercfg -setactive $ReqPerf}
+        New-VerboseMessage -Message "Powerplan has been set to $PlanName" 
     }
     
     Catch 
@@ -111,12 +117,12 @@ function Test-TargetResource
     }
     If($ElementGuid -eq $ReqPerfGuid)
     {
-        Write-Verbose -Message "PowerPlan is set to $PlanName Already"
+        New-VerboseMessage -Message "PowerPlan is set to $PlanName Already"
         return $true
     }
     else
     {
-        Write-Verbose -Message "PowerPlan is $CurrPerfName Expect $PlanName"
+        New-VerboseMessage -Message "PowerPlan is $CurrPerfName Expect $PlanName"
         return $false
     }
 }
