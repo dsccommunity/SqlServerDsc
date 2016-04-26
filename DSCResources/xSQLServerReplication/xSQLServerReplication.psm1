@@ -9,7 +9,7 @@
 
         [ValidateSet('Present', 'Absent')]
         [System.String]
-        $Ensure,
+        $Ensure = 'Present',
 
         [parameter(Mandatory = $true)]
         [System.Boolean]
@@ -24,7 +24,7 @@
         $AdminLinkCredentials,
 
         [System.String]
-        $DistributionDBName,
+        $DistributionDBName = 'distribution',
 
         [System.String]
         $PublisherDistributor,
@@ -33,10 +33,10 @@
         $PublisherWorkingDirectory,
 
         [System.Boolean]
-        $PublisherTrustedConnection,
+        $PublisherTrustedConnection = $false,
 
         [System.Boolean]
-        $UninstallWithForce
+        $UninstallWithForce = $false
     )
 
     if(Test-TargetResource $InstanceName $Ensure $IsDistributor $IsPublisher $AdminLinkCredentials $DistributionDBName $PublisherDistributor $PublisherWorkingDirectory $PublisherTrustedConnection $UninstallWithForce)
@@ -98,10 +98,10 @@ Function Set-TargetResource
         $PublisherWorkingDirectory,
 
         [System.Boolean]
-        $PublisherTrustedConnection,
+        $PublisherTrustedConnection = $false,
 
         [System.Boolean]
-        $UninstallWithForce
+        $UninstallWithForce = $false
     )
 
     $sqlMajorVersion = Get-SqlServerMajorVersion $InstanceName
@@ -183,7 +183,7 @@ Function Test-TargetResource
 
         [ValidateSet('Present', 'Absent')]
         [System.String]
-        $Ensure,
+        $Ensure = 'Present',
 
         [parameter(Mandatory = $true)]
         [System.Boolean]
@@ -198,7 +198,7 @@ Function Test-TargetResource
         $AdminLinkCredentials,
 
         [System.String]
-        $DistributionDBName,
+        $DistributionDBName = 'distribution',
 
         [System.String]
         $PublisherDistributor,
@@ -207,10 +207,10 @@ Function Test-TargetResource
         $PublisherWorkingDirectory,
 
         [System.Boolean]
-        $PublisherTrustedConnection,
+        $PublisherTrustedConnection = $false,
 
         [System.Boolean]
-        $UninstallWithForce
+        $UninstallWithForce = $false
     )
 
     $sqlMajorVersion = Get-SqlServerMajorVersion $InstanceName
