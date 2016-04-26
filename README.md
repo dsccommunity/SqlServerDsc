@@ -297,6 +297,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 	- Removed ConnectSQL function and replaced with new Connect-SQL function
 * xSQLServerPowerPlan
 	- Updated Verbose statements to use new function New-VerboseMessage
+
 ### 1.5.0.0
 
 * Added new resource xSQLServerDatabase that allows adding an empty database to a server
