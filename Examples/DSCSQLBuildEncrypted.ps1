@@ -39,24 +39,24 @@ Get-cert -RemoteMachine $env:COMPUTERNAME -SaveLocation $KeyPath
 
 [DSCLocalConfigurationManager()]
 Configuration LCM_Reboot_CentralConfig 
-{	
+{    
     Param(
         [string[]]$ComputerName
     )
     Node $computers
     {
-		Settings
-		{
+        Settings
+        {
             ConfigurationID                = $GUID
             CertificateID                  =(Get-PfxCertificate -FilePath "$KeyPath\$computers.$env:USERDNSDOMAIN.cer").Thumbprint
             RefreshFrequencyMins           = 30
             ConfigurationModeFrequencyMins = 15
             RefreshMode                    = "Push"
             AllowModuleOverwrite           = $true 
-            RebootNodeIfNeeded = $True	
+            RebootNodeIfNeeded = $True    
             ConfigurationMode = 'ApplyAndAutoCorrect'
-		}  
-	}
+        }  
+    }
 }
 #LCM_Reboot_CentralConfig -OutputPath $OutputPath
 

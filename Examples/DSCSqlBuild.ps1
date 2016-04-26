@@ -9,20 +9,20 @@ Function check-even($num){[bool]!($num%2)}
 
 [DSCLocalConfigurationManager()]
 Configuration LCM_Push
-{	
+{    
     Param(
         [string[]]$ComputerName
     )
     Node $ComputerName
     {
     Settings
-		{
+        {
             AllowModuleOverwrite = $True
             ConfigurationMode = 'ApplyAndAutoCorrect'
-			RefreshMode = 'Push'
-            RebootNodeIfNeeded = $True	
-		}
-	}
+            RefreshMode = 'Push'
+            RebootNodeIfNeeded = $True    
+        }
+    }
 }
 
 foreach ($computer in $computers)
