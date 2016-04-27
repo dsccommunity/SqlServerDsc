@@ -1,46 +1,8 @@
 $currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-Write-Debug -Message "CurrentPath: $currentPath"
-
-# DSC resource to manage SQL Server Instance Memory Dynamically or Statically
+Write-Verbose -Message "CurrentPath: $currentPath"
 
 # Load Common Code
 Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
-
-function ConnectSQL
-{
-    param
-    (
-        [System.String]
-        $SQLServer = $env:COMPUTERNAME,
-
-        [System.String]
-        $SQLInstanceName = "MSSQLSERVER"
-    )
-    
-    $null = [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.Smo')
-    
-    if($SQLInstanceName -eq "MSSQLSERVER")
-    {
-        $ConnectSQL = $SQLServer
-    }
-    else
-    {
-        $ConnectSQL = "$SQLServer\$SQLInstanceName"
-    }
-
-    Write-Verbose "Connecting to SQL $ConnectSQL"
-    $SQL = New-Object Microsoft.SqlServer.Management.Smo.Server $ConnectSQL
-
-    if($SQL)
-    {
-        Write-Verbose "Connected to SQL $ConnectSQL"
-        $SQL
-    }
-    else
-    {
-        Write-Verbose "Failed connecting to SQL $ConnectSQL"
-    }
-}
 
 function Get-TargetResource
 {
@@ -71,12 +33,11 @@ function Get-TargetResource
 
         if(!$SQL)
         {
-            $SQL = ConnectSQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+            $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
         }
 
         if($SQL)
         {
-            Write-Verbose "Getting Current Min and Max Server Memory Settings"
             $GetMinMemory = $sql.Configuration.MinServerMemory.ConfigValue
             $GetMaxMemory = $sql.Configuration.MaxServerMemory.ConfigValue
         }
@@ -128,7 +89,7 @@ function Set-TargetResource
 
     if(!$SQL)
     {
-        $SQL = ConnectSQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
 
     If($SQL)
@@ -180,19 +141,18 @@ function Set-TargetResource
             }
         }
         try
-        {
-            Write-Verbose -message "Dynamic Alloc is $DynamicAlloc. MaxMem will be set to $MaxMemory."
-            Write-Verbose -message "Server Memory is $serverMem and should be capped."
+        {            
             $sql.Configuration.MaxServerMemory.ConfigValue = $MaxMemory
             if($MinMemory)
             {
                 $sql.Configuration.MinServerMemory.ConfigValue = $MinMemory
             }
             $sql.alter()
+            New-VerboseMessage -Message "SQL Server Memory has been capped to $MaxMemory."
         }
         catch
         {
-            Write-Verbose -Message "Failed setting Min and Max SQL Memory"
+            New-VerboseMessage -Message "Failed setting Min and Max SQL Memory"
         }
     }
 }
@@ -227,7 +187,7 @@ function Test-TargetResource
 
     if(!$SQL)
     {
-        $SQL = ConnectSQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
 
     if($SQL)
@@ -242,12 +202,12 @@ function Test-TargetResource
         {
             if ($GetMaxMemory  -eq 2147483647)
             {
-                Write-Verbose -Message "Current Max Memory is $GetMaxMemory. Min Memory is $GetMinMemory"
+                New-VerboseMessage -Message "Current Max Memory is $GetMaxMemory. Min Memory is $GetMinMemory"
                 return $true
             }
             else 
             {
-                Write-Verbose -Message "Current Max Memory is $GetMaxMemory. Min Memory is $GetMinMemory"
+                New-VerboseMessage -Message "Current Max Memory is $GetMaxMemory. Min Memory is $GetMinMemory"
                 return $false
             }
         }
@@ -258,12 +218,12 @@ function Test-TargetResource
              {
                  if ($GetMaxMemory  -eq 2147483647)
                  {
-                     Write-Verbose -Message "Current Max Memory is $GetMaxMemory. Min Memory is $GetMinMemory"
+                     New-VerboseMessage -Message "Current Max Memory is $GetMaxMemory. Min Memory is $GetMinMemory"
                      return $false
                  }
                  else 
                  {
-                     Write-Verbose -Message "Current Max Memory is $GetMaxMemory. Min Memory is $GetMinMemory"
+                     New-VerboseMessage -Message "Current Max Memory is $GetMaxMemory. Min Memory is $GetMinMemory"
                      return $true
                  }
              }
@@ -271,12 +231,12 @@ function Test-TargetResource
              {
                  If($MinMemory -ne $GetMinMemory -or $MaxMemory -ne $GetMaxMemory)
                  {
-                    Write-Verbose -Message "Current Max Memory is $GetMaxMemory. Min Memory is $GetMinMemory"
+                    New-VerboseMessage -Message "Current Max Memory is $GetMaxMemory. Min Memory is $GetMinMemory"
                     return $false
                  }
                  else
                  {
-                    Write-Verbose -Message "Current Max Memory is $GetMaxMemory. Min Memory is $GetMinMemory"
+                    New-VerboseMessage -Message "Current Max Memory is $GetMaxMemory. Min Memory is $GetMinMemory"
                     return $true
                  }
              }

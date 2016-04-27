@@ -25,6 +25,11 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerPowerPlan** resource to manage windows powerplan on SQL Server
 * **xSQLServerNetwork** resource to manage SQL Server Network Protocols
 * **xSQLServerDatabase** resource to manage ensure database is present or absent
+* **xSQLAOGroupEnsure** resource to ensure availability group is present or absent
+* **xSQLAOGroupJoin** resource to join a replica to an existing availability group
+* **xSQLServerAlwaysOnService** resource to enable always on on a SQL Server
+* **xSQLServerEndpoint** resource to ensure database endpoint is present or absent
+* **xWaitForAvailabilityGroup** resource to wait till availability group is created on primary server
 * **xSQLServerConfiguration** resource to manage [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
 
 ### xSQLServerSetup
@@ -217,6 +222,44 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **SQLServer**: The SQL Server for the database
 * **SQLInstance**: The SQL instance for the database 
 
+###xSQLAOGroupEnsure
+* **Ensure**: (key) An enumerated value that describes if Availability Group is to be present or absent.
+* **AvailabilityGroupName** (key) Name for availability group
+* **AvailabilityGroupNameListener** Listener name for availability group
+* **AvailabilityGroupNameIP** List of IP addresses associated with listener
+* **AvailabilityGroupSubMask** Network subnetmask for listener
+* **AvailabilityGroupPort** Port availability group should listen on
+* **ReadableSecondary** Mode secondaries should operate under (None, ReadOnly, ReadIntent)
+* **AutoBackupPreference** Where backups should be backed up from (Primary,Secondary)
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database
+* **SetupCredential**: (Required) Credential to be used to Grant Permissions on SQL Server
+
+###xSQLServerAOJoin
+* **Ensure**: (key) An enumerated value that describes if Replica is to be present or absent from availability group
+* **AvailabilityGroupName** (key) Name for availability group
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database
+* **SetupCredential**: (Required) Credential to be used to Grant Permissions on SQL Server
+
+###xSQLServerAlwaysOnService
+* **Ensure**: (key) An enumerated value that describes if SQL server should have AlwaysOn property present or absent.
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database
+
+###xSQLServerEndpoint
+* **EndPointName**: Name for endpoint to be created on SQL Server
+* **Ensure**: (key) An enumerated value that describes if endpoint is to be present or absent on SQL Server
+* **Port**: Port Endpoint should listen on
+* **AuthorizedUser**:  User who should have connect ability to endpoint
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database 
+
+###xWaitforAvailabilityGroup
+* **Name**:  (key) Name for availability group
+* **RetryIntervalSec**: Interval to check for availability group
+* **RetryCount**: Maximum number of retries to check availability group creation
+
 ###xSQLServerConfiguration
 * **InstanceName**: (Key) nave of SQL Server instance for which configuration options will be configured.
 * **OptionName**: (Key) SQL Server option name. For all possible values reference [MSDN](https://msdn.microsoft.com/en-us/library/ms189631.aspx) or run sp_configure.
@@ -227,6 +270,40 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ### Unreleased
 
+* Resources Added
+  - xSQLAOGroupEnsure
+  - xSQLAOGroupJoin
+  - xWaitForAvailabilityGroup
+  - xSQLServerEndPoint
+  - xSQLServerAlwaysOnService
+* xSQLServerHelper
+	- added functions 
+		- Connect-SQL
+		- New-VerboseMessage
+		- Grant-ServerPerms
+		- Grant-CNOPerms
+		- New-ListenerADObject
+* xSQLDatabaseRecoveryModel
+	- Updated Verbose statements to use new function New-VerboseMessage
+* xSQLServerDatabase
+	- Updated Verbose statements to use new function New-VerboseMessage
+	- Removed ConnectSQL function and replaced with new Connect-SQL function
+* xSQLServerDatabaseOwner
+	- Removed ConnectSQL function and replaced with new Connect-SQL function
+* xSQLServerDatabasePermissions
+	- Removed ConnectSQL function and replaced with new Connect-SQL function
+* xSQLServerDatabaseRole
+	- Removed ConnectSQL function and replaced with new Connect-SQL function
+* xSQLServerLogin
+	- Removed ConnectSQL function and replaced with new Connect-SQL function
+* xSQLServerMaxDop
+	- Updated Verbose statements to use new function New-VerboseMessage
+	- Removed ConnectSQL function and replaced with new Connect-SQL function
+* xSQLServerMemory
+	- Updated Verbose statements to use new function New-VerboseMessage
+	- Removed ConnectSQL function and replaced with new Connect-SQL function
+* xSQLServerPowerPlan
+	- Updated Verbose statements to use new function New-VerboseMessage
 * Added new resource xSQLServerConfiguration
 * Added example for xSQLServerConfiguration resource
 
@@ -237,7 +314,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ### 1.4.0.0
 
 * Resources Added
-  - xSQLDatabaseReoveryModeAdded
+  - xSQLDatabaseRecoveryModeAdded
   - xSQLServerDatabaseOwner
   - xSQLServerDatabasePermissions
   - xSQLServerDatabaseRole
