@@ -1,4 +1,4 @@
-﻿#this will configure show advanced options option of default instance on local machine
+﻿#this will configure 'show advanced options' option of default instance on local machine
 configuration SQLConfigSample
 {
     Import-DscResource -ModuleName xSQLServer
