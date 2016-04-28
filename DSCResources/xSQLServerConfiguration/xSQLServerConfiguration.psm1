@@ -1,4 +1,6 @@
-﻿Function Get-TargetResource
+﻿$dom = [System.AppDomain]::CreateDomain("xSQLServerConfiguration")
+
+Function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -15,27 +17,24 @@
         [System.Int32]
         $OptionValue,
 
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present'
+        [System.Boolean]
+        $RestartService = $false
     )
 
-    if(Test-TargetResource $InstanceName $OptionName $OptionValue $Ensure)
+    $sqlServer = Get-SqlServerObject -InstanceName $InstanceName
+    $option = $sqlServer.Configuration.Properties | where {$_.DisplayName -eq $optionName}
+    if(!$option)
     {
-        $Ensure = 'Present'
+        throw "Specified option '$OptionName' was not found!"
     }
-    else
-    {
-        $Ensure = 'Absent'
-    }
-    
+
     $returnValue = @{
-        InstanceName = $InstanceName
-        OptionName = $OptionName
-        OptionValue = $OptionValue
-        Ensure = $Ensure
+        InstanceName   = $InstanceName
+        OptionName     = $option.DisplayName
+        OptionValue    = $option.RunValue
+        RestartService = $RestartService
     }
-    
+
     return $returnValue
 }
 
@@ -55,12 +54,11 @@ Function Set-TargetResource
         [System.Int32]
         $OptionValue,
 
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present'
+        [System.Boolean]
+        $RestartService = $false
     )
 
-    $sqlServer = Get-SqlServerObject $InstanceName
+    $sqlServer = Get-SqlServerObject -InstanceName $InstanceName
 
     $option = $sqlServer.Configuration.Properties | where {$_.DisplayName -eq $optionName}
 
@@ -75,9 +73,15 @@ Function Set-TargetResource
     {  
         Write-Verbose "Configuration option has been updated."
     }
+    elseif ($option.IsDynamic -eq $false -and $RestartService -eq $true)
+    {
+        Write-Verbose "Configuration option has been updated ..."
+
+        Restart-SqlServer -InstanceName $InstanceName
+    }
     else
     {
-        Write-Warning "Configuration option will be updated when SQL Server is restarted."
+        Write-Warning "Configuration option was set but SQL Server restart is required."
     }
 }
 
@@ -98,26 +102,16 @@ Function Test-TargetResource
         [System.Int32]
         $OptionValue,
 
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present'
+        [System.Boolean]
+        $RestartService = $false
     )
 
-    Write-Verbose "OptionName: $OptionName"
-    Write-Verbose "OptionValue: $OptionValue"
+    $state = Get-TargetResource -InstanceName $InstanceName -OptionName $OptionName -OptionValue $OptionValue
 
-    $sqlServer = Get-SqlServerObject $InstanceName
-    $option = $sqlServer.Configuration.Properties | where {$_.DisplayName -eq $optionName}
-    if(!$option)
-    {
-        throw "Specified option '$OptionName' was not found!"
-    }
-        
-    Write-Verbose "ConfigValue: $($option.ConfigValue)"
-
-    return ($option.ConfigValue -eq $OptionValue)
+    return ($state.OptionValue -eq $OptionValue)
 }
 
+#region helper functions
 Function Get-SqlServerMajorVersion
 {
     [CmdletBinding()]
@@ -140,6 +134,7 @@ Function Get-SqlServerMajorVersion
 
 Function Get-SqlServerObject
 {
+    [CmdletBinding()]
     param(
         [parameter(Mandatory = $true)]
         [System.String]
@@ -155,9 +150,9 @@ Function Get-SqlServerObject
         $connectSQL = "$($env:COMPUTERNAME)\$InstanceName"
     }
 
-    $dom_set = [AppDomain]::CreateDomain("xSQLServerConfiguration_Set_$InstanceName")
-    $sqlMajorVersion = Get-SqlServerMajorVersion $InstanceName
-    $smo = $dom_set.Load("Microsoft.SqlServer.Smo, Version=$sqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+    $sqlMajorVersion = Get-SqlServerMajorVersion -InstanceName $InstanceName
+    $smo = $dom.Load("Microsoft.SqlServer.Smo, Version=$sqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+    Write-Verbose "Loaded assembly: $($smo.FullName)"
 
     $sqlServer = new-object $smo.GetType("Microsoft.SqlServer.Management.Smo.Server") $connectSQL
 
@@ -168,5 +163,80 @@ Function Get-SqlServerObject
 
     return $sqlServer
 }
+
+Function Restart-SqlServer
+{
+    [CmdletBinding()]
+    param(
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName
+    )
+
+    $sqlMajorVersion = Get-SqlServerMajorVersion -InstanceName $InstanceName
+    $sqlWmiManagement = $dom.Load("Microsoft.SqlServer.SqlWmiManagement, Version=$sqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+    Write-Verbose "Loaded assembly: $($sqlWmiManagement.FullName)"
+    $wmi = new-object $sqlWmiManagement.GetType("Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer")
+
+    if(!$wmi)
+    {
+        throw "Unable to create wmi ManagedComputer object for sql instance: $InstanceName"
+    }
+
+    Write-Verbose "SQL Service will be restarted ..."
+    if($InstanceName -eq "MSSQLSERVER")
+    {
+        $dbServiceName = "MSSQLSERVER"
+        $agtServiceName = "SQLSERVERAGENT"
+    }
+    else
+    {
+        $dbServiceName = "MSSQL`$$InstanceName"
+        $agtServiceName = "SQLAgent`$$InstanceName"
+    }
+
+    $sqlService = $wmi.Services[$dbServiceName]
+    $agentService = $wmi.Services[$agtServiceName]
+    $startAgent = ($agentService.ServiceState -eq "Running")
+
+    if ($sqlService -eq $null)
+    {
+        throw "$dbServiceName service was not found, restart service failed"
+    }   
+
+    Write-Verbose "Stopping [$dbServiceName] service ..."
+    $sqlService.Stop()
+
+    while($sqlService.ServiceState -ne "Stopped")
+    {
+        Start-Sleep -Milliseconds 500
+        $sqlService.Refresh()
+    }
+    Write-Verbose "[$dbServiceName] service stopped"
+
+    Write-Verbose "Starting [$dbServiceName] service ..."
+    $sqlService.Start()
+
+    while($sqlService.ServiceState -ne "Running")
+    {
+        Start-Sleep -Milliseconds 500
+        $sqlService.Refresh()
+    }
+    Write-Verbose "[$dbServiceName] service started"
+
+    if ($startAgent)
+    {
+        Write-Verbose "Staring [$agtServiceName] service ..."
+        $agentService.Start()
+        while($agentService.ServiceState -ne "Running")
+        {
+            Start-Sleep -Milliseconds 500
+            $agentService.Refresh()
+        }
+        Write-Verbose "[$agtServiceName] service started"
+    }
+
+}
+#endregion
 
 Export-ModuleMember -Function *-TargetResource

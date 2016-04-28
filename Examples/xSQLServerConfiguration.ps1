@@ -1,4 +1,5 @@
 ﻿#this will configure 'show advanced options' option of default instance on local machine
+
 configuration SQLConfigSample
 {
     Import-DscResource -ModuleName xSQLServer
@@ -15,11 +16,13 @@ configuration SQLConfigSample
         xSQLServerConfiguration test
         {
             InstanceName = 'MSSQLSERVER'
-            OptionName = 'show advanced options' 
+            OptionName = 'priority boost' 
             OptionValue = 1
+            RestartService = $false
         }
     }
 }
+
 SQLConfigSample
 Set-DscLocalConfigurationManager .\SQLConfigSample -Force -Verbose #only needed if using DebugMode
 Start-DscConfiguration .\SQLConfigSample -Wait -Force -Verbose

@@ -4,5 +4,5 @@ class xSQLServerConfiguration : OMI_BaseResource
     [Key, Description("SQL Server instance name of which configuration will be managed")] String InstanceName;
     [Key, Description("SQL Server configuration option to be set")] String OptionName;
     [Required, Description("Configuration option value to be set")] Sint32 OptionValue;
-    [Write, ValueMap{"Present", "Absent"}, Values{"Present", "Absent"}] String Ensure;
+    [Write, Description("Controls if affected SQL Service should be restarted automatically")] Boolean RestartService;
 };

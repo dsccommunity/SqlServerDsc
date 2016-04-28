@@ -264,7 +264,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **InstanceName**: (Key) name of SQL Server instance for which configuration options will be configured.
 * **OptionName**: (Key) SQL Server option name. For all possible values reference [MSDN](https://msdn.microsoft.com/en-us/library/ms189631.aspx) or run sp_configure.
 * **OptionValue**: (Required) SQL Server option value to be set.
-* **Ensure**: An enumerated value that describes if configuration should be set. This is only used in Get-TargetResource to report current state. Has no effect for Set-TargetResource.
+* **RestartService**: Default false. If true will restart SQL Service instance service after update.
 
 ## Versions
 
