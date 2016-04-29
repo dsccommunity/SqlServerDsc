@@ -31,7 +31,7 @@ Function Get-TargetResource
     $returnValue = @{
         InstanceName   = $InstanceName
         OptionName     = $option.DisplayName
-        OptionValue    = $option.RunValue
+        OptionValue    = $option.ConfigValue
         RestartService = $RestartService
     }
 
