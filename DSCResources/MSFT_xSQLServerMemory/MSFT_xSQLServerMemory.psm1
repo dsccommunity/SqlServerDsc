@@ -67,7 +67,7 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName #= "MSSQLSERVER"
+        $SQLInstanceName
     )
 
         if(!$SQL)
@@ -125,7 +125,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName #= "MSSQLSERVER"
+        $SQLInstanceName
     )
 
     if(!$SQL)
@@ -140,11 +140,11 @@ function Set-TargetResource
         {
             "Absent"
             {
-                If($Ensure -eq "Absent")
-                {
+                #If($Ensure -eq "Absent")
+                #{
                    $MaxMemory =2147483647
                    $MinMemory = 128
-                } 
+                #} 
             }
             "Present"
             {       
@@ -173,9 +173,9 @@ function Set-TargetResource
                 }
                 else
                 {
-                    if (!$MaxMemory)
+                    if (!$MaxMemory -or ($MinMemory -gt $MaxMemory))
                     {
-                        Throw "Dynamic Allocation is not set and Min and Max memory were not passed."
+                        Throw "Dynamic Allocation is not set, Max memory was not passed or Min memory value is greater than Max memory."
                         Exit
                     } 
                 }
@@ -226,7 +226,7 @@ function Test-TargetResource
         
         [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName #= "MSSQLSERVER"
+        $SQLInstanceName
     )
 
     if(!$SQL)
