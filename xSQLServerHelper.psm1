@@ -78,7 +78,11 @@ function New-TerminatingError
 
         [parameter(Mandatory = $false)]
         [Object]
-        $TargetObject = $null
+        $TargetObject = $null,
+
+        [parameter(Mandatory = $false)]
+        [System.Exception]
+        $InnerException = $null
     )
 
     $errorMessage = $LocalizedData.$ErrorType
@@ -94,7 +98,12 @@ function New-TerminatingError
     }
 
     $errorMessage = ($errorMessage -f $FormatArgs)
-
+    
+    if( $InnerException )
+    {
+        $errorMessage += " InnerException: $($InnerException.Message)"
+    }
+    
     $callStack = Get-PSCallStack 
 
     # Get Name of calling script
@@ -110,7 +119,6 @@ function New-TerminatingError
     {
         $errorId = $ErrorType
     }
-
 
     Write-Verbose -Message "$($USLocalizedData.$ErrorType -f $FormatArgs) | ErrorType: $errorId"
 
@@ -312,4 +320,105 @@ function New-ListenerADObject
           Exit
         }
 
+}
+
+function Import-SQLPSModule {
+    [CmdletBinding()]
+    param()
+
+    # If SQLPS is not removed between resources (if it was started by another DSC resource) loading objects will fail in some instances
+    # because of som sort of inconsistancy. Uncertain why this happens.
+    if( (Get-Module SQLPS).Count -ne 0 ) {
+        Write-Debug "Unloading SQLPS module."
+        Remove-Module -Name SQLPS -Force -Verbose:$False
+    }
+    
+    Write-Debug "SQLPS module changes CWD to SQLSERVER:\ when loading, pushing location to pop it when module is loaded."
+    Push-Location
+
+    New-VerboseMessage -Message "Importing SQLPS module."
+    Import-Module -Name SQLPS -DisableNameChecking -Verbose:$False -ErrorAction Stop # SQLPS has unapproved verbs, disable checking to ignore Warnings.
+    Write-Debug "SQLPS module imported." 
+
+    Write-Debug "Poping location back to what it was before importing SQLPS module."
+    Pop-Location
+}
+
+function Get-SQLPSInstanceName
+{
+    [CmdletBinding()]
+    [OutputType([string])]
+    param
+    (
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName
+    )
+
+    if( $InstanceName -eq "MSSQLSERVER" ) {
+        $InstanceName = "DEFAULT"            
+    }
+    
+    return $InstanceName
+}
+
+function Get-SQLPSInstance
+{
+    [CmdletBinding()]
+    [OutputType([string])]
+    param
+    (
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
+
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $NodeName 
+    )
+
+    $InstanceName = Get-SQLPSInstanceName -InstanceName $InstanceName 
+    $Path = "SQLSERVER:\SQL\$NodeName\$InstanceName"
+    
+    New-VerboseMessage -Message "Connecting to $Path as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+
+    Import-SQLPSModule
+    $instance = Get-Item $Path
+    
+    return $instance
+}
+
+function Get-SQLAlwaysOnEndpoint
+{
+    [CmdletBinding()]
+    [OutputType()]
+    param
+    (
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Name,
+
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
+
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $NodeName 
+    )
+
+    $instance = Get-SQLPSInstance -InstanceName $InstanceName -NodeName $NodeName
+    $Path = "$($instance.PSPath)\Endpoints"
+
+    Write-Debug "Connecting to $Path as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+    
+    [string[]]$presentEndpoint = Get-ChildItem $Path
+    if( $presentEndpoint.Count -ne 0 -and $presentEndpoint.Contains("[$Name]") ) {
+        Write-Debug "Connecting to endpoint $Name as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+        $endpoint = Get-Item "$Path\$Name"
+    } else {
+        $endpoint = $null
+    }    
+
+    return $endpoint
 }
