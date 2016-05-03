@@ -5,7 +5,7 @@ Describe 'Get-TargetResource'{
         Write-Output 'DBMSSOCN,localhost,1433'
     }
     
-    $SqlAlias = Get-xSqlAliasTargetResource -SQLServerName 'localhost'
+    $SqlAlias = Get-xSqlAliasTargetResource -Name 'localhost'
 
     It 'Should return hashtable with Key Protocol'{
         $SqlAlias.ContainsKey('Protocol') | Should Be $true
@@ -38,12 +38,12 @@ Describe 'Set-TargetResource'{
     }
 
     It 'Should not call Set-ItemProperty with value already set' {
-        Set-xSqlAliasTargetResource -SQLServerName 'myServerAlias'  -Protocol 'TCP' -ServerName 'localhost' -TCPPort 52002 -Ensure 'Present'
+        Set-xSqlAliasTargetResource -Name 'myServerAlias'  -Protocol 'TCP' -ServerName 'localhost' -TCPPort 52002 -Ensure 'Present'
         Assert-MockCalled -ModuleName MSFT_xSqlAlias -CommandName Set-ItemProperty -Exactly 0
     }
 
     It 'Call Set-ItemProperty exactly 2 times (1 for 32bit and 1 for 64 bit reg keys)' {
-        Set-xSqlAliasTargetResource -SQLServerName 'myServerAlias'  -Protocol 'TCP' -ServerName 'localhost' -TCPPort 1433 -Ensure 'Present'
+        Set-xSqlAliasTargetResource -Name 'myServerAlias'  -Protocol 'TCP' -ServerName 'localhost' -TCPPort 1433 -Ensure 'Present'
         Assert-MockCalled -ModuleName MSFT_xSqlAlias -CommandName Set-ItemProperty -Exactly 2
     }
 
@@ -68,11 +68,11 @@ Describe 'Test-TargetResource'{
     }
 
     It 'Should return true when Test is passed as Alias thats already set'{
-        Test-xSqlAliasTargetResource -SQLServerName 'myServerAlias'  -Protocol 'TCP' -ServerName localhost -TCPPort 1433 -Ensure 'Present' | Should Be $true
+        Test-xSqlAliasTargetResource -Name 'myServerAlias'  -Protocol 'TCP' -ServerName localhost -TCPPort 1433 -Ensure 'Present' | Should Be $true
     }
 
     It 'Should return false when Test is passed as Alias that is not set'{
-        Test-xSqlAliasTargetResource -SQLServerName 'myServerAlias'  -Protocol 'TCP' -ServerName localhost -TCPPort 52002 -Ensure 'Present' | Should Be $false
+        Test-xSqlAliasTargetResource -Name 'myServerAlias'  -Protocol 'TCP' -ServerName localhost -TCPPort 52002 -Ensure 'Present' | Should Be $false
     }
 
 }
