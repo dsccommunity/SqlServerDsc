@@ -231,6 +231,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **AvailabilityGroupPort** Port availability group should listen on
 * **ReadableSecondary** Mode secondaries should operate under (None, ReadOnly, ReadIntent)
 * **AutoBackupPreference** Where backups should be backed up from (Primary,Secondary)
+* **BackupPriority** The percentage weight for backup prority (default 50)
 * **SQLServer**: The SQL Server for the database
 * **SQLInstance**: The SQL instance for the database
 * **SetupCredential**: (Required) Credential to be used to Grant Permissions on SQL Server
@@ -307,6 +308,9 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 	- Removed ConnectSQL function and replaced with new Connect-SQL function
 * xSQLServerPowerPlan
 	- Updated Verbose statements to use new function New-VerboseMessage
+* xSQLAOGroupEnsure
+    - Fixed spelling mistake in AutoBackupPreference property
+    - Added BackupPriority property
 
 ### 1.5.0.0
 
