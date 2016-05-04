@@ -87,7 +87,10 @@ function Set-TargetResource
 
         [ValidateSet("Primary","Secondary")]
         [System.String]
-        $AutoBackupPrefernce ="Primary",
+        $AutoBackupPreference ="Primary",
+        
+        [System.UInt32]
+        $BackupPriority = "50",
 
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
@@ -140,9 +143,9 @@ function Set-TargetResource
                 $syncNodes = $nodes | Select-Object -First 2
                 $asyncNodes = $nodes | Select-Object -Skip 2
                 $availabilityGroup = New-Object -typename Microsoft.SqlServer.Management.Smo.AvailabilityGroup -ArgumentList $SQL, $AvailabilityGroupName
-                $availabilityGroup.AutomatedBackupPreference="Primary"
+                $availabilityGroup.AutomatedBackupPreference = $AutoBackupPreference
                 $availabilityGroup.FailureConditionLevel = $FailoverCondition
-                $availabilityGroup.HealthCheckTimeout =$HealthCheckTimeout
+                $availabilityGroup.HealthCheckTimeout = $HealthCheckTimeout
            }
            Catch
            {
@@ -160,7 +163,7 @@ function Set-TargetResource
                     $Replica.FailoverMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaFailoverMode]::Automatic
                     $Replica.AvailabilityMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaAvailabilityMode]::SynchronousCommit
                     #Backup Priority Gives the ability to set a priority of one secondany over another valid values are from 1 - 100
-                    $Replica.BackupPriority = 50
+                    $Replica.BackupPriority = $BackupPriority
                     $Replica.ConnectionModeInPrimaryRole =  $ConnectionModeInPrimary
                     $replica.ConnectionModeInSecondaryRole = $ConnectionModeInSecondaryRole 
                     $availabilityGroup.AvailabilityReplicas.Add($Replica)
@@ -182,7 +185,7 @@ function Set-TargetResource
                     $asyncReplica.EndpointUrl = "TCP://$($node):5022"
                     $asyncReplica.FailoverMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaFailoverMode]::Manual
                     $asyncReplica.AvailabilityMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaAvailabilityMode]::ASynchronousCommit
-                    $asyncReplica.BackupPriority = 50
+                    $asyncReplica.BackupPriority = $BackupPriority
                     $asyncReplica.ConnectionModeInPrimaryRole =  $ConnectionModeInPrimary
                     $asyncReplica.ConnectionModeInSecondaryRole = $ConnectionModeInSecondaryRole 
                     $AvailabilityGroup.AvailabilityReplicas.Add($asyncReplica)
@@ -306,7 +309,10 @@ function Test-TargetResource
 
         [ValidateSet("Primary","Secondary")]
         [System.String]
-        $AutoBackupPrefernce="Primary",
+        $AutoBackupPreference ="Primary",
+        
+        [System.UInt32]
+        $BackupPriority = "50",
 
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
