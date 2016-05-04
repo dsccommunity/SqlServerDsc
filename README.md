@@ -30,6 +30,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerAlwaysOnService** resource to enable always on on a SQL Server
 * **xSQLServerEndpoint** resource to ensure database endpoint is present or absent
 * **xWaitForAvailabilityGroup** resource to wait till availability group is created on primary server
+* **xSQLAlias** resource to manage SQL Server client Aliases
 
 ### xSQLServerSetup
 
@@ -230,6 +231,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **AvailabilityGroupPort** Port availability group should listen on
 * **ReadableSecondary** Mode secondaries should operate under (None, ReadOnly, ReadIntent)
 * **AutoBackupPreference** Where backups should be backed up from (Primary,Secondary)
+* **BackupPriority** The percentage weight for backup prority (default 50)
 * **SQLServer**: The SQL Server for the database
 * **SQLInstance**: The SQL instance for the database
 * **SetupCredential**: (Required) Credential to be used to Grant Permissions on SQL Server
@@ -259,11 +261,20 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **RetryIntervalSec**: Interval to check for availability group
 * **RetryCount**: Maximum number of retries to check availability group creation
 
+### xSqlAlias
+
+* **Name**: The name of Alias (e.g. svr01\inst01).
+* **ServerName**: The name of real SQL server.
+* **Protocol**: The protocol of either tcp or np (named pipes).
+* **RetryCount**: Maximum number of retries to check HA group existency.
+* **TCPPort**: The tcp port of the instance.
+
 ## Versions
 
 ### Unreleased
 
 * Resources Added
+  - xSqlAlias
   - xSQLAOGroupEnsure
   - xSQLAOGroupJoin
   - xWaitForAvailabilityGroup
@@ -297,6 +308,9 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 	- Removed ConnectSQL function and replaced with new Connect-SQL function
 * xSQLServerPowerPlan
 	- Updated Verbose statements to use new function New-VerboseMessage
+* xSQLAOGroupEnsure
+    - Fixed spelling mistake in AutoBackupPreference property
+    - Added BackupPriority property
 
 ### 1.5.0.0
 
