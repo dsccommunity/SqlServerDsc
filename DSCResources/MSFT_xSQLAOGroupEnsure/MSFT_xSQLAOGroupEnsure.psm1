@@ -26,17 +26,17 @@ function Get-TargetResource
         [System.String]
         $SQLInstanceName= "MSSQLSERVER",
 
-        [parameter(Mandatory = $true)]
+        [parameter(Mandatory = $false)]
         [System.Management.Automation.PSCredential]
         $SetupCredential
     )
 
     if(!$SQL)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -SetupCredential $SetupCredential
     }
     
-    $vConfigured = Test-TargetResource -Ensure $Ensure -AvailabilityGroupName $AvailabilityGroupName -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName 
+    $vConfigured = Test-TargetResource -Ensure $Ensure -AvailabilityGroupName $AvailabilityGroupName -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -SetupCredential $SetupCredential
 
     $returnValue = @{
     Ensure = $vConfigured
@@ -95,7 +95,7 @@ function Set-TargetResource
         [System.String]
         $SQLInstanceName= "MSSQLSERVER",
         
-        [parameter(Mandatory = $true)]
+        [parameter(Mandatory = $false)]
         [System.Management.Automation.PSCredential]
         $SetupCredential
     )
@@ -136,7 +136,7 @@ function Set-TargetResource
            #First two nodes will account for Syncronous Automatic Failover, Any additional will be Asyncronous
            try
            {
-                $nodes= Get-ClusterNode -cluster $sql.ClusterName -Verbose:$false |  select -ExpandProperty name
+                $nodes = Get-ClusterNode -cluster $sql.ClusterName -Verbose:$false |  select -ExpandProperty name
                 $syncNodes = $nodes | Select-Object -First 2
                 $asyncNodes = $nodes | Select-Object -Skip 2
                 $availabilityGroup = New-Object -typename Microsoft.SqlServer.Management.Smo.AvailabilityGroup -ArgumentList $SQL, $AvailabilityGroupName
@@ -146,7 +146,7 @@ function Set-TargetResource
            }
            Catch
            {
-                Throw "Failed to connect to Cluster Nodes from $sql.ClusterName"
+                Throw "Failed to connect to Cluster Nodes from $($sql.ClusterName)"
                 Exit
            }
 
@@ -260,7 +260,7 @@ function Set-TargetResource
            Try
                 {
                  $sql.AvailabilityGroups[$AvailabilityGroupName].Drop()
-                 NNew-VerboseMessage -Message "Dropped $AvailabilityGroupName" 
+                 New-VerboseMessage -Message "Dropped $AvailabilityGroupName" 
                 }
            Catch{
                  Throw "Unable to Drop $AvailabilityGroup on $SQLServer\$SQLInstanceName"
@@ -314,14 +314,14 @@ function Test-TargetResource
         [System.String]
         $SQLInstanceName= "MSSQLSERVER",
         
-        [parameter(Mandatory = $true)]
+        [parameter(Mandatory = $false)]
         [System.Management.Automation.PSCredential]
         $SetupCredential
     )
 
     if(!$SQL)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -SetupCredential $SetupCredential
     }
 
     Switch ($Ensure)
