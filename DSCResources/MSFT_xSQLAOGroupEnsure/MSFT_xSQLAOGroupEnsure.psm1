@@ -26,7 +26,7 @@ function Get-TargetResource
         [System.String]
         $SQLInstanceName= "MSSQLSERVER",
 
-        [parameter(Mandatory = $false)]
+        [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential
     )
@@ -95,7 +95,7 @@ function Set-TargetResource
         [System.String]
         $SQLInstanceName= "MSSQLSERVER",
         
-        [parameter(Mandatory = $false)]
+        [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential
     )
@@ -314,7 +314,7 @@ function Test-TargetResource
         [System.String]
         $SQLInstanceName= "MSSQLSERVER",
         
-        [parameter(Mandatory = $false)]
+        [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential
     )
