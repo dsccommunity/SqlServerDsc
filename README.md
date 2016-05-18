@@ -30,6 +30,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerAlwaysOnService** resource to enable always on on a SQL Server
 * **xSQLServerEndpoint** resource to ensure database endpoint is present or absent
 * **xWaitForAvailabilityGroup** resource to wait till availability group is created on primary server
+* **xSQLAlias** resource to manage SQL Server client Aliases
 
 ### xSQLServerSetup
 
@@ -259,6 +260,14 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **RetryIntervalSec**: Interval to check for availability group
 * **RetryCount**: Maximum number of retries to check availability group creation
 
+### xSqlAlias
+
+* **Name**: The name of Alias (e.g. svr01\inst01).
+* **ServerName**: The name of real SQL server.
+* **Protocol**: The protocol of either tcp or np (named pipes).
+* **RetryCount**: Maximum number of retries to check HA group existency.
+* **TCPPort**: The tcp port of the instance.
+
 ## Versions
 
 ### Unreleased
@@ -266,6 +275,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ### 1.6.0.0
 
 * Resources Added
+  - xSqlAlias
   - xSQLAOGroupEnsure
   - xSQLAOGroupJoin
   - xWaitForAvailabilityGroup
