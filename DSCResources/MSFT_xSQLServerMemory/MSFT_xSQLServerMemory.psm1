@@ -140,11 +140,8 @@ function Set-TargetResource
         {
             "Absent"
             {
-                #If($Ensure -eq "Absent")
-                #{
-                   $MaxMemory =2147483647
+                   $MaxMemory = 2147483647
                    $MinMemory = 128
-                #} 
             }
             "Present"
             {       
