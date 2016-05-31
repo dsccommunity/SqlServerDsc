@@ -232,7 +232,6 @@ function Wait-SqlServiceState
         [System.String]
         $State,
         
-        [Parameter(AttributeValues)]
         [System.Int32]
         $TimeOut = 60
     )
