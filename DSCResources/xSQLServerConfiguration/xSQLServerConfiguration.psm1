@@ -202,40 +202,55 @@ Function Restart-SqlServer
     if ($sqlService -eq $null)
     {
         throw "$dbServiceName service was not found, restart service failed"
-    }   
+    }
 
     Write-Verbose "Stopping [$dbServiceName] service ..."
     $sqlService.Stop()
-
-    while($sqlService.ServiceState -ne "Stopped")
-    {
-        Start-Sleep -Milliseconds 500
-        $sqlService.Refresh()
-    }
-    Write-Verbose "[$dbServiceName] service stopped"
+    Wait-SqlServiceState -Service $sqlService -State "Stopped" 
 
     Write-Verbose "Starting [$dbServiceName] service ..."
     $sqlService.Start()
-
-    while($sqlService.ServiceState -ne "Running")
-    {
-        Start-Sleep -Milliseconds 500
-        $sqlService.Refresh()
-    }
-    Write-Verbose "[$dbServiceName] service started"
+    Wait-SqlServiceState -Service $sqlService -State "Running"
 
     if ($startAgent)
     {
-        Write-Verbose "Staring [$agtServiceName] service ..."
+        Write-Verbose "Starting [$agtServiceName] service ..."
         $agentService.Start()
-        while($agentService.ServiceState -ne "Running")
-        {
-            Start-Sleep -Milliseconds 500
-            $agentService.Refresh()
-        }
-        Write-Verbose "[$agtServiceName] service started"
+        Wait-SqlServiceState -Service $agentService -State "Running"
     }
+}
 
+function Wait-SqlServiceState
+{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [System.Object]
+        $Service,
+        
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $State,
+        
+        [Parameter(AttributeValues)]
+        [System.Int32]
+        $TimeOut = 60
+    )
+    
+    $startTime = Get-Date
+    
+    while($Service.ServiceState -ne $State)
+    {
+        if((New-TimeSpan -Start $startTime -End (Get-Date)).TotalSeconds -gt 6)
+        {
+            throw "Time out of $TimeOut seconds exceeded while waiting for service [$($Service.DisplayName)] to enter '$State' state!"
+        }
+        
+        Start-Sleep -Milliseconds 500
+        $Service.Refresh()
+    }
+    
+    Write-Verbose "[$($Service.DisplayName)] service is $State"
 }
 #endregion
 
