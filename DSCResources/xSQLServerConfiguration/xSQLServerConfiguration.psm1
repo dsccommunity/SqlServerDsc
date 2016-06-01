@@ -240,7 +240,7 @@ function Wait-SqlServiceState
     
     while($Service.ServiceState -ne $State)
     {
-        if((New-TimeSpan -Start $startTime -End (Get-Date)).TotalSeconds -gt 6)
+        if((New-TimeSpan -Start $startTime -End (Get-Date)).TotalSeconds -gt $TimeOut)
         {
             throw "Time out of $TimeOut seconds exceeded while waiting for service [$($Service.DisplayName)] to enter '$State' state!"
         }
