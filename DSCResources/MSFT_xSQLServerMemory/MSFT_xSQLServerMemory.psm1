@@ -170,11 +170,13 @@ function Set-TargetResource
                 }
                 else
                 {
-                    if (!$MaxMemory -or ($MinMemory -gt $MaxMemory))
-                    {
-                        Throw "Dynamic Allocation is not set, Max memory was not passed or Min memory value is greater than Max memory."
-                        Exit
-                    } 
+                    if  (-not $MaxMemory -or $MinMemory -lt 0) {
+                        throw "Dynamic Allocation is not set. Valid values were not supplied for MaxMemory or MinMemory."
+                    }
+
+                    if ($MinMemory -gt $MaxMemory) {
+                        throw "Provided MinMemory value is greater than MaxMemory."
+                    }
                 }
             }
         }
