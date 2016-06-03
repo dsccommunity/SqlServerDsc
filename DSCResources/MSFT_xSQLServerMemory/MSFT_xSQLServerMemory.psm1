@@ -57,7 +57,7 @@ function Get-TargetResource
         $DynamicAlloc,
 
         [System.Int32]
-        $MinMemory,
+        $MinMemory = -1,
 
         [System.Int32]
         $MaxMemory,
