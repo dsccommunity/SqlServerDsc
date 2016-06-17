@@ -1,5 +1,5 @@
 ﻿#this example should be used on local machine where two sql instances are installed
-#DEFAULT instace will be configured as distributor
+#DEFAULT instance will be configured as distributor
 #PUBLISHER instance will be configured as publisher with remote distributor as default instance
 
 $credentials = Get-Credential 'AdminLink'
