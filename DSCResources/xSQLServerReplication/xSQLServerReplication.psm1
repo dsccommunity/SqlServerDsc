@@ -9,6 +9,10 @@ Function Get-TargetResource
         [System.String]
         $InstanceName,
 
+        [ValidateSet('Present', 'Absent')]
+        [System.String]
+        $Ensure = 'Present',
+
         [parameter(Mandatory = $true)]
         [ValidateSet('Local', 'Remote')]
         [System.String]
@@ -18,9 +22,21 @@ Function Get-TargetResource
         [System.Management.Automation.PSCredential]
         $AdminLinkCredentials,
 
+        [System.String]
+        $DistributionDBName = 'distribution',
+
+        [System.String]
+        $RemoteDistributor,
+
         [parameter(Mandatory = $true)]
         [System.String]
-        $WorkingDirectory
+        $WorkingDirectory,
+
+        [System.Boolean]
+        $UseTrustedConnection = $true,
+
+        [System.Boolean]
+        $UninstallWithForce = $true
     )
 
     $WorkingDirectory = ''
@@ -32,14 +48,7 @@ Function Get-TargetResource
     $rmo = $dom.Load("Microsoft.SqlServer.Rmo, Version=$sqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
     Write-Verbose "Loaded assembly: $($rmo.FullName)"
 
-    if($InstanceName -eq "MSSQLSERVER")
-    {
-        $localSqlName = $env:COMPUTERNAME
-    }
-    else
-    {
-        $localSqlName = "$($env:COMPUTERNAME)\$InstanceName"
-    }
+    $localSqlName = Get-SqlLocalServerName $InstanceName
 
     $localConnection = New-Object $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') $localSqlName
     $localReplicationServer = New-Object $rmo.GetType('Microsoft.SqlServer.Replication.ReplicationServer') $localConnection
@@ -124,14 +133,7 @@ Function Set-TargetResource
     $rmo = $dom.Load("Microsoft.SqlServer.Rmo, Version=$sqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
     Write-Verbose "Loaded assembly: $($rmo.FullName)"
 
-    if($InstanceName -eq "MSSQLSERVER")
-    {
-        $localSqlName = $env:COMPUTERNAME
-    }
-    else
-    {
-        $localSqlName = "$($env:COMPUTERNAME)\$InstanceName"
-    }
+    $localSqlName = Get-SqlLocalServerName $InstanceName
 
     $localConnection = New-Object $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') $localSqlName
     $localReplicationServer = New-Object $rmo.GetType('Microsoft.SqlServer.Replication.ReplicationServer') $localConnection
@@ -220,7 +222,7 @@ Function Test-TargetResource
     )
 
     $result = $false
-    $state = Get-TargetResource -InstanceName $InstanceName -DistributorMode $DistributorMode -AdminLinkCredentials $AdminLinkCredentials -WorkingDirectory $WorkingDirectory
+    $state = Get-TargetResource @PSBoundParameters
 
     if($Ensure -eq 'Absent' -and $state.Ensure -eq 'Absent')
     {
@@ -234,6 +236,7 @@ Function Test-TargetResource
     return $result
 }
 
+#region helper functions
 Function Get-SqlServerMajorVersion
 {
     [CmdletBinding()]
@@ -253,5 +256,26 @@ Function Get-SqlServerMajorVersion
     }
     return $sqlMajorVersion
 }
+
+Function Get-SqlLocalServerName
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param(
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName
+    )
+
+    if($InstanceName -eq "MSSQLSERVER")
+    {
+        return $env:COMPUTERNAME
+    }
+    else
+    {
+        return "$($env:COMPUTERNAME)\$InstanceName"
+    }
+}
+#endregion
 
 Export-ModuleMember -Function *-TargetResource
