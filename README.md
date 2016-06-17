@@ -20,7 +20,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerDatabasePermissions** resource to manage SQL database permissions
 * **xSQLServerDatabaseOwner** resource to manage SQL database owners
 * **xSQLDatabaseRecoveryModel** resource to manage database recovery model
-* **xSQLServerMaxDop** resource to manage MaxDegree of Parallism for SQL Server
+* **xSQLServerMaxDop** resource to manage MaxDegree of Parallelism for SQL Server
 * **xSQLServerMemory** resource to manage Memory for SQL Server
 * **xSQLServerPowerPlan** resource to manage windows powerplan on SQL Server
 * **xSQLServerNetwork** resource to manage SQL Server Network Protocols
@@ -30,6 +30,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerAlwaysOnService** resource to enable always on on a SQL Server
 * **xSQLServerEndpoint** resource to ensure database endpoint is present or absent
 * **xWaitForAvailabilityGroup** resource to wait till availability group is created on primary server
+* **xSQLServerConfiguration** resource to manage [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
 
 ### xSQLServerSetup
 
@@ -37,7 +38,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **SourceFolder**: Folder within the source path containing the source files for installation.
 * **SetupCredential**: (Required) Credential to be used to perform the installation.
 * **SourceCredential**: Credential used to access SourcePath
-* **SuppressReboot**: Supresses reboot
+* **SuppressReboot**: Suppresses reboot
 * **ForceReboot**: Forces Reboot
 * **Features**: (Key) SQL features to be installed.
 * **InstanceName**: (Key) SQL instance to be installed.
@@ -68,7 +69,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **FTSvcAccountUsername**: Output username for the Full Text service.
 * **RSSvcAccount**: Service account for Reporting Services service.
 * **RSSvcAccountUsername**: Output username for the Reporting Services service.
-* **ASSvcAccount**: Service account for Analysus Services service.
+* **ASSvcAccount**: Service account for Analysis Services service.
 * **ASSvcAccountUsername**: Output username for the Analysis Services service.
 * **ASCollation**: Collation for Analysis Services.
 * **ASSysAdminAccounts**: Array of accounts to be made Analysis Services admins.
@@ -106,7 +107,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **SourceFolder**: Folder within the source path containing the source files for installation.
 * **SetupCredential**: (Required) Credential to be used to perform the installation.
 * **SourceCredential**: Credential to be used to access SourcePath
-* **SuppressReboot**: Supresses reboot
+* **SuppressReboot**: Suppresses reboot
 * **ForceReboot**: Forces Reboot
 * **Features**: (Required) SQL features to be installed.
 * **InstanceName**: (Key) SQL instance to be installed.
@@ -259,6 +260,12 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **RetryIntervalSec**: Interval to check for availability group
 * **RetryCount**: Maximum number of retries to check availability group creation
 
+###xSQLServerConfiguration
+* **InstanceName**: (Key) name of SQL Server instance for which configuration options will be configured.
+* **OptionName**: (Key) SQL Server option name. For all possible values reference [MSDN](https://msdn.microsoft.com/en-us/library/ms189631.aspx) or run sp_configure.
+* **OptionValue**: (Required) SQL Server option value to be set.
+* **RestartService**: Default false. If true will restart SQL Service instance service after update.
+
 ## Versions
 
 ### Unreleased
@@ -271,34 +278,37 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xWaitForAvailabilityGroup
   - xSQLServerEndPoint
   - xSQLServerAlwaysOnService
+  - xSQLServerConfiguration
 * xSQLServerHelper
-	- added functions 
-		- Connect-SQL
-		- New-VerboseMessage
-		- Grant-ServerPerms
-		- Grant-CNOPerms
-		- New-ListenerADObject
+    - added functions 
+        - Connect-SQL
+        - New-VerboseMessage
+        - Grant-ServerPerms
+        - Grant-CNOPerms
+        - New-ListenerADObject
 * xSQLDatabaseRecoveryModel
-	- Updated Verbose statements to use new function New-VerboseMessage
+    - Updated Verbose statements to use new function New-VerboseMessage
 * xSQLServerDatabase
-	- Updated Verbose statements to use new function New-VerboseMessage
-	- Removed ConnectSQL function and replaced with new Connect-SQL function
+    - Updated Verbose statements to use new function New-VerboseMessage
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
 * xSQLServerDatabaseOwner
-	- Removed ConnectSQL function and replaced with new Connect-SQL function
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
 * xSQLServerDatabasePermissions
-	- Removed ConnectSQL function and replaced with new Connect-SQL function
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
 * xSQLServerDatabaseRole
-	- Removed ConnectSQL function and replaced with new Connect-SQL function
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
 * xSQLServerLogin
-	- Removed ConnectSQL function and replaced with new Connect-SQL function
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
 * xSQLServerMaxDop
-	- Updated Verbose statements to use new function New-VerboseMessage
-	- Removed ConnectSQL function and replaced with new Connect-SQL function
+    - Updated Verbose statements to use new function New-VerboseMessage
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
 * xSQLServerMemory
-	- Updated Verbose statements to use new function New-VerboseMessage
-	- Removed ConnectSQL function and replaced with new Connect-SQL function
+    - Updated Verbose statements to use new function New-VerboseMessage
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
 * xSQLServerPowerPlan
-	- Updated Verbose statements to use new function New-VerboseMessage
+    - Updated Verbose statements to use new function New-VerboseMessage
+* Examples
+    - Added xSQLServerConfiguration resource example
 
 ### 1.5.0.0
 
@@ -325,8 +335,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - Added setup parameter BrowserSvcStartupType
   - Change SourceFolder to Source to allow for multiversion Support
   - Add Source Credential for accessing source files
-  - Add Paramaters for SQL Server configuration
-  - Add Paramaters to SuppressReboot or ForceReboot
+  - Add Parameters for SQL Server configuration
+  - Add Parameters to SuppressReboot or ForceReboot
 * xSQLServerFirewall
   - Removed default values for parameters, to avoid compatibility issues
   - Updated firewall rule name to not use 2012 version, since package supports 2008, 2012 and 2014 versions
@@ -343,7 +353,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * xSQLServerFailoverClusterSetup
   - Additional of SQLHelper Function and error handling
   - Change SourceFolder to Source to allow for multiversion Support
-  - Add Paramaters to SuppressReboot or ForceReboot 
+  - Add Parameters to SuppressReboot or ForceReboot 
 * Examples
   - Updated example files to use correct DebugMode parameter value ForceModuleImport, this is not boolean in WMF 5.0 RTM
   - Added xSQLServerNetwork example
