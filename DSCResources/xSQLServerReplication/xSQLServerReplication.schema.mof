@@ -1,7 +1,7 @@
 [ClassVersion("1.0.0.0"), FriendlyName("xSQLServerReplication")]
 class xSQLServerReplication : OMI_BaseResource
 {
-    [Key, Description("SQL Server instance name of which configuration will be managed")] String InstanceName;
+    [Key, Description("SQL Server instance name where replication distribution will be configured")] String InstanceName;
     [Write, ValueMap{"Present", "Absent"}, Values{"Present", "Absent"}] String Ensure;
     [Required, ValueMap{"Local", "Remote"}, Values{"Local", "Remote"}] String DistributorMode;
     [Required, EmbeddedInstance("MSFT_Credential"), Description("Distributor administration link password")] String AdminLinkCredentials;

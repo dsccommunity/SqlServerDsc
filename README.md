@@ -7,7 +7,6 @@ The **xSQLServer** module contains DSC resources for deployment and configuratio
 ## Contributing
 Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
 
-
 ## Resources
 
 * **xSQLServerSetup** installs a standalone SQL Server instance
@@ -31,6 +30,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerEndpoint** resource to ensure database endpoint is present or absent
 * **xWaitForAvailabilityGroup** resource to wait till availability group is created on primary server
 * **xSQLServerConfiguration** resource to manage [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
+* **xSQLServerReplication** resource to manage SQL Replication distribution and publishing.
 
 ### xSQLServerSetup
 
@@ -266,9 +266,22 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **OptionValue**: (Required) SQL Server option value to be set.
 * **RestartService**: Default false. If true will restart SQL Service instance service after update.
 
+###xSQLServerReplication
+* **InstanceName**: (Key) SQL Server instance name where replication distribution will be configured.
+* **Ensure**: (Default = 'Present') 'Present' will configure replication, 'Absent' will disable replication.
+* **DistributorMode**: (Required), 'Local' - Instance will be configured as it's own distributor, 'Remote' - Instace will be configure with remote distributor (remote distributor needs to be already configured for distribution).
+* **AdminLinkCredentials**: (Required) - AdminLink password to be used when setting up publisher distributor relationship.
+* **DistributionDBName**: (Default = 'distribution') distribution database name. If DistributionMode='Local' this will be created, if 'Remote' needs to match distribution database on remote distributor. 
+* **RemoteDistributor**: (Required if DistributionMode='Remote') SQL Server network name that will be used as distributor for local instance.
+* **WorkingDirectory**: (Required) Publisher working directory.
+* **UseTrustedConnection**: (Default = $true) Publisher security mode.
+* **UninstallWithForce**: (Default = $true) Force flag for uninstall procedure
+
 ## Versions
 
 ### Unreleased
+
+* Added xSQLServerReplication resource
 
 ### 1.6.0.0
 
