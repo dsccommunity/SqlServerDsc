@@ -280,8 +280,9 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Versions
 
 ### Unreleased
-
-* Added xSQLServerReplication resource
+* Resources Added
+  - xSQLServerConfiguration
+  - xSQLServerReplication
 
 ### 1.6.0.0
 
@@ -291,7 +292,6 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xWaitForAvailabilityGroup
   - xSQLServerEndPoint
   - xSQLServerAlwaysOnService
-  - xSQLServerConfiguration
 * xSQLServerHelper
     - added functions 
         - Connect-SQL
