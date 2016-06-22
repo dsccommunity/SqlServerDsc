@@ -20,11 +20,18 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerDatabasePermissions** resource to manage SQL database permissions
 * **xSQLServerDatabaseOwner** resource to manage SQL database owners
 * **xSQLDatabaseRecoveryModel** resource to manage database recovery model
-* **xSQLServerMaxDop** resource to manage MaxDegree of Parallism for SQL Server
+* **xSQLServerMaxDop** resource to manage MaxDegree of Parallelism for SQL Server
 * **xSQLServerMemory** resource to manage Memory for SQL Server
 * **xSQLServerPowerPlan** resource to manage windows powerplan on SQL Server
+* **xSQLServerNetwork** resource to manage SQL Server Network Protocols
+* **xSQLServerDatabase** resource to manage ensure database is present or absent
+* **xSQLAOGroupEnsure** resource to ensure availability group is present or absent
+* **xSQLAOGroupJoin** resource to join a replica to an existing availability group
+* **xSQLServerAlwaysOnService** resource to enable always on on a SQL Server
+* **xSQLServerEndpoint** resource to ensure database endpoint is present or absent
+* **xWaitForAvailabilityGroup** resource to wait till availability group is created on primary server
+* **xSQLServerConfiguration** resource to manage [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
 * **xSQLServerScript** resource to extend DSCs Get/Set/Test functionality to T-SQL
-
 
 ### xSQLServerSetup
 
@@ -32,7 +39,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **SourceFolder**: Folder within the source path containing the source files for installation.
 * **SetupCredential**: (Required) Credential to be used to perform the installation.
 * **SourceCredential**: Credential used to access SourcePath
-* **SuppressReboot**: Supresses reboot
+* **SuppressReboot**: Suppresses reboot
 * **ForceReboot**: Forces Reboot
 * **Features**: (Key) SQL features to be installed.
 * **InstanceName**: (Key) SQL instance to be installed.
@@ -63,7 +70,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **FTSvcAccountUsername**: Output username for the Full Text service.
 * **RSSvcAccount**: Service account for Reporting Services service.
 * **RSSvcAccountUsername**: Output username for the Reporting Services service.
-* **ASSvcAccount**: Service account for Analysus Services service.
+* **ASSvcAccount**: Service account for Analysis Services service.
 * **ASSvcAccountUsername**: Output username for the Analysis Services service.
 * **ASCollation**: Collation for Analysis Services.
 * **ASSysAdminAccounts**: Array of accounts to be made Analysis Services admins.
@@ -101,7 +108,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **SourceFolder**: Folder within the source path containing the source files for installation.
 * **SetupCredential**: (Required) Credential to be used to perform the installation.
 * **SourceCredential**: Credential to be used to access SourcePath
-* **SuppressReboot**: Supresses reboot
+* **SuppressReboot**: Suppresses reboot
 * **ForceReboot**: Forces Reboot
 * **Features**: (Required) SQL features to be installed.
 * **InstanceName**: (Key) SQL instance to be installed.
@@ -210,6 +217,56 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **TCPPort**: Custom TCP port.
 * **RestartService**: If true will restart SQL Service instance service after update. Default false.
 
+###xSQLServerDatabase
+* **Database**: (key) Database to be created or dropped
+* **Ensure**: An enumerated value that describes if Database is to be present or absent.
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database 
+
+###xSQLAOGroupEnsure
+* **Ensure**: (key) An enumerated value that describes if Availability Group is to be present or absent.
+* **AvailabilityGroupName** (key) Name for availability group
+* **AvailabilityGroupNameListener** Listener name for availability group
+* **AvailabilityGroupNameIP** List of IP addresses associated with listener
+* **AvailabilityGroupSubMask** Network subnetmask for listener
+* **AvailabilityGroupPort** Port availability group should listen on
+* **ReadableSecondary** Mode secondaries should operate under (None, ReadOnly, ReadIntent)
+* **AutoBackupPreference** Where backups should be backed up from (Primary,Secondary)
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database
+* **SetupCredential**: (Required) Credential to be used to Grant Permissions on SQL Server
+
+###xSQLServerAOJoin
+* **Ensure**: (key) An enumerated value that describes if Replica is to be present or absent from availability group
+* **AvailabilityGroupName** (key) Name for availability group
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database
+* **SetupCredential**: (Required) Credential to be used to Grant Permissions on SQL Server
+
+###xSQLServerAlwaysOnService
+* **Ensure**: (key) An enumerated value that describes if SQL server should have AlwaysOn property present or absent.
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database
+
+###xSQLServerEndpoint
+* **EndPointName**: Name for endpoint to be created on SQL Server
+* **Ensure**: (key) An enumerated value that describes if endpoint is to be present or absent on SQL Server
+* **Port**: Port Endpoint should listen on
+* **AuthorizedUser**:  User who should have connect ability to endpoint
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database 
+
+###xWaitforAvailabilityGroup
+* **Name**:  (key) Name for availability group
+* **RetryIntervalSec**: Interval to check for availability group
+* **RetryCount**: Maximum number of retries to check availability group creation
+
+###xSQLServerConfiguration
+* **InstanceName**: (Key) name of SQL Server instance for which configuration options will be configured.
+* **OptionName**: (Key) SQL Server option name. For all possible values reference [MSDN](https://msdn.microsoft.com/en-us/library/ms189631.aspx) or run sp_configure.
+* **OptionValue**: (Required) SQL Server option value to be set.
+* **RestartService**: Default false. If true will restart SQL Service instance service after update.
+
 ###xSQLServerScript
 * **ServerInstance**: (Required) The name of an instance of the Database Engine. For default instances, only specify the computer name. For named instances, use the format ComputerName\\InstanceName.
 * **SetFilePath**: (Key) Path to SQL file that will perform Set action.
@@ -223,13 +280,57 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Versions
 
 ### Unreleased
+* Resources Added
+  - xSQLServerConfiguration
+  - xSQLServerScript
 
-* Added xSQLServerScript resource
+### 1.6.0.0
+
+* Resources Added
+  - xSQLAOGroupEnsure
+  - xSQLAOGroupJoin
+  - xWaitForAvailabilityGroup
+  - xSQLServerEndPoint
+  - xSQLServerAlwaysOnService
+* xSQLServerHelper
+    - added functions 
+        - Connect-SQL
+        - New-VerboseMessage
+        - Grant-ServerPerms
+        - Grant-CNOPerms
+        - New-ListenerADObject
+* xSQLDatabaseRecoveryModel
+    - Updated Verbose statements to use new function New-VerboseMessage
+* xSQLServerDatabase
+    - Updated Verbose statements to use new function New-VerboseMessage
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
+* xSQLServerDatabaseOwner
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
+* xSQLServerDatabasePermissions
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
+* xSQLServerDatabaseRole
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
+* xSQLServerLogin
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
+* xSQLServerMaxDop
+    - Updated Verbose statements to use new function New-VerboseMessage
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
+* xSQLServerMemory
+    - Updated Verbose statements to use new function New-VerboseMessage
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
+* xSQLServerPowerPlan
+    - Updated Verbose statements to use new function New-VerboseMessage
+* Examples
+    - Added xSQLServerConfiguration resource example
+
+### 1.5.0.0
+
+* Added new resource xSQLServerDatabase that allows adding an empty database to a server
 
 ### 1.4.0.0
 
 * Resources Added
-  - xSQLDatabaseReoveryModeAdded
+  - xSQLDatabaseRecoveryModeAdded
   - xSQLServerDatabaseOwner
   - xSQLServerDatabasePermissions
   - xSQLServerDatabaseRole
@@ -237,16 +338,18 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerMaxDop
   - xSQLServerMemory
   - xSQLServerPowerPlan
+  - xSQLServerDatabase
 * xSQLServerSetup:
   - Corrected bug in GetFirstItemPropertyValue to correctly handle registry keys with only one value.
-  - Added support for SQL Server 2008 R2 installation
+  - Added support for SQL Server 
+  - 2008 R2 installation
   - Removed default values for parameters, to avoid compatibility issues and setup errors
   - Added Replication sub feature detection
   - Added setup parameter BrowserSvcStartupType
   - Change SourceFolder to Source to allow for multiversion Support
   - Add Source Credential for accessing source files
-  - Add Paramaters for SQL Server configuration
-  - Add Paramaters to SuppressReboot or ForceReboot
+  - Add Parameters for SQL Server configuration
+  - Add Parameters to SuppressReboot or ForceReboot
 * xSQLServerFirewall
   - Removed default values for parameters, to avoid compatibility issues
   - Updated firewall rule name to not use 2012 version, since package supports 2008, 2012 and 2014 versions
@@ -259,12 +362,11 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - Allows to set custom or dynamic port values
 * xSQLServerRSSecureConnectionLevel
   - Additional of SQLHelper Function and error handling
-* xSQLServerRSConfig
-  - Additional of SQLHelper Function and error handling
+* xSqlServerRSConfig
 * xSQLServerFailoverClusterSetup
   - Additional of SQLHelper Function and error handling
   - Change SourceFolder to Source to allow for multiversion Support
-  - Add Paramaters to SuppressReboot or ForceReboot
+  - Add Parameters to SuppressReboot or ForceReboot 
 * Examples
   - Updated example files to use correct DebugMode parameter value ForceModuleImport, this is not boolean in WMF 5.0 RTM
   - Added xSQLServerNetwork example
@@ -294,3 +396,4 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Examples
 
 Examples for use of this resource can be found with the System Center resources, such as **xSCVMM**, **xSCSMA**, and **xSCOM**.
+
