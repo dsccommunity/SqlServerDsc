@@ -4,7 +4,7 @@ Write-Verbose -Message "CurrentPath: $currentPath"
 # Load Common Code
 Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
 
-# DSC resource to manage SQL database roles
+# DSC resource to manage SQL database
 
 # NOTE: This resource requires WMF5 and PsDscRunAsCredential
 
@@ -17,18 +17,11 @@ function Get-TargetResource
         [parameter(Mandatory = $true)]
         [System.String]
         $Database,
-
-        [parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
-
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
-
         [System.String]
         $SQLInstanceName = "MSSQLSERVER"
     )
-
     if(!$SQL)
     {
         $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
@@ -37,21 +30,12 @@ function Get-TargetResource
     if($SQL)
     {
         # Check database exists
-        if(!($SQLDatabase = $SQL.Databases[$Database]))
-        {
-            throw New-TerminatingError -ErrorType NoDatabase -FormatArgs @($Database,$SQLServer,$SQLInstanceName) -ErrorCategory InvalidResult
-        }
-
-        $Name = $SQLDatabase.Owner
+        $SQLDatabase = $sql.Databases.Contains($Database)
+        $Present = $SQLDatabase
     }
-    else
-    {
-        $Name = $null
-    }
-
-    $returnValue = @{
+        $returnValue = @{
         Database = $Database
-        Name = $Name
+        Ensure = $Present
         SQLServer = $SQLServer
         SQLInstanceName = $SQLInstanceName
     }
@@ -69,9 +53,9 @@ function Set-TargetResource
         [System.String]
         $Database,
 
-        [parameter(Mandatory = $true)]
+        [ValidateSet("Present","Absent")]
         [System.String]
-        $Name,
+        $Ensure,
 
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
@@ -87,13 +71,17 @@ function Set-TargetResource
 
     if($SQL)
     {
-        $SQLDatabase = $SQL.Databases[$Database]
-        $SQLDatabase.SetOwner($Name)
-    }
-
-    if(!(Test-TargetResource @PSBoundParameters))
-    {
-        throw New-TerminatingError -ErrorType TestFailedAfterSet -ErrorCategory InvalidResult
+        if($Ensure -eq "Present")
+        {
+            $Db = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $SQL,$Database
+            $db.Create()
+            New-VerboseMessage -Message "Created Database $Database"
+        }
+        else
+        {
+            $sql.Databases[$Database].Drop()
+            New-VerboseMessage -Messaged "Dropped Database $Database"
+        }
     }
 }
 
@@ -108,9 +96,9 @@ function Test-TargetResource
         [System.String]
         $Database,
 
-        [parameter(Mandatory = $true)]
+        [ValidateSet("Present","Absent")]
         [System.String]
-        $Name,
+        $Ensure,
 
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
@@ -118,11 +106,27 @@ function Test-TargetResource
         [System.String]
         $SQLInstanceName = "MSSQLSERVER"
     )
-
-    $result = ((Get-TargetResource @PSBoundParameters).Name -eq $Name)
     
+
+    if(!$SQL)
+    {
+        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+    }
+
+    if($SQL)
+    {
+        # Check database exists
+        $SQLDatabase = $sql.Databases.Contains($Database)
+        $Present = $SQLDatabase
+    }
+    if($ensure -eq "Present")
+    {$result =  $Present}
+    if($ensure -eq "Absent")
+    {$result = !$present}
+
     $result
 }
 
 
 Export-ModuleMember -Function *-TargetResource
+
