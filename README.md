@@ -272,6 +272,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Versions
 
 ### Unreleased
+
+### 1.7.0.0
 * Resources Added
   - xSQLServerConfiguration
 
