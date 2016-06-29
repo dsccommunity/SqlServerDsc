@@ -1,4 +1,7 @@
-﻿Configuration SQLNetwork
+﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+param ()
+
+Configuration SQLNetwork
 {
     Import-DscResource -Module xSQLServer
 
