@@ -1,5 +1,8 @@
 #requires -Version 5
 
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+param ()
+
 Configuration SQL
 {
     Import-DscResource -Module xSQLServer
