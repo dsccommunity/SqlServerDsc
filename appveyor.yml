@@ -3,12 +3,11 @@
 #---------------------------------# 
 version: 1.7.{build}.0
 install: 
-  - cinst -y pester
-  - git clone https://github.com/PowerShell/DscResource.Tests
-  - ps: Push-Location
-  - cd DscResource.Tests
-  - ps: Import-Module .\TestHelper.psm1 -force
-  - ps: Pop-Location
+    - git clone https://github.com/PowerShell/DscResource.Tests
+    - ps: |
+        Import-Module -Name .\DscResource.Tests\TestHelper.psm1 -Force
+        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+        Install-Module -Name Pester -Repository PSGallery -Force
 
 #---------------------------------# 
 #      build configuration        # 
