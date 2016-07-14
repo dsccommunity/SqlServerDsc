@@ -1,4 +1,5 @@
-Import-LocalizedData LocalizedData -filename xPDT.strings.psd1
+Import-LocalizedData LocalizedData -filename xPDT.strings.psd1 -ErrorAction SilentlyContinue 
+Import-LocalizedData USLocalizedData -filename xPDT.strings.psd1 -UICulture en-US -ErrorAction SilentlyContinue
 
 function ThrowInvalidArgumentError
 {
