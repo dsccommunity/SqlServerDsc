@@ -4,4 +4,6 @@ class MSFT_xSQLServerRoleMembership : OMI_BaseResource
     [Key] String RoleName;
     [Key] String Login;
     [Write, ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write, Description("The SQL Server for the login.")] String SQLServer;
+    [Write, Description("The SQL instance for the login.")] String SQLInstanceName;
 };

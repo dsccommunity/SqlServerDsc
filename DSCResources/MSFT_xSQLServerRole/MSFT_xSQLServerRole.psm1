@@ -20,7 +20,13 @@ function Get-TargetResource
 
         [ValidateSet("Present","Absent")]
         [System.String]
-        $Ensure
+        $Ensure,
+
+        [System.String]
+        $SQLServer = $env:COMPUTERNAME,
+
+        [System.String]
+        $SQLInstanceName = "MSSQLSERVER"
     )
 
     if(!$SQL)
@@ -61,7 +67,13 @@ function Set-TargetResource
 
         [ValidateSet("Present","Absent")]
         [System.String]
-        $Ensure
+        $Ensure,
+
+        [System.String]
+        $SQLServer = $env:COMPUTERNAME,
+
+        [System.String]
+        $SQLInstanceName = "MSSQLSERVER"
     )
 
     if(!$SQL)
@@ -98,7 +110,13 @@ function Test-TargetResource
 
         [ValidateSet("Present","Absent")]
         [System.String]
-        $Ensure
+        $Ensure,
+
+        [System.String]
+        $SQLServer = $env:COMPUTERNAME,
+
+        [System.String]
+        $SQLInstanceName = "MSSQLSERVER"
     )
 
     $testObject = Get-TargetResource @PSBoundParameters

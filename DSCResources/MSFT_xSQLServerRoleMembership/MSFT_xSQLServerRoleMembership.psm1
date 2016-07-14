@@ -24,7 +24,13 @@ function Get-TargetResource
 
         [ValidateSet("Present","Absent")]
         [System.String]
-        $Ensure
+        $Ensure,
+
+        [System.String]
+        $SQLServer = $env:COMPUTERNAME,
+
+        [System.String]
+        $SQLInstanceName = "MSSQLSERVER"
     )
 
     if(!$SQL)
@@ -34,7 +40,7 @@ function Get-TargetResource
     
     if($SQL)
     {
-        if($SQL.Roles[$RoleName].EnumMemberNames().Contains($Login)
+        if($SQL.Roles[$RoleName].EnumMemberNames().Contains($Login))
         {
             Write-Verbose "SQL Server role $RoleName contains member $Login"
             $Ensure = "Present"
@@ -71,7 +77,13 @@ function Set-TargetResource
 
         [ValidateSet("Present","Absent")]
         [System.String]
-        $Ensure
+        $Ensure,
+
+        [System.String]
+        $SQLServer = $env:COMPUTERNAME,
+
+        [System.String]
+        $SQLInstanceName = "MSSQLSERVER"
     )
     
     if(!$SQL)
@@ -116,7 +128,13 @@ function Test-TargetResource
 
         [ValidateSet("Present","Absent")]
         [System.String]
-        $Ensure
+        $Ensure,
+
+        [System.String]
+        $SQLServer = $env:COMPUTERNAME,
+
+        [System.String]
+        $SQLInstanceName = "MSSQLSERVER"
     )
 
     $testObject = Get-TargetResource @PSBoundParameters
