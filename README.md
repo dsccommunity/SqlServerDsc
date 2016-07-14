@@ -19,6 +19,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerFailoverClusterSetup** installs SQL Server failover cluster instances.
 * **xSQLServerRSConfig** configures SQL Server Reporting Services to use a database engine in another instance.
 * **xSQLServerLogin** resource to manage SQL logins
+* **xSQLServerRole** resource to manage server roles
+* **xSQLServerRoleMembership** resource to manage server role membership
 * **xSQLServerDatabaseRole** resource to manage SQL database roles
 * **xSQLServerDatabasePermissions** resource to manage SQL database permissions
 * **xSQLServerDatabaseOwner** resource to manage SQL database owners
@@ -165,6 +167,17 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **Name**: (Key) Name of the SQL Login to create
 * **LoginCredential**: PowerShell Credential for the SQL Login to be created
 * **LoginType**: Type of SQL login to create.(SQL, WindowsUser, WindowsGroup)
+* **SQLServer**: SQL Server where login should be created
+* **SQLInstance**: SQL Instance for the login
+
+### xSQLServerRole
+* **RoleName**: (Key) Name of the SQL Server Role to create
+* **SQLServer**: SQL Server where login should be created
+* **SQLInstance**: SQL Instance for the login
+
+### xSQLServerRoleMembership
+* **RoleName**: (Key) Name of the server role to manage
+* **Login**: (Key) Login name to add to server role members
 * **SQLServer**: SQL Server where login should be created
 * **SQLInstance**: SQL Instance for the login
 
