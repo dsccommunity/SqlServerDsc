@@ -1,0 +1,7 @@
+[ClassVersion("1.0.0.0"), FriendlyName("xSQLServerRoleMembership")]
+class MSFT_xSQLServerRoleMembership : OMI_BaseResource
+{
+    [Key] String RoleName;
+    [Key] String Login;
+    [Write, ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+};
