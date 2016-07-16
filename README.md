@@ -286,9 +286,9 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ### Unreleased
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
-* Added following resources
-  * MSFT_xSQLServerRole used to create/drop server roles
-  * MSFT_xSQLServerRoleMembership used to add/remove server role membership
+* Resources Added
+  - MSFT_xSQLServerRole
+  - MSFT_xSQLServerRoleMembership
 
 ### 1.7.0.0
 * Resources Added
