@@ -272,6 +272,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Versions
 
 ### Unreleased
+* Added support for SQL Server 2016
 
 ### 1.7.0.0
 * Resources Added
