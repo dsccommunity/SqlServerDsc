@@ -335,11 +335,6 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xWaitForAvailabilityGroup
   - xSQLServerEndPoint
   - xSQLServerAlwaysOnService
-  - xSQLServerPermission
-  - xSQLServerEndpointState
-  - xSQLServerEndpointPermission
-  - xSQLServerAvailabilityGroupListner
-  
 * xSQLServerHelper
     - added functions 
         - Connect-SQL
