@@ -108,10 +108,10 @@ function Set-TargetResource
     )
    
     $parameters = @{
-        InstanceName = [System.String]$InstanceName
-        NodeName = [System.String]$NodeName
-        Name = [System.String]$Name
-        AvailabilityGroup = [System.String]$AvailabilityGroup
+        InstanceName = [System.String] $InstanceName
+        NodeName = [System.String] $NodeName
+        Name = [System.String] $Name
+        AvailabilityGroup = [System.String] $AvailabilityGroup
     }
     
     $listnerState = Get-TargetResource @parameters 

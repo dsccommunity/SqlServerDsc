@@ -92,10 +92,10 @@ function Set-TargetResource
     )
 
     $parameters = @{
-        InstanceName = [System.String]$InstanceName
-        NodeName = [System.String]$NodeName
-        Name = [System.String]$Name
-        Principal = [System.String]$Principal
+        InstanceName = [System.String] $InstanceName
+        NodeName = [System.String] $NodeName
+        Name = [System.String] $Name
+        Principal = [System.String] $Principal
     }
     
     $endPointPermissionState = Get-TargetResource @parameters 

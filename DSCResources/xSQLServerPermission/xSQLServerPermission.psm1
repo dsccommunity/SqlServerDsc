@@ -88,10 +88,10 @@ function Set-TargetResource
     )
 
     $parameters = @{
-        InstanceName = [System.String]$InstanceName
-        NodeName = [System.String]$NodeName
-        Principal = [System.String]$Principal
-        Permission = [System.String[]]$Permission
+        InstanceName = [System.String] $InstanceName
+        NodeName = [System.String] $NodeName
+        Principal = [System.String] $Principal
+        Permission = [System.String[]] $Permission
     }
     
     $permissionState = Get-TargetResource @parameters 
@@ -166,7 +166,6 @@ function Test-TargetResource
         [System.Boolean] $result = $false
         if( $permissionState.Ensure -eq $Ensure) {
             $result = $true
-        } else {
         }
     } else {
         throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult

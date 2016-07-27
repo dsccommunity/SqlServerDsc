@@ -326,8 +326,9 @@ function Import-SQLPSModule {
     [CmdletBinding()]
     param()
 
-    # If SQLPS is not removed between resources (if it was started by another DSC resource) getting
-    # objects with the SQL PS provider will fail in some instances because of some sort of inconsistancy. Uncertain why this happens.
+    
+    <# If SQLPS is not removed between resources (if it was started by another DSC resource) getting
+    objects with the SQL PS provider will fail in some instances because of some sort of inconsistancy. Uncertain why this happens. #>
     if( (Get-Module SQLPS).Count -ne 0 ) {
         Write-Debug "Unloading SQLPS module."
         Remove-Module -Name SQLPS -Force -Verbose:$False
