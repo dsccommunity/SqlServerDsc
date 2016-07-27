@@ -5,8 +5,8 @@ $OutputPath = 'F:\DSCConfig'
 Configuration FCISQL
 {
     Import-DscResource –Module PSDesiredStateConfiguration
-    Import-DscResource -Module xSQLServer -ModuleVersion 1.7.0.0
-    Import-DscResource -Module xFailoverCluster -ModuleVersion 1.4.0.0
+    Import-DscResource -Module xSQLServer 
+    Import-DscResource -Module xFailoverCluster
    
     Node $AllNodes.NodeName
     {
@@ -35,24 +35,18 @@ Configuration FCISQL
        {
            Ensure = "Present"
            Name = "RSAT-Clustering-Mgmt"
-
-           #DependsOn = "[WindowsFeature]FailoverFeature"
        }
 
        WindowsFeature RSATClusteringPowerShell
        {
            Ensure = "Present"
            Name   = "RSAT-Clustering-PowerShell"   
-
-           #DependsOn = "[WindowsFeature]FailoverFeature"
        }
 
        WindowsFeature RSATClusteringCmdInterface
        {
            Ensure = "Present"
            Name   = "RSAT-Clustering-CmdInterface"
-
-           #DependsOn = "[WindowsFeature]RSATClusteringPowerShell"
        }
 
         xSQLServerFailoverClusterSetup "PrepareMSSQLSERVER"
@@ -153,8 +147,6 @@ Configuration FCISQL
     }
 }
 
-#$SecurePassword = ConvertTo-SecureString -String "" -AsPlainText -Force
-#$InstallerServiceAccount = New-Object System.Management.Automation.PSCredential ("CORP\AutoSvc", $SecurePassword)
 $InstallerServiceAccount = Get-Credential -UserName CORP\AutoSvc -Message "Credentials to Install SQL Server"
 
 $firstComputer = $computers | Select-Object -First 1
