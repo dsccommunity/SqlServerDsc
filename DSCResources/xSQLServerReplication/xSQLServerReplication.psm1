@@ -121,7 +121,7 @@ function Set-TargetResource
         $UninstallWithForce = $true
     )
 
-    if($DistributorMode -eq 'Remote' -and !$RemoteDistributor)
+    if(($DistributorMode -eq 'Remote') -and (-not $RemoteDistributor))
     {
         throw "RemoteDistributor parameter cannot be empty when DistributorMode = 'Remote'!"
     }
@@ -250,7 +250,7 @@ function Get-SqlServerMajorVersion
     $instanceId = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL").$InstanceName
     $sqlVersion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\Setup").Version
     $sqlMajorVersion = $sqlVersion.Split(".")[0]
-    if (!$sqlMajorVersion)
+    if (-not $sqlMajorVersion)
     {
         throw "Unable to detect version for sql server instance: $InstanceName!"
     }
