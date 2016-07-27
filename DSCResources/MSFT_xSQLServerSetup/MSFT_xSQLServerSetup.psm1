@@ -547,6 +547,11 @@ function Set-TargetResource
     $FeaturesToInstall = ""
     foreach($Feature in $Features.Split(","))
     {   
+        if (($SQLVersion -eq "13") -and (($Feature -eq "SSMS") -or ($Feature -eq "ADV_SSMS")))
+        {
+            Throw New-TerminatingError -ErrorType FeatureNotSupported -FormatArgs @($Feature) -ErrorCategory InvalidData
+        }
+
         if(!($SQLData.Features.Contains($Feature)))
         {
             $FeaturesToInstall += "$Feature,"
@@ -956,10 +961,6 @@ function Test-TargetResource
     $result = $true
     foreach($Feature in $Features.Split(","))
     {
-        if (($SQLVersion -eq "13") -and (($Feature -eq "SSMS") -or ($Feature -eq "ADV_SSMS")))
-        {
-            Throw New-TerminatingError -ErrorType FeatureNotSupported -FormatArgs @($Feature) -ErrorCategory InvalidData
-        }
         if(!($SQLData.Features.Contains($Feature)))
         {
             $result = $false

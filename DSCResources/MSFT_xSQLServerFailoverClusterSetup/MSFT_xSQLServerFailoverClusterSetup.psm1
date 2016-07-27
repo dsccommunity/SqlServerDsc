@@ -451,6 +451,11 @@ function Set-TargetResource
     $Path = ResolvePath $Path
     $SQLVersion = GetSQLVersion -Path $Path
     
+    if(($SQLVersion -eq "13") -and (($Features.Contains("SSMS")) -or ($Features.Contains("ADV_SSMS"))))
+    {
+        Throw "$Feature is not a valid value for setting 'FEATURES' when installing SQL2016. Refer to SQL Help for more information."
+    }
+
     switch($Action)
     {
         "Prepare"
@@ -948,10 +953,6 @@ function Test-TargetResource
             $result = $true
             foreach($Feature in $Features.Split(","))
             {
-                if (($SQLVersion -eq "13") -and (($Feature -eq "SSMS") -or ($Feature -eq "ADV_SSMS")))
-                {
-                    Throw New-TerminatingError -ErrorType FeatureNotSupported -FormatArgs @($Feature) -ErrorCategory InvalidData
-                }
                 if(!($SQLData.Features.Contains($Feature)))
                 {
                     $result = $false
