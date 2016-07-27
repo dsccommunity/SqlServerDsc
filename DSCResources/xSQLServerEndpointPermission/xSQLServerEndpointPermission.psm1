@@ -1,6 +1,6 @@
 ﻿$ErrorActionPreference = "Stop"
 
-$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+$script:currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -ErrorAction Stop
 
 function Get-TargetResource
@@ -9,19 +9,19 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName = "DEFAULT",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Principal
     )
@@ -50,12 +50,12 @@ function Get-TargetResource
     }
 
     $returnValue = @{
-        InstanceName = [System.String]$InstanceName
-        NodeName = [System.String]$NodeName
-        Ensure = [System.String]$Ensure
-        Name = [System.String]$Name
-        Principal = [System.String]$Principal
-        Permission = [System.String]$Permission
+        InstanceName = [System.String] $InstanceName
+        NodeName = [System.String] $NodeName
+        Ensure = [System.String] $Ensure
+        Name = [System.String] $Name
+        Principal = [System.String] $Principal
+        Permission = [System.String] $Permission
     }
 
     return $returnValue
@@ -66,11 +66,11 @@ function Set-TargetResource
     [CmdletBinding(SupportsShouldProcess)]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName = "DEFAULT",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName,
 
@@ -78,11 +78,11 @@ function Set-TargetResource
         [System.String]
         $Ensure,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Principal,
 
@@ -131,11 +131,11 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName = "DEFAULT",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName,
 
@@ -143,11 +143,11 @@ function Test-TargetResource
         [System.String]
         $Ensure,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Principal,
 
@@ -157,20 +157,19 @@ function Test-TargetResource
     )
 
     $parameters = @{
-        InstanceName = [System.String]$InstanceName
-        NodeName = [System.String]$NodeName
-        Name = [System.String]$Name
-        Principal = [System.String]$Principal
+        InstanceName = [System.String] $InstanceName
+        NodeName = [System.String] $NodeName
+        Name = [System.String] $Name
+        Principal = [System.String] $Principal
     }
     
     New-VerboseMessage -Message "Testing state of endpoint permission for $Principal"
 
     $endPointPermissionState = Get-TargetResource @parameters 
     if( $null -ne $endPointPermissionState ) {
+        [System.Boolean] $result = $false
         if( $endPointPermissionState.Ensure -eq $Ensure) {
-            [System.Boolean]$result = $True
-        } else {
-            [System.Boolean]$result = $False
+            $result = $true
         }
     } else {
         throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult

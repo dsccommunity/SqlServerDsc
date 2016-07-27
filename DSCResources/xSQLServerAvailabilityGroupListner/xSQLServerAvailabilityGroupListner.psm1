@@ -1,6 +1,6 @@
 ﻿$ErrorActionPreference = "Stop"
 
-$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+$script:currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -ErrorAction Stop
 
 function Get-TargetResource
@@ -9,20 +9,20 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName = "DEFAULT",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateLength(1,15)]
         [System.String]
         $Name,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AvailabilityGroup
     )
@@ -58,14 +58,14 @@ function Get-TargetResource
     }
 
     $returnValue = @{
-        InstanceName = [System.String]$InstanceName
-        NodeName = [System.String]$NodeName
-        Name = [System.String]$Name
-        Ensure = [System.String]$ensure
-        AvailabilityGroup = [System.String]$AvailabilityGroup
-        IpAddress = [System.String[]]$ipAddress
-        Port = [System.UInt16]$port
-        DHCP = [System.Boolean]$dhcp
+        InstanceName = [System.String] $InstanceName
+        NodeName = [System.String] $NodeName
+        Name = [System.String] $Name
+        Ensure = [System.String] $ensure
+        AvailabilityGroup = [System.String] $AvailabilityGroup
+        IpAddress = [System.String[]] $ipAddress
+        Port = [System.UInt16] $port
+        DHCP = [System.Boolean] $dhcp
     }
 
     return $returnValue
@@ -76,15 +76,15 @@ function Set-TargetResource
     [CmdletBinding(SupportsShouldProcess)]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName = "DEFAULT",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateLength(1,15)]
         [System.String]
         $Name,
@@ -93,7 +93,7 @@ function Set-TargetResource
         [System.String]
         $Ensure,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AvailabilityGroup,
 
@@ -225,15 +225,15 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName = "DEFAULT",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateLength(1,15)]
         [System.String]
         $Name,
@@ -242,7 +242,7 @@ function Test-TargetResource
         [System.String]
         $Ensure,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AvailabilityGroup,
 
@@ -257,10 +257,10 @@ function Test-TargetResource
     )
 
     $parameters = @{
-        InstanceName = [System.String]$InstanceName
-        NodeName = [System.String]$NodeName
-        Name = [System.String]$Name
-        AvailabilityGroup = [System.String]$AvailabilityGroup
+        InstanceName = [System.String] $InstanceName
+        NodeName = [System.String] $NodeName
+        Name = [System.String] $Name
+        AvailabilityGroup = [System.String] $AvailabilityGroup
     }
     
     New-VerboseMessage -Message "Testing state of listner $Name"
@@ -268,15 +268,14 @@ function Test-TargetResource
     $listnerState = Get-TargetResource @parameters 
     if( $null -ne $listnerState ) {
         if( $null -eq $IpAddress -or ($null -ne $listnerState.IpAddress -and -not ( Compare-Object -ReferenceObject $IpAddress -DifferenceObject $listnerState.IpAddress ) ) ) { 
-            $ipAddressEqual = $True
+            $ipAddressEqual = $true
         } else {
-            $ipAddressEqual = $False
+            $ipAddressEqual = $false
         }
         
+        [System.Boolean] $result = $false
         if( ( $Ensure -eq "" -or ( $Ensure -ne "" -and $listnerState.Ensure -eq $Ensure) ) -and ($Port -eq "" -or $listnerState.Port -eq $Port) -and $ipAddressEqual ) {
-            [System.Boolean]$result = $True
-        } else {
-            [System.Boolean]$result = $False
+            $result = $true
         }
     } else {
         throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
@@ -291,19 +290,19 @@ function Get-SQLAlwaysOnAvailabilityGroupListner
     [OutputType()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AvailabilityGroup,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName 
     )
@@ -313,7 +312,7 @@ function Get-SQLAlwaysOnAvailabilityGroupListner
 
     Write-Debug "Connecting to $Path as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
     
-    [string[]]$presentListner = Get-ChildItem $Path
+    [string[]] $presentListner = Get-ChildItem $Path
     if( $presentListner.Count -ne 0 -and $presentListner.Contains("[$Name]") ) {
         Write-Debug "Connecting to availability group $Name as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
         $listner = Get-Item "$Path\$Name"

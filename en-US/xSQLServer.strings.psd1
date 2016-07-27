@@ -17,12 +17,12 @@ FailedLogin = Creating a login of type 'SqlLogin' requires LoginCredential
 
 # AvailabilityGroupListner
 AvailabilityGroupListnerNotFound = Trying to make a change to a listner that does not exist.
-AvailabilityGroupListnerErrorVerifyExist = Unexpected result when trying to verify existance of listner {0}.
+AvailabilityGroupListnerErrorVerifyExist = Unexpected result when trying to verify existence of listner {0}.
 AvailabilityGroupListnerIPChangeError = IP-address configuration mismatch. Expecting {0} found {1}. Resource does not support changing IP-address. Listner needs to be removed and then created again.
 
 # Endpoint
 EndpointNotFound = Endpoint {0} does not exist
-EndpointErrorVerifyExist = Unexpected result when trying to verify existance of endpoint {0}.
+EndpointErrorVerifyExist = Unexpected result when trying to verify existence of endpoint {0}.
 
 # Permission
 PermissionGetError = Unexpected result when trying to get permissions for {0}.

@@ -1,6 +1,6 @@
 ﻿$ErrorActionPreference = "Stop"
 
-$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+$script:currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -ErrorAction Stop
 
 function Get-TargetResource
@@ -9,15 +9,15 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName = "DEFAULT",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Principal,
 
@@ -51,11 +51,11 @@ function Get-TargetResource
     }
 
     $returnValue = @{
-        InstanceName = [System.String]$InstanceName
-        NodeName = [System.String]$NodeName
-        Ensure = [System.String]$ensure
-        Principal = [System.String]$Principal
-        Permission = [System.String[]]$grantedPermission
+        InstanceName = [System.String] $InstanceName
+        NodeName = [System.String] $NodeName
+        Ensure = [System.String] $ensure
+        Principal = [System.String] $Principal
+        Permission = [System.String[]] $grantedPermission
     }
 
     return $returnValue
@@ -66,11 +66,11 @@ function Set-TargetResource
     [CmdletBinding(SupportsShouldProcess)]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName = "DEFAULT",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName,
 
@@ -78,7 +78,7 @@ function Set-TargetResource
         [System.String]
         $Ensure,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Principal,
 
@@ -131,11 +131,11 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName = "DEFAULT",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName,
 
@@ -143,7 +143,7 @@ function Test-TargetResource
         [System.String]
         $Ensure,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Principal,
 
@@ -153,20 +153,20 @@ function Test-TargetResource
     )
 
     $parameters = @{
-        InstanceName = [System.String]$InstanceName
-        NodeName = [System.String]$NodeName
-        Principal = [System.String]$Principal
-        Permission = [System.String[]]$Permission
+        InstanceName = [System.String] $InstanceName
+        NodeName = [System.String] $NodeName
+        Principal = [System.String] $Principal
+        Permission = [System.String[]] $Permission
     }
     
     New-VerboseMessage -Message "Testing state of permissions for $Principal"
 
     $permissionState = Get-TargetResource @parameters 
     if( $null -ne $permissionState ) {
+        [System.Boolean] $result = $false
         if( $permissionState.Ensure -eq $Ensure) {
-            [System.Boolean]$result = $True
+            $result = $true
         } else {
-            [System.Boolean]$result = $False
         }
     } else {
         throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
@@ -186,7 +186,7 @@ function Get-SQLPermission
         $ServerPermissionSet
     )
 
-    [string[]]$permission = @()
+    [String[]] $permission = @()
     
     if( $ServerPermissionSet ) {
         foreach( $Property in $($ServerPermissionSet | Get-Member -Type Property) ) {
@@ -217,7 +217,7 @@ function Get-SQLServerPermissionSet
     [OutputType([Object])] 
     param
     (
-        [Parameter(Mandatory,ParameterSetName="Permission",HelpMessage="Takes an array of string which will be concatenated to a single ServerPermissionSet.")]
+        [Parameter(Mandatory,ParameterSetName="Permission",HelpMessage="Takes an array of strings which will be concatenated to a single ServerPermissionSet.")]
         [System.String[]]
         [ValidateNotNullOrEmpty()]
         $Permission,

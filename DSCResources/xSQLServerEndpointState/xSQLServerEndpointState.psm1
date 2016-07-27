@@ -1,6 +1,6 @@
 ﻿$ErrorActionPreference = "Stop"
 
-$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+$script:currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -ErrorAction Stop
 
 function Get-TargetResource
@@ -9,15 +9,15 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName = "DEFAULT",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name
     )
@@ -28,7 +28,7 @@ function Get-TargetResource
         $endpoint = Get-SQLAlwaysOnEndpoint -Name $Name -NodeName $NodeName -InstanceName $InstanceName -Verbose:$VerbosePreference
         
         if( $null -ne $endpoint ) {
-            $State = $endpoint.EndpointState
+            $state = $endpoint.EndpointState
         } else {
             throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($Name) -ErrorCategory ObjectNotFound
         }
@@ -37,10 +37,10 @@ function Get-TargetResource
     }
 
     $returnValue = @{
-        InstanceName = [System.String]$InstanceName
-        NodeName = [System.String]$NodeName
-        Name = [System.String]$Name
-        State = [System.String]$State
+        InstanceName = [System.String] $InstanceName
+        NodeName = [System.String] $NodeName
+        Name = [System.String] $Name
+        State = [System.String] $state
     }
 
     return $returnValue
@@ -51,15 +51,15 @@ function Set-TargetResource
     [CmdletBinding(SupportsShouldProcess)]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName = "DEFAULT",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
@@ -104,15 +104,15 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName = "DEFAULT",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
@@ -122,19 +122,18 @@ function Test-TargetResource
     )
 
     $parameters = @{
-        InstanceName = [System.String]$InstanceName
-        NodeName = [System.String]$NodeName
-        Name = [System.String]$Name
+        InstanceName = [System.String] $InstanceName
+        NodeName = [System.String] $NodeName
+        Name = [System.String] $Name
     }
 
     New-VerboseMessage -Message "Testing state $State on endpoint $Name"
     
     $endPointState = Get-TargetResource @parameters 
     if( $null -ne $endPointState ) {
+        [System.Boolean] $result = $false
         if( $endPointState.State -eq $State ) {
-            [System.Boolean]$result = $True
-        } else {
-            [System.Boolean]$result = $False
+            $result = $true
         }
     } else {
         throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult

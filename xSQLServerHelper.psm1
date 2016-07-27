@@ -63,24 +63,24 @@ function New-TerminatingError
     [OutputType([System.Management.Automation.ErrorRecord])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
         $ErrorType,
 
-        [parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $false)]
         [String[]]
         $FormatArgs,
 
-        [parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $false)]
         [System.Management.Automation.ErrorCategory]
         $ErrorCategory = [System.Management.Automation.ErrorCategory]::OperationStopped,
 
-        [parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $false)]
         [Object]
         $TargetObject = $null,
 
-        [parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $false)]
         [System.Exception]
         $InnerException = $null
     )
@@ -133,7 +133,7 @@ function New-VerboseMessage
 {
     [CmdletBinding()]
     [Alias()]
-    [OutputType([string])]
+    [OutputType([String])]
     Param
     (
         [Parameter(Mandatory=$true)]
@@ -157,12 +157,12 @@ function Grant-ServerPerms
         $SQLInstanceName= "MSSQLSERVER",
 
         [ValidateNotNullOrEmpty()]  
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
         [ValidateNotNullOrEmpty()] 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AuthorizedUser
     )
@@ -188,12 +188,12 @@ function Grant-CNOPerms
     Param
     (
         [ValidateNotNullOrEmpty()] 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AvailabilityGroupNameListener,
         
         [ValidateNotNullOrEmpty()] 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $CNO
     )
@@ -234,7 +234,7 @@ function New-ListenerADObject
     Param
     (
         [ValidateNotNullOrEmpty()] 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AvailabilityGroupNameListener,
         
@@ -247,7 +247,7 @@ function New-ListenerADObject
         $SQLInstanceName = "MSSQLSERVER",
     
         [ValidateNotNullOrEmpty()] 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential
     )
@@ -326,8 +326,8 @@ function Import-SQLPSModule {
     [CmdletBinding()]
     param()
 
-    # If SQLPS is not removed between resources (if it was started by another DSC resource) loading objects will fail in some instances
-    # because of som sort of inconsistancy. Uncertain why this happens.
+    # If SQLPS is not removed between resources (if it was started by another DSC resource) getting
+    # objects with the SQL PS provider will fail in some instances because of some sort of inconsistancy. Uncertain why this happens.
     if( (Get-Module SQLPS).Count -ne 0 ) {
         Write-Debug "Unloading SQLPS module."
         Remove-Module -Name SQLPS -Force -Verbose:$False
@@ -347,10 +347,10 @@ function Import-SQLPSModule {
 function Get-SQLPSInstanceName
 {
     [CmdletBinding()]
-    [OutputType([string])]
+    [OutputType([String])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName
     )
@@ -365,14 +365,14 @@ function Get-SQLPSInstanceName
 function Get-SQLPSInstance
 {
     [CmdletBinding()]
-    [OutputType([string])]
+    [OutputType([String])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName 
     )
@@ -394,15 +394,15 @@ function Get-SQLAlwaysOnEndpoint
     [OutputType()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName 
     )
@@ -412,7 +412,7 @@ function Get-SQLAlwaysOnEndpoint
 
     Write-Debug "Connecting to $Path as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
     
-    [string[]]$presentEndpoint = Get-ChildItem $Path
+    [String[]] $presentEndpoint = Get-ChildItem $Path
     if( $presentEndpoint.Count -ne 0 -and $presentEndpoint.Contains("[$Name]") ) {
         Write-Debug "Connecting to endpoint $Name as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
         $endpoint = Get-Item "$Path\$Name"
