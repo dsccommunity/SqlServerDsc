@@ -177,7 +177,7 @@ function Test-TargetResource
 function Get-SQLPermission
 {
     [CmdletBinding()]
-    [OutputType([string[]])]
+    [OutputType([String[]])]
     param (
         [Parameter(Mandatory,ParameterSetName="ServerPermissionSet",HelpMessage="Takes a PermissionSet which will be enumerated to return a string array.")]
         [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
@@ -207,7 +207,7 @@ function Get-SQLPermission
         }
     }
     
-    return [string[]]$permission
+    return [String[]] $permission
 }
 
 function Get-SQLServerPermissionSet

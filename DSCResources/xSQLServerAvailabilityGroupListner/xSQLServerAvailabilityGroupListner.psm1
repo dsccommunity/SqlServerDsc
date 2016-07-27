@@ -312,7 +312,7 @@ function Get-SQLAlwaysOnAvailabilityGroupListner
 
     Write-Debug "Connecting to $Path as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
     
-    [string[]] $presentListner = Get-ChildItem $Path
+    [String[]] $presentListner = Get-ChildItem $Path
     if( $presentListner.Count -ne 0 -and $presentListner.Contains("[$Name]") ) {
         Write-Debug "Connecting to availability group $Name as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
         $listner = Get-Item "$Path\$Name"
