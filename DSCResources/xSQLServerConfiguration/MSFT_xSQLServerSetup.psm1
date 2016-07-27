@@ -546,7 +546,7 @@ function Set-TargetResource
     # Determine features to install
     $FeaturesToInstall = ""
     foreach($Feature in $Features.Split(","))
-    {   
+    {
         if(!($SQLData.Features.Contains($Feature)))
         {
             $FeaturesToInstall += "$Feature,"
