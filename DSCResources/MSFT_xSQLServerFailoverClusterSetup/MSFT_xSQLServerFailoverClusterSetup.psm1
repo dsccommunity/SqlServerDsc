@@ -948,7 +948,7 @@ function Test-TargetResource
             $result = $true
             foreach($Feature in $Features.Split(","))
             {
-                if (($SQLVersion = "13") -and (($Feature -eq "SSMS") -or ($Feature -eq "ADV_SSMS")))
+                if (($SQLVersion -eq "13") -and (($Feature -eq "SSMS") -or ($Feature -eq "ADV_SSMS")))
                 {
                     Throw New-TerminatingError -ErrorType FeatureNotSupported -FormatArgs @($Feature) -ErrorCategory InvalidData
                 }
