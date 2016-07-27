@@ -19,6 +19,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerFailoverClusterSetup** installs SQL Server failover cluster instances.
 * **xSQLServerRSConfig** configures SQL Server Reporting Services to use a database engine in another instance.
 * **xSQLServerLogin** resource to manage SQL logins
+* **xSQLServerRole** resource to manage server roles
+* **xSQLServerRoleMembership** resource to manage server role membership
 * **xSQLServerDatabaseRole** resource to manage SQL database roles
 * **xSQLServerDatabasePermissions** resource to manage SQL database permissions
 * **xSQLServerDatabaseOwner** resource to manage SQL database owners
@@ -168,6 +170,17 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **SQLServer**: SQL Server where login should be created
 * **SQLInstance**: SQL Instance for the login
 
+### xSQLServerRole
+* **RoleName**: (Key) Name of the SQL Server Role to create
+* **SQLServer**: SQL Server where login should be created
+* **SQLInstance**: SQL Instance for the login
+
+### xSQLServerRoleMembership
+* **RoleName**: (Key) Name of the server role to manage
+* **Login**: (Key) Login name to add to server role members
+* **SQLServer**: SQL Server where login should be created
+* **SQLInstance**: SQL Instance for the login
+
 ### xSQLServerDatabaseRole
 * **Name**: (Key) Name of the SQL Login or the role on the database
 * **SQLServer**: The SQL Server for the database
@@ -273,6 +286,9 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ### Unreleased
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
+* Resources Added
+  - MSFT_xSQLServerRole
+  - MSFT_xSQLServerRoleMembership
 
 ### 1.7.0.0
 * Resources Added
