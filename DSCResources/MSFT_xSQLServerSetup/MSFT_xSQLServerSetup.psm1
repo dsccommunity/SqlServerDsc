@@ -525,9 +525,6 @@ function Set-TargetResource
     Write-Verbose "Path: $Path"
     $SQLVersion = GetSQLVersion -Path $Path
 
-    if($Features -ccontains "SSMS")
-    {}
-
     if($InstanceName -eq "MSSQLSERVER")
     {
         $DBServiceName = "MSSQLSERVER"
@@ -550,11 +547,7 @@ function Set-TargetResource
     $FeaturesToInstall = ""
     foreach($Feature in $Features.Split(","))
     {
-        if (($Feature -eq "SSMS") -or ($Feature -eq "ADV_SSMS"))
-        {
-            Throw "$Feature is not a valid value for setting 'FEATURES'. Refer to SQL Help for more information."
-        }
-        
+    
         if(!($SQLData.Features.Contains($Feature)))
         {
             $FeaturesToInstall += "$Feature,"
@@ -600,6 +593,10 @@ function Set-TargetResource
         }
         "13"
         {
+            if (($Feature -eq "SSMS") -or ($Feature -eq "ADV_SSMS"))
+            {
+                Throw "$Feature is not a valid value for setting 'FEATURES'. Refer to SQL Help for more information."
+            }
             if((Get-Variable -Name "InstallSharedDir" -ErrorAction SilentlyContinue) -and (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\FEE2E540D20152D4597229B6CFBC0A69" -ErrorAction SilentlyContinue))
             {
                 Set-Variable -Name "InstallSharedDir" -Value ""
