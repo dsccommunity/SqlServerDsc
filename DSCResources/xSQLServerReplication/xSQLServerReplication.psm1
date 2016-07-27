@@ -1,6 +1,6 @@
 ﻿$dom = [AppDomain]::CreateDomain('xSQLServerReplication')
 
-Function Get-TargetResource
+function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -83,7 +83,7 @@ Function Get-TargetResource
     return $returnValue
 }
 
-Function Set-TargetResource
+function Set-TargetResource
 {
     [CmdletBinding()]
     param(
@@ -182,7 +182,7 @@ Function Set-TargetResource
     }
 }
 
-Function Test-TargetResource
+function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -237,7 +237,7 @@ Function Test-TargetResource
 }
 
 #region helper functions
-Function Get-SqlServerMajorVersion
+function Get-SqlServerMajorVersion
 {
     [CmdletBinding()]
     [OutputType([System.String])]
@@ -257,7 +257,7 @@ Function Get-SqlServerMajorVersion
     return $sqlMajorVersion
 }
 
-Function Get-SqlLocalServerName
+function Get-SqlLocalServerName
 {
     [CmdletBinding()]
     [OutputType([System.String])]
