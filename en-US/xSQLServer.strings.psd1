@@ -14,6 +14,7 @@ SSRSNotFound = SQL Reporting Services instance {0} does not exist!
 RoleNotFound = Role '{0}' does not exist on database '{1}' on SQL server '{2}\{3}'."
 LoginNotFound = Login '{0}' does not exist on SQL server '{1}\{2}'."
 FailedLogin = Creating a login of type 'SqlLogin' requires LoginCredential
+FeatureNotSupported = '{0}' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information.
 
 # AvailabilityGroupListner
 AvailabilityGroupListnerNotFound = Trying to make a change to a listner that does not exist.
