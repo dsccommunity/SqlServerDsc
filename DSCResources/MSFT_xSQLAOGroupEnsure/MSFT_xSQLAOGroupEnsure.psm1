@@ -185,7 +185,7 @@ function Set-TargetResource
                 Try
                 {
                     $asyncReplica = New-Object -typename Microsoft.SqlServer.Management.Smo.AvailabilityReplica -ArgumentList $availabilityGroup, $node
-                    $asyncReplica.EndpointUrl = "TCP://$($node):5022"
+                    $asyncReplica.EndpointUrl = "TCP://$($node):$EndPointPort"
                     $asyncReplica.FailoverMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaFailoverMode]::Manual
                     $asyncReplica.AvailabilityMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaAvailabilityMode]::ASynchronousCommit
                     $asyncReplica.BackupPriority = $BackupPriority
