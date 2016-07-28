@@ -451,9 +451,9 @@ function Set-TargetResource
     $Path = ResolvePath $Path
     $SQLVersion = GetSQLVersion -Path $Path
     
-    foreach($Feature in $Features.Split(","))
+    foreach($feature in $Features.Split(","))
     { 
-         if (($SQLVersion -eq "13") -and (($Feature -eq "SSMS") -or ($Feature -eq "ADV_SSMS")))
+        if (($SQLVersion -eq "13") -and (($Feature -eq "SSMS") -or ($Feature -eq "ADV_SSMS")))
         {
             Throw New-TerminatingError -ErrorType FeatureNotSupported -FormatArgs @($Feature) -ErrorCategory InvalidData
         }

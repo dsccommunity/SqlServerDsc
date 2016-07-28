@@ -545,7 +545,7 @@ function Set-TargetResource
 
     # Determine features to install
     $FeaturesToInstall = ""
-    foreach($Feature in $Features.Split(","))
+    foreach($feature in $Features.Split(","))
     {   
         if (($SQLVersion -eq "13") -and (($Feature -eq "SSMS") -or ($Feature -eq "ADV_SSMS")))
         {
