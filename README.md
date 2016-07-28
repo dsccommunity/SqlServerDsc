@@ -234,6 +234,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **AvailabilityGroupPort** Port availability group should listen on
 * **ReadableSecondary** Mode secondaries should operate under (None, ReadOnly, ReadIntent)
 * **AutoBackupPreference** Where backups should be backed up from (Primary,Secondary)
+* **BackupPriority** The percentage weight for backup prority (default 50)
 * **EndPointPort** The TCP port for the SQL AG Endpoint (default 5022)
 * **SQLServer**: The SQL Server for the database
 * **SQLInstance**: The SQL instance for the database
@@ -275,6 +276,9 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ### Unreleased
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
 * Added Support for SQL Server 2016
+* xSQLAOGroupEnsure
+   - Fixed spelling mistake in AutoBackupPreference property
+   - Added BackupPriority property
 
 ### 1.7.0.0
 * Resources Added
