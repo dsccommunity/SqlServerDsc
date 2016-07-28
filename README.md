@@ -273,6 +273,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ### Unreleased
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
+* Added Support for SQL Server 2016
 
 ### 1.7.0.0
 * Resources Added
@@ -390,4 +391,5 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Examples
 
 Examples for use of this resource can be found with the System Center resources, such as **xSCVMM**, **xSCSMA**, and **xSCOM**.
+
 
