@@ -1,6 +1,6 @@
 @{
 # Version number of this module.
-ModuleVersion = '1.6.0.0'
+ModuleVersion = '1.7.0.0'
 
 # ID used to uniquely identify this module
 GUID = '74e9ddb5-4cbc-4fa2-a222-2bcfb533fd66'
@@ -48,40 +48,7 @@ PrivateData = @{
 
         # ReleaseNotes of this module
         ReleaseNotes = '* Resources Added
-  - xSQLAOGroupEnsure
-  - xSQLAOGroupJoin
-  - xWaitForAvailabilityGroup
-  - xSQLServerEndPoint
-  - xSQLServerAlwaysOnService
-* xSQLServerHelper
-    - added functions 
-        - Connect-SQL
-        - New-VerboseMessage
-        - Grant-ServerPerms
-        - Grant-CNOPerms
-        - New-ListenerADObject
-* xSQLDatabaseRecoveryModel
-    - Updated Verbose statements to use new function New-VerboseMessage
-* xSQLServerDatabase
-    - Updated Verbose statements to use new function New-VerboseMessage
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
-* xSQLServerDatabaseOwner
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
-* xSQLServerDatabasePermissions
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
-* xSQLServerDatabaseRole
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
-* xSQLServerLogin
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
-* xSQLServerMaxDop
-    - Updated Verbose statements to use new function New-VerboseMessage
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
-* xSQLServerMemory
-    - Updated Verbose statements to use new function New-VerboseMessage
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
-* xSQLServerPowerPlan
-    - Updated Verbose statements to use new function New-VerboseMessage
-
+  - xSQLServerConfiguration
 '
 
     } # End of PSData hashtable

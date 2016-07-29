@@ -4,6 +4,9 @@
 
 The **xSQLServer** module contains DSC resources for deployment and configuration of SQL Server in a way that is fully compliant with the requirements of System Center.
 
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
 ## Contributing
 Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
 
@@ -232,6 +235,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **AvailabilityGroupPort** Port availability group should listen on
 * **ReadableSecondary** Mode secondaries should operate under (None, ReadOnly, ReadIntent)
 * **AutoBackupPreference** Where backups should be backed up from (Primary,Secondary)
+* **EndPointPort** The TCP port for the SQL AG Endpoint (default 5022)
 * **SQLServer**: The SQL Server for the database
 * **SQLInstance**: The SQL instance for the database
 * **SetupCredential**: (Required) Credential to be used to Grant Permissions on SQL Server
@@ -280,6 +284,10 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Versions
 
 ### Unreleased
+* Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
+* Added Support for SQL Server 2016
+
+### 1.7.0.0
 * Resources Added
   - xSQLServerConfiguration
   - xSQLServerScript
@@ -396,4 +404,5 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Examples
 
 Examples for use of this resource can be found with the System Center resources, such as **xSCVMM**, **xSCSMA**, and **xSCOM**.
+
 

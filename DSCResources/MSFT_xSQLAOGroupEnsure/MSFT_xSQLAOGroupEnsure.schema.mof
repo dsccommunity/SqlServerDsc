@@ -10,6 +10,7 @@ class MSFT_xSQLAOGroupEnsure : OMI_BaseResource
     [Write] Uint32 AvailabilityGroupPort;
     [Write, ValueMap{"None","ReadOnly","ReadIntent"}, Values{"None","ReadOnly","ReadIntent"}] String ReadableSecondary;
     [Write, ValueMap{"Primary","Secondary"}, Values{"Primary","Secondary"}] String AutoBackupPrefernce;
+    [Write] Uint32 EndPointPort;
     [Write] String SQLServer;
     [Write] String SQLInstanceName;
     [Required, EmbeddedInstance("MSFT_Credential"), Description("Credential to be used to Grant Permissions in SQL.")] String SetupCredential;

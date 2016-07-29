@@ -89,6 +89,9 @@ function Set-TargetResource
         [System.String]
         $AutoBackupPrefernce ="Primary",
 
+        [System.UInt32]
+        $EndPointPort ="5022",
+
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
@@ -156,7 +159,7 @@ function Set-TargetResource
                Try
                {
                     $Replica = New-Object -typename Microsoft.SqlServer.Management.Smo.AvailabilityReplica -ArgumentList $availabilityGroup, $node
-                    $Replica.EndpointUrl = "TCP://$($node):5022"
+                    $Replica.EndpointUrl = "TCP://$($node):$EndPointPort"
                     $Replica.FailoverMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaFailoverMode]::Automatic
                     $Replica.AvailabilityMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaAvailabilityMode]::SynchronousCommit
                     #Backup Priority Gives the ability to set a priority of one secondany over another valid values are from 1 - 100
@@ -179,7 +182,7 @@ function Set-TargetResource
                Try
                {
                     $asyncReplica = New-Object -typename Microsoft.SqlServer.Management.Smo.AvailabilityReplica -ArgumentList $availabilityGroup, $node
-                    $asyncReplica.EndpointUrl = "TCP://$($node):5022"
+                    $asyncReplica.EndpointUrl = "TCP://$($node):$EndPointPort"
                     $asyncReplica.FailoverMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaFailoverMode]::Manual
                     $asyncReplica.AvailabilityMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaAvailabilityMode]::ASynchronousCommit
                     $asyncReplica.BackupPriority = 50
@@ -307,6 +310,9 @@ function Test-TargetResource
         [ValidateSet("Primary","Secondary")]
         [System.String]
         $AutoBackupPrefernce="Primary",
+
+        [System.UInt32]
+        $EndPointPort ="5022",
 
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
