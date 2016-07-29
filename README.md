@@ -38,7 +38,12 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerEndpointPermission** Grant or revoke permission on the endpoint.
 * **xSQLServerAvailabilityGroupListener** Create or remove an availability group listener.
 * **xSQLServerReplication** resource to manage SQL Replication distribution and publishing.
+<<<<<<< 69dca6ac93fc95f0f4c87f5075970307b7e906fe
 * **xSQLServerScript** resource to extend DSCs Get/Set/Test functionality to T-SQL
+=======
+* **xSQLAlias** resource to manage SQL Server client Aliases
+
+>>>>>>> Fixing Merge Conflicts from 59
 
 ### xSQLServerSetup
 
@@ -328,18 +333,28 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **Credential**: Specifies the credentials for making a SQL Server Authentication connection to an instance of the Database Engine.
 * **Variable**: Creates a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable.
 
+### xSqlAlias
+ * **Name**: The name of Alias (e.g. svr01\inst01).
+ * **ServerName**: The name of real SQL server.
+ * **Protocol**: The protocol of either tcp or np (named pipes).
+ * **RetryCount**: Maximum number of retries to check HA group existency.
+ * **TCPPort**: The tcp port of the instance.
+
 ## Versions
 
 ### Unreleased
 * Added resources
   - xSQLServerReplication
   - xSQLServerScript
+  - xSQLAlias	
 * Added tests for resources
   - xSQLServerPermission
   - xSQLServerEndpointState
   - xSQLServerEndpointPermission
   - xSQLServerAvailabilityGroupListener
   - xSQLServerLogin
+  - xSQLAOGroupEnsure
+  - xSQLAlias
 * Fixes in xSQLServerAvailabilityGroupListener
   - In one case the Get-method did not report that DHCP was configured. 
   - Now the resource will throw 'Not supported' when IP is changed between Static and DHCP.
@@ -351,6 +366,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - BREAKING CHANGE: The name of the parameter Database has changed. It is now called Name.
 * Fixes in xSQLAOGroupEnsure
   - Added parameters to New-ListenerADObject to allow usage of a named instance.
+  - pass Setup Credential Correctly
 * Changes to xSQLServerLogin
    - Fixed an issue when dropping logins.
    - BREAKING CHANGE: Fixed an issue where it was not possible to add the same login to two instances on the same server.
@@ -377,6 +393,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
         - Get-SQLAlwaysOnEndpoint
     - modified functions
         - New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
+
 
 ### 1.7.0.0
 
