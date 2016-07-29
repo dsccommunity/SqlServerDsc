@@ -38,6 +38,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerEndpointPermission** Grant or revoke permission on the endpoint.
 * **xSQLServerAvailabilityGroupListener** Create or remove an availability group listener.
 * **xSQLServerReplication** resource to manage SQL Replication distribution and publishing.
+* **xSQLAlias** resource to manage SQL Server client Aliases
+
 
 ### xSQLServerSetup
 
@@ -318,6 +320,14 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **UseTrustedConnection**: (Default = $true) Publisher security mode.
 * **UninstallWithForce**: (Default = $true) Force flag for uninstall procedure
 
+### xSqlAlias
+ 
+ * **Name**: The name of Alias (e.g. svr01\inst01).
+ * **ServerName**: The name of real SQL server.
+ * **Protocol**: The protocol of either tcp or np (named pipes).
+ * **RetryCount**: Maximum number of retries to check HA group existency.
+ * **TCPPort**: The tcp port of the instance.
+
 ## Versions
 
 ### Unreleased
@@ -354,6 +364,19 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
     - modified functions
         - New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
 
+	- added functions 
+		- Import-SQLPSModule
+		- Get-SQLPSInstanceName
+		- Get-SQLPSInstance
+		- Get-SQLAlwaysOnEndpoint
+	- modified functions
+		- New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
+* Pester Tests for xSQLAOGroupEnsure and xSQLAlias
+* Correction on xSQLAOGroupEnsure to pass Setup Credential Correctly
+
+* Resources Added
+	* xSQLAlias	
+	
 ### 1.7.0.0
 
 * Resources Added
