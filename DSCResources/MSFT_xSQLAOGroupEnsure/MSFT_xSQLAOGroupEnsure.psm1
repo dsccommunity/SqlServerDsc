@@ -61,7 +61,7 @@ function Set-TargetResource
     param
     (
         [parameter(Mandatory = $true)]
-        [ValidateSet("Present","Absent")]
+        [ValidateSet("Present", "Absent")]
         [System.String]
         $Ensure,
 
@@ -79,27 +79,27 @@ function Set-TargetResource
         $AvailabilityGroupSubMask,
 
         [System.UInt32]
-        $AvailabilityGroupPort ="1433",
+        $AvailabilityGroupPort = "1433",
 
-        [ValidateSet("None","ReadOnly","ReadIntent")]
+        [ValidateSet("None", "ReadOnly", "ReadIntent")]
         [System.String]
-        $ReadableSecondary="ReadOnly",
+        $ReadableSecondary = "ReadOnly",
 
-        [ValidateSet("Primary","Secondary")]
+        [ValidateSet("Primary", "Secondary")]
         [System.String]
-        $AutoBackupPreference ="Primary",
+        $AutoBackupPreference = "Primary",
         
         [System.UInt32]
         $BackupPriority = "50",
         
         [System.UInt32]
-        $EndPointPort ="5022",
+        $EndPointPort = "5022",
 
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
         [System.String]
-        $SQLInstanceName= "MSSQLSERVER",
+        $SQLInstanceName = "MSSQLSERVER",
         
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
@@ -286,7 +286,7 @@ function Test-TargetResource
     param
     (
         [parameter(Mandatory = $true)]
-        [ValidateSet("Present","Absent")]
+        [ValidateSet("Present", "Absent")]
         [System.String]
         $Ensure,
 
@@ -306,25 +306,25 @@ function Test-TargetResource
         [System.UInt32]
         $AvailabilityGroupPort,
 
-        [ValidateSet("None","ReadOnly","ReadIntent")]
+        [ValidateSet("None", "ReadOnly", "ReadIntent")]
         [System.String]
         $ReadableSecondary ="ReadOnly",
 
-        [ValidateSet("Primary","Secondary")]
+        [ValidateSet("Primary", "Secondary")]
         [System.String]
-        $AutoBackupPreference ="Primary",
+        $AutoBackupPreference = "Primary",
         
         [System.UInt32]
         $BackupPriority = "50",
         
         [System.UInt32]
-        $EndPointPort ="5022",
+        $EndPointPort = "5022",
 
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
         [System.String]
-        $SQLInstanceName= "MSSQLSERVER",
+        $SQLInstanceName = "MSSQLSERVER",
         
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
