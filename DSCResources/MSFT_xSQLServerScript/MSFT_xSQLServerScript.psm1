@@ -20,11 +20,8 @@
         [System.String]
         $TestFilePath,
 
-        [System.String]
-        $Username,
-
-        [System.String]
-        $Password,
+        [System.Management.Automation.PSCredential]
+        $Credential,
 
         [System.String[]]
         $Variable
@@ -32,6 +29,14 @@
 
     Import-Module -Name SQLPS -WarningAction SilentlyContinue -ErrorAction Stop
     
+    if($null -ne $Credential)
+    {
+        $null = $PSBoundParameters.Add("Username", $Credential.UserName)
+        $null = $PSBoundParameters.Add("Password", $Credential.GetNetworkCredential().password)
+
+        $null = $PSBoundParameters.Remove("Credential")
+    }
+
     $null = $PSBoundParameters.Remove("SetFilePath")
     $null = $PSBoundParameters.Remove("GetFilePath")
     $null = $PSBoundParameters.Remove("TestFilePath")
@@ -75,11 +80,8 @@ function Set-TargetResource
         [System.String]
         $TestFilePath,
 
-        [System.String]
-        $Username,
-
-        [System.String]
-        $Password,
+        [System.Management.Automation.PSCredential]
+        $Credential,
 
         [System.String[]]
         $Variable
@@ -87,6 +89,14 @@ function Set-TargetResource
 
     Import-Module -Name SQLPS -WarningAction SilentlyContinue -ErrorAction Stop
     
+    if($null -ne $Credential)
+    {
+        $null = $PSBoundParameters.Add("Username", $Credential.UserName)
+        $null = $PSBoundParameters.Add("Password", $Credential.GetNetworkCredential().password)
+
+        $null = $PSBoundParameters.Remove("Credential")
+    }
+
     $null = $PSBoundParameters.Remove("SetFilePath")
     $null = $PSBoundParameters.Remove("GetFilePath")
     $null = $PSBoundParameters.Remove("TestFilePath")
@@ -117,11 +127,8 @@ function Test-TargetResource
         [System.String]
         $TestFilePath,
 
-        [System.String]
-        $Username,
-
-        [System.String]
-        $Password,
+        [System.Management.Automation.PSCredential]
+        $Credential,
 
         [System.String[]]
         $Variable
@@ -130,7 +137,15 @@ function Test-TargetResource
     Import-Module -Name SQLPS -WarningAction SilentlyContinue -ErrorAction Stop
     
     try
-    {    
+    {   
+        if($null -ne $Credential)
+        {
+            $null = $PSBoundParameters.Add("Username", $Credential.UserName)
+            $null = $PSBoundParameters.Add("Password", $Credential.GetNetworkCredential().password)
+
+            $null = $PSBoundParameters.Remove("Credential")
+        }
+     
         $null = $PSBoundParameters.Remove("SetFilePath")
         $null = $PSBoundParameters.Remove("GetFilePath")
         $null = $PSBoundParameters.Remove("TestFilePath")

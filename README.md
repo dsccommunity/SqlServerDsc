@@ -286,6 +286,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ### Unreleased
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
 * Added Support for SQL Server 2016
+* Resources Added
+  - xSQLServerScript
 
 ### 1.7.0.0
 * Resources Added
