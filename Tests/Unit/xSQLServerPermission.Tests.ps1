@@ -20,8 +20,6 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 #endregion HEADER
 
-# TODO: Other Optional Init Code Goes Here...
-
 # Begin Testing
 try
 {
