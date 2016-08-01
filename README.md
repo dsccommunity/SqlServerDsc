@@ -38,12 +38,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerEndpointPermission** Grant or revoke permission on the endpoint.
 * **xSQLServerAvailabilityGroupListener** Create or remove an availability group listener.
 * **xSQLServerReplication** resource to manage SQL Replication distribution and publishing.
-<<<<<<< 69dca6ac93fc95f0f4c87f5075970307b7e906fe
 * **xSQLServerScript** resource to extend DSCs Get/Set/Test functionality to T-SQL
-=======
 * **xSQLAlias** resource to manage SQL Server client Aliases
-
->>>>>>> Fixing Merge Conflicts from 59
 
 ### xSQLServerSetup
 
@@ -366,7 +362,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - BREAKING CHANGE: The name of the parameter Database has changed. It is now called Name.
 * Fixes in xSQLAOGroupEnsure
   - Added parameters to New-ListenerADObject to allow usage of a named instance.
-  - pass Setup Credential Correctly
+  - pass setup credential correctly
 * Changes to xSQLServerLogin
    - Fixed an issue when dropping logins.
    - BREAKING CHANGE: Fixed an issue where it was not possible to add the same login to two instances on the same server.
@@ -386,14 +382,13 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerEndpointPermission
   - xSQLServerAvailabilityGroupListener
 * xSQLServerHelper
-    - added functions 
-        - Import-SQLPSModule
-        - Get-SQLPSInstanceName
-        - Get-SQLPSInstance
-        - Get-SQLAlwaysOnEndpoint
-    - modified functions
-        - New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
-
+	- added functions 
+		- Import-SQLPSModule
+		- Get-SQLPSInstanceName
+		- Get-SQLPSInstance
+		- Get-SQLAlwaysOnEndpoint
+	- modified functions
+		- New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
 
 ### 1.7.0.0
 
