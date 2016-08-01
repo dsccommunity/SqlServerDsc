@@ -1,7 +1,7 @@
 ﻿$ErrorActionPreference = "Stop"
 
 $script:currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -ErrorAction Stop
+Import-Module $script:currentPath\..\..\xSQLServerHelper.psm1 -ErrorAction Stop
 
 function Get-TargetResource
 {
@@ -21,7 +21,7 @@ function Get-TargetResource
         [System.String]
         $Principal,
 
-        [ValidateSet("ALTER ANY AVAILABILITY GROUP","VIEW SERVER STATE","ALTER ANY ENDPOINT")]
+        [ValidateSet('AlterAnyAvailabilityGroup','ViewServerState','AlterAnyEndPoint')]
         [System.String[]]
         $Permission
     )
@@ -29,13 +29,13 @@ function Get-TargetResource
     New-VerboseMessage -Message "Enumerating permissions for $Principal"
 
     try {
-        $instance = Get-SQLPSInstance -NodeName $NodeName -InstanceName $InstanceName -Verbose:$VerbosePreference
+        $instance = Get-SQLPSInstance -NodeName $NodeName -InstanceName $InstanceName
 
         $permissionSet = Get-SQLServerPermissionSet -Permission $Permission
         $enumeratedPermission = $instance.EnumServerPermissions( $Principal, $permissionSet ) | Where-Object { $_.PermissionState -eq "Grant" }
         if( $null -ne $enumeratedPermission) {
             $grantedPermissionSet = Get-SQLServerPermissionSet -PermissionSet $enumeratedPermission.PermissionType
-            if( -not ( Compare-Object -ReferenceObject $permissionSet -DifferenceObject $grantedPermissionSet ) ) { 
+            if( -not ( Compare-Object -ReferenceObject $permissionSet -DifferenceObject $grantedPermissionSet -Property $Permission ) ) { 
                 $ensure = "Present"
             } else {
                 $ensure = "Absent"
@@ -82,7 +82,7 @@ function Set-TargetResource
         [System.String]
         $Principal,
 
-        [ValidateSet("ALTER ANY AVAILABILITY GROUP","VIEW SERVER STATE","ALTER ANY ENDPOINT")]
+        [ValidateSet('AlterAnyAvailabilityGroup','ViewServerState','AlterAnyEndPoint')]
         [System.String[]]
         $Permission
     )
@@ -98,7 +98,7 @@ function Set-TargetResource
     if( $null -ne $permissionState ) {
         if( $Ensure -ne "" ) {
             if( $permissionState.Ensure -ne $Ensure ) {
-                $instance = Get-SQLPSInstance -NodeName $NodeName -InstanceName $InstanceName -Verbose:$VerbosePreference
+                $instance = Get-SQLPSInstance -NodeName $NodeName -InstanceName $InstanceName
                 if( $null -ne $instance ) {
                     $permissionSet = Get-SQLServerPermissionSet -Permission $Permission
                     
@@ -147,7 +147,7 @@ function Test-TargetResource
         [System.String]
         $Principal,
 
-        [ValidateSet("ALTER ANY AVAILABILITY GROUP","VIEW SERVER STATE","ALTER ANY ENDPOINT")]
+        [ValidateSet('AlterAnyAvailabilityGroup','ViewServerState','AlterAnyEndPoint')]
         [System.String[]]
         $Permission
     )
@@ -190,19 +190,7 @@ function Get-SQLPermission
     if( $ServerPermissionSet ) {
         foreach( $Property in $($ServerPermissionSet | Get-Member -Type Property) ) {
             if( $ServerPermissionSet.$($Property.Name) ) {
-                switch( $Property.Name ) {
-                    "AlterAnyAvailabilityGroup" {
-                        $permission += @("ALTER ANY AVAILABILITY GROUP")
-                    }
-
-                    "ViewServerState" {
-                        $permission += @("VIEW SERVER STATE")
-                    }
-
-                    "AlterAnyEndPoint" {
-                        $permission += @("ALTER ANY ENDPOINT")
-                    }
-                }
+                $permission += $Property.Name
             }
         }
     }
@@ -228,20 +216,10 @@ function Get-SQLServerPermissionSet
     )
 
     if( $Permission ) {
-        [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]$permissionSet = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerPermissionSet
-        
-        switch( $Permission ) {
-            "ALTER ANY AVAILABILITY GROUP" {
-                $permissionSet.AlterAnyAvailabilityGroup = $True
-            }
+        [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] $permissionSet = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerPermissionSet
 
-            "VIEW SERVER STATE" {
-                $permissionSet.ViewServerState = $True
-            }
-
-            "ALTER ANY ENDPOINT" {
-                $permissionSet.AlterAnyEndPoint = $True
-            }
+        foreach( $currentPermission in $Permission ) {
+            $permissionSet.$($currentPermission) = $true
         }
     } else {
         $permissionSet = Merge-SQLPermissionSet -Object $PermissionSet 
@@ -253,7 +231,7 @@ function Get-SQLServerPermissionSet
 function Merge-SQLPermissionSet {
     param (
         [Parameter(Mandatory)]
-        [Microsoft.SqlServer.Management.Smo.PermissionSetBase[]]
+        [Microsoft.SqlServer.Management.Smo.ServerPermissionSet[]]
         [ValidateNotNullOrEmpty()]
         $Object
     )
