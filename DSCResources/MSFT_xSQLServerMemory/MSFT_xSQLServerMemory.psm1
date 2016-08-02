@@ -19,7 +19,7 @@ function Get-TargetResource
         $DynamicAlloc,
 
         [System.Int32]
-        $MinMemory,
+        $MinMemory = -1,
 
         [System.Int32]
         $MaxMemory,
@@ -27,8 +27,9 @@ function Get-TargetResource
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
+        [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName= "MSSQLSERVER"
+        $SQLInstanceName
     )
 
         if(!$SQL)
@@ -75,7 +76,7 @@ function Set-TargetResource
         $DynamicAlloc,
 
         [System.Int32]
-        $MinMemory,
+        $MinMemory = -1,
 
         [System.Int32]
         $MaxMemory,
@@ -83,8 +84,9 @@ function Set-TargetResource
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
+        [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName= "MSSQLSERVER"
+        $SQLInstanceName
     )
 
     if(!$SQL)
@@ -99,11 +101,8 @@ function Set-TargetResource
         {
             "Absent"
             {
-                If($Ensure -eq "Absent")
-                {
-                   $MaxMemory =2147483647
+                   $MaxMemory = 2147483647
                    $MinMemory = 128
-                } 
             }
             "Present"
             {       
@@ -132,19 +131,22 @@ function Set-TargetResource
                 }
                 else
                 {
-                    if (!$MaxMemory -xor !$MinMemory)
-                    {
-                        Throw "Dynamic Allocation is not set and Min and Max memory were not passed."
-                        Exit
-                    } 
+                    if  (-not $MaxMemory -or $MinMemory -lt 0) {
+                        throw "Dynamic Allocation is not set. Valid values were not supplied for MaxMemory or MinMemory."
+                    }
+
+                    if ($MinMemory -gt $MaxMemory) {
+                        throw "Provided MinMemory value is greater than MaxMemory."
+                    }
                 }
             }
         }
         try
         {            
             $sql.Configuration.MaxServerMemory.ConfigValue = $MaxMemory
-            if($MinMemory)
+            if($MinMemory -ge 0)
             {
+                Write-Verbose -message "MinMem will be set to $MinMemory."
                 $sql.Configuration.MinServerMemory.ConfigValue = $MinMemory
             }
             $sql.alter()
@@ -173,16 +175,17 @@ function Test-TargetResource
         $DynamicAlloc,
 
         [System.Int32]
-        $MinMemory,
+        $MinMemory = -1,
 
         [System.Int32]
         $MaxMemory,
 
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
-
+        
+        [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName= "MSSQLSERVER"
+        $SQLInstanceName
     )
 
     if(!$SQL)
@@ -229,7 +232,7 @@ function Test-TargetResource
              }
              else
              {
-                 If($MinMemory -ne $GetMinMemory -or $MaxMemory -ne $GetMaxMemory)
+                 If(($MinMemory -ge 0 -and $MinMemory -ne $GetMinMemory) -or $MaxMemory -ne $GetMaxMemory)
                  {
                     New-VerboseMessage -Message "Current Max Memory is $GetMaxMemory. Min Memory is $GetMinMemory"
                     return $false
