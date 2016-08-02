@@ -35,138 +35,210 @@ try
 
     #endregion Pester Test Initialization
 
-    Describe 'The system is not in the desired state' {
-        Mock -CommandName Get-SQLPSInstance -MockWith { 
-            $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server -ArgumentList @( $false )
-            $mockObjectSmoServer.Name = "$nodeName\$instanceName"
-            $mockObjectSmoServer.DisplayName = $instanceName
-            $mockObjectSmoServer.InstanceName = $instanceName
-            $mockObjectSmoServer.IsHadrEnabled = $False
-            $mockObjectSmoServer.MockGranteeName = $principal
+    $testParameters = @{
+        InstanceName = $instanceName
+        NodeName = $nodeName
+        Principal = $principal
+        Permission = $permission
+    }
 
-            return $mockObjectSmoServer
-        } -ModuleName $script:DSCResourceName -Verifiable
- 
-        $testParameters = @{
-            InstanceName = $instanceName
-            NodeName = $nodeName
-            Principal = $principal
-            Permission = $permission
+    Describe "$($script:DSCResourceName)\Get-TargetResource" {
+        Context 'When the system is not in the desired state' {
+            BeforeAll {
+                Mock -CommandName Get-SQLPSInstance -MockWith { 
+                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server -ArgumentList @( $false )
+                    $mockObjectSmoServer.Name = "$nodeName\$instanceName"
+                    $mockObjectSmoServer.DisplayName = $instanceName
+                    $mockObjectSmoServer.InstanceName = $instanceName
+                    $mockObjectSmoServer.IsHadrEnabled = $False
+                    $mockObjectSmoServer.MockGranteeName = $principal
+
+                    return $mockObjectSmoServer
+                } -ModuleName $script:DSCResourceName -Verifiable
+            }
+    
+            $result = Get-TargetResource @testParameters
+
+            It 'Should return the desired state as Absent' {
+                $result.Ensure | Should Be 'Absent'
+            }
+
+            It 'Should return the node name passed as parameter' {
+                $result.NodeName | Should Be $nodeName
+            }
+
+            It 'Should return the instance name passed as parameter' {
+                $result.InstanceName | Should Be $instanceName
+            }
+
+            It 'Should return the principal passed as parameter' {
+                $result.Principal | Should Be $principal
+            }
+
+            It 'Should not return any permissions' {
+                $result.Permission | Should Be $null
+            }
+
+            It 'Should call the mock function Get-SQLPSInstance' {
+                 Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context 
+            }
         }
+    
+        Context 'When the system is in the desired state' {
+            BeforeAll {
+                Mock -CommandName Get-SQLPSInstance -MockWith { 
+                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server -ArgumentList @( $true )
+                    $mockObjectSmoServer.Name = "$nodeName\$instanceName"
+                    $mockObjectSmoServer.DisplayName = $instanceName
+                    $mockObjectSmoServer.InstanceName = $instanceName
+                    $mockObjectSmoServer.IsHadrEnabled = $False
+                    $mockObjectSmoServer.MockGranteeName = $principal
 
-        $result = Get-TargetResource @testParameters
+                    return $mockObjectSmoServer
+                } -ModuleName $script:DSCResourceName -Verifiable
+            }
 
-        It 'Get method returns desired state is absent' {
-            $result.Ensure | Should Be 'Absent'
-        }
+            $result = Get-TargetResource @testParameters
 
-        It 'Get method returns correct node name' {
-            $result.NodeName | Should Be $nodeName
-        }
+            It 'Should return the desired state as present' {
+                $result.Ensure | Should Be 'Present'
+            }
 
-        It 'Get method returns correct instance name' {
-            $result.InstanceName | Should Be $instanceName
-        }
+            It 'Should return the node name passed as parameter' {
+                $result.NodeName | Should Be $nodeName
+            }
 
-        It 'Get method returns correct principal' {
-            $result.Principal | Should Be $principal
-        }
+            It 'Should return the instance name passed as parameter' {
+                $result.InstanceName | Should Be $instanceName
+            }
 
-        It 'Get method returns no permissions' {
-            $result.Permission | Should Be $null
-        }
+            It 'Should return the principal passed as parameter' {
+                $result.Principal | Should Be $principal
+            }
 
-        $testParameters += @{
-            Ensure = 'Present'
-        }
+            It 'Should return the permissions passed as parameter' {
+                foreach ($currentPermission in $permission) {
+                    if( $result.Permission -ccontains $currentPermission ) {
+                        $permissionState = $true 
+                    } else {
+                        $permissionState = $false
+                        break
+                    }
+                } 
+                
+                $permissionState | Should Be $true
+            }
 
-        $result = Test-TargetResource @testParameters
-
-        It 'Test method returns desired state is absent' {
-            $result | Should Be $false
-        }
-
-        It 'Set method calls Get-SQLPSInstance' {
-            Assert-MockCalled Get-SQLPSInstance -Exactly -Times 2 -ModuleName $script:DSCResourceName
-        }
-
-        It 'Set method should not throw' {
-            { Set-TargetResource @testParameters } | Should Not Throw
-        }
-
-        It 'Get,Test and Set method calls Get-SQLPSInstance' {
-            Assert-MockCalled Get-SQLPSInstance -Exactly 4 -ModuleName $script:DSCResourceName
+            It 'Should call the mock function Get-SQLPSInstance' {
+                 Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context 
+            }
         }
 
         Assert-VerifiableMocks
     }
 
-    Describe 'The system is in the desired state' {
-        Mock -CommandName Get-SQLPSInstance -MockWith { 
-            $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server -ArgumentList @($true)
-            $mockObjectSmoServer.Name = "$nodeName\$instanceName"
-            $mockObjectSmoServer.DisplayName = $instanceName
-            $mockObjectSmoServer.InstanceName = $instanceName
-            $mockObjectSmoServer.IsHadrEnabled = $False
-            $mockObjectSmoServer.MockGranteeName = $principal
+    # This is added to the hash table after the Get method is tested, because Get method doesn't have Ensure as a parameter. 
+    $testParameters += @{
+        Ensure = 'Present'
+    }
 
-            return $mockObjectSmoServer
-        } -ModuleName $script:DSCResourceName -Verifiable
+    Describe "$($script:DSCResourceName)\Test-TargetResource" {
+        Context 'When the system is not in the desired state' {
+            BeforeAll {
+                Mock -CommandName Get-SQLPSInstance -MockWith { 
+                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server -ArgumentList @( $false )
+                    $mockObjectSmoServer.Name = "$nodeName\$instanceName"
+                    $mockObjectSmoServer.DisplayName = $instanceName
+                    $mockObjectSmoServer.InstanceName = $instanceName
+                    $mockObjectSmoServer.IsHadrEnabled = $False
+                    $mockObjectSmoServer.MockGranteeName = $principal
 
-        $testParameters = @{
-            InstanceName = $instanceName
-            NodeName = $nodeName
-            Principal = $principal
-            Permission = $permission
+                    return $mockObjectSmoServer
+                } -ModuleName $script:DSCResourceName -Verifiable
+            }
+
+            It 'Should return that desired state is absent' {
+                $result = Test-TargetResource @testParameters
+                $result | Should Be $false
+            }
+
+            It 'Should call the mock function Get-SQLPSInstance' {
+                 Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context 
+            }
         }
 
-        $result = Get-TargetResource @testParameters
+        Context 'When the system is in the desired state' {
+            BeforeAll {
+                Mock -CommandName Get-SQLPSInstance -MockWith { 
+                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server -ArgumentList @( $true )
+                    $mockObjectSmoServer.Name = "$nodeName\$instanceName"
+                    $mockObjectSmoServer.DisplayName = $instanceName
+                    $mockObjectSmoServer.InstanceName = $instanceName
+                    $mockObjectSmoServer.IsHadrEnabled = $False
+                    $mockObjectSmoServer.MockGranteeName = $principal
 
-        It 'Get method returns desired state is present' {
-            $result.Ensure | Should Be 'Present'
+                    return $mockObjectSmoServer
+                } -ModuleName $script:DSCResourceName -Verifiable
+            }
+
+            It 'Should return that desired state is present' {
+                $result = Test-TargetResource @testParameters
+                $result | Should Be $true
+            }
+
+            It 'Should call the mock function Get-SQLPSInstance' {
+                 Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context 
+            }
         }
 
-        It 'Get method returns correct node name' {
-            $result.NodeName | Should Be $nodeName
+        Assert-VerifiableMocks
+    }
+
+    Describe "$($script:DSCResourceName)\Set-TargetResource" {
+        Context 'When the system is not in the desired state' {
+            BeforeAll {
+                Mock -CommandName Get-SQLPSInstance -MockWith { 
+                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server -ArgumentList @( $false )
+                    $mockObjectSmoServer.Name = "$nodeName\$instanceName"
+                    $mockObjectSmoServer.DisplayName = $instanceName
+                    $mockObjectSmoServer.InstanceName = $instanceName
+                    $mockObjectSmoServer.IsHadrEnabled = $False
+                    $mockObjectSmoServer.MockGranteeName = $principal
+
+                    return $mockObjectSmoServer
+                } -ModuleName $script:DSCResourceName -Verifiable
+            }
+
+            It 'Should not throw an error' {
+                { Set-TargetResource @testParameters } | Should Not Throw
+            }
+
+            It 'Should call the mock function Get-SQLPSInstance twice' {
+                 Assert-MockCalled Get-SQLPSInstance -Exactly -Times 2 -ModuleName $script:DSCResourceName -Scope Context 
+            }
         }
 
-        It 'Get method returns correct instance name' {
-            $result.InstanceName | Should Be $instanceName
-        }
+        Context 'When the system is in the desired state' {
+            BeforeAll {
+                Mock -CommandName Get-SQLPSInstance -MockWith { 
+                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server -ArgumentList @( $true )
+                    $mockObjectSmoServer.Name = "$nodeName\$instanceName"
+                    $mockObjectSmoServer.DisplayName = $instanceName
+                    $mockObjectSmoServer.InstanceName = $instanceName
+                    $mockObjectSmoServer.IsHadrEnabled = $False
+                    $mockObjectSmoServer.MockGranteeName = $principal
 
-        It 'Get method returns correct principal' {
-            $result.Principal | Should Be $principal
-        }
+                    return $mockObjectSmoServer
+                } -ModuleName $script:DSCResourceName -Verifiable
+            }
 
-        It 'Get method returns correct permissions' {
-            foreach ($currentPermission in $permission) {
-                if( $result.Permission -ccontains $currentPermission ) {
-                    $permissionState = $true 
-                } else {
-                    $permissionState = $false
-                    break
-                }
-            } 
-            
-            $permissionState | Should Be $true
-        }
+            It 'Should not throw an error' {
+                { Set-TargetResource @testParameters } | Should Not Throw
+            }
 
-        $testParameters += @{
-            Ensure = 'Present'
-        }
-
-        $result = Test-TargetResource @testParameters
-        
-        It 'Test method returns desired state is present' {
-            $result | Should Be $true
-        }
-
-        It 'Set method should not throw' {
-            { Set-TargetResource @testParameters } | Should Not Throw
-        }
-
-        It 'Get,Test and Set method calls Get-SQLPSInstance' {
-            Assert-MockCalled Get-SQLPSInstance -Exactly 3 -ModuleName $script:DSCResourceName
+            It 'Should call the mock function Get-SQLPSInstance' {
+                 Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context 
+            }
         }
 
         Assert-VerifiableMocks
