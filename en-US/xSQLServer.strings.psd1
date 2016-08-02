@@ -7,6 +7,7 @@ TestFailedAfterSet = Test-TargetResource returned false after calling set.
 RemoteConnectionFailed = Remote PowerShell connection to Server '{0}' failed.
 TODO = ToDo. Work not implemented at this time. 
 UnexpectedErrorFromGet = Got unexpected result from Get-TargetResource. No change is made.
+FailedToImportSQLPSModule = Failed to import SQLPS module. 
 
 # SQLServer
 NoDatabase = Database '{0}' does not exist on SQL server '{1}\{2}'.
@@ -16,10 +17,10 @@ LoginNotFound = Login '{0}' does not exist on SQL server '{1}\{2}'."
 FailedLogin = Creating a login of type 'SqlLogin' requires LoginCredential
 FeatureNotSupported = '{0}' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information.
 
-# AvailabilityGroupListner
-AvailabilityGroupListnerNotFound = Trying to make a change to a listner that does not exist.
-AvailabilityGroupListnerErrorVerifyExist = Unexpected result when trying to verify existence of listner {0}.
-AvailabilityGroupListnerIPChangeError = IP-address configuration mismatch. Expecting {0} found {1}. Resource does not support changing IP-address. Listner needs to be removed and then created again.
+# AvailabilityGroupListener
+AvailabilityGroupListenerNotFound = Trying to make a change to a listener that does not exist.
+AvailabilityGroupListenerErrorVerifyExist = Unexpected result when trying to verify existence of listener {0}.
+AvailabilityGroupListenerIPChangeError = IP-address configuration mismatch. Expecting {0} found {1}. Resource does not support changing IP-address. Listener needs to be removed and then created again.
 
 # Endpoint
 EndpointNotFound = Endpoint {0} does not exist

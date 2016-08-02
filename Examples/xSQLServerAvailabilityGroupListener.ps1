@@ -34,8 +34,8 @@ Configuration SQLAlwaysOnNodeConfig
 
     Node $AllNodes.Where{$_.Role -eq "PrimaryReplica" }.NodeName
     {
-        #region Example to add listners
-        xSQLServerAvailabilityGroupListner AvailabilityGroupListnerWithSameNameAsVCO
+        #region Example to add listeners
+        xSQLServerAvailabilityGroupListener AvailabilityGroupListenerWithSameNameAsVCO
         {
             Ensure = "Present"
             NodeName = $Node.NodeName
@@ -50,7 +50,7 @@ Configuration SQLAlwaysOnNodeConfig
             DependsOn = "[xSQLServerAvailabilityGroup]AvailabilityGroupForSynchronousCommitAndAutomaticFailover"
         }
 
-        xSQLServerAvailabilityGroupListner AvailabilityGroupListnerWithDifferentNameAsVCO
+        xSQLServerAvailabilityGroupListener AvailabilityGroupListenerWithDifferentNameAsVCO
         {
             Ensure = "Present"
             NodeName = $Node.NodeName
@@ -66,8 +66,8 @@ Configuration SQLAlwaysOnNodeConfig
         }
         #endregion
         
-        #region Example to remove listners
-        xSQLServerAvailabilityGroupListner RemoveAvailabilityGroupListnerWithSameNameAsVCO
+        #region Example to remove listeners
+        xSQLServerAvailabilityGroupListener RemoveAvailabilityGroupListenerWithSameNameAsVCO
         {
             Ensure = "Absent"
             NodeName = $Node.NodeName
@@ -77,10 +77,10 @@ Configuration SQLAlwaysOnNodeConfig
 
             PsDscRunAsCredential = $SqlAdministratorCredential
             
-            DependsOn = "[xSQLServerAvailabilityGroupListner]AvailabilityGroupListnerWithSameNameAsVCO"
+            DependsOn = "[xSQLServerAvailabilityGroupListener]AvailabilityGroupListenerWithSameNameAsVCO"
         }
 
-        xSQLServerAvailabilityGroupListner RemoveAvailabilityGroupListnerWithDifferentNameAsVCO
+        xSQLServerAvailabilityGroupListener RemoveAvailabilityGroupListenerWithDifferentNameAsVCO
         {
             Ensure = "Absent"
             NodeName = $Node.NodeName
@@ -90,7 +90,7 @@ Configuration SQLAlwaysOnNodeConfig
 
             PsDscRunAsCredential = $SqlAdministratorCredential
             
-            DependsOn = "[xSQLServerAvailabilityGroupListner]AvailabilityGroupListnerWithDifferentNameAsVCO"
+            DependsOn = "[xSQLServerAvailabilityGroupListener]AvailabilityGroupListenerWithDifferentNameAsVCO"
         }
         #endregion
     }

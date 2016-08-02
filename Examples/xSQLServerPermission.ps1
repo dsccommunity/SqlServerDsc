@@ -41,7 +41,7 @@ Configuration SQLAlwaysOnNodeConfig
             NodeName = $Node.NodeName
             InstanceName = $Node.SqlInstanceName
             Principal = "NT AUTHORITY\SYSTEM" 
-            Permission = "ALTER ANY AVAILABILITY GROUP","VIEW SERVER STATE"
+            Permission = "AlterAnyAvailabilityGroup","ViewServerState"
 
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
@@ -53,7 +53,7 @@ Configuration SQLAlwaysOnNodeConfig
             NodeName = $Node.NodeName
             InstanceName = $Node.SqlInstanceName
             Principal = "NT AUTHORITY\SYSTEM" 
-            Permission = "ALTER ANY AVAILABILITY GROUP","VIEW SERVER STATE"
+            Permission = "AlterAnyAvailabilityGroup","ViewServerState"
 
             PsDscRunAsCredential = $SqlAdministratorCredential
 
@@ -70,7 +70,7 @@ Configuration SQLAlwaysOnNodeConfig
             NodeName = $Node.NodeName
             InstanceName = $Node.SqlInstanceName
             Principal = "NT AUTHORITY\SYSTEM" 
-            Permission = "ALTER ANY AVAILABILITY GROUP","VIEW SERVER STATE"
+            Permission = "AlterAnyAvailabilityGroup","ViewServerState"
 
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
@@ -82,7 +82,7 @@ Configuration SQLAlwaysOnNodeConfig
             NodeName = $Node.NodeName
             InstanceName = $Node.SqlInstanceName
             Principal = "NT AUTHORITY\SYSTEM" 
-            Permission = "ALTER ANY AVAILABILITY GROUP","VIEW SERVER STATE"
+            Permission = "AlterAnyAvailabilityGroup","ViewServerState"
 
             PsDscRunAsCredential = $SqlAdministratorCredential
 

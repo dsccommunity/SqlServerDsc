@@ -37,7 +37,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerPermission** Grant or revoke permission on the SQL Server.
 * **xSQLServerEndpointState** Change state of the endpoint.
 * **xSQLServerEndpointPermission** Grant or revoke permission on the endpoint.
-* **xSQLServerAvailabilityGroupListner** Create or remove an availability group listner.
+* **xSQLServerAvailabilityGroupListener** Create or remove an availability group listener.
 
 ### xSQLServerSetup
 
@@ -280,7 +280,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **NodeName** The host name or FQDN.
 * **Ensure** If the permission should be present or absent.
 * **Principal** The login to which permission will be set.
-* **Permission** The permission to set for the login. Valid values are ALTER ANY AVAILABILITY GROUP, VIEW SERVER STATE or ALTER ANY ENDPOINT.
+* **Permission** The permission to set for the login. Valid values are AlterAnyAvailabilityGroup, ViewServerState or AlterAnyEndPoint.
 
 ### xSQLServerEndpointState
 * **InstanceName** The SQL Server instance name.
@@ -296,16 +296,16 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **Principal** The login to which permission will be set.
 * **Permission** The permission to set for the login. Valid value for permission are only CONNECT.
 
-### xSQLServerAvailabilityGroupListner
+### xSQLServerAvailabilityGroupListener
 *This resource requires that the CNO has been delegated the right `Create computer object` on the organizational unit (OU) in which the CNO resides.*
 * **InstanceName** The SQL Server instance name of the primary replica.
 * **NodeName** The host name or FQDN of the primary replica.
-* **Ensure** If the availability group listner should be present or absent.
-* **Name** The name of the availability group listner, max 15 characters. This name will be used as the Virtual Computer Object (VCO).
-* **AvailabilityGroup** The name of the availability group to which the availability group listner is or will be connected.
+* **Ensure** If the availability group listener should be present or absent.
+* **Name** The name of the availability group listener, max 15 characters. This name will be used as the Virtual Computer Object (VCO).
+* **AvailabilityGroup** The name of the availability group to which the availability group listener is or will be connected.
 * **IpAddress** The IP address used for the availability group listener, in the format 192.168.10.45/255.255.252.0. If using DCHP, set to the first IP-address of the DHCP subnet, in the format 192.168.8.1/255.255.252.0. Must be valid in the cluster-allowed IP range.
-* **Port** The port used for the availability group listner.
-* **DHCP** If DHCP should be used for the availability group listner instead of static IP address.
+* **Port** The port used for the availability group listener.
+* **DHCP** If DHCP should be used for the availability group listener instead of static IP address.
 
 ## Versions
 
@@ -319,7 +319,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerPermission
   - xSQLServerEndpointState
   - xSQLServerEndpointPermission
-  - xSQLServerAvailabilityGroupListner
+  - xSQLServerAvailabilityGroupListener
 * xSQLServerHelper
 	- added functions 
 		- Import-SQLPSModule
