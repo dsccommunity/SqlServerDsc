@@ -63,15 +63,9 @@ try
                 $result.Ensure | Should Be 'Absent'
             }
 
-            It 'Should return the node name passed as parameter' {
+            It 'Should return the same values as passed as parameters' {
                 $result.NodeName | Should Be $nodeName
-            }
-
-            It 'Should return the instance name passed as parameter' {
                 $result.InstanceName | Should Be $instanceName
-            }
-
-            It 'Should return the principal passed as parameter' {
                 $result.Principal | Should Be $principal
             }
 
@@ -104,15 +98,9 @@ try
                 $result.Ensure | Should Be 'Present'
             }
 
-            It 'Should return the node name passed as parameter' {
+            It 'Should return the same values as passed as parameters' {
                 $result.NodeName | Should Be $nodeName
-            }
-
-            It 'Should return the instance name passed as parameter' {
                 $result.InstanceName | Should Be $instanceName
-            }
-
-            It 'Should return the principal passed as parameter' {
                 $result.Principal | Should Be $principal
             }
 
