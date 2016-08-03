@@ -34,14 +34,11 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerEndpoint** resource to ensure database endpoint is present or absent
 * **xWaitForAvailabilityGroup** resource to wait till availability group is created on primary server
 * **xSQLServerConfiguration** resource to manage [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
-<<<<<<< HEAD
-* **xSQLServerScript** resource to extend DSCs Get/Set/Test functionality to T-SQL
-=======
 * **xSQLServerPermission** Grant or revoke permission on the SQL Server.
 * **xSQLServerEndpointState** Change state of the endpoint.
 * **xSQLServerEndpointPermission** Grant or revoke permission on the endpoint.
 * **xSQLServerAvailabilityGroupListener** Create or remove an availability group listener.
->>>>>>> refs/remotes/PowerShell/dev
+* **xSQLServerScript** resource to extend DSCs Get/Set/Test functionality to T-SQL
 
 ### xSQLServerSetup
 
@@ -279,16 +276,6 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **OptionValue**: (Required) SQL Server option value to be set.
 * **RestartService**: Default false. If true will restart SQL Service instance service after update.
 
-<<<<<<< HEAD
-###xSQLServerScript
-* **ServerInstance**: (Required) The name of an instance of the Database Engine. For default instances, only specify the computer name. For named instances, use the format ComputerName\\InstanceName.
-* **SetFilePath**: (Key) Path to SQL file that will perform Set action.
-* **GetFilePath**: (Key) Path to SQL file that will perform Get action. SQL Queries returned by this function are returned by the Get-DscConfiguration cmdlet with the GetResult parameter.
-* **TestFilePath**: (Key) Path to SQL file that will perform Test action. Any Script that does not throw an error and returns null is evaluated to true. Invoke-SqlCmd treats SQL Print statements as verbose text, this will not cause a Test to return false. 
-* **Credential**: Specifies the credentials for making a SQL Server Authentication connection to an instance of the Database Engine.
-* **Variable**: Creates a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable.
-* **GetResult**: Result of Get action.
-=======
 ### xSQLServerPermission
 * **InstanceName** The SQL Server instance name.
 * **NodeName** The host name or FQDN.
@@ -320,17 +307,22 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **IpAddress** The IP address used for the availability group listener, in the format 192.168.10.45/255.255.252.0. If using DCHP, set to the first IP-address of the DHCP subnet, in the format 192.168.8.1/255.255.252.0. Must be valid in the cluster-allowed IP range.
 * **Port** The port used for the availability group listener.
 * **DHCP** If DHCP should be used for the availability group listener instead of static IP address.
->>>>>>> refs/remotes/PowerShell/dev
+
+###xSQLServerScript
+* **ServerInstance**: (Required) The name of an instance of the Database Engine. For default instances, only specify the computer name. For named instances, use the format ComputerName\\InstanceName.
+* **SetFilePath**: (Key) Path to SQL file that will perform Set action.
+* **GetFilePath**: (Key) Path to SQL file that will perform Get action. SQL Queries returned by this function are returned by the Get-DscConfiguration cmdlet with the GetResult parameter.
+* **TestFilePath**: (Key) Path to SQL file that will perform Test action. Any Script that does not throw an error and returns null is evaluated to true. Invoke-SqlCmd treats SQL Print statements as verbose text, this will not cause a Test to return false. 
+* **Credential**: Specifies the credentials for making a SQL Server Authentication connection to an instance of the Database Engine.
+* **Variable**: Creates a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable.
+* **GetResult**: Result of Get action.
 
 ## Versions
 
 ### Unreleased
+
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
 * Added Support for SQL Server 2016
-<<<<<<< HEAD
-* Resources Added
-  - xSQLServerScript
-=======
 * xSQLAOGroupEnsure
    - Fixed spelling mistake in AutoBackupPreference property
    - Added BackupPriority property
@@ -339,6 +331,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerEndpointState
   - xSQLServerEndpointPermission
   - xSQLServerAvailabilityGroupListener
+  - xSQLServerScript
 * xSQLServerHelper
 	- added functions 
 		- Import-SQLPSModule
@@ -347,9 +340,9 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 		- Get-SQLAlwaysOnEndpoint
 	- modified functions
 		- New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
->>>>>>> refs/remotes/PowerShell/dev
 
 ### 1.7.0.0
+
 * Resources Added
   - xSQLServerConfiguration
   
@@ -465,5 +458,6 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Examples
 
 Examples for use of this resource can be found with the System Center resources, such as **xSCVMM**, **xSCSMA**, and **xSCOM**.
+
 
 
