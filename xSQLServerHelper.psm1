@@ -63,22 +63,26 @@ function New-TerminatingError
     [OutputType([System.Management.Automation.ErrorRecord])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
         $ErrorType,
 
-        [parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $false)]
         [String[]]
         $FormatArgs,
 
-        [parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $false)]
         [System.Management.Automation.ErrorCategory]
         $ErrorCategory = [System.Management.Automation.ErrorCategory]::OperationStopped,
 
-        [parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $false)]
         [Object]
-        $TargetObject = $null
+        $TargetObject = $null,
+
+        [Parameter(Mandatory = $false)]
+        [System.Exception]
+        $InnerException = $null
     )
 
     $errorMessage = $LocalizedData.$ErrorType
@@ -94,7 +98,12 @@ function New-TerminatingError
     }
 
     $errorMessage = ($errorMessage -f $FormatArgs)
-
+    
+    if( $InnerException )
+    {
+        $errorMessage += " InnerException: $($InnerException.Message)"
+    }
+    
     $callStack = Get-PSCallStack 
 
     # Get Name of calling script
@@ -111,10 +120,9 @@ function New-TerminatingError
         $errorId = $ErrorType
     }
 
-
     Write-Verbose -Message "$($USLocalizedData.$ErrorType -f $FormatArgs) | ErrorType: $errorId"
 
-    $exception = New-Object System.Exception $errorMessage;
+    $exception = New-Object System.Exception $errorMessage, $InnerException    
     $errorRecord = New-Object System.Management.Automation.ErrorRecord $exception, $errorId, $ErrorCategory, $TargetObject
 
     return $errorRecord
@@ -125,7 +133,7 @@ function New-VerboseMessage
 {
     [CmdletBinding()]
     [Alias()]
-    [OutputType([string])]
+    [OutputType([String])]
     Param
     (
         [Parameter(Mandatory=$true)]
@@ -149,12 +157,12 @@ function Grant-ServerPerms
         $SQLInstanceName= "MSSQLSERVER",
 
         [ValidateNotNullOrEmpty()]  
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
         [ValidateNotNullOrEmpty()] 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AuthorizedUser
     )
@@ -180,12 +188,12 @@ function Grant-CNOPerms
     Param
     (
         [ValidateNotNullOrEmpty()] 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AvailabilityGroupNameListener,
         
         [ValidateNotNullOrEmpty()] 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $CNO
     )
@@ -226,7 +234,7 @@ function New-ListenerADObject
     Param
     (
         [ValidateNotNullOrEmpty()] 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AvailabilityGroupNameListener,
         
@@ -239,7 +247,7 @@ function New-ListenerADObject
         $SQLInstanceName = "MSSQLSERVER",
     
         [ValidateNotNullOrEmpty()] 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential
     )
@@ -312,4 +320,113 @@ function New-ListenerADObject
           Exit
         }
 
+}
+
+function Import-SQLPSModule {
+    [CmdletBinding()]
+    param()
+
+    
+    <# If SQLPS is not removed between resources (if it was started by another DSC resource) getting
+    objects with the SQL PS provider will fail in some instances because of some sort of inconsistency. Uncertain why this happens. #>
+    if( (Get-Module SQLPS).Count -ne 0 ) {
+        Write-Debug "Unloading SQLPS module."
+        Remove-Module -Name SQLPS -Force -Verbose:$False
+    }
+    
+    Write-Debug "SQLPS module changes CWD to SQLSERVER:\ when loading, pushing location to pop it when module is loaded."
+    Push-Location
+
+    try {
+        New-VerboseMessage -Message "Importing SQLPS module."
+        Import-Module -Name SQLPS -DisableNameChecking -Verbose:$False -ErrorAction Stop # SQLPS has unapproved verbs, disable checking to ignore Warnings.
+        Write-Debug "SQLPS module imported." 
+    }
+    catch {
+        throw New-TerminatingError -ErrorType FailedToImportSQLPSModule -ErrorCategory InvalidOperation -InnerException $_.Exception
+    }
+    finally {
+        Write-Debug "Popping location back to what it was before importing SQLPS module."
+        Pop-Location
+    }
+
+}
+
+function Get-SQLPSInstanceName
+{
+    [CmdletBinding()]
+    [OutputType([String])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName
+    )
+
+    if( $InstanceName -eq "MSSQLSERVER" ) {
+        $InstanceName = "DEFAULT"            
+    }
+    
+    return $InstanceName
+}
+
+function Get-SQLPSInstance
+{
+    [CmdletBinding()]
+    [OutputType([String])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $NodeName 
+    )
+
+    $InstanceName = Get-SQLPSInstanceName -InstanceName $InstanceName 
+    $Path = "SQLSERVER:\SQL\$NodeName\$InstanceName"
+    
+    New-VerboseMessage -Message "Connecting to $Path as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+
+    Import-SQLPSModule
+    $instance = Get-Item $Path
+    
+    return $instance
+}
+
+function Get-SQLAlwaysOnEndpoint
+{
+    [CmdletBinding()]
+    [OutputType()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Name,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $NodeName 
+    )
+
+    $instance = Get-SQLPSInstance -InstanceName $InstanceName -NodeName $NodeName
+    $Path = "$($instance.PSPath)\Endpoints"
+
+    Write-Debug "Connecting to $Path as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+    
+    [String[]] $presentEndpoint = Get-ChildItem $Path
+    if( $presentEndpoint.Count -ne 0 -and $presentEndpoint.Contains("[$Name]") ) {
+        Write-Debug "Connecting to endpoint $Name as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+        $endpoint = Get-Item "$Path\$Name"
+    } else {
+        $endpoint = $null
+    }    
+
+    return $endpoint
 }

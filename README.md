@@ -34,7 +34,14 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerEndpoint** resource to ensure database endpoint is present or absent
 * **xWaitForAvailabilityGroup** resource to wait till availability group is created on primary server
 * **xSQLServerConfiguration** resource to manage [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
+<<<<<<< HEAD
 * **xSQLServerScript** resource to extend DSCs Get/Set/Test functionality to T-SQL
+=======
+* **xSQLServerPermission** Grant or revoke permission on the SQL Server.
+* **xSQLServerEndpointState** Change state of the endpoint.
+* **xSQLServerEndpointPermission** Grant or revoke permission on the endpoint.
+* **xSQLServerAvailabilityGroupListener** Create or remove an availability group listener.
+>>>>>>> refs/remotes/PowerShell/dev
 
 ### xSQLServerSetup
 
@@ -202,12 +209,12 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **SQLInstance**: The SQL instance for the database
 
 ###xSQLServerMemory
-* **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
+* **Ensure**: An enumerated value that describes if Min and Max memory is configured
 * **DyamicAlloc**: (key) Flag to indicate if Memory is dynamically configured
 * **MinMemory**: Minimum memory value to set SQL Server memory to
 * **MaxMemory**: Maximum memory value to set SQL Server memory to
 * **SQLServer**: The SQL Server for the database
-* **SQLInstance**: The SQL instance for the database
+* **SQLInstance**: (key) The SQL instance for the database
 
 ###xSQLServerPowerPlan
 * **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
@@ -235,6 +242,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **AvailabilityGroupPort** Port availability group should listen on
 * **ReadableSecondary** Mode secondaries should operate under (None, ReadOnly, ReadIntent)
 * **AutoBackupPreference** Where backups should be backed up from (Primary,Secondary)
+* **BackupPriority** The percentage weight for backup prority (default 50)
 * **EndPointPort** The TCP port for the SQL AG Endpoint (default 5022)
 * **SQLServer**: The SQL Server for the database
 * **SQLInstance**: The SQL instance for the database
@@ -271,6 +279,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **OptionValue**: (Required) SQL Server option value to be set.
 * **RestartService**: Default false. If true will restart SQL Service instance service after update.
 
+<<<<<<< HEAD
 ###xSQLServerScript
 * **ServerInstance**: (Required) The name of an instance of the Database Engine. For default instances, only specify the computer name. For named instances, use the format ComputerName\\InstanceName.
 * **SetFilePath**: (Key) Path to SQL file that will perform Set action.
@@ -279,14 +288,66 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **Credential**: Specifies the credentials for making a SQL Server Authentication connection to an instance of the Database Engine.
 * **Variable**: Creates a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable.
 * **GetResult**: Result of Get action.
+=======
+### xSQLServerPermission
+* **InstanceName** The SQL Server instance name.
+* **NodeName** The host name or FQDN.
+* **Ensure** If the permission should be present or absent.
+* **Principal** The login to which permission will be set.
+* **Permission** The permission to set for the login. Valid values are AlterAnyAvailabilityGroup, ViewServerState or AlterAnyEndPoint.
+
+### xSQLServerEndpointState
+* **InstanceName** The SQL Server instance name.
+* **NodeName** The host name or FQDN.
+* **Name** The name of the endpoint.
+* **State** The state of the endpoint. Valid states are Started, Stopped or Disabled.
+
+### xSQLServerEndpointPermission
+* **InstanceName** The SQL Server instance name.
+* **NodeName** The host name or FQDN.
+* **Ensure** If the permission should be present or absent.
+* **Name** The name of the endpoint.
+* **Principal** The login to which permission will be set.
+* **Permission** The permission to set for the login. Valid value for permission are only CONNECT.
+
+### xSQLServerAvailabilityGroupListener
+*This resource requires that the CNO has been delegated the right `Create computer object` on the organizational unit (OU) in which the CNO resides.*
+* **InstanceName** The SQL Server instance name of the primary replica.
+* **NodeName** The host name or FQDN of the primary replica.
+* **Ensure** If the availability group listener should be present or absent.
+* **Name** The name of the availability group listener, max 15 characters. This name will be used as the Virtual Computer Object (VCO).
+* **AvailabilityGroup** The name of the availability group to which the availability group listener is or will be connected.
+* **IpAddress** The IP address used for the availability group listener, in the format 192.168.10.45/255.255.252.0. If using DCHP, set to the first IP-address of the DHCP subnet, in the format 192.168.8.1/255.255.252.0. Must be valid in the cluster-allowed IP range.
+* **Port** The port used for the availability group listener.
+* **DHCP** If DHCP should be used for the availability group listener instead of static IP address.
+>>>>>>> refs/remotes/PowerShell/dev
 
 ## Versions
 
 ### Unreleased
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
 * Added Support for SQL Server 2016
+<<<<<<< HEAD
 * Resources Added
   - xSQLServerScript
+=======
+* xSQLAOGroupEnsure
+   - Fixed spelling mistake in AutoBackupPreference property
+   - Added BackupPriority property
+* Added resources
+  - xSQLServerPermission
+  - xSQLServerEndpointState
+  - xSQLServerEndpointPermission
+  - xSQLServerAvailabilityGroupListener
+* xSQLServerHelper
+	- added functions 
+		- Import-SQLPSModule
+		- Get-SQLPSInstanceName
+		- Get-SQLPSInstance
+		- Get-SQLAlwaysOnEndpoint
+	- modified functions
+		- New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
+>>>>>>> refs/remotes/PowerShell/dev
 
 ### 1.7.0.0
 * Resources Added
