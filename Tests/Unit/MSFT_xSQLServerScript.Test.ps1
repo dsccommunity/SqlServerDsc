@@ -1,13 +1,11 @@
 <#
 .Synopsis
-   Automated unit test for RPS_TSQL DSC Resource
+   Automated unit test for MSFT_xSQLServerScript DSC Resource
 #>
 
 
-# TODO: Customize these parameters...
-$Global:DSCModuleName      = 'MSFT_xSQLServerScript' # Example xNetworking
-$Global:DSCResourceName    = 'MSFT_xSQLServerScript' # Example MSFT_xFirewall
-# /TODO
+$Script:DSCModuleName      = 'MSFT_xSQLServerScript' 
+$Script:DSCResourceName    = 'MSFT_xSQLServerScript' 
 
 #region HEADER
 # Unit Test Template Version: 1.1.0
@@ -20,21 +18,21 @@ if ( (-not (Test-Path -Path (Join-Path -Path $moduleRoot -ChildPath 'DSCResource
 
 Import-Module (Join-Path -Path $moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $Global:DSCModuleName `
-    -DSCResourceName $Global:DSCResourceName `
+    -DSCModuleName $DSCModuleName `
+    -DSCResourceName $DSCResourceName `
     -TestType Unit 
 #endregion HEADER
 
 # Begin Testing
 try
 {
-    InModuleScope $Global:DSCResourceName {
+    InModuleScope $DSCResourceName {
         #region Pester Test Initialization
-            Function GLobal:Invoke-SqlCmd {}
+            Function script:Invoke-SqlCmd {}
         #endregion Pester Test Initialization
 
         #region Function Get-TargetResource
-        Describe "$($Global:DSCResourceName)\Get-TargetResource" {
+        Describe "$($DSCResourceName)\Get-TargetResource" {
             It "Should throw if SQLPS module cannot be found" {
                 $throwMessage = "Failed to find module"
 
@@ -69,7 +67,7 @@ try
 
 
         #region Function Test-TargetResource
-        Describe "$($Global:DSCResourceName)\Test-TargetResource" {
+        Describe "$($DSCResourceName)\Test-TargetResource" {
             It "Should throw if SQLPS module cannot be found" {
                 $throwMessage = "Failed to find module"
 
@@ -98,7 +96,7 @@ try
 
 
         #region Function Set-TargetResource
-        Describe "$($Global:DSCResourceName)\Set-TargetResource" {
+        Describe "$($DSCResourceName)\Set-TargetResource" {
             It "Should throw if SQLPS module cannot be found" {
                 $throwMessage = "Failed to find module"
 

@@ -275,7 +275,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **ServerInstance**: (Required) The name of an instance of the Database Engine. For default instances, only specify the computer name. For named instances, use the format ComputerName\\InstanceName.
 * **SetFilePath**: (Key) Path to SQL file that will perform Set action.
 * **GetFilePath**: (Key) Path to SQL file that will perform Get action. SQL Queries returned by this function are returned by the Get-DscConfiguration cmdlet with the GetResult parameter.
-* **TestFilePath**: (Key) Path to SQL file that will perform Test action. Any Script that does not throw an error and returns null is evaluated to true. Invoke-SqlCmd treats SQL Print statements as verbose text, this will not cause a the Test to return false. 
+* **TestFilePath**: (Key) Path to SQL file that will perform Test action. Any Script that does not throw an error and returns null is evaluated to true. Invoke-SqlCmd treats SQL Print statements as verbose text, this will not cause a Test to return false. 
 * **Credential**: Specifies the credentials for making a SQL Server Authentication connection to an instance of the Database Engine.
 * **Variable**: Creates a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable.
 * **GetResult**: Result of Get action.
