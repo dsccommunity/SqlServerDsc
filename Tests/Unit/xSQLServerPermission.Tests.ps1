@@ -61,7 +61,7 @@ try
     
             $result = Get-TargetResource @testParameters
 
-            It 'Should return the desired state as Absent' {
+            It 'Should return the desired state as absent' {
                 $result.Ensure | Should Be 'Absent'
             }
 
@@ -211,7 +211,7 @@ try
                 { Set-TargetResource @testParameters } | Should Not Throw
             }
 
-            It 'Should call the mock function Get-SQLPSInstance twice' {
+            It 'Should call the mock function Get-SQLPSInstance' {
                  Assert-MockCalled Get-SQLPSInstance -Exactly -Times 2 -ModuleName $script:DSCResourceName -Scope Context 
             }
         }
@@ -251,6 +251,4 @@ finally
     Restore-TestEnvironment -TestEnvironment $TestEnvironment 
 
     #endregion
-
-    Remove-module $script:DSCResourceName -Force
 }
