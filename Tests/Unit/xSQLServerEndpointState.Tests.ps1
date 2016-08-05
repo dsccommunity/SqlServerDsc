@@ -24,18 +24,13 @@ $TestEnvironment = Initialize-TestEnvironment `
 try
 {
     #region Pester Test Initialization
-
-    # Loading mocked classes
-    #Add-Type -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SMO.cs')
-
-    #endregion Pester Test Initialization
-
     $defaultParameters = @{
         InstanceName = 'DEFAULT'
         NodeName = 'localhost'
         Name = 'DefaultMirrorEndpoint'
         
     }
+    #endregion Pester Test Initialization
 
     Describe "$($script:DSCResourceName)\Get-TargetResource" {
         $testParameters = $defaultParameters
