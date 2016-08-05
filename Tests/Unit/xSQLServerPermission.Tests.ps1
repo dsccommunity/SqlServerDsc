@@ -45,8 +45,10 @@ try
     Describe "$($script:DSCResourceName)\Get-TargetResource" {
         Context 'When the system is not in the desired state' {
             BeforeAll {
-                Mock -CommandName Get-SQLPSInstance -MockWith { 
-                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server -ArgumentList @( $false )
+                Mock -CommandName Get-SQLPSInstance -MockWith {
+                    [Microsoft.SqlServer.Management.Smo.Globals]::GenerateMockData = $false
+
+                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server
                     $mockObjectSmoServer.Name = "$nodeName\$instanceName"
                     $mockObjectSmoServer.DisplayName = $instanceName
                     $mockObjectSmoServer.InstanceName = $instanceName
@@ -80,8 +82,10 @@ try
     
         Context 'When the system is in the desired state' {
             BeforeAll {
-                Mock -CommandName Get-SQLPSInstance -MockWith { 
-                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server -ArgumentList @( $true )
+                Mock -CommandName Get-SQLPSInstance -MockWith {
+                    [Microsoft.SqlServer.Management.Smo.Globals]::GenerateMockData = $true
+                    
+                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server
                     $mockObjectSmoServer.Name = "$nodeName\$instanceName"
                     $mockObjectSmoServer.DisplayName = $instanceName
                     $mockObjectSmoServer.InstanceName = $instanceName
@@ -133,8 +137,10 @@ try
     Describe "$($script:DSCResourceName)\Test-TargetResource" {
         Context 'When the system is not in the desired state' {
             BeforeAll {
-                Mock -CommandName Get-SQLPSInstance -MockWith { 
-                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server -ArgumentList @( $false )
+                Mock -CommandName Get-SQLPSInstance -MockWith {
+                    [Microsoft.SqlServer.Management.Smo.Globals]::GenerateMockData = $false
+
+                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server
                     $mockObjectSmoServer.Name = "$nodeName\$instanceName"
                     $mockObjectSmoServer.DisplayName = $instanceName
                     $mockObjectSmoServer.InstanceName = $instanceName
@@ -157,8 +163,10 @@ try
 
         Context 'When the system is in the desired state' {
             BeforeAll {
-                Mock -CommandName Get-SQLPSInstance -MockWith { 
-                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server -ArgumentList @( $true )
+                Mock -CommandName Get-SQLPSInstance -MockWith {
+                    [Microsoft.SqlServer.Management.Smo.Globals]::GenerateMockData = $true
+
+                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server
                     $mockObjectSmoServer.Name = "$nodeName\$instanceName"
                     $mockObjectSmoServer.DisplayName = $instanceName
                     $mockObjectSmoServer.InstanceName = $instanceName
@@ -185,8 +193,10 @@ try
     Describe "$($script:DSCResourceName)\Set-TargetResource" {
         Context 'When the system is not in the desired state' {
             BeforeAll {
-                Mock -CommandName Get-SQLPSInstance -MockWith { 
-                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server -ArgumentList @( $false )
+                Mock -CommandName Get-SQLPSInstance -MockWith {
+                    [Microsoft.SqlServer.Management.Smo.Globals]::GenerateMockData = $false
+
+                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server
                     $mockObjectSmoServer.Name = "$nodeName\$instanceName"
                     $mockObjectSmoServer.DisplayName = $instanceName
                     $mockObjectSmoServer.InstanceName = $instanceName
@@ -208,8 +218,10 @@ try
 
         Context 'When the system is in the desired state' {
             BeforeAll {
-                Mock -CommandName Get-SQLPSInstance -MockWith { 
-                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server -ArgumentList @( $true )
+                Mock -CommandName Get-SQLPSInstance -MockWith {
+                    [Microsoft.SqlServer.Management.Smo.Globals]::GenerateMockData = $true
+
+                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server
                     $mockObjectSmoServer.Name = "$nodeName\$instanceName"
                     $mockObjectSmoServer.DisplayName = $instanceName
                     $mockObjectSmoServer.InstanceName = $instanceName

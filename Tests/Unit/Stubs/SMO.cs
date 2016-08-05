@@ -3,6 +3,12 @@ using System.Collections.Generic;
 
 namespace Microsoft.SqlServer.Management.Smo
 {
+    public class Globals
+    {
+        // Static property that is switched on or off by tests if data should be mocked (true) or not (false).
+        public static bool GenerateMockData = false;
+    }
+
     // TypeName: Microsoft.SqlServer.Management.Smo.ServerPermissionSet
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionSetBase
     // Used by: 
@@ -57,8 +63,6 @@ namespace Microsoft.SqlServer.Management.Smo
     //  xSQLServerPermission
     public class Server 
     { 
-        private bool _generateMockData = false;
-
         public string MockGranteeName;
 
         public string Name;
@@ -66,21 +70,13 @@ namespace Microsoft.SqlServer.Management.Smo
         public string InstanceName;
         public bool IsHadrEnabled = false;
 
-        public Server()
-        { 
-            _generateMockData = false;
-        } 
-
-        public Server( bool generateMockData )
-        { 
-            this._generateMockData = generateMockData;
-        } 
+        public Server(){} 
 
         public Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[] EnumServerPermissions( string principal, Microsoft.SqlServer.Management.Smo.ServerPermissionSet permissionSetQuery ) 
         { 
             List<Microsoft.SqlServer.Management.Smo.ServerPermissionInfo> listOfServerPermissionInfo = new List<Microsoft.SqlServer.Management.Smo.ServerPermissionInfo>();
             
-            if( this._generateMockData ) {
+            if( Globals.GenerateMockData ) {
                 Microsoft.SqlServer.Management.Smo.ServerPermissionSet[] permissionSet = { 
                     new Microsoft.SqlServer.Management.Smo.ServerPermissionSet( true, false, false, false ),
                     new Microsoft.SqlServer.Management.Smo.ServerPermissionSet( false, true, false, false ),
