@@ -8,127 +8,195 @@ $Script:DSCModuleName      = 'MSFT_xSQLServerScript'
 $Script:DSCResourceName    = 'MSFT_xSQLServerScript' 
 
 #region HEADER
+
 # Unit Test Template Version: 1.1.0
-[String] $moduleRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $Script:MyInvocation.MyCommand.Path))
-if ( (-not (Test-Path -Path (Join-Path -Path $moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-     (-not (Test-Path -Path (Join-Path -Path $moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
+     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $moduleRoot -ChildPath '\DSCResource.Tests\'))
+    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
 }
 
-Import-Module (Join-Path -Path $moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
+Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $DSCModuleName `
-    -DSCResourceName $DSCResourceName `
+    -DSCModuleName $script:DSCModuleName `
+    -DSCResourceName $script:DSCResourceName `
     -TestType Unit 
+
 #endregion HEADER
 
 # Begin Testing
 try
 {
-    InModuleScope $DSCResourceName {
-        #region Pester Test Initialization
-            Function script:Invoke-SqlCmd {}
-        #endregion Pester Test Initialization
+    #region Pester Test Initialization
+        Function script:Invoke-SqlCmd {}
+    #endregion Pester Test Initialization
 
-        #region Function Get-TargetResource
-        Describe "$($DSCResourceName)\Get-TargetResource" {
-            It "Should throw if SQLPS module cannot be found" {
-                $throwMessage = "Failed to find module"
+    #region Test Sql script throws an error
+    Describe 'Test Sql script throws an error' {
+        Mock -CommandName Import-Module -MockWith {}        
 
-                Mock -CommandName Import-Module -MockWith { Throw $throwMessage }
-
-                { Get-TargetResource -ServerInstance $env:COMPUTERNAME -SetFilePath "set.sql" -GetFilePath "get.sql" -TestFilePath "test.sql" } | should throw $throwMessage
-            }
-
-            It "Should throw if Invoke-SqlCmd throws" {
-                $throwMessage = "Failed to run SQL Script"
-
-                Mock -CommandName Import-Module -MockWith {}
-                Mock -CommandName Invoke-SqlCmd -MockWith { Throw $throwMessage }
-
-                { Get-TargetResource -ServerInstance $env:COMPUTERNAME -SetFilePath "set.sql" -GetFilePath "get.sql" -TestFilePath "test.sql" } | should throw $throwMessage
-            }
-            
-            It "Should return a hashtable if the Get SQL script returns" {
-                Mock -CommandName Import-Module -MockWith {}
-                Mock -CommandName Invoke-SqlCmd -MockWith { "" }
-
-                $result = Get-TargetResource -ServerInstance $env:COMPUTERNAME -SetFilePath "set.sql" -GetFilePath "get.sql" -TestFilePath "test.sql"
-
-                $result.ServerInstance | should be $env:COMPUTERNAME
-                $result.SetFilePath | should be "set.sql"
-                $result.GetFilePath | should be "get.sql"
-                $result.TestFilePath | should be "test.sql"
-                $result.GetType() | should be "hashtable"
-            }
+        $testParameters = @{
+            ServerInstance = $env:COMPUTERNAME 
+            SetFilePath = "set.sql" 
+            GetFilePath = "get.sql" 
+            TestFilePath = "test.sql"
         }
-        #endregion Function Get-TargetResource
 
+        It 'Get method returns successfully' {         
+            Mock -CommandName Invoke-SqlCmd -MockWith { "" }
 
-        #region Function Test-TargetResource
-        Describe "$($DSCResourceName)\Test-TargetResource" {
-            It "Should throw if SQLPS module cannot be found" {
-                $throwMessage = "Failed to find module"
+            $result = Get-TargetResource @testParameters
 
-                Mock -CommandName Import-Module -MockWith { Throw $throwMessage }
-
-                { Test-TargetResource -ServerInstance $env:COMPUTERNAME -SetFilePath "set.sql" -GetFilePath "get.sql" -TestFilePath "test.sql" } | should throw $throwMessage
-            }
-
-            It "Should return false if Invoke-SqlCmd throws" {
-                $throwMessage = "Failed to run SQL Script"
-
-                Mock -CommandName Import-Module -MockWith {}
-                Mock -CommandName Invoke-SqlCmd -MockWith { Throw $throwMessage }
-
-                Test-TargetResource -ServerInstance $env:COMPUTERNAME -SetFilePath "set.sql" -GetFilePath "get.sql" -TestFilePath "test.sql" | should be $false
-            }
-
-            It "Should return true if Invoke-SqlCmd returns null" {
-                Mock -CommandName Import-Module -MockWith {}
-                Mock -CommandName Invoke-SqlCmd -MockWith {}
-
-                Test-TargetResource -ServerInstance $env:COMPUTERNAME -SetFilePath "set.sql" -GetFilePath "get.sql" -TestFilePath "test.sql" | should be $true
-            }
+            $result.ServerInstance | should be $testParameters.ServerInstance
+            $result.SetFilePath | should be $testParameters.SetFilePath
+            $result.GetFilePath | should be $testParameters.GetFilePath
+            $result.TestFilePath | should be $testParameters.TestFilePath
+            $result.GetType() | should be "hashtable"
         }
-        #endregion Function Test-TargetResource
 
+        It 'Test method returns false' {
+            $throwMessage = "Failed to run SQL Script"
 
-        #region Function Set-TargetResource
-        Describe "$($DSCResourceName)\Set-TargetResource" {
-            It "Should throw if SQLPS module cannot be found" {
-                $throwMessage = "Failed to find module"
+             Mock -CommandName Invoke-SqlCmd -MockWith { Throw $throwMessage }
 
-                Mock -CommandName Import-Module -MockWith { Throw $throwMessage }
-
-                { Set-TargetResource -ServerInstance $env:COMPUTERNAME -SetFilePath "set.sql" -GetFilePath "get.sql" -TestFilePath "test.sql" } | should throw $throwMessage
-            }
-
-            It "Should throw if Invoke-SqlCmd throws" {
-                $throwMessage = "Failed to run SQL Script"
-
-                Mock -CommandName Import-Module -MockWith {}
-                Mock -CommandName Invoke-SqlCmd -MockWith { Throw $throwMessage }
-
-                { Set-TargetResource -ServerInstance $env:COMPUTERNAME -SetFilePath "set.sql" -GetFilePath "get.sql" -TestFilePath "test.sql" } | should throw $throwMessage
-            }
-
-            It "Should always attempt to execute Invoke-SqlCmd" {
-                Mock -CommandName Import-Module -MockWith {}
-                Mock -CommandName Invoke-SqlCmd -MockWith {} -Verifiable
-
-                $result = Set-TargetResource -ServerInstance $env:COMPUTERNAME -SetFilePath "set.sql" -GetFilePath "get.sql" -TestFilePath "test.sql" 
-
-                Assert-MockCalled -CommandName Invoke-SqlCmd -Times 1
-            }
+             Test-TargetResource @testParameters | should be $false
         }
-        #endregion Function Set-TargetResource
+
+        It 'Set method calls Invoke-SqlCmd' {
+            Mock -CommandName Invoke-SqlCmd -MockWith { "" } -Verifiable
+
+            $result = Set-TargetResource @testParameters
+
+            Assert-MockCalled -CommandName Invoke-SqlCmd -Times 1
+        }
     }
+    #endregion Test Sql script throws an error
+
+    #region Test Sql script returns null
+    Describe 'Test Sql script returns null' {
+        Mock -CommandName Import-Module -MockWith {}        
+        Mock -CommandName Invoke-SqlCmd -MockWith { $null }
+
+        $testParameters = @{
+            ServerInstance = $env:COMPUTERNAME 
+            SetFilePath = "set.sql" 
+            GetFilePath = "get.sql" 
+            TestFilePath = "test.sql"
+        }
+
+        It 'Get method returns successfully' {                     
+            $result = Get-TargetResource @testParameters
+
+            $result.ServerInstance | should be $testParameters.ServerInstance
+            $result.SetFilePath | should be $testParameters.SetFilePath
+            $result.GetFilePath | should be $testParameters.GetFilePath
+            $result.TestFilePath | should be $testParameters.TestFilePath
+            $result.GetType() | should be "hashtable"
+        }
+
+        It 'Test method returns true' {
+            Test-TargetResource @testParameters | should be $true
+        }
+    }
+    #endregion Test Sql script returns null
+
+    #region Get SQl script throws and error
+    Describe 'Get SQl script throws and error' {
+        Mock -CommandName Import-Module -MockWith {}
+
+        $testParameters = @{
+            ServerInstance = $env:COMPUTERNAME 
+            SetFilePath = "set.sql" 
+            GetFilePath = "get.sql" 
+            TestFilePath = "test.sql"
+        }
+
+        It 'Get throws when get sql script throws' {                     
+            $throwMessage = "Failed to run SQL Script"
+
+            Mock -CommandName Invoke-SqlCmd -MockWith { Throw $throwMessage }
+
+            { Get-TargetResource @testParameters } | should throw $throwMessage
+        }
+
+        It 'Test method returns true' {
+            Mock -CommandName Invoke-SqlCmd -MockWith { $null }
+
+            Test-TargetResource @testParameters | should be $true
+        }
+    }
+    #endregion
+
+    #region Set-TargetResource throws when Set Sql script throws
+    Describe 'Set-TargetResource throws when Set Sql script throws' {
+        Mock -CommandName Import-Module -MockWith {}       
+        Mock -CommandName Invoke-SqlCmd -MockWith { $null }
+
+        $testParameters = @{
+            ServerInstance = $env:COMPUTERNAME 
+            SetFilePath = "set.sql" 
+            GetFilePath = "get.sql" 
+            TestFilePath = "test.sql"
+        }
+
+        It 'Get method returns successfully' {      
+            $result = Get-TargetResource @testParameters
+
+            $result.ServerInstance | should be $testParameters.ServerInstance
+            $result.SetFilePath | should be $testParameters.SetFilePath
+            $result.GetFilePath | should be $testParameters.GetFilePath
+            $result.TestFilePath | should be $testParameters.TestFilePath
+            $result.GetType() | should be "hashtable"
+        }
+
+        It 'Test method returns true' {
+            Test-TargetResource @testParameters | should be $true
+        }
+
+        It 'Set method throws' {
+            $throwMessage = "Failed to execute set Sql script"
+
+            Mock -CommandName Invoke-SqlCmd -MockWith { throw $throwMessage }
+
+            { Set-TargetResource @testParameters } | should throw $throwMessage
+        }
+    }
+    #endregion
+
+    #region Failed to import SQLPS module
+    Describe 'Failed to import SQLPS module' {
+        $throwMessage = "Failed to import module SQLPS"
+
+        Mock -CommandName Import-Module -MockWith { throw $throwMessage }        
+
+        $testParameters = @{
+            ServerInstance = $env:COMPUTERNAME 
+            SetFilePath = "set.sql" 
+            GetFilePath = "get.sql" 
+            TestFilePath = "test.sql"
+        }
+
+        It 'Get method throws' {         
+            { $result = Get-TargetResource @testParameters } | should throw $throwMessage
+        }
+
+        It 'Test method throws' {
+            { Test-TargetResource @testParameters } | should throw $throwMessage
+        }
+
+        It 'Set method throws' {
+            { Set-TargetResource @testParameters} | should throw $throwMessage
+        }
+    }
+    #endregion
+
 }
 finally
 {
     #region FOOTER
+
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
+
     #endregion
 }
