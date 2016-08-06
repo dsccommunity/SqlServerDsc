@@ -252,7 +252,7 @@ try
             function Set-SqlHADREndpoint { return }
         
             Export-ModuleMember -Function Set-SqlHADREndpoint
-        } | Import-Module -Force -Scope Global
+        } | Import-Module -Force
 
         Mock Set-SqlHADREndpoint -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
 
