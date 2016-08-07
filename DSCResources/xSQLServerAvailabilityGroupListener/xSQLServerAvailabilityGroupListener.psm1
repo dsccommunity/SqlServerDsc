@@ -274,9 +274,20 @@ function Test-TargetResource
         }
         
         [System.Boolean] $result = $false
-        if( ( $Ensure -eq "" -or ( $Ensure -ne "" -and $listenerState.Ensure -eq $Ensure) ) -and ($Port -eq "" -or $listenerState.Port -eq $Port) -and $ipAddressEqual ) {
-            $result = $true
+        if( $listenerState.Ensure -eq $Ensure)  {
+            if( $Ensure -eq 'Absent' ) {
+                $result = $true
+            } elseif ( ( $Port -eq "" -or $listenerState.Port -eq $Port ) -and $ipAddressEqual ) {
+                $result = $true
+            }
         }
+
+        if( $Ensure -eq "" ) { # Will handle changes when Ensure is not set. 
+            if( ($Port -eq "" -or $listenerState.Port -eq $Port) -and $ipAddressEqual ) {
+                $result = $true
+            }
+        }
+
     } else {
         throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
     }
