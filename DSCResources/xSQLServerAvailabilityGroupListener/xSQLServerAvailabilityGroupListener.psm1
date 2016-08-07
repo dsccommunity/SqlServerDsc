@@ -39,7 +39,7 @@ function Get-TargetResource
 
             $presentIpAddress = $listener.AvailabilityGroupListenerIPAddresses
 
-            $dhcp = [bool]( $presentIpAddress | Select-Object -first 1 IsDHCP )
+            $dhcp = [bool]( $presentIpAddress | Select-Object -First 1 -ExpandProperty IsDHCP )
 
             $ipAddress = @()
             foreach( $currentIpAddress in $presentIpAddress ) {
