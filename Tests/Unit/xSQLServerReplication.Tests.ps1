@@ -2,7 +2,6 @@ $script:DSCModuleName   = 'xSQLServer'
 $script:DSCResourceName = 'xSQLServerReplication'
 
 #region HEADER
-
 # Unit Test Template Version: 1.1.0
 [String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
@@ -15,102 +14,255 @@ Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:DSCModuleName `
     -DSCResourceName $script:DSCResourceName `
-    -TestType Unit 
+    -TestType Unit
 
 #endregion HEADER
-
 # Begin Testing
 try
 {
-    #region Pester Test Initialization
-
-    #TODO: Load stubs
-    #TODO: define variables
-
-    #endregion Pester Test Initialization
-
-    #region Example state 1
-    Describe 'The system is not in the desired state' {
-        #TODO: Mock cmdlets here that represent the system not being in the desired state
-
-        #TODO: Create a set of parameters to test your get/test/set methods in this state
-        $testParameters = @{
-            Property1 = 'value'
-            Property2 = 'value'
-        }
-
-        #TODO: Update the assertions below to align with the expected results of this state
-        It 'Get method returns something' {
-            Get-TargetResource @testParameters | Should Be 'something'
-        }
-
-        It 'Test method returns false' {
-            Test-TargetResource @testParameters | Should be $false
-        }
-
-        It 'Set method calls Demo-CmdletName' {
-            Set-TargetResource @testParameters
-
-            #TODO: Assert that the appropriate cmdlets were called
-            Assert-MockCalled Demo-CmdletName 
-        }
-    }
-    #endregion Example state 1
-
-    #region Example state 2
-    Describe 'The system is in the desired state' {
-        #TODO: Mock cmdlets here that represent the system being in the desired state
-
-        #TODO: Create a set of parameters to test your get/test/set methods in this state
-        $testParameters = @{
-            Property1 = 'value'
-            Property2 = 'value'
-        }
-
-        #TODO: Update the assertions below to align with the expected results of this state
-        It 'Get method returns something' {
-            Get-TargetResource @testParameters | Should Be 'something'
-        }
-
-        It 'Test method returns true' {
-            Test-TargetResource @testParameters | Should be $true
-        }
-    }
-    #endregion Example state 1
-
-    #region Non-Exported Function Unit Tests
-
-    # TODO: Pester Tests for any non-exported Helper Cmdlets
-    # If the resource does not contain any non-exported helper cmdlets then
-    # this block may be safetly deleted.
     InModuleScope $script:DSCResourceName {
 
-        Describe 'Get-SqlServerMajorVersion' {
-
-            Mock -CommandName Get-ItemProperty `
-                -MockWith { return New-Object psobject -Property @{ MSSQLSERVER = 'MSSQL12.MSSQLSERVER'} } `
-                -ParameterFilter { $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' }
-
-            It 'Should return corrent major version for default instance' {
+        Describe 'Helper functions' {
+            Context 'Get-SqlServerMajorVersion' {
 
                 Mock -CommandName Get-ItemProperty `
-                    -MockWith { return New-Object psobject -Property @{ Version = '12.1.4100.1' } } `
-                    -ParameterFilter { $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.MSSQLSERVER\Setup' }
-               
-                Get-SqlServerMajorVersion -InstanceName 'MSSQLSERVER' | Should be '12'
+                    -MockWith { return [pscustomobject]@{ MSSQLSERVER = 'MSSQL12.MSSQLSERVER'} } `
+                    -ParameterFilter { $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' }
+
+                It 'Should return corrent major version for default instance' {
+
+                    Mock -CommandName Get-ItemProperty `
+                        -MockWith { return [pscustomobject]@{ Version = '12.1.4100.1' } } `
+                        -ParameterFilter { $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.MSSQLSERVER\Setup' }
+
+                    Get-SqlServerMajorVersion -InstanceName 'MSSQLSERVER' | Should be '12'
+                }
+
+                It 'Should throw error if major version cannot be resolved' {
+
+                    Mock -CommandName Get-ItemProperty `
+                        -MockWith { return [pscustomobject]@{ Version = '' } }`
+                        -ParameterFilter { $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.MSSQLSERVER\Setup' }
+
+                    { Get-SqlServerMajorVersion -InstanceName 'MSSQLSERVER' } | Should Throw "instance: MSSQLSERVER!"
+                }
             }
 
-            It 'Should throw error if major version cannot be resolved' {
-                
-                Mock -CommandName Get-ItemProperty `
-                    -MockWith { return New-Object psobject -Property @{ Version = '' } }`
-                    -ParameterFilter { $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.MSSQLSERVER\Setup' }
+            Context 'Get-SqlLocalServerName' {
 
-                { Get-SqlServerMajorVersion -InstanceName 'MSSQLSERVER' } | Should Throw "instance: MSSQLSERVER!"
+                It 'Should return COMPUTERNAME given MSSQLSERVER' {
+                    Get-SqlLocalServerName -InstanceName MSSQLSERVER | Should be $env:COMPUTERNAME
+                }
+
+                It 'Should return COMPUTERNAME\InstanceName given InstanceName' {
+                    Get-SqlLocalServerName -InstanceName InstanceName | Should be "$($env:COMPUTERNAME)\InstanceName"
+                }
+
+            }
+        }
+
+        $secpasswd = ConvertTo-SecureString 'P@$$w0rd1' -AsPlainText -Force
+        $credentials = New-Object System.Management.Automation.PSCredential ('AdminLink', $secpasswd)
+
+        Describe 'The system is not in the desired state given local distribution mode' {
+
+            $testParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                AdminLinkCredentials = $credentials
+                DistributorMode = 'Local'
+                WorkingDirectory = 'C:\temp'
+                Ensure = 'Present'
+            }
+
+            Mock -CommandName Get-SqlServerMajorVersion -MockWith { return '99' }
+            Mock -CommandName Get-SqlLocalServerName -MockWith { return 'SERVERNAME' }
+            Mock -CommandName New-ServerConnection -MockWith { 
+                return [pscustomobject]@{
+                    ServerInstance = $SqlServerName
+                } 
+            }
+            Mock -CommandName New-ReplicationServer -MockWith {
+                return [pscustomobject]@{
+                    IsDistributor = $false
+                    IsPublisher = $false
+                    DistributionDatabase = ''
+                    DistributionServer = 'SERVERNAME'
+                    WorkingDirectory = ''
+                }
+            }
+            Mock -CommandName New-DistributionDatabase -MockWith { return [pscustomobject]@{} } 
+            Mock -CommandName Install-LocalDistributor -MockWith {} 
+            Mock -CommandName Register-DistributorPublisher -MockWith {} 
+
+            Context 'Get methot' {
+                $result = Get-TargetResource @testParameters
+                It 'Get method returns Ensure = Absent' {
+                    $result.Ensure | Should Be 'Absent'
+                }
+                It "Get method returns InstanceName = $($testParameters.InstanceName)" {
+                    $result.InstanceName | Should Be $testParameters.InstanceName
+                }
+                It "Get method returns DistributorMode = $($testParameters.DistributorMode)" {
+                    $result.DistributorMode | Should Be $testParameters.DistributorMode
+                }
+                It 'Get method returns DistributionDBName = distribution' {
+                    $result.DistributionDBName | Should Be 'distribution'
+                }
+                It 'Get method returns RemoteDistributor is empty' {
+                    $result.RemoteDistributor | Should Be ''
+                }
+                It 'Get method returns WorkingDirectory = C:\temp' {
+                    $result.WorkingDirectory | Should Be 'C:\temp'
+                }
+            }
+
+            Context 'Test method' {
+                It 'Test method returns false' {
+                    Test-TargetResource @testParameters | Should be $false
+                }
+            }
+
+            Context 'Set method' {
+                Set-TargetResource @testParameters
+
+                It 'Set method calls Get-SqlServerMajorVersion with $InstanceName = MSSQLSERVER' {
+                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                        -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+                }
+
+                It 'Set method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
+                    Assert-MockCalled -CommandName Get-SqlLocalServerName -Times 1 `
+                        -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+                }
+
+                It 'Set method calls New-ServerConnection with $SqlServerName = SERVERNAME' {
+                    Assert-MockCalled -CommandName New-ServerConnection -Times 1 `
+                        -ParameterFilter { $SqlServerName -eq 'SERVERNAME' }
+                }
+
+                It 'Set method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME' {
+                    Assert-MockCalled -CommandName New-ReplicationServer -Times 1 `
+                        -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' }
+                }
+
+                It 'Set method calls New-DistributionDatabase with $DistributionDBName = distribution' {
+                    Assert-MockCalled -CommandName New-DistributionDatabase -Times 1 `
+                        -ParameterFilter { $DistributionDBName -eq 'distribution' }
+                }
+
+                It 'Set method calls Install-Distributor' {
+                    Assert-MockCalled -CommandName Install-LocalDistributor -Times 1 `
+                        -ParameterFilter { $ReplicationServer.DistributionServer -eq 'SERVERNAME' }
+                }
+
+                It 'Set method calls Register-DistributorPublisher' {
+                    Assert-MockCalled -CommandName Register-DistributorPublisher -Times 1 `
+                        -ParameterFilter { $PublisherName -eq 'SERVERNAME' }
+                }
+            }
+        }
+
+        Describe 'The system is not in the desired state given local distribution mode' {
+
+            $testParameters = @{
+                InstanceName = 'INSTANCENAME'
+                AdminLinkCredentials = $credentials
+                DistributorMode = 'Remote'
+                RemoteDistributor = 'REMOTESERVER'
+                WorkingDirectory = 'C:\temp'
+                Ensure = 'Present'
+            }
+
+            Mock -CommandName Get-SqlServerMajorVersion -MockWith { return '99' }
+            Mock -CommandName Get-SqlLocalServerName -MockWith { return 'SERVERNAME\INSTANCENAME' }
+            Mock -CommandName New-ServerConnection -MockWith { 
+                return [pscustomobject]@{
+                    ServerInstance = $SqlServerName
+                } 
+            }
+            Mock -CommandName New-ReplicationServer -MockWith {
+                return [pscustomobject]@{
+                    IsDistributor = $false
+                    IsPublisher = $false
+                    DistributionDatabase = ''
+                    DistributionServer = ''
+                    WorkingDirectory = ''
+                }
+            }
+            Mock -CommandName Register-DistributorPublisher -MockWith {}
+            Mock -CommandName Install-RemoteDistributor -MockWith {} 
+
+            Context 'Get methot' {
+                $result = Get-TargetResource @testParameters
+                It 'Get method returns Ensure = Absent' {
+                    $result.Ensure | Should Be 'Absent'
+                }
+                It "Get method returns InstanceName = $($testParameters.InstanceName)" {
+                    $result.InstanceName | Should Be $testParameters.InstanceName
+                }
+                It "Get method returns DistributorMode = $($testParameters.DistributorMode)" {
+                    $result.DistributorMode | Should Be $testParameters.DistributorMode
+                }
+                It 'Get method returns DistributionDBName = distribution' {
+                    $result.DistributionDBName | Should Be 'distribution'
+                }
+                It 'Get method returns RemoteDistributor is empty' {
+                    $result.RemoteDistributor | Should Be $testParameters.RemoteDistributor
+                }
+                It 'Get method returns WorkingDirectory = C:\temp' {
+                    $result.WorkingDirectory | Should Be 'C:\temp'
+                }
+            }
+
+            Context 'Test method' {
+                It 'Test method returns false' {
+                    Test-TargetResource @testParameters | Should be $false
+                }
+            }
+
+            Context 'Set method' {
+                Set-TargetResource @testParameters
+
+                It 'Set method calls Get-SqlServerMajorVersion with $InstanceName = INSTANCENAME' {
+                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                        -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+                }
+
+                It 'Set method calls Get-SqlLocalServerName with $InstanceName = INSTANCENAME' {
+                    Assert-MockCalled -CommandName Get-SqlLocalServerName -Times 1 `
+                        -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+                }
+
+                It 'Set method calls New-ServerConnection with $SqlServerName = SERVERNAME\INSTANCENAME' {
+                    Assert-MockCalled -CommandName New-ServerConnection -Times 1 `
+                        -ParameterFilter { $SqlServerName -eq 'SERVERNAME\INSTANCENAME' }
+                }
+
+                It 'Set method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME\INSTANCENAME' {
+                    Assert-MockCalled -CommandName New-ReplicationServer -Times 1 `
+                        -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME\INSTANCENAME' }
+                }
+
+                It "Set method calls New-ServerConnection with $SqlServerName = $($testParameters.RemoteDistributor)" {
+                    Assert-MockCalled -CommandName New-ServerConnection -Times 1 `
+                        -ParameterFilter { $SqlServerName -eq $testParameters.RemoteDistributor }
+                }
+
+                It 'Set method calls Register-DistributorPublisher with RemoteDistributor connection' {
+                    Assert-MockCalled -CommandName Register-DistributorPublisher -Times 1 `
+                        -ParameterFilter { 
+                            $PublisherName -eq 'SERVERNAME\INSTANCENAME' `
+                            -and $ServerConnection.ServerInstance -eq $testParameters.RemoteDistributor
+                        }
+                }
+
+                It 'Set method calls Install-RemoteDistributor' {
+                    Assert-MockCalled -CommandName Install-RemoteDistributor -Times 1 `
+                        -ParameterFilter { $RemoteDistributor -eq $testParameters.RemoteDistributor }
+                }
             }
         }
     }
-    #endregion Non-Exported Function Unit Tests
 }
 finally
 {
