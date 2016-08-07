@@ -1,3 +1,6 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+param ()
+
 $script:DSCModuleName   = 'xSQLServer'
 $script:DSCResourceName = 'xSQLServerReplication'
 
