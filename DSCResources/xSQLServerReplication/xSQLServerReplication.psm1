@@ -39,19 +39,13 @@ function Get-TargetResource
         $UninstallWithForce = $true
     )
 
-    $WorkingDirectory = ''
     $Ensure = 'Absent'
 
-    $sqlMajorVersion = Get-SqlServerMajorVersion $InstanceName
-    $connInfo = $dom.Load("Microsoft.SqlServer.ConnectionInfo, Version=$sqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
-    Write-Verbose "Loaded assembly: $($connInfo.FullName)"
-    $rmo = $dom.Load("Microsoft.SqlServer.Rmo, Version=$sqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
-    Write-Verbose "Loaded assembly: $($rmo.FullName)"
+    $sqlMajorVersion = Get-SqlServerMajorVersion -InstanceName $InstanceName
+    $localSqlName = Get-SqlLocalServerName -InstanceName $InstanceName
 
-    $localSqlName = Get-SqlLocalServerName $InstanceName
-
-    $localConnection = New-Object $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') $localSqlName
-    $localReplicationServer = New-Object $rmo.GetType('Microsoft.SqlServer.Replication.ReplicationServer') $localConnection
+    $localServerConnection = New-ServerConnection -SqlMajorVersion $sqlMajorVersion -SqlServerName $localSqlName
+    $localReplicationServer = New-ReplicationServer -SqlMajorVersion $sqlMajorVersion -ServerConnection $localServerConnection
 
     if($localReplicationServer.IsDistributor -eq $true)
     {
@@ -64,7 +58,7 @@ function Get-TargetResource
         $DistributorMode = 'Remote'
     }
 
-    if($Ensure -eq 'Preset')
+    if($Ensure -eq 'Present')
     {
         $DistributionDBName = $localReplicationServer.DistributionDatabase
         $RemoteDistributor = $localReplicationServer.DistributionServer
@@ -126,46 +120,55 @@ function Set-TargetResource
         throw "RemoteDistributor parameter cannot be empty when DistributorMode = 'Remote'!"
     }
 
-    $sqlMajorVersion = Get-SqlServerMajorVersion $InstanceName
+    $sqlMajorVersion = Get-SqlServerMajorVersion -InstanceName $InstanceName
+    $localSqlName = Get-SqlLocalServerName -InstanceName $InstanceName
 
-    $connInfo = $dom.Load("Microsoft.SqlServer.ConnectionInfo, Version=$sqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
-    Write-Verbose "Loaded assembly: $($connInfo.FullName)"
-    $rmo = $dom.Load("Microsoft.SqlServer.Rmo, Version=$sqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
-    Write-Verbose "Loaded assembly: $($rmo.FullName)"
-
-    $localSqlName = Get-SqlLocalServerName $InstanceName
-
-    $localConnection = New-Object $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') $localSqlName
-    $localReplicationServer = New-Object $rmo.GetType('Microsoft.SqlServer.Replication.ReplicationServer') $localConnection
+    $localServerConnection = New-ServerConnection -SqlMajorVersion $sqlMajorVersion -SqlServerName $localSqlName
+    $localReplicationServer = New-ReplicationServer -SqlMajorVersion $sqlMajorVersion -ServerConnection $localServerConnection
 
     if($Ensure -eq 'Present')
     {
         if($DistributorMode -eq 'Local' -and $localReplicationServer.IsDistributor -eq $false)
         {
             Write-Verbose "Local distribution will be configured ..."
-            $distributionDB = New-Object $rmo.GetType('Microsoft.SqlServer.Replication.DistributionDatabase') $DistributionDBName, $localConnection
-            $localReplicationServer.InstallDistributor($AdminLinkCredentials.Password, $distributionDB)
 
-            $distributorPublisher = New-object $rmo.GetType('Microsoft.SqlServer.Replication.DistributionPublisher') $localSqlName, $localConnection
-            $distributorPublisher.DistributionDatabase = $DistributionDBName
-            $distributorPublisher.WorkingDirectory = $WorkingDirectory
-            $distributorPublisher.PublisherSecurity.WindowsAuthentication = $UseTrustedConnection
-            $distributorPublisher.Create()
+            $distributionDB = New-DistributionDatabase `
+                -SqlMajorVersion $sqlMajorVersion `
+                -DistributionDBName $DistributionDBName `
+                -ServerConnection $localServerConnection
+
+            Install-LocalDistributor `
+                -ReplicationServer $localReplicationServer `
+                -AdminLinkCredentials $AdminLinkCredentials `
+                -DistributionDB $distributionDB
+
+            Register-DistributorPublisher `
+                -SqlMajorVersion $sqlMajorVersion `
+                -PublisherName $localSqlName `
+                -ServerConnection $localServerConnection `
+                -DistributionDBName $DistributionDBName `
+                -WorkingDirectory $WorkingDirectory `
+                -UseTrustedConnection $UseTrustedConnection
         }
             
         if($DistributorMode -eq 'Remote' -and $localReplicationServer.IsPublisher -eq $false)
         {
             Write-Verbose "Remote distribution will be configured ..."
 
-            $remoteConnection = New-Object $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') $RemoteDistributor
+            $remoteConnection = New-ServerConnection -SqlMajorVersion $sqlMajorVersion -SqlServerName $RemoteDistributor
 
-            $distributorPublisher = New-object $rmo.GetType('Microsoft.SqlServer.Replication.DistributionPublisher') $localSqlName, $remoteConnection
-            $distributorPublisher.DistributionDatabase = $DistributionDBName
-            $distributorPublisher.WorkingDirectory = $WorkingDirectory
-            $distributorPublisher.PublisherSecurity.WindowsAuthentication = $UseTrustedConnection
-            $distributorPublisher.Create()
+            Register-DistributorPublisher `
+                -SqlMajorVersion $sqlMajorVersion `
+                -PublisherName $localSqlName `
+                -ServerConnection $remoteConnection `
+                -DistributionDBName $DistributionDBName `
+                -WorkingDirectory $WorkingDirectory `
+                -UseTrustedConnection $UseTrustedConnection
 
-            $localReplicationServer.InstallDistributor($RemoteDistributor, $AdminLinkCredentials.Password)
+            Install-RemoteDistributor `
+                -ReplicationServer $localReplicationServer `
+                -RemoteDistributor $RemoteDistributor `
+                -AdminLinkCredentials $AdminLinkCredentials
         }
     }
     else #'Absent'
@@ -173,7 +176,7 @@ function Set-TargetResource
         if($localReplicationServer.IsDistributor -eq $true -or $localReplicationServer.IsPublisher -eq $true)
         {
             Write-Verbose "Distribution will be removed ..."
-            $localReplicationServer.UninstallDistributor($UninstallWithForce)
+            Uninstall-Distributor -ReplicationServer $localReplicationServer -UninstallWithForce $UninstallWithForce
         }
         else
         {
@@ -237,6 +240,227 @@ function Test-TargetResource
 }
 
 #region helper functions
+function New-ServerConnection
+{
+    [CmdletBinding()]
+    [OutputType([System.Object])]
+    param(
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $SqlMajorVersion,
+
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $SqlServerName
+    )
+
+    $connInfo = Get-ConnectionInfoAssembly -SqlMajorVersion $SqlMajorVersion
+    $serverConnection = New-Object $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') $SqlServerName
+
+    return $serverConnection
+}
+
+function New-ReplicationServer
+{
+    [CmdletBinding()]
+    [OutputType([System.Object])]
+    param(
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $SqlMajorVersion,
+
+        [parameter(Mandatory = $true)]
+        [System.Object]
+        $ServerConnection
+    )
+
+    $rmo = Get-RmoAssembly -SqlMajorVersion $SqlMajorVersion
+    $localReplicationServer = New-Object $rmo.GetType('Microsoft.SqlServer.Replication.ReplicationServer') $ServerConnection
+
+    return $localReplicationServer;
+}
+
+function New-DistributionDatabase
+{
+    [CmdletBinding()]
+    [OutputType([System.Object])]
+    param(
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $SqlMajorVersion,
+
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $DistributionDBName,
+
+        [parameter(Mandatory = $true)]
+        [System.Object]
+        $ServerConnection
+    )
+
+    $rmo = Get-RmoAssembly -SqlMajorVersion $SqlMajorVersion
+    Write-Verbose "Creating DistributionDatabase object $DistributionDBName"
+    $distributionDB = New-Object $rmo.GetType('Microsoft.SqlServer.Replication.DistributionDatabase') $DistributionDBName, $ServerConnection
+
+    return $distributionDB
+}
+
+function New-DistributionPublisher
+{
+    [CmdletBinding()]
+    [OutputType([System.Object])]
+    param(
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $SqlMajorVersion,
+
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $PublisherName,
+
+        [parameter(Mandatory = $true)]
+        [System.Object]
+        $ServerConnection
+    )
+    
+    $rmo = Get-RmoAssembly -SqlMajorVersion $SqlMajorVersion
+    $distributorPublisher = New-object $rmo.GetType('Microsoft.SqlServer.Replication.DistributionPublisher') $PublisherName, $ServerConnection
+
+    return $distributorPublisher
+}
+
+function Install-RemoteDistributor
+{
+    [CmdletBinding()]
+    param(
+        [parameter(Mandatory = $true)]
+        [System.Object]
+        $ReplicationServer,
+
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $RemoteDistributor,
+
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $AdminLinkCredentials
+    )
+
+    Write-Verbose "Calling InstallDistributor with RemoteDistributor = $RemoteDistributor"
+    $ReplicationServer.InstallDistributor($RemoteDistributor, $AdminLinkCredentials.Password)
+}
+
+function Install-LocalDistributor
+{
+    [CmdletBinding()]
+    param(
+        [parameter(Mandatory = $true)]
+        [System.Object]
+        $ReplicationServer,
+
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $AdminLinkCredentials,
+
+        [parameter(Mandatory = $true)]
+        [System.Object]
+        $DistributionDB
+    )
+
+    Write-Verbose "Calling InstallDistributor with DistributionDB"
+    $ReplicationServer.InstallDistributor($AdminLinkCredentials.Password, $DistributionDB)
+}
+
+function Uninstall-Distributor
+{
+    [CmdletBinding()]
+    param(
+        [parameter(Mandatory = $true)]
+        [System.Object]
+        $ReplicationServer,
+
+        [parameter(Mandatory = $true)]
+        [System.Boolean]
+        $UninstallWithForce
+    )
+    Write-Verbose 'Calling UnistallDistributor method on ReplicationServer object'
+    $ReplicationServer.UninstallDistributor($UninstallWithForce)
+}
+
+function Register-DistributorPublisher
+{
+    [CmdletBinding()]
+    param(
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $SqlMajorVersion,
+
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $PublisherName,
+
+        [parameter(Mandatory = $true)]
+        [System.Object]
+        $ServerConnection,
+
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $DistributionDBName,
+
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $WorkingDirectory,
+
+        [parameter(Mandatory = $true)]
+        [System.Boolean]
+        $UseTrustedConnection
+    )
+
+    Write-Verbose "Creating DistributorPublisher $PublisherName on $($ServerConnection.ServerInstance)"
+
+    $distributorPublisher = New-DistributionPublisher `
+        -SqlMajorVersion $SqlMajorVersion `
+        -PublisherName $PublisherName `
+        -ServerConnection $ServerConnection
+    
+    $distributorPublisher.DistributionDatabase = $DistributionDBName
+    $distributorPublisher.WorkingDirectory = $WorkingDirectory
+    $distributorPublisher.PublisherSecurity.WindowsAuthentication = $UseTrustedConnection
+    $distributorPublisher.Create()
+}
+
+function Get-ConnectionInfoAssembly
+{
+    [CmdletBinding()]
+    [OutputType([System.Object])]
+    param(
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $SqlMajorVersion
+    )
+
+    $connInfo = $dom.Load("Microsoft.SqlServer.ConnectionInfo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+    Write-Verbose "Loaded assembly: $($connInfo.FullName)"
+
+    return $connInfo
+}
+
+function Get-RmoAssembly
+{
+    [CmdletBinding()]
+    [OutputType([System.Object])]
+    param(
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $SqlMajorVersion
+    )
+
+    $rmo = $dom.Load("Microsoft.SqlServer.Rmo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+    Write-Verbose "Loaded assembly: $($rmo.FullName)"
+
+    return $rmo
+}
+
 function Get-SqlServerMajorVersion
 {
     [CmdletBinding()]
