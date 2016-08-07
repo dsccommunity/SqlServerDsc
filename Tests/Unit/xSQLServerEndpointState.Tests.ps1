@@ -24,12 +24,17 @@ $TestEnvironment = Initialize-TestEnvironment `
 try
 {
     #region Pester Test Initialization
+
+    $nodeName = 'localhost'
+    $instanceName = 'DEFAULT'
+    $endpointName = 'DefaultEndpointMirror'
+
     $defaultParameters = @{
-        InstanceName = 'DEFAULT'
-        NodeName = 'localhost'
-        Name = 'DefaultMirrorEndpoint'
-        
+        InstanceName = $instanceName
+        NodeName = $nodeName
+        Name = $endpointName
     }
+
     #endregion Pester Test Initialization
 
     Describe "$($script:DSCResourceName)\Get-TargetResource" {
@@ -43,7 +48,7 @@ try
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
-                    Add-Member NoteProperty Name $testParameters.Name -PassThru | 
+                    Add-Member NoteProperty Name $endpointName -PassThru | 
                     Add-Member NoteProperty EndpointState 'Stopped' -PassThru -Force # TypeName: Microsoft.SqlServer.Management.Smo.EndpointState
             } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -67,7 +72,7 @@ try
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
-                    Add-Member NoteProperty Name $testParameters.Name -PassThru | 
+                    Add-Member NoteProperty Name $endpointName -PassThru | 
                     Add-Member NoteProperty EndpointState 'Started' -PassThru -Force # TypeName: Microsoft.SqlServer.Management.Smo.EndpointState
             } -ModuleName $script:DSCResourceName -Verifiable
     
@@ -97,7 +102,7 @@ try
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
-                    Add-Member NoteProperty Name $testParameters.Name -PassThru | 
+                    Add-Member NoteProperty Name $endpointName -PassThru | 
                     Add-Member NoteProperty EndpointState 'Started' -PassThru -Force # TypeName: Microsoft.SqlServer.Management.Smo.EndpointState
             } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -121,7 +126,7 @@ try
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
-                    Add-Member NoteProperty Name $testParameters.Name -PassThru | 
+                    Add-Member NoteProperty Name $endpointName -PassThru | 
                     Add-Member NoteProperty EndpointState 'Stopped' -PassThru -Force # TypeName: Microsoft.SqlServer.Management.Smo.EndpointState
             } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -155,7 +160,7 @@ try
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
-                    Add-Member NoteProperty Name $testParameters.Name -PassThru | 
+                    Add-Member NoteProperty Name $endpointName -PassThru | 
                     Add-Member NoteProperty EndpointState 'Stopped' -PassThru -Force # TypeName: Microsoft.SqlServer.Management.Smo.EndpointState
             } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -176,7 +181,7 @@ try
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
-                    Add-Member NoteProperty Name $testParameters.Name -PassThru | 
+                    Add-Member NoteProperty Name $endpointName -PassThru | 
                     Add-Member NoteProperty EndpointState 'Started' -PassThru -Force # TypeName: Microsoft.SqlServer.Management.Smo.EndpointState
             } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -203,7 +208,7 @@ try
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
-                    Add-Member NoteProperty Name $testParameters.Name -PassThru | 
+                    Add-Member NoteProperty Name $endpointName -PassThru | 
                     Add-Member NoteProperty EndpointState 'Started' -PassThru -Force # TypeName: Microsoft.SqlServer.Management.Smo.EndpointState
             } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -224,7 +229,7 @@ try
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
-                    Add-Member NoteProperty Name $testParameters.Name -PassThru | 
+                    Add-Member NoteProperty Name $endpointName -PassThru | 
                     Add-Member NoteProperty EndpointState 'Stopped' -PassThru -Force # TypeName: Microsoft.SqlServer.Management.Smo.EndpointState
             } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -269,7 +274,7 @@ try
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
-                    Add-Member NoteProperty Name $testParameters.Name -PassThru | 
+                    Add-Member NoteProperty Name $endpointName -PassThru | 
                     Add-Member NoteProperty EndpointState 'Started' -PassThru -Force # TypeName: Microsoft.SqlServer.Management.Smo.EndpointState
             } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -295,7 +300,7 @@ try
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
-                    Add-Member NoteProperty Name $testParameters.Name -PassThru | 
+                    Add-Member NoteProperty Name $endpointName -PassThru | 
                     Add-Member NoteProperty EndpointState 'Stopped' -PassThru -Force # TypeName: Microsoft.SqlServer.Management.Smo.EndpointState
             } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -327,7 +332,7 @@ try
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
-                    Add-Member NoteProperty Name $testParameters.Name -PassThru | 
+                    Add-Member NoteProperty Name $endpointName -PassThru | 
                     Add-Member NoteProperty EndpointState 'Stopped' -PassThru -Force # TypeName: Microsoft.SqlServer.Management.Smo.EndpointState
             } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -353,7 +358,7 @@ try
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
-                    Add-Member NoteProperty Name $testParameters.Name -PassThru | 
+                    Add-Member NoteProperty Name $endpointName -PassThru | 
                     Add-Member NoteProperty EndpointState 'Started' -PassThru -Force # TypeName: Microsoft.SqlServer.Management.Smo.EndpointState
             } -ModuleName $script:DSCResourceName -Verifiable
 

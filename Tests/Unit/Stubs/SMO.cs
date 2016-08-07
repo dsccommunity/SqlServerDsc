@@ -9,10 +9,27 @@ namespace Microsoft.SqlServer.Management.Smo
         public static bool GenerateMockData = false;
     }
 
+    // Typename: Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
+    // BaseType: Microsoft.SqlServer.Management.Smo.PermissionSetBase
+    // Used by: 
+    //  xSQLServerEndpointPermission.Tests.ps1
+    public class ObjectPermissionSet 
+    {
+        public ObjectPermissionSet(){}
+
+        public ObjectPermissionSet(
+            bool connect )
+        {
+            this.Connect = connect; 
+        } 
+    
+        public bool Connect = false;
+    }
+    
     // TypeName: Microsoft.SqlServer.Management.Smo.ServerPermissionSet
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionSetBase
     // Used by: 
-    //  xSQLServerPermission
+    //  xSQLServerPermission.Tests.ps1
     public class ServerPermissionSet 
     {
         public ServerPermissionSet(){}
@@ -38,7 +55,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.ServerPermissionInfo
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionInfo
     // Used by: 
-    //  xSQLServerPermission
+    //  xSQLServerPermission.Tests.ps1
     public class ServerPermissionInfo 
     {
         public ServerPermissionInfo()
@@ -60,7 +77,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.Server
     // BaseType: Microsoft.SqlServer.Management.Smo.SqlSmoObject
     // Used by: 
-    //  xSQLServerPermission
+    //  xSQLServerPermission.Tests.ps1
     public class Server 
     { 
         public string MockGranteeName;
@@ -104,7 +121,11 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public void Revoke( Microsoft.SqlServer.Management.Smo.ServerPermissionSet permission, string granteeName )
         {
-
+            if( granteeName != this.MockGranteeName ) 
+            {
+                string errorMessage = "Expected to get granteeName == '" + this.MockGranteeName + "'. But got '" + granteeName + "'";
+                throw new System.ArgumentException(errorMessage, "granteeName");
+            }
         }
     }
 }
