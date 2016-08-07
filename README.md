@@ -328,6 +328,11 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 		- Get-SQLAlwaysOnEndpoint
 	- modified functions
 		- New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
+* Added tests for resources
+  - xSQLServerPermission
+  - xSQLServerEndpointState
+  - xSQLServerEndpointPermission
+  - xSQLServerAvailabilityGroupListener
 
 ### 1.7.0.0
 * Resources Added
