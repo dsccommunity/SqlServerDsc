@@ -21,6 +21,7 @@ FeatureNotSupported = '{0}' is not a valid value for setting 'FEATURES'.  Refer 
 AvailabilityGroupListenerNotFound = Trying to make a change to a listener that does not exist.
 AvailabilityGroupListenerErrorVerifyExist = Unexpected result when trying to verify existence of listener {0}.
 AvailabilityGroupListenerIPChangeError = IP-address configuration mismatch. Expecting {0} found {1}. Resource does not support changing IP-address. Listener needs to be removed and then created again.
+AvailabilityGroupListenerDHCPChangeError = IP-address configuration mismatch. Expecting {0} found {1}. Resource does not support changing between static IP and DHCP. Listener needs to be removed and then created again.
 
 # Endpoint
 EndpointNotFound = Endpoint {0} does not exist

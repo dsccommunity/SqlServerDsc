@@ -169,6 +169,10 @@ function Set-TargetResource
                         throw New-TerminatingError -ErrorType AvailabilityGroupListenerIPChangeError -FormatArgs @($($IpAddress -join ', '),$($listenerState.IpAddress -join ', ')) -ErrorCategory InvalidOperation
                     }
                 }
+
+                if( $($PSBoundParameters.ContainsKey('DHCP')) -and $listenerState.DHCP -ne $DHCP ) {
+                    throw New-TerminatingError -ErrorType AvailabilityGroupListenerDHCPChangeError -FormatArgs @( $DHCP, $($listenerState.DHCP) ) -ErrorCategory InvalidOperation
+                }
                 
                 if( $listenerState.Port -ne $Port -or -not $ipAddressEqual ) {
                     New-VerboseMessage -Message "Listener differ in configuration."
@@ -277,13 +281,11 @@ function Test-TargetResource
         if( $listenerState.Ensure -eq $Ensure)  {
             if( $Ensure -eq 'Absent' ) {
                 $result = $true
-            } elseif ( ( $Port -eq "" -or $listenerState.Port -eq $Port ) -and $ipAddressEqual ) {
-                $result = $true
             }
         }
 
-        if( $Ensure -eq "" ) { # Will handle changes when Ensure is not set. 
-            if( ($Port -eq "" -or $listenerState.Port -eq $Port) -and $ipAddressEqual ) {
+        if( -not $($PSBoundParameters.ContainsKey('Ensure')) -or $Ensure -eq "Present" ) { 
+            if( ($Port -eq "" -or $listenerState.Port -eq $Port) -and $ipAddressEqual -and ( -not $($PSBoundParameters.ContainsKey('DHCP')) -or $listenerState.DHCP -eq $DHCP ) ) {
                 $result = $true
             }
         }
