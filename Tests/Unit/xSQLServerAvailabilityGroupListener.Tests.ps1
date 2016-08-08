@@ -96,8 +96,8 @@ try
                     Add-Member NoteProperty PortNumber 5030 -PassThru | 
                     Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                         return @(
-                            # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                            (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                            # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                            (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                 Add-Member NoteProperty IsDHCP $false -TypeName [bool] -PassThru | 
                                 Add-Member NoteProperty IPAddress '10.0.0.1' -PassThru |
                                 Add-Member NoteProperty SubnetMask '255.255.255.0' -PassThru
@@ -150,8 +150,8 @@ try
                     Add-Member NoteProperty PortNumber 5031 -PassThru | 
                     Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                         return @(
-                            # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                            (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                            # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                            (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                 Add-Member NoteProperty IsDHCP $true -TypeName [bool] -PassThru | 
                                 Add-Member NoteProperty IPAddress '192.168.0.1' -PassThru |
                                 Add-Member NoteProperty SubnetMask '255.255.255.0' -PassThru
@@ -229,8 +229,8 @@ try
                         Add-Member NoteProperty PortNumber 5030 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $false -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.0.1' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.255.0' -PassThru
@@ -261,8 +261,8 @@ try
                         Add-Member NoteProperty PortNumber 5030 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $false -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.0.1' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.255.0' -PassThru
@@ -293,8 +293,8 @@ try
                         Add-Member NoteProperty PortNumber 5030 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $true -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.0.100' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.255.0' -PassThru
@@ -325,8 +325,8 @@ try
                         Add-Member NoteProperty PortNumber 5030 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $false -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.0.100' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.255.0' -PassThru
@@ -357,8 +357,8 @@ try
                         Add-Member NoteProperty PortNumber 5555 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses { 
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $false -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.0.100' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.255.0' -PassThru
@@ -386,8 +386,8 @@ try
                         Add-Member NoteProperty PortNumber 5555 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $true -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.10.45' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.252.0' -PassThru
@@ -415,8 +415,8 @@ try
                         Add-Member NoteProperty PortNumber 5030 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $true -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '10.0.0.1' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.252.0' -PassThru
@@ -444,8 +444,8 @@ try
                         Add-Member NoteProperty PortNumber 5030 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $false -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.10.45' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.252.0' -PassThru
@@ -499,8 +499,8 @@ try
                         Add-Member NoteProperty PortNumber 5030 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $false -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.10.45' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.252.0' -PassThru
@@ -531,8 +531,8 @@ try
                         Add-Member NoteProperty PortNumber 5030 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $true -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.10.45' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.252.0' -PassThru
@@ -560,8 +560,8 @@ try
                         Add-Member NoteProperty PortNumber 5030 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $true -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.10.45' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.252.0' -PassThru
@@ -589,8 +589,8 @@ try
                         Add-Member NoteProperty PortNumber 5030 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $true -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.10.45' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.252.0' -PassThru
@@ -618,8 +618,8 @@ try
                         Add-Member NoteProperty PortNumber 5030 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $true -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.10.45' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.252.0' -PassThru
@@ -690,8 +690,8 @@ try
                         Add-Member NoteProperty PortNumber 5030 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $false -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.10.45' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.252.0' -PassThru
@@ -723,8 +723,8 @@ try
                         Add-Member NoteProperty PortNumber 5030 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $false -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.10.45' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.252.0' -PassThru
@@ -756,8 +756,8 @@ try
                         Add-Member NoteProperty PortNumber 5555 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $false -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.10.45' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.252.0' -PassThru
@@ -789,8 +789,8 @@ try
                         Add-Member NoteProperty PortNumber 5030 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $false -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.10.45' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.252.0' -PassThru
@@ -829,8 +829,8 @@ try
                         Add-Member NoteProperty PortNumber 5030 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $false -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.10.45' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.252.0' -PassThru
@@ -861,8 +861,8 @@ try
                         Add-Member NoteProperty PortNumber 5030 -PassThru | 
                         Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                             return @(
-                                # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                (New-Object Object |    # Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                     Add-Member NoteProperty IsDHCP $false -TypeName [bool] -PassThru | 
                                     Add-Member NoteProperty IPAddress '192.168.10.45' -PassThru |
                                     Add-Member NoteProperty SubnetMask '255.255.252.0' -PassThru
