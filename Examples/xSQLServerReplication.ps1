@@ -3,6 +3,7 @@
 #PUBLISHER instance will be configured as publisher with remote distributor as default instance
 
 $credentials = Get-Credential 'AdminLink'
+$runAsCredentials = Get-Credential
 
 configuration ReplicationTest
 {
@@ -23,6 +24,7 @@ configuration ReplicationTest
             DistributorMode = 'Local'
             WorkingDirectory = 'C:\temp'
             Ensure = 'Present'
+            PsDscRunAsCredential = $runAsCredentials
         }
 
         xSQLServerReplication publisher
@@ -33,6 +35,7 @@ configuration ReplicationTest
             WorkingDirectory = 'C:\temp'
             RemoteDistributor = $Node.NodeName
             Ensure = 'Present'
+            PsDscRunAsCredential = $runAsCredentials
         }
     }
 }
