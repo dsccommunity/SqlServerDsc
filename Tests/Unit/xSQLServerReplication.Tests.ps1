@@ -94,8 +94,10 @@ try
                 }
             }
             Mock -CommandName New-DistributionDatabase -MockWith { return [pscustomobject]@{} } 
-            Mock -CommandName Install-LocalDistributor -MockWith {} 
-            Mock -CommandName Register-DistributorPublisher -MockWith {} 
+            Mock -CommandName Install-LocalDistributor -MockWith { }
+            Mock -CommandName Install-RemoteDistributor -MockWith { }
+            Mock -CommandName Register-DistributorPublisher -MockWith { }
+            Mock -CommandName Uninstall-Distributor -MockWith {}
 
             Context 'Get methot' {
                 $result = Get-TargetResource @testParameters
@@ -114,6 +116,21 @@ try
                 It 'Get method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME' {
                     Assert-MockCalled -CommandName New-ReplicationServer -Times 1 `
                         -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' }
+                }
+                It 'Get method doesnt call New-DistributionDatabase' {
+                    Assert-MockCalled -CommandName New-DistributionDatabase -Times 0 
+                }
+                It 'Get method doesnt call Install-LocalDistributor' {
+                    Assert-MockCalled -CommandName Install-LocalDistributor -Times 0 
+                }
+                It 'Get method doesnt call Install-RemoteDistributor' {
+                    Assert-MockCalled -CommandName Install-RemoteDistributor -Times 0 
+                }
+                It 'Ger method doesnt call Register-DistributorPublisher' {
+                    Assert-MockCalled -CommandName Register-DistributorPublisher -Times 0 
+                }
+                It 'Ger method doesnt call Uninstall-Distributor' {
+                    Assert-MockCalled -CommandName Uninstall-Distributor -Times 0 
                 }
                 It 'Get method returns Ensure = Absent' {
                     $result.Ensure | Should Be 'Absent'
@@ -143,40 +160,39 @@ try
 
             Context 'Set method' {
                 Set-TargetResource @testParameters
-
                 It 'Set method calls Get-SqlServerMajorVersion with $InstanceName = MSSQLSERVER' {
                     Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
                         -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
                 }
-
                 It 'Set method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
                     Assert-MockCalled -CommandName Get-SqlLocalServerName -Times 1 `
                         -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
                 }
-
                 It 'Set method calls New-ServerConnection with $SqlServerName = SERVERNAME' {
                     Assert-MockCalled -CommandName New-ServerConnection -Times 1 `
                         -ParameterFilter { $SqlServerName -eq 'SERVERNAME' }
                 }
-
                 It 'Set method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME' {
                     Assert-MockCalled -CommandName New-ReplicationServer -Times 1 `
                         -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' }
                 }
-
                 It 'Set method calls New-DistributionDatabase with $DistributionDBName = distribution' {
                     Assert-MockCalled -CommandName New-DistributionDatabase -Times 1 `
                         -ParameterFilter { $DistributionDBName -eq 'distribution' }
                 }
-
-                It 'Set method calls Install-Distributor' {
+                It 'Set method calls Install-LocalDistributor' {
                     Assert-MockCalled -CommandName Install-LocalDistributor -Times 1 `
                         -ParameterFilter { $ReplicationServer.DistributionServer -eq 'SERVERNAME' }
                 }
-
                 It 'Set method calls Register-DistributorPublisher' {
                     Assert-MockCalled -CommandName Register-DistributorPublisher -Times 1 `
                         -ParameterFilter { $PublisherName -eq 'SERVERNAME' }
+                }
+                It 'Set method doesnt call Install-RemoteDistributor' {
+                    Assert-MockCalled -CommandName Install-RemoteDistributor -Times 0 
+                }
+                It 'Set method doesnt call Uninstall-Distributor' {
+                    Assert-MockCalled -CommandName Uninstall-Distributor -Times 0 
                 }
             }
         }
@@ -208,8 +224,11 @@ try
                     WorkingDirectory = ''
                 }
             }
-            Mock -CommandName Register-DistributorPublisher -MockWith {}
-            Mock -CommandName Install-RemoteDistributor -MockWith {} 
+            Mock -CommandName New-DistributionDatabase -MockWith { return [pscustomobject]@{} } 
+            Mock -CommandName Install-LocalDistributor -MockWith { }
+            Mock -CommandName Install-RemoteDistributor -MockWith { }
+            Mock -CommandName Register-DistributorPublisher -MockWith { }
+            Mock -CommandName Uninstall-Distributor -MockWith {}
 
             Context 'Get methot' {
                 $result = Get-TargetResource @testParameters
@@ -228,6 +247,21 @@ try
                 It 'Get method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME\INSTANCENAME' {
                     Assert-MockCalled -CommandName New-ReplicationServer -Times 1 `
                         -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME\INSTANCENAME' }
+                }
+                It 'Get method doesnt call New-DistributionDatabase' {
+                    Assert-MockCalled -CommandName New-DistributionDatabase -Times 0 
+                }
+                It 'Get method doesnt call Install-LocalDistributor' {
+                    Assert-MockCalled -CommandName Install-LocalDistributor -Times 0 
+                }
+                It 'Get method doesnt call Install-RemoteDistributor' {
+                    Assert-MockCalled -CommandName Install-RemoteDistributor -Times 0 
+                }
+                It 'Ger method doesnt call Register-DistributorPublisher' {
+                    Assert-MockCalled -CommandName Register-DistributorPublisher -Times 0 
+                }
+                It 'Ger method doesnt call Uninstall-Distributor' {
+                    Assert-MockCalled -CommandName Uninstall-Distributor -Times 0 
                 }
                 It 'Get method returns Ensure = Absent' {
                     $result.Ensure | Should Be 'Absent'
@@ -288,6 +322,12 @@ try
                     Assert-MockCalled -CommandName Install-RemoteDistributor -Times 1 `
                         -ParameterFilter { $RemoteDistributor -eq $testParameters.RemoteDistributor }
                 }
+                It 'Set method doesnt call Install-LocalDistributor' {
+                    Assert-MockCalled -CommandName Install-LocalDistributor -Times 0 
+                }
+                It 'Set method doesnt call Uninstall-Distributor' {
+                    Assert-MockCalled -CommandName Uninstall-Distributor -Times 0 
+                }
             }
         }
 
@@ -317,9 +357,11 @@ try
                     WorkingDirectory = 'C:\temp'
                 }
             }
-            Mock -CommandName New-DistributionDatabase -MockWith { }
+            Mock -CommandName New-DistributionDatabase -MockWith { return [pscustomobject]@{} } 
             Mock -CommandName Install-LocalDistributor -MockWith { }
+            Mock -CommandName Install-RemoteDistributor -MockWith { }
             Mock -CommandName Register-DistributorPublisher -MockWith { }
+            Mock -CommandName Uninstall-Distributor -MockWith {}
 
             Context 'Get method' {
                 $result = Get-TargetResource @testParameters
@@ -338,6 +380,21 @@ try
                 It 'Get method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME' {
                     Assert-MockCalled -CommandName New-ReplicationServer -Times 1 `
                         -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' }
+                }
+                It 'Get method doesnt call New-DistributionDatabase' {
+                    Assert-MockCalled -CommandName New-DistributionDatabase -Times 0 
+                }
+                It 'Get method doesnt call Install-LocalDistributor' {
+                    Assert-MockCalled -CommandName Install-LocalDistributor -Times 0 
+                }
+                It 'Get method doesnt call Install-RemoteDistributor' {
+                    Assert-MockCalled -CommandName Install-RemoteDistributor -Times 0 
+                }
+                It 'Ger method doesnt call Register-DistributorPublisher' {
+                    Assert-MockCalled -CommandName Register-DistributorPublisher -Times 0 
+                }
+                It 'Ger method doesnt call Uninstall-Distributor' {
+                    Assert-MockCalled -CommandName Uninstall-Distributor -Times 0 
                 }
                 It 'Get method returns Ensure = Present' {
                     $result.Ensure | Should Be 'Present'
@@ -386,11 +443,17 @@ try
                 It 'Set method doesnt call New-DistributionDatabase with $DistributionDBName = distribution' {
                     Assert-MockCalled -CommandName New-DistributionDatabase -Times 0 
                 }
-                It 'Set method doesnt call Install-Distributor' {
+                It 'Set method doesnt call Install-LocalDistributor' {
                     Assert-MockCalled -CommandName Install-LocalDistributor -Times 0
+                }
+                It 'Set method doesnt call Install-RemoteDistributor' {
+                    Assert-MockCalled -CommandName Install-RemoteDistributor -Times 0 
                 }
                 It 'Set method doesnt call Register-DistributorPublisher' {
                     Assert-MockCalled -CommandName Register-DistributorPublisher -Times 0 
+                }
+                It 'Set method doesnt call Uninstall-Distributor' {
+                    Assert-MockCalled -CommandName Uninstall-Distributor -Times 0 
                 }
             }
         }
@@ -422,9 +485,11 @@ try
                     WorkingDirectory = 'C:\temp'
                 }
             }
-            Mock -CommandName New-DistributionDatabase -MockWith { }
+            Mock -CommandName New-DistributionDatabase -MockWith { return [pscustomobject]@{} } 
             Mock -CommandName Install-LocalDistributor -MockWith { }
+            Mock -CommandName Install-RemoteDistributor -MockWith { }
             Mock -CommandName Register-DistributorPublisher -MockWith { }
+            Mock -CommandName Uninstall-Distributor -MockWith {}
 
             Context 'Get methot' {
                 $result = Get-TargetResource @testParameters
@@ -443,6 +508,21 @@ try
                 It 'Get method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME\INSTANCENAME' {
                     Assert-MockCalled -CommandName New-ReplicationServer -Times 1 `
                         -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME\INSTANCENAME' }
+                }
+                It 'Get method doesnt call New-DistributionDatabase' {
+                    Assert-MockCalled -CommandName New-DistributionDatabase -Times 0 
+                }
+                It 'Get method doesnt call Install-LocalDistributor' {
+                    Assert-MockCalled -CommandName Install-LocalDistributor -Times 0 
+                }
+                It 'Get method doesnt call Install-RemoteDistributor' {
+                    Assert-MockCalled -CommandName Install-RemoteDistributor -Times 0 
+                }
+                It 'Ger method doesnt call Register-DistributorPublisher' {
+                    Assert-MockCalled -CommandName Register-DistributorPublisher -Times 0 
+                }
+                It 'Ger method doesnt call Uninstall-Distributor' {
+                    Assert-MockCalled -CommandName Uninstall-Distributor -Times 0 
                 }
                 It 'Get method returns Ensure = Present' {
                     $result.Ensure | Should Be 'Present'
@@ -491,11 +571,17 @@ try
                 It 'Set method doesnt call New-DistributionDatabase' {
                     Assert-MockCalled -CommandName New-DistributionDatabase -Times 0 
                 }
-                It 'Set method doesnt call Install-Distributor' {
+                It 'Set method doesnt call Install-LocalDistributor' {
                     Assert-MockCalled -CommandName Install-LocalDistributor -Times 0
+                }
+                It 'Set method doesnt call Install-RemoteDistributor' {
+                    Assert-MockCalled -CommandName Install-RemoteDistributor -Times 0 
                 }
                 It 'Set method doesnt call Register-DistributorPublisher' {
                     Assert-MockCalled -CommandName Register-DistributorPublisher -Times 0 
+                }
+                It 'Set method doesnt call Uninstall-Distributor' {
+                    Assert-MockCalled -CommandName Uninstall-Distributor -Times 0 
                 }
             }
         }
@@ -527,8 +613,9 @@ try
                 }
             }
             Mock -CommandName New-DistributionDatabase -MockWith { return [pscustomobject]@{} } 
-            Mock -CommandName Install-LocalDistributor -MockWith {} 
-            Mock -CommandName Register-DistributorPublisher -MockWith {} 
+            Mock -CommandName Install-LocalDistributor -MockWith { }
+            Mock -CommandName Install-RemoteDistributor -MockWith { }
+            Mock -CommandName Register-DistributorPublisher -MockWith { }
             Mock -CommandName Uninstall-Distributor -MockWith {}
 
             Context 'Get method' {
@@ -548,6 +635,21 @@ try
                 It 'Get method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME' {
                     Assert-MockCalled -CommandName New-ReplicationServer -Times 1 `
                         -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' }
+                }
+                It 'Get method doesnt call New-DistributionDatabase' {
+                    Assert-MockCalled -CommandName New-DistributionDatabase -Times 0 
+                }
+                It 'Get method doesnt call Install-LocalDistributor' {
+                    Assert-MockCalled -CommandName Install-LocalDistributor -Times 0 
+                }
+                It 'Get method doesnt call Install-RemoteDistributor' {
+                    Assert-MockCalled -CommandName Install-RemoteDistributor -Times 0 
+                }
+                It 'Ger method doesnt call Register-DistributorPublisher' {
+                    Assert-MockCalled -CommandName Register-DistributorPublisher -Times 0 
+                }
+                It 'Ger method doesnt call Uninstall-Distributor' {
+                    Assert-MockCalled -CommandName Uninstall-Distributor -Times 0 
                 }
                 It 'Get method returns Ensure = Present' {
                     $result.Ensure | Should Be 'Present'
@@ -594,21 +696,281 @@ try
                     Assert-MockCalled -CommandName New-ReplicationServer -Times 1 `
                         -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' }
                 }
-                It 'Set method doesnt call New-DistributionDatabase' {
-                    Assert-MockCalled -CommandName New-DistributionDatabase -Times 0
-                }
-                It 'Set method doesnt call Install-Distributor' {
-                    Assert-MockCalled -CommandName Install-LocalDistributor -Times 0
-                }
-                It 'Set method doesnt call Register-DistributorPublisher' {
-                    Assert-MockCalled -CommandName Register-DistributorPublisher -Times 0
-                }
                 It 'Set method calls Uninstall-Distributor with $ReplicationServer.DistributionServer = SERVERNAME' {
                     Assert-MockCalled -CommandName Uninstall-Distributor -Times 1 `
                         -ParameterFilter { $ReplicationServer.DistributionServer -eq 'SERVERNAME' }
                 }
+                It 'Set method doesnt call New-DistributionDatabase' {
+                    Assert-MockCalled -CommandName New-DistributionDatabase -Times 0
+                }
+                It 'Set method doesnt call Install-LocalDistributor' {
+                    Assert-MockCalled -CommandName Install-LocalDistributor -Times 0
+                }
+                It 'Set method doesnt call Install-RemoteDistributor' {
+                    Assert-MockCalled -CommandName Install-RemoteDistributor -Times 0 
+                }
+                It 'Set method doesnt call Register-DistributorPublisher' {
+                    Assert-MockCalled -CommandName Register-DistributorPublisher -Times 0
+                }
             }
         }
+
+        Describe 'The system is not in desired state given Remote distribution, but should be Absent' {
+
+            $testParameters = @{
+                InstanceName = 'INSTANCENAME'
+                AdminLinkCredentials = $credentials
+                DistributorMode = 'Remote'
+                RemoteDistributor = 'REMOTESERVER'
+                WorkingDirectory = 'C:\temp'
+                Ensure = 'Absent'
+            }
+
+            Mock -CommandName Get-SqlServerMajorVersion -MockWith { return '99' }
+            Mock -CommandName Get-SqlLocalServerName -MockWith { return 'SERVERNAME\INSTANCENAME' }
+            Mock -CommandName New-ServerConnection -MockWith { 
+                return [pscustomobject]@{
+                    ServerInstance = $SqlServerName
+                } 
+            }
+            Mock -CommandName New-ReplicationServer -MockWith {
+                return [pscustomobject]@{
+                    IsDistributor = $false
+                    IsPublisher = $true
+                    DistributionDatabase = 'distribution'
+                    DistributionServer = 'REMOTESERVER'
+                    WorkingDirectory = 'C:\temp'
+                }
+            }
+            Mock -CommandName New-DistributionDatabase -MockWith { return [pscustomobject]@{} } 
+            Mock -CommandName Install-LocalDistributor -MockWith { }
+            Mock -CommandName Install-RemoteDistributor -MockWith { }
+            Mock -CommandName Register-DistributorPublisher -MockWith { }
+            Mock -CommandName Uninstall-Distributor -MockWith {}
+
+            Context 'Get methot' {
+                $result = Get-TargetResource @testParameters
+                It 'Get method calls Get-SqlServerMajorVersion with $InstanceName = INSTANCENAME' {
+                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                        -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+                }
+                It 'Get method calls Get-SqlLocalServerName with $InstanceName = INSTANCENAME' {
+                    Assert-MockCalled -CommandName Get-SqlLocalServerName -Times 1 `
+                        -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+                }
+                It 'Get method calls New-ServerConnection with $SqlServerName = SERVERNAME\INSTANCENAME' {
+                    Assert-MockCalled -CommandName New-ServerConnection -Times 1 `
+                        -ParameterFilter { $SqlServerName -eq 'SERVERNAME\INSTANCENAME' }
+                }
+                It 'Get method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME\INSTANCENAME' {
+                    Assert-MockCalled -CommandName New-ReplicationServer -Times 1 `
+                        -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME\INSTANCENAME' }
+                }
+                It 'Get method doesnt call New-DistributionDatabase' {
+                    Assert-MockCalled -CommandName New-DistributionDatabase -Times 0 
+                }
+                It 'Get method doesnt call Install-LocalDistributor' {
+                    Assert-MockCalled -CommandName Install-LocalDistributor -Times 0 
+                }
+                It 'Get method doesnt call Install-RemoteDistributor' {
+                    Assert-MockCalled -CommandName Install-RemoteDistributor -Times 0 
+                }
+                It 'Ger method doesnt call Register-DistributorPublisher' {
+                    Assert-MockCalled -CommandName Register-DistributorPublisher -Times 0 
+                }
+                It 'Ger method doesnt call Uninstall-Distributor' {
+                    Assert-MockCalled -CommandName Uninstall-Distributor -Times 0 
+                }
+                It 'Get method returns Ensure = Present' {
+                    $result.Ensure | Should Be 'Present'
+                }
+                It "Get method returns InstanceName = $($testParameters.InstanceName)" {
+                    $result.InstanceName | Should Be $testParameters.InstanceName
+                }
+                It "Get method returns DistributorMode = $($testParameters.DistributorMode)" {
+                    $result.DistributorMode | Should Be $testParameters.DistributorMode
+                }
+                It 'Get method returns DistributionDBName = distribution' {
+                    $result.DistributionDBName | Should Be 'distribution'
+                }
+                It "Get method returns RemoteDistributor = $($testParameters.RemoteDistributor)" {
+                    $result.RemoteDistributor | Should Be $testParameters.RemoteDistributor
+                }
+                It 'Get method returns WorkingDirectory = C:\temp' {
+                    $result.WorkingDirectory | Should Be 'C:\temp'
+                }
+            }
+
+            Context 'Test method' {
+                It 'Test method returns false' {
+                    Test-TargetResource @testParameters | Should be $false
+                }
+            }
+
+            Context 'Set method' {
+                Set-TargetResource @testParameters
+                It 'Set method calls Get-SqlServerMajorVersion with $InstanceName = INSTANCENAME' {
+                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                        -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+                }
+                It 'Set method calls Get-SqlLocalServerName with $InstanceName = INSTANCENAME' {
+                    Assert-MockCalled -CommandName Get-SqlLocalServerName -Times 1 `
+                        -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+                }
+                It 'Set method calls New-ServerConnection with $SqlServerName = SERVERNAME\INSTANCENAME' {
+                    Assert-MockCalled -CommandName New-ServerConnection -Times 1 `
+                        -ParameterFilter { $SqlServerName -eq 'SERVERNAME\INSTANCENAME' }
+                }
+                It 'Set method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME\INSTANCENAME' {
+                    Assert-MockCalled -CommandName New-ReplicationServer -Times 1 `
+                        -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME\INSTANCENAME' }
+                }
+                It 'Set method calls Uninstall-Distributor with $ReplicationServer.DistributionServer = REMOTESERVER' {
+                    Assert-MockCalled -CommandName Uninstall-Distributor -Times 1 `
+                        -ParameterFilter { $ReplicationServer.DistributionServer -eq 'REMOTESERVER' }
+                }
+                It 'Set method doesnt call New-DistributionDatabase' {
+                    Assert-MockCalled -CommandName New-DistributionDatabase -Times 0
+                }
+                It 'Set method doesnt call Install-LocalDistributor' {
+                    Assert-MockCalled -CommandName Install-LocalDistributor -Times 0
+                }
+                It 'Set method doesnt call Install-RemoteDistributor' {
+                    Assert-MockCalled -CommandName Install-RemoteDistributor -Times 0 
+                }
+                It 'Set method doesnt call Register-DistributorPublisher' {
+                    Assert-MockCalled -CommandName Register-DistributorPublisher -Times 0
+                }
+            }
+        }
+
+        Describe 'The system is in sync when Absent' {
+
+            $testParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                AdminLinkCredentials = $credentials
+                DistributorMode = 'Local'
+                WorkingDirectory = 'C:\temp'
+                Ensure = 'Absent'
+            }
+
+            Mock -CommandName Get-SqlServerMajorVersion -MockWith { return '99' }
+            Mock -CommandName Get-SqlLocalServerName -MockWith { return 'SERVERNAME' }
+            Mock -CommandName New-ServerConnection -MockWith { 
+                return [pscustomobject]@{
+                    ServerInstance = $SqlServerName
+                } 
+            }
+            Mock -CommandName New-ReplicationServer -MockWith {
+                return [pscustomobject]@{
+                    IsDistributor = $false
+                    IsPublisher = $false
+                    DistributionDatabase = ''
+                    DistributionServer = ''
+                    WorkingDirectory = ''
+                }
+            }
+            Mock -CommandName New-DistributionDatabase -MockWith { return [pscustomobject]@{} } 
+            Mock -CommandName Install-LocalDistributor -MockWith { }
+            Mock -CommandName Install-RemoteDistributor -MockWith { }
+            Mock -CommandName Register-DistributorPublisher -MockWith { }
+            Mock -CommandName Uninstall-Distributor -MockWith {}
+
+            Context 'Get method' {
+                $result = Get-TargetResource @testParameters
+                It 'Get method calls Get-SqlServerMajorVersion with InstanceName = MSSQLSERVER' {
+                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                        -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+                }
+                It 'Get method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
+                    Assert-MockCalled -CommandName Get-SqlLocalServerName -Times 1 `
+                        -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+                }
+                It 'Get method calls New-ServerConnection with $SqlServerName = SERVERNAME' {
+                    Assert-MockCalled -CommandName New-ServerConnection -Times 1 `
+                        -ParameterFilter { $SqlServerName -eq 'SERVERNAME' }
+                }
+                It 'Get method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME' {
+                    Assert-MockCalled -CommandName New-ReplicationServer -Times 1 `
+                        -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' }
+                }
+                It 'Get method doesnt call New-DistributionDatabase' {
+                    Assert-MockCalled -CommandName New-DistributionDatabase -Times 0 
+                }
+                It 'Get method doesnt call Install-LocalDistributor' {
+                    Assert-MockCalled -CommandName Install-LocalDistributor -Times 0 
+                }
+                It 'Get method doesnt call Install-RemoteDistributor' {
+                    Assert-MockCalled -CommandName Install-RemoteDistributor -Times 0 
+                }
+                It 'Ger method doesnt call Register-DistributorPublisher' {
+                    Assert-MockCalled -CommandName Register-DistributorPublisher -Times 0 
+                }
+                It 'Ger method doesnt call Uninstall-Distributor' {
+                    Assert-MockCalled -CommandName Uninstall-Distributor -Times 0 
+                }
+                It 'Get method returns Ensure = Absent' {
+                    $result.Ensure | Should Be 'Absent'
+                }
+                It "Get method returns InstanceName = $($testParameters.InstanceName)" {
+                    $result.InstanceName | Should Be $testParameters.InstanceName
+                }
+                It "Get method returns DistributorMode = $($testParameters.DistributorMode)" {
+                    $result.DistributorMode | Should Be $testParameters.DistributorMode
+                }
+                It 'Get method returns DistributionDBName = distribution' {
+                    $result.DistributionDBName | Should Be 'distribution'
+                }
+                It 'Get method returns RemoteDistributor is empty' {
+                    $result.RemoteDistributor | Should Be ''
+                }
+                It "Get method returns WorkingDirectory = $($testParameters.WorkingDirectory)" {
+                    $result.WorkingDirectory | Should Be $testParameters.WorkingDirectory
+                }
+            }
+            
+            Context 'Test method' {
+                It 'Test method returns true' {
+                    Test-TargetResource @testParameters | Should be $true
+                }
+            }
+            
+            Context 'Set method' {
+                Set-TargetResource @testParameters
+                It 'Set method calls Get-SqlServerMajorVersion with $InstanceName = MSSQLSERVER' {
+                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                        -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+                }
+                It 'Set method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
+                    Assert-MockCalled -CommandName Get-SqlLocalServerName -Times 1 `
+                        -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+                }
+                It 'Set method calls New-ServerConnection with $SqlServerName = SERVERNAME' {
+                    Assert-MockCalled -CommandName New-ServerConnection -Times 1 `
+                        -ParameterFilter { $SqlServerName -eq 'SERVERNAME' }
+                }
+                It 'Set method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME' {
+                    Assert-MockCalled -CommandName New-ReplicationServer -Times 1 `
+                        -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' }
+                }
+                It 'Set method doesnt call New-DistributionDatabase with $DistributionDBName = distribution' {
+                    Assert-MockCalled -CommandName New-DistributionDatabase -Times 0 
+                }
+                It 'Set method doesnt call Install-LocalDistributor' {
+                    Assert-MockCalled -CommandName Install-LocalDistributor -Times 0
+                }
+                It 'Set method doesnt call Install-RemoteDistributor' {
+                    Assert-MockCalled -CommandName Install-RemoteDistributor -Times 0
+                }
+                It 'Set method doesnt call Register-DistributorPublisher' {
+                    Assert-MockCalled -CommandName Register-DistributorPublisher -Times 0 
+                }
+                It 'Set method doesnt call Uninstall-Distributor' {
+                    Assert-MockCalled -CommandName Uninstall-Distributor -Times 0 
+                }
+            }
+        }
+
     }
 }
 finally
