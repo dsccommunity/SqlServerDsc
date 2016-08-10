@@ -18,11 +18,11 @@ function Get-TargetResource
         [parameter(Mandatory = $true)]
         [System.String]
         $AvailabilityGroupName,
-        
+
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
-        [ValidateNotNull()] 
+        [ValidateNotNull()]
         [System.String]
         $SQLInstanceName= "MSSQLSERVER",
 
@@ -35,8 +35,8 @@ function Get-TargetResource
     {
         $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
-    
-    $vConfigured = Test-TargetResource -Ensure $Ensure -AvailabilityGroupName $AvailabilityGroupName -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName 
+
+    $vConfigured = Test-TargetResource -Ensure $Ensure -AvailabilityGroupName $AvailabilityGroupName -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
     $returnValue = @{
     Ensure = $vConfigured
@@ -88,10 +88,10 @@ function Set-TargetResource
         [ValidateSet("Primary", "Secondary")]
         [System.String]
         $AutoBackupPreference = "Primary",
-        
+
         [System.UInt32]
         $BackupPriority = "50",
-        
+
         [System.UInt32]
         $EndPointPort = "5022",
 
@@ -100,7 +100,7 @@ function Set-TargetResource
 
         [System.String]
         $SQLInstanceName = "MSSQLSERVER",
-        
+
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential
@@ -108,7 +108,7 @@ function Set-TargetResource
 
     $null = [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.Smo')
     $null = [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.SmoExtended")
-   
+
     if(!$SQL)
     {
         $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -SetupCredential $SetupCredential
@@ -125,18 +125,18 @@ function Set-TargetResource
         "Present"
         {
             Grant-ServerPerms -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -AuthorizedUser "NT AUTHORITY\SYSTEM" -SetupCredential $SetupCredential
-            New-ListenerADObject -AvailabilityGroupNameListener $AvailabilityGroupNameListener -SetupCredential $SetupCredential
-           
+            New-ListenerADObject -AvailabilityGroupNameListener $AvailabilityGroupNameListener -SetupCredential $SetupCredential -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+
             $FailoverCondition = 3
             $HealthCheckTimeout = 30000
-            $ConnectionModeInPrimary ="AllowAllConnections"    
+            $ConnectionModeInPrimary ="AllowAllConnections"
             $ConnectionModeInSecondaryRole = switch ($ReadableSecondary)
                                {
                                    'None' {"AllowNoConnections"}
                                    'ReadOnly' {"AllowAllConnections"}
                                    'ReadIntent'{"AllowReadIntentConnectionsOnly"}
                                    Default {"AllowAllConnections"}
-                               } 
+                               }
 
             #Get Servers participating in the cluster
             #First two nodes will account for Syncronous Automatic Failover, Any additional will be Asyncronous
@@ -158,7 +158,7 @@ function Set-TargetResource
 
             #Loop through Sync nodes Create Replica Object Assign properties and add it to AvailabilityGroup
             foreach ($node in $syncNodes)
-            { 
+            {
                 Try
                 {
                     $Replica = New-Object -typename Microsoft.SqlServer.Management.Smo.AvailabilityReplica -ArgumentList $availabilityGroup, $node
@@ -168,7 +168,7 @@ function Set-TargetResource
                     #Backup Priority Gives the ability to set a priority of one secondany over another valid values are from 1 - 100
                     $Replica.BackupPriority = $BackupPriority
                     $Replica.ConnectionModeInPrimaryRole =  $ConnectionModeInPrimary
-                    $replica.ConnectionModeInSecondaryRole = $ConnectionModeInSecondaryRole 
+                    $replica.ConnectionModeInSecondaryRole = $ConnectionModeInSecondaryRole
                     $availabilityGroup.AvailabilityReplicas.Add($Replica)
                 }
                 Catch
@@ -176,7 +176,7 @@ function Set-TargetResource
                     Throw "Failed to add $Replica to the Availability Group $AvailabilityGroupName"
                     Exit
                 }
-                         
+
             }
 
             #Loop through ASync nodes Create Replica Object Assign properties and add it to AvailabilityGroup
@@ -190,7 +190,7 @@ function Set-TargetResource
                     $asyncReplica.AvailabilityMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaAvailabilityMode]::ASynchronousCommit
                     $asyncReplica.BackupPriority = $BackupPriority
                     $asyncReplica.ConnectionModeInPrimaryRole =  $ConnectionModeInPrimary
-                    $asyncReplica.ConnectionModeInSecondaryRole = $ConnectionModeInSecondaryRole 
+                    $asyncReplica.ConnectionModeInSecondaryRole = $ConnectionModeInSecondaryRole
                     $AvailabilityGroup.AvailabilityReplicas.Add($asyncReplica)
                 }
                 Catch
@@ -198,7 +198,7 @@ function Set-TargetResource
                     Write-Error "Failed to add $asyncReplica to the Availability Group $AvailabilityGroupName"
                 }
             }
-        
+
             Try{
                 $AgListener = New-Object -typename Microsoft.SqlServer.Management.Smo.AvailabilityGroupListener -ArgumentList $AvailabilityGroup, $AvailabilityGroupNameListener
                 $AgListener.PortNumber =$AvailabilityGroupPort
@@ -206,8 +206,8 @@ function Set-TargetResource
             Catch{
                 Write-Error -Message ((Get-Date -format yyyy-MM-dd_HH-mm-ss) + ": Failed to Create AG Listener Object");
             }
-         
-         
+
+
             If($AvailabilityGroupNameIP)
             {
                 Foreach ($IP in $AvailabilityGroupNameIP)
@@ -218,7 +218,7 @@ function Set-TargetResource
                     $AgListenerIp.SubnetMask = $AvailabilityGroupSubMask
                     $AgListener.AvailabilityGroupListenerIPAddresses.Add($AgListenerIp)
                     New-VerboseMessage -Message "Added Static IP $IP to $AvailabilityGroupNameListener..."
-            
+
                 }
             }
             Else
@@ -229,25 +229,25 @@ function Set-TargetResource
                 $AgListener.AvailabilityGroupListenerIPAddresses.Add($AgListenerIp)
                 New-VerboseMessage -Message "Added DynamicIP to $AvailabilityGroupNameListener..."
             }
-         
+
             Try{
                 $AvailabilityGroup.AvailabilityGroupListeners.Add($AgListener);
             }
             Catch{
                 Throw "Failed to Add $AvailabilityGroupNameListener to $AvailabilityGroupName..."
                 Exit
-             }    
+             }
 
             #Add Availabilty Group to the SQL connection
             Try{
                 $SQL.AvailabilityGroups.Add($availabilityGroup)
-                New-VerboseMessage -Message "Added $availabilityGroupName Availability Group to Connection"  
+                New-VerboseMessage -Message "Added $availabilityGroupName Availability Group to Connection"
               }
             Catch{
                     Throw "Unable to Add $AvailabilityGroup to $SQLServer\$SQLInstanceName"
                     Exit
                 }
-           
+
             #Create Availability Group
             Try
                {
@@ -259,14 +259,14 @@ function Set-TargetResource
                 Throw "Unable to Create $AvailabilityGroup on $SQLServer\$SQLInstanceName"
                 Exit
                }
-           
+
         }
         "Absent"
-        { 
+        {
             Try
                 {
                  $sql.AvailabilityGroups[$AvailabilityGroupName].Drop()
-                 NNew-VerboseMessage -Message "Dropped $AvailabilityGroupName" 
+                 NNew-VerboseMessage -Message "Dropped $AvailabilityGroupName"
                 }
             Catch{
                  Throw "Unable to Drop $AvailabilityGroup on $SQLServer\$SQLInstanceName"
@@ -313,10 +313,10 @@ function Test-TargetResource
         [ValidateSet("Primary", "Secondary")]
         [System.String]
         $AutoBackupPreference = "Primary",
-        
+
         [System.UInt32]
         $BackupPriority = "50",
-        
+
         [System.UInt32]
         $EndPointPort = "5022",
 
@@ -325,7 +325,7 @@ function Test-TargetResource
 
         [System.String]
         $SQLInstanceName = "MSSQLSERVER",
-        
+
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential
@@ -361,4 +361,3 @@ function Test-TargetResource
 
 
 Export-ModuleMember -Function *-TargetResource
-
