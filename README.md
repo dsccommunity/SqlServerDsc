@@ -10,7 +10,6 @@ For more information see the [Code of Conduct FAQ](https://opensource.microsoft.
 ## Contributing
 Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
 
-
 ## Resources
 
 * **xSQLServerSetup** installs a standalone SQL Server instance
@@ -38,6 +37,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerEndpointState** Change state of the endpoint.
 * **xSQLServerEndpointPermission** Grant or revoke permission on the endpoint.
 * **xSQLServerAvailabilityGroupListener** Create or remove an availability group listener.
+* **xSQLServerReplication** resource to manage SQL Replication distribution and publishing.
 
 ### xSQLServerSetup
 
@@ -307,6 +307,17 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **Port** The port used for the availability group listener.
 * **DHCP** If DHCP should be used for the availability group listener instead of static IP address.
 
+###xSQLServerReplication
+* **InstanceName**: (Key) SQL Server instance name where replication distribution will be configured.
+* **Ensure**: (Default = 'Present') 'Present' will configure replication, 'Absent' will disable replication.
+* **DistributorMode**: (Required), 'Local' - Instance will be configured as it's own distributor, 'Remote' - Instace will be configure with remote distributor (remote distributor needs to be already configured for distribution).
+* **AdminLinkCredentials**: (Required) - AdminLink password to be used when setting up publisher distributor relationship.
+* **DistributionDBName**: (Default = 'distribution') distribution database name. If DistributionMode='Local' this will be created, if 'Remote' needs to match distribution database on remote distributor. 
+* **RemoteDistributor**: (Required if DistributionMode='Remote') SQL Server network name that will be used as distributor for local instance.
+* **WorkingDirectory**: (Required) Publisher working directory.
+* **UseTrustedConnection**: (Default = $true) Publisher security mode.
+* **UninstallWithForce**: (Default = $true) Force flag for uninstall procedure
+
 ## Versions
 
 ### Unreleased
@@ -322,16 +333,18 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerEndpointState
   - xSQLServerEndpointPermission
   - xSQLServerAvailabilityGroupListener
+  - xSQLServerReplication
 * xSQLServerHelper
-	- added functions 
-		- Import-SQLPSModule
-		- Get-SQLPSInstanceName
-		- Get-SQLPSInstance
-		- Get-SQLAlwaysOnEndpoint
-	- modified functions
-		- New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
+    - added functions 
+        - Import-SQLPSModule
+        - Get-SQLPSInstanceName
+        - Get-SQLPSInstance
+        - Get-SQLAlwaysOnEndpoint
+    - modified functions
+        - New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
 
 ### 1.7.0.0
+
 * Resources Added
   - xSQLServerConfiguration
 
@@ -447,5 +460,3 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Examples
 
 Examples for use of this resource can be found with the System Center resources, such as **xSCVMM**, **xSCSMA**, and **xSCOM**.
-
-
