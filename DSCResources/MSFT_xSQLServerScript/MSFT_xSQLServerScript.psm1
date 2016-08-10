@@ -4,19 +4,19 @@
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ServerInstance,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SetFilePath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $GetFilePath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $TestFilePath,
 
@@ -46,14 +46,13 @@
     $getResult = Out-String -InputObject $result
         
     $returnValue = @{
-        ServerInstance = [System.String]$ServerInstance
-        SetFilePath = [System.String]$SetFilePath
-        GetFilePath = [System.String]$GetFilePath
-        TestFilePath = [System.String]$TestFilePath
-        Username = [System.String]$Username
-        Password = [System.String]$Password
-        Variable = [System.String[]]$Variable
-        GetResult = [System.String[]]$getresult
+        ServerInstance = [System.String] $ServerInstance
+        SetFilePath = [System.String] $SetFilePath
+        GetFilePath = [System.String] $GetFilePath
+        TestFilePath = [System.String] $TestFilePath
+        Username = [System.Management.Automation.PSCredential] $Credential
+        Variable = [System.String[]] $Variable
+        GetResult = [System.String[]] $getresult
     }
 
     $returnValue
@@ -64,19 +63,19 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ServerInstance,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SetFilePath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $GetFilePath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $TestFilePath,
 
@@ -111,19 +110,19 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ServerInstance,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SetFilePath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $GetFilePath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $TestFilePath,
 
