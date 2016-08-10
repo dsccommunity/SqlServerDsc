@@ -58,14 +58,13 @@ PrivateData = @{
   - xSQLServerEndpointPermission
   - xSQLServerAvailabilityGroupListener
 * xSQLServerHelper
-	- added functions 
-		- Import-SQLPSModule
-		- Get-SQLPSInstanceName
-		- Get-SQLPSInstance
-		- Get-SQLAlwaysOnEndpoint
-	- modified functions
-		- New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
-
+  - added functions 
+  - Import-SQLPSModule
+  - Get-SQLPSInstanceName
+  - Get-SQLPSInstance
+  - Get-SQLAlwaysOnEndpoint
+    - modified functions
+      - New-TerminatingError - *added optional parameter "InnerException" to be able to give the user more information in the returned message*
 '
 
     } # End of PSData hashtable
