@@ -1,4 +1,11 @@
-﻿function Get-TargetResource
+﻿$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+Write-Verbose -Message "CurrentPath: $currentPath"
+
+# Load Common Code
+Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
+
+
+function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -25,23 +32,10 @@
 
         [System.String[]]
         $Variable
-    )
+    )   
 
-    Import-Module -Name SQLPS -WarningAction SilentlyContinue -ErrorAction Stop
-    
-    if($null -ne $Credential)
-    {
-        $null = $PSBoundParameters.Add("Username", $Credential.UserName)
-        $null = $PSBoundParameters.Add("Password", $Credential.GetNetworkCredential().password)
-
-        $null = $PSBoundParameters.Remove("Credential")
-    }
-
-    $null = $PSBoundParameters.Remove("SetFilePath")
-    $null = $PSBoundParameters.Remove("GetFilePath")
-    $null = $PSBoundParameters.Remove("TestFilePath")
-
-    $result = Invoke-Sqlcmd -InputFile $getFilePath @PSBoundParameters -ErrorAction Stop
+    $result = Invoke-SqlScript -ServerInstance $ServerInstance -SqlScriptPath $GetFilePath `
+                -Credential $Credential -Variable $Variable -ErrorAction Stop
 
     $getResult = Out-String -InputObject $result
         
@@ -86,21 +80,8 @@ function Set-TargetResource
         $Variable
     )
 
-    Import-Module -Name SQLPS -WarningAction SilentlyContinue -ErrorAction Stop
-    
-    if($null -ne $Credential)
-    {
-        $null = $PSBoundParameters.Add("Username", $Credential.UserName)
-        $null = $PSBoundParameters.Add("Password", $Credential.GetNetworkCredential().password)
-
-        $null = $PSBoundParameters.Remove("Credential")
-    }
-
-    $null = $PSBoundParameters.Remove("SetFilePath")
-    $null = $PSBoundParameters.Remove("GetFilePath")
-    $null = $PSBoundParameters.Remove("TestFilePath")
-
-    Invoke-Sqlcmd -InputFile $setFilePath @PSBoundParameters -ErrorAction Stop 
+    Invoke-SqlScript -ServerInstance $ServerInstance -SqlScriptPath $SetFilePath `
+                -Credential $Credential -Variable $Variable -ErrorAction Stop
 }
 
 
@@ -133,23 +114,10 @@ function Test-TargetResource
         $Variable
     )
 
-    Import-Module -Name SQLPS -WarningAction SilentlyContinue -ErrorAction Stop
-    
     try
     {   
-        if($null -ne $Credential)
-        {
-            $null = $PSBoundParameters.Add("Username", $Credential.UserName)
-            $null = $PSBoundParameters.Add("Password", $Credential.GetNetworkCredential().password)
-
-            $null = $PSBoundParameters.Remove("Credential")
-        }
-     
-        $null = $PSBoundParameters.Remove("SetFilePath")
-        $null = $PSBoundParameters.Remove("GetFilePath")
-        $null = $PSBoundParameters.Remove("TestFilePath")
-
-        $result = Invoke-Sqlcmd -InputFile $testFilePath @PSBoundParameters -ErrorAction stop
+        $result = Invoke-SqlScript -ServerInstance $ServerInstance -SqlScriptPath $TestFilePath `
+                -Credential $Credential -Variable $Variable -ErrorAction Stop
 
         if($result -eq $null)
         {
@@ -167,6 +135,38 @@ function Test-TargetResource
     }
 }
 
+function Invoke-SqlScript
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ServerInstance,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $SqlScriptPath,
+
+        [System.Management.Automation.PSCredential]
+        $Credential,
+
+        [System.String[]]
+        $Variable
+    )
+
+    Import-SQLPSModule
+
+    if($null -ne $Credential)
+    {
+        $null = $PSBoundParameters.Add("Username", $Credential.UserName)
+        $null = $PSBoundParameters.Add("Password", $Credential.GetNetworkCredential().password)   
+    }
+
+    $null = $PSBoundParameters.Remove("Credential")
+    $null = $PSBoundParameters.Remove("SqlScriptPath")
+
+    Invoke-Sqlcmd -InputFile $SqlScriptPath @PSBoundParameters
+}
 
 Export-ModuleMember -Function *-TargetResource
 

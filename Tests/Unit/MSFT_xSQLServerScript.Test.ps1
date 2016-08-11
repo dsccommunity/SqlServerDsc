@@ -182,7 +182,7 @@ try
         }
 
         It 'Test method throws' {
-            { Test-TargetResource @testParameters } | should throw $throwMessage
+            Test-TargetResource @testParameters | should be $false
         }
 
         It 'Set method throws' {
