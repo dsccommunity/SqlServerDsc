@@ -28,6 +28,9 @@ try
     # Loading mocked classes
     Add-Type -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SMO.cs')
 
+    # Loading stub cmdlets
+    Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SQLPSStub.psm1') -Force
+
     $nodeName = 'localhost'
     $instanceName = 'DEFAULT'
     $availabilityGroup = 'AG01'
@@ -639,13 +642,13 @@ try
     }
 
     Describe "$($script:DSCResourceName)\Set-TargetResource" {
-        Get-Module -Name MockSQLPS | Remove-Module -Force
-        New-Module -Name MockSQLPS -ScriptBlock {
-            function New-SqlAvailabilityGroupListener { return }
-            function Set-SqlAvailabilityGroupListener { return }
-            function Add-SqlAvailabilityGroupListenerStaticIp { return }
-            Export-ModuleMember -Function *-SqlAvailability*
-        } | Import-Module -Force
+        # Get-Module -Name MockSQLPS | Remove-Module -Force
+        # New-Module -Name MockSQLPS -ScriptBlock {
+        #     function New-SqlAvailabilityGroupListener { return }
+        #     function Set-SqlAvailabilityGroupListener { return }
+        #     function Add-SqlAvailabilityGroupListenerStaticIp { return }
+        #     Export-ModuleMember -Function *-SqlAvailability*
+        # } | Import-Module -Force
 
         Mock -CommandName New-SqlAvailabilityGroupListener -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
         Mock -CommandName Set-SqlAvailabilityGroupListener -MockWith {} -ModuleName $script:DSCResourceName -Verifiable

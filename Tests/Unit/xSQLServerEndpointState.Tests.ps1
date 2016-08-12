@@ -25,6 +25,9 @@ try
 {
     #region Pester Test Initialization
 
+    # Loading stub cmdlets
+    Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SQLPSStub.psm1') -Force
+
     $nodeName = 'localhost'
     $instanceName = 'DEFAULT'
     $endpointName = 'DefaultEndpointMirror'
@@ -252,13 +255,6 @@ try
     }
 
     Describe "$($script:DSCResourceName)\Set-TargetResource" {
-        Get-Module -Name MockSQLPS | Remove-Module -Force
-        New-Module -Name MockSQLPS -ScriptBlock {
-            function Set-SqlHADREndpoint { return }
-        
-            Export-ModuleMember -Function Set-SqlHADREndpoint
-        } | Import-Module -Force
-
         Mock Set-SqlHADREndpoint -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is not in the desired state' {
@@ -275,7 +271,17 @@ try
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
                     Add-Member NoteProperty Name $endpointName -PassThru | 
-                    Add-Member NoteProperty EndpointState 'Started' -PassThru -Force # TypeName: Microsoft.SqlServer.Management.Smo.EndpointState
+                    Add-Member NoteProperty EndpointState 'Started' -PassThru | # TypeName: Microsoft.SqlServer.Management.Smo.EndpointState
+                    Add-Member ScriptProperty Protocol {
+                        return New-Object Object |
+                            Add-Member ScriptProperty Tcp {
+                                return New-Object Object |
+                                        Add-Member ScriptProperty ListenerIPAddress {
+                                            return New-Object Object |
+                                                    Add-Member NoteProperty IPAddressToString '10.0.0.1' -PassThru
+                                        } -PassThru
+                            } -PassThru
+                    } -PassThru -Force 
             } -ModuleName $script:DSCResourceName -Verifiable
 
             It 'Should not throw an error when desired state is not equal to Stopped' {
@@ -301,7 +307,17 @@ try
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
                     Add-Member NoteProperty Name $endpointName -PassThru | 
-                    Add-Member NoteProperty EndpointState 'Stopped' -PassThru -Force # TypeName: Microsoft.SqlServer.Management.Smo.EndpointState
+                    Add-Member NoteProperty EndpointState 'Stopped' -PassThru | # TypeName: Microsoft.SqlServer.Management.Smo.EndpointState
+                    Add-Member ScriptProperty Protocol {
+                        return New-Object Object |
+                            Add-Member ScriptProperty Tcp {
+                                return New-Object Object |
+                                        Add-Member ScriptProperty ListenerIPAddress {
+                                            return New-Object Object |
+                                                    Add-Member NoteProperty IPAddressToString '10.0.0.1' -PassThru
+                                        } -PassThru
+                            } -PassThru
+                    } -PassThru -Force 
             } -ModuleName $script:DSCResourceName -Verifiable
 
             It 'Should not throw an error when desired state is not equal to Started' {
