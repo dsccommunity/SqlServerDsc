@@ -197,7 +197,7 @@ function Set-TargetResource
                             $newIpAddress = @()
                             
                             foreach( $currentIpAddress in $IpAddress ) {
-                                if( -not $listenerState.IpAddress -contains $currentIpAddress ) {
+                                if( -not ( $listenerState.IpAddress -contains $currentIpAddress ) ) {
                                     $newIpAddress += $currentIpAddress
                                 }
                             }
