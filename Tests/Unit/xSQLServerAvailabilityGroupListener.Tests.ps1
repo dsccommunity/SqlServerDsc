@@ -31,10 +31,19 @@ try
     # Loading stub cmdlets
     Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SQLPSStub.psm1') -Force
 
+    # Static parameter values
     $nodeName = 'localhost'
     $instanceName = 'DEFAULT'
     $availabilityGroup = 'AG01'
     $listnerName = 'AGListner'
+    
+    # Values used for mocking
+    $desiredPortNumber = 5030
+    $actualPortNumber = 5555
+    $desiredIPAddress = '192.168.0.10'
+    $actualIPAddress = '10.0.0.1'
+    $desiredSubnetMask = '255.255.255.0'
+    $actualSubnetMask = '255.255.252.0'
 
     $defaultParameters = @{
         InstanceName = $instanceName
@@ -47,10 +56,6 @@ try
 
     Describe "$($script:DSCResourceName)\Get-TargetResource" {
         Context 'When the system is not in the desired state' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-
             $testParameters = $defaultParameters
 
             Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
@@ -86,24 +91,20 @@ try
         }
     
         Context 'When the system is in the desired state, without DHCP' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-
             $testParameters = $defaultParameters
 
             Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
                 # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListener
                 return New-Object Object | 
                     Add-Member NoteProperty Name $listnerName -PassThru | 
-                    Add-Member NoteProperty PortNumber 5030 -PassThru | 
+                    Add-Member NoteProperty PortNumber $actualPortNumber -PassThru | 
                     Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                         return @(
                             # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
                             (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                 Add-Member NoteProperty IsDHCP $false -TypeName [bool] -PassThru | 
-                                Add-Member NoteProperty IPAddress '10.0.0.1' -PassThru |
-                                Add-Member NoteProperty SubnetMask '255.255.255.0' -PassThru
+                                Add-Member NoteProperty IPAddress $actualIPAddress -PassThru |
+                                Add-Member NoteProperty SubnetMask $actualSubnetMask -PassThru
                             )
                         )
                     } -PassThru -Force 
@@ -123,11 +124,11 @@ try
             }
 
             It 'Should return correct IP address' {
-                $result.IpAddress | Should Be '10.0.0.1/255.255.255.0'
+                $result.IpAddress | Should Be "$actualIPAddress/$actualSubnetMask"
             }
 
             It 'Should return correct port' {
-                $result.Port | Should Be 5030
+                $result.Port | Should Be $actualPortNumber
             }
 
             It 'Should return that DHCP is not used' {
@@ -140,10 +141,6 @@ try
         }
 
         Context 'When the system is in the desired state, with DHCP' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-
             $testParameters = $defaultParameters
 
             Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
@@ -198,10 +195,6 @@ try
 
     Describe "$($script:DSCResourceName)\Test-TargetResource" {
         Context 'When the system is not in the desired state' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-
             It 'Should return that desired state is absent when wanted desired state is to be Present' {
                 $testParameters = $defaultParameters
                 $testParameters += @{
@@ -465,10 +458,6 @@ try
         }
 
         Context 'When the system is in the desired state' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-
             It 'Should return that desired state is present when wanted desired state is to be Absent' {
                 $testParameters = $defaultParameters
                 $testParameters += @{
@@ -642,23 +631,11 @@ try
     }
 
     Describe "$($script:DSCResourceName)\Set-TargetResource" {
-        # Get-Module -Name MockSQLPS | Remove-Module -Force
-        # New-Module -Name MockSQLPS -ScriptBlock {
-        #     function New-SqlAvailabilityGroupListener { return }
-        #     function Set-SqlAvailabilityGroupListener { return }
-        #     function Add-SqlAvailabilityGroupListenerStaticIp { return }
-        #     Export-ModuleMember -Function *-SqlAvailability*
-        # } | Import-Module -Force
-
         Mock -CommandName New-SqlAvailabilityGroupListener -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
         Mock -CommandName Set-SqlAvailabilityGroupListener -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
         Mock -CommandName Add-SqlAvailabilityGroupListenerStaticIp -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is not in the desired state' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-
             It 'Should call the cmdlet New-SqlAvailabilityGroupListener when system is not in desired state' {
                 $testParameters = $defaultParameters
                 $testParameters += @{
@@ -812,10 +789,6 @@ try
         }
 
         Context 'When the system is in the desired state' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-
             It 'Should not call the any cmdlet *-SqlAvailability* when system is in desired state' {
                 $testParameters = $defaultParameters
                 $testParameters += @{

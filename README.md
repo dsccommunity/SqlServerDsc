@@ -321,6 +321,16 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Versions
 
 ### Unreleased
+* Added tests for resources
+  - xSQLServerPermission
+  - xSQLServerEndpointState
+  - xSQLServerEndpointPermission
+  - xSQLServerAvailabilityGroupListener
+* Fixes in xSQLServerAvailabilityGroupListener
+  - In one case the Get-method did not report that DHCP was configured. 
+  - Now the resource will throw 'Not supported' when IP is changed between Static and DHCP.
+  - Fixed an issue where sometimes the listener wasn't removed.
+  - Fixed the issue when trying to add a static IP to a listener was ignored.
 
 ### 1.8.0.0
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
@@ -342,16 +352,6 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
         - Get-SQLAlwaysOnEndpoint
     - modified functions
         - New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
-* Added tests for resources
-  - xSQLServerPermission
-  - xSQLServerEndpointState
-  - xSQLServerEndpointPermission
-  - xSQLServerAvailabilityGroupListener
-* Fixes in xSQLServerAvailabilityGroupListener
-  - In one case the Get-method did not report that DHCP was configured. 
-  - Now the resource will throw 'Not supported' when IP is changed between Static and DHCP.
-  - Fixed an issue where sometimes the listener wasn't removed.
-  - Fixed the issue when trying to add a static IP to a listener was ignored.
 
 ### 1.7.0.0
 

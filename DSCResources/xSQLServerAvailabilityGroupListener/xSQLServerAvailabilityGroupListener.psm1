@@ -285,7 +285,10 @@ function Test-TargetResource
         }
 
         if( -not $($PSBoundParameters.ContainsKey('Ensure')) -or $Ensure -eq "Present" ) { 
-            if( ($Port -eq "" -or $listenerState.Port -eq $Port) -and $ipAddressEqual -and ( -not $($PSBoundParameters.ContainsKey('DHCP')) -or $listenerState.DHCP -eq $DHCP ) ) {
+            if( ( $Port -eq "" -or $listenerState.Port -eq $Port) -and 
+                $ipAddressEqual -and 
+                ( -not $($PSBoundParameters.ContainsKey('DHCP')) -or $listenerState.DHCP -eq $DHCP ) ) 
+            {
                 $result = $true
             }
         }

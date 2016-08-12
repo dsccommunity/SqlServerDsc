@@ -45,10 +45,6 @@ try
 
     Describe "$($script:DSCResourceName)\Get-TargetResource" {
         Context 'When the system is not in the desired state' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-
             $testParameters = $defaultParameters
 
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
@@ -89,10 +85,6 @@ try
         }
     
         Context 'When the system is in the desired state' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-
             $testParameters = $defaultParameters
 
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
@@ -137,10 +129,6 @@ try
 
     Describe "$($script:DSCResourceName)\Test-TargetResource" {
         Context 'When the system is not in the desired state' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-
             $testParameters = $defaultParameters
             $testParameters += @{
                 Ensure = 'Present'
@@ -199,10 +187,6 @@ try
         }
 
         Context 'When the system is in the desired state' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-
             It 'Should return that desired state is present when wanted desired state is to be Present' {
                 $testParameters = $defaultParameters
                 $testParameters += @{
@@ -265,10 +249,6 @@ try
 
     Describe "$($script:DSCResourceName)\Set-TargetResource" {
         Context 'When the system is not in the desired state' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-
             It 'Should call the the method Grant when desired state is to be Present' {
                 $testParameters = $defaultParameters
                 $testParameters += @{
@@ -353,10 +333,6 @@ try
         }
 
         Context 'When the system is in the desired state' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-
             It 'Should not throw error when desired state is already Present' {
                 $testParameters = $defaultParameters
                 $testParameters += @{

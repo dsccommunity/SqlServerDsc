@@ -44,10 +44,6 @@ try
         $testParameters = $defaultParameters
 
         Context 'When the system is not in the desired state' {
-            BeforeAll {
-                # This has intentially been left blank 
-            }
-
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
@@ -98,10 +94,6 @@ try
         }
     
         Context 'When the system is in the desired state' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
@@ -156,10 +148,6 @@ try
     
     Describe "$($script:DSCResourceName)\Test-TargetResource" {
         Context 'When the system is not in the desired state' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-            
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
@@ -204,10 +192,6 @@ try
         }
 
         Context 'When the system is in the desired state' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-
             Mock -CommandName Get-SQLAlwaysOnEndpoint -MockWith {
                 # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                 return New-Object Object |            
@@ -258,10 +242,6 @@ try
         Mock Set-SqlHADREndpoint -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is not in the desired state' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-
             $testParameters = $defaultParameters
             $testParameters += @{
                 State = 'Stopped' 
@@ -336,10 +316,6 @@ try
        }
 
         Context 'When the system is in the desired state' {
-            BeforeAll {
-                # This has intentially been left blank
-            }
-
             $testParameters = $defaultParameters
             $testParameters += @{
                 State = 'Stopped' 
