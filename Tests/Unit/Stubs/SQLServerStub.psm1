@@ -1,4 +1,6 @@
-﻿function Add-SqlAvailabilityDatabase {
+﻿# Generated from SQLServer module, module version 20.0 (SQL Server Management Studio 13.0.15600.2 - August 2016)
+
+function Add-SqlAvailabilityDatabase {
    [CmdletBinding(DefaultParameterSetName='ByPath', ConfirmImpact='Medium')]
    param(
        [Parameter(Mandatory=$true, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
@@ -20,7 +22,7 @@
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Add-SqlAvailabilityGroupListenerStaticIp {
@@ -45,7 +47,7 @@ function Add-SqlAvailabilityGroupListenerStaticIp {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Add-SqlAzureAuthenticationContext {
@@ -71,7 +73,7 @@ function Add-SqlAzureAuthenticationContext {
        ${Tenant}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Add-SqlColumnEncryptionKeyValue {
@@ -106,7 +108,7 @@ function Add-SqlColumnEncryptionKeyValue {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Add-SqlFirewallRule {
@@ -147,7 +149,7 @@ function Add-SqlFirewallRule {
        ${RetryTimeout}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Backup-SqlDatabase {
@@ -305,7 +307,7 @@ function Backup-SqlDatabase {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Complete-SqlColumnMasterKeyRotation {
@@ -330,7 +332,7 @@ function Complete-SqlColumnMasterKeyRotation {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function ConvertFrom-EncodedSqlName {
@@ -342,7 +344,7 @@ function ConvertFrom-EncodedSqlName {
        ${SqlName}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function ConvertTo-EncodedSqlName {
@@ -354,7 +356,7 @@ function ConvertTo-EncodedSqlName {
        ${SqlName}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Convert-UrnToPath {
@@ -366,7 +368,7 @@ function Convert-UrnToPath {
        ${Urn}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Disable-SqlAlwaysOn {
@@ -397,7 +399,7 @@ function Disable-SqlAlwaysOn {
        ${Credential}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Enable-SqlAlwaysOn {
@@ -428,7 +430,7 @@ function Enable-SqlAlwaysOn {
        ${Credential}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Get-SqlAgent {
@@ -459,7 +461,7 @@ function Get-SqlAgent {
        ${ConnectionTimeout}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Get-SqlAgentJob {
@@ -495,7 +497,7 @@ function Get-SqlAgentJob {
        ${Path}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Get-SqlAgentJobHistory {
@@ -559,7 +561,7 @@ function Get-SqlAgentJobHistory {
        ${InputObject}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Get-SqlAgentJobSchedule {
@@ -581,7 +583,7 @@ function Get-SqlAgentJobSchedule {
        ${Path}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Get-SqlAgentJobStep {
@@ -603,7 +605,7 @@ function Get-SqlAgentJobStep {
        ${Path}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Get-SqlAgentSchedule {
@@ -639,7 +641,7 @@ function Get-SqlAgentSchedule {
        ${Path}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Get-SqlColumnEncryptionKey {
@@ -664,7 +666,7 @@ function Get-SqlColumnEncryptionKey {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Get-SqlColumnMasterKey {
@@ -689,7 +691,7 @@ function Get-SqlColumnMasterKey {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Get-SqlCredential {
@@ -714,7 +716,7 @@ function Get-SqlCredential {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Get-SqlDatabase {
@@ -753,7 +755,7 @@ function Get-SqlDatabase {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Get-SqlErrorLog {
@@ -799,7 +801,7 @@ function Get-SqlErrorLog {
        ${InputObject}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Get-SqlInstance {
@@ -835,7 +837,7 @@ function Get-SqlInstance {
        ${RetryTimeout}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Get-SqlSmartAdmin {
@@ -871,7 +873,7 @@ function Get-SqlSmartAdmin {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Invoke-PolicyEvaluation {
@@ -902,7 +904,7 @@ function Invoke-PolicyEvaluation {
        ${OutputXml}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Invoke-Sqlcmd {
@@ -1012,7 +1014,7 @@ function Invoke-Sqlcmd {
        ${ConnectionString}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Invoke-SqlColumnMasterKeyRotation {
@@ -1042,7 +1044,7 @@ function Invoke-SqlColumnMasterKeyRotation {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Join-SqlAvailabilityGroup {
@@ -1067,7 +1069,7 @@ function Join-SqlAvailabilityGroup {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function New-SqlAvailabilityGroup {
@@ -1119,7 +1121,7 @@ function New-SqlAvailabilityGroup {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function New-SqlAvailabilityGroupListener {
@@ -1157,7 +1159,7 @@ function New-SqlAvailabilityGroupListener {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function New-SqlAvailabilityReplica {
@@ -1223,7 +1225,7 @@ function New-SqlAvailabilityReplica {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function New-SqlAzureKeyVaultColumnMasterKeySettings {
@@ -1235,7 +1237,7 @@ function New-SqlAzureKeyVaultColumnMasterKeySettings {
        ${KeyUrl}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function New-SqlBackupEncryptionOption {
@@ -1257,7 +1259,7 @@ function New-SqlBackupEncryptionOption {
        ${EncryptorName}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function New-SqlCertificateStoreColumnMasterKeySettings {
@@ -1274,7 +1276,7 @@ function New-SqlCertificateStoreColumnMasterKeySettings {
        ${Thumbprint}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function New-SqlCngColumnMasterKeySettings {
@@ -1291,7 +1293,7 @@ function New-SqlCngColumnMasterKeySettings {
        ${KeyName}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function New-SqlColumnEncryptionKey {
@@ -1325,7 +1327,7 @@ function New-SqlColumnEncryptionKey {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function New-SqlColumnEncryptionKeyEncryptedValue {
@@ -1347,7 +1349,7 @@ function New-SqlColumnEncryptionKeyEncryptedValue {
        ${EncryptedValue}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function New-SqlColumnEncryptionSettings {
@@ -1369,7 +1371,7 @@ function New-SqlColumnEncryptionSettings {
        ${EncryptionKey}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function New-SqlColumnMasterKey {
@@ -1399,7 +1401,7 @@ function New-SqlColumnMasterKey {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function New-SqlCredential {
@@ -1436,7 +1438,7 @@ function New-SqlCredential {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function New-SqlCspColumnMasterKeySettings {
@@ -1453,7 +1455,7 @@ function New-SqlCspColumnMasterKeySettings {
        ${KeyName}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function New-SqlHADREndpoint {
@@ -1506,7 +1508,7 @@ function New-SqlHADREndpoint {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Remove-SqlAvailabilityDatabase {
@@ -1526,7 +1528,7 @@ function Remove-SqlAvailabilityDatabase {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Remove-SqlAvailabilityGroup {
@@ -1546,7 +1548,7 @@ function Remove-SqlAvailabilityGroup {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Remove-SqlAvailabilityReplica {
@@ -1566,7 +1568,7 @@ function Remove-SqlAvailabilityReplica {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Remove-SqlColumnEncryptionKey {
@@ -1591,7 +1593,7 @@ function Remove-SqlColumnEncryptionKey {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Remove-SqlColumnEncryptionKeyValue {
@@ -1621,7 +1623,7 @@ function Remove-SqlColumnEncryptionKeyValue {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Remove-SqlColumnMasterKey {
@@ -1646,7 +1648,7 @@ function Remove-SqlColumnMasterKey {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Remove-SqlCredential {
@@ -1666,7 +1668,7 @@ function Remove-SqlCredential {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Remove-SqlFirewallRule {
@@ -1707,7 +1709,7 @@ function Remove-SqlFirewallRule {
        ${RetryTimeout}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Restore-SqlDatabase {
@@ -1852,7 +1854,7 @@ function Restore-SqlDatabase {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Resume-SqlAvailabilityDatabase {
@@ -1872,7 +1874,7 @@ function Resume-SqlAvailabilityDatabase {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Save-SqlMigrationReport {
@@ -1909,7 +1911,7 @@ function Save-SqlMigrationReport {
        ${FolderPath}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Set-SqlAuthenticationMode {
@@ -1967,7 +1969,7 @@ function Set-SqlAuthenticationMode {
        ${RetryTimeout}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Set-SqlAvailabilityGroup {
@@ -1999,7 +2001,7 @@ function Set-SqlAvailabilityGroup {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Set-SqlAvailabilityGroupListener {
@@ -2024,7 +2026,7 @@ function Set-SqlAvailabilityGroupListener {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Set-SqlAvailabilityReplica {
@@ -2073,7 +2075,7 @@ function Set-SqlAvailabilityReplica {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Set-SqlColumnEncryption {
@@ -2098,7 +2100,7 @@ function Set-SqlColumnEncryption {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Set-SqlCredential {
@@ -2128,7 +2130,7 @@ function Set-SqlCredential {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Set-SqlErrorLog {
@@ -2166,7 +2168,7 @@ function Set-SqlErrorLog {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Set-SqlHADREndpoint {
@@ -2218,7 +2220,7 @@ function Set-SqlHADREndpoint {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Set-SqlNetworkConfiguration {
@@ -2279,7 +2281,7 @@ function Set-SqlNetworkConfiguration {
        ${RetryTimeout}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Set-SqlSmartAdmin {
@@ -2319,7 +2321,7 @@ function Set-SqlSmartAdmin {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Start-SqlInstance {
@@ -2360,7 +2362,7 @@ function Start-SqlInstance {
        ${RetryTimeout}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Stop-SqlInstance {
@@ -2401,7 +2403,7 @@ function Stop-SqlInstance {
        ${RetryTimeout}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Suspend-SqlAvailabilityDatabase {
@@ -2421,7 +2423,7 @@ function Suspend-SqlAvailabilityDatabase {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Switch-SqlAvailabilityGroup {
@@ -2447,7 +2449,7 @@ function Switch-SqlAvailabilityGroup {
        ${Script}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Test-SqlAvailabilityGroup {
@@ -2473,7 +2475,7 @@ function Test-SqlAvailabilityGroup {
        ${InputObject}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Test-SqlAvailabilityReplica {
@@ -2499,7 +2501,7 @@ function Test-SqlAvailabilityReplica {
        ${InputObject}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Test-SqlDatabaseReplicaState {
@@ -2525,7 +2527,7 @@ function Test-SqlDatabaseReplicaState {
        ${InputObject}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 function Test-SqlSmartAdmin {
@@ -2551,7 +2553,7 @@ function Test-SqlSmartAdmin {
        ${InputObject}
    )
 
-   throw 'NotImplemented'
+   throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
 
 
