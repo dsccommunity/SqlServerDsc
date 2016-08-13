@@ -37,14 +37,6 @@ try
     $availabilityGroup = 'AG01'
     $listnerName = 'AGListner'
     
-    # Values used for mocking
-    $global:desiredPortNumber = 5030
-    $global:actualPortNumber = 5555
-    $global:desiredIPAddress = '192.168.0.10'
-    $global:actualIPAddress = '10.0.0.1'
-    $global:desiredSubnetMask = '255.255.255.0'
-    $global:actualSubnetMask = '255.255.252.0'
-
     $defaultParameters = @{
         InstanceName = $instanceName
         NodeName = $nodeName 
@@ -89,21 +81,29 @@ try
                  Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context 
             }
         }
+
+        # Values used for mocking
+        $desiredPortNumber = 5030
+        $desiredIPAddress = '192.168.0.10'
+        $desiredSubnetMask = '255.255.255.0'
     
         Context 'When the system is in the desired state, without DHCP' {
             $testParameters = $defaultParameters
 
             Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
+                $actualPortNumber = 5030
+                $actualIPAddress = '192.168.0.10'
+                $actualSubnetMask = '255.255.255.0'
                 # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListener
                 return New-Object Object | 
-                    Add-Member NoteProperty PortNumber $global:actualPortNumber -PassThru | 
+                    Add-Member NoteProperty PortNumber $actualPortNumber -PassThru | 
                     Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
                         return @(
                             # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
                             (New-Object Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
                                 Add-Member NoteProperty IsDHCP $false -TypeName [bool] -PassThru | 
-                                Add-Member NoteProperty IPAddress $global:actualIPAddress -PassThru |
-                                Add-Member NoteProperty SubnetMask $global:actualSubnetMask -PassThru
+                                Add-Member NoteProperty IPAddress $actualIPAddress -PassThru |
+                                Add-Member NoteProperty SubnetMask $actualSubnetMask -PassThru
                             )
                         )
                     } -PassThru -Force 
@@ -123,11 +123,11 @@ try
             }
 
             It 'Should return correct IP address' {
-                $result.IpAddress | Should Be "$actualIPAddress/$actualSubnetMask"
+                $result.IpAddress | Should Be "$desiredIPAddress/$desiredSubnetMask"
             }
 
             It 'Should return correct port' {
-                $result.Port | Should Be $actualPortNumber
+                $result.Port | Should Be $desiredPortNumber
             }
 
             It 'Should return that DHCP is not used' {
