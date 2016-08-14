@@ -338,6 +338,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerEndpointState
   - xSQLServerEndpointPermission
   - xSQLServerAvailabilityGroupListener
+  - xSQLServerLogin
 * Fixes in xSQLServerAvailabilityGroupListener
   - In one case the Get-method did not report that DHCP was configured. 
   - Now the resource will throw 'Not supported' when IP is changed between Static and DHCP.
@@ -345,7 +346,10 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - Fixed the issue when trying to add a static IP to a listener was ignored.
 * Fixes in xSQLAOGroupEnsure
   - Added parameters to New-ListenerADObject to allow usage of a named instance.
-  
+* Fixes in xSQLServerLogin
+   - Fixed an issue when dropping logins.
+   - Fixed an issue where it was not possible to add the same login to two instances on the same server.
+
 ### 1.8.0.0
 
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
