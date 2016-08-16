@@ -321,6 +321,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Versions
 
 ### Unreleased
+* Added resources
+  - xSQLServerReplication
 * Added tests for resources
   - xSQLServerPermission
   - xSQLServerEndpointState
@@ -343,7 +345,6 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerEndpointState
   - xSQLServerEndpointPermission
   - xSQLServerAvailabilityGroupListener
-  - xSQLServerReplication
 * xSQLServerHelper
     - added functions 
         - Import-SQLPSModule
