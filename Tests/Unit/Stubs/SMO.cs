@@ -3,10 +3,33 @@ using System.Collections.Generic;
 
 namespace Microsoft.SqlServer.Management.Smo
 {
+    public class Globals
+    {
+        // Static property that is switched on or off by tests if data should be mocked (true) or not (false).
+        public static bool GenerateMockData = false;
+    }
+
+    // Typename: Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
+    // BaseType: Microsoft.SqlServer.Management.Smo.PermissionSetBase
+    // Used by: 
+    //  xSQLServerEndpointPermission.Tests.ps1
+    public class ObjectPermissionSet 
+    {
+        public ObjectPermissionSet(){}
+
+        public ObjectPermissionSet(
+            bool connect )
+        {
+            this.Connect = connect; 
+        } 
+    
+        public bool Connect = false;
+    }
+    
     // TypeName: Microsoft.SqlServer.Management.Smo.ServerPermissionSet
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionSetBase
     // Used by: 
-    //  xSQLServerPermission
+    //  xSQLServerPermission.Tests.ps1
     public class ServerPermissionSet 
     {
         public ServerPermissionSet(){}
@@ -32,7 +55,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.ServerPermissionInfo
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionInfo
     // Used by: 
-    //  xSQLServerPermission
+    //  xSQLServerPermission.Tests.ps1
     public class ServerPermissionInfo 
     {
         public ServerPermissionInfo()
@@ -54,11 +77,9 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.Server
     // BaseType: Microsoft.SqlServer.Management.Smo.SqlSmoObject
     // Used by: 
-    //  xSQLServerPermission
+    //  xSQLServerPermission.Tests.ps1
     public class Server 
     { 
-        private bool _generateMockData = false;
-
         public string MockGranteeName;
 
         public string Name;
@@ -66,21 +87,13 @@ namespace Microsoft.SqlServer.Management.Smo
         public string InstanceName;
         public bool IsHadrEnabled = false;
 
-        public Server()
-        { 
-            _generateMockData = false;
-        } 
-
-        public Server( bool generateMockData )
-        { 
-            this._generateMockData = generateMockData;
-        } 
+        public Server(){} 
 
         public Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[] EnumServerPermissions( string principal, Microsoft.SqlServer.Management.Smo.ServerPermissionSet permissionSetQuery ) 
         { 
             List<Microsoft.SqlServer.Management.Smo.ServerPermissionInfo> listOfServerPermissionInfo = new List<Microsoft.SqlServer.Management.Smo.ServerPermissionInfo>();
             
-            if( this._generateMockData ) {
+            if( Globals.GenerateMockData ) {
                 Microsoft.SqlServer.Management.Smo.ServerPermissionSet[] permissionSet = { 
                     new Microsoft.SqlServer.Management.Smo.ServerPermissionSet( true, false, false, false ),
                     new Microsoft.SqlServer.Management.Smo.ServerPermissionSet( false, true, false, false ),
@@ -108,7 +121,11 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public void Revoke( Microsoft.SqlServer.Management.Smo.ServerPermissionSet permission, string granteeName )
         {
-
+            if( granteeName != this.MockGranteeName ) 
+            {
+                string errorMessage = "Expected to get granteeName == '" + this.MockGranteeName + "'. But got '" + granteeName + "'";
+                throw new System.ArgumentException(errorMessage, "granteeName");
+            }
         }
     }
 }

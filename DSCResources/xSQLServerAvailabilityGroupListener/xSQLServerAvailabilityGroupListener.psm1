@@ -39,7 +39,7 @@ function Get-TargetResource
 
             $presentIpAddress = $listener.AvailabilityGroupListenerIPAddresses
 
-            $dhcp = [bool]( $presentIpAddress | Select-Object -first 1 IsDHCP )
+            $dhcp = [bool]( $presentIpAddress | Select-Object -First 1 -ExpandProperty IsDHCP )
 
             $ipAddress = @()
             foreach( $currentIpAddress in $presentIpAddress ) {
@@ -169,6 +169,10 @@ function Set-TargetResource
                         throw New-TerminatingError -ErrorType AvailabilityGroupListenerIPChangeError -FormatArgs @($($IpAddress -join ', '),$($listenerState.IpAddress -join ', ')) -ErrorCategory InvalidOperation
                     }
                 }
+
+                if( $($PSBoundParameters.ContainsKey('DHCP')) -and $listenerState.DHCP -ne $DHCP ) {
+                    throw New-TerminatingError -ErrorType AvailabilityGroupListenerDHCPChangeError -FormatArgs @( $DHCP, $($listenerState.DHCP) ) -ErrorCategory InvalidOperation
+                }
                 
                 if( $listenerState.Port -ne $Port -or -not $ipAddressEqual ) {
                     New-VerboseMessage -Message "Listener differ in configuration."
@@ -193,7 +197,7 @@ function Set-TargetResource
                             $newIpAddress = @()
                             
                             foreach( $currentIpAddress in $IpAddress ) {
-                                if( -not $listenerState.IpAddress -contains $currentIpAddress ) {
+                                if( -not ( $listenerState.IpAddress -contains $currentIpAddress ) ) {
                                     $newIpAddress += $currentIpAddress
                                 }
                             }
@@ -274,9 +278,21 @@ function Test-TargetResource
         }
         
         [System.Boolean] $result = $false
-        if( ( $Ensure -eq "" -or ( $Ensure -ne "" -and $listenerState.Ensure -eq $Ensure) ) -and ($Port -eq "" -or $listenerState.Port -eq $Port) -and $ipAddressEqual ) {
-            $result = $true
+        if( $listenerState.Ensure -eq $Ensure)  {
+            if( $Ensure -eq 'Absent' ) {
+                $result = $true
+            }
         }
+
+        if( -not $($PSBoundParameters.ContainsKey('Ensure')) -or $Ensure -eq "Present" ) { 
+            if( ( $Port -eq "" -or $listenerState.Port -eq $Port) -and 
+                $ipAddressEqual -and 
+                ( -not $($PSBoundParameters.ContainsKey('DHCP')) -or $listenerState.DHCP -eq $DHCP ) ) 
+            {
+                $result = $true
+            }
+        }
+
     } else {
         throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
     }
