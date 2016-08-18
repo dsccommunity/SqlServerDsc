@@ -11,7 +11,12 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $Name
+        $Name,
+        
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $ServerName
     )
 
     Write-Verbose -Message 'Get-TargetResource'
@@ -64,6 +69,7 @@ function Set-TargetResource
         $Protocol,
 
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $ServerName,
 
@@ -180,6 +186,7 @@ function Test-TargetResource
         $Protocol,
 
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $ServerName,
 
