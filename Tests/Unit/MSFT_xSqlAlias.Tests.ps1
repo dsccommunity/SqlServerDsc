@@ -26,7 +26,7 @@ try
         Write-Output 'DBMSSOCN,localhost,1433'
     }
     
-    $SqlAlias = Get-TargetResource -Name 'localhost'
+    $SqlAlias = Get-TargetResource -Name 'localhost' -Servname 'localhost'
 
     It 'Should return hashtable with Key Protocol'{
         $SqlAlias.ContainsKey('Protocol') | Should Be $true
