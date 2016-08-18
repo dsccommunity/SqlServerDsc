@@ -63,6 +63,7 @@ function Set-TargetResource
         [System.String]
         $Protocol,
 
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ServerName,
 
@@ -178,6 +179,7 @@ function Test-TargetResource
         [System.String]
         $Protocol,
 
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ServerName,
 
