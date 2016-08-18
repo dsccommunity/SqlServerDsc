@@ -333,6 +333,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ### Unreleased
 * Added resources
   - xSQLServerReplication
+  - xSQLAlias	
 * Added tests for resources
   - xSQLServerPermission
   - xSQLServerEndpointState
@@ -343,6 +344,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - Now the resource will throw 'Not supported' when IP is changed between Static and DHCP.
   - Fixed an issue where sometimes the listener wasn't removed.
   - Fixed the issue when trying to add a static IP to a listener was ignored.
+* Pester Test for xSQLAlias
+* Correction on xSQLAOGroupEnsure to pass Setup Credential Correctly
 
 ### 1.8.0.0
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
@@ -356,14 +359,6 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerEndpointPermission
   - xSQLServerAvailabilityGroupListener
 * xSQLServerHelper
-    - added functions 
-        - Import-SQLPSModule
-        - Get-SQLPSInstanceName
-        - Get-SQLPSInstance
-        - Get-SQLAlwaysOnEndpoint
-    - modified functions
-        - New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
-
 	- added functions 
 		- Import-SQLPSModule
 		- Get-SQLPSInstanceName
@@ -371,11 +366,6 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 		- Get-SQLAlwaysOnEndpoint
 	- modified functions
 		- New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
-* Pester Tests for xSQLAOGroupEnsure and xSQLAlias
-* Correction on xSQLAOGroupEnsure to pass Setup Credential Correctly
-
-* Resources Added
-	* xSQLAlias	
 	
 ### 1.7.0.0
 

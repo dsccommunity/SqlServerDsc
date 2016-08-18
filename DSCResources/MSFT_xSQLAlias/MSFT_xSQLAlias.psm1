@@ -8,7 +8,7 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Name
@@ -17,13 +17,13 @@ function Get-TargetResource
     Write-Verbose -Message 'Get-TargetResource'
     
     $returnValue = @{
-            Name = [System.String]
-            Protocol = [System.String]
-            ServerName = [System.String]
-            TCPPort = [System.Int32]
-            PipeName = [System.String]
-            Ensure = [System.String]
-        }
+        Name = [System.String]
+        Protocol = [System.String]
+        ServerName = [System.String]
+        TCPPort = [System.Int32]
+        PipeName = [System.String]
+        Ensure = [System.String]
+    }
 
     if ($null -ne (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name "$Name" -ErrorAction SilentlyContinue))
     {
@@ -54,7 +54,7 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
@@ -161,10 +161,7 @@ function Set-TargetResource
             }
         }
     }
-
-
 }
-
 
 function Test-TargetResource
 {
@@ -172,7 +169,7 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
