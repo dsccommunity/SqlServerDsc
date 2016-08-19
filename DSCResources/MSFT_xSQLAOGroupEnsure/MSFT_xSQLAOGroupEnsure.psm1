@@ -125,8 +125,8 @@ function Set-TargetResource
         "Present"
         {
             Grant-ServerPerms -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -AuthorizedUser "NT AUTHORITY\SYSTEM" -SetupCredential $SetupCredential
-            New-ListenerADObject -AvailabilityGroupNameListener $AvailabilityGroupNameListener -SetupCredential $SetupCredential
-           
+            New-ListenerADObject -AvailabilityGroupNameListener $AvailabilityGroupNameListener -SetupCredential $SetupCredential -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+ 
             $FailoverCondition = 3
             $HealthCheckTimeout = 30000
             $ConnectionModeInPrimary ="AllowAllConnections"    
