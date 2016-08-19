@@ -227,7 +227,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **Database**: (key) Database to be created or dropped
 * **Ensure**: An enumerated value that describes if Database is to be present or absent.
 * **SQLServer**: The SQL Server for the database
-* **SQLInstance**: The SQL instance for the database 
+* **SQLInstance**: The SQL instance for the database
 
 ###xSQLAOGroupEnsure
 * **Ensure**: (key) An enumerated value that describes if Availability Group is to be present or absent.
@@ -262,7 +262,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **Port**: Port Endpoint should listen on
 * **AuthorizedUser**:  User who should have connect ability to endpoint
 * **SQLServer**: The SQL Server for the database
-* **SQLInstance**: The SQL instance for the database 
+* **SQLInstance**: The SQL instance for the database
 
 ###xWaitforAvailabilityGroup
 * **Name**:  (key) Name for availability group
@@ -312,7 +312,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **Ensure**: (Default = 'Present') 'Present' will configure replication, 'Absent' will disable replication.
 * **DistributorMode**: (Required), 'Local' - Instance will be configured as it's own distributor, 'Remote' - Instace will be configure with remote distributor (remote distributor needs to be already configured for distribution).
 * **AdminLinkCredentials**: (Required) - AdminLink password to be used when setting up publisher distributor relationship.
-* **DistributionDBName**: (Default = 'distribution') distribution database name. If DistributionMode='Local' this will be created, if 'Remote' needs to match distribution database on remote distributor. 
+* **DistributionDBName**: (Default = 'distribution') distribution database name. If DistributionMode='Local' this will be created, if 'Remote' needs to match distribution database on remote distributor.
 * **RemoteDistributor**: (Required if DistributionMode='Remote') SQL Server network name that will be used as distributor for local instance.
 * **WorkingDirectory**: (Required) Publisher working directory.
 * **UseTrustedConnection**: (Default = $true) Publisher security mode.
@@ -329,10 +329,12 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerEndpointPermission
   - xSQLServerAvailabilityGroupListener
 * Fixes in xSQLServerAvailabilityGroupListener
-  - In one case the Get-method did not report that DHCP was configured. 
+  - In one case the Get-method did not report that DHCP was configured.
   - Now the resource will throw 'Not supported' when IP is changed between Static and DHCP.
   - Fixed an issue where sometimes the listener wasn't removed.
   - Fixed the issue when trying to add a static IP to a listener was ignored.
+* Fixes in xSQLAOGroupEnsure
+  - Added parameters to New-ListenerADObject to allow usage of a named instance.
 
 ### 1.8.0.0
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
@@ -346,7 +348,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerEndpointPermission
   - xSQLServerAvailabilityGroupListener
 * xSQLServerHelper
-    - added functions 
+    - added functions
         - Import-SQLPSModule
         - Get-SQLPSInstanceName
         - Get-SQLPSInstance
@@ -368,7 +370,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerEndPoint
   - xSQLServerAlwaysOnService
 * xSQLServerHelper
-    - added functions 
+    - added functions
         - Connect-SQL
         - New-VerboseMessage
         - Grant-ServerPerms
@@ -416,7 +418,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerDatabase
 * xSQLServerSetup:
   - Corrected bug in GetFirstItemPropertyValue to correctly handle registry keys with only one value.
-  - Added support for SQL Server 
+  - Added support for SQL Server
   - 2008 R2 installation
   - Removed default values for parameters, to avoid compatibility issues and setup errors
   - Added Replication sub feature detection
@@ -441,14 +443,14 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * xSQLServerFailoverClusterSetup
   - Additional of SQLHelper Function and error handling
   - Change SourceFolder to Source to allow for multiversion Support
-  - Add Parameters to SuppressReboot or ForceReboot 
+  - Add Parameters to SuppressReboot or ForceReboot
 * Examples
   - Updated example files to use correct DebugMode parameter value ForceModuleImport, this is not boolean in WMF 5.0 RTM
   - Added xSQLServerNetwork example
 
 ### 1.3.0.0
 
-* xSqlServerSetup: 
+* xSqlServerSetup:
     - Make Features case-insensitive.
 
 ### 1.2.1.0
@@ -457,13 +459,13 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ### 1.2.0.0
 
-* Updated release with the following new resources 
+* Updated release with the following new resources
     - xSQLServerFailoverClusterSetup
     - xSQLServerRSConfig
 
 ### 1.1.0.0
 
-* Initial release with the following resources 
+* Initial release with the following resources
     - xSQLServerSetup
     - xSQLServerFirewall
     - xSQLServerRSSecureConnectionLevel
