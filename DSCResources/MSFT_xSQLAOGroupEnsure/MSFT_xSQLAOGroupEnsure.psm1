@@ -33,10 +33,10 @@ function Get-TargetResource
 
     if(!$SQL)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -SetupCredential $SetupCredential
     }
     
-    $vConfigured = Test-TargetResource -Ensure $Ensure -AvailabilityGroupName $AvailabilityGroupName -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName 
+    $vConfigured = Test-TargetResource -Ensure $Ensure -AvailabilityGroupName $AvailabilityGroupName -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -SetupCredential $SetupCredential
 
     $returnValue = @{
     Ensure = $vConfigured
@@ -129,36 +129,36 @@ function Set-TargetResource
            
             $FailoverCondition = 3
             $HealthCheckTimeout = 30000
-            $ConnectionModeInPrimary ="AllowAllConnections"    
+            $ConnectionModeInPrimary = "AllowAllConnections"    
             $ConnectionModeInSecondaryRole = switch ($ReadableSecondary)
                                {
                                    'None' {"AllowNoConnections"}
                                    'ReadOnly' {"AllowAllConnections"}
-                                   'ReadIntent'{"AllowReadIntentConnectionsOnly"}
+                                   'ReadIntent' {"AllowReadIntentConnectionsOnly"}
                                    Default {"AllowAllConnections"}
                                } 
 
-            #Get Servers participating in the cluster
-            #First two nodes will account for Syncronous Automatic Failover, Any additional will be Asyncronous
-            try
-            {
-                $nodes= Get-ClusterNode -cluster $sql.ClusterName -Verbose:$false |  select -ExpandProperty name
+           #Get Servers participating in the cluster
+           #First two nodes will account for Syncronous Automatic Failover, Any additional will be Asyncronous
+           try
+           {
+                $nodes = Get-ClusterNode -cluster $sql.ClusterName -Verbose:$false |  select -ExpandProperty name
                 $syncNodes = $nodes | Select-Object -First 2
                 $asyncNodes = $nodes | Select-Object -Skip 2
                 $availabilityGroup = New-Object -typename Microsoft.SqlServer.Management.Smo.AvailabilityGroup -ArgumentList $SQL, $AvailabilityGroupName
                 $availabilityGroup.AutomatedBackupPreference = $AutoBackupPreference
                 $availabilityGroup.FailureConditionLevel = $FailoverCondition
                 $availabilityGroup.HealthCheckTimeout = $HealthCheckTimeout
-            }
-            Catch
-            {
-                Throw "Failed to connect to Cluster Nodes from $sql.ClusterName"
+           }
+           Catch
+           {
+                Throw "Failed to connect to Cluster Nodes from $($sql.ClusterName)"
                 Exit
-            }
+           }
 
-            #Loop through Sync nodes Create Replica Object Assign properties and add it to AvailabilityGroup
-            foreach ($node in $syncNodes)
-            { 
+           #Loop through Sync nodes Create Replica Object Assign properties and add it to AvailabilityGroup
+           foreach ($node in $syncNodes)
+           { 
                 Try
                 {
                     $Replica = New-Object -typename Microsoft.SqlServer.Management.Smo.AvailabilityReplica -ArgumentList $availabilityGroup, $node
@@ -175,8 +175,7 @@ function Set-TargetResource
                 {
                     Throw "Failed to add $Replica to the Availability Group $AvailabilityGroupName"
                     Exit
-                }
-                         
+                }         
             }
 
             #Loop through ASync nodes Create Replica Object Assign properties and add it to AvailabilityGroup
@@ -235,49 +234,44 @@ function Set-TargetResource
             }
             Catch{
                 Throw "Failed to Add $AvailabilityGroupNameListener to $AvailabilityGroupName..."
-                Exit
-             }    
+            }    
 
             #Add Availabilty Group to the SQL connection
             Try{
                 $SQL.AvailabilityGroups.Add($availabilityGroup)
                 New-VerboseMessage -Message "Added $availabilityGroupName Availability Group to Connection"  
-              }
+            }
             Catch{
                     Throw "Unable to Add $AvailabilityGroup to $SQLServer\$SQLInstanceName"
                     Exit
-                }
+            }
            
             #Create Availability Group
-            Try
-               {
+            Try{
                 $availabilityGroup.Create()
                 New-VerboseMessage -Message "Created Availability Group $availabilityGroupName"
-               }
-            Catch
-               {
+            }
+            Catch{
                 Throw "Unable to Create $AvailabilityGroup on $SQLServer\$SQLInstanceName"
                 Exit
-               }
+            }
            
         }
         "Absent"
         { 
-            Try
-                {
+            Try{
                  $sql.AvailabilityGroups[$AvailabilityGroupName].Drop()
-                 NNew-VerboseMessage -Message "Dropped $AvailabilityGroupName" 
-                }
+                 New-VerboseMessage -Message "Dropped $AvailabilityGroupName" 
+            }
             Catch{
                  Throw "Unable to Drop $AvailabilityGroup on $SQLServer\$SQLInstanceName"
-                }
+            }
         }
     }
 
 
 
 }
-
 
 function Test-TargetResource
 {
@@ -333,21 +327,19 @@ function Test-TargetResource
 
     if(!$SQL)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -SetupCredential $SetupCredential
     }
 
     Switch ($Ensure)
     {
         "Present"
-            {
-
-                $AGPresent=$sql.AvailabilityGroups.Contains($AvailabilityGroupName)
-
-                if ($AGPresent)
-                    {$Return = $true}
-                else
-                    {$Return = $false}
-            }
+        {
+            $AGPresent=$sql.AvailabilityGroups.Contains($AvailabilityGroupName)
+            if ($AGPresent)
+                {$Return = $true}
+            else
+                {$Return = $false}
+        }
         "Absent"
         {
             if(!$sql.AvailabilityGroups[$AvailabilityGroupName])

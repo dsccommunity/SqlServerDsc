@@ -38,6 +38,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerEndpointPermission** Grant or revoke permission on the endpoint.
 * **xSQLServerAvailabilityGroupListener** Create or remove an availability group listener.
 * **xSQLServerReplication** resource to manage SQL Replication distribution and publishing.
+* **xSQLAlias** resource to manage SQL Server client Aliases
+
 
 ### xSQLServerSetup
 
@@ -318,11 +320,20 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **UseTrustedConnection**: (Default = $true) Publisher security mode.
 * **UninstallWithForce**: (Default = $true) Force flag for uninstall procedure
 
+### xSqlAlias
+ 
+ * **Name**: The name of Alias (e.g. svr01\inst01).
+ * **ServerName**: The name of real SQL server.
+ * **Protocol**: The protocol of either tcp or np (named pipes).
+ * **RetryCount**: Maximum number of retries to check HA group existency.
+ * **TCPPort**: The tcp port of the instance.
+
 ## Versions
 
 ### Unreleased
 * Added resources
   - xSQLServerReplication
+  - xSQLAlias	
 * Added tests for resources
   - xSQLServerPermission
   - xSQLServerEndpointState
@@ -333,6 +344,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - Now the resource will throw 'Not supported' when IP is changed between Static and DHCP.
   - Fixed an issue where sometimes the listener wasn't removed.
   - Fixed the issue when trying to add a static IP to a listener was ignored.
+* Pester Test for xSQLAlias
+* Correction on xSQLAOGroupEnsure to pass Setup Credential Correctly
 
 ### 1.8.0.0
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
@@ -346,14 +359,14 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerEndpointPermission
   - xSQLServerAvailabilityGroupListener
 * xSQLServerHelper
-    - added functions 
-        - Import-SQLPSModule
-        - Get-SQLPSInstanceName
-        - Get-SQLPSInstance
-        - Get-SQLAlwaysOnEndpoint
-    - modified functions
-        - New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
-
+	- added functions 
+		- Import-SQLPSModule
+		- Get-SQLPSInstanceName
+		- Get-SQLPSInstance
+		- Get-SQLAlwaysOnEndpoint
+	- modified functions
+		- New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
+	
 ### 1.7.0.0
 
 * Resources Added
