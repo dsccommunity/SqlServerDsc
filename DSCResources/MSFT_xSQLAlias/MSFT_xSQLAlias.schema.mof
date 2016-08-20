@@ -1,10 +1,10 @@
 [ClassVersion("1.0.0.0"), FriendlyName("xSQLAlias")]
 class MSFT_xSQLAlias : OMI_BaseResource
 {
-    [Key, Description("The SQL Server Alias name.")] String Name;
-    [Write, Description("Protocal to use when connecting."), ValueMap{"TCP","NP"}, Values{"TCP","NP"}] String Protocol;
-    [Key, Description("The SQL Server you are aliasing.")] String ServerName;
-    [Write, Description("The TCP port SQL is listening on")] Sint32 TCPPort;
-    [Read, Description("Named Pipes Name ")] String PipeName;
-    [Write, Description("Determines if Alias be Present or Absent."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Key, Description("The name of Alias (e.g. svr01\inst01).")] String Name;
+    [Write, Description("Protocol to use when connecting. Valid values are TCP or NP. NP is Named Pipes."), ValueMap{"TCP","NP"}, Values{"TCP","NP"}] String Protocol;
+    [Key, Description("The SQL Server you are aliasing (the real SQL Server name).")] String ServerName;
+    [Write, Description("The TCP port SQL is listening on.")] Sint32 TCPPort;
+    [Read, Description("Named Pipes name from the Get-TargetResource method.")] String PipeName;
+    [Write, Description("Determines if Alias is to be Present or Absent."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
 };

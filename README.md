@@ -330,11 +330,12 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **Variable**: Creates a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable.
 
 ### xSqlAlias
- * **Name**: The name of Alias (e.g. svr01\inst01).
- * **ServerName**: The name of real SQL server.
- * **Protocol**: The protocol of either tcp or np (named pipes).
- * **RetryCount**: Maximum number of retries to check HA group existency.
- * **TCPPort**: The tcp port of the instance.
+ * **Ensure**: Determines if Alias is to be Present or Absent.
+ * **Name**: (Key) The name of Alias (e.g. svr01\inst01).
+ * **ServerName**: (Key) The SQL Server you are aliasing (the real SQL Server name).
+ * **Protocol**: Protocol to use when connecting. Valid values are TCP or NP. NP is Named Pipes.
+ * **TCPPort**: The TCP port SQL is listening on.
+ * **PipeName**: (Readonly) Named Pipes name from the Get-TargetResource method.
 
 ## Versions
 
