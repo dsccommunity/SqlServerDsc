@@ -32,7 +32,7 @@ function Get-TargetResource
 
     if ($null -ne (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -ErrorAction SilentlyContinue))
     {
-        $itemValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name
+        $itemValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -ErrorAction SilentlyContinue
         
         $returnValue.Name = $Name
         $itemConfig = $itemValue."$Name" -split ','
@@ -97,49 +97,59 @@ function Set-TargetResource
     # Logic based on ensure value Present
     if ($Ensure -eq 'Present')
     {
-        if ($PSCmdlet.ShouldProcess("'$Name'","Replace the Client Alias"))
-        {
-        
-            # Update the registry
-            if (Test-Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo')
-            {
-                Write-Debug -Message 'Check if value requires changing'
-                $currentValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name "$Name"
-                if ($itemValue -ne $currentValue)
-                {
-                    Write-Debug -Message 'Set-ItemProperty'
-                    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name "$Name" -Value $itemValue
-                }
-            }
-            else
-            {
-                Write-Debug -Message 'New-Item'
-                New-Item -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' | Out-Null
-                Write-Debug -Message 'New-ItemProperty'
-                New-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name "$Name" -Value $itemValue | Out-Null
-            }
+        Write-Debug -Message 'Check if value requires changing'
 
-            Write-Debug -Message 'Check OSArchitecture'
-            # If this is a 64 bit machine also update Wow6432Node
-            if ((Get-Wmiobject -Class win32_OperatingSystem).OSArchitecture -eq '64-bit')
+        $currentValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -ErrorAction SilentlyContinue
+        if ($null -ne $currentValue -and $itemValue -ne $currentValue)
+        {
+            if ($PSCmdlet.ShouldProcess($Name,"Changing the client alias (64-bit)"))
             {
-                Write-Debug -Message 'Is 64Bit'
-                if (Test-Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo')
-                {
-                    Write-Debug -Message 'Check if value requires changing'
-                    $currentValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name "$Name"
-                    if ($itemValue -ne $currentValue)
-                    {
-                        Write-Debug -Message 'Set-ItemProperty'
-                        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name "$Name" -Value $itemValue
-                    }
-                }
-                else
+                Write-Debug -Message 'Set-ItemProperty'
+                Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -Value $itemValue
+            }
+        }
+        elseif ($null -eq $currentValue)
+        {
+            if ($PSCmdlet.ShouldProcess($Name,"Create client alias (64-bit)"))
+            {
+                if (!(Test-Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo'))
                 {
                     Write-Debug -Message 'New-Item'
-                    New-Item -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo'
+                    New-Item -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' | Out-Null
+                }
+
+                Write-Debug -Message 'New-ItemProperty'
+                New-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -Value $itemValue | Out-Null
+            }
+        }
+
+        Write-Debug -Message 'Check OSArchitecture'
+        # If this is a 64 bit machine also update Wow6432Node
+        if ((Get-Wmiobject -Class win32_OperatingSystem).OSArchitecture -eq '64-bit')
+        {
+            Write-Debug -Message 'Is 64Bit'
+            Write-Debug -Message 'Check if value requires changing'
+            $currentValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -ErrorAction SilentlyContinue
+            if ($null -ne $currentValue -and $itemValue -ne $currentValue)
+            {
+                if ($PSCmdlet.ShouldProcess($Name,"Changing the client alias (32-bit)"))
+                {
+                    Write-Debug -Message 'Set-ItemProperty'
+                    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -Value $itemValue
+                }
+            }
+            elseif ($null -eq $currentValue)
+            {
+                if ($PSCmdlet.ShouldProcess($Name,"Create client alias (32-bit)"))
+                {
+                    if (!(Test-Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo'))
+                    {
+                        Write-Debug -Message 'New-Item'
+                        New-Item -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' | Out-Null
+                    }
+
                     Write-Debug -Message 'New-ItemProperty'
-                    New-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name "$Name" -Value $itemValue
+                    New-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -Value $itemValue
                 }
             }
         }
@@ -148,20 +158,25 @@ function Set-TargetResource
     # Logic based on ensure value Absent
     if ($Ensure -eq 'Absent')
     {
-        if ($PSCmdlet.ShouldProcess("'$Name'","Remove the Client Alias (if exists)"))
+        # If the base path doesn't exist then we don't need to do anything
+        if (Test-Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo')
         {
-            # If the base path doesn't exist then we don't need to do anything
-            if (Test-Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo')
+            
+            if ($PSCmdlet.ShouldProcess($Name,"Remove the client alias (64-bit)"))
             {
                 Write-Debug -Message 'Remove-ItemProperty'
-                Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name "$Name"
+                Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name
+            }
+            
+            Write-Debug -Message 'Check OSArchitecture'
 
-                Write-Debug -Message 'Check OSArchitecture'
-                # If this is a 64 bit machine also update Wow6432Node
-                if ((Get-Wmiobject -Class win32_OperatingSystem).OSArchitecture -eq '64-bit' -and (Test-Path -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo'))
+            # If this is a 64 bit machine also update Wow6432Node
+            if ((Get-Wmiobject -Class win32_OperatingSystem).OSArchitecture -eq '64-bit' -and (Test-Path -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo'))
+            {
+                if ($PSCmdlet.ShouldProcess($Name,"Remove the client alias (34-bit)"))
                 {
                     Write-Debug -Message 'Remove-ItemProperty Wow6432Node'
-                    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name "$Name"
+                    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name
                 }
             }
         }
@@ -203,12 +218,12 @@ function Test-TargetResource
     if (Test-Path -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo')
     {
         Write-Debug -Message 'Alias registry container exists'
-        if ($null -ne (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name "$Name" -ErrorAction SilentlyContinue))
+        if ($null -ne (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -ErrorAction SilentlyContinue))
         {
             Write-Debug -Message 'Existing alias found'
             if ($Ensure -eq 'Present')
             {
-                $itemValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name "$Name"
+                $itemValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -ErrorAction SilentlyContinue
                 
                 $itemConfig = $itemValue."$Name" -split ','
 
@@ -250,10 +265,10 @@ function Test-TargetResource
                 if ((Get-Wmiobject -Class win32_OperatingSystem).OSArchitecture -eq '64-bit')
                 {
                     Write-Debug -Message 'Wow6432Node'
-                    if ($null -ne (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name "$Name" -ErrorAction SilentlyContinue))
+                    if ($null -ne (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -ErrorAction SilentlyContinue))
                     {
                         Write-Debug -Message 'Existing alias found'
-                        $itemValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name "$Name"
+                        $itemValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name  -ErrorAction SilentlyContinue
 
                         $itemConfig = $itemValue."$Name" -split ','
 

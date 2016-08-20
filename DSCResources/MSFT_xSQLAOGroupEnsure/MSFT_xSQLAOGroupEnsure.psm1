@@ -149,7 +149,7 @@ function Set-TargetResource
            # First two nodes will account for Syncronous Automatic Failover, Any additional will be Asyncronous
            try
            {
-                $nodes = Get-ClusterNode -cluster $sql.ClusterName -Verbose:$false | elect-Object -ExpandProperty name
+                $nodes = Get-ClusterNode -cluster $sql.ClusterName -Verbose:$false | Select-Object -ExpandProperty name
                 $syncNodes = $nodes | Select-Object -First 2
                 $asyncNodes = $nodes | Select-Object -Skip 2
                 $availabilityGroup = New-Object -typename Microsoft.SqlServer.Management.Smo.AvailabilityGroup -ArgumentList $SQL, $AvailabilityGroupName

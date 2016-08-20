@@ -27,9 +27,9 @@ try
 
     #region Get-TargetResource
     Describe 'Get-TargetResource' {
-        Mock -ModuleName MSFT_xSqlAlias -CommandName Get-ItemProperty -MockWith {
+        Mock -CommandName Get-ItemProperty -MockWith {
             return 'DBMSSOCN,localhost,1433'
-        }
+        } -ModuleName $script:DSCResourceName
     
         $SqlAlias = Get-TargetResource -Name 'localhost' -Servername 'localhost'
 
@@ -45,57 +45,85 @@ try
 
     #region Set-TargetResource
     Describe 'Set-TargetResource' {
-        Mock -ModuleName MSFT_xSqlAlias -CommandName Test-Path -MockWith {
+        Mock -CommandName New-ItemProperty -MockWith {} -ModuleName $script:DSCResourceName 
+        Mock -CommandName Set-ItemProperty -MockWith {} -ModuleName $script:DSCResourceName
+        Mock -CommandName Remove-ItemProperty -MockWith {} -ModuleName $script:DSCResourceName
+        
+        Mock -CommandName Test-Path -MockWith {
             return $true
-        }
+        } -ModuleName $script:DSCResourceName 
 
-        Mock -ModuleName MSFT_xSqlAlias -CommandName Get-ItemProperty -MockWith {
-            return 'DBMSSOCN,localhost,52002'
-        } 
-    
-        Mock -ModuleName MSFT_xSqlAlias -CommandName Set-ItemProperty -MockWith {
-            return $true
-        }    
-
-        Mock -ModuleName MSFT_xSqlAlias -CommandName Get-WmiObject -MockWith {
+        Mock -CommandName Get-WmiObject -MockWith {
             return @{
                 Class = 'win32_OperatingSystem'
                 OSArchitecture = '64-bit'
             }
+        } -ModuleName $script:DSCResourceName
+
+        It 'Should call New-ItemProperty when value is not set' {
+            Mock -CommandName Get-ItemProperty -MockWith {
+                return $null
+            } -ModuleName $script:DSCResourceName
+
+            Set-TargetResource -Name 'myServerAlias' -Protocol 'TCP' -ServerName 'localhost' -TCPPort 52002 -Ensure 'Present'
+
+            Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName New-ItemProperty -Exactly 2 -Scope It
+            Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Set-ItemProperty -Exactly 0 -Scope It
         }
 
-        It 'Should not call Set-ItemProperty with value already set' {
-            Set-TargetResource -Name 'myServerAlias'  -Protocol 'TCP' -ServerName 'localhost' -TCPPort 52002 -Ensure 'Present'
+        Mock -CommandName Get-ItemProperty -MockWith {
+            return 'DBMSSOCN,localhost,52002'
+        } -ModuleName $script:DSCResourceName
 
-            Assert-MockCalled -ModuleName MSFT_xSqlAlias -CommandName Set-ItemProperty -Exactly 0
+        It 'Should not call any *-ItemProperty when value is already set' {
+            Set-TargetResource -Name 'myServerAlias' -Protocol 'TCP' -ServerName 'localhost' -TCPPort 52002 -Ensure 'Present'
+
+            Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Set-ItemProperty -Exactly 0 -Scope It
+            Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName New-ItemProperty -Exactly 0 -Scope It
+            Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Remove-ItemProperty -Exactly 0 -Scope It
         }
 
-        It 'Should call Set-ItemProperty exactly 2 times (1 for 32bit and 1 for 64 bit reg keys)' {
-            Set-TargetResource -Name 'myServerAlias'  -Protocol 'TCP' -ServerName 'localhost' -TCPPort 1433 -Ensure 'Present'
+        It 'Should call Set-ItemProperty exactly 2 times (1 for 32bit and 1 for 64 bit reg keys) when server name is different' {
+            Set-TargetResource -Name 'myServerAlias' -Protocol 'TCP' -ServerName 'newserver' -TCPPort 52002 -Ensure 'Present'
+
+            Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Set-ItemProperty -Exactly 2 -Scope It
+            Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName New-ItemProperty -Exactly 0 -Scope It
+        }
+
+        It 'Should call Set-ItemProperty exactly 2 times (1 for 32bit and 1 for 64 bit reg keys) when TCP port is different' {
+            Set-TargetResource -Name 'myServerAlias' -Protocol 'TCP' -ServerName 'localhost' -TCPPort 1433 -Ensure 'Present'
             
-            Assert-MockCalled -ModuleName MSFT_xSqlAlias -CommandName Set-ItemProperty -Exactly 2
+            Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Set-ItemProperty -Exactly 2 -Scope It
+        }
+
+        It 'Should call any Remove-ItemProperty exactly 2 times (1 for 32bit and 1 for 64 bit reg keys) when alias should be absent' {
+            Set-TargetResource -Name 'myServerAlias' -Protocol 'TCP' -ServerName 'localhost' -TCPPort 52002 -Ensure 'Absent'
+
+            Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Set-ItemProperty -Exactly 0 -Scope It
+            Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName New-ItemProperty -Exactly 0 -Scope It
+            Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Remove-ItemProperty -Exactly 2 -Scope It
         }
     }
     #end region Set-TargetResource
 
     #region Test-TargetResource
     Describe 'Test-TargetResource' {
-        Mock -ModuleName MSFT_xSqlAlias -CommandName Test-Path -MockWith {
+        Mock -CommandName Test-Path -MockWith {
             return $true
-        }
+        } -ModuleName $script:DSCResourceName
 
-        Mock -ModuleName MSFT_xSqlAlias -CommandName Get-ItemProperty -MockWith {
+        Mock -CommandName Get-ItemProperty -MockWith {
             return @{
                 myServerAlias = 'DBMSSOCN,localhost,1433'
             }
-        }   
+        } -ModuleName $script:DSCResourceName
 
-        Mock -ModuleName MSFT_xSqlAlias -CommandName Get-WmiObject -MockWith {
+        Mock -CommandName Get-WmiObject -MockWith {
             return @{
                 Class = 'win32_OperatingSystem'
                 OSArchitecture = '64-bit'
             }
-        }
+        } -ModuleName $script:DSCResourceName
 
         It 'Should return $true when Test is passed as Alias thats already set'{
             Test-TargetResource -Name 'myServerAlias'  -Protocol 'TCP' -ServerName localhost -TCPPort 1433 -Ensure 'Present' | Should Be $true

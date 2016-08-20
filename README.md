@@ -233,19 +233,19 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **SQLInstance**: (key) The SQL instance for the database 
 
 ###xSQLAOGroupEnsure
-* **Ensure**: (key) An enumerated value that describes if Availability Group is to be present or absent.
-* **AvailabilityGroupName** (key) Name for availability group
-* **AvailabilityGroupNameListener** Listener name for availability group
-* **AvailabilityGroupNameIP** List of IP addresses associated with listener
-* **AvailabilityGroupSubMask** Network subnetmask for listener
-* **AvailabilityGroupPort** Port availability group should listen on
-* **ReadableSecondary** Mode secondaries should operate under (None, ReadOnly, ReadIntent)
-* **AutoBackupPreference** Where backups should be backed up from (Primary,Secondary)
-* **BackupPriority** The percentage weight for backup prority (default 50)
-* **EndPointPort** The TCP port for the SQL AG Endpoint (default 5022)
-* **SQLServer**: The SQL Server for the database
-* **SQLInstance**: The SQL instance for the database
-* **SetupCredential**: (Required) Credential to be used to Grant Permissions on SQL Server
+* **Ensure**: (Key) Determines whether the availability group should be added or removed.
+* **AvailabilityGroupName** (Key) Name for availability group.
+* **AvailabilityGroupNameListener** Listener name for availability group.
+* **AvailabilityGroupNameIP** List of IP addresses associated with listener.
+* **AvailabilityGroupSubMask** Network subnetmask for listener.
+* **AvailabilityGroupPort** Port availability group should listen on.
+* **ReadableSecondary** Mode secondaries should operate under (None, ReadOnly, ReadIntent).
+* **AutoBackupPreference** Where backups should be backed up from (Primary, Secondary).
+* **BackupPriority** The percentage weight for backup prority (default 50).
+* **EndPointPort** The TCP port for the SQL AG Endpoint (default 5022).
+* **SQLServer**: The SQL Server for the database.
+* **SQLInstance**: The SQL instance for the database.
+* **SetupCredential**: (Required) Credential to be used to Grant Permissions on SQL Server, set this to $null to use Windows Authentication. 
 
 ###xSQLServerAOJoin
 * **Ensure**: (key) An enumerated value that describes if Replica is to be present or absent from availability group
@@ -330,7 +330,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **Variable**: Creates a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable.
 
 ### xSqlAlias
- * **Ensure**: Determines if Alias is to be Present or Absent.
+ * **Ensure**: Determines whether the alias should be added or removed.
  * **Name**: (Key) The name of Alias (e.g. svr01\inst01).
  * **ServerName**: (Key) The SQL Server you are aliasing (the real SQL Server name).
  * **Protocol**: Protocol to use when connecting. Valid values are TCP or NP. NP is Named Pipes.
