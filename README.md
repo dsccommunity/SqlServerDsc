@@ -331,7 +331,20 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ### Unreleased
 * Added resources
+  - xSQLServerReplication
   - xSQLServerScript
+* Added tests for resources
+  - xSQLServerPermission
+  - xSQLServerEndpointState
+  - xSQLServerEndpointPermission
+  - xSQLServerAvailabilityGroupListener
+* Fixes in xSQLServerAvailabilityGroupListener
+  - In one case the Get-method did not report that DHCP was configured. 
+  - Now the resource will throw 'Not supported' when IP is changed between Static and DHCP.
+  - Fixed an issue where sometimes the listener wasn't removed.
+  - Fixed the issue when trying to add a static IP to a listener was ignored.
+* Fixes in xSQLAOGroupEnsure
+  - Added parameters to New-ListenerADObject to allow usage of a named instance.
   
 ### 1.8.0.0
 
@@ -345,7 +358,6 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerEndpointState
   - xSQLServerEndpointPermission
   - xSQLServerAvailabilityGroupListener
-  - xSQLServerReplication
 * xSQLServerHelper
     - added functions 
         - Import-SQLPSModule
