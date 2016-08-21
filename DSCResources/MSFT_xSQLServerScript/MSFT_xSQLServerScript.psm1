@@ -128,7 +128,7 @@ function Test-TargetResource
             return $false
         }
     }
-    catch
+    catch [Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException]
     {
         Write-Verbose $_
         return $false

@@ -1,6 +1,6 @@
 <#
-.Synopsis
-   Automated unit test for MSFT_xSQLServerScript DSC Resource
+    .SYNOPSIS
+       Automated unit test for MSFT_xSQLServerScript DSC Resource
 #>
 
 
@@ -24,6 +24,18 @@ $TestEnvironment = Initialize-TestEnvironment `
     -TestType Unit 
 
 #endregion HEADER
+
+Add-Type -ErrorAction SilentlyContinue -TypeDefinition @'
+namespace Microsoft.SqlServer.Management.PowerShell
+{
+    public class SqlPowerShellSqlExecutionException : System.Exception
+    {
+        public SqlPowerShellSqlExecutionException()
+        {
+        }
+    }
+}
+'@ 
 
 # Begin Testing
 try
@@ -56,11 +68,9 @@ try
         }
 
         It 'Test method returns false' {
-            $throwMessage = "Failed to run SQL Script"
+            Mock -CommandName Invoke-SqlCmd -MockWith { throw New-Object Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException}
 
-             Mock -CommandName Invoke-SqlCmd -MockWith { Throw $throwMessage }
-
-             Test-TargetResource @testParameters | should be $false
+            Test-TargetResource @testParameters | should be $false
         }
 
         It 'Set method calls Invoke-SqlCmd' {
@@ -182,7 +192,7 @@ try
         }
 
         It 'Test method throws' {
-            Test-TargetResource @testParameters | should be $false
+            { Test-TargetResource @testParameters } | should throw $throwMessage
         }
 
         It 'Set method throws' {
