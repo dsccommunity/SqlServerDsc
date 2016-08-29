@@ -5,7 +5,6 @@ Write-Debug -Message "CurrentPath: $currentPath"
 Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
 
 # DSC resource to manage SQL logins in server role
-
 # NOTE: This resource requires WMF5 and PsDscRunAsCredential
 
 function Get-TargetResource
@@ -14,26 +13,26 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Name,
+
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure,
 
         [parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
-
-        [System.Management.Automation.PSCredential]
-        $LoginCredential,
-
         [ValidateSet("bulkadmin","dbcreator","diskadmin","processadmin","public","securityadmin","serveradmin","setupadmin","sysadmin")]
         [System.String[]]
-        $ServerRoles,
+        $ServerRole,
 
+        [parameter(Mandatory = $true)]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLServer,
 
+        [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName = "MSSQLSERVER"
+        $SQLInstanceName
     )
 
     if(!$SQL)
@@ -43,30 +42,29 @@ function Get-TargetResource
 
     if($SQL)
     {
-        Write-Verbose "Getting SQL Roles"
-        $SQLRoles = $SQL.Roles
-        if($SQLRoles)
+        Write-Verbose "Getting SQL Server roles for $Name on SQL Server $SQLServer."
+        $SQLRole = $SQL.Roles
+        if($SQLRole)
         {
-            ForEach ($ServerRole in $ServerRoles)
+            ForEach ($srvRole in $ServerRole)
             {
-                if($SQLRoles[$ServerRole])
+                if($SQLRole[$srvRole])
                 {
-                    Write-Verbose "SQL role name $ServerRole is present"
-                    $membersInRole = $SQLRoles[$ServerRole].EnumMemberNames()             
+                    $membersInRole = $SQLRole[$srvRole].EnumMemberNames()             
                     if($membersInRole.Contains($Name))
                     {
                         $Ensure = "Present"
-                        Write-Verbose "$Name is present in SQL role name $ServerRole"
+                        Write-Verbose "$Name is present in SQL role name $srvRole"
                     }
                     else
                     {
-                        Write-Verbose "$Name is absent in SQL role name $ServerRole"
+                        Write-Verbose "$Name is absent in SQL role name $srvRole"
                         $Ensure = "Absent"
                     }
                 }
                 else
                 {
-                    Write-Verbose "SQL role name $ServerRole is absent"
+                    Write-Verbose "SQL role name $srvRole is absent"
                     $Ensure = "Absent"
                 }
             }
@@ -89,8 +87,6 @@ function Get-TargetResource
         SQLServer = $SQLServer
         SQLInstanceName = $SQLInstanceName
     }
-
-    $returnValue
 }
 
 
@@ -99,26 +95,26 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [ValidateSet("Present","Absent")]
-        [System.String]
-        $Ensure = "Present",
-
         [parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [System.Management.Automation.PSCredential]
-        $LoginCredential,
+        [ValidateSet("Present","Absent")]
+        [System.String]
+        $Ensure,
 
+        [parameter(Mandatory = $true)]
         [ValidateSet("bulkadmin","dbcreator","diskadmin","processadmin","public","securityadmin","serveradmin","setupadmin","sysadmin")]
         [System.String[]]
-        $ServerRoles = "public",
+        $ServerRole,
 
+        [parameter(Mandatory = $true)]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLServer,
 
+        [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName = "MSSQLSERVER"
+        $SQLInstanceName
     )
 
     if(!$SQL)
@@ -134,27 +130,27 @@ function Set-TargetResource
             {
                 try
                 {
-                    $SQLRoles = $SQL.Roles
-                    ForEach ($ServerRole in $ServerRoles)
+                    $SQLRole = $SQL.Roles
+                    ForEach ($srvRole in $ServerRole)
                     {
-                        Write-Verbose "Adding SQL login $Name in role $ServerRole"
-                        $SQLRoles[$ServerRole].AddMember($Name)
+                        Write-Verbose "Adding SQL login $Name in role $srvRole"
+                        $SQLRole[$srvRole].AddMember($Name)
                     }
                 }
                 catch
                 {
-                    Write-Verbose "Failed adding SQL login $Name in role $ServerRole"
+                    Write-Verbose "Failed adding SQL login $Name in role $srvRole"
                 }
             }
             "Absent"
             {
                 try
                 {
-                    $SQLRoles = $SQL.Roles
-                    ForEach ($ServerRole in $ServerRoles)
+                    $SQLRole = $SQL.Roles
+                    ForEach ($srvRole in $ServerRole)
                     {
-                        Write-Verbose "Deleting SQL login $Name in role $ServerRole"
-                        $SQLRoles[$ServerRole].DropMember($Name)
+                        Write-Verbose "Deleting SQL login $Name in role $srvRole"
+                        $SQLRole[$srvRole].DropMember($Name)
                     }
                 }
                 catch
@@ -164,6 +160,7 @@ function Set-TargetResource
             }
         }
     }
+
 }
 
 
@@ -173,95 +170,37 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [ValidateSet("Present","Absent")]
-        [System.String]
-        $Ensure = "Present",
-
         [parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [System.Management.Automation.PSCredential]
-        $LoginCredential,
+        [ValidateSet("Present","Absent")]
+        [System.String]
+        $Ensure,
 
+        [parameter(Mandatory = $true)]
         [ValidateSet("bulkadmin","dbcreator","diskadmin","processadmin","public","securityadmin","serveradmin","setupadmin","sysadmin")]
         [System.String[]]
-        $ServerRoles = "public",
+        $ServerRole,
 
+        [parameter(Mandatory = $true)]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLServer,
 
+        [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName = "MSSQLSERVER"
+        $SQLInstanceName
     )
 
-    if(!$SQL)
-    {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-    }
-
-    if($SQL)
-    {
-        switch($Ensure)
-        {
-            "Present"
-            {
-                try
-                {
-                    Write-Verbose "getting SQL login $Name in role $ServerRoles"
-                    $numberSQLRolesPresent=0
-                    $SQLRoles = $SQL.Roles
-                    ForEach ($ServerRole in $ServerRoles)
-                    {
-                        $membersInRole = $SQLRoles[$ServerRole].EnumMemberNames()
-                        if($membersInRole.Contains($Name))
-                        {
-                            New-VerboseMessage -Message "$Name is present in SQL role name $ServerRole"
-                            $numberSQLRolesPresent++
-                        }
-                        Else
-                        {
-                            New-VerboseMessage -Message "$Name is absent in SQL role name $ServerRole"
-                        }
-                    }
-                    if($ServerRoles.Count -eq $numberSQLRolesPresent){return $True}
-                    Else{return $False}
-                }
-                catch
-                {
-                    Write-Verbose "Failed getting SQL login $Name in role $ServerRoles"
-                }
-            }
-            "Absent"
-            {
-                try
-                {
-                    Write-Verbose "getting SQL login $Name in role $ServerRole"
-                    $numberSQLRolesAbsent = 0
-                    $SQLRoles = $SQL.Roles
-                    ForEach ($ServerRole in $ServerRoles)
-                    {
-                        $membersInRole = $SQLRoles[$ServerRole].EnumMemberNames()
-                        if($membersInRole.Contains($Name))
-                        {
-                            New-VerboseMessage -Message "$Name is absent in SQL role name $ServerRole"
-                            $numberSQLRolesAbsent++
-                        }
-                        Else
-                        {
-                            New-VerboseMessage -Message "$Name is present in SQL role name $ServerRole"
-                        }
-                    }
-                    if($ServerRoles.Count -eq $numberSQLRolesAbsent){return $False}
-                    Else{return $True}
-                }
-                catch
-                {
-                    Write-Verbose "Failed getting SQL login $Name in role $ServerRole"
-                }
-            }
-        }
-    }
+    Write-Verbose -Message "Testing SQL roles for login $Name"
+    $CurrentValues = Get-TargetResource @PSBoundParameters
+    
+    $result = ($CurrentValues.Ensure -eq $Ensure) -and ($CurrentValues.ServerRole -eq $ServerRole)
+    
+    $result
+    
 }
 
+
 Export-ModuleMember -Function *-TargetResource
+

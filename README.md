@@ -167,8 +167,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ### xSQLServerRole
 * **Name**: (Key) Name of the SQL Login to create
-* **LoginCredential**: PowerShell Credential for the SQL Login to be created
-* **ServerRoles**: Type of SQL role to add.(bulkadmin, dbcreator, diskadmin, processadmin , public, securityadmin, serveradmin , setupadmin, sysadmin)
+* **ServerRole**: Type of SQL role to add.(bulkadmin, dbcreator, diskadmin, processadmin , public, securityadmin, serveradmin , setupadmin, sysadmin)
 * **SQLServer**: SQL Server where login should be created
 * **SQLInstance**: SQL Instance for the login
 
