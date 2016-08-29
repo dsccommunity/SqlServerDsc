@@ -1,6 +1,6 @@
 @{
 # Version number of this module.
-ModuleVersion = '1.6.0.0'
+ModuleVersion = '1.8.0.0'
 
 # ID used to uniquely identify this module
 GUID = '74e9ddb5-4cbc-4fa2-a222-2bcfb533fd66'
@@ -47,44 +47,28 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Resources Added
-  - xSQLAOGroupEnsure
-  - xSQLAOGroupJoin
-  - xWaitForAvailabilityGroup
-  - xSQLServerEndPoint
-  - xSQLServerAlwaysOnService
+        ReleaseNotes = '* Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
+* Added Support for SQL Server 2016
+* xSQLAOGroupEnsure
+   - Fixed spelling mistake in AutoBackupPreference property
+   - Added BackupPriority property
+* Added resources
+  - xSQLServerPermission
+  - xSQLServerEndpointState
+  - xSQLServerEndpointPermission
+  - xSQLServerAvailabilityGroupListener
 * xSQLServerHelper
-    - added functions 
-        - Connect-SQL
-        - New-VerboseMessage
-        - Grant-ServerPerms
-        - Grant-CNOPerms
-        - New-ListenerADObject
-* xSQLDatabaseRecoveryModel
-    - Updated Verbose statements to use new function New-VerboseMessage
-* xSQLServerDatabase
-    - Updated Verbose statements to use new function New-VerboseMessage
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
-* xSQLServerDatabaseOwner
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
-* xSQLServerDatabasePermissions
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
-* xSQLServerDatabaseRole
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
-* xSQLServerLogin
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
-* xSQLServerMaxDop
-    - Updated Verbose statements to use new function New-VerboseMessage
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
-* xSQLServerMemory
-    - Updated Verbose statements to use new function New-VerboseMessage
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
-* xSQLServerPowerPlan
-    - Updated Verbose statements to use new function New-VerboseMessage
-
+  - added functions 
+  - Import-SQLPSModule
+  - Get-SQLPSInstanceName
+  - Get-SQLPSInstance
+  - Get-SQLAlwaysOnEndpoint
+    - modified functions
+      - New-TerminatingError - *added optional parameter "InnerException" to be able to give the user more information in the returned message*
 '
 
     } # End of PSData hashtable
 
 } # End of PrivateData hashtable
 }
+

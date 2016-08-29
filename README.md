@@ -4,9 +4,11 @@
 
 The **xSQLServer** module contains DSC resources for deployment and configuration of SQL Server in a way that is fully compliant with the requirements of System Center.
 
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
 ## Contributing
 Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
-
 
 ## Resources
 
@@ -21,7 +23,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerDatabasePermissions** resource to manage SQL database permissions
 * **xSQLServerDatabaseOwner** resource to manage SQL database owners
 * **xSQLDatabaseRecoveryModel** resource to manage database recovery model
-* **xSQLServerMaxDop** resource to manage MaxDegree of Parallism for SQL Server
+* **xSQLServerMaxDop** resource to manage MaxDegree of Parallelism for SQL Server
 * **xSQLServerMemory** resource to manage Memory for SQL Server
 * **xSQLServerPowerPlan** resource to manage windows powerplan on SQL Server
 * **xSQLServerNetwork** resource to manage SQL Server Network Protocols
@@ -31,6 +33,13 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerAlwaysOnService** resource to enable always on on a SQL Server
 * **xSQLServerEndpoint** resource to ensure database endpoint is present or absent
 * **xWaitForAvailabilityGroup** resource to wait till availability group is created on primary server
+* **xSQLServerConfiguration** resource to manage [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
+* **xSQLServerPermission** Grant or revoke permission on the SQL Server.
+* **xSQLServerEndpointState** Change state of the endpoint.
+* **xSQLServerEndpointPermission** Grant or revoke permission on the endpoint.
+* **xSQLServerAvailabilityGroupListener** Create or remove an availability group listener.
+* **xSQLServerReplication** resource to manage SQL Replication distribution and publishing.
+* **xSQLServerScript** resource to extend DSCs Get/Set/Test functionality to T-SQL
 
 ### xSQLServerSetup
 
@@ -38,7 +47,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **SourceFolder**: Folder within the source path containing the source files for installation.
 * **SetupCredential**: (Required) Credential to be used to perform the installation.
 * **SourceCredential**: Credential used to access SourcePath
-* **SuppressReboot**: Supresses reboot
+* **SuppressReboot**: Suppresses reboot
 * **ForceReboot**: Forces Reboot
 * **Features**: (Key) SQL features to be installed.
 * **InstanceName**: (Key) SQL instance to be installed.
@@ -69,7 +78,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **FTSvcAccountUsername**: Output username for the Full Text service.
 * **RSSvcAccount**: Service account for Reporting Services service.
 * **RSSvcAccountUsername**: Output username for the Reporting Services service.
-* **ASSvcAccount**: Service account for Analysus Services service.
+* **ASSvcAccount**: Service account for Analysis Services service.
 * **ASSvcAccountUsername**: Output username for the Analysis Services service.
 * **ASCollation**: Collation for Analysis Services.
 * **ASSysAdminAccounts**: Array of accounts to be made Analysis Services admins.
@@ -107,7 +116,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **SourceFolder**: Folder within the source path containing the source files for installation.
 * **SetupCredential**: (Required) Credential to be used to perform the installation.
 * **SourceCredential**: Credential to be used to access SourcePath
-* **SuppressReboot**: Supresses reboot
+* **SuppressReboot**: Suppresses reboot
 * **ForceReboot**: Forces Reboot
 * **Features**: (Required) SQL features to be installed.
 * **InstanceName**: (Key) SQL instance to be installed.
@@ -159,11 +168,12 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **IsInitialized**: Output is the Reporting Services instance initialized.
 
 ### xSQLServerLogin
-* **Name**: (Key) Name of the SQL Login to create
-* **LoginCredential**: PowerShell Credential for the SQL Login to be created
-* **LoginType**: Type of SQL login to create.(SQL, WindowsUser, WindowsGroup)
-* **SQLServer**: SQL Server where login should be created
-* **SQLInstance**: SQL Instance for the login
+* **Ensure**: If the values should be present or absent. Valid values are 'Present' or 'Absent'. 
+* **Name**: (Key) The name of the SQL login. If LoginType is 'WindowsUser' or 'WindowsGroup' then provide the name in the format DOMAIN\name.
+* **LoginCredential**: If LoginType is 'SqlLogin' then a PSCredential is needed for the password to the login.
+* **LoginType**: The SQL login type. Valid values are 'SqlLogin', 'WindowsUser' or 'WindowsGroup'.
+* **SQLServer**: (Key) The SQL Server for the login.
+* **SQLInstanceName**: (Key) The SQL instance for the login.
 
 ### xSQLServerRole
 * **Name**: (Key) Name of the SQL Login to create
@@ -204,12 +214,12 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **SQLInstance**: The SQL instance for the database
 
 ###xSQLServerMemory
-* **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
+* **Ensure**: An enumerated value that describes if Min and Max memory is configured
 * **DyamicAlloc**: (key) Flag to indicate if Memory is dynamically configured
 * **MinMemory**: Minimum memory value to set SQL Server memory to
 * **MaxMemory**: Maximum memory value to set SQL Server memory to
 * **SQLServer**: The SQL Server for the database
-* **SQLInstance**: The SQL instance for the database
+* **SQLInstance**: (key) The SQL instance for the database
 
 ###xSQLServerPowerPlan
 * **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
@@ -237,6 +247,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **AvailabilityGroupPort** Port availability group should listen on
 * **ReadableSecondary** Mode secondaries should operate under (None, ReadOnly, ReadIntent)
 * **AutoBackupPreference** Where backups should be backed up from (Primary,Secondary)
+* **BackupPriority** The percentage weight for backup prority (default 50)
+* **EndPointPort** The TCP port for the SQL AG Endpoint (default 5022)
 * **SQLServer**: The SQL Server for the database
 * **SQLInstance**: The SQL instance for the database
 * **SetupCredential**: (Required) Credential to be used to Grant Permissions on SQL Server
@@ -266,9 +278,111 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **RetryIntervalSec**: Interval to check for availability group
 * **RetryCount**: Maximum number of retries to check availability group creation
 
+###xSQLServerConfiguration
+* **InstanceName**: (Key) name of SQL Server instance for which configuration options will be configured.
+* **OptionName**: (Key) SQL Server option name. For all possible values reference [MSDN](https://msdn.microsoft.com/en-us/library/ms189631.aspx) or run sp_configure.
+* **OptionValue**: (Required) SQL Server option value to be set.
+* **RestartService**: Default false. If true will restart SQL Service instance service after update.
+
+### xSQLServerPermission
+* **InstanceName** The SQL Server instance name.
+* **NodeName** The host name or FQDN.
+* **Ensure** If the permission should be present or absent.
+* **Principal** The login to which permission will be set.
+* **Permission** The permission to set for the login. Valid values are AlterAnyAvailabilityGroup, ViewServerState or AlterAnyEndPoint.
+
+### xSQLServerEndpointState
+* **InstanceName** The SQL Server instance name.
+* **NodeName** The host name or FQDN.
+* **Name** The name of the endpoint.
+* **State** The state of the endpoint. Valid states are Started, Stopped or Disabled.
+
+### xSQLServerEndpointPermission
+* **InstanceName** The SQL Server instance name.
+* **NodeName** The host name or FQDN.
+* **Ensure** If the permission should be present or absent.
+* **Name** The name of the endpoint.
+* **Principal** The login to which permission will be set.
+* **Permission** The permission to set for the login. Valid value for permission are only CONNECT.
+
+### xSQLServerAvailabilityGroupListener
+*This resource requires that the CNO has been delegated the right `Create computer object` on the organizational unit (OU) in which the CNO resides.*
+* **InstanceName** The SQL Server instance name of the primary replica.
+* **NodeName** The host name or FQDN of the primary replica.
+* **Ensure** If the availability group listener should be present or absent.
+* **Name** The name of the availability group listener, max 15 characters. This name will be used as the Virtual Computer Object (VCO).
+* **AvailabilityGroup** The name of the availability group to which the availability group listener is or will be connected.
+* **IpAddress** The IP address used for the availability group listener, in the format 192.168.10.45/255.255.252.0. If using DCHP, set to the first IP-address of the DHCP subnet, in the format 192.168.8.1/255.255.252.0. Must be valid in the cluster-allowed IP range.
+* **Port** The port used for the availability group listener.
+* **DHCP** If DHCP should be used for the availability group listener instead of static IP address.
+
+###xSQLServerReplication
+* **InstanceName**: (Key) SQL Server instance name where replication distribution will be configured.
+* **Ensure**: (Default = 'Present') 'Present' will configure replication, 'Absent' will disable replication.
+* **DistributorMode**: (Required), 'Local' - Instance will be configured as it's own distributor, 'Remote' - Instace will be configure with remote distributor (remote distributor needs to be already configured for distribution).
+* **AdminLinkCredentials**: (Required) - AdminLink password to be used when setting up publisher distributor relationship.
+* **DistributionDBName**: (Default = 'distribution') distribution database name. If DistributionMode='Local' this will be created, if 'Remote' needs to match distribution database on remote distributor. 
+* **RemoteDistributor**: (Required if DistributionMode='Remote') SQL Server network name that will be used as distributor for local instance.
+* **WorkingDirectory**: (Required) Publisher working directory.
+* **UseTrustedConnection**: (Default = $true) Publisher security mode.
+* **UninstallWithForce**: (Default = $true) Force flag for uninstall procedure
+
+###xSQLServerScript
+* **ServerInstance**: (Required) The name of an instance of the Database Engine. For default instances, only specify the computer name. For named instances, use the format ComputerName\\InstanceName.
+* **SetFilePath**: (Key) Path to SQL file that will perform Set action.
+* **GetFilePath**: (Key) Path to SQL file that will perform Get action. SQL Queries returned by this function are returned by the Get-DscConfiguration cmdlet with the GetResult parameter.
+* **TestFilePath**: (Key) Path to SQL file that will perform Test action. Any Script that does not throw an error and returns null is evaluated to true. Invoke-SqlCmd treats SQL Print statements as verbose text, this will not cause a Test to return false. 
+* **Credential**: Specifies the credentials for making a SQL Server Authentication connection to an instance of the Database Engine.
+* **Variable**: Creates a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable.
+
 ## Versions
 
 ### Unreleased
+* Added resources
+  - xSQLServerReplication
+  - xSQLServerScript
+* Added tests for resources
+  - xSQLServerPermission
+  - xSQLServerEndpointState
+  - xSQLServerEndpointPermission
+  - xSQLServerAvailabilityGroupListener
+  - xSQLServerLogin
+* Fixes in xSQLServerAvailabilityGroupListener
+  - In one case the Get-method did not report that DHCP was configured. 
+  - Now the resource will throw 'Not supported' when IP is changed between Static and DHCP.
+  - Fixed an issue where sometimes the listener wasn't removed.
+  - Fixed the issue when trying to add a static IP to a listener was ignored.
+* Fixes in xSQLAOGroupEnsure
+  - Added parameters to New-ListenerADObject to allow usage of a named instance.
+* Changes to xSQLServerLogin
+   - Fixed an issue when dropping logins.
+   - Fixed an issue where it was not possible to add the same login to two instances on the same server.
+
+### 1.8.0.0
+
+* Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
+* Added Support for SQL Server 2016
+* xSQLAOGroupEnsure
+   - Fixed spelling mistake in AutoBackupPreference property
+   - Added BackupPriority property
+* Added resources
+  - xSQLServerPermission
+  - xSQLServerEndpointState
+  - xSQLServerEndpointPermission
+  - xSQLServerAvailabilityGroupListener
+* xSQLServerHelper
+    - added functions 
+        - Import-SQLPSModule
+        - Get-SQLPSInstanceName
+        - Get-SQLPSInstance
+        - Get-SQLAlwaysOnEndpoint
+    - modified functions
+        - New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
+
+### 1.7.0.0
+
+* Resources Added
+  - xSQLServerConfiguration
 
 ### 1.6.0.0
 
@@ -279,33 +393,35 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerEndPoint
   - xSQLServerAlwaysOnService
 * xSQLServerHelper
-	- added functions 
-		- Connect-SQL
-		- New-VerboseMessage
-		- Grant-ServerPerms
-		- Grant-CNOPerms
-		- New-ListenerADObject
+    - added functions 
+        - Connect-SQL
+        - New-VerboseMessage
+        - Grant-ServerPerms
+        - Grant-CNOPerms
+        - New-ListenerADObject
 * xSQLDatabaseRecoveryModel
-	- Updated Verbose statements to use new function New-VerboseMessage
+    - Updated Verbose statements to use new function New-VerboseMessage
 * xSQLServerDatabase
-	- Updated Verbose statements to use new function New-VerboseMessage
-	- Removed ConnectSQL function and replaced with new Connect-SQL function
+    - Updated Verbose statements to use new function New-VerboseMessage
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
 * xSQLServerDatabaseOwner
-	- Removed ConnectSQL function and replaced with new Connect-SQL function
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
 * xSQLServerDatabasePermissions
-	- Removed ConnectSQL function and replaced with new Connect-SQL function
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
 * xSQLServerDatabaseRole
-	- Removed ConnectSQL function and replaced with new Connect-SQL function
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
 * xSQLServerLogin
-	- Removed ConnectSQL function and replaced with new Connect-SQL function
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
 * xSQLServerMaxDop
-	- Updated Verbose statements to use new function New-VerboseMessage
-	- Removed ConnectSQL function and replaced with new Connect-SQL function
+    - Updated Verbose statements to use new function New-VerboseMessage
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
 * xSQLServerMemory
-	- Updated Verbose statements to use new function New-VerboseMessage
-	- Removed ConnectSQL function and replaced with new Connect-SQL function
+    - Updated Verbose statements to use new function New-VerboseMessage
+    - Removed ConnectSQL function and replaced with new Connect-SQL function
 * xSQLServerPowerPlan
-	- Updated Verbose statements to use new function New-VerboseMessage
+    - Updated Verbose statements to use new function New-VerboseMessage
+* Examples
+    - Added xSQLServerConfiguration resource example
 
 ### 1.5.0.0
 
@@ -332,8 +448,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - Added setup parameter BrowserSvcStartupType
   - Change SourceFolder to Source to allow for multiversion Support
   - Add Source Credential for accessing source files
-  - Add Paramaters for SQL Server configuration
-  - Add Paramaters to SuppressReboot or ForceReboot
+  - Add Parameters for SQL Server configuration
+  - Add Parameters to SuppressReboot or ForceReboot
 * xSQLServerFirewall
   - Removed default values for parameters, to avoid compatibility issues
   - Updated firewall rule name to not use 2012 version, since package supports 2008, 2012 and 2014 versions
@@ -350,7 +466,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * xSQLServerFailoverClusterSetup
   - Additional of SQLHelper Function and error handling
   - Change SourceFolder to Source to allow for multiversion Support
-  - Add Paramaters to SuppressReboot or ForceReboot 
+  - Add Parameters to SuppressReboot or ForceReboot 
 * Examples
   - Updated example files to use correct DebugMode parameter value ForceModuleImport, this is not boolean in WMF 5.0 RTM
   - Added xSQLServerNetwork example

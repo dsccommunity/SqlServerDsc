@@ -1,5 +1,8 @@
 #requires -Version 5
 
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+param ()
+
 Configuration SQLSA
 {
     Import-DscResource -Module xSQLServer
@@ -101,10 +104,15 @@ Configuration SQLSA
     }
 }
 
+<<<<<<< HEAD
 # Uncomment the line below and change password in double quote
 #$SecurePassword = ConvertTo-SecureString -String "Pass@word1" -AsPlainText -Force
 $InstallerServiceAccount = New-Object System.Management.Automation.PSCredential ("CONTOSO\!Installer", $SecurePassword)
 $LocalSystemAccount = New-Object System.Management.Automation.PSCredential ("SYSTEM", $SecurePassword)
+=======
+$InstallerServiceAccount = Get-Credential "CONTOSO\!Installer"
+$LocalSystemAccount = Get-Credential "SYSTEM"
+>>>>>>> dev
 
 $ConfigurationData = @{
     AllNodes = @(
