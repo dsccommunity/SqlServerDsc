@@ -6,6 +6,6 @@ class MSFT_xSQLServerRole : OMI_BaseResource
     [Write, Description("An enumerated value that describes if the login exists on the SQL instance.\nPresent {default}  \nAbsent   \n"), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Required, Description("Type of SQL role to add"), ValueMap{"bulkadmin","dbcreator","diskadmin","processadmin","public","securityadmin","serveradmin","setupadmin","sysadmin"}, Values{"bulkadmin","dbcreator","diskadmin","processadmin","public","securityadmin","serveradmin","setupadmin","sysadmin"}] String ServerRole[];
     [Required, Description("The SQL Server for the login.")] String SQLServer;
-    [Required, Description("The SQL instance for the login.")] String SQLInstanceName;
+    [Key, Description("The SQL instance for the login.")] String SQLInstanceName;
 };
 

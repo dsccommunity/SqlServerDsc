@@ -50,7 +50,7 @@ function Get-TargetResource
             {
                 if($SQLRole[$srvRole])
                 {
-                    $membersInRole = $SQLRole[$srvRole].EnumMemberNames()             
+					$membersInRole = $SQLRole[$srvRole].EnumMemberNames()             
                     if($membersInRole.Contains($Name))
                     {
                         $Ensure = "Present"
