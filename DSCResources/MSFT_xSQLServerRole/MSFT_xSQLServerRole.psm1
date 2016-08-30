@@ -87,6 +87,8 @@ function Get-TargetResource
         SQLServer = $SQLServer
         SQLInstanceName = $SQLInstanceName
     }
+
+    $returnValue
 }
 
 
