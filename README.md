@@ -200,11 +200,11 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **RecoveryModel**: (Required) Recovery Model (Full, Simple, BulkLogged)
 
 ###xSQLServerMaxDop
-* **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
-* **DyamicAlloc**: (key) Flag to indicate if MaxDop is dynamically configured
+* **Ensure**: An enumerated value that describes if Min and Max memory is configured
+* **DyamicAlloc**: Flag to indicate if MaxDop is dynamically configured
 * **MaxDop**: Numeric value to configure MaxDop to
-* **SQLServer**: The SQL Server for the database
-* **SQLInstance**: The SQL instance for the database
+* **SQLServer**: The SQL Server where to set MaxDop
+* **SQLInstance** (Key): The SQL instance where to set MaxDop
 
 ###xSQLServerMemory
 * **Ensure**: An enumerated value that describes if Min and Max memory is configured
@@ -350,6 +350,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * Changes to xSQLServerLogin
    - Fixed an issue when dropping logins.
    - BREAKING CHANGE: Fixed an issue where it was not possible to add the same login to two instances on the same server.
+* Changes to xSQLServerMaxDop
+   - BREAKING CHANGE: Made SQLInstance parameter a key so that multiple instances on the same server can be configured
 
 ### 1.8.0.0
 
