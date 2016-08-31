@@ -330,6 +330,11 @@ function Get-TargetResource
                 $InstallSharedDir = (GetFirstItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components" -Name "FEE2E540D20152D4597229B6CFBC0A69")
                 $InstallSharedWOWDir = (GetFirstItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components" -Name "C90BFAC020D87EA46811C836AD3C507F")
             }
+            "13"
+            {
+                $InstallSharedDir = (GetFirstItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components" -Name "FEE2E540D20152D4597229B6CFBC0A69")
+                $InstallSharedWOWDir = (GetFirstItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components" -Name "A79497A344129F64CA7D69C56F5DD8B4")
+            }
         }
     }
 
@@ -540,11 +545,16 @@ function Set-TargetResource
 
     # Determine features to install
     $FeaturesToInstall = ""
-    foreach($Feature in $Features.Split(","))
-    {
-        if(!($SQLData.Features.Contains($Feature)))
+    foreach($feature in $Features.Split(","))
+    {   
+        if(($SQLVersion -eq "13") -and (($feature -eq "SSMS") -or ($feature -eq "ADV_SSMS")))
         {
-            $FeaturesToInstall += "$Feature,"
+            Throw New-TerminatingError -ErrorType FeatureNotSupported -FormatArgs @($feature) -ErrorCategory InvalidData
+        }
+
+        if(!($SQLData.Features.Contains($feature)))
+        {
+            $FeaturesToInstall += "$feature,"
         }
     }
     $Features = $FeaturesToInstall.Trim(",")
@@ -581,6 +591,17 @@ function Set-TargetResource
                 Set-Variable -Name "InstallSharedDir" -Value ""
             }
             if((Get-Variable -Name "InstallSharedWOWDir" -ErrorAction SilentlyContinue) -and (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\C90BFAC020D87EA46811C836AD3C507F" -ErrorAction SilentlyContinue))
+            {
+                Set-Variable -Name "InstallSharedWOWDir" -Value ""
+            }
+        }
+        "13"
+        {
+            if((Get-Variable -Name "InstallSharedDir" -ErrorAction SilentlyContinue) -and (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\FEE2E540D20152D4597229B6CFBC0A69" -ErrorAction SilentlyContinue))
+            {
+                Set-Variable -Name "InstallSharedDir" -Value ""
+            }
+            if((Get-Variable -Name "InstallSharedWOWDir" -ErrorAction SilentlyContinue) -and (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\A79497A344129F64CA7D69C56F5DD8B4" -ErrorAction SilentlyContinue))
             {
                 Set-Variable -Name "InstallSharedWOWDir" -Value ""
             }

@@ -1,5 +1,8 @@
 #requires -Version 5
 
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+param ()
+
 Configuration SQL
 {
     Import-DscResource -Module xSQLServer
@@ -152,11 +155,10 @@ Configuration SQL
     }
 }
 
-$SecurePassword = ConvertTo-SecureString -String "Pass@word1" -AsPlainText -Force
-$DomainAdministratorCredential = New-Object System.Management.Automation.PSCredential ("CONTOSO\Administrator", $SecurePassword)
-$InstallerServiceAccount = New-Object System.Management.Automation.PSCredential ("CONTOSO\!Installer", $SecurePassword)
-$LocalSystemAccount = New-Object System.Management.Automation.PSCredential ("SYSTEM", $SecurePassword)
-$SQLServiceAccount = New-Object System.Management.Automation.PSCredential ("CONTOSO\!sql", $SecurePassword)
+$DomainAdministratorCredential = Get-Credential "CONTOSO\Administrator"
+$InstallerServiceAccount = Get-Credential "CONTOSO\!Installer"
+$LocalSystemAccount = Get-Credential "SYSTEM"
+$SQLServiceAccount = Get-Credential "CONTOSO\!sql"
 
 $ConfigurationData = @{
     AllNodes = @(
