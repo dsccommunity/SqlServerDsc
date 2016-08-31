@@ -208,7 +208,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ###xSQLServerMemory
 * **Ensure**: An enumerated value that describes if Min and Max memory is configured
-* **DyamicAlloc**: (key) Flag to indicate if Memory is dynamically configured
+* **DyamicAlloc**: Flag to indicate if Memory is dynamically configured
 * **MinMemory**: Minimum memory value to set SQL Server memory to
 * **MaxMemory**: Maximum memory value to set SQL Server memory to
 * **SQLServer**: The SQL Server for the database
@@ -350,7 +350,10 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * Changes to xSQLServerLogin
    - Fixed an issue when dropping logins.
    - BREAKING CHANGE: Fixed an issue where it was not possible to add the same login to two instances on the same server.
-
+* Changes to xSQLServerMemory
+   - Removed DyamicAlloc from being a key (default value false)
+   - Improvements to code
+   
 ### 1.8.0.0
 
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
