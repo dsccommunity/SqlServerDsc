@@ -1,5 +1,8 @@
+$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+Write-Verbose -Message "CurrentPath: $currentPath"
+
 # Load Common Code
-Import-Module $PSScriptRoot\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
+Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
 
 function Get-TargetResource
 {
@@ -7,7 +10,7 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SQLInstanceName,
 
@@ -22,17 +25,17 @@ function Get-TargetResource
 
     if($SQL)
     {
-        $CurrentMaxDop = $SQL.Configuration.MaxDegreeOfParallelism.ConfigValue
-        If($CurrentMaxDop)
+        $currentMaxDop = $SQL.Configuration.MaxDegreeOfParallelism.ConfigValue
+        If($currentMaxDop)
         {
-             New-VerboseMessage -Message "MaxDop is $CurrentMaxDop"
+             New-VerboseMessage -Message "MaxDop is $currentMaxDop"
         }
     }
 
     $returnValue = @{
         SQLInstanceName = $SQLInstanceName
         SQLServer = $SQLServer
-        MaxDop = $CurrentMaxDop
+        MaxDop = $currentMaxDop
     }
 
     $returnValue
@@ -43,7 +46,7 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SQLInstanceName,
 
@@ -97,14 +100,13 @@ function Set-TargetResource
     }
 }
 
-
 function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SQLInstanceName,
 
@@ -127,7 +129,7 @@ function Test-TargetResource
         $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
     
-    $CurrentMaxDop = $SQL.Configuration.MaxDegreeOfParallelism.ConfigValue
+    $currentMaxDop = $SQL.Configuration.MaxDegreeOfParallelism.ConfigValue
 
     switch($Ensure)
     {
@@ -139,29 +141,29 @@ function Test-TargetResource
                 New-VerboseMessage -Message "Dynamic MaxDop is $MaxDop."
             }
 
-            If ($CurrentMaxDop -eq $MaxDop)
+            If ($currentMaxDop -eq $MaxDop)
             {
                 New-VerboseMessage -Message "Current MaxDop is at Requested value $MaxDop."
                 return $true
             }
             else 
             {
-                New-VerboseMessage -Message "Current MaxDop is $CurrentMaxDop should be updated to $MaxDop"
-                return $False
+                New-VerboseMessage -Message "Current MaxDop is $currentMaxDop should be updated to $MaxDop"
+                return $false
             }
         }
 
         "Absent"
         {
-            If ($CurrentMaxDop -eq 0)
+            If ($currentMaxDop -eq 0)
             {
                 New-VerboseMessage -Message "Current MaxDop is at Requested value 0."
                 return $true
             }
             else 
             {
-                New-VerboseMessage -Message "Current MaxDop is $CurrentMaxDop should be updated to 0"
-                return $False
+                New-VerboseMessage -Message "Current MaxDop is $currentMaxDop should be updated to 0"
+                return $false
             }
         }
     }
@@ -175,26 +177,24 @@ function Get-MaxDopDynamic
         $SQL
     )
 
-    $NumCores = $SQL.Processors
-    $NumProcs = ($SQL.AffinityInfo.NumaNodes | Measure-Object).Count
+    $numCores = $SQL.Processors
+    $numProcs = ($SQL.AffinityInfo.NumaNodes | Measure-Object).Count
 
-    if ($NumProcs -eq 1)
+    if ($numProcs -eq 1)
     {
-        $MaxDop =  ($NumCores /2)
-        $MaxDop=[Math]::Round( $MaxDop, [system.midpointrounding]::AwayFromZero)
+        $maxDop = ($numCores /2)
+        $maxDop = [Math]::Round($maxDop, [system.midpointrounding]::AwayFromZero)
     }
-    elseif ($NumCores -ge 8)
+    elseif ($numCores -ge 8)
     {
-        $MaxDop = 8
+        $maxDop = 8
     }
     else
     {
-        $MaxDop = $NumCores
+        $maxDop = $numCores
     }
 
-    $MaxDop
+    $maxDop
 }
 
-
 Export-ModuleMember -Function *-TargetResource
-
