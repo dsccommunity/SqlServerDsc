@@ -357,7 +357,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - Added parameters to New-ListenerADObject to allow usage of a named instance.
 * Changes to xSQLServerLogin
    - Fixed an issue when dropping logins.
-   - Fixed an issue where it was not possible to add the same login to two instances on the same server.
+   - BREAKING CHANGE: Fixed an issue where it was not possible to add the same login to two instances on the same server.
 
 ### 1.8.0.0
 
