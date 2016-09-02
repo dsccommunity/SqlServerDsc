@@ -1,0 +1,8 @@
+*.suo
+*.user
+*.coverage
+.vs
+.psproj
+.sln
+DscResource.Tests
+DscResource.Tests/*

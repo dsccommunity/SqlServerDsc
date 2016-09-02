@@ -161,7 +161,6 @@ function Set-TargetResource
             }
         }
     }
-
 }
 
 
