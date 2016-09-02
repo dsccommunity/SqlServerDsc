@@ -35,23 +35,23 @@ function Get-TargetResource
         $SQLInstanceName
     )
 
-    if(!$sql)
+    if (!$sql)
     {
         $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
 
-    if($sql)
+    if ($sql)
     {
         Write-Verbose "Getting SQL Server roles for $Name on SQL Server $SQLServer."
         $sqlRole = $sql.Roles
-        if($sqlRole)
+        if ($sqlRole)
         {
             ForEach ($currentServerRole in $ServerRole)
             {
-                if($sqlRole[$currentServerRole])
+                if ($sqlRole[$currentServerRole])
                 {
                     $membersInRole = $sqlRole[$currentServerRole].EnumMemberNames()             
-                    if($membersInRole.Contains($Name))
+                    if ($membersInRole.Contains($Name))
                     {
                         $Ensure = "Present"
                         Write-Verbose "$Name is present in SQL role name $currentServerRole"
@@ -117,14 +117,14 @@ function Set-TargetResource
         $SQLInstanceName
     )
 
-    if(!$sql)
+    if (!$sql)
     {
         $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
 
-    if($sql)
+    if ($sql)
     {
-        switch($Ensure)
+        switch ($Ensure)
         {
             "Present"
             {
