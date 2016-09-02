@@ -345,6 +345,9 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - Now the resource will throw 'Not supported' when IP is changed between Static and DHCP.
   - Fixed an issue where sometimes the listener wasn't removed.
   - Fixed the issue when trying to add a static IP to a listener was ignored.
+* Fix in xSQLServerDatabase
+  - New-VerboseMessage -Messaged =>  New-VerboseMessage -Message
+  - Replace variable with CamelCase
 * Fixes in xSQLAOGroupEnsure
   - Added parameters to New-ListenerADObject to allow usage of a named instance.
 * Changes to xSQLServerLogin

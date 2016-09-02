@@ -22,16 +22,16 @@ function Get-TargetResource
         [System.String]
         $SQLInstanceName = "MSSQLSERVER"
     )
-    if(!$SQL)
+    if(!$sql)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
 
-    if($SQL)
+    if($sql)
     {
         # Check database exists
-        $SQLDatabase = $sql.Databases.Contains($Database)
-        $Present = $SQLDatabase
+        $sqlDatabase = $sql.Databases.Contains($Database)
+        $Present = $sqlDatabase
     }
         $returnValue = @{
         Database = $Database
@@ -42,7 +42,6 @@ function Get-TargetResource
 
     $returnValue
 }
-
 
 function Set-TargetResource
 {
@@ -64,27 +63,26 @@ function Set-TargetResource
         $SQLInstanceName = "MSSQLSERVER"
     )
 
-    if(!$SQL)
+    if(!$sql)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
 
-    if($SQL)
+    if($sql)
     {
         if($Ensure -eq "Present")
         {
-            $Db = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $SQL,$Database
+            $db = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $sql,$Database
             $db.Create()
             New-VerboseMessage -Message "Created Database $Database"
         }
         else
         {
             $sql.Databases[$Database].Drop()
-            New-VerboseMessage -Messaged "Dropped Database $Database"
+            New-VerboseMessage -Message "Dropped Database $Database"
         }
     }
 }
-
 
 function Test-TargetResource
 {
@@ -108,16 +106,16 @@ function Test-TargetResource
     )
     
 
-    if(!$SQL)
+    if(!$sql)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
 
-    if($SQL)
+    if($sql)
     {
         # Check database exists
-        $SQLDatabase = $sql.Databases.Contains($Database)
-        $Present = $SQLDatabase
+        $sqlDatabase = $sql.Databases.Contains($Database)
+        $Present = $sqlDatabase
     }
     if($ensure -eq "Present")
     {$result =  $Present}
@@ -126,7 +124,6 @@ function Test-TargetResource
 
     $result
 }
-
 
 Export-ModuleMember -Function *-TargetResource
 
