@@ -1,9 +1,0 @@
-*.suo
-*.user
-*.coverage
-.vs
-.psproj
-.sln
-DSCResource.Tests
-DSCResource.Tests/*
-.gitignore
