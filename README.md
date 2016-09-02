@@ -341,6 +341,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * Added resources
   - xSQLServerReplication
   - xSQLServerScript
+  - xSQLServerRole
 * Added tests for resources
   - xSQLServerPermission
   - xSQLServerEndpointState

@@ -11,6 +11,7 @@
             [PSCredential]
             $SysadminAccount
         )
+        
         Import-DscResource -ModuleName xSqlServer
 
         node localhost {
