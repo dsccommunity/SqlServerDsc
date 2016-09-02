@@ -4,5 +4,6 @@
 .vs
 .psproj
 .sln
-DscResource.Tests
-DscResource.Tests/*
+DSCResource.Tests
+DSCResource.Tests/*
+.gitignore

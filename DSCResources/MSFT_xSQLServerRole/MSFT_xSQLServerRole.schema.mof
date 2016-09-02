@@ -4,7 +4,7 @@ class MSFT_xSQLServerRole : OMI_BaseResource
 {
     [Key, Description("The name of the SQL login.  If LoginType='WindowsUser' or 'WindowsGroup', this is also the name of the user or group in format DOMAIN\name.")] String Name;
     [Write, Description("An enumerated value that describes if the login exists on the SQL instance.\nPresent {default}  \nAbsent   \n"), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
-    [Required, Description("Type of SQL role to add"), ValueMap{"bulkadmin","dbcreator","diskadmin","processadmin","public","securityadmin","serveradmin","setupadmin","sysadmin"}, Values{"bulkadmin","dbcreator","diskadmin","processadmin","public","securityadmin","serveradmin","setupadmin","sysadmin"}] String serverRole[];
+    [Required, Description("Type of SQL role to add"), ValueMap{"bulkadmin","dbcreator","diskadmin","processadmin","public","securityadmin","serveradmin","setupadmin","sysadmin"}, Values{"bulkadmin","dbcreator","diskadmin","processadmin","public","securityadmin","serveradmin","setupadmin","sysadmin"}] String ServerRole[];
     [Required, Description("The SQL Server for the login.")] String SQLServer;
     [Key, Description("The SQL instance for the login.")] String SQLInstanceName;
 };

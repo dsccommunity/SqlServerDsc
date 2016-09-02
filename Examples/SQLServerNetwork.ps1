@@ -60,15 +60,8 @@ Configuration SQLNetwork
 #Following example of how to use credentials is intended only for demo and test purposes
 #For production environments please use SSencryption, more info can be found here:
 #http://blogs.msdn.com/b/powershell/archive/2014/01/31/want-to-secure-credentials-in-windows-powershell-desired-state-configuration.aspx
-<<<<<<< HEAD
-# Uncomment the line below and change password in double quote
-#$SecurePassword = ConvertTo-SecureString -String "Pass@word1" -AsPlainText -Force
-$InstallerServiceAccount = New-Object System.Management.Automation.PSCredential ("CONTOSO\!Installer", $SecurePassword)
-$LocalSystemAccount = New-Object System.Management.Automation.PSCredential ("SYSTEM", $SecurePassword)
-=======
 $InstallerServiceAccount = Get-Credential "CONTOSO\!Installer"
 $LocalSystemAccount = Get-Credential "SYSTEM"
->>>>>>> dev
 
 $ConfigurationData = @{
     AllNodes = @(

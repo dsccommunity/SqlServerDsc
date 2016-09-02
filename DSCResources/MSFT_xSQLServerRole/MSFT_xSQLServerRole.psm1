@@ -24,7 +24,7 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateSet("bulkadmin","dbcreator","diskadmin","processadmin","public","securityadmin","serveradmin","setupadmin","sysadmin")]
         [System.String[]]
-        $serverRole,
+        $ServerRole,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -46,25 +46,25 @@ function Get-TargetResource
         $sqlRole = $sql.Roles
         if($sqlRole)
         {
-            ForEach ($srvRole in $serverRole)
+            ForEach ($currentServerRole in $ServerRole)
             {
-                if($sqlRole[$srvRole])
+                if($sqlRole[$currentServerRole])
                 {
-                    $membersInRole = $sqlRole[$srvRole].EnumMemberNames()             
+                    $membersInRole = $sqlRole[$currentServerRole].EnumMemberNames()             
                     if($membersInRole.Contains($Name))
                     {
                         $Ensure = "Present"
-                        Write-Verbose "$Name is present in SQL role name $srvRole"
+                        Write-Verbose "$Name is present in SQL role name $currentServerRole"
                     }
                     else
                     {
-                        Write-Verbose "$Name is absent in SQL role name $srvRole"
+                        Write-Verbose "$Name is absent in SQL role name $currentServerRole"
                         $Ensure = "Absent"
                     }
                 }
                 else
                 {
-                    Write-Verbose "SQL role name $srvRole is absent"
+                    Write-Verbose "SQL role name $currentServerRole is absent"
                     $Ensure = "Absent"
                 }
             }
@@ -83,13 +83,12 @@ function Get-TargetResource
     $returnValue = @{
         Ensure = $Ensure
         Name = $Name
-        serverRole = $serverRole
+        ServerRole = $ServerRole
         SQLServer = $SQLServer
         SQLInstanceName = $SQLInstanceName
     }
     $returnValue
 }
-
 
 function Set-TargetResource
 {
@@ -107,7 +106,7 @@ function Set-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateSet("bulkadmin","dbcreator","diskadmin","processadmin","public","securityadmin","serveradmin","setupadmin","sysadmin")]
         [System.String[]]
-        $serverRole,
+        $ServerRole,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -132,15 +131,15 @@ function Set-TargetResource
                 try
                 {
                     $sqlRole = $sql.Roles
-                    ForEach ($srvRole in $serverRole)
+                    ForEach ($currentServerRole in $ServerRole)
                     {
-                        Write-Verbose "Adding SQL login $Name in role $srvRole"
-                        $sqlRole[$srvRole].AddMember($Name)
+                        Write-Verbose "Adding SQL login $Name in role $currentServerRole"
+                        $sqlRole[$currentServerRole].AddMember($Name)
                     }
                 }
                 catch
                 {
-                    Write-Verbose "Failed adding SQL login $Name in role $srvRole"
+                    Write-Verbose "Failed adding SQL login $Name in role $currentServerRole"
                 }
             }
             "Absent"
@@ -148,10 +147,10 @@ function Set-TargetResource
                 try
                 {
                     $sqlRole = $sql.Roles
-                    ForEach ($srvRole in $serverRole)
+                    ForEach ($currentServerRole in $ServerRole)
                     {
-                        Write-Verbose "Deleting SQL login $Name in role $srvRole"
-                        $sqlRole[$srvRole].DropMember($Name)
+                        Write-Verbose "Deleting SQL login $Name in role $currentServerRole"
+                        $sqlRole[$currentServerRole].DropMember($Name)
                     }
                 }
                 catch
@@ -162,7 +161,6 @@ function Set-TargetResource
         }
     }
 }
-
 
 function Test-TargetResource
 {
@@ -181,7 +179,7 @@ function Test-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateSet("bulkadmin","dbcreator","diskadmin","processadmin","public","securityadmin","serveradmin","setupadmin","sysadmin")]
         [System.String[]]
-        $serverRole,
+        $ServerRole,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -195,7 +193,7 @@ function Test-TargetResource
     Write-Verbose -Message "Testing SQL roles for login $Name"
     $currentValues = Get-TargetResource @PSBoundParameters
     
-    $result = ($currentValues.Ensure -eq $Ensure) -and ($currentValues.serverRole -eq $serverRole)
+    $result = ($currentValues.Ensure -eq $Ensure) -and ($currentValues.ServerRole -eq $ServerRole)
     $result    
 }
 
