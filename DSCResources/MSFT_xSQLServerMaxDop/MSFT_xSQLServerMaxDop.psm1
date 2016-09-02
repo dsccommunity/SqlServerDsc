@@ -18,15 +18,15 @@ function Get-TargetResource
         $SQLServer = $env:COMPUTERNAME
     )
 
-    if(!$SQL)
+    if(!$sql)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
 
-    if($SQL)
+    if($sql)
     {
-        $currentMaxDop = $SQL.Configuration.MaxDegreeOfParallelism.ConfigValue
-        If($currentMaxDop)
+        $currentMaxDop = $sql.Configuration.MaxDegreeOfParallelism.ConfigValue
+        if($currentMaxDop)
         {
              New-VerboseMessage -Message "MaxDop is $currentMaxDop"
         }
@@ -64,20 +64,20 @@ function Set-TargetResource
         $MaxDop = 0
     )
 
-    if(!$SQL)
+    if(!$sql)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
 
-    if($SQL)
+    if($sql)
     {
         switch($Ensure)
         {
             "Present"
             {
-                If($DynamicAlloc -eq $true)
+                if($DynamicAlloc -eq $true)
                 {
-                    $MaxDop = Get-MaxDopDynamic $SQL
+                    $MaxDop = Get-MaxDopDynamic $sql
                 }
             }
             
@@ -89,8 +89,8 @@ function Set-TargetResource
 
         try
         {
-            $SQL.Configuration.MaxDegreeOfParallelism.ConfigValue = $MaxDop
-            $SQL.alter()
+            $sql.Configuration.MaxDegreeOfParallelism.ConfigValue = $MaxDop
+            $sql.alter()
             New-VerboseMessage -Message "Set MaxDop to $MaxDop"
         }
         catch
@@ -124,24 +124,24 @@ function Test-TargetResource
         $MaxDop = 0
     )
 
-    if(!$SQL)
+    if(!$sql)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
     
-    $currentMaxDop = $SQL.Configuration.MaxDegreeOfParallelism.ConfigValue
+    $currentMaxDop = $sql.Configuration.MaxDegreeOfParallelism.ConfigValue
 
     switch($Ensure)
     {
         "Present"
         {
-            If($DynamicAlloc -eq $true)
+            if($DynamicAlloc -eq $true)
             {
-                $MaxDop = Get-MaxDopDynamic $SQL
+                $MaxDop = Get-MaxDopDynamic $sql
                 New-VerboseMessage -Message "Dynamic MaxDop is $MaxDop."
             }
 
-            If ($currentMaxDop -eq $MaxDop)
+            if ($currentMaxDop -eq $MaxDop)
             {
                 New-VerboseMessage -Message "Current MaxDop is at Requested value $MaxDop."
                 return $true
@@ -155,7 +155,7 @@ function Test-TargetResource
 
         "Absent"
         {
-            If ($currentMaxDop -eq 0)
+            if ($currentMaxDop -eq 0)
             {
                 New-VerboseMessage -Message "Current MaxDop is at Requested value 0."
                 return $true
@@ -174,15 +174,15 @@ function Get-MaxDopDynamic
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param(
-        $SQL
+        $Sql
     )
 
-    $numCores = $SQL.Processors
-    $numProcs = ($SQL.AffinityInfo.NumaNodes | Measure-Object).Count
+    $numCores = $Sql.Processors
+    $numProcs = ($Sql.AffinityInfo.NumaNodes | Measure-Object).Count
 
     if ($numProcs -eq 1)
     {
-        $maxDop = ($numCores /2)
+        $maxDop = ($numCores / 2)
         $maxDop = [Math]::Round($maxDop, [system.midpointrounding]::AwayFromZero)
     }
     elseif ($numCores -ge 8)
