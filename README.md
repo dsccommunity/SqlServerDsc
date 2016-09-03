@@ -346,8 +346,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - Fixed an issue where sometimes the listener wasn't removed.
   - Fixed the issue when trying to add a static IP to a listener was ignored.
 * Fix in xSQLServerDatabase
-  - New-VerboseMessage -Messaged =>  New-VerboseMessage -Message
-  - Replace variable with CamelCase
+  - Fixed so dropping a database no longer throws an error
 * Fixes in xSQLAOGroupEnsure
   - Added parameters to New-ListenerADObject to allow usage of a named instance.
 * Changes to xSQLServerLogin
