@@ -3,6 +3,6 @@ class MSFT_xSQLServerDatabase : OMI_BaseResource
 {
     [Key, Description("The name of the Database.")] String Database;
     [Write, Description("If the values should be present or absent. Valid values are 'Present' or 'Absent'."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
-    [Write, Description("The SQL Server for the database.")] String SQLServer;
-    [Write, Description("The SQL instance for the database.")] String SQLInstanceName;
+    [Key, Description("The SQL Server for the database.")] String SQLServer;
+    [Key, Description("The SQL instance for the database.")] String SQLInstanceName;
 };
