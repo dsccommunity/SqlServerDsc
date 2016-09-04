@@ -20,7 +20,7 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Database,
+        $Name,
 
         [Parameter(Mandatory)]
         [System.String]
@@ -40,21 +40,30 @@ function Get-TargetResource
     {
         Write-Verbose 'Getting SQL Databases'
         # Check database exists
-        $sqlDatabase = $sql.Databases.Contains($Database)
+        $sqlDatabase = $sql.Databases
+        
         if ($sqlDatabase)
         {
-            Write-Verbose "SQL Database $Database is present"
-            $Ensure = 'Present'
+            if ($sqlDatabase[$Name])
+            {
+                Write-Verbose "SQL Database name $Name is present"
+                $Ensure = 'Present'
+            }
+            else
+            {
+                Write-Verbose "SQL Database name $Name is absent"
+                $Ensure = 'Absent'
+            }
         }
         else
         {
-            Write-Verbose "SQL Database $Database is Absent"
+            Write-Verbose 'Failed getting SQL databases'
             $Ensure = 'Absent'
         }
     }
     
     $returnValue = @{
-        Database = $Database
+        Name = $Name
         Ensure = $Ensure
         SQLServer = $SQLServer
         SQLInstanceName = $SQLInstanceName
@@ -70,11 +79,11 @@ function Set-TargetResource
     (
         [ValidateSet('Present', 'Absent')]
         [System.String]
-        $Ensure,
+        $Ensure = 'Present',
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Database,
+        $Name,
 
         [Parameter(Mandatory)]
         [System.String]
@@ -94,14 +103,14 @@ function Set-TargetResource
     {
         if ($Ensure -eq "Present")
         {
-            $db = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $sql,$Database
+            $db = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $sql,$Name
             $db.Create()
-            New-VerboseMessage -Message "Created Database $Database"
+            New-VerboseMessage -Message "Created Database $Name"
         }
         else
         {
-            $sql.Databases[$Database].Drop()
-            New-VerboseMessage -Message "Dropped Database $Database"
+            $sql.Databases[$Name].Drop()
+            New-VerboseMessage -Message "Dropped Database $Name"
         }
     }
 }
@@ -114,11 +123,11 @@ function Test-TargetResource
     (
         [ValidateSet('Present', 'Absent')]
         [System.String]
-        $Ensure,
+        $Ensure = 'Present',
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Database,
+        $Name,
 
         [Parameter(Mandatory)]
         [System.String]
