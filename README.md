@@ -347,6 +347,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - Fixed the issue when trying to add a static IP to a listener was ignored.
 * Fix in xSQLServerDatabase
   - Fixed so dropping a database no longer throws an error
+  - BREAKING CHANGE: Fixed an issue where it was not possible to add the same database to two instances on the same server.
 * Fixes in xSQLAOGroupEnsure
   - Added parameters to New-ListenerADObject to allow usage of a named instance.
 * Changes to xSQLServerLogin
