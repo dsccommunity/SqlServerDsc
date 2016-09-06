@@ -16,7 +16,7 @@ function Get-TargetResource
     (
         [ValidateSet('Present', 'Absent')]
         [System.String]
-        $Ensure,
+        $Ensure = 'Present',
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -103,13 +103,12 @@ function Set-TargetResource
     {
         if ($Ensure -eq "Present")
         {
-            $db = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $sql,$Name
-            $db.Create()
+            New-SqlDatabase -SQL $sql -Name $Name
             New-VerboseMessage -Message "Created Database $Name"
         }
         else
         {
-            $sql.Databases[$Name].Drop()
+            Remove-SqlDatabase -SQL $sql -Name $Name
             New-VerboseMessage -Message "Dropped Database $Name"
         }
     }

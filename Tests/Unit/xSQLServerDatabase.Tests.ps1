@@ -1,7 +1,3 @@
-# Suppressing this rule because PlainText is required for one of the functions used in this test
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
-param()
-
 $script:DSCModuleName      = 'xSQLServer'
 $script:DSCResourceName    = 'MSFT_xSQLServerDatabase'
 
@@ -47,9 +43,7 @@ try
             return New-Object Object | 
                 Add-Member ScriptProperty Databases {
                     return @{
-                        'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') -Property @{} ) )
-                        'AdventureWorksLT' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorksLT') -Property @{} ) )
-                        'AdventureWorksDW' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorksDW') -Property @{} ) )
+                        'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') ) )
                     }
                 } -PassThru -Force 
         } -ModuleName $script:DSCResourceName -Verifiable
@@ -62,7 +56,7 @@ try
 
             $result = Get-TargetResource @testParameters
 
-            It 'Should not return the state as absent' {
+            It 'Should return the state as absent' {
                 $result.Ensure | Should Be 'Absent'
             }
 
@@ -85,7 +79,7 @@ try
     
             $result = Get-TargetResource @testParameters
 
-            It 'Should not return the state as present' {
+            It 'Should return the state as present' {
                 $result.Ensure | Should Be 'Present'
             }
 
@@ -108,9 +102,7 @@ try
             return New-Object Object | 
                 Add-Member ScriptProperty Databases {
                     return @{
-                        'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') -Property @{} ) )
-                        'AdventureWorksLT' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorksLT') -Property @{} ) )
-                        'AdventureWorksDW' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorksDW') -Property @{} ) )
+                        'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') ) )
                     }
                 } -PassThru -Force 
         } -ModuleName $script:DSCResourceName -Verifiable
@@ -128,7 +120,7 @@ try
                 Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It 
             }
 
-            It 'Should return the state as present when desired database exists' {
+            It 'Should return the state as present when desired database exist' {
                 $testParameters = $defaultParameters
                 $testParameters += @{
                     Name = 'AdventureWorks'
@@ -142,7 +134,7 @@ try
         }
 
         Context 'When the system is in the desired state' {
-            It 'Should return the state as present when desired database exists' {
+            It 'Should return the state as present when desired database exist' {
                 $testParameters = $defaultParameters
                 $testParameters += @{
                     Name = 'AdventureWorks'
@@ -150,6 +142,17 @@ try
 
                 $result = Test-TargetResource @testParameters
                 $result | Should Be $true
+
+                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It 
+            }
+            It 'Should return the state as absent when desired database does not exist' {
+                $testParameters = $defaultParameters
+                $testParameters += @{
+                    Name = 'UnknownDatabase'
+                }
+
+                $result = Test-TargetResource @testParameters
+                $result | Should Be $false
 
                 Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It 
             }
@@ -163,37 +166,41 @@ try
             return New-Object Object | 
                 Add-Member ScriptProperty Databases {
                     return @{
-                        'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') -Property @{} ) )
-                        'AdventureWorksLT' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorksLT') -Property @{} ) )
-                        'AdventureWorksDW' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorksDW') -Property @{} ) )
+                        'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') ) )
                     }
                 } -PassThru -Force 
         } -ModuleName $script:DSCResourceName -Verifiable
 
+        Mock -CommandName New-SqlDatabase -MockWith {} -ModuleName $script:DSCResourceName -Verifiable        
+        Mock -CommandName Remove-SqlDatabase -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
+
         Context 'When the system is not in the desired state' {
-            $testParameters = $defaultParameters
-            $testParameters += @{
-                Name = 'NewDatabase'
-            }
+            It 'Should call the function New-SqlDatabase when desired database should be present' {
+                $testParameters = $defaultParameters
+                $testParameters += @{
+                    Name = 'NewDatabase'
+                    Ensure = 'Present'
+                }
 
-            It 'Should return the state as present when desired database successfully created' {
-                { Set-TargetResource @testParameters } | Should Be $true
+                Set-TargetResource @testParameters
 
-                Assert-MockCalled Connect-SQL -Exactly -Times 0 -ModuleName $script:DSCResourceName -Scope It
+                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
+                Assert-MockCalled New-SqlDatabase -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
             }
         }
 
         Context 'When the system is not in the desired state' {
-            $testParameters = $defaultParameters
-            $testParameters += @{
-                Name = 'AdventureWorks'
-                Ensure = 'Absent'
-            }
+            It 'Should call the function Remove-SqlDatabase when desired database should be absent' {
+                $testParameters = $defaultParameters
+                $testParameters += @{
+                    Name = 'AdventureWorks'
+                    Ensure = 'Absent'
+                }             
 
-            It 'Should return the state as present when desired database successfully dropped' {
-                { Set-TargetResource @testParameters } | Should Be $true
-                
-                Assert-MockCalled Connect-SQL -Exactly -Times 0 -ModuleName $script:DSCResourceName -Scope It
+                Set-TargetResource @testParameters
+
+                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
+                Assert-MockCalled Remove-SqlDatabase -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
             }
         }
     }
