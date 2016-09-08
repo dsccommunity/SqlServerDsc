@@ -10,139 +10,95 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [ValidateSet("Present","Absent")]
+        [Parameter(Mandatory = $true)]
         [System.String]
-        $Ensure,
-
-        [parameter(Mandatory = $true)]
-        [System.Boolean]
-        $DynamicAlloc,
-
-        [System.Int32]
-        $MaxDop,
+        $SQLInstanceName,
 
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
-
-        [System.String]
-        $SQLInstanceName= "MSSQLSERVER"
+        $SQLServer = $env:COMPUTERNAME
     )
 
-    if(!$SQL)
+    if(!$sql)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
 
-    if($SQL)
+    if($sql)
     {
-        $GetMaxDop = $sql.Configuration.MaxDegreeOfParallelism.ConfigValue
-        If($GetMaxDop)
+        $currentMaxDop = $sql.Configuration.MaxDegreeOfParallelism.ConfigValue
+        if($currentMaxDop)
         {
-             New-VerboseMessage -Message "MaxDop is $GetMaxDop"
+             New-VerboseMessage -Message "MaxDop is $currentMaxDop"
         }
-        Switch ($Ensure)
-        {
-            "Present"
-            {
-                if ($GetMaxDop -eq 0)
-                {$EnsureResult = $false}
-                else
-                {$EnsureResult = $true}
-            }
-            "Absent"
-            {
-                if ($GetMaxDop -eq 0)
-                {$EnsureResult = $true}
-                else
-                {$EnsureResult =$false}
-            }
     }
 
     $returnValue = @{
-            Ensure = $EnsureResult
-            DynamicAlloc =$DynamicAlloc
-            MaxDop = $GetMaxDop 
-            }
+        SQLInstanceName = $SQLInstanceName
+        SQLServer = $SQLServer
+        MaxDop = $currentMaxDop
+    }
+
     $returnValue
 }
-}
-
 
 function Set-TargetResource
 {
     [CmdletBinding()]
     param
     (
-        [ValidateSet("Present","Absent")]
+        [Parameter(Mandatory = $true)]
         [System.String]
-        $Ensure,
-
-        [parameter(Mandatory = $true)]
-        [System.Boolean]
-        $DynamicAlloc,
-
-        [System.Int32]
-        $MaxDop,
+        $SQLInstanceName,
 
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
+        [ValidateSet("Present","Absent")]
         [System.String]
-        $SQLInstanceName= "MSSQLSERVER"
+        $Ensure = 'Present',
+
+        [System.Boolean]
+        $DynamicAlloc = $false,
+
+        [System.Int32]
+        $MaxDop = 0
     )
 
-    if(!$SQL)
+    if(!$sql)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
 
-    if($SQL)
+    if($sql)
     {
-        
         switch($Ensure)
         {
             "Present"
             {
-                If($DynamicAlloc -eq $True)
+                if($DynamicAlloc -eq $true)
                 {
-                    $NumCores = $SQL.Processors
-                    $NumProcs = ($sql.AffinityInfo.NumaNodes | Measure-Object).Count
-                    if ($NumProcs -eq 1) 
-                    {
-                        $MaxDop =  ($NumCores /2)
-                        $MaxDop=[math]::round( $MaxDop,[system.midpointrounding]::AwayFromZero)
-                    }
-                    elseif ($NumCores -ge 8) 
-                    {
-                        $MaxDop = 8
-                    }
-                    else
-                    {
-                        $MaxDop = $NumCores
-                    }
-                } 
+                    $MaxDop = Get-MaxDopDynamic $sql
+                }
             }
-                
+            
             "Absent"
             {
                 $MaxDop = 0
             }
+        }
 
-            }
-
-            try
-            {
-                $sql.Configuration.MaxDegreeOfParallelism.ConfigValue =$MaxDop
-                $sql.alter()
-                New-VerboseMessage -Message "Set MaxDop to $MaxDop"
-            }
-            catch
-            {
-                New-VerboseMessage -Message "Failed setting MaxDop to $MaxDop"
-            }
+        try
+        {
+            $sql.Configuration.MaxDegreeOfParallelism.ConfigValue = $MaxDop
+            $sql.alter()
+            New-VerboseMessage -Message "Set MaxDop to $MaxDop"
+        }
+        catch
+        {
+            New-VerboseMessage -Message "Failed setting MaxDop to $MaxDop"
+        }
     }
 }
-
 
 function Test-TargetResource
 {
@@ -150,78 +106,95 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [ValidateSet("Present","Absent")]
+        [Parameter(Mandatory = $true)]
         [System.String]
-        $Ensure,
-
-        [parameter(Mandatory = $true)]
-        [System.Boolean]
-        $DynamicAlloc,
-
-        [System.Int32]
-        $MaxDop,
+        $SQLInstanceName,
 
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
+        [ValidateSet("Present","Absent")]
         [System.String]
-        $SQLInstanceName= "MSSQLSERVER"
+        $Ensure = 'Present',
+
+        [System.Boolean]
+        $DynamicAlloc = $false,
+
+        [System.Int32]
+        $MaxDop = 0
     )
 
-    if(!$SQL)
+    if(!$sql)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
     
-    $GetMaxDop = $SQL.Configuration.MaxDegreeOfParallelism.ConfigValue
+    $currentMaxDop = $sql.Configuration.MaxDegreeOfParallelism.ConfigValue
+
     switch($Ensure)
     {
         "Present"
         {
-            If ($DynamicAlloc)
+            if($DynamicAlloc -eq $true)
             {
-                
-                If ($GetMaxDop -eq 0)
-                {
-                    New-VerboseMessage -Message "Current MaxDop is $GetMaxDop should be updated to $MaxDop"
-                    return $false
-                }
-                else 
-                {
-                    New-VerboseMessage -Message "Current MaxDop is configured at $GetMaxDop."
-                    return $True
-                }
+                $MaxDop = Get-MaxDopDynamic $sql
+                New-VerboseMessage -Message "Dynamic MaxDop is $MaxDop."
             }
-            else
+
+            if ($currentMaxDop -eq $MaxDop)
             {
-                If ($GetMaxDop -eq $MaxDop)
-                {
-                    New-VerboseMessage -Message "Current MaxDop is at Requested value. Do nothing." 
-                    return $true
-                }
-                else 
-                {
-                    New-VerboseMessage -Message "Current MaxDop is $GetMaxDop should be updated to $MaxDop"
-                    return $False
-                }
-            }
-        }
-        "Absent" 
-        {
-            If ($GetMaxDop -eq 0)
-            {
-                New-VerboseMessage -Message "Current MaxDop is at Requested value. Do nothing." 
+                New-VerboseMessage -Message "Current MaxDop is at Requested value $MaxDop."
                 return $true
             }
             else 
             {
-                New-VerboseMessage -Message "Current MaxDop is $GetMaxDop should be updated"
-                return $False
+                New-VerboseMessage -Message "Current MaxDop is $currentMaxDop should be updated to $MaxDop"
+                return $false
+            }
+        }
+
+        "Absent"
+        {
+            if ($currentMaxDop -eq 0)
+            {
+                New-VerboseMessage -Message "Current MaxDop is at Requested value 0."
+                return $true
+            }
+            else 
+            {
+                New-VerboseMessage -Message "Current MaxDop is $currentMaxDop should be updated to 0"
+                return $false
             }
         }
     }
 }
 
+function Get-MaxDopDynamic
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param(
+        $Sql
+    )
+
+    $numCores = $Sql.Processors
+    $numProcs = ($Sql.AffinityInfo.NumaNodes | Measure-Object).Count
+
+    if ($numProcs -eq 1)
+    {
+        $maxDop = ($numCores / 2)
+        $maxDop = [Math]::Round($maxDop, [system.midpointrounding]::AwayFromZero)
+    }
+    elseif ($numCores -ge 8)
+    {
+        $maxDop = 8
+    }
+    else
+    {
+        $maxDop = $numCores
+    }
+
+    $maxDop
+}
 
 Export-ModuleMember -Function *-TargetResource
-
