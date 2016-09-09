@@ -196,6 +196,24 @@ namespace Microsoft.SqlServer.Management.Smo
         {
         }
     }
+	
+	// TypeName: Microsoft.SqlServer.Management.Smo.ServerRole
+    // BaseType: Microsoft.SqlServer.Management.Smo.ScriptNameObjectBase
+    // Used by: 
+    //  MSFT_xSQLServerRole
+    public class ServerRole 
+    {
+        public ServerRole( Server server, string name ) {
+            this.Name = name;
+        } 
+
+        public ServerRole( Object server, string name ) {
+            this.Name = name;
+        } 
+            
+        public string Name;
+    }
+
 
     #endregion Public Classes
 }

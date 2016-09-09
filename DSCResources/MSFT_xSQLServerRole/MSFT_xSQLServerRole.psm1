@@ -43,35 +43,13 @@ function Get-TargetResource
     if ($sql)
     {
         Write-Verbose "Getting SQL Server roles for $Name on SQL Server $SQLServer."
-        $sqlRole = $sql.Roles
-        if ($sqlRole)
+        $confirmSqlServerRole = Confirm-SqlServerRole -SQL $sql -LoginName $Name -ServerRole $ServerRole
+        if ($confirmSqlServerRole)
         {
-            ForEach ($currentServerRole in $ServerRole)
-            {
-                if ($sqlRole[$currentServerRole])
-                {
-                    $membersInRole = $sqlRole[$currentServerRole].EnumMemberNames()             
-                    if ($membersInRole.Contains($Name))
-                    {
-                        $Ensure = "Present"
-                        Write-Verbose "$Name is present in SQL role name $currentServerRole"
-                    }
-                    else
-                    {
-                        Write-Verbose "$Name is absent in SQL role name $currentServerRole"
-                        $Ensure = "Absent"
-                    }
-                }
-                else
-                {
-                    Write-Verbose "SQL role name $currentServerRole is absent"
-                    $Ensure = "Absent"
-                }
-            }
+            $Ensure = "Present"
         }
         else
         {
-            Write-Verbose "Failed getting SQL roles"
             $Ensure = "Absent"
         }
     }
@@ -124,40 +102,15 @@ function Set-TargetResource
 
     if ($sql)
     {
-        switch ($Ensure)
+        if ($Ensure -eq "Present")
         {
-            "Present"
-            {
-                try
-                {
-                    $sqlRole = $sql.Roles
-                    ForEach ($currentServerRole in $ServerRole)
-                    {
-                        Write-Verbose "Adding SQL login $Name in role $currentServerRole"
-                        $sqlRole[$currentServerRole].AddMember($Name)
-                    }
-                }
-                catch
-                {
-                    Write-Verbose "Failed adding SQL login $Name in role $currentServerRole"
-                }
-            }
-            "Absent"
-            {
-                try
-                {
-                    $sqlRole = $sql.Roles
-                    ForEach ($currentServerRole in $ServerRole)
-                    {
-                        Write-Verbose "Deleting SQL login $Name in role $currentServerRole"
-                        $sqlRole[$currentServerRole].DropMember($Name)
-                    }
-                }
-                catch
-                {
-                    Write-Verbose "Failed deleting SQL login $Name"
-                }
-            }
+            Add-SqlServerRole -SQL $sql -LoginName $Name -ServerRole $ServerRole
+            New-VerboseMessage -Message "SQL Roles for $Name, successfullly added"
+        }
+        else
+        {
+            Remove-SqlServerRole -SQL $sql -Name $Name
+            New-VerboseMessage -Message "SQL Roles for $Name, successfullly removed"
         }
     }
 }
