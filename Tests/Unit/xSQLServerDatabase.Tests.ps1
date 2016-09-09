@@ -145,6 +145,7 @@ try
 
                 Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It 
             }
+            
             It 'Should return the state as absent when desired database does not exist' {
                 $testParameters = $defaultParameters
                 $testParameters += @{
