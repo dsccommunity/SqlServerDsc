@@ -455,7 +455,7 @@ function Add-SqlServerRole
     {
         try
         {
-            ForEach ($currentServerRole in $ServerRole)
+            foreach ($currentServerRole in $ServerRole)
             {
                 New-VerboseMessage -Message "Adding SQL login $LoginName in role $currentServerRole"
                 $sqlRole[$currentServerRole].AddMember($LoginName)
@@ -466,7 +466,7 @@ function Add-SqlServerRole
             New-VerboseMessage -Message "Failed adding SQL login $LoginName in role $currentServerRole"
         }
     }
-    Else
+    else
     {
         New-VerboseMessage -Message "Failed to getting SQL server roles"
     }
@@ -496,7 +496,7 @@ function Remove-SqlServerRole
     {
         try
         {
-            ForEach ($currentServerRole in $ServerRole)
+            foreach ($currentServerRole in $ServerRole)
             {
                 New-VerboseMessage -Message "Deleting SQL login $LoginName in role $currentServerRole"
                 $sqlRole[$currentServerRole].DropMember($LoginName)
@@ -507,7 +507,7 @@ function Remove-SqlServerRole
             New-VerboseMessage -Message "Failed deleting SQL login $LoginName in role $currentServerRole"
         }
     }
-    Else
+    else
     {
         New-VerboseMessage -Message "Failed to getting SQL server roles"
     }
@@ -535,7 +535,7 @@ function Confirm-SqlServerRole
     $sqlRole = $SQL.Roles
     if ($sqlRole)
     {
-        ForEach ($currentServerRole in $ServerRole)
+        foreach ($currentServerRole in $ServerRole)
         {
             if ($sqlRole[$currentServerRole])
             {
@@ -564,5 +564,5 @@ function Confirm-SqlServerRole
         $confirmServerRole = $false
     }
 
-    Return $confirmServerRole
+    return $confirmServerRole
 }
