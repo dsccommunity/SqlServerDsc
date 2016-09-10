@@ -451,7 +451,7 @@ function New-SqlDatabase
         New-VerboseMessage -Message "Adding to SQL the database $Name"
         $newDatabase.Create()
     }
-    Else
+    else
     {
         New-VerboseMessage -Message "Failed to adding the database $Name"
     }    
@@ -477,7 +477,7 @@ function Remove-SqlDatabase
         New-VerboseMessage -Message "Deleting to SQL the database $Name"
         $getDatabase.Drop()
     }
-    Else
+    else
     {
         New-VerboseMessage -Message "Failed to deleting the database $Name"
     }    
