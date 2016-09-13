@@ -431,6 +431,58 @@ function Get-SQLAlwaysOnEndpoint
     return $endpoint
 }
 
+function New-SqlDatabase
+{
+    [CmdletBinding()]    
+    param
+    (   
+        [ValidateNotNull()] 
+        [System.Object]
+        $SQL,
+        
+        [ValidateNotNull()] 
+        [System.String]
+        $Name
+    )
+    
+    $newDatabase = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $SQL,$Name
+    if ($newDatabase)
+    {
+        New-VerboseMessage -Message "Adding to SQL the database $Name"
+        $newDatabase.Create()
+    }
+    else
+    {
+        New-VerboseMessage -Message "Failed to adding the database $Name"
+    }    
+}
+
+function Remove-SqlDatabase
+{
+    [CmdletBinding()]    
+    param
+    (   
+        [ValidateNotNull()] 
+        [System.Object]
+        $SQL,
+        
+        [ValidateNotNull()] 
+        [System.String]
+        $Name
+    )
+    
+    $getDatabase = $SQL.Databases[$Name]
+    if ($getDatabase)
+    {
+        New-VerboseMessage -Message "Deleting to SQL the database $Name"
+        $getDatabase.Drop()
+    }
+    else
+    {
+        New-VerboseMessage -Message "Failed to deleting the database $Name"
+    }    
+}
+
 function Add-SqlServerRole
 {
     [CmdletBinding()]    

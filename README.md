@@ -207,11 +207,11 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **RecoveryModel**: (Required) Recovery Model (Full, Simple, BulkLogged)
 
 ###xSQLServerMaxDop
-* **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
-* **DyamicAlloc**: (key) Flag to indicate if MaxDop is dynamically configured
+* **Ensure**: An enumerated value that describes if Min and Max memory is configured
+* **DyamicAlloc**: Flag to indicate if MaxDop is dynamically configured
 * **MaxDop**: Numeric value to configure MaxDop to
-* **SQLServer**: The SQL Server for the database
-* **SQLInstance**: The SQL instance for the database
+* **SQLServer**: The SQL Server where to set MaxDop
+* **SQLInstance** (Key): The SQL instance where to set MaxDop
 
 ###xSQLServerMemory
 * **Ensure**: An enumerated value that describes if Min and Max memory is configured
@@ -234,9 +234,9 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ###xSQLServerDatabase
 * **Database**: (key) Database to be created or dropped
-* **Ensure**: An enumerated value that describes if Database is to be present or absent.
-* **SQLServer**: The SQL Server for the database
-* **SQLInstance**: The SQL instance for the database 
+* **Ensure**: (Default = 'Present') An enumerated value that describes if Database is to be present or absent.
+* **SQLServer**: (key) The SQL Server for the database
+* **SQLInstance**: (key) The SQL instance for the database 
 
 ###xSQLAOGroupEnsure
 * **Ensure**: (key) An enumerated value that describes if Availability Group is to be present or absent.
@@ -353,11 +353,17 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - Now the resource will throw 'Not supported' when IP is changed between Static and DHCP.
   - Fixed an issue where sometimes the listener wasn't removed.
   - Fixed the issue when trying to add a static IP to a listener was ignored.
+* Fix in xSQLServerDatabase
+  - Fixed so dropping a database no longer throws an error
+  - BREAKING CHANGE: Fixed an issue where it was not possible to add the same database to two instances on the same server.
+  - BREAKING CHANGE: The name of the parameter Database has changed. It is now called Name.
 * Fixes in xSQLAOGroupEnsure
   - Added parameters to New-ListenerADObject to allow usage of a named instance.
 * Changes to xSQLServerLogin
    - Fixed an issue when dropping logins.
    - BREAKING CHANGE: Fixed an issue where it was not possible to add the same login to two instances on the same server.
+* Changes to xSQLServerMaxDop
+   - BREAKING CHANGE: Made SQLInstance parameter a key so that multiple instances on the same server can be configured
 
 ### 1.8.0.0
 

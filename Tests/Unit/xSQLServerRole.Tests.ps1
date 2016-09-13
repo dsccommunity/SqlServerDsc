@@ -86,7 +86,7 @@ try
 
             $result = Get-TargetResource @testParameters
 
-            It 'Should not return the state as present' {
+            It 'Should return the state as present' {
                 $result.Ensure | Should Be 'Present'
             }
 

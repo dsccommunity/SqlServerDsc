@@ -1,7 +1,7 @@
 <#
 .EXAMPLE
     This example shows how to ensure that the user account CONTOSO\SQLUser
-    has not "setupadmin" SQL server role. 
+    does not have "setupadmin" SQL server role. 
 #>
 
     Configuration Example 
@@ -9,7 +9,7 @@
         param(
             [Parameter(Mandatory = $true)]
             [PSCredential]
-            $SysadminAccount
+            $SysAdminAccount
         )
         
         Import-DscResource -ModuleName xSqlServer
@@ -23,7 +23,7 @@
                 ServerRole = "setupadmin"
                 SQLServer = 'SQLServer'
                 SQLInstanceName = 'DSC'
-                PsDscRunAsCredential = $SysadminAccount
+                PsDscRunAsCredential = $SysAdminAccount
             }
         }
     }

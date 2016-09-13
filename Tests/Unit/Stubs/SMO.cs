@@ -215,5 +215,30 @@ namespace Microsoft.SqlServer.Management.Smo
     }
 
 
+	// TypeName: Microsoft.SqlServer.Management.Smo.Database
+    // BaseType: Microsoft.SqlServer.Management.Smo.ScriptNameObjectBase
+    // Used by: 
+    //  MSFT_xSQLServerDatabase
+	public class Database
+	{
+        public Database( Server server, string name ) {
+            this.Name = name;
+        } 
+
+        public Database( Object server, string name ) {
+            this.Name = name;
+        } 
+            
+        public string Name;
+		
+		public void Create()
+        {
+        }
+		
+		public void Drop()
+        {
+        }
+		
+	}
     #endregion Public Classes
 }

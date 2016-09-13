@@ -14,28 +14,57 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
-        $Database,
+        $Ensure = 'Present',
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Name,
+
+        [Parameter(Mandatory)]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
+
+        [Parameter(Mandatory)]
         [System.String]
-        $SQLInstanceName = "MSSQLSERVER"
+        $SQLInstanceName = 'MSSQLSERVER'
     )
-    if(!$SQL)
+
+    if (!$sql)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
 
-    if($SQL)
+    if ($sql)
     {
+        Write-Verbose 'Getting SQL Databases'
         # Check database exists
-        $SQLDatabase = $sql.Databases.Contains($Database)
-        $Present = $SQLDatabase
+        $sqlDatabase = $sql.Databases
+        
+        if ($sqlDatabase)
+        {
+            if ($sqlDatabase[$Name])
+            {
+                Write-Verbose "SQL Database name $Name is present"
+                $Ensure = 'Present'
+            }
+            else
+            {
+                Write-Verbose "SQL Database name $Name is absent"
+                $Ensure = 'Absent'
+            }
+        }
+        else
+        {
+            Write-Verbose 'Failed getting SQL databases'
+            $Ensure = 'Absent'
+        }
     }
-        $returnValue = @{
-        Database = $Database
-        Ensure = $Present
+    
+    $returnValue = @{
+        Name = $Name
+        Ensure = $Ensure
         SQLServer = $SQLServer
         SQLInstanceName = $SQLInstanceName
     }
@@ -43,48 +72,47 @@ function Get-TargetResource
     $returnValue
 }
 
-
 function Set-TargetResource
 {
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
-        $Database,
+        $Ensure = 'Present',
 
-        [ValidateSet("Present","Absent")]
+        [Parameter(Mandatory = $true)]
         [System.String]
-        $Ensure,
+        $Name,
 
+        [Parameter(Mandatory)]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
+        [Parameter(Mandatory)]
         [System.String]
-        $SQLInstanceName = "MSSQLSERVER"
+        $SQLInstanceName = 'MSSQLSERVER'
     )
 
-    if(!$SQL)
+    if (!$sql)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+        $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     }
 
-    if($SQL)
+    if ($sql)
     {
-        if($Ensure -eq "Present")
+        if ($Ensure -eq "Present")
         {
-            $Db = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $SQL,$Database
-            $db.Create()
-            New-VerboseMessage -Message "Created Database $Database"
+            New-SqlDatabase -SQL $sql -Name $Name
+            New-VerboseMessage -Message "Created Database $Name"
         }
         else
         {
-            $sql.Databases[$Database].Drop()
-            New-VerboseMessage -Messaged "Dropped Database $Database"
+            Remove-SqlDatabase -SQL $sql -Name $Name
+            New-VerboseMessage -Message "Dropped Database $Name"
         }
     }
 }
-
 
 function Test-TargetResource
 {
@@ -92,41 +120,29 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
-        $Database,
+        $Ensure = 'Present',
 
-        [ValidateSet("Present","Absent")]
+        [Parameter(Mandatory = $true)]
         [System.String]
-        $Ensure,
+        $Name,
 
+        [Parameter(Mandatory)]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
+        [Parameter(Mandatory)]
         [System.String]
-        $SQLInstanceName = "MSSQLSERVER"
-    )
+        $SQLInstanceName = 'MSSQLSERVER'
+    )    
+
+    $sqlDatabase = Get-TargetResource @PSBoundParameters
+
+    $result = ($sqlDatabase.Ensure -eq $Ensure)
     
-
-    if(!$SQL)
-    {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-    }
-
-    if($SQL)
-    {
-        # Check database exists
-        $SQLDatabase = $sql.Databases.Contains($Database)
-        $Present = $SQLDatabase
-    }
-    if($ensure -eq "Present")
-    {$result =  $Present}
-    if($ensure -eq "Absent")
-    {$result = !$present}
-
     $result
 }
-
 
 Export-ModuleMember -Function *-TargetResource
 

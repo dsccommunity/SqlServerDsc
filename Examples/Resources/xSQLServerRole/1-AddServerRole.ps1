@@ -9,7 +9,7 @@
         param(
             [Parameter(Mandatory = $true)]
             [PSCredential]
-            $SysadminAccount
+            $SysAdminAccount
         )
         
         Import-DscResource -ModuleName xSqlServer
@@ -23,7 +23,7 @@
                 ServerRole = "dbcreator","securityadmin"
                 SQLServer = 'SQLServer'
                 SQLInstanceName = 'DSC'
-                PsDscRunAsCredential = $SysadminAccount
+                PsDscRunAsCredential = $SysAdminAccount
             }
         }
     }

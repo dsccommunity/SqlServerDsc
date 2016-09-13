@@ -35,10 +35,7 @@ function Get-TargetResource
         $SQLInstanceName
     )
 
-    if (!$sql)
-    {
-        $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-    }
+    $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
     if ($sql)
     {
@@ -95,10 +92,7 @@ function Set-TargetResource
         $SQLInstanceName
     )
 
-    if (!$sql)
-    {
-        $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-    }
+    $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
     if ($sql)
     {
@@ -146,7 +140,7 @@ function Test-TargetResource
     Write-Verbose -Message "Testing SQL roles for login $Name"
     $currentValues = Get-TargetResource @PSBoundParameters
     
-    $result = ($currentValues.Ensure -eq $Ensure) -and ($currentValues.ServerRole -eq $ServerRole)
+    $result = ($currentValues.Ensure -eq $Ensure) -and ($currentValues.ServerRole -eq $ServerRole) -and ($currentValues.Name -eq $Name)
     $result    
 }
 
