@@ -19,35 +19,54 @@ function Get-TargetResource
         $ServerName
     )
 
-    Write-Verbose -Message 'Get-TargetResource'
-    
     $returnValue = @{
-        Name = [System.String]
-        Protocol = [System.String]
-        ServerName = [System.String]
-        TCPPort = [System.Int32]
-        PipeName = [System.String]
-        Ensure = [System.String]
+        Name = [System.String] $Name
+        Protocol = [System.String] ''
+        ServerName = [System.String] ''
+        TcpPort = [System.UInt16] 0
+        PipeName = [System.String] ''
+        Ensure = [System.String] 'Absent'
     }
 
-    if ($null -ne (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -ErrorAction SilentlyContinue))
-    {
-        $itemValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -ErrorAction SilentlyContinue
-        
-        $returnValue.Name = $Name
-        $itemConfig = $itemValue."$Name" -split ','
-        if ($itemConfig[0] -eq 'DBMSSOCN')
-        {
-            $returnValue.Protocol = 'TCP'
-            $returnValue.ServerName = $itemConfig[1]
-            $returnValue.TCPPort = $itemConfig[2]
-        }
-        else
-        {
-            $returnValue.Protocol = 'NP'
-            $returnValue.PipeName = $itemConfig[1]
-        }
+    $protocolTcp = 'DBMSSOCN'
+    $protocolNamedPipes = 'DBNMPNTW'
 
+    Write-Verbose "Get the client alias $Name"
+
+    <#
+        Get-ItemProperty will either return $null if no value is set, or if value is set, it will always
+        return a value in the format 'DBNMPNTW,\\ServerName\PIPE\sql\query' or 'DBMSSOCN,ServerName.company.local,1433'
+    #>
+    $itemValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -ErrorAction SilentlyContinue
+    if ((Get-WmiOSArchitecture) -eq '64-bit')
+    {
+        Write-Verbose "64-bit Operating System. Also get the client alias $Name from Wow6432Node"
+        
+        $isWow6432Node = $true
+        $itemValueWow6432Node = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -ErrorAction SilentlyContinue
+    }
+    
+    if ((-not $isWow6432Node -and $null -ne $itemValue ) -or
+            ( ($null -ne $itemValue -and $null -ne $itemValueWow6432Node) -and
+            ($isWow6432Node -and $itemValueWow6432Node."$Name" -eq $itemValue."$Name") ))
+    {
+        $itemConfig = $itemValue."$Name" | ConvertFrom-Csv -Header 'Protocol','ServerName','TcpPort'
+        if ($itemConfig)
+        {
+            if ($itemConfig.Protocol -eq $protocolTcp)
+            {
+                $returnValue.Ensure = 'Present'
+                $returnValue.Protocol = 'TCP'
+                $returnValue.ServerName = $itemConfig.ServerName
+                $returnValue.TcpPort = $itemConfig.TcpPort
+            }
+            elseif ($itemConfig.Protocol -eq $protocolNamedPipes)
+            {
+                $returnValue.Ensure = 'Present'
+                $returnValue.Protocol = 'NP'
+                $returnValue.PipeName = $itemConfig.ServerName
+            }
+        }
     }
 
     $returnValue
@@ -65,25 +84,21 @@ function Set-TargetResource
 
         [ValidateSet("TCP","NP")]
         [System.String]
-        $Protocol,
+        $Protocol = 'TCP',
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $ServerName,
 
-        [System.Int32]
-        $TCPPort,
+        [System.UInt16]
+        $TcpPort = 1433,
 
         [ValidateSet("Present","Absent")]
         [System.String]
-        $Ensure
+        $Ensure = 'Present'
     )
 
-    Write-Verbose -Message 'Set-TargetResource'
-
-    $itemValue = [System.String]
-    
     if ($Protocol -eq 'NP')
     {
         $itemValue = "DBNMPNTW,\\$ServerName\PIPE\sql\query"
@@ -91,93 +106,55 @@ function Set-TargetResource
 
     if ($Protocol -eq 'TCP')
     {
-        $itemValue = "DBMSSOCN,$ServerName,$TCPPort"
+        $itemValue = "DBMSSOCN,$ServerName,$TcpPort"
     }
 
-    # Logic based on ensure value Present
+    $registryPath = 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo'
+    $registryPathWow6432Node = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' 
+
     if ($Ensure -eq 'Present')
     {
-        Write-Debug -Message 'Check if value requires changing'
-
-        $currentValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -ErrorAction SilentlyContinue
-        if ($null -ne $currentValue -and $itemValue -ne $currentValue)
+        if ($PSCmdlet.ShouldProcess($Name, 'Setting the client alias'))
         {
-            if ($PSCmdlet.ShouldProcess($Name,"Changing the client alias (64-bit)"))
+            if (!(Test-Path -Path $registryPath))
             {
-                Write-Debug -Message 'Set-ItemProperty'
-                Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -Value $itemValue
+                New-Item -Path $registryPath | Out-Null
             }
-        }
-        elseif ($null -eq $currentValue)
-        {
-            if ($PSCmdlet.ShouldProcess($Name,"Create client alias (64-bit)"))
-            {
-                if (!(Test-Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo'))
-                {
-                    Write-Debug -Message 'New-Item'
-                    New-Item -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' | Out-Null
-                }
 
-                Write-Debug -Message 'New-ItemProperty'
-                New-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -Value $itemValue | Out-Null
-            }
+            Set-ItemProperty -Path $registryPath -Name $Name -Value $itemValue | Out-Null
         }
 
-        Write-Debug -Message 'Check OSArchitecture'
-        # If this is a 64 bit machine also update Wow6432Node
-        if ((Get-Wmiobject -Class win32_OperatingSystem).OSArchitecture -eq '64-bit')
+        # If this is a 64-bit OS then also update Wow6432Node
+        if ((Get-WmiOSArchitecture) -eq '64-bit')
         {
-            Write-Debug -Message 'Is 64Bit'
-            Write-Debug -Message 'Check if value requires changing'
-            $currentValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -ErrorAction SilentlyContinue
-            if ($null -ne $currentValue -and $itemValue -ne $currentValue)
+            if ($PSCmdlet.ShouldProcess($Name, 'Setting the client alias (32-bit)'))
             {
-                if ($PSCmdlet.ShouldProcess($Name,"Changing the client alias (32-bit)"))
+                if (!(Test-Path -Path $registryPathWow6432Node))
                 {
-                    Write-Debug -Message 'Set-ItemProperty'
-                    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -Value $itemValue
+                    New-Item -Path $registryPathWow6432Node | Out-Null
                 }
-            }
-            elseif ($null -eq $currentValue)
-            {
-                if ($PSCmdlet.ShouldProcess($Name,"Create client alias (32-bit)"))
-                {
-                    if (!(Test-Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo'))
-                    {
-                        Write-Debug -Message 'New-Item'
-                        New-Item -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' | Out-Null
-                    }
 
-                    Write-Debug -Message 'New-ItemProperty'
-                    New-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -Value $itemValue
-                }
+                Set-ItemProperty -Path $registryPathWow6432Node -Name $Name -Value $itemValue | Out-Null
             }
         }
     }
 
-    # Logic based on ensure value Absent
     if ($Ensure -eq 'Absent')
     {
-        # If the base path doesn't exist then we don't need to do anything
-        if (Test-Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo')
+        if ($PSCmdlet.ShouldProcess($Name, 'Remove the client alias'))
         {
-            
-            if ($PSCmdlet.ShouldProcess($Name,"Remove the client alias (64-bit)"))
+            if (Test-Path -Path $registryPath)
             {
-                Write-Debug -Message 'Remove-ItemProperty'
-                Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name
+                Remove-ItemProperty -Path $registryPath -Name $Name
             }
+        }
             
-            Write-Debug -Message 'Check OSArchitecture'
-
-            # If this is a 64 bit machine also update Wow6432Node
-            if ((Get-Wmiobject -Class win32_OperatingSystem).OSArchitecture -eq '64-bit' -and (Test-Path -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo'))
+        # If this is a 64-bit OS then also remove from Wow6432Node
+        if ((Get-WmiOSArchitecture) -eq '64-bit' -and (Test-Path -Path $registryPathWow6432Node))
+        {
+            if ($PSCmdlet.ShouldProcess($Name, 'Remove the client alias (32-bit)'))
             {
-                if ($PSCmdlet.ShouldProcess($Name,"Remove the client alias (34-bit)"))
-                {
-                    Write-Debug -Message 'Remove-ItemProperty Wow6432Node'
-                    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name
-                }
+                Remove-ItemProperty -Path $registryPathWow6432Node -Name $Name
             }
         }
     }
@@ -196,160 +173,73 @@ function Test-TargetResource
 
         [ValidateSet("TCP","NP")]
         [System.String]
-        $Protocol,
+        $Protocol = 'TCP',
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $ServerName,
 
-        [System.Int32]
-        $TCPPort,
+        [System.UInt16]
+        $TcpPort = 1433,
 
         [ValidateSet("Present","Absent")]
         [System.String]
-        $Ensure
+        $Ensure = 'Present'
     )
 
-    Write-Debug -Message 'Test-TargetResource'
+    $result = $false
 
-    $result = [System.Boolean] $true
-
-    if (Test-Path -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo')
+    $currentValues = Get-TargetResource -Name $Name -ServerName $ServerName
+    if ($Ensure -eq $currentValues.Ensure)
     {
-        Write-Debug -Message 'Alias registry container exists'
-        if ($null -ne (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -ErrorAction SilentlyContinue))
-        {
-            Write-Debug -Message 'Existing alias found'
-            if ($Ensure -eq 'Present')
-            {
-                $itemValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -ErrorAction SilentlyContinue
-                
-                $itemConfig = $itemValue."$Name" -split ','
-
-                if ($Protocol -eq 'NP')
-                {
-                    Write-Debug -Message 'Named Pipes'
-
-                    if ($itemConfig[0] -ne 'DBNMPNTW')
-                    {
-                        $result = $false
-                    }
-
-                    if ($itemConfig[1] -ne "\\$ServerName\PIPE\sql\query")
-                    {
-                        $result = $false
-                    }
-                }
-
-                if ($Protocol -eq 'TCP')
-                {
-                    Write-Debug -Message 'TCP'
-                    if ($itemConfig[0] -ne 'DBMSSOCN')
-                    {
-                        $result = $false
-                    }
-
-                    if ($itemConfig[1] -ne $ServerName)
-                    {
-                        $result = $false
-                    }
-
-                    if ($itemConfig[2] -ne $TCPPort)
-                    {
-                        $result = $false
-                    }
-                }
-
-                # If this is a 64 bit machine also check Wow6432Node
-                if ((Get-Wmiobject -Class win32_OperatingSystem).OSArchitecture -eq '64-bit')
-                {
-                    Write-Debug -Message 'Wow6432Node'
-                    if ($null -ne (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -ErrorAction SilentlyContinue))
-                    {
-                        Write-Debug -Message 'Existing alias found'
-                        $itemValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name  -ErrorAction SilentlyContinue
-
-                        $itemConfig = $itemValue."$Name" -split ','
-
-                        if ($Protocol -eq 'NP')
-                        {
-                            Write-Debug -Message 'Named Pipes'
-
-                            if ($itemConfig[0] -ne 'DBNMPNTW')
-                            {
-                                $result = $false
-                            }
-
-                            if ($itemConfig[1] -ne "\\$ServerName\PIPE\sql\query")
-                            {
-                                $result = $false
-                            }
-                        }
-
-                        if ($Protocol -eq 'TCP')
-                        {
-                            Write-Debug -Message 'TCP'
-
-                            if ($itemConfig[0] -ne 'DBMSSOCN')
-                            {
-                                $result = $false
-                            }
-
-                            if ($itemConfig[1] -ne $ServerName)
-                            {
-                                $result = $false
-                            }
-                            
-                            if ($itemConfig[2] -ne $TCPPort)
-                            {
-                                $result = $false
-                            }
-                        }
-                    }
-                    else
-                    {
-                        # Wow6432Node
-                        $result = $false
-                    }
-                }
-            }
-            else
-            {
-                # Existing alias not found
-                $result = $false
-            }
-        }
-        else
-        {
-            # Registry container doesn't exist
-            if ($Ensure -eq 'Present')
-            {
-                $result = $false
-            }
-            else
-            {
-                $result = $true
-            }
-        }
-    }
-    else
-    {
-        # Alias not present
-        if ($Ensure -eq 'Present')
-        {
-            $result = $false
-        }
-        else
+        if( $Ensure -eq 'Absent' )
         {
             $result = $true
         }
+        else {
+            Write-Verbose "Ensure is in the desired state. Verifying values."
+
+            if ($Protocol -eq $currentValues.Protocol)
+            {
+                switch ($Protocol)
+                {
+                    'NP'
+                    {
+                        if ($currentValues.PipeName -eq "\\$ServerName\PIPE\sql\query")
+                        {
+                            $result = $true
+                        }
+                    }
+
+                    'TCP'
+                    {
+                        if ($currentValues.ServerName -eq $ServerName -and
+                            $currentValues.TcpPort -eq $TcpPort)
+                        {
+                            $result = $true
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    if ($result) 
+    {
+        Write-Verbose "In the desired state"
+    }
+    else
+    {
+        Write-Verbose "Not in the desired state"
     }
 
-    Write-Debug -Message "Test-TargetResource Result: $result"
-    
     return $result
 }
 
+function Get-WmiOSArchitecture
+{
+    return (Get-WmiObject -Class win32_OperatingSystem).OSArchitecture
+}
 
 Export-ModuleMember -Function *-TargetResource
