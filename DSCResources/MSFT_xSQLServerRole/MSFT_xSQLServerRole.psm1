@@ -103,7 +103,7 @@ function Set-TargetResource
         }
         else
         {
-            Remove-SqlServerRole -SQL $sql -Name $Name
+            Remove-SqlServerRole -SQL $sql -LoginName $Name -ServerRole $ServerRole
             New-VerboseMessage -Message "SQL Roles for $Name, successfullly removed"
         }
     }
