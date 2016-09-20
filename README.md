@@ -329,11 +329,11 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **Credential**: Specifies the credentials for making a SQL Server Authentication connection to an instance of the Database Engine.
 * **Variable**: Creates a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable.
 
-### xSqlAlias
- * **Ensure**: Determines whether the alias should be added or removed. Default values is 'Present'
+### xSQLAlias
+ * **Ensure**: Determines whether the alias should be added or removed. Default value is 'Present'
  * **Name**: (Key) The name of Alias (e.g. svr01\inst01).
  * **ServerName**: (Key) The SQL Server you are aliasing (the netbios name or FQDN).
- * **Protocol**: Protocol to use when connecting. Valid values are 'TCP' or 'NP' (Named Pipes). Default values is 'TCP'.
+ * **Protocol**: Protocol to use when connecting. Valid values are 'TCP' or 'NP' (Named Pipes). Default value is 'TCP'.
  * **TCPPort**: The TCP port SQL is listening on. Only used when protocol is set to 'TCP'. Default value is port 1433.
  * **PipeName**: (Read) Named Pipes path from the Get-TargetResource method.
 
@@ -343,7 +343,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * Added resources
   - xSQLServerReplication
   - xSQLServerScript
-  - xSqlAlias	
+  - xSQLAlias	
 * Added tests for resources
   - xSQLServerPermission
   - xSQLServerEndpointState
@@ -351,7 +351,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerAvailabilityGroupListener
   - xSQLServerLogin
   - xSQLAOGroupEnsure
-  - xSqlAlias
+  - xSQLAlias
 * Fixes in xSQLServerAvailabilityGroupListener
   - In one case the Get-method did not report that DHCP was configured. 
   - Now the resource will throw 'Not supported' when IP is changed between Static and DHCP.
