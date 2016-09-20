@@ -227,11 +227,11 @@ function Test-TargetResource
     
     if ($result) 
     {
-        Write-Verbose 'In the desired state'
+        Write-Verbose -Message 'In the desired state'
     }
     else
     {
-        Write-Verbose 'Not in the desired state'
+        Write-Verbose -Message 'Not in the desired state'
     }
 
     return $result
