@@ -116,7 +116,7 @@ try
         } -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is not in the desired state' {            
-            It 'Should return the state as absent when desired loginName does not exist' {
+            It 'Should return the test as false when desired loginName does not exist' {
 
                 Mock -CommandName Confirm-SqlServerRole -MockWith { return $false } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -133,13 +133,13 @@ try
                 Assert-MockCalled Confirm-SqlServerRole -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It 
             }
 
-            It 'Should return the state as present when non-desired loginName exist' {
+            It 'Should return the test as false when non-desired loginName exist' {
 
                 Mock -CommandName Confirm-SqlServerRole -MockWith { return $true } -ModuleName $script:DSCResourceName -Verifiable
 
                 $testParameters = $defaultParameters
                 $testParameters += @{
-                    Name = 'CONTOSO\SQL-Admin'
+                    Name = 'NonDesiredUser'
                     Ensure = 'Absent'
                 }
 
@@ -152,7 +152,7 @@ try
         }
 
         Context 'When the system is in the desired state' {
-            It 'Should return the state as present when desired loginName exist' {
+            It 'Should return the test as true when desired loginName exist' {
 
                 Mock -CommandName Confirm-SqlServerRole -MockWith { return $true } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -169,7 +169,7 @@ try
                 Assert-MockCalled Confirm-SqlServerRole -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
             }
                         
-            It 'Should return the state as absent when non-desired loginName does not exist' {
+            It 'Should return the test as true when non-desired loginName does not exist' {
 
                 Mock -CommandName Confirm-SqlServerRole -MockWith { return $false } -ModuleName $script:DSCResourceName -Verifiable
 
