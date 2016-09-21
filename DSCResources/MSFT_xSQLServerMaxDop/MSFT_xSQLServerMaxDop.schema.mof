@@ -3,9 +3,9 @@
 class MSFT_xSQLServerMaxDop : OMI_BaseResource
 {
     [Write, Description("An enumerated value that describes if MaxDop is configured"), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
-    [Key, Description("Flag to Dynamically allocate Maxdop based on Best Practices")] Boolean DynamicAlloc;
+    [Write, Description("Flag to Dynamically allocate Maxdop based on Best Practices")] Boolean DynamicAlloc;
     [Write, Description("Numeric value to configure Maxdop to")] Sint32 MaxDop;
     [Write, Description("SQL Server to configure Maxdop on")] String SQLServer;
-    [Write, Description("SQL Instance to configure Maxdop on")] String SQLInstanceName;
+    [Key, Description("SQL Instance to configure Maxdop on")] String SQLInstanceName;
 };
 

@@ -10,7 +10,6 @@ For more information see the [Code of Conduct FAQ](https://opensource.microsoft.
 ## Contributing
 Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
 
-
 ## Resources
 
 * **xSQLServerSetup** installs a standalone SQL Server instance
@@ -19,6 +18,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerFailoverClusterSetup** installs SQL Server failover cluster instances.
 * **xSQLServerRSConfig** configures SQL Server Reporting Services to use a database engine in another instance.
 * **xSQLServerLogin** resource to manage SQL logins
+* **xSQLServerRole** resource to manage SQL server roles
 * **xSQLServerDatabaseRole** resource to manage SQL database roles
 * **xSQLServerDatabasePermissions** resource to manage SQL database permissions
 * **xSQLServerDatabaseOwner** resource to manage SQL database owners
@@ -38,6 +38,9 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerEndpointState** Change state of the endpoint.
 * **xSQLServerEndpointPermission** Grant or revoke permission on the endpoint.
 * **xSQLServerAvailabilityGroupListener** Create or remove an availability group listener.
+* **xSQLServerReplication** resource to manage SQL Replication distribution and publishing.
+* **xSQLServerScript** resource to extend DSCs Get/Set/Test functionality to T-SQL
+* **xSQLAlias** resource to manage SQL Server client Aliases
 
 ### xSQLServerSetup
 
@@ -166,9 +169,16 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **IsInitialized**: Output is the Reporting Services instance initialized.
 
 ### xSQLServerLogin
+* **Ensure**: If the values should be present or absent. Valid values are 'Present' or 'Absent'. 
+* **Name**: (Key) The name of the SQL login. If LoginType is 'WindowsUser' or 'WindowsGroup' then provide the name in the format DOMAIN\name.
+* **LoginCredential**: If LoginType is 'SqlLogin' then a PSCredential is needed for the password to the login.
+* **LoginType**: The SQL login type. Valid values are 'SqlLogin', 'WindowsUser' or 'WindowsGroup'.
+* **SQLServer**: (Key) The SQL Server for the login.
+* **SQLInstanceName**: (Key) The SQL instance for the login.
+
+### xSQLServerRole
 * **Name**: (Key) Name of the SQL Login to create
-* **LoginCredential**: PowerShell Credential for the SQL Login to be created
-* **LoginType**: Type of SQL login to create.(SQL, WindowsUser, WindowsGroup)
+* **ServerRole**: Type of SQL role to add.(bulkadmin, dbcreator, diskadmin, processadmin , public, securityadmin, serveradmin , setupadmin, sysadmin)
 * **SQLServer**: SQL Server where login should be created
 * **SQLInstance**: SQL Instance for the login
 
@@ -198,11 +208,11 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **RecoveryModel**: (Required) Recovery Model (Full, Simple, BulkLogged)
 
 ###xSQLServerMaxDop
-* **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
-* **DyamicAlloc**: (key) Flag to indicate if MaxDop is dynamically configured
+* **Ensure**: An enumerated value that describes if Min and Max memory is configured
+* **DyamicAlloc**: Flag to indicate if MaxDop is dynamically configured
 * **MaxDop**: Numeric value to configure MaxDop to
-* **SQLServer**: The SQL Server for the database
-* **SQLInstance**: The SQL instance for the database
+* **SQLServer**: The SQL Server where to set MaxDop
+* **SQLInstance** (Key): The SQL instance where to set MaxDop
 
 ###xSQLServerMemory
 * **Ensure**: An enumerated value that describes if Min and Max memory is configured
@@ -225,24 +235,24 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ###xSQLServerDatabase
 * **Database**: (key) Database to be created or dropped
-* **Ensure**: An enumerated value that describes if Database is to be present or absent.
-* **SQLServer**: The SQL Server for the database
-* **SQLInstance**: The SQL instance for the database 
+* **Ensure**: (Default = 'Present') An enumerated value that describes if Database is to be present or absent.
+* **SQLServer**: (key) The SQL Server for the database
+* **SQLInstance**: (key) The SQL instance for the database 
 
 ###xSQLAOGroupEnsure
-* **Ensure**: (key) An enumerated value that describes if Availability Group is to be present or absent.
-* **AvailabilityGroupName** (key) Name for availability group
-* **AvailabilityGroupNameListener** Listener name for availability group
-* **AvailabilityGroupNameIP** List of IP addresses associated with listener
-* **AvailabilityGroupSubMask** Network subnetmask for listener
-* **AvailabilityGroupPort** Port availability group should listen on
-* **ReadableSecondary** Mode secondaries should operate under (None, ReadOnly, ReadIntent)
-* **AutoBackupPreference** Where backups should be backed up from (Primary,Secondary)
-* **BackupPriority** The percentage weight for backup prority (default 50)
-* **EndPointPort** The TCP port for the SQL AG Endpoint (default 5022)
-* **SQLServer**: The SQL Server for the database
-* **SQLInstance**: The SQL instance for the database
-* **SetupCredential**: (Required) Credential to be used to Grant Permissions on SQL Server
+* **Ensure**: (Key) Determines whether the availability group should be added or removed.
+* **AvailabilityGroupName** (Key) Name for availability group.
+* **AvailabilityGroupNameListener** Listener name for availability group.
+* **AvailabilityGroupNameIP** List of IP addresses associated with listener.
+* **AvailabilityGroupSubMask** Network subnetmask for listener.
+* **AvailabilityGroupPort** Port availability group should listen on.
+* **ReadableSecondary** Mode secondaries should operate under (None, ReadOnly, ReadIntent).
+* **AutoBackupPreference** Where backups should be backed up from (Primary, Secondary).
+* **BackupPriority** The percentage weight for backup prority (default 50).
+* **EndPointPort** The TCP port for the SQL AG Endpoint (default 5022).
+* **SQLServer**: The SQL Server for the database.
+* **SQLInstance**: The SQL instance for the database.
+* **SetupCredential**: (Required) Credential to be used to Grant Permissions on SQL Server, set this to $null to use Windows Authentication. 
 
 ###xSQLServerAOJoin
 * **Ensure**: (key) An enumerated value that describes if Replica is to be present or absent from availability group
@@ -307,11 +317,72 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **Port** The port used for the availability group listener.
 * **DHCP** If DHCP should be used for the availability group listener instead of static IP address.
 
+###xSQLServerReplication
+* **InstanceName**: (Key) SQL Server instance name where replication distribution will be configured.
+* **Ensure**: (Default = 'Present') 'Present' will configure replication, 'Absent' will disable replication.
+* **DistributorMode**: (Required), 'Local' - Instance will be configured as it's own distributor, 'Remote' - Instace will be configure with remote distributor (remote distributor needs to be already configured for distribution).
+* **AdminLinkCredentials**: (Required) - AdminLink password to be used when setting up publisher distributor relationship.
+* **DistributionDBName**: (Default = 'distribution') distribution database name. If DistributionMode='Local' this will be created, if 'Remote' needs to match distribution database on remote distributor. 
+* **RemoteDistributor**: (Required if DistributionMode='Remote') SQL Server network name that will be used as distributor for local instance.
+* **WorkingDirectory**: (Required) Publisher working directory.
+* **UseTrustedConnection**: (Default = $true) Publisher security mode.
+* **UninstallWithForce**: (Default = $true) Force flag for uninstall procedure
+
+###xSQLServerScript
+* **ServerInstance**: (Required) The name of an instance of the Database Engine. For default instances, only specify the computer name. For named instances, use the format ComputerName\\InstanceName.
+* **SetFilePath**: (Key) Path to SQL file that will perform Set action.
+* **GetFilePath**: (Key) Path to SQL file that will perform Get action. SQL Queries returned by this function are returned by the Get-DscConfiguration cmdlet with the GetResult parameter.
+* **TestFilePath**: (Key) Path to SQL file that will perform Test action. Any Script that does not throw an error and returns null is evaluated to true. Invoke-SqlCmd treats SQL Print statements as verbose text, this will not cause a Test to return false. 
+* **Credential**: Specifies the credentials for making a SQL Server Authentication connection to an instance of the Database Engine.
+* **Variable**: Creates a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable.
+
+### xSQLAlias
+ * **Ensure**: Determines whether the alias should be added or removed. Default value is 'Present'
+ * **Name**: (Key) The name of Alias (e.g. svr01\inst01).
+ * **ServerName**: (Key) The SQL Server you are aliasing (the netbios name or FQDN).
+ * **Protocol**: Protocol to use when connecting. Valid values are 'TCP' or 'NP' (Named Pipes). Default value is 'TCP'.
+ * **TCPPort**: The TCP port SQL is listening on. Only used when protocol is set to 'TCP'. Default value is port 1433.
+ * **PipeName**: (Read) Named Pipes path from the Get-TargetResource method.
+
 ## Versions
 
 ### Unreleased
 
+### 2.0.0.0
+* Added resources
+  - xSQLServerReplication
+  - xSQLServerScript
+  - xSQLAlias  
+  - xSQLServerRole
+* Added tests for resources
+  - xSQLServerPermission
+  - xSQLServerEndpointState
+  - xSQLServerEndpointPermission
+  - xSQLServerAvailabilityGroupListener
+  - xSQLServerLogin
+  - xSQLAOGroupEnsure
+  - xSQLAlias
+  - xSQLServerRole
+* Fixes in xSQLServerAvailabilityGroupListener
+  - In one case the Get-method did not report that DHCP was configured. 
+  - Now the resource will throw 'Not supported' when IP is changed between Static and DHCP.
+  - Fixed an issue where sometimes the listener wasn't removed.
+  - Fixed the issue when trying to add a static IP to a listener was ignored.
+* Fix in xSQLServerDatabase
+  - Fixed so dropping a database no longer throws an error
+  - BREAKING CHANGE: Fixed an issue where it was not possible to add the same database to two instances on the same server.
+  - BREAKING CHANGE: The name of the parameter Database has changed. It is now called Name.
+* Fixes in xSQLAOGroupEnsure
+  - Added parameters to New-ListenerADObject to allow usage of a named instance.
+  - pass setup credential correctly
+* Changes to xSQLServerLogin
+   - Fixed an issue when dropping logins.
+   - BREAKING CHANGE: Fixed an issue where it was not possible to add the same login to two instances on the same server.
+* Changes to xSQLServerMaxDop
+   - BREAKING CHANGE: Made SQLInstance parameter a key so that multiple instances on the same server can be configured
+
 ### 1.8.0.0
+
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
 * Added Support for SQL Server 2016
 * xSQLAOGroupEnsure
@@ -332,6 +403,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 		- New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
 
 ### 1.7.0.0
+
 * Resources Added
   - xSQLServerConfiguration
 
@@ -447,5 +519,4 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Examples
 
 Examples for use of this resource can be found with the System Center resources, such as **xSCVMM**, **xSCSMA**, and **xSCOM**.
-
 
