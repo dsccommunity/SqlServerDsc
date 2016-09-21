@@ -1,6 +1,6 @@
 @{
 # Version number of this module.
-ModuleVersion = '1.8.0.0'
+ModuleVersion = '2.0.0.0'
 
 # ID used to uniquely identify this module
 GUID = '74e9ddb5-4cbc-4fa2-a222-2bcfb533fd66'
@@ -47,28 +47,43 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
-* Added Support for SQL Server 2016
-* xSQLAOGroupEnsure
-   - Fixed spelling mistake in AutoBackupPreference property
-   - Added BackupPriority property
-* Added resources
+        ReleaseNotes = '* Added resources
+  - xSQLServerReplication
+  - xSQLServerScript
+  - xSQLAlias  
+  - xSQLServerRole
+* Added tests for resources
   - xSQLServerPermission
   - xSQLServerEndpointState
   - xSQLServerEndpointPermission
   - xSQLServerAvailabilityGroupListener
-* xSQLServerHelper
-  - added functions 
-  - Import-SQLPSModule
-  - Get-SQLPSInstanceName
-  - Get-SQLPSInstance
-  - Get-SQLAlwaysOnEndpoint
-    - modified functions
-      - New-TerminatingError - *added optional parameter "InnerException" to be able to give the user more information in the returned message*
+  - xSQLServerLogin
+  - xSQLAOGroupEnsure
+  - xSQLAlias
+  - xSQLServerRole
+* Fixes in xSQLServerAvailabilityGroupListener
+  - In one case the Get-method did not report that DHCP was configured. 
+  - Now the resource will throw "Not supported" when IP is changed between Static and DHCP.
+  - Fixed an issue where sometimes the listener wasn"t removed.
+  - Fixed the issue when trying to add a static IP to a listener was ignored.
+* Fix in xSQLServerDatabase
+  - Fixed so dropping a database no longer throws an error
+  - BREAKING CHANGE: Fixed an issue where it was not possible to add the same database to two instances on the same server.
+  - BREAKING CHANGE: The name of the parameter Database has changed. It is now called Name.
+* Fixes in xSQLAOGroupEnsure
+  - Added parameters to New-ListenerADObject to allow usage of a named instance.
+  - pass setup credential correctly
+* Changes to xSQLServerLogin
+   - Fixed an issue when dropping logins.
+   - BREAKING CHANGE: Fixed an issue where it was not possible to add the same login to two instances on the same server.
+* Changes to xSQLServerMaxDop
+   - BREAKING CHANGE: Made SQLInstance parameter a key so that multiple instances on the same server can be configured
+
 '
 
     } # End of PSData hashtable
 
 } # End of PrivateData hashtable
 }
+
 
