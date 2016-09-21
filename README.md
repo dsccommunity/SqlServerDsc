@@ -18,6 +18,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerFailoverClusterSetup** installs SQL Server failover cluster instances.
 * **xSQLServerRSConfig** configures SQL Server Reporting Services to use a database engine in another instance.
 * **xSQLServerLogin** resource to manage SQL logins
+* **xSQLServerRole** resource to manage SQL server roles
 * **xSQLServerDatabaseRole** resource to manage SQL database roles
 * **xSQLServerDatabasePermissions** resource to manage SQL database permissions
 * **xSQLServerDatabaseOwner** resource to manage SQL database owners
@@ -174,6 +175,12 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **LoginType**: The SQL login type. Valid values are 'SqlLogin', 'WindowsUser' or 'WindowsGroup'.
 * **SQLServer**: (Key) The SQL Server for the login.
 * **SQLInstanceName**: (Key) The SQL instance for the login.
+
+### xSQLServerRole
+* **Name**: (Key) Name of the SQL Login to create
+* **ServerRole**: Type of SQL role to add.(bulkadmin, dbcreator, diskadmin, processadmin , public, securityadmin, serveradmin , setupadmin, sysadmin)
+* **SQLServer**: SQL Server where login should be created
+* **SQLInstance**: SQL Instance for the login
 
 ### xSQLServerDatabaseRole
 * **Name**: (Key) Name of the SQL Login or the role on the database
@@ -343,7 +350,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * Added resources
   - xSQLServerReplication
   - xSQLServerScript
-  - xSQLAlias	
+  - xSQLAlias  
+  - xSQLServerRole
 * Added tests for resources
   - xSQLServerPermission
   - xSQLServerEndpointState
@@ -352,6 +360,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerLogin
   - xSQLAOGroupEnsure
   - xSQLAlias
+  - xSQLServerRole
 * Fixes in xSQLServerAvailabilityGroupListener
   - In one case the Get-method did not report that DHCP was configured. 
   - Now the resource will throw 'Not supported' when IP is changed between Static and DHCP.

@@ -482,3 +482,139 @@ function Remove-SqlDatabase
         New-VerboseMessage -Message "Failed to deleting the database $Name"
     }    
 }
+
+function Add-SqlServerRole
+{
+    [CmdletBinding()]    
+    param
+    (   
+        [ValidateNotNull()] 
+        [System.Object]
+        $SQL,
+        
+        [ValidateNotNull()] 
+        [System.String]
+        $LoginName,
+
+        [ValidateNotNull()] 
+        [System.String[]]
+        $ServerRole
+
+    )
+    
+    $sqlRole = $SQL.Roles
+    if ($sqlRole)
+    {
+        try
+        {
+            foreach ($currentServerRole in $ServerRole)
+            {
+                New-VerboseMessage -Message "Adding SQL login $LoginName in role $currentServerRole"
+                $sqlRole[$currentServerRole].AddMember($LoginName)
+            }
+        }
+        catch
+        {
+            New-VerboseMessage -Message "Failed adding SQL login $LoginName in role $currentServerRole"
+        }
+    }
+    else
+    {
+        New-VerboseMessage -Message "Failed to getting SQL server roles"
+    }
+}
+
+function Remove-SqlServerRole
+{
+    [CmdletBinding()]    
+    param
+    (   
+        [ValidateNotNull()] 
+        [System.Object]
+        $SQL,
+        
+        [ValidateNotNull()] 
+        [System.String]
+        $LoginName,
+
+        [ValidateNotNull()] 
+        [System.String[]]
+        $ServerRole
+
+    )
+    
+    $sqlRole = $SQL.Roles
+    if ($sqlRole)
+    {
+        try
+        {
+            foreach ($currentServerRole in $ServerRole)
+            {
+                New-VerboseMessage -Message "Deleting SQL login $LoginName in role $currentServerRole"
+                $sqlRole[$currentServerRole].DropMember($LoginName)
+            }
+        }
+        catch
+        {
+            New-VerboseMessage -Message "Failed deleting SQL login $LoginName in role $currentServerRole"
+        }
+    }
+    else
+    {
+        New-VerboseMessage -Message "Failed to getting SQL server roles"
+    }
+}
+
+function Confirm-SqlServerRole
+{
+    [CmdletBinding()]    
+    param
+    (   
+        [ValidateNotNull()] 
+        [System.Object]
+        $SQL,
+        
+        [ValidateNotNull()] 
+        [System.String]
+        $LoginName,
+
+        [ValidateNotNull()] 
+        [System.String[]]
+        $ServerRole
+
+    )
+    
+    $sqlRole = $SQL.Roles
+    if ($sqlRole)
+    {
+        foreach ($currentServerRole in $ServerRole)
+        {
+            if ($sqlRole[$currentServerRole])
+            {
+                $membersInRole = $sqlRole[$currentServerRole].EnumMemberNames()             
+                if ($membersInRole.Contains($Name))
+                {
+                    $confirmServerRole = $true
+                    New-VerboseMessage -Message "$Name is present in SQL role name $currentServerRole"
+                }
+                else
+                {
+                    New-VerboseMessage -Message "$Name is absent in SQL role name $currentServerRole"
+                    $confirmServerRole = $false
+                }
+            }
+            else
+            {
+                New-VerboseMessage -Message "SQL role name $currentServerRole is absent"
+                $confirmServerRole = $false
+            }
+        }
+    }
+    else
+    {
+        New-VerboseMessage -Message "Failed getting SQL roles"
+        $confirmServerRole = $false
+    }
+
+    return $confirmServerRole
+}
