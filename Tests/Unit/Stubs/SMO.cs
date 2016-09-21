@@ -11,7 +11,6 @@ namespace Microsoft.SqlServer.Management.Smo
     // BaseType: Microsoft.SqlServer.Management.Smo.ScriptNameObjectBase
     // Used by: 
     //  MSFT_xSQLServerLogin
-    
     public enum LoginType
     {
         AsymmetricKey = 4,
@@ -22,6 +21,26 @@ namespace Microsoft.SqlServer.Management.Smo
         WindowsGroup = 1,
         WindowsUser = 0,
         Unknown = -1    // Added for verification (mock) purposes, to verify that a login type is passed  
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityReplicaFailoverMode
+    // Used by: 
+    //  MSFT_xSQLAOGroupEnsure.Tests
+    public enum AvailabilityReplicaFailoverMode
+    {
+        Automatic,
+        Manual,
+        Unknown
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityReplicaAvailabilityMode
+    // Used by: 
+    //  MSFT_xSQLAOGroupEnsure.Tests
+    public enum AvailabilityReplicaAvailabilityMode
+    {
+        AsynchronousCommit,
+        SynchronousCommit,
+        Unknown
     }
 
     #endregion Public Enums

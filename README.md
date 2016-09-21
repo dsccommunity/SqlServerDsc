@@ -40,6 +40,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xSQLServerAvailabilityGroupListener** Create or remove an availability group listener.
 * **xSQLServerReplication** resource to manage SQL Replication distribution and publishing.
 * **xSQLServerScript** resource to extend DSCs Get/Set/Test functionality to T-SQL
+* **xSQLAlias** resource to manage SQL Server client Aliases
 
 ### xSQLServerSetup
 
@@ -239,19 +240,19 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **SQLInstance**: (key) The SQL instance for the database 
 
 ###xSQLAOGroupEnsure
-* **Ensure**: (key) An enumerated value that describes if Availability Group is to be present or absent.
-* **AvailabilityGroupName** (key) Name for availability group
-* **AvailabilityGroupNameListener** Listener name for availability group
-* **AvailabilityGroupNameIP** List of IP addresses associated with listener
-* **AvailabilityGroupSubMask** Network subnetmask for listener
-* **AvailabilityGroupPort** Port availability group should listen on
-* **ReadableSecondary** Mode secondaries should operate under (None, ReadOnly, ReadIntent)
-* **AutoBackupPreference** Where backups should be backed up from (Primary,Secondary)
-* **BackupPriority** The percentage weight for backup prority (default 50)
-* **EndPointPort** The TCP port for the SQL AG Endpoint (default 5022)
-* **SQLServer**: The SQL Server for the database
-* **SQLInstance**: The SQL instance for the database
-* **SetupCredential**: (Required) Credential to be used to Grant Permissions on SQL Server
+* **Ensure**: (Key) Determines whether the availability group should be added or removed.
+* **AvailabilityGroupName** (Key) Name for availability group.
+* **AvailabilityGroupNameListener** Listener name for availability group.
+* **AvailabilityGroupNameIP** List of IP addresses associated with listener.
+* **AvailabilityGroupSubMask** Network subnetmask for listener.
+* **AvailabilityGroupPort** Port availability group should listen on.
+* **ReadableSecondary** Mode secondaries should operate under (None, ReadOnly, ReadIntent).
+* **AutoBackupPreference** Where backups should be backed up from (Primary, Secondary).
+* **BackupPriority** The percentage weight for backup prority (default 50).
+* **EndPointPort** The TCP port for the SQL AG Endpoint (default 5022).
+* **SQLServer**: The SQL Server for the database.
+* **SQLInstance**: The SQL instance for the database.
+* **SetupCredential**: (Required) Credential to be used to Grant Permissions on SQL Server, set this to $null to use Windows Authentication. 
 
 ###xSQLServerAOJoin
 * **Ensure**: (key) An enumerated value that describes if Replica is to be present or absent from availability group
@@ -335,12 +336,21 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **Credential**: Specifies the credentials for making a SQL Server Authentication connection to an instance of the Database Engine.
 * **Variable**: Creates a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable.
 
+### xSQLAlias
+ * **Ensure**: Determines whether the alias should be added or removed. Default value is 'Present'
+ * **Name**: (Key) The name of Alias (e.g. svr01\inst01).
+ * **ServerName**: (Key) The SQL Server you are aliasing (the netbios name or FQDN).
+ * **Protocol**: Protocol to use when connecting. Valid values are 'TCP' or 'NP' (Named Pipes). Default value is 'TCP'.
+ * **TCPPort**: The TCP port SQL is listening on. Only used when protocol is set to 'TCP'. Default value is port 1433.
+ * **PipeName**: (Read) Named Pipes path from the Get-TargetResource method.
+
 ## Versions
 
 ### Unreleased
 * Added resources
   - xSQLServerReplication
   - xSQLServerScript
+  - xSQLAlias  
   - xSQLServerRole
 * Added tests for resources
   - xSQLServerPermission
@@ -348,6 +358,9 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerEndpointPermission
   - xSQLServerAvailabilityGroupListener
   - xSQLServerLogin
+  - xSQLAOGroupEnsure
+  - xSQLAlias
+  - xSQLServerRole
 * Fixes in xSQLServerAvailabilityGroupListener
   - In one case the Get-method did not report that DHCP was configured. 
   - Now the resource will throw 'Not supported' when IP is changed between Static and DHCP.
@@ -359,6 +372,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - BREAKING CHANGE: The name of the parameter Database has changed. It is now called Name.
 * Fixes in xSQLAOGroupEnsure
   - Added parameters to New-ListenerADObject to allow usage of a named instance.
+  - pass setup credential correctly
 * Changes to xSQLServerLogin
    - Fixed an issue when dropping logins.
    - BREAKING CHANGE: Fixed an issue where it was not possible to add the same login to two instances on the same server.
@@ -378,13 +392,13 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - xSQLServerEndpointPermission
   - xSQLServerAvailabilityGroupListener
 * xSQLServerHelper
-    - added functions 
-        - Import-SQLPSModule
-        - Get-SQLPSInstanceName
-        - Get-SQLPSInstance
-        - Get-SQLAlwaysOnEndpoint
-    - modified functions
-        - New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
+	- added functions 
+		- Import-SQLPSModule
+		- Get-SQLPSInstanceName
+		- Get-SQLPSInstance
+		- Get-SQLAlwaysOnEndpoint
+	- modified functions
+		- New-TerminatingError - *added optional parameter `InnerException` to be able to give the user more information in the returned message*
 
 ### 1.7.0.0
 
