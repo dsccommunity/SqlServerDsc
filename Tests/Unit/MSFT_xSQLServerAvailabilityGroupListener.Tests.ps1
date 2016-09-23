@@ -1,5 +1,5 @@
 $script:DSCModuleName      = 'xSQLServer'
-$script:DSCResourceName    = 'xSQLServerAvailabilityGroupListener'
+$script:DSCResourceName    = 'MSFT_xSQLServerAvailabilityGroupListener'
 
 #region HEADER
 

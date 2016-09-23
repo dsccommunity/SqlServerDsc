@@ -1,6 +1,6 @@
 
 [ClassVersion("1.0.0.0"), FriendlyName("xSQLServerEndpointState")]
-class xSQLServerEndpointState : OMI_BaseResource
+class MSFT_xSQLServerEndpointState : OMI_BaseResource
 {
     [Key, Description("The SQL Server instance name.")] String InstanceName;
     [Required, Description("The host name or FQDN.")] String NodeName;
