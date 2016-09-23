@@ -1,5 +1,5 @@
 $script:DSCModuleName      = 'xSQLServer' 
-$script:DSCResourceName    = 'MSFT_xSqlAlias' 
+$script:DSCResourceName    = 'MSFT_xSQLAlias' 
 
 #region HEADER
 

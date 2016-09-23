@@ -2,7 +2,7 @@
 param ()
 
 $script:DSCModuleName   = 'xSQLServer'
-$script:DSCResourceName = 'xSQLServerReplication'
+$script:DSCResourceName = 'MSFT_xSQLServerReplication'
 
 #region HEADER
 # Unit Test Template Version: 1.1.0
