@@ -618,3 +618,89 @@ function Confirm-SqlServerRole
 
     return $confirmServerRole
 }
+
+function Get-SqlDatabaseOwner
+{
+    [CmdletBinding()]    
+    param
+    (   
+        [ValidateNotNull()] 
+        [System.Object]
+        $SQL,
+        
+        [ValidateNotNull()] 
+        [System.String]
+        $Name,
+
+        [ValidateNotNull()] 
+        [System.String]
+        $Database
+    )
+    
+    Write-Verbose 'Getting SQL Databases'
+    $sqlDatabase = $sql.Databases
+    if ($sqlDatabase)
+    {
+        if ($sqlDatabase[$Database])
+        {
+            $Name = $sqlDatabase[$Database].Owner
+        }
+        else
+        {
+            Write-Verbose "SQL Database name $Database does not exist"
+            $null = $Name
+        }
+    }
+    else
+    {
+        Write-Verbose 'Failed getting SQL databases'
+        $null = $Name
+    }
+
+    $Name
+}
+
+function Set-SqlDatabaseOwner
+{
+    [CmdletBinding()]    
+    param
+    (   
+        [ValidateNotNull()] 
+        [System.Object]
+        $SQL,
+        
+        [ValidateNotNull()] 
+        [System.String]
+        $Name,
+
+        [ValidateNotNull()] 
+        [System.String]
+        $Database
+    )
+    
+    Write-Verbose 'Getting SQL Databases'
+    $sqlDatabase = $sql.Databases
+    if ($sqlDatabase)
+    {
+        if ($sqlDatabase[$Database])
+        {
+            try
+            {
+                $sqlDatabase[$Database].SetOwner($Name)
+                New-VerboseMessage -Message "Owner of SQL Database name $Database is now $Name"
+            }
+            catch
+            {
+                throw [Exception] ("Failed setting owner $Name for SQL Database $Database")
+            }
+        }
+        else
+        {
+            Write-Verbose "SQL Database name $Database does not exist"
+        }
+    }
+    else
+    {
+        Write-Verbose 'Failed getting SQL databases'
+    }
+}
