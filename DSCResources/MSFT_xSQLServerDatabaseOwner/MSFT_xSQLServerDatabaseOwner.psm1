@@ -33,7 +33,7 @@ function Get-TargetResource
     if ($sql)
     {
         # Getting Owner of Database        
-        $getSqlDatabaseOwner = Get-SqlDatabaseOwner -SQL $sql -Name $Name -Database $Database
+        $getSqlDatabaseOwner = Get-SqlDatabaseOwner -SQL $sql -Database $Database
 
         if ($getSqlDatabaseOwner)
         {

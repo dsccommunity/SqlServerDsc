@@ -65,10 +65,28 @@ try
                     $result.Name | Should Be $null
                 }
 
-                It 'Should return the same values as passed as parameters' {
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.Database | Should Be $testParameters.Database
+                It "Should return false from the test method" {
+                    Test-TargetResource @testParameters | Should Be $false
+                }
+
+                It "Should throw when the set method is called" {
+                    { Set-TargetResource @testParameters } | Should Throw
+                }
+            }
+
+            Context 'When the specified login does not exist' {
+                $testParameters = $defaultParameters
+                $testParameters += @{
+                    Database = 'UnknownDatabase'
+                }
+
+                Mock -CommandName Get-SqlDatabaseOwner -MockWith { return $null }
+                Mock -CommandName Set-SqlDatabaseOwner -MockWith { return exception }
+
+                $result = Get-TargetResource @testParameters
+
+                It 'Should return the name as null from the get method' {
+                    $result.Name | Should Be $null
                 }
 
                 It "Should return false from the test method" {
@@ -95,12 +113,6 @@ try
                     $result.Name | Should Be $null
                 }
 
-                It 'Should return the same values as passed as parameters' {
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.Database | Should Be $testParameters.Database
-                }
-
                 It "Should return false from the test method" {
                     Test-TargetResource @testParameters | Should Be $false
                 }
@@ -123,12 +135,6 @@ try
 
                 It 'Should return the name of the owner from the get method' {
                     $result.Name | Should Be $testParameters.Name
-                }
-
-                It 'Should return the same values as passed as parameters' {
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.Database | Should Be $testParameters.Database
                 }
 
                 It "Should return true from the test method" {

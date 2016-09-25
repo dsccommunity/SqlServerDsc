@@ -627,10 +627,6 @@ function Get-SqlDatabaseOwner
         [ValidateNotNull()] 
         [System.Object]
         $SQL,
-        
-        [ValidateNotNull()] 
-        [System.String]
-        $Name,
 
         [ValidateNotNull()] 
         [System.String]
@@ -680,18 +676,27 @@ function Set-SqlDatabaseOwner
     
     Write-Verbose 'Getting SQL Databases'
     $sqlDatabase = $sql.Databases
-    if ($sqlDatabase)
+    $sqlLogins = $sql.Logins
+
+    if ($sqlDatabase -and $sqlLogins)
     {
         if ($sqlDatabase[$Database])
         {
-            try
+            if ($sqlLogins[$Name])
             {
-                $sqlDatabase[$Database].SetOwner($Name)
-                New-VerboseMessage -Message "Owner of SQL Database name $Database is now $Name"
+                try
+                {
+                    $sqlDatabase[$Database].SetOwner($Name)
+                    New-VerboseMessage -Message "Owner of SQL Database name $Database is now $Name"
+                }
+                catch
+                {
+                    throw [Exception] ("Failed setting owner $Name for SQL Database $Database")
+                }
             }
-            catch
+            else
             {
-                throw [Exception] ("Failed setting owner $Name for SQL Database $Database")
+                Write-Verbose "SQL Login name $Name does not exist"
             }
         }
         else
@@ -701,6 +706,6 @@ function Set-SqlDatabaseOwner
     }
     else
     {
-        Write-Verbose 'Failed getting SQL databases'
+        Write-Verbose 'Failed getting SQL databases and logins'
     }
 }
