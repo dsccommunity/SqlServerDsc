@@ -634,7 +634,7 @@ function Get-SqlDatabaseOwner
     )
     
     Write-Verbose 'Getting SQL Databases'
-    $sqlDatabase = $sql.Databases
+    $sqlDatabase = $SQL.Databases
     if ($sqlDatabase)
     {
         if ($sqlDatabase[$Database])
@@ -675,8 +675,8 @@ function Set-SqlDatabaseOwner
     )
     
     Write-Verbose 'Getting SQL Databases'
-    $sqlDatabase = $sql.Databases
-    $sqlLogins = $sql.Logins
+    $sqlDatabase = $SQL.Databases
+    $sqlLogins = $SQL.Logins
 
     if ($sqlDatabase -and $sqlLogins)
     {
