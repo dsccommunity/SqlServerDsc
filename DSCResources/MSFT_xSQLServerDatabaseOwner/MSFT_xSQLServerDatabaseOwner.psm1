@@ -115,11 +115,11 @@ function Test-TargetResource
     )
 
     Write-Verbose -Message "Testing owner $Name of database $Database"
+     
     $currentValues = Get-TargetResource @PSBoundParameters
-    
-    $result = ($currentValues.Database -eq $Database) -and ($currentValues.Name -eq $Name)
-    $result
+    return Test-SQLDscParameterState -CurrentValues $CurrentValues `
+                                     -DesiredValues $PSBoundParameters `
+                                     -ValuesToCheck @("Name", "Database")
 }
-
 
 Export-ModuleMember -Function *-TargetResource
