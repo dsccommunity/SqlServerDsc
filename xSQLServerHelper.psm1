@@ -172,7 +172,7 @@ function Test-SQLDscParameterState
 
     if (($DesiredValues.GetType().Name -eq "CimInstance") -and ($null -eq $ValuesToCheck)) 
     {
-        throw ("If 'DesiredValues' is a Hashtable then property 'ValuesToCheck' must contain " + `
+        throw ("If 'DesiredValues' is a CimInstance then property 'ValuesToCheck' must contain " + `
                "a value")
     }
 
@@ -791,7 +791,7 @@ function Get-SqlDatabaseOwner
         $Database
     )
     
-    Write-Verbose 'Getting SQL Databases'
+    Write-Verbose -Message 'Getting SQL Databases'
     $sqlDatabase = $SQL.Databases
     if ($sqlDatabase)
     {
@@ -801,14 +801,12 @@ function Get-SqlDatabaseOwner
         }
         else
         {
-            Write-Verbose "SQL Database name $Database does not exist"
-            $null = $Name
+            Write-Error -Message "SQL Database name $Database does not exist" -Category InvalidData
         }
     }
     else
     {
-        Write-Verbose 'Failed getting SQL databases'
-        $null = $Name
+        Write-Verbose -Message 'Failed getting SQL databases'
     }
 
     $Name
@@ -832,7 +830,7 @@ function Set-SqlDatabaseOwner
         $Database
     )
     
-    Write-Verbose 'Getting SQL Databases'
+    Write-Verbose -Message 'Getting SQL Databases'
     $sqlDatabase = $SQL.Databases
     $sqlLogins = $SQL.Logins
 
@@ -849,21 +847,21 @@ function Set-SqlDatabaseOwner
                 }
                 catch
                 {
-                    throw [Exception] ("Failed setting owner $Name for SQL Database $Database")
+                    throw New-TerminatingError -ErrorType FailedToSetOwnerDatabase -ErrorCategory InvalidOperation -InnerException $_.Exception
                 }
             }
             else
             {
-                Write-Verbose "SQL Login name $Name does not exist"
+                Write-Error -Message "SQL Login name $Name does not exist" -Category InvalidData
             }
         }
         else
         {
-            Write-Verbose "SQL Database name $Database does not exist"
+            Write-Error -Message "SQL Database name $Database does not exist" -Category InvalidData
         }
     }
     else
     {
-        Write-Verbose 'Failed getting SQL databases and logins'
+        Write-Verbose -Message 'Failed getting SQL databases and logins'
     }
 }
