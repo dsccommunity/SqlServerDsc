@@ -4,7 +4,7 @@
 #>
 
 
-$Script:DSCModuleName      = 'MSFT_xSQLServerScript' 
+$Script:DSCModuleName      = 'xSQLServer' 
 $Script:DSCResourceName    = 'MSFT_xSQLServerScript' 
 
 #region HEADER
@@ -41,12 +41,12 @@ namespace Microsoft.SqlServer.Management.PowerShell
 try
 {
     #region Pester Test Initialization
-        Function script:Invoke-SqlCmd {}
+        Function Invoke-SqlScript {}
     #endregion Pester Test Initialization
 
     #region Test Sql script throws an error
     Describe 'Test Sql script throws an error' {
-        Mock -CommandName Import-Module -MockWith {}        
+        Mock -CommandName Import-Module -MockWith {} -ModuleName 'xSQLServerHelper'
 
         $testParameters = @{
             ServerInstance = $env:COMPUTERNAME 
@@ -56,7 +56,7 @@ try
         }
 
         It 'Get method returns successfully' {         
-            Mock -CommandName Invoke-SqlCmd -MockWith { "" }
+            Mock -CommandName Invoke-SqlScript -MockWith { "" } -ModuleName $script:DSCResourceName
 
             $result = Get-TargetResource @testParameters
 
@@ -68,25 +68,25 @@ try
         }
 
         It 'Test method returns false' {
-            Mock -CommandName Invoke-SqlCmd -MockWith { throw New-Object Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException}
+            Mock -CommandName Invoke-SqlScript -MockWith { throw New-Object Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException} -ModuleName $script:DSCResourceName
 
             Test-TargetResource @testParameters | should be $false
         }
 
         It 'Set method calls Invoke-SqlCmd' {
-            Mock -CommandName Invoke-SqlCmd -MockWith { "" } -Verifiable
+            Mock -CommandName Invoke-SqlScript -MockWith { "" } -ModuleName $script:DSCResourceName
 
             $result = Set-TargetResource @testParameters
 
-            Assert-MockCalled -CommandName Invoke-SqlCmd -Times 1
+            Assert-MockCalled -CommandName Invoke-SqlScript -Times 3 -Exactly -ModuleName $script:DSCResourceName
         }
     }
     #endregion Test Sql script throws an error
 
     #region Test Sql script returns null
     Describe 'Test Sql script returns null' {
-        Mock -CommandName Import-Module -MockWith {}        
-        Mock -CommandName Invoke-SqlCmd -MockWith { $null }
+        Mock -CommandName Import-Module -MockWith {} -ModuleName 'xSQLServerHelper'
+        Mock -CommandName Invoke-SqlScript -MockWith { $null } -ModuleName $script:DSCResourceName
 
         $testParameters = @{
             ServerInstance = $env:COMPUTERNAME 
@@ -113,7 +113,7 @@ try
 
     #region Get SQl script throws and error
     Describe 'Get SQl script throws and error' {
-        Mock -CommandName Import-Module -MockWith {}
+        Mock -CommandName Import-Module -MockWith {} -ModuleName 'xSQLServerHelper'
 
         $testParameters = @{
             ServerInstance = $env:COMPUTERNAME 
@@ -123,15 +123,13 @@ try
         }
 
         It 'Get throws when get sql script throws' {                     
-            $throwMessage = "Failed to run SQL Script"
+            Mock -CommandName Invoke-SqlScript -MockWith { Throw "Failed to run SQL Script" } -ModuleName $script:DSCResourceName
 
-            Mock -CommandName Invoke-SqlCmd -MockWith { Throw $throwMessage }
-
-            { Get-TargetResource @testParameters } | should throw $throwMessage
+            { Get-TargetResource @testParameters } | should throw "Failed to run SQL Script"
         }
 
         It 'Test method returns true' {
-            Mock -CommandName Invoke-SqlCmd -MockWith { $null }
+            Mock -CommandName Invoke-SqlScript -MockWith { $null } -ModuleName $script:DSCResourceName
 
             Test-TargetResource @testParameters | should be $true
         }
@@ -140,8 +138,8 @@ try
 
     #region Set-TargetResource throws when Set Sql script throws
     Describe 'Set-TargetResource throws when Set Sql script throws' {
-        Mock -CommandName Import-Module -MockWith {}       
-        Mock -CommandName Invoke-SqlCmd -MockWith { $null }
+        Mock -CommandName Import-Module -MockWith {} -ModuleName 'xSQLServerHelper'
+        Mock -CommandName Invoke-SqlScript -MockWith { $null } -ModuleName $script:DSCResourceName
 
         $testParameters = @{
             ServerInstance = $env:COMPUTERNAME 
@@ -165,20 +163,18 @@ try
         }
 
         It 'Set method throws' {
-            $throwMessage = "Failed to execute set Sql script"
+            Mock -CommandName Invoke-SqlScript -MockWith { throw "Failed to execute set Sql script" } -ModuleName $script:DSCResourceName
 
-            Mock -CommandName Invoke-SqlCmd -MockWith { throw $throwMessage }
-
-            { Set-TargetResource @testParameters } | should throw $throwMessage
+            { Set-TargetResource @testParameters } | should throw "Failed to execute set Sql script"
         }
     }
     #endregion
 
     #region Failed to import SQLPS module
     Describe 'Failed to import SQLPS module' {
-        $throwMessage = "Failed to import module SQLPS"
+        $throwMessage = "Failed to import SQLPS module. InnerException: Failed to import module SQLPS"
 
-        Mock -CommandName Import-Module -MockWith { throw $throwMessage }        
+        Mock -CommandName Import-Module -MockWith { throw "Failed to import module SQLPS" } -ModuleName 'xSQLServerHelper'
 
         $testParameters = @{
             ServerInstance = $env:COMPUTERNAME 
