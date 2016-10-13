@@ -142,12 +142,11 @@ try
         } -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is not in the desired state' {
-
             It 'Should return the state as false when desired login is not the database owner' {
-            $testParameters = $defaultParameters
-            $testParameters += @{
-                Database = 'AdventureWorks'
-                Name = 'CONTOSO\SqlServiceAcct'
+                $testParameters = $defaultParameters
+                $testParameters += @{
+                    Database = 'AdventureWorks'
+                    Name = 'CONTOSO\SqlServiceAcct'
                 }       
 
                 Mock -CommandName Get-SqlDatabaseOwner -MockWith { 
@@ -158,7 +157,7 @@ try
                 $result | Should Be $false
 
                 Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-                Assert-MockCalled Get-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+                Assert-MockCalled Get-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
             }
         }
 
@@ -178,7 +177,7 @@ try
                 $result | Should Be $true
 
                 Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-                Assert-MockCalled Get-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+                Assert-MockCalled Get-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
             }
         }
 
@@ -202,33 +201,24 @@ try
                 Name = 'CONTOSO\SqlServiceAcct'
             }
 
-            It 'Should throw an error when desired database does not exist' {
-                Mock -CommandName Set-SqlDatabaseOwner -MockWith {
-                    return Throw
-                } -ModuleName $script:DSCResourceName -Verifiable
-                
-                { Set-TargetResource @testParameters } | Should Throw
-                
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-                Assert-MockCalled Set-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-            }
-
-            It 'Should throw an error when desired login name does not exist' {
-                Mock -CommandName Set-SqlDatabaseOwner -MockWith {
-                    return Throw
-                } -ModuleName $script:DSCResourceName -Verifiable
-                
-                { Set-TargetResource @testParameters } | Should Throw
-                
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-                Assert-MockCalled Set-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-            }
-
             It 'Should call the function Set-SqlDatabaseOwner when desired login is not the database owner' {
                 Mock -CommandName Set-SqlDatabaseOwner -MockWith { } -ModuleName $script:DSCResourceName -Verifiable
                 
                 Set-TargetResource @testParameters
                
+                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
+                Assert-MockCalled Set-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
+            }
+            
+            $testParameters.Database = 'UnknownDatabase'
+
+            It 'Should throw an error when desired database does not exist' {
+                Mock -CommandName Set-SqlDatabaseOwner -MockWith {
+                    return Throw
+                } -ModuleName $script:DSCResourceName -Verifiable
+                
+                { Set-TargetResource @testParameters } | Should Throw "Failed to setting the owner of database UnknownDatabase"
+                
                 Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
                 Assert-MockCalled Set-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
             }
@@ -241,28 +231,6 @@ try
                 Name = 'CONTOSO\SqlServiceAcct'
             }
 
-            It 'Should throw an error when desired database does not exist' {
-                Mock -CommandName Set-SqlDatabaseOwner -MockWith {
-                    return Throw
-                } -ModuleName $script:DSCResourceName -Verifiable
-                
-                { Set-TargetResource @testParameters } | Should Throw
-                
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-                Assert-MockCalled Set-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-            }
-
-            It 'Should throw an error when desired login name does not exist' {
-                Mock -CommandName Set-SqlDatabaseOwner -MockWith {
-                    return Throw
-                } -ModuleName $script:DSCResourceName -Verifiable
-                
-                { Set-TargetResource @testParameters } | Should Throw
-                
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-                Assert-MockCalled Set-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-            }
-
             It 'Should not call the function Set-SqlDatabaseOwner when desired login is the database owner' {
                 Mock -CommandName Get-SqlDatabaseOwner -MockWith { 
                     'CONTOSO\SqlServiceAcct' 
@@ -273,6 +241,19 @@ try
                 Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
                 Assert-MockCalled Get-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
                 Assert-MockCalled Set-SqlDatabaseOwner -Exactly -Times 0 -ModuleName $script:DSCResourceName -Scope It
+            }
+            
+            $testParameters.Database = 'UnknownDatabase'
+
+            It 'Should throw an error when desired database does not exist' {
+                Mock -CommandName Set-SqlDatabaseOwner -MockWith {
+                    return Throw
+                } -ModuleName $script:DSCResourceName -Verifiable
+                
+                { Set-TargetResource @testParameters } | Should Throw "Failed to setting the owner of database UnknownDatabase"
+                
+                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
+                Assert-MockCalled Set-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
             }
         }
 

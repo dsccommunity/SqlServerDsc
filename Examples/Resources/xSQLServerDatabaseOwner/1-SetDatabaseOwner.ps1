@@ -6,12 +6,14 @@
 
     Configuration Example 
     {
-        param(
+        param
+        (
             [Parameter(Mandatory = $true)]
-            [PSCredential]
+            [System.Management.Automation.PSCredential]
+            [System.Management.Automation.Credential()]
             $SysAdminAccount
         )
-        
+
         Import-DscResource -ModuleName xSqlServer
 
         node localhost 

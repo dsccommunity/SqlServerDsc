@@ -147,15 +147,15 @@ function Test-SQLDscParameterState
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true, Position=1)]  
+        [Parameter(Mandatory = $true)]  
         [HashTable]
         $CurrentValues,
         
-        [parameter(Mandatory = $true, Position=2)]  
+        [Parameter(Mandatory = $true)]  
         [Object]
         $DesiredValues,
 
-        [parameter(Mandatory = $false, Position=3)] 
+        [Parameter(Mandatory = $false)] 
         [Array]
         $ValuesToCheck
     )
@@ -241,47 +241,32 @@ function Test-SQLDscParameterState
                         switch ($desiredType.Name) 
                         {
                             "String" {
-                                if ([string]::IsNullOrEmpty($CurrentValues.$fieldName) `
-                                -and [string]::IsNullOrEmpty($DesiredValues.$fieldName)) 
-                                {} 
-                                else 
+                                if (-not [String]::IsNullOrEmpty($CurrentValues.$fieldName) -or `
+                                    -not [String]::IsNullOrEmpty($DesiredValues.$fieldName))
                                 {
-                                    Write-Verbose -Message ("String value for property " + `
-                                                            "$fieldName does not match. " + `
-                                                            "Current state is " + `
-                                                            "'$($CurrentValues.$fieldName)' " + `
-                                                            "and desired state is " + `
-                                                            "'$($DesiredValues.$fieldName)'")
+                                    Write-Verbose -Message ("String value for property $fieldName does not match. " + `
+                                                            "Current state is '$($CurrentValues.$fieldName)' " + `
+                                                            "and Desired state is '$($DesiredValues.$fieldName)'")
                                     $returnValue = $false
                                 }
                             }
                             "Int32" {
-                                if (($DesiredValues.$fieldName -eq 0) `
-                                -and ($null -eq $CurrentValues.$fieldName)) 
-                                {} 
-                                else 
-                                {
-                                    Write-Verbose -Message ("Int32 value for property " + `
-                                                            "$fieldName does not match. " + `
-                                                            "Current state is " + `
-                                                            "'$($CurrentValues.$fieldName)' " + `
-                                                            "and desired state is " + `
-                                                            "'$($DesiredValues.$fieldName)'")
+                                if (-not ($DesiredValues.$fieldName -eq 0) -or `
+                                    -not ($null -eq $CurrentValues.$fieldName))
+                                { 
+                                    Write-Verbose -Message ("Int32 value for property " + "$fieldName does not match. " + `
+                                                            "Current state is " + "'$($CurrentValues.$fieldName)' " + `
+                                                            "and desired state is " + "'$($DesiredValues.$fieldName)'")
                                     $returnValue = $false
                                 }
                             }
                             "Int16" {
-                                if (($DesiredValues.$fieldName -eq 0) `
-                                -and ($null -eq $CurrentValues.$fieldName)) 
-                                {} 
-                                else 
-                                {
-                                    Write-Verbose -Message ("Int16 value for property " + `
-                                                            "$fieldName does not match. " + `
-                                                            "Current state is " + `
-                                                            "'$($CurrentValues.$fieldName)' " + `
-                                                            "and desired state is " + `
-                                                            "'$($DesiredValues.$fieldName)'")
+                                if (-not ($DesiredValues.$fieldName -eq 0) -or `
+                                    -not ($null -eq $CurrentValues.$fieldName))
+                                { 
+                                    Write-Verbose -Message ("Int32 value for property " + "$fieldName does not match. " + `
+                                                            "Current state is " + "'$($CurrentValues.$fieldName)' " + `
+                                                            "and desired state is " + "'$($DesiredValues.$fieldName)'")
                                     $returnValue = $false
                                 }
                             }
