@@ -242,19 +242,6 @@ try
                 Assert-MockCalled Get-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
                 Assert-MockCalled Set-SqlDatabaseOwner -Exactly -Times 0 -ModuleName $script:DSCResourceName -Scope It
             }
-            
-            $testParameters.Database = 'UnknownDatabase'
-
-            It 'Should throw an error when desired database does not exist' {
-                Mock -CommandName Set-SqlDatabaseOwner -MockWith {
-                    return Throw
-                } -ModuleName $script:DSCResourceName -Verifiable
-                
-                { Set-TargetResource @testParameters } | Should Throw "Failed to setting the owner of database UnknownDatabase"
-                
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-                Assert-MockCalled Set-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-            }
         }
 
         Assert-VerifiableMocks
