@@ -142,6 +142,25 @@ function New-VerboseMessage
 
 }
 
+<#
+.SYNOPSIS
+
+This method is used to compare current and desired values for any DSC resource
+
+.PARAMETER CurrentValues
+
+This is hashtable of the current values that are applied to the resource
+
+.PARAMETER DesiredValues 
+
+This is a PSBoundParametersDictionary of the desired values for the resource
+
+.PARAMETER ValuesToCheck
+
+This is a list of which properties in the desired values list should be checkked.
+If this is empty then all values in DesiredValues are checked.
+
+#>
 function Test-SQLDscParameterState 
 {
     [CmdletBinding()]
@@ -762,6 +781,20 @@ function Confirm-SqlServerRole
     return $confirmServerRole
 }
 
+<#
+.SYNOPSIS
+
+This cmdlet is used to return the owner of a SQL database
+
+.PARAMETER SQL
+
+This is an object of the SQL server that contains the result of Connect-SQL
+
+.PARAMETER Database
+
+This is the SQL database that will be checking
+
+#>
 function Get-SqlDatabaseOwner
 {
     [CmdletBinding()]    
@@ -797,6 +830,24 @@ function Get-SqlDatabaseOwner
     $Name
 }
 
+<#
+.SYNOPSIS
+
+This cmdlet is used to configure the owner of a SQL database
+
+.PARAMETER SQL
+
+This is an object of the SQL server that contains the result of Connect-SQL
+
+.PARAMETER Name 
+
+This is the name of the desired owner for the SQL database
+
+.PARAMETER Database
+
+This is the SQL database that will be setting
+
+#>
 function Set-SqlDatabaseOwner
 {
     [CmdletBinding()]    
