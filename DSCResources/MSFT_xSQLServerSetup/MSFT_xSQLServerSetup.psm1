@@ -191,9 +191,10 @@ function Get-TargetResource
             Write-Verbose "Replication feature detected"
             $Features += "REPLICATION,"
         }
+        $FeaturesVersion = $SqlVersion + "0"
         Write-Verbose "Detecting Client Connectivity Tools feature"
-        Write-Verbose "Reading registry key HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\120\Tools\Setup\Client_Components_Full"
-        $isCONNInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\120\Tools\Setup\Client_Components_Full").FeatureList
+        Write-Verbose "Reading registry key HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\$FeaturesVersion\Tools\Setup\Client_Components_Full"
+        $isCONNInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$FeaturesVersion\Tools\Setup\Client_Components_Full").FeatureList
         Write-Verbose "SQL_Client_Connectivity_Tools = $isCONNInstalled"
         if ($isCONNInstalled -like '*Connectivity_FNS=3*') { }
         {
@@ -201,8 +202,8 @@ function Get-TargetResource
             $Features += "CONN,"
         }
         Write-Verbose "Detecting Client Connectivity Backwards Compatibility Tools feature"
-        Write-Verbose "Reading registry key HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\120\Tools\Setup\Client_Components_Full"
-        $isBCInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\120\Tools\Setup\Client_Components_Full").FeatureList
+        Write-Verbose "Reading registry key HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\$FeaturesVersion\Tools\Setup\Client_Components_Full"
+        $isBCInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$FeaturesVersion\Tools\Setup\Client_Components_Full").FeatureList
         Write-Verbose "SQL_Client_Connectivity_Tools_Backwards_Compatibility = $isBCInstalled"
         if ($isBCInstalled -like '*Tools_Legacy_FNS=3*') { }
         {
