@@ -157,7 +157,7 @@ This is a PSBoundParametersDictionary of the desired values for the resource
 
 .PARAMETER ValuesToCheck
 
-This is a list of which properties in the desired values list should be checkked.
+This is a list of which properties in the desired values list should be checked.
 If this is empty then all values in DesiredValues are checked.
 
 #>
@@ -819,11 +819,13 @@ function Get-SqlDatabaseOwner
         }
         else
         {
-            Write-Error -Message "SQL Database name $Database does not exist" -Category InvalidData
+            $null = $Name
+            Throw "SQL Database name $Database does not exist"
         }
     }
     else
     {
+        $null = $Name
         Write-Verbose -Message 'Failed getting SQL databases'
     }
 
