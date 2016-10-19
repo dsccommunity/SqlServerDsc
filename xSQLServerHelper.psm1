@@ -819,13 +819,13 @@ function Get-SqlDatabaseOwner
         }
         else
         {
-            $null = $Name
-            Throw "SQL Database name $Database does not exist"
+            throw New-TerminatingError -ErrorType FailedToGetOwnerDatabase `
+                                       -FormatArgs @($Database) `
+                                       -ErrorCategory InvalidOperation
         }
     }
     else
     {
-        $null = $Name
         Write-Verbose -Message 'Failed getting SQL databases'
     }
 
