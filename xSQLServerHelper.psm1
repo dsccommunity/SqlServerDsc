@@ -128,7 +128,6 @@ function New-TerminatingError
     return $errorRecord
 }
 
-
 function New-VerboseMessage
 {
     [CmdletBinding()]
@@ -141,6 +140,169 @@ function New-VerboseMessage
     )
     Write-Verbose -Message ((Get-Date -format yyyy-MM-dd_HH-mm-ss) + ": $Message");
 
+}
+
+<#
+.SYNOPSIS
+
+This method is used to compare current and desired values for any DSC resource
+
+.PARAMETER CurrentValues
+
+This is hashtable of the current values that are applied to the resource
+
+.PARAMETER DesiredValues 
+
+This is a PSBoundParametersDictionary of the desired values for the resource
+
+.PARAMETER ValuesToCheck
+
+This is a list of which properties in the desired values list should be checked.
+If this is empty then all values in DesiredValues are checked.
+
+#>
+function Test-SQLDscParameterState 
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]  
+        [HashTable]
+        $CurrentValues,
+        
+        [Parameter(Mandatory = $true)]  
+        [Object]
+        $DesiredValues,
+
+        [Parameter(Mandatory = $false)] 
+        [Array]
+        $ValuesToCheck
+    )
+
+    $returnValue = $true
+
+    if (($DesiredValues.GetType().Name -ne "HashTable") `
+        -and ($DesiredValues.GetType().Name -ne "CimInstance") `
+        -and ($DesiredValues.GetType().Name -ne "PSBoundParametersDictionary")) 
+    {
+        throw ("Property 'DesiredValues' in Test-SQLDscParameterState must be either a " + `
+               "Hashtable or CimInstance. Type detected was $($DesiredValues.GetType().Name)")
+    }
+
+    if (($DesiredValues.GetType().Name -eq "CimInstance") -and ($null -eq $ValuesToCheck)) 
+    {
+        throw ("If 'DesiredValues' is a CimInstance then property 'ValuesToCheck' must contain " + `
+               "a value")
+    }
+
+    if (($null -eq $ValuesToCheck) -or ($ValuesToCheck.Count -lt 1)) 
+    {
+        $KeyList = $DesiredValues.Keys
+    } 
+    else 
+    {
+        $KeyList = $ValuesToCheck
+    }
+
+    $KeyList | ForEach-Object -Process {
+        if (($_ -ne "Verbose")) 
+        {
+            if (($CurrentValues.ContainsKey($_) -eq $false) `
+            -or ($CurrentValues.$_ -ne $DesiredValues.$_) `
+            -or (($DesiredValues.ContainsKey($_) -eq $true) -and ($DesiredValues.$_.GetType().IsArray))) 
+            {
+                if ($DesiredValues.GetType().Name -eq "HashTable" -or `
+                    $DesiredValues.GetType().Name -eq "PSBoundParametersDictionary") 
+                {
+                    
+                    $CheckDesiredValue = $DesiredValues.ContainsKey($_)
+                } 
+                else 
+                {
+                    $CheckDesiredValue = Test-SPDSCObjectHasProperty $DesiredValues $_
+                }
+
+                if ($CheckDesiredValue) 
+                {
+                    $desiredType = $DesiredValues.$_.GetType()
+                    $fieldName = $_
+                    if ($desiredType.IsArray -eq $true) 
+                    {
+                        if (($CurrentValues.ContainsKey($fieldName) -eq $false) `
+                        -or ($null -eq $CurrentValues.$fieldName)) 
+                        {
+                            Write-Verbose -Message ("Expected to find an array value for " + `
+                                                    "property $fieldName in the current " + `
+                                                    "values, but it was either not present or " + `
+                                                    "was null. This has caused the test method " + `
+                                                    "to return false.")
+                            $returnValue = $false
+                        } 
+                        else 
+                        {
+                            $arrayCompare = Compare-Object -ReferenceObject $CurrentValues.$fieldName `
+                                                           -DifferenceObject $DesiredValues.$fieldName
+                            if ($null -ne $arrayCompare) 
+                            {
+                                Write-Verbose -Message ("Found an array for property $fieldName " + `
+                                                        "in the current values, but this array " + `
+                                                        "does not match the desired state. " + `
+                                                        "Details of the changes are below.")
+                                $arrayCompare | ForEach-Object -Process {
+                                    Write-Verbose -Message "$($_.InputObject) - $($_.SideIndicator)"
+                                }
+                                $returnValue = $false
+                            }
+                        }
+                    } 
+                    else 
+                    {
+                        switch ($desiredType.Name) 
+                        {
+                            "String" {
+                                if (-not [String]::IsNullOrEmpty($CurrentValues.$fieldName) -or `
+                                    -not [String]::IsNullOrEmpty($DesiredValues.$fieldName))
+                                {
+                                    Write-Verbose -Message ("String value for property $fieldName does not match. " + `
+                                                            "Current state is '$($CurrentValues.$fieldName)' " + `
+                                                            "and Desired state is '$($DesiredValues.$fieldName)'")
+                                    $returnValue = $false
+                                }
+                            }
+                            "Int32" {
+                                if (-not ($DesiredValues.$fieldName -eq 0) -or `
+                                    -not ($null -eq $CurrentValues.$fieldName))
+                                { 
+                                    Write-Verbose -Message ("Int32 value for property " + "$fieldName does not match. " + `
+                                                            "Current state is " + "'$($CurrentValues.$fieldName)' " + `
+                                                            "and desired state is " + "'$($DesiredValues.$fieldName)'")
+                                    $returnValue = $false
+                                }
+                            }
+                            "Int16" {
+                                if (-not ($DesiredValues.$fieldName -eq 0) -or `
+                                    -not ($null -eq $CurrentValues.$fieldName))
+                                { 
+                                    Write-Verbose -Message ("Int32 value for property " + "$fieldName does not match. " + `
+                                                            "Current state is " + "'$($CurrentValues.$fieldName)' " + `
+                                                            "and desired state is " + "'$($DesiredValues.$fieldName)'")
+                                    $returnValue = $false
+                                }
+                            }
+                            default {
+                                Write-Verbose -Message ("Unable to compare property $fieldName " + `
+                                                        "as the type ($($desiredType.Name)) is " + `
+                                                        "not handled by the " + `
+                                                        "Test-SQLDscParameterState cmdlet")
+                                $returnValue = $false
+                            }
+                        }
+                    }
+                }            
+            }
+        } 
+    }
+    return $returnValue
 }
 
 function Grant-ServerPerms
@@ -617,4 +779,127 @@ function Confirm-SqlServerRole
     }
 
     return $confirmServerRole
+}
+
+<#
+.SYNOPSIS
+
+This cmdlet is used to return the owner of a SQL database
+
+.PARAMETER SQL
+
+This is an object of the SQL server that contains the result of Connect-SQL
+
+.PARAMETER Database
+
+This is the SQL database that will be checking
+
+#>
+function Get-SqlDatabaseOwner
+{
+    [CmdletBinding()]    
+    param
+    (   
+        [ValidateNotNull()] 
+        [System.Object]
+        $SQL,
+
+        [ValidateNotNull()] 
+        [System.String]
+        $Database
+    )
+    
+    Write-Verbose -Message 'Getting SQL Databases'
+    $sqlDatabase = $SQL.Databases
+    if ($sqlDatabase)
+    {
+        if ($sqlDatabase[$Database])
+        {
+            $Name = $sqlDatabase[$Database].Owner
+        }
+        else
+        {
+            throw New-TerminatingError -ErrorType FailedToGetOwnerDatabase `
+                                       -FormatArgs @($Database) `
+                                       -ErrorCategory InvalidOperation
+        }
+    }
+    else
+    {
+        Write-Verbose -Message 'Failed getting SQL databases'
+    }
+
+    $Name
+}
+
+<#
+.SYNOPSIS
+
+This cmdlet is used to configure the owner of a SQL database
+
+.PARAMETER SQL
+
+This is an object of the SQL server that contains the result of Connect-SQL
+
+.PARAMETER Name 
+
+This is the name of the desired owner for the SQL database
+
+.PARAMETER Database
+
+This is the SQL database that will be setting
+
+#>
+function Set-SqlDatabaseOwner
+{
+    [CmdletBinding()]    
+    param
+    (   
+        [ValidateNotNull()] 
+        [System.Object]
+        $SQL,
+        
+        [ValidateNotNull()] 
+        [System.String]
+        $Name,
+
+        [ValidateNotNull()] 
+        [System.String]
+        $Database
+    )
+    
+    Write-Verbose -Message 'Getting SQL Databases'
+    $sqlDatabase = $SQL.Databases
+    $sqlLogins = $SQL.Logins
+
+    if ($sqlDatabase -and $sqlLogins)
+    {
+        if ($sqlDatabase[$Database])
+        {
+            if ($sqlLogins[$Name])
+            {
+                try
+                {
+                    $sqlDatabase[$Database].SetOwner($Name)
+                    New-VerboseMessage -Message "Owner of SQL Database name $Database is now $Name"
+                }
+                catch
+                {
+                    throw New-TerminatingError -ErrorType FailedToSetOwnerDatabase -ErrorCategory InvalidOperation -InnerException $_.Exception
+                }
+            }
+            else
+            {
+                Write-Error -Message "SQL Login name $Name does not exist" -Category InvalidData
+            }
+        }
+        else
+        {
+            Write-Error -Message "SQL Database name $Database does not exist" -Category InvalidData
+        }
+    }
+    else
+    {
+        Write-Verbose -Message 'Failed getting SQL databases and logins'
+    }
 }
