@@ -43,7 +43,7 @@ Examples/Resources/xSQLServerConfiguration/2-RemoveConfigurationOption.ps1
 
 Please note that the `FriendlyName` in the schema mof file should not contain the prefix `MSFT_`.
 
-```PowerShell
+```powershell
 [ClassVersion("1.0.0.0"), FriendlyName("xSQLServerConfiguration")]
 class MSFT_xSQLServerConfiguration : OMI_BaseResource
 {
