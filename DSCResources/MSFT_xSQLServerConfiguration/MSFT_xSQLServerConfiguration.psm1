@@ -2,7 +2,8 @@
 Write-Verbose -Message "CurrentPath: $currentPath"
 
 # Load Common Code
-Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
+$helperModule = $currentPath | Split-Path -Parent | Split-Path -Parent | Join-Path -ChildPath "xSQLServerHelper.psm1"
+Import-Module $helperModule -ErrorAction Stop
 
 <#
     .SYNOPSIS
@@ -31,25 +32,24 @@ Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAct
 function Get-TargetResource
 {
     [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
+    [OutputType([hashtable])]
     param(
         [Parameter(Mandatory = $true)]
         [String]
         $SQLServer,
 
-        [Parameter(Mandatory = $false)]
-        [System.String]
+        [String]
         $SQLInstanceName = 'MSSQLSERVER',
 
         [Parameter(Mandatory = $true)]
-        [System.String]
+        [String]
         $OptionName,
 
         [Parameter(Mandatory = $true)]
-        [System.Int32]
+        [int]
         $OptionValue,
 
-        [System.Boolean]
+        [bool]
         $RestartService = $false,
 
         [int]
@@ -109,19 +109,18 @@ function Set-TargetResource
         [String]
         $SQLServer,
 
-        [Parameter(Mandatory = $false)]
-        [System.String]
+        [String]
         $SQLInstanceName = 'MSSQLSERVER',
 
         [Parameter(Mandatory = $true)]
-        [System.String]
+        [String]
         $OptionName,
 
         [Parameter(Mandatory = $true)]
-        [System.Int32]
+        [int]
         $OptionValue,
 
-        [System.Boolean]
+        [bool]
         $RestartService = $false,
 
         [int]
@@ -176,33 +175,34 @@ function Set-TargetResource
     The desired value of the SQL configuration option
 
     .PARAMETER RestartService
+    *** Not used in this function ***
     Determines whether the instance should be restarted after updating the configuration option
 
     .PARAMETER RestartTimeout
+    *** Not used in this function ***
     The length of time, in seconds, to wait for the service to restart.
 #>
 function Test-TargetResource
 {
     [CmdletBinding()]
-    [OutputType([System.Boolean])]
+    [OutputType([bool])]
     param(
         [Parameter(Mandatory = $true)]
         [String]
         $SQLServer,
 
-        [Parameter(Mandatory = $false)]
-        [System.String]
+        [String]
         $SQLInstanceName = 'MSSQLSERVER',
 
         [Parameter(Mandatory = $true)]
-        [System.String]
+        [String]
         $OptionName,
 
         [Parameter(Mandatory = $true)]
-        [System.Int32]
+        [int]
         $OptionValue,
 
-        [System.Boolean]
+        [bool]
         $RestartService = $false,
 
         [int]
@@ -245,14 +245,12 @@ function Restart-SqlService
     param
     (
         [Parameter(Mandatory = $true)]
-        [string]
+        [String]
         $SQLServer,
 
-        [Parameter(Mandatory = $false)]
         [String]
         $SQLInstanceName = 'MSSQLSERVER',
 
-        [Parameter(Mandatory = $false)]
         [int]
         $Timeout = 120
     )
@@ -266,16 +264,26 @@ function Restart-SqlService
         New-VerboseMessage -Message 'Getting cluster resource for SQL Server' 
         $sqlService = Get-WmiObject -Namespace root/MSCluster -Class MSCluster_Resource -Filter "Type = 'SQL Server'" | Where-Object { $_.PrivateProperties.InstanceName -eq $serverObject.ServiceName }
 
-        New-VerboseMessage -Message 'Getting cluster resource for SQL Server Agent'
-        $agentService = Get-WmiObject -Namespace root/MSCluster -Query "ASSOCIATORS OF {$sqlService} WHERE ResultClass = MSCluster_Resource" | Where-Object { $_.Type -eq "SQL Server Agent" }
+        New-VerboseMessage -Message 'Getting active cluster resource SQL Server Agent'
+        $agentService = Get-WmiObject -Namespace root/MSCluster -Query "ASSOCIATORS OF {$sqlService} WHERE ResultClass = MSCluster_Resource" | Where-Object { ($_.Type -eq "SQL Server Agent") -and ($_.State -eq 2) }
 
-        ## Stop the SQL Server resource
-        New-VerboseMessage -Message 'Bringing the SQL Server resources offline.'
+        ## Build a listing of resources being acted upon
+        $resourceNames = @($sqlService.Name, ($agentService | Select -ExpandProperty Name)) -join ","
+
+        ## Stop the SQL Server and dependent resources
+        New-VerboseMessage -Message 'Bringing the SQL Server resources $resourceNames offline.'
         $sqlService.TakeOffline($Timeout)
 
+        ## Start the SQL server resource
+        New-VerboseMessage -Message 'Bringing the SQL Server resource back online.'
+        $sqlService.BringOnline($Timeout)
+
         ## Start the SQL Agent resource
-        New-VerboseMessage -Message 'Bringing the SQL Server resources online.'
-        $agentService.BringOnline($Timeout)
+        if ($agentService)
+        {
+            New-VerboseMessage -Message 'Bringing the SQL Server Agent resource online.'
+            $agentService.BringOnline($Timeout)
+        }
     }
     else
     {
