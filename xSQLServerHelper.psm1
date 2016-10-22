@@ -148,7 +148,6 @@ function New-WarningMessage
         [String]
         $WarningType,
 
-        [Parameter(Mandatory = $false)]
         [String[]]
         $FormatArgs
     )
