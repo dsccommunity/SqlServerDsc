@@ -262,10 +262,12 @@ function Restart-SqlService
     {
         ## Get the cluster resources
         New-VerboseMessage -Message 'Getting cluster resource for SQL Server' 
-        $sqlService = Get-WmiObject -Namespace root/MSCluster -Class MSCluster_Resource -Filter "Type = 'SQL Server'" | Where-Object { $_.PrivateProperties.InstanceName -eq $serverObject.ServiceName }
+        $sqlService = Get-WmiObject -Namespace root/MSCluster -Class MSCluster_Resource -Filter "Type = 'SQL Server'" | 
+                        Where-Object { $_.PrivateProperties.InstanceName -eq $serverObject.ServiceName }
 
         New-VerboseMessage -Message 'Getting active cluster resource SQL Server Agent'
-        $agentService = Get-WmiObject -Namespace root/MSCluster -Query "ASSOCIATORS OF {$sqlService} WHERE ResultClass = MSCluster_Resource" | Where-Object { ($_.Type -eq "SQL Server Agent") -and ($_.State -eq 2) }
+        $agentService = Get-WmiObject -Namespace root/MSCluster -Query "ASSOCIATORS OF {$sqlService} WHERE ResultClass = MSCluster_Resource" | 
+                            Where-Object { ($_.Type -eq "SQL Server Agent") -and ($_.State -eq 2) }
 
         ## Build a listing of resources being acted upon
         $resourceNames = @($sqlService.Name, ($agentService | Select -ExpandProperty Name)) -join ","
