@@ -426,7 +426,7 @@ try
                             }
                         }
 
-                        $mock | Add-Member -MemberType ScriptMethod -Name TakeOffline -Value { param ( [int] $TimeOut ) }
+                        $mock | Add-Member -MemberType ScriptMethod -Name TakeOffline -Value { param ( [int] $Timeout ) }
                         $mock | Add-Member -MemberType ScriptMethod -Name BringOnline -Value { param ( [int] $Timeout ) }
 
                         return $mock
@@ -445,7 +445,7 @@ try
                             State = (@{ $true = 3; $false = 2 }[($serviceName -eq "STOPPEDAGENT")])
                         }
 
-                        $mock | Add-Member -MemberType ScriptMethod -Name TakeOffline -Value { param ( [int] $TimeOut ) }
+                        $mock | Add-Member -MemberType ScriptMethod -Name TakeOffline -Value { param ( [int] $Timeout ) }
                         $mock | Add-Member -MemberType ScriptMethod -Name BringOnline -Value { param ( [int] $Timeout ) }
 
                         return $mock 
