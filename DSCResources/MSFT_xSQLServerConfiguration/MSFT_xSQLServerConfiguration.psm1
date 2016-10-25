@@ -32,7 +32,7 @@ Import-Module $helperModule -ErrorAction Stop
 function Get-TargetResource
 {
     [CmdletBinding()]
-    [OutputType([hashtable])]
+    [OutputType([Hashtable])]
     param(
         [Parameter(Mandatory = $true)]
         [String]
@@ -46,13 +46,13 @@ function Get-TargetResource
         $OptionName,
 
         [Parameter(Mandatory = $true)]
-        [int]
+        [Int32]
         $OptionValue,
 
-        [bool]
+        [Boolean]
         $RestartService = $false,
 
-        [int]
+        [Int32]
         $RestartTimeout = 120
     )
 
@@ -117,13 +117,13 @@ function Set-TargetResource
         $OptionName,
 
         [Parameter(Mandatory = $true)]
-        [int]
+        [Int32]
         $OptionValue,
 
-        [bool]
+        [Boolean]
         $RestartService = $false,
 
-        [int]
+        [Int32]
         $RestartTimeout = 120
     )
 
@@ -185,7 +185,7 @@ function Set-TargetResource
 function Test-TargetResource
 {
     [CmdletBinding()]
-    [OutputType([bool])]
+    [OutputType([Boolean])]
     param(
         [Parameter(Mandatory = $true)]
         [String]
@@ -199,13 +199,13 @@ function Test-TargetResource
         $OptionName,
 
         [Parameter(Mandatory = $true)]
-        [int]
+        [Int32]
         $OptionValue,
 
-        [bool]
+        [Boolean]
         $RestartService = $false,
 
-        [int]
+        [Int32]
         $RestartTimeout = 120
     )
 
@@ -251,7 +251,7 @@ function Restart-SqlService
         [String]
         $SQLInstanceName = 'MSSQLSERVER',
 
-        [int]
+        [Int32]
         $Timeout = 120
     )
 
