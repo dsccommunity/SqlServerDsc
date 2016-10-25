@@ -1,10 +1,7 @@
-﻿$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-Write-Verbose -Message "CurrentPath: $currentPath"
-
-# Load Common Code
-$helperModule = $currentPath | Split-Path -Parent | Split-Path -Parent | Join-Path -ChildPath "xSQLServerHelper.psm1"
-Import-Module $helperModule -ErrorAction Stop
-
+﻿# Load Common Code
+Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
+                               -ChildPath 'xSQLServerHelper.psm1') `
+                               -Force
 <#
     .SYNOPSIS
     Gets the current value of a SQL configuration option
