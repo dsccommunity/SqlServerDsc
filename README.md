@@ -82,6 +82,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **ASSvcAccount**: Service account for Analysis Services service.
 * **ASSvcAccountUsername**: Output username for the Analysis Services service.
 * **ASCollation**: Collation for Analysis Services.
+* **ASSERVERMODE**: Analysis Services Server Mode.
 * **ASSysAdminAccounts**: Array of accounts to be made Analysis Services admins.
 * **ASDataDir**: Path for Analysis Services data files.
 * **ASLogDir**: Path for Analysis Services log files.
