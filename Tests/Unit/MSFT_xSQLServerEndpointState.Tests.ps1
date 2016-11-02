@@ -1,5 +1,5 @@
 $script:DSCModuleName      = 'xSQLServer'
-$script:DSCResourceName    = 'xSQLServerEndPointState'
+$script:DSCResourceName    = 'MSFT_xSQLServerEndPointState'
 
 #region HEADER
 

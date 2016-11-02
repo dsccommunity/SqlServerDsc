@@ -1,6 +1,6 @@
 
 [ClassVersion("1.0.0.0"), FriendlyName("xSQLServerPermission")]
-class xSQLServerPermission : OMI_BaseResource
+class MSFT_xSQLServerPermission : OMI_BaseResource
 {
     [Key, Description("The SQL Server instance name.")] String InstanceName;
     [Required, Description("The host name or FQDN.")] String NodeName;

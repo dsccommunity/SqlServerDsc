@@ -1,5 +1,5 @@
 $script:DSCModuleName      = 'xSQLServer'
-$script:DSCResourceName    = 'xSQLServerPermission'
+$script:DSCResourceName    = 'MSFT_xSQLServerPermission'
 
 #region HEADER
 
