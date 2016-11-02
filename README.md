@@ -347,6 +347,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Versions
 
 ### Unreleased
+
+### 3.0.0.0
 * xSQLServerHelper
   - added functions
     - Test-SQLDscParameterState
