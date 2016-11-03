@@ -17,45 +17,45 @@ $TestEnvironment = Initialize-TestEnvironment `
     -TestType Unit 
 
 $defaultState = @{
-    SQLServer = "CLU01"
-    SQLInstanceName = "ClusteredInstance"
-    OptionName = "user connections"
+    SQLServer = 'CLU01'
+    SQLInstanceName = 'ClusteredInstance'
+    OptionName = 'user connections'
     OptionValue = 0
     RestartService = $false
     RestartTimeout = 120
 }
 
 $desiredState = @{
-    SQLServer = "CLU01"
-    SQLInstanceName = "ClusteredInstance"
-    OptionName = "user connections"
+    SQLServer = 'CLU01'
+    SQLInstanceName = 'ClusteredInstance'
+    OptionName = 'user connections'
     OptionValue = 500
     RestartService = $false
     RestartTimeout = 120
 }
 
 $desiredStateRestart = @{
-    SQLServer = "CLU01"
-    SQLInstanceName = "ClusteredInstance"
-    OptionName = "user connections"
+    SQLServer = 'CLU01'
+    SQLInstanceName = 'ClusteredInstance'
+    OptionName = 'user connections'
     OptionValue = 5000
     RestartService = $true
     RestartTimeout = 120
 }
 
 $dynamicOption = @{
-    SQLServer = "CLU02"
-    SQLInstanceName = "ClusteredInstance"
-    OptionName = "show advanced options"
+    SQLServer = 'CLU02'
+    SQLInstanceName = 'ClusteredInstance'
+    OptionName = 'show advanced options'
     OptionValue = 0
     RestartService = $false
     RestartTimeout = 120
 }
 
 $invalidOption = @{
-    SQLServer = "CLU01"
-    SQLInstanceName = "MSSQLSERVER"
-    OptionName = "Does Not Exist"
+    SQLServer = 'CLU01'
+    SQLInstanceName = 'MSSQLSERVER'
+    OptionName = 'Does Not Exist'
     OptionValue = 1
     RestartService = $false
     RestartTimeout = 120
@@ -79,7 +79,7 @@ try
                     Configuration = @{
                         Properties = @(
                             @{
-                                DisplayName = "user connections"
+                                DisplayName = 'user connections'
                                 ConfigValue = 0
                             }
                         )
@@ -116,7 +116,7 @@ try
                     Configuration = @{
                         Properties = @(
                             @{
-                                DisplayName = "user connections"
+                                DisplayName = 'user connections'
                                 ConfigValue = 500
                             }
                         )
@@ -153,7 +153,7 @@ try
                     Configuration = @{
                         Properties = @(
                             @{
-                                DisplayName = "user connections"
+                                DisplayName = 'user connections'
                                 ConfigValue = 0
                             }
                         )
@@ -167,16 +167,9 @@ try
             } -ModuleName $script:DSCResourceName -Verifiable
 
             It 'Should call New-TerminatingError mock when a bad option name is specified' {
-                { Get-TargetResource @invalidOption } | Should Throw
-                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName New-TerminatingError -Scope It -Times 1
-            }
-
-            It 'Should throw the correct error type' {
                 { Get-TargetResource @invalidOption } | Should Throw 'ConfigurationOptionNotFound'
-            }
-
-            It 'Should call Connect-SQL mock when getting the state' {
-                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope Context -Times 2
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName New-TerminatingError -Scope It -Times 1
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope Context -Times 1
             }
         }
     }
@@ -190,7 +183,7 @@ try
                 Configuration = @{
                     Properties = @(
                         @{
-                            DisplayName = "user connections"
+                            DisplayName = 'user connections'
                             ConfigValue = 500
                         }
                     )
@@ -222,7 +215,7 @@ try
                 Configuration = @{
                     Properties = @(
                         @{
-                            DisplayName = "user connections"
+                            DisplayName = 'user connections'
                             ConfigValue = 0
                             IsDynamic = $false
                         }
@@ -234,14 +227,14 @@ try
             $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
 
             return $mock
-        } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { $SQLServer -eq "CLU01" }
+        } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { $SQLServer -eq 'CLU01' }
 
         Mock -CommandName Connect-SQL -MockWith {
             $mock = New-Object PSObject -Property @{ 
                 Configuration = @{
                     Properties = @(
                         @{
-                            DisplayName = "show advanced options"
+                            DisplayName = 'show advanced options'
                             ConfigValue = 1
                             IsDynamic = $true
                         }
@@ -253,7 +246,7 @@ try
             $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
 
             return $mock
-        } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { $SQLServer -eq "CLU02" }
+        } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { $SQLServer -eq 'CLU02' }
 
         Mock -CommandName Restart-SqlService -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
 
@@ -292,43 +285,43 @@ try
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
-                        Name = "MSSQLSERVER"
-                        InstanceName = ""
-                        ServiceName = "MSSQLSERVER"
+                        Name = 'MSSQLSERVER'
+                        InstanceName = ''
+                        ServiceName = 'MSSQLSERVER'
                     }
-                } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { $SQLInstanceName -eq "MSSQLSERVER" }
+                } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { $SQLInstanceName -eq 'MSSQLSERVER' }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
-                        Name = "NOAGENT"
-                        InstanceName = "NOAGENT"
-                        ServiceName = "NOAGENT"
+                        Name = 'NOAGENT'
+                        InstanceName = 'NOAGENT'
+                        ServiceName = 'NOAGENT'
                     }
-                } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { $SQLInstanceName -eq "NOAGENT" }
+                } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { $SQLInstanceName -eq 'NOAGENT' }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
-                        Name = "STOPPEDAGENT"
-                        InstanceName = "STOPPEDAGENT"
-                        ServiceName = "STOPPEDAGENT"
+                        Name = 'STOPPEDAGENT'
+                        InstanceName = 'STOPPEDAGENT'
+                        ServiceName = 'STOPPEDAGENT'
                     }
-                } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { $SQLInstanceName -eq "STOPPEDAGENT" }
+                } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { $SQLInstanceName -eq 'STOPPEDAGENT' }
 
                 ## SQL instance with running SQL Agent Service
                 Mock -CommandName Get-Service {
                     return @{
-                        Name = "MSSQLSERVER"
-                        DisplayName = "Microsoft SQL Server (MSSQLSERVER)"
+                        Name = 'MSSQLSERVER'
+                        DisplayName = 'Microsoft SQL Server (MSSQLSERVER)'
                         DependentServices = @(
                             @{ 
-                                Name = "SQLSERVERAGENT"
-                                DisplayName = "SQL Server Agent (MSSQLSERVER)"
-                                Status = "Running"
+                                Name = 'SQLSERVERAGENT'
+                                DisplayName = 'SQL Server Agent (MSSQLSERVER)'
+                                Status = 'Running'
                                 DependentServices = @()
                             }
                         )
                     }
-                } -Verifiable -ParameterFilter { $DisplayName -eq "SQL Server (MSSQLSERVER)" }
+                } -Verifiable -ParameterFilter { $DisplayName -eq 'SQL Server (MSSQLSERVER)' }
 
                 ## SQL instance with no installed SQL Agent Service
                 Mock -CommandName Get-Service {
@@ -337,7 +330,7 @@ try
                         DisplayName = 'Microsoft SQL Server (NOAGENT)'
                         DependentServices = @()
                     }
-                } -Verifiable -ParameterFilter { $DisplayName -eq "SQL Server (NOAGENT)" }
+                } -Verifiable -ParameterFilter { $DisplayName -eq 'SQL Server (NOAGENT)' }
 
                 ## SQL instance with stopped SQL Agent Service
                 Mock -CommandName Get-Service {
@@ -353,14 +346,14 @@ try
                             }
                         )
                     }
-                } -Verifiable -ParameterFilter { $DisplayName -eq "SQL Server (STOPPEDAGENT)" }
+                } -Verifiable -ParameterFilter { $DisplayName -eq 'SQL Server (STOPPEDAGENT)' }
 
                 Mock -CommandName Restart-Service {} -Verifiable
 
                 Mock -CommandName Start-Service {} -Verifiable
 
                 It 'Should restart SQL Service and running SQL Agent service' {
-                    { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName "MSSQLSERVER" } | Should Not Throw
+                    { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'MSSQLSERVER' } | Should Not Throw
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
                     Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
@@ -369,7 +362,7 @@ try
                 }
 
                 It 'Should restart SQL Service and not try to restart missing SQL Agent service' {
-                    { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName "NOAGENT" } | Should Not Throw
+                    { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'NOAGENT' } | Should Not Throw
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
                     Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
@@ -378,7 +371,7 @@ try
                 }
 
                 It 'Should restart SQL Service and not try to restart stopped SQL Agent service' {
-                    { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName "STOPPEDAGENT" } | Should Not Throw
+                    { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'STOPPEDAGENT' } | Should Not Throw
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
                     Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
@@ -391,34 +384,34 @@ try
                 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
-                        Name = "MSSQLSERVER"
-                        InstanceName = ""
-                        ServiceName = "MSSQLSERVER"
+                        Name = 'MSSQLSERVER'
+                        InstanceName = ''
+                        ServiceName = 'MSSQLSERVER'
                         IsClustered = $true
                     }
-                } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { ($SQLServer -eq "CLU01") -and ($SQLInstanceName -eq "MSSQLSERVER") }
+                } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { ($SQLServer -eq 'CLU01') -and ($SQLInstanceName -eq 'MSSQLSERVER') }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
-                        Name = "NAMEDINSTANCE"
-                        InstanceName = "NAMEDINSTANCE"
-                        ServiceName = "NAMEDINSTANCE"
+                        Name = 'NAMEDINSTANCE'
+                        InstanceName = 'NAMEDINSTANCE'
+                        ServiceName = 'NAMEDINSTANCE'
                         IsClustered = $true
                     }
-                } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { ($SQLServer -eq "CLU01") -and ($SQLInstanceName -eq "NAMEDINSTANCE") }
+                } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { ($SQLServer -eq 'CLU01') -and ($SQLInstanceName -eq 'NAMEDINSTANCE') }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
-                        Name = "STOPPEDAGENT"
-                        InstanceName = "STOPPEDAGENT"
-                        ServiceName = "STOPPEDAGENT"
+                        Name = 'STOPPEDAGENT'
+                        InstanceName = 'STOPPEDAGENT'
+                        ServiceName = 'STOPPEDAGENT'
                         IsClustered = $true
                     }
-                } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { ($SQLServer -eq "CLU01") -and ($SQLInstanceName -eq "STOPPEDAGENT") }
+                } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { ($SQLServer -eq 'CLU01') -and ($SQLInstanceName -eq 'STOPPEDAGENT') }
 
                 ## Mock Get-WmiObject for SQL Instance
                 Mock -CommandName Get-WmiObject {
-                    return @("MSSQLSERVER","NAMEDINSTANCE","STOPPEDAGENT") | ForEach-Object {
+                    return @('MSSQLSERVER','NAMEDINSTANCE','STOPPEDAGENT') | ForEach-Object {
                         $mock = New-Object PSObject -Property @{
                             Name = "SQL Server ($($_))"
                             PrivateProperties = @{
@@ -435,14 +428,14 @@ try
 
                 ## Mock Get-WmiObject for SQL Agent
                 Mock -CommandName Get-WmiObject {
-                    if ($Query -imatch "SQL Server \((\w+)\)")
+                    if ($Query -imatch 'SQL Server \((\w+)\)')
                     {
                         $serviceName = $Matches[1]
 
                         $mock = New-Object PSObject -Property @{
                             Name = "SQL Server Agent ($serviceName)"
-                            Type = "SQL Server Agent"
-                            State = (@{ $true = 3; $false = 2 }[($serviceName -eq "STOPPEDAGENT")])
+                            Type = 'SQL Server Agent'
+                            State = (@{ $true = 3; $false = 2 }[($serviceName -eq 'STOPPEDAGENT')])
                         }
 
                         $mock | Add-Member -MemberType ScriptMethod -Name TakeOffline -Value { param ( [int] $Timeout ) }
@@ -450,10 +443,10 @@ try
 
                         return $mock 
                     }
-                } -Verifiable -ParameterFilter { $Query -match "^ASSOCIATORS OF" }
+                } -Verifiable -ParameterFilter { $Query -match '^ASSOCIATORS OF' }
 
                 It 'Should restart SQL Server and SQL Agent resources for a clustered default instance' {
-                    { Restart-SqlService -SQLServer "CLU01" -SQLInstanceName "MSSQLSERVER" } | Should Not Throw
+                    { Restart-SqlService -SQLServer 'CLU01' -SQLInstanceName 'MSSQLSERVER' } | Should Not Throw
                     
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
                     Assert-MockCalled -CommandName Get-WmiObject -Scope It -Exactly -Times 2
@@ -463,7 +456,7 @@ try
                 }
 
                 It 'Should restart SQL Server and SQL Agent resources for a clustered named instance' {
-                    { Restart-SqlService -SQLServer "CLU01" -SQLInstanceName "NAMEDINSTANCE" } | Should Not Throw
+                    { Restart-SqlService -SQLServer 'CLU01' -SQLInstanceName 'NAMEDINSTANCE' } | Should Not Throw
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
                     Assert-MockCalled -CommandName Get-WmiObject -Scope It -Exactly -Times 2
@@ -473,7 +466,7 @@ try
                 }
 
                 It 'Should not try to restart a SQL Agent resource that is not online' {
-                    { Restart-SqlService -SQLServer "CLU01" -SQLInstanceName "STOPPEDAGENT" } | Should Not Throw
+                    { Restart-SqlService -SQLServer 'CLU01' -SQLInstanceName 'STOPPEDAGENT' } | Should Not Throw
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
                     Assert-MockCalled -CommandName Get-WmiObject -Scope It -Exactly -Times 2
