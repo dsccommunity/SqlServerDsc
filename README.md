@@ -349,6 +349,10 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Versions
 
 ### Unreleased
+* Fixes in xSQLServerConfiguration
+  - Added support for clustered SQL instances
+  - BREAKING CHANGE: Updated parameters to align with other resources (SQLServer / SQLInstanceName)
+* Created unit tests for xSQLServerConfiguration resource
 
 ### 3.0.0.0
 * xSQLServerHelper
@@ -361,10 +365,6 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
    - 1-SetDatabaseOwner.ps1
  * Added tests for resources
    - MSFT_xSQLServerDatabaseOwner.Tests.Tests.ps1
-* Fixes in xSQLServerConfiguration
-  - Added support for clustered SQL instances
-  - BREAKING CHANGE: Updated parameters to align with other resources (SQLServer / SQLInstanceName)
-* Created unit tests for xSQLServerConfiguration resource
 
 ### 2.0.0.0
 * Added resources
