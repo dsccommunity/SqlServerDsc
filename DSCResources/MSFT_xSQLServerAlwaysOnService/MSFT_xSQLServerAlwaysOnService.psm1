@@ -13,7 +13,7 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
     Hostname of the SQL Server to be configured.
     
     .PARAMETER SQLInstanceName
-    Name of the SQL instance to be configued. Default is 'MSSQLSERVER'
+    Name of the SQL instance to be configued.
 #>
 function Get-TargetResource
 {
