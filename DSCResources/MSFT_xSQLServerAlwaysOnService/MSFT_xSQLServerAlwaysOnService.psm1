@@ -172,7 +172,7 @@ function Test-TargetResource
 
     $state = Get-TargetResource @params
     
-    # Determine what the desired state of Always On is
+    # Determine what the desired state of Always On is 
     $hadrDesiredState = @{ 'Present' = $true; 'Absent' = $false }[$Ensure]
 
     # Determine whether the value matches the desired state
