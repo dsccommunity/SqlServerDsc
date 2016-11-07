@@ -1271,7 +1271,7 @@ function Restart-SqlService
         New-VerboseMessage -Message 'Getting SQL Service information'
         $sqlService = Get-Service -DisplayName "SQL Server ($($serverObject.ServiceName))"
 
-        ## Get all dependent services that are running.
+        ## Get all dependent services that are running
         ## There are scenarios where an automatic service is stopped and should not be restarted automatically.
         $agentService = $sqlService.DependentServices | Where-Object { $_.Status -eq "Running" }
 
