@@ -44,7 +44,7 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-    Sets the current value of the SQL Server HADR property.
+    Sets the current value of the SQL Server HADR property
 
     .PARAMETER Ensure
     HADR is Present (enabled) or Absent (disabled).
