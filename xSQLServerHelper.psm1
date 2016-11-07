@@ -1202,7 +1202,7 @@ function Set-SqlDatabaseOwner
     Hostname of the SQL Server to be configured
     
     .PARAMETER SQLInstanceName
-    Name of the SQL instance to be configued. Default is 'MSSQLSERVER'
+    Name of the SQL instance to be configued. Default is 'MSSQLSERVER'.
 
     .PARAMETER Timeout
     Timeout value for restarting the SQL services. The default value is 120 seconds.
