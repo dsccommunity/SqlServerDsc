@@ -1208,7 +1208,7 @@ function Set-SqlDatabaseOwner
     Timeout value for restarting the SQL services. The default value is 120 seconds.
 
     .EXAMPLE
-    Restart-SqlService -SQLServer localhost
+    Restart-SqlService -SQLServer $env:COMPUTERNAME
 
     .EXAMPLE
     Restart-SqlService -SQLServer localhost -SQLInstanceName 'NamedInstance'
