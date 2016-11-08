@@ -57,7 +57,7 @@ try
             Context 'Get-TargetResource fails to import SQLPS module' {
                 $throwMessage = "Failed to import SQLPS module."
 
-                Mock -CommandName Import-SQLPSModule -MockWith { throw $throwMessage } -ModuleName $sqlServerHelperModuleName
+                Mock -CommandName Import-Module -MockWith { throw $throwMessage } -ModuleName $sqlServerHelperModuleName
 
                 It 'Should throw an error' {
                     { Get-TargetResource @testParameters } | Should Throw $throwMessage
@@ -96,7 +96,7 @@ try
             Context 'Set-TargetResource fails to import SQLPS module' {
                 $throwMessage = "Failed to import SQLPS module."
 
-                Mock -CommandName Import-SQLPSModule -MockWith { throw $throwMessage } -ModuleName $sqlServerHelperModuleName
+                Mock -CommandName Import-Module -MockWith { throw $throwMessage } -ModuleName $sqlServerHelperModuleName
 
                 It 'Should throw an error' {
                     { Set-TargetResource @testParameters } | Should Throw $throwMessage
@@ -130,7 +130,7 @@ try
             Context 'Test-TargetResource fails to import SQLPS module' {
                 $throwMessage = "Failed to import SQLPS module."
 
-                Mock -CommandName Import-SQLPSModule -MockWith { throw $throwMessage } -ModuleName $sqlServerHelperModuleName
+                Mock -CommandName Import-Module -MockWith { throw $throwMessage } -ModuleName $sqlServerHelperModuleName
 
                 It 'Should throw an error' {
                     { Set-TargetResource @testParameters } | Should Throw $throwMessage
@@ -180,7 +180,7 @@ try
             Context 'Invoke-SqlScript fails to import SQLPS module' {
                 $throwMessage = "Failed to import SQLPS module."
 
-                Mock -CommandName Import-SQLPSModule -MockWith { throw $throwMessage } -ModuleName $sqlServerHelperModuleName
+                Mock -CommandName Import-Module -MockWith { throw $throwMessage } -ModuleName $sqlServerHelperModuleName
 
                 It 'Should throw an error' {
                     { Invoke-SqlScript @invokeScriptParameters } | Should Throw $throwMessage
