@@ -1,16 +1,16 @@
 <#
     .SYNOPSIS
-       Automated unit test for MSFT_xSQLServerScript DSC Resource
+        Automated unit test for MSFT_xSQLServerScript DSC Resource
 #>
 
-
-$Script:DSCModuleName      = 'xSQLServer' 
-$Script:DSCResourceName    = 'MSFT_xSQLServerScript' 
+# Suppression of this PSSA rule allowed in tests.
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
+Param()
 
 #region HEADER
 
-# Unit Test Template Version: 1.1.0
-[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+# Unit Test Template Version: 1.2.0
+$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
      (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
@@ -18,191 +18,208 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 }
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
+
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName 'xSQLServer' `
+    -DSCResourceName 'MSFT_xSQLServerScript' `
     -TestType Unit 
 
 #endregion HEADER
 
-Add-Type -ErrorAction SilentlyContinue -TypeDefinition @'
-namespace Microsoft.SqlServer.Management.PowerShell
-{
-    public class SqlPowerShellSqlExecutionException : System.Exception
-    {
-        public SqlPowerShellSqlExecutionException()
-        {
-        }
-    }
+function Invoke-TestSetup {
+    Add-Type -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SqlPowerShellSqlExecutionException.cs')
+    Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SQLPSStub.psm1') -Force
 }
-'@ 
+
+function Invoke-TestCleanup {
+    Restore-TestEnvironment -TestEnvironment $TestEnvironment
+}
 
 # Begin Testing
 try
 {
-    #region Pester Test Initialization
-        Function Invoke-SqlScript {}
-    #endregion Pester Test Initialization
+    Invoke-TestSetup
 
-    #region Test Sql script throws an error
-    Describe 'Test Sql script throws an error' {
-        Mock -CommandName Import-Module -MockWith {} -ModuleName 'xSQLServerHelper'
+    InModuleScope 'MSFT_xSQLServerScript' { 
 
         $testParameters = @{
-            ServerInstance = $env:COMPUTERNAME 
+            ServerInstance = $env:COMPUTERNAME
             SetFilePath = "set.sql" 
             GetFilePath = "get.sql" 
             TestFilePath = "test.sql"
         }
 
-        It 'Get method returns successfully' {         
-            Mock -CommandName Invoke-SqlScript -MockWith { "" } -ModuleName $script:DSCResourceName
+        $dscResourceName = 'MSFT_xSQLServerScript'
+        $sqlServerHelperModuleName = 'xSQLServerHelper'
 
-            $result = Get-TargetResource @testParameters
+        Describe "$dscResourceName\Get-TargetResource" {         
 
-            $result.ServerInstance | should be $testParameters.ServerInstance
-            $result.SetFilePath | should be $testParameters.SetFilePath
-            $result.GetFilePath | should be $testParameters.GetFilePath
-            $result.TestFilePath | should be $testParameters.TestFilePath
-            $result.GetType() | should be "hashtable"
+            Context 'Get-TargetResource fails to import SQLPS module' {
+                $throwMessage = "Failed to import SQLPS module."
+
+                Mock -CommandName Import-SQLPSModule -MockWith { throw $throwMessage } -ModuleName $sqlServerHelperModuleName
+
+                It 'Should throw an error' {
+                    { Get-TargetResource @testParameters } | Should Throw $throwMessage
+                }
+            }
+
+            Context 'Get-TargetResource returns script results successfully' {
+                Mock -CommandName Import-Module -MockWith {} -ModuleName $sqlServerHelperModuleName
+                Mock -CommandName Invoke-Sqlcmd -MockWith { "" } -ModuleName $dscResourceName
+
+                $result = Get-TargetResource @testParameters
+
+                It 'Should return the expected results' {
+                    $result.ServerInstance | Should Be $testParameters.ServerInstance
+                    $result.SetFilePath | Should Be $testParameters.SetFilePath
+                    $result.GetFilePath | Should Be $testParameters.GetFilePath
+                    $result.TestFilePath | Should Be $testParameters.TestFilePath
+                    $result.GetType() | Should Be "hashtable"
+                }
+            }
+
+            Context 'Get SQl script throws an error' {
+                $errorMessage = "Failed to run SQL Script"
+
+                Mock -CommandName Import-Module -MockWith {} -ModuleName $sqlServerHelperModuleName
+                Mock -CommandName Invoke-Sqlcmd -MockWith { Throw $errorMessage } -ModuleName $script:DSCResourceName
+
+                It 'Should throw an error' {
+                    { Get-TargetResource @testParameters } | Should Throw $errorMessage
+                }
+            } 
         }
 
-        It 'Test method returns false' {
-            Mock -CommandName Invoke-SqlScript -MockWith { throw New-Object Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException} -ModuleName $script:DSCResourceName
+        Describe "$dscResourceName\Set-TargetResource" {
 
-            Test-TargetResource @testParameters | should be $false
+            Context 'Set-TargetResource fails to import SQLPS module' {
+                $throwMessage = "Failed to import SQLPS module."
+
+                Mock -CommandName Import-SQLPSModule -MockWith { throw $throwMessage } -ModuleName $sqlServerHelperModuleName
+
+                It 'Should throw an error' {
+                    { Set-TargetResource @testParameters } | Should Throw $throwMessage
+                }
+            }
+
+            Context 'Set-TargetResource runs script without issue' {
+                Mock -CommandName Import-Module -MockWith {} -ModuleName $sqlServerHelperModuleName
+                Mock -CommandName Invoke-Sqlcmd -MockWith { "" } -ModuleName $dscResourceName
+
+                $result = Set-TargetResource @testParameters
+
+                It 'Should return the expected results' {
+                    $result | should be ""
+                }
+            }
+
+            Context 'Set SQL script trhows an error' {
+                $errorMessage = "Failed to run SQL Script"
+
+                Mock -CommandName Import-Module -MockWith {} -ModuleName $sqlServerHelperModuleName
+                Mock -CommandName Invoke-Sqlcmd -MockWith { Throw $errorMessage } -ModuleName $script:DSCResourceName
+
+                It 'Should throw an error' {
+                    { Set-TargetResource @testParameters } | Should Throw $errorMessage
+                }
+            }
+        }
+        
+        Describe "$dscResourceName\Test-TargetResource" {
+            Context 'Test-TargetResource fails to import SQLPS module' {
+                $throwMessage = "Failed to import SQLPS module."
+
+                Mock -CommandName Import-SQLPSModule -MockWith { throw $throwMessage } -ModuleName $sqlServerHelperModuleName
+
+                It 'Should throw an error' {
+                    { Set-TargetResource @testParameters } | Should Throw $throwMessage
+                }
+            }
+
+            Context 'Test-TargetResource runs script without issue' {
+                Mock -CommandName Import-Module -MockWith {} -ModuleName $sqlServerHelperModuleName
+                Mock -CommandName Invoke-Sqlcmd -MockWith {} -ModuleName $dscResourceName
+
+                $result = Test-TargetResource @testParameters
+
+                It 'Should return true' {
+                    $result | should be $true
+                }
+            }
+
+            Context 'Test SQL script throws SQL execution error' {
+                Mock -CommandName Import-Module -MockWith {} -ModuleName $sqlServerHelperModuleName
+                Mock -CommandName Invoke-Sqlcmd -MockWith { throw New-Object Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException} -ModuleName $dscResourceName
+
+                $result = Test-TargetResource @testParameters
+
+                It 'Should return false' {
+                    $result | should be $false
+                }
+            }
+
+            Context 'Test SQL script throws a different error' {
+                $errorMessage = "Failed to run SQL Script"
+
+                Mock -CommandName Import-Module -MockWith {} -ModuleName $sqlServerHelperModuleName
+                Mock -CommandName Invoke-Sqlcmd -MockWith { Throw $errorMessage } -ModuleName $script:DSCResourceName
+
+                It 'Should throw an error' {
+                    { Test-TargetResource @testParameters } | Should Throw $errorMessage
+                }            
+            }
         }
 
-        It 'Set method calls Invoke-SqlCmd' {
-            Mock -CommandName Invoke-SqlScript -MockWith { "" } -ModuleName $script:DSCResourceName
+        Describe "$dscResourceName\Invoke-SqlScript" {
+            $invokeScriptParameters = @{
+                ServerInstance = $env:COMPUTERNAME 
+                SqlScriptPath = "set.sql" 
+            }
 
-            $result = Set-TargetResource @testParameters
+            Context 'Invoke-SqlScript fails to import SQLPS module' {
+                $throwMessage = "Failed to import SQLPS module."
 
-            Assert-MockCalled -CommandName Invoke-SqlScript -Times 3 -Exactly -ModuleName $script:DSCResourceName
-        }
+                Mock -CommandName Import-SQLPSModule -MockWith { throw $throwMessage } -ModuleName $sqlServerHelperModuleName
+
+                It 'Should throw an error' {
+                    { Invoke-SqlScript @invokeScriptParameters } | Should Throw $throwMessage
+                }
+            }
+
+            Context 'Invoke-SQlScript is called with credentials' {
+                $passwordPlain = "password"
+                $user = "User"
+
+                Mock -CommandName Import-Module -MockWith {} -ModuleName $sqlServerHelperModuleName
+                Mock -CommandName Invoke-Sqlcmd -MockWith {} -ParameterFilter { ($Username -eq $user) -and ($Password -eq $passwordPlain) } -ModuleName $dscResourceName
+
+                $password = ConvertTo-SecureString -String $passwordPlain -AsPlainText -Force
+                $cred = New-Object pscredential -ArgumentList $user, $password
+
+                $invokeScriptParameters.Add("Credential", $cred)
+
+                $null = Invoke-SqlScript @invokeScriptParameters
+
+                It 'Should call Invoke-Sqlcmd with correct parameters' {
+                    Assert-MockCalled -CommandName Invoke-Sqlcmd -Times 1 -Exactly -ParameterFilter { ($Username -eq $user) -and ($Password -eq $passwordPlain) }
+                }
+            }
+
+            Context 'Invoke-SqlScript fails to execute the SQL scripts' {
+                $errorMessage = "Failed to run SQL Script"
+
+                Mock -CommandName Import-Module -MockWith {} -ModuleName $sqlServerHelperModuleName
+                Mock -CommandName Invoke-Sqlcmd -MockWith { Throw $errorMessage } -ModuleName $script:DSCResourceName
+
+                It 'Should throw an error' {
+                    { Invoke-SqlScript @invokeScriptParameters } | Should Throw $errorMessage
+                } 
+            }
+        }  
     }
-    #endregion Test Sql script throws an error
-
-    #region Test Sql script returns null
-    Describe 'Test Sql script returns null' {
-        Mock -CommandName Import-Module -MockWith {} -ModuleName 'xSQLServerHelper'
-        Mock -CommandName Invoke-SqlScript -MockWith { $null } -ModuleName $script:DSCResourceName
-
-        $testParameters = @{
-            ServerInstance = $env:COMPUTERNAME 
-            SetFilePath = "set.sql" 
-            GetFilePath = "get.sql" 
-            TestFilePath = "test.sql"
-        }
-
-        It 'Get method returns successfully' {                     
-            $result = Get-TargetResource @testParameters
-
-            $result.ServerInstance | should be $testParameters.ServerInstance
-            $result.SetFilePath | should be $testParameters.SetFilePath
-            $result.GetFilePath | should be $testParameters.GetFilePath
-            $result.TestFilePath | should be $testParameters.TestFilePath
-            $result.GetType() | should be "hashtable"
-        }
-
-        It 'Test method returns true' {
-            Test-TargetResource @testParameters | should be $true
-        }
-    }
-    #endregion Test Sql script returns null
-
-    #region Get SQl script throws and error
-    Describe 'Get SQl script throws and error' {
-        Mock -CommandName Import-Module -MockWith {} -ModuleName 'xSQLServerHelper'
-
-        $testParameters = @{
-            ServerInstance = $env:COMPUTERNAME 
-            SetFilePath = "set.sql" 
-            GetFilePath = "get.sql" 
-            TestFilePath = "test.sql"
-        }
-
-        It 'Get throws when get sql script throws' {                     
-            Mock -CommandName Invoke-SqlScript -MockWith { Throw "Failed to run SQL Script" } -ModuleName $script:DSCResourceName
-
-            { Get-TargetResource @testParameters } | should throw "Failed to run SQL Script"
-        }
-
-        It 'Test method returns true' {
-            Mock -CommandName Invoke-SqlScript -MockWith { $null } -ModuleName $script:DSCResourceName
-
-            Test-TargetResource @testParameters | should be $true
-        }
-    }
-    #endregion
-
-    #region Set-TargetResource throws when Set Sql script throws
-    Describe 'Set-TargetResource throws when Set Sql script throws' {
-        Mock -CommandName Import-Module -MockWith {} -ModuleName 'xSQLServerHelper'
-        Mock -CommandName Invoke-SqlScript -MockWith { $null } -ModuleName $script:DSCResourceName
-
-        $testParameters = @{
-            ServerInstance = $env:COMPUTERNAME 
-            SetFilePath = "set.sql" 
-            GetFilePath = "get.sql" 
-            TestFilePath = "test.sql"
-        }
-
-        It 'Get method returns successfully' {      
-            $result = Get-TargetResource @testParameters
-
-            $result.ServerInstance | should be $testParameters.ServerInstance
-            $result.SetFilePath | should be $testParameters.SetFilePath
-            $result.GetFilePath | should be $testParameters.GetFilePath
-            $result.TestFilePath | should be $testParameters.TestFilePath
-            $result.GetType() | should be "hashtable"
-        }
-
-        It 'Test method returns true' {
-            Test-TargetResource @testParameters | should be $true
-        }
-
-        It 'Set method throws' {
-            Mock -CommandName Invoke-SqlScript -MockWith { throw "Failed to execute set Sql script" } -ModuleName $script:DSCResourceName
-
-            { Set-TargetResource @testParameters } | should throw "Failed to execute set Sql script"
-        }
-    }
-    #endregion
-
-    #region Failed to import SQLPS module
-    Describe 'Failed to import SQLPS module' {
-        $throwMessage = "Failed to import SQLPS module. InnerException: Failed to import module SQLPS"
-
-        Mock -CommandName Import-Module -MockWith { throw "Failed to import module SQLPS" } -ModuleName 'xSQLServerHelper'
-
-        $testParameters = @{
-            ServerInstance = $env:COMPUTERNAME 
-            SetFilePath = "set.sql" 
-            GetFilePath = "get.sql" 
-            TestFilePath = "test.sql"
-        }
-
-        It 'Get method throws' {         
-            { $result = Get-TargetResource @testParameters } | should throw $throwMessage
-        }
-
-        It 'Test method throws' {
-            { Test-TargetResource @testParameters } | should throw $throwMessage
-        }
-
-        It 'Set method throws' {
-            { Set-TargetResource @testParameters} | should throw $throwMessage
-        }
-    }
-    #endregion
-
 }
 finally
 {
-    #region FOOTER
-
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment
-
-    #endregion
+    Invoke-TestCleanup
 }
