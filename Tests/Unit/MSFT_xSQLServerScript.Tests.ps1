@@ -110,7 +110,7 @@ try
                 $result = Set-TargetResource @testParameters
 
                 It 'Should return the expected results' {
-                    $result | should be ""
+                    $result | Should Be ""
                 }
             }
 
@@ -144,7 +144,7 @@ try
                 $result = Test-TargetResource @testParameters
 
                 It 'Should return true' {
-                    $result | should be $true
+                    $result | Should Be $true
                 }
             }
 
@@ -155,7 +155,7 @@ try
                 $result = Test-TargetResource @testParameters
 
                 It 'Should return false' {
-                    $result | should be $false
+                    $result | Should Be $false
                 }
             }
 
