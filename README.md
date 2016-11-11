@@ -361,8 +361,6 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * Fixes in xSQLServerRole
   - Updated Ensure parameter to 'Present' default value
   - Renamed helper functions *-SqlServerRole to *-SqlServerRoleMember
-* Fix in xSQLAlias
-  - BREAKING CHANGE: The type of the parameter TCPPort has changed. It is now String Type.
 * Changes to xSQLAlias
   - Add UseDynamicTcpPort parameter for option "Dynamically determine port"
 
