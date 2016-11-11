@@ -94,7 +94,7 @@ function Set-TargetResource
              New-VerboseMessage -Message "Joined $SQLServer\$SQLInstanceName to $AvailabilityGroupName"       
             }
         Catch
-            {Throw "Unable to Join $AvailabilityGroup on $SQLServer\$SQLInstanceName"
+            {Throw "Unable to Join $AvailabilityGroupName on $SQLServer\$SQLInstanceName"
              Exit
             }
 
