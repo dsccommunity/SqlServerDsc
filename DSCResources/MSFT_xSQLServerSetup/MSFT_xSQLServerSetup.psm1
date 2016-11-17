@@ -1,3 +1,5 @@
+Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Modules\xSQLServer.xPDT\xPDT.psm1') -Force
+
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -132,8 +134,6 @@ function Get-TargetResource
     )
 
     $InstanceName = $InstanceName.ToUpper()
-
-    Import-Module $PSScriptRoot\..\..\xPDT.psm1
 
     if($SourceCredential)
     {
@@ -503,8 +503,6 @@ function Set-TargetResource
 
     $SQLData = Get-TargetResource @PSBoundParameters
     $InstanceName = $InstanceName.ToUpper()
-
-    Import-Module $PSScriptRoot\..\..\xPDT.psm1
 
     if($SourceCredential)
     {
