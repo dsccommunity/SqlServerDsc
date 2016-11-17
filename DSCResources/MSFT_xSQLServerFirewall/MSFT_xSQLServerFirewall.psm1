@@ -1,3 +1,5 @@
+Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Modules\xSQLServer.xPDT\xPDT.psm1') -Force
+
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -20,8 +22,6 @@ function Get-TargetResource
     )
 
     $InstanceName = $InstanceName.ToUpper()
-
-    Import-Module $PSScriptRoot\..\..\xPDT.psm1
 
     $Path = Join-Path -Path (Join-Path -Path $SourcePath -ChildPath $SourceFolder) -ChildPath "setup.exe"
     $Path = ResolvePath $Path
@@ -180,8 +180,6 @@ function Set-TargetResource
     )
 
     $InstanceName = $InstanceName.ToUpper()
-
-    Import-Module $PSScriptRoot\..\..\xPDT.psm1
 
     $Path = Join-Path -Path (Join-Path -Path $SourcePath -ChildPath $SourceFolder) -ChildPath "setup.exe"
     $Path = ResolvePath $Path
