@@ -1,12 +1,3 @@
-$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-Write-Debug -Message "CurrentPath: $currentPath"
-
-# Load Common Code
-Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
-
-# DSC resource to manage SQL logins in server role
-# NOTE: This resource requires WMF5 and PsDscRunAsCredential
-
 function Get-TargetResource
 {
     [CmdletBinding()]
