@@ -1,8 +1,4 @@
-﻿# Load Common Code
-Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'xSQLServerHelper.psm1') `
-                               -Force
-<#
+﻿<#
     .SYNOPSIS
     Gets the current value of a SQL configuration option
 

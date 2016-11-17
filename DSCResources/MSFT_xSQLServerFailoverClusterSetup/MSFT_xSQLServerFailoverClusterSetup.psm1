@@ -1,11 +1,3 @@
-# NOTE: This resource requires WMF5 and PsDscRunAsCredential
-
-$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-Write-Debug -Message "CurrentPath: $currentPath"
-
-# Load Common Code
-Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
-
 function Get-TargetResource
 {
     [CmdletBinding()]

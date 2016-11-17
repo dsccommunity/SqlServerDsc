@@ -1,9 +1,4 @@
-﻿$ErrorActionPreference = "Stop"
-
-$script:currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -ErrorAction Stop
-
-function Get-TargetResource
+﻿function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
