@@ -89,10 +89,10 @@ try
         } -ModuleName $script:DSCResourceName -Verifiable
 
         # Mocking 64-bit OS
-        Mock -CommandName Get-WmiObject -MockWith {
+        Mock -CommandName Get-CimInstance -MockWith {
             return New-Object Object | 
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
-        } -ParameterFilter { $Class -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
+        } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is in the desired present state for 64-bit OS using TCP' {
             $testParameters = @{
@@ -124,7 +124,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -168,7 +168,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -209,7 +209,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -253,7 +253,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -265,10 +265,10 @@ try
         }
 
         # Mocking 32-bit OS
-        Mock -CommandName Get-WmiObject -MockWith {
+        Mock -CommandName Get-CimInstance -MockWith {
             return New-Object Object | 
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '32-bit' -PassThru -Force
-        } -ParameterFilter { $Class -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
+        } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is in the desired present state for 32-bit OS using TCP' {
             $testParameters = @{
@@ -300,7 +300,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -346,7 +346,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -397,10 +397,10 @@ try
         } -ModuleName $script:DSCResourceName -Verifiable
 
         # Mocking 64-bit OS
-        Mock -CommandName Get-WmiObject -MockWith {
+        Mock -CommandName Get-CimInstance -MockWith {
             return New-Object Object | 
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
-        } -ParameterFilter { $Class -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
+        } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is in the desired present state for 64-bit OS using Named Pipes' {
             $testParameters = @{
@@ -435,7 +435,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -479,7 +479,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -523,7 +523,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -535,10 +535,10 @@ try
         }
 
         # Mocking 32-bit OS
-        Mock -CommandName Get-WmiObject -MockWith {
+        Mock -CommandName Get-CimInstance -MockWith {
             return New-Object Object | 
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '32-bit' -PassThru -Force
-        } -ParameterFilter { $Class -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
+        } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is in the desired present state for 32-bit OS using Named Pipes' {
             $testParameters = @{
@@ -573,7 +573,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -600,10 +600,10 @@ try
         } -ModuleName $script:DSCResourceName -Verifiable
 
         # Mocking 64-bit OS
-        Mock -CommandName Get-WmiObject -MockWith {
+        Mock -CommandName Get-CimInstance -MockWith {
             return New-Object Object | 
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
-        } -ParameterFilter { $Class -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
+        } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
         
         Context 'When the system is not in the desired state for 64-bit OS using TCP' {
             It 'Should call mocked functions Test-Path, New-Item and Set-ItemProperty twice each when desired state should be present for protocol TCP' {
@@ -655,10 +655,10 @@ try
         }
 
         # Mocking 32-bit OS
-        Mock -CommandName Get-WmiObject -MockWith {
+        Mock -CommandName Get-CimInstance -MockWith {
             return New-Object Object | 
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '32-bit' -PassThru -Force
-        } -ParameterFilter { $Class -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
+        } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is not in the desired state for 32-bit OS using TCP' {
             It 'Should call mocked functions Test-Path, New-Item and Set-ItemProperty once each when desired state should be present for protocol TCP' {
@@ -729,10 +729,10 @@ try
         } -ModuleName $script:DSCResourceName -Verifiable
 
         # Mocking 64-bit OS
-        Mock -CommandName Get-WmiObject -MockWith {
+        Mock -CommandName Get-CimInstance -MockWith {
             return New-Object Object | 
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
-        } -ParameterFilter { $Class -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
+        } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is in the desired state (when using TCP)' {
             It 'Should return state as present ($true)' {
