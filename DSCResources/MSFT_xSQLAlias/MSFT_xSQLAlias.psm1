@@ -38,7 +38,7 @@ function Get-TargetResource
         return a value in the format 'DBNMPNTW,\\ServerName\PIPE\sql\query' or 'DBMSSOCN,ServerName.company.local,1433'
     #>
     $itemValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' -Name $Name -ErrorAction SilentlyContinue
-    if ((Get-WmiOSArchitecture) -eq '64-bit')
+    if ((Get-OSArchitecture) -eq '64-bit')
     {
         Write-Verbose "64-bit Operating System. Also get the client alias $Name from Wow6432Node"
         
@@ -125,7 +125,7 @@ function Set-TargetResource
         }
 
         # If this is a 64-bit OS then also update Wow6432Node
-        if ((Get-WmiOSArchitecture) -eq '64-bit')
+        if ((Get-OSArchitecture) -eq '64-bit')
         {
             if ($PSCmdlet.ShouldProcess($Name, 'Setting the client alias (32-bit)'))
             {
@@ -150,7 +150,7 @@ function Set-TargetResource
         }
             
         # If this is a 64-bit OS then also remove from Wow6432Node
-        if ((Get-WmiOSArchitecture) -eq '64-bit' -and (Test-Path -Path $registryPathWow6432Node))
+        if ((Get-OSArchitecture) -eq '64-bit' -and (Test-Path -Path $registryPathWow6432Node))
         {
             if ($PSCmdlet.ShouldProcess($Name, 'Remove the client alias (32-bit)'))
             {
@@ -237,9 +237,9 @@ function Test-TargetResource
     return $result
 }
 
-function Get-WmiOSArchitecture
+function Get-OSArchitecture
 {
-    return (Get-WmiObject -Class win32_OperatingSystem).OSArchitecture
+    return (Get-CimInstance -ClassName win32_OperatingSystem).OSArchitecture
 }
 
 Export-ModuleMember -Function *-TargetResource
