@@ -1,9 +1,3 @@
-$script:currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-Write-Debug -Message "CurrentPath: $script:currentPath"
-
-# Load helper functions
-Import-Module $script:currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
-
 function Get-TargetResource
 {
     [CmdletBinding()]

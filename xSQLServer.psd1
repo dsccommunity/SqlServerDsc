@@ -23,11 +23,32 @@ PowerShellVersion = '4.0'
 # Minimum version of the common language runtime (CLR) required by this module
 CLRVersion = '4.0'
 
+# Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
+NestedModules = @("Modules\xSQLServer.Helper\xSQLServer.Helper.psm1")
+
 # Functions to export from this module
 FunctionsToExport = '*'
 
 # Cmdlets to export from this module
-CmdletsToExport = '*'
+CmdletsToExport = @("Connect-SQL",
+                    "New-TerminatingError",
+                    "New-WarningMessage",
+                    "New-VerboseMessage",
+                    "Test-SQLDscParameterState",
+                    "Grant-ServerPerms",
+                    "Grant-CNOPerms",
+                    "New-ListenerADObject",
+                    "Import-SQLPSModule",
+                    "Get-SQLPSInstanceName",
+                    "Get-SQLPSInstance",
+                    "Get-SQLAlwaysOnEndpoint",
+                    "New-SqlDatabase",
+                    "Remove-SqlDatabase",
+                    "Add-SqlServerRole",
+                    "Remove-SqlServerRole",
+                    "Confirm-SqlServerRole",
+                    "Get-SqlDatabaseOwner",
+                    "Set-SqlDatabaseOwner")
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
 PrivateData = @{
