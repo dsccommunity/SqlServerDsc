@@ -345,6 +345,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
  * **ServerName**: (Key) The SQL Server you are aliasing (the netbios name or FQDN).
  * **Protocol**: Protocol to use when connecting. Valid values are 'TCP' or 'NP' (Named Pipes). Default value is 'TCP'.
  * **TCPPort**: The TCP port SQL is listening on. Only used when protocol is set to 'TCP'. Default value is port 1433.
+ * **UseDynamicTcpPort**: The UseDynamicTcpPort specify that the Net-Library will determine the port dynamically. The port specified in Port number will not be used. Default value is '$false'.
  * **PipeName**: (Read) Named Pipes path from the Get-TargetResource method.
 
 ## Versions
@@ -360,6 +361,9 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * Fixes in xSQLServerRole
   - Updated Ensure parameter to 'Present' default value
   - Renamed helper functions *-SqlServerRole to *-SqlServerRoleMember
+* Changes to xSQLAlias
+  - Add UseDynamicTcpPort parameter for option "Dynamically determine port"
+  - Change Get-WmiObject to Get-CimInstance in Resource and associated pester file
 
 ### 3.0.0.0
 * xSQLServerHelper
