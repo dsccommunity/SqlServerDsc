@@ -363,6 +363,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   - Renamed helper functions *-SqlServerRole to *-SqlServerRoleMember
 * Changes to xSQLAlias
   - Add UseDynamicTcpPort parameter for option "Dynamically determine port"
+  - Change Get-WmiObject to Get-CimInstance in Resource and associated pester file
 
 ### 3.0.0.0
 * xSQLServerHelper
