@@ -10,12 +10,12 @@ function Get-TargetResource
         [System.String]
         $Name,
 
-        [ValidateSet("Present","Absent")]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet("bulkadmin","dbcreator","diskadmin","processadmin","public","securityadmin","serveradmin","setupadmin","sysadmin")]
+        [ValidateSet('bulkadmin','dbcreator','diskadmin','processadmin','public','securityadmin','serveradmin','setupadmin','sysadmin')]
         [System.String[]]
         $ServerRole,
 
@@ -67,12 +67,12 @@ function Set-TargetResource
         [System.String]
         $Name,
 
-        [ValidateSet("Present","Absent")]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet("bulkadmin","dbcreator","diskadmin","processadmin","public","securityadmin","serveradmin","setupadmin","sysadmin")]
+        [ValidateSet('bulkadmin','dbcreator','diskadmin','processadmin','public','securityadmin','serveradmin','setupadmin','sysadmin')]
         [System.String[]]
         $ServerRole,
 
@@ -113,12 +113,12 @@ function Test-TargetResource
         [System.String]
         $Name,
 
-        [ValidateSet("Present","Absent")]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet("bulkadmin","dbcreator","diskadmin","processadmin","public","securityadmin","serveradmin","setupadmin","sysadmin")]
+        [ValidateSet('bulkadmin','dbcreator','diskadmin','processadmin','public','securityadmin','serveradmin','setupadmin','sysadmin')]
         [System.String[]]
         $ServerRole,
 
