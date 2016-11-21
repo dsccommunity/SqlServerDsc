@@ -355,6 +355,10 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * Created unit tests for xSQLServerConfiguration resource
 * Fixes in xSQLAOGroupJoin
   - Availability Group name now appears in the error message for a failed Availability Group join attempt.
+* Fixes in xSQLAlias
+  - Updated code to utilize CIM rather than WMI
+  - Renamed internal function to remove WMI reference
+  - Updated unit tests for CIM changes
 
 ### 3.0.0.0
 * xSQLServerHelper
