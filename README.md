@@ -353,9 +353,13 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * Fixes in xSQLServerConfiguration
   - Added support for clustered SQL instances
   - BREAKING CHANGE: Updated parameters to align with other resources (SQLServer / SQLInstanceName)
-* Created unit tests for xSQLServerConfiguration resource
+* Added tests for resources
+  - xSQLServerConfiguration
 * Fixes in xSQLAOGroupJoin
   - Availability Group name now appears in the error message for a failed Availability Group join attempt.
+* Fixes in xSQLServerRole
+  - Updated Ensure parameter to 'Present' default value
+  - Renamed helper functions *-SqlServerRole to *-SqlServerRoleMember
 
 ### 3.0.0.0
 * xSQLServerHelper
