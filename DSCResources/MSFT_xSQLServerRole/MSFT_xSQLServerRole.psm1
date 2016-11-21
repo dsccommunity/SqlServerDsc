@@ -89,6 +89,7 @@ function Set-TargetResource
 
     if ($sql)
     {
+        Write-Verbose "Setting SQL Server roles for $Name on SQL Server $SQLServer."
         if ($Ensure -eq 'Present')
         {
             Add-SqlServerRoleMember -SQL $sql -LoginName $Name -ServerRole $ServerRole
