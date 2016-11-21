@@ -248,7 +248,7 @@ function Test-TargetResource
         }
         else
         {
-            Write-Verbose "Ensure is in the desired state. Verifying values."
+            Write-Verbose -Message 'Ensure is in the desired state. Verifying values.'
 
             if ($Protocol -eq $currentValues.Protocol)
             {
