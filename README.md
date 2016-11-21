@@ -178,9 +178,10 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ### xSQLServerRole
 * **Name**: (Key) Name of the SQL Login to create
+* **Ensure**: If the values should be present or absent. Valid values are 'Present' or 'Absent'.
 * **ServerRole**: Type of SQL role to add.(bulkadmin, dbcreator, diskadmin, processadmin , public, securityadmin, serveradmin , setupadmin, sysadmin)
 * **SQLServer**: SQL Server where login should be created
-* **SQLInstance**: SQL Instance for the login
+* **SQLInstance**: (Key) SQL Instance for the login
 
 ### xSQLServerDatabaseRole
 * **Name**: (Key) Name of the SQL Login or the role on the database
@@ -352,9 +353,13 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * Fixes in xSQLServerConfiguration
   - Added support for clustered SQL instances
   - BREAKING CHANGE: Updated parameters to align with other resources (SQLServer / SQLInstanceName)
-* Created unit tests for xSQLServerConfiguration resource
+* Added tests for resources
+  - xSQLServerConfiguration
 * Fixes in xSQLAOGroupJoin
   - Availability Group name now appears in the error message for a failed Availability Group join attempt.
+* Fixes in xSQLServerRole
+  - Updated Ensure parameter to 'Present' default value
+  - Renamed helper functions *-SqlServerRole to *-SqlServerRoleMember
 
 ### 3.0.0.0
 * xSQLServerHelper
