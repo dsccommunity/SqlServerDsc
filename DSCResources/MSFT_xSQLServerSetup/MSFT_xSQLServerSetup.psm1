@@ -798,11 +798,10 @@ function Set-TargetResource
             $Log = $Log.Replace((Get-Variable -Name $LogVar).Value.GetNetworkCredential().Password,"********")
         }
     }
-    Write-Verbose "Arguments: $Log"
 
-    $Process = StartWin32Process -Path $Path -Arguments $Arguments
-    Write-Verbose $Process
-    WaitForWin32ProcessEnd -Path $Path -Arguments $Arguments
+    Write-Verbose "Arguments: $Log"
+    $Process = Start-Process -FilePath $Path -ArgumentList $Arguments -PassThru -Wait -NoNewWindow
+    Write-Information "setup exited with code $($Process.ExitCode)"
 
     if($ForceReboot -or ((Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue) -ne $null))
     {
