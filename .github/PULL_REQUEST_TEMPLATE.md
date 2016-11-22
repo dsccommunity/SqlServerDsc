@@ -11,8 +11,11 @@ Your contribution to this project is greatly appreciated!
 
 [Replace this with a description of your pull request]
 
-- [ ] Change details added to Unreleased section of changelog.md?
-- [ ] Added/updated documentation and descriptions in .schema.mof files where appropriate?
+This Pull Request fixes the following issues:
+[Replace this with the list of issues (use format Fixes #123)]
+
+- [ ] Change details added to Unreleased section of Changelog.md?
+- [ ] Added/updated documentation, comment-based help and descriptions in .schema.mof files where appropriate?
 - [ ] Examples appropriately updated?
 - [ ] New/changed code adheres to [Style Guidelines]?(https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md)?
 - [ ] [Unit and Integration tests](https://github.com/PowerShell/DscResources/blob/master/TestsGuidelines.md) created/updated where possible?
