@@ -4,6 +4,7 @@
 * Fixes in xSQLServerConfiguration
   - Added support for clustered SQL instances
   - BREAKING CHANGE: Updated parameters to align with other resources (SQLServer / SQLInstanceName)
+  - Updated code to utilize CIM rather than WMI
 * Added tests for resources
   - xSQLServerConfiguration
 * Fixes in xSQLAOGroupJoin
