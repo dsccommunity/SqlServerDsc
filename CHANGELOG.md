@@ -16,6 +16,8 @@
   - Add UseDynamicTcpPort parameter for option "Dynamically determine port"
   - Change Get-WmiObject to Get-CimInstance in Resource and associated pester file
 * Add CHANGELOG file
+* Add template file for New Issue and New Pull Request
+* Add Contributing.md file
 
 ### 3.0.0.0
 * xSQLServerHelper
