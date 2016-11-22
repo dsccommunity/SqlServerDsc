@@ -7,6 +7,7 @@
   - Updated code to utilize CIM rather than WMI
 * Added tests for resources
   - xSQLServerConfiguration
+  - xSQLServerSetup
 * Fixes in xSQLAOGroupJoin
   - Availability Group name now appears in the error message for a failed Availability Group join attempt.
 * Fixes in xSQLServerRole
@@ -18,6 +19,8 @@
 * Add CHANGELOG file
 * Add template file for New Issue and New Pull Request
 * Add Contributing.md file
+* Changes to xSQLServerSetup
+  - Now `Features` parameter is case-insensitive.
 
 ### 3.0.0.0
 * xSQLServerHelper
