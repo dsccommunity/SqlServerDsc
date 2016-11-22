@@ -131,7 +131,7 @@ function Get-TargetResource
 
         [System.Management.Automation.PSCredential]
         $ISSvcAccount,
-        
+
         [System.String]
         [ValidateSet("Automatic", "Disabled", "Manual")]
         $BrowserSvcStartupType
@@ -153,7 +153,7 @@ function Get-TargetResource
     {
         NetUse -SourcePath $SourcePath -Credential $SourceCredential -Ensure "Absent"
     }
-    
+
     if($InstanceName -eq "MSSQLSERVER")
     {
         $DBServiceName = "MSSQLSERVER"
@@ -171,7 +171,7 @@ function Get-TargetResource
         $ASServiceName = "MSOLAP`$$InstanceName"
     }
     $ISServiceName = "MsDtsServer" + $SQLVersion + "0"
-    
+
     $Services = Get-Service
     $Features = ""
     if($Services | Where-Object {$_.Name -eq $DBServiceName})
@@ -191,7 +191,25 @@ function Get-TargetResource
             Write-Verbose "Replication feature detected"
             $Features += "REPLICATION,"
         }
-
+        $FeaturesVersion = $SqlVersion + "0"
+        Write-Verbose "Detecting Client Connectivity Tools feature"
+        Write-Verbose "Reading registry key HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\$FeaturesVersion\Tools\Setup\Client_Components_Full"
+        $isCONNInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$FeaturesVersion\Tools\Setup\Client_Components_Full").FeatureList
+        Write-Verbose "SQL_Client_Connectivity_Tools = $isCONNInstalled"
+        if ($isCONNInstalled -like '*Connectivity_FNS=3*')
+        {
+            Write-Verbose "Client Connectivity Tools feature detected"
+            $Features += "CONN,"
+        }
+        Write-Verbose "Detecting Client Connectivity Backwards Compatibility Tools feature"
+        Write-Verbose "Reading registry key HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\$FeaturesVersion\Tools\Setup\Client_Components_Full"
+        $isBCInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$FeaturesVersion\Tools\Setup\Client_Components_Full").FeatureList
+        Write-Verbose "SQL_Client_Connectivity_Tools_Backwards_Compatibility = $isBCInstalled"
+        if ($isBCInstalled -like '*Tools_Legacy_FNS=3*')
+        {
+            Write-Verbose "Client Connectivity Tools Backwards Compatibility feature detected"
+            $Features += "BC,"
+            }
         $InstanceID = $FullInstanceID.Split(".")[1]
         $InstanceDir = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$FullInstanceID\Setup" -Name 'SqlProgramDir').SqlProgramDir.Trim("\")
         $null = [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO')
@@ -204,7 +222,7 @@ function Get-TargetResource
             $DBServer = New-Object ('Microsoft.SqlServer.Management.Smo.Server') "localhost\$InstanceName"
         }
         $SQLCollation = $DBServer.Collation
-        $SQLSysAdminAccounts = @() 
+        $SQLSysAdminAccounts = @()
         foreach($SQLUser in $DBServer.Logins)
         {
             foreach ($SQLRole in $SQLUser.ListMembers())
@@ -226,8 +244,8 @@ function Get-TargetResource
         $InstallSQLDataDir = $DBServer.InstallDataDirectory
         $SQLUserDBDir = $DBServer.DefaultFile
         $SQLUserDBLogDir = $DBServer.DefaultLog
-#        $SQLTempDBDir = 
-#        $SQLTempDBLogDir = 
+#        $SQLTempDBDir =
+#        $SQLTempDBLogDir =
         $SQLBackupDir = $DBServer.BackupDirectory
     }
     if($Services | Where-Object {$_.Name -eq $FTServiceName})
@@ -546,7 +564,7 @@ function Set-TargetResource
     # Determine features to install
     $FeaturesToInstall = ""
     foreach($feature in $Features.Split(","))
-    {   
+    {
         if(($SQLVersion -eq "13") -and (($feature -eq "SSMS") -or ($feature -eq "ADV_SSMS")))
         {
             Throw New-TerminatingError -ErrorType FeatureNotSupported -FormatArgs @($feature) -ErrorCategory InvalidData
