@@ -22,6 +22,7 @@
 - Add Contributing.md file
 - Changes to xSQLServerSetup
   - Now `Features` parameter is case-insensitive.
+- BREAKING CHANGE: Removed xSQLServerPowerPlan from this module. The resource has been moved to [xComputerManagement](https://github.com/PowerShell/xComputerManagement) and is now called xPowerPlan.
 
 ## 3.0.0.0
 

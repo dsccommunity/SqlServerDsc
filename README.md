@@ -56,7 +56,6 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **xSQLDatabaseRecoveryModel** resource to manage database recovery model
 * **xSQLServerMaxDop** resource to manage MaxDegree of Parallelism for SQL Server
 * **xSQLServerMemory** resource to manage Memory for SQL Server
-* **xSQLServerPowerPlan** resource to manage windows powerplan on SQL Server
 * **xSQLServerNetwork** resource to manage SQL Server Network Protocols
 * **xSQLServerDatabase** resource to manage ensure database is present or absent
 * **xSQLAOGroupEnsure** resource to ensure availability group is present or absent
@@ -262,10 +261,6 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **MaxMemory**: Maximum memory value to set SQL Server memory to
 * **SQLServer**: The SQL Server for the database
 * **SQLInstance**: (key) The SQL instance for the database
-
-### xSQLServerPowerPlan
-
-* **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
 
 ### xSQLServerNetwork
 
