@@ -128,8 +128,16 @@ function Set-TargetResource
             }
             if($RSConfig.VirtualDirectoryReportManager -ne $RMVirtualDirectory)
             {
-                $RSConfig.SetVirtualDirectory("ReportManager",$RMVirtualDirectory,$Language)
-                $RSConfig.ReserveURL("ReportManager","http://+:80",$Language)
+                if ($SQLVersion -eq '13')
+                {
+                    $virtualDirectoryName = 'ReportServerWebApp'
+                }
+                else
+                {
+                    $virtualDirectoryName = 'ReportManager'
+                }
+                $RSConfig.SetVirtualDirectory($virtualDirectoryName,$RMVirtualDirectory,$Language)
+                $RSConfig.ReserveURL($virtualDirectoryName,"http://+:80",$Language)
             }
             $RSScript = $RSConfig.GenerateDatabaseCreationScript($RSDatabase,$Language,$false)
             $RSScript.Script | Out-File $DBCreateFile
