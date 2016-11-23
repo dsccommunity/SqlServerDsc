@@ -97,11 +97,6 @@ Configuration AlwaysOnCluster
              DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
          }
 
-         xSQLServerPowerPlan ($Node.Nodename)
-         {
-             Ensure = "Present"
-         }
-
          xSQLServerMemory ($Node.Nodename)
          {
              Ensure = "Present"
@@ -230,17 +225,14 @@ Configuration AlwaysOnCluster
          }
          
          xSqlServerFirewall ($Node.NodeName)
-          {
+         {
              SourcePath = $Node.SourcePath
              InstanceName = $Node.InstanceName
              Features = $Node.Features
          
              DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
          }
-         xSQLServerPowerPlan ($Node.Nodename)
-         {
-             Ensure = "Present"
-         }
+
          xSQLServerMemory ($Node.Nodename)
          {
              Ensure = "Present"
