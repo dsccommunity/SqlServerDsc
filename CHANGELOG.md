@@ -1,8 +1,9 @@
 # Change log for xSQLServer
 
 ### Unreleased
-* Fix in xSQLServerRSConfig
-  - Fix the virtual directory creation for SQL 2016 (Web Portal)
+* Rework of xSQLServerRSConfig
+  - Fix issues related to SQL 2016
+  - Update the resoruce to match the HQRM criterias
 * Fixes in xSQLServerConfiguration
   - Added support for clustered SQL instances
   - BREAKING CHANGE: Updated parameters to align with other resources (SQLServer / SQLInstanceName)

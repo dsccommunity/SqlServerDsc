@@ -192,7 +192,11 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **RSSQLServer**: (Required) Name of the SQL Server to host the Reporting Service database.
 * **RSSQLInstanceName**: (Required) Name of the SQL Server instance to host the Reporting Service database.
 * **SQLAdminCredential**: (Required) Credential to be used to perform the configuration.
-* **IsInitialized**: Output is the Reporting Services instance initialized.
+* **IsInitialized**: (Output) Boolean if the Reporting Services instance is initialized.
+* **ServiceName**: (Output) The SSRS Windows service name.
+* **DatabaseName**: (Output) The SSRS database name.
+* **VirtualDirectoryReportManager**: (Output) Virtual directory name for the report manager.
+* **VirtualDirectoryReportServer**: (Output) Virtual directory name for the report server.
 
 ### xSQLServerLogin
 * **Ensure**: If the values should be present or absent. Valid values are 'Present' or 'Absent'. 
