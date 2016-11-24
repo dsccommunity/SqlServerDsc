@@ -10,6 +10,7 @@ function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingComputerNameHardcoded', '')]
     param
     (
         # Name of the SQL Server Reporting Services instance to be configured.
@@ -85,6 +86,7 @@ function Set-TargetResource
 {
     [CmdletBinding()]
     [OutputType([void])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingComputerNameHardcoded', '')]
     param
     (
         # Name of the SQL Server Reporting Services instance to be configured.
@@ -150,7 +152,7 @@ function Set-TargetResource
             $rsConfig.SetVirtualDirectory("ReportServerWebService", $virtualDirectory, $language)
             $rsConfig.ReserveURL("ReportServerWebService" ,"http://+:80", $language)
         }
-    }
+    } | Out-Null
 
 
     Write-Verbose 'Update the report manager virutal directory, if required'
@@ -164,7 +166,7 @@ function Set-TargetResource
             $rsConfig.SetVirtualDirectory($virtualDirectoryName, $virtualDirectory, $language)
             $rsConfig.ReserveURL($virtualDirectoryName, "http://+:80", $language)
         }
-    }
+    } | Out-Null
 
 
     Write-Verbose 'Create the database for the SQL Reporting Service' 
@@ -181,7 +183,7 @@ function Set-TargetResource
         $rsCreateScript.Script | Out-File $dbCreateFile
 
         Invoke-Sqlcmd -ServerInstance $rsConnection -InputFile $dbCreateFile -Verbose
-    }
+    } | Out-Null
 
 
     Write-Verbose 'Update rights on the database of SQL Reporting Service' 
@@ -204,7 +206,7 @@ function Set-TargetResource
         $rsRightsScript.Script | Out-File $dbRightsFile
 
         Invoke-Sqlcmd -ServerInstance $rsConnection -InputFile $dbRightsFile -Verbose
-    }
+    } | Out-Null
 
 
     Write-Verbose 'Update rights on the database of SQL Reporting Service' 
@@ -214,7 +216,7 @@ function Set-TargetResource
         $rsConfig = Get-WmiObject -Class MSReportServer_ConfigurationSetting -Namespace "root\Microsoft\SQLServer\ReportServer\RS_$instanceName\v$sqlVersion\Admin"
         $rsConfig.SetDatabaseConnection($rsConnection, $databaseName, 2, '', '')
         $rsConfig.InitializeReportServer($rsConfig.InstallationID)
-    }
+    } | Out-Null
 
 
     Write-Verbose "Restart the $($desiredConfig.ServiceName) service to apply the configuration"
