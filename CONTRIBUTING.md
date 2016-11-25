@@ -10,7 +10,7 @@ We follow all of the standard contribution guidelines for DSC resources [outline
 
 ### SQL Server products supported by resources
 
-Any resource should be able to target at least all SQL Server versions that is currently supported by Microsoft (also those in extended support).
+Any resource should be able to target at least all SQL Server versions that are currently supported by Microsoft (also those in extended support).
 Unless the functionality that the resource targets does not exist in a certain SQL Server version.
 There can also be other limitations that restrict the resource from tageting all supported versions.
 
@@ -62,9 +62,9 @@ The localized strings are placed in a file named 'xSQLServer.strings.psd1' which
 
 |Function|Short description|
 ---|---|---
-|`New-TerminatingError`| Throws a localized error message using `Throw`. The parameter `ErrorType` take the message type for which it will get the localized message string. |
-|`New-VerboseMessage`| Writes a localized verbose message using `Write-Verbose`. The parameter `ErrorType` take the message type for which it will get the localized message string. |
-|`New-WarningMessage`| Writes a localized warning message using `Write-Warning`. The parameter `ErrorType` take the message type for which it will get the localized message string. |
+|`New-TerminatingError`| Throws a localized error message using `Throw`. The parameter `ErrorType` takes the message type for which it will get the localized message string. |
+|`New-VerboseMessage`| Writes a localized verbose message using `Write-Verbose`. The parameter `ErrorType` takes the message type for which it will get the localized message string. |
+|`New-WarningMessage`| Writes a localized warning message using `Write-Warning`. The parameter `ErrorType` takes the message type for which it will get the localized message string. |
 
 ### Helper functions
 
