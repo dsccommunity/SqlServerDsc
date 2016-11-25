@@ -1,6 +1,6 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/mxn453y284eab8li/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xsqlserver/branch/master)
-
 # xSQLServer
+
+[![Build status](https://ci.appveyor.com/api/projects/status/mxn453y284eab8li/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xsqlserver/branch/master)
 
 The **xSQLServer** module contains DSC resources for deployment and configuration of SQL Server in a way that is fully compliant with the requirements of System Center.
 
@@ -8,33 +8,38 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## Contributing
-Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).  
+
+Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
 Also please check out the [specific guidelines](https://github.com/PowerShell/xSQLServer/blob/dev/CONTRIBUTING.md) for contributing to xSQLServer.
 
 ## Installation
 
-To manually install the module, download the source code and unzip the contents of the \Modules\xSQLServer directory to the $env:ProgramFiles\WindowsPowerShell\Modules folder 
+To manually install the module, download the source code and unzip the contents of the '\Modules\xSQLServer' directory to the '$env:ProgramFiles\WindowsPowerShell\Modules folder'.
 
 To install from the PowerShell gallery using PowerShellGet (in PowerShell 5.0) run the following command:
 
-    Find-Module -Name xSQLServer -Repository PSGallery | Install-Module
+```powershell
+Find-Module -Name xSQLServer -Repository PSGallery | Install-Module
+```
 
 To confirm installation, run the below command and ensure you see the Office Online Server DSC resoures available:
 
-    Get-DscResource -Module xSQLServer
+```powershell
+Get-DscResource -Module xSQLServer
+```
 
-## Requirements 
+## Requirements
 
-The minimum PowerShell version required is 4.0, which ships in Windows 8.1 or Windows Server 2012R2 (or higher versions).
+The minimum PowerShell version required is 4.0, which ships in Windows 8.1 or Windows Server 2012R2 (or higher versions). But PowerShell 4.0 can also be installed on Windows Server 2008 R2.
 The preferred version is PowerShell 5.0 or higher, which ships with Windows 10 or Windows Server 2016.
 
 ## Examples
 
 You can review the "examples" directory in the xSQLServer module for some general use scenarios for all of the resources that are in the module.
 
-## Changelog
+## Change log
 
-A full list of changes in each version can be found in the [change log](CHANGELOG.md)
+A full list of changes in each version can be found in the [change log](CHANGELOG.md).
 
 ## Resources
 
@@ -196,7 +201,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **IsInitialized**: Output is the Reporting Services instance initialized.
 
 ### xSQLServerLogin
-* **Ensure**: If the values should be present or absent. Valid values are 'Present' or 'Absent'. 
+
+* **Ensure**: If the values should be present or absent. Valid values are 'Present' or 'Absent'.
 * **Name**: (Key) The name of the SQL login. If LoginType is 'WindowsUser' or 'WindowsGroup' then provide the name in the format DOMAIN\name.
 * **LoginCredential**: If LoginType is 'SqlLogin' then a PSCredential is needed for the password to the login.
 * **LoginType**: The SQL login type. Valid values are 'SqlLogin', 'WindowsUser' or 'WindowsGroup'.
@@ -204,6 +210,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **SQLInstanceName**: (Key) The SQL instance for the login.
 
 ### xSQLServerRole
+
 * **Name**: (Key) Name of the SQL Login to create
 * **Ensure**: If the values should be present or absent. Valid values are 'Present' or 'Absent'.
 * **ServerRole**: Type of SQL role to add.(bulkadmin, dbcreator, diskadmin, processadmin , public, securityadmin, serveradmin , setupadmin, sysadmin)
@@ -211,38 +218,44 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **SQLInstance**: (Key) SQL Instance for the login
 
 ### xSQLServerDatabaseRole
+
 * **Name**: (Key) Name of the SQL Login or the role on the database
 * **SQLServer**: The SQL Server for the database
 * **SQLInstanceName**: The SQL Instance for the database
 * **Database**: The SQL Database for the role
 * **Role**: The SQL role for the database
 
-###xSQLServerDatabasePermissions
+### xSQLServerDatabasePermissions
+
 * **Database**: (Key) The SQL Database
 * **Name**: (Required) The name of permissions for the SQL database
 * **Permissions**: (Required) The set of Permissions for the SQL database
 * **SQLServer**: The SQL Server for the database
 * **SQLInstanceName**: The SQL instance for the database
 
-###xSQLServerDatabaseOwner
+### xSQLServerDatabaseOwner
+
 * **Database**: (Key) The SQL Database
 * **Name**: (Required) The name of the SQL login for the owner
 * **SQLServer**: The SQL Server for the database
 * **SQLInstance**: The SQL instance for the database
 
-###xSQLDatabaseRecoveryModel
+### xSQLDatabaseRecoveryModel
+
 * **DatabaseName**: (key) The SQL database name
 * **SQLServerInstance**: (Required) The SQL server and instance
 * **RecoveryModel**: (Required) Recovery Model (Full, Simple, BulkLogged)
 
-###xSQLServerMaxDop
+### xSQLServerMaxDop
+
 * **Ensure**: An enumerated value that describes if Min and Max memory is configured
 * **DyamicAlloc**: Flag to indicate if MaxDop is dynamically configured
 * **MaxDop**: Numeric value to configure MaxDop to
 * **SQLServer**: The SQL Server where to set MaxDop
 * **SQLInstance** (Key): The SQL instance where to set MaxDop
 
-###xSQLServerMemory
+### xSQLServerMemory
+
 * **Ensure**: An enumerated value that describes if Min and Max memory is configured
 * **DyamicAlloc**: (key) Flag to indicate if Memory is dynamically configured
 * **MinMemory**: Minimum memory value to set SQL Server memory to
@@ -250,10 +263,12 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **SQLServer**: The SQL Server for the database
 * **SQLInstance**: (key) The SQL instance for the database
 
-###xSQLServerPowerPlan
+### xSQLServerPowerPlan
+
 * **Ensure**: (key) An enumerated value that describes if Min and Max memory is configured
 
 ### xSQLServerNetwork
+
 * **InstanceName**: (Key) name of SQL Server instance for which network will be configured.
 * **ProtocolName**: (Required) Name of network protocol to be configured. Only tcp is currently supported.
 * **IsEnabled**: Enables/Disables network protocol.
@@ -261,13 +276,15 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **TCPPort**: Custom TCP port.
 * **RestartService**: If true will restart SQL Service instance service after update. Default false.
 
-###xSQLServerDatabase
+### xSQLServerDatabase
+
 * **Database**: (key) Database to be created or dropped
 * **Ensure**: (Default = 'Present') An enumerated value that describes if Database is to be present or absent.
 * **SQLServer**: (key) The SQL Server for the database
-* **SQLInstance**: (key) The SQL instance for the database 
+* **SQLInstance**: (key) The SQL instance for the database
 
-###xSQLAOGroupEnsure
+### xSQLAOGroupEnsure
+
 * **Ensure**: (Key) Determines whether the availability group should be added or removed.
 * **AvailabilityGroupName** (Key) Name for availability group.
 * **AvailabilityGroupNameListener** Listener name for availability group.
@@ -280,34 +297,39 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **EndPointPort** The TCP port for the SQL AG Endpoint (default 5022).
 * **SQLServer**: The SQL Server for the database.
 * **SQLInstance**: The SQL instance for the database.
-* **SetupCredential**: (Required) Credential to be used to Grant Permissions on SQL Server, set this to $null to use Windows Authentication. 
+* **SetupCredential**: (Required) Credential to be used to Grant Permissions on SQL Server, set this to $null to use Windows Authentication.
 
-###xSQLServerAOJoin
+### xSQLServerAOJoin
+
 * **Ensure**: (key) An enumerated value that describes if Replica is to be present or absent from availability group
 * **AvailabilityGroupName** (key) Name for availability group
 * **SQLServer**: The SQL Server for the database
 * **SQLInstance**: The SQL instance for the database
 * **SetupCredential**: (Required) Credential to be used to Grant Permissions on SQL Server
 
-###xSQLServerAlwaysOnService
+### xSQLServerAlwaysOnService
+
 * **Ensure**: (key) An enumerated value that describes if SQL server should have AlwaysOn property present or absent.
 * **SQLServer**: The SQL Server for the database
 * **SQLInstance**: The SQL instance for the database
 
-###xSQLServerEndpoint
+### xSQLServerEndpoint
+
 * **EndPointName**: Name for endpoint to be created on SQL Server
 * **Ensure**: (key) An enumerated value that describes if endpoint is to be present or absent on SQL Server
 * **Port**: Port Endpoint should listen on
 * **AuthorizedUser**:  User who should have connect ability to endpoint
 * **SQLServer**: The SQL Server for the database
-* **SQLInstance**: The SQL instance for the database 
+* **SQLInstance**: The SQL instance for the database
 
-###xWaitforAvailabilityGroup
+### xWaitforAvailabilityGroup
+
 * **Name**:  (key) Name for availability group
 * **RetryIntervalSec**: Interval to check for availability group
 * **RetryCount**: Maximum number of retries to check availability group creation
 
-###xSQLServerConfiguration
+### xSQLServerConfiguration
+
 * **SQLServer**: (Key) The hostname of the SQL Server to be configured
 * **SQLInstanceName**: (Write) Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
 * **OptionName**: (Key) The name of the SQL configuration option to be checked. For all possible values reference [MSDN](https://msdn.microsoft.com/en-us/library/ms189631.aspx) or run sp_configure.
@@ -316,6 +338,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **RestartTimeout**: The length of time, in seconds, to wait for the service to restart. Default is 120 seconds.
 
 ### xSQLServerPermission
+
 * **InstanceName** The SQL Server instance name.
 * **NodeName** The host name or FQDN.
 * **Ensure** If the permission should be present or absent.
@@ -323,12 +346,14 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **Permission** The permission to set for the login. Valid values are AlterAnyAvailabilityGroup, ViewServerState or AlterAnyEndPoint.
 
 ### xSQLServerEndpointState
+
 * **InstanceName** The SQL Server instance name.
 * **NodeName** The host name or FQDN.
 * **Name** The name of the endpoint.
 * **State** The state of the endpoint. Valid states are Started, Stopped or Disabled.
 
 ### xSQLServerEndpointPermission
+
 * **InstanceName** The SQL Server instance name.
 * **NodeName** The host name or FQDN.
 * **Ensure** If the permission should be present or absent.
@@ -337,7 +362,9 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **Permission** The permission to set for the login. Valid value for permission are only CONNECT.
 
 ### xSQLServerAvailabilityGroupListener
+
 *This resource requires that the CNO has been delegated the right `Create computer object` on the organizational unit (OU) in which the CNO resides.*
+
 * **InstanceName** The SQL Server instance name of the primary replica.
 * **NodeName** The host name or FQDN of the primary replica.
 * **Ensure** If the availability group listener should be present or absent.
@@ -347,30 +374,33 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **Port** The port used for the availability group listener.
 * **DHCP** If DHCP should be used for the availability group listener instead of static IP address.
 
-###xSQLServerReplication
+### xSQLServerReplication
+
 * **InstanceName**: (Key) SQL Server instance name where replication distribution will be configured.
 * **Ensure**: (Default = 'Present') 'Present' will configure replication, 'Absent' will disable replication.
 * **DistributorMode**: (Required), 'Local' - Instance will be configured as it's own distributor, 'Remote' - Instace will be configure with remote distributor (remote distributor needs to be already configured for distribution).
 * **AdminLinkCredentials**: (Required) - AdminLink password to be used when setting up publisher distributor relationship.
-* **DistributionDBName**: (Default = 'distribution') distribution database name. If DistributionMode='Local' this will be created, if 'Remote' needs to match distribution database on remote distributor. 
+* **DistributionDBName**: (Default = 'distribution') distribution database name. If DistributionMode='Local' this will be created, if 'Remote' needs to match distribution database on remote distributor.
 * **RemoteDistributor**: (Required if DistributionMode='Remote') SQL Server network name that will be used as distributor for local instance.
 * **WorkingDirectory**: (Required) Publisher working directory.
 * **UseTrustedConnection**: (Default = $true) Publisher security mode.
 * **UninstallWithForce**: (Default = $true) Force flag for uninstall procedure
 
-###xSQLServerScript
+### xSQLServerScript
+
 * **ServerInstance**: (Required) The name of an instance of the Database Engine. For default instances, only specify the computer name. For named instances, use the format ComputerName\\InstanceName.
 * **SetFilePath**: (Key) Path to SQL file that will perform Set action.
 * **GetFilePath**: (Key) Path to SQL file that will perform Get action. SQL Queries returned by this function are returned by the Get-DscConfiguration cmdlet with the GetResult parameter.
-* **TestFilePath**: (Key) Path to SQL file that will perform Test action. Any Script that does not throw an error and returns null is evaluated to true. Invoke-SqlCmd treats SQL Print statements as verbose text, this will not cause a Test to return false. 
+* **TestFilePath**: (Key) Path to SQL file that will perform Test action. Any Script that does not throw an error and returns null is evaluated to true. Invoke-SqlCmd treats SQL Print statements as verbose text, this will not cause a Test to return false.
 * **Credential**: Specifies the credentials for making a SQL Server Authentication connection to an instance of the Database Engine.
 * **Variable**: Creates a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable.
 
 ### xSQLAlias
- * **Ensure**: Determines whether the alias should be added or removed. Default value is 'Present'
- * **Name**: (Key) The name of Alias (e.g. svr01\inst01).
- * **ServerName**: (Key) The SQL Server you are aliasing (the netbios name or FQDN).
- * **Protocol**: Protocol to use when connecting. Valid values are 'TCP' or 'NP' (Named Pipes). Default value is 'TCP'.
- * **TCPPort**: The TCP port SQL is listening on. Only used when protocol is set to 'TCP'. Default value is port 1433.
- * **UseDynamicTcpPort**: The UseDynamicTcpPort specify that the Net-Library will determine the port dynamically. The port specified in Port number will not be used. Default value is '$false'.
- * **PipeName**: (Read) Named Pipes path from the Get-TargetResource method.
+
+* **Ensure**: Determines whether the alias should be added or removed. Default value is 'Present'
+* **Name**: (Key) The name of Alias (e.g. svr01\inst01).
+* **ServerName**: (Key) The SQL Server you are aliasing (the netbios name or FQDN).
+* **Protocol**: Protocol to use when connecting. Valid values are 'TCP' or 'NP' (Named Pipes). Default value is 'TCP'.
+* **TCPPort**: The TCP port SQL is listening on. Only used when protocol is set to 'TCP'. Default value is port 1433.
+* **UseDynamicTcpPort**: The UseDynamicTcpPort specify that the Net-Library will determine the port dynamically. The port specified in Port number will not be used. Default value is '$false'.
+* **PipeName**: (Read) Named Pipes path from the Get-TargetResource method.

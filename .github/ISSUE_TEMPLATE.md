@@ -1,6 +1,6 @@
 _Please provide the following information regarding your issue (place N/A if certain fields don't apply in your case:_
 
-**DELETE THIS LINE AND ABOVE**
+---- DELETE THIS LINE AND ABOVE ----
 
 **Details of the scenario you try and problem that is occurring:**
 
@@ -10,7 +10,7 @@ _Please provide the following information regarding your issue (place N/A if cer
 
 **Version of the DSC module you're using, or 'dev' if you're using current dev branch:**
 
-**DELETE THIS LINE AND BELOW**
+---- DELETE THIS LINE AND BELOW ----
 
 _Your feedback and support is greatly appreciated._
 
