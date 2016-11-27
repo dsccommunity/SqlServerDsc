@@ -29,6 +29,7 @@
 - Changes and enhancements in xSQLServerDatabaseRole
   - BREAKING CHANGE: Fixed so the same user can now be added to a role in one or more databases, and/or one or more instances. Now the parameters `SQLServer` and `SQLInstanceName` are mandatory.
   - Enhanced so the same user can now be added to more than one role
+- BREAKING CHANGE: Renamed xSQLAlias to xSQLServerAlias to align wíth naming convention.
 
 ## 3.0.0.0
 

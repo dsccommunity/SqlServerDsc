@@ -15,7 +15,7 @@ Configuration Example
     Import-DscResource -ModuleName xSqlServer
 
     node localhost {
-        xSQLAlias Remove_SqlAlias_TCP
+        xSQLServerAlias Remove_SqlAlias_TCP
         {
             Ensure = 'Absent'
             Name = 'SQLDSC-TCP'
@@ -25,7 +25,7 @@ Configuration Example
             PsDscRunAsCredential = $SysAdminAccount
         }
 
-        xSQLAlias Remove_SqlAlias_NP
+        xSQLServerAlias Remove_SqlAlias_NP
         {
             Ensure = 'Absent'
             Name = 'SQLDSC-NP'

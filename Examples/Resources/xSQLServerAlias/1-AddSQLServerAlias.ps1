@@ -15,7 +15,7 @@ Configuration Example
     Import-DscResource -ModuleName xSqlServer
 
     node localhost {
-        xSQLAlias Add_SqlAlias_TCP
+        xSQLServerAlias Add_SqlAlias_TCP
         {
             Ensure = 'Present'
             Name = 'SQLDSC-TCP'
@@ -25,7 +25,7 @@ Configuration Example
             PsDscRunAsCredential = $SysAdminAccount
         }
 
-        xSQLAlias Add_SqlAlias_TCPUseDynamicTcpPort
+        xSQLServerAlias Add_SqlAlias_TCPUseDynamicTcpPort
         {
             Ensure = 'Present'
             Name = 'SQLDSC-DYN'
@@ -35,7 +35,7 @@ Configuration Example
             PsDscRunAsCredential = $SysAdminAccount
         }
 
-        xSQLAlias Add_SqlAlias_NP
+        xSQLServerAlias Add_SqlAlias_NP
         {
             Ensure = 'Present'
             Name = 'SQLDSC-NP'
