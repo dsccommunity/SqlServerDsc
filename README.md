@@ -218,11 +218,12 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 
 ### xSQLServerDatabaseRole
 
-* **Name**: (Key) Name of the SQL Login or the role on the database
-* **SQLServer**: The SQL Server for the database
-* **SQLInstanceName**: The SQL Instance for the database
-* **Database**: The SQL Database for the role
-* **Role**: The SQL role for the database
+* **Ensure**: If 'Present' (the default value) then the login (user) will be added to the role(s). If 'Absent' then the login (user) will be removed from the role(s).
+* **Name**: (Key) The name of the login that will become a member, or removed as a member, of the role(s).
+* **SQLServer**: (Key) The SQL server on which the instance exist.
+* **SQLInstanceName**: (Key) The SQL instance in which the database exist.
+* **Database**: (Key) The database in which the login (user) and role(s) exist.
+* **Role**: One or more roles to which the login (user) will be added or removed.
 
 ### xSQLServerDatabasePermissions
 
