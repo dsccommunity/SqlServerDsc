@@ -78,10 +78,7 @@ Configuration SQLSA
                InstanceName = $Node.InstanceName
                Features = $Node.Features
            }
-           xSQLServerPowerPlan ($Node.Nodename)
-           {
-               Ensure = "Present"
-           }
+
            xSQLServerMemory ($Node.Nodename)
            {
                DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
