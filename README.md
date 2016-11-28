@@ -70,7 +70,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **xSQLServerAvailabilityGroupListener** Create or remove an availability group listener.
 * **xSQLServerReplication** resource to manage SQL Replication distribution and publishing.
 * **xSQLServerScript** resource to extend DSCs Get/Set/Test functionality to T-SQL
-* **xSQLAlias** resource to manage SQL Server client Aliases
+* **xSQLServerAlias** resource to manage SQL Server client Aliases
 
 ### xSQLServerSetup
 
@@ -391,7 +391,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **Credential**: Specifies the credentials for making a SQL Server Authentication connection to an instance of the Database Engine.
 * **Variable**: Creates a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable.
 
-### xSQLAlias
+### xSQLServerAlias
 
 * **Ensure**: Determines whether the alias should be added or removed. Default value is 'Present'
 * **Name**: (Key) The name of Alias (e.g. svr01\inst01).
