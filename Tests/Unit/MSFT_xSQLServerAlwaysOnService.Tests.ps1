@@ -99,8 +99,12 @@ try
         Mock -CommandName Restart-SqlService -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
 
         Mock -CommandName Enable-SqlAlwaysOn -MockWith {} -ModuleName $script:DSCResourceName
+        
+        Mock -CommandName New-TerminatingError { $ErrorType } -ModuleName $script:DSCResourceName
 
-        Mock -CommandName Disable-SqlAlwaysOn -MockWith {} -ModuleName $script:DSCResourceName
+        Mock -CommandName New-VerboseMessage -MockWith {} -ModuleName $script:DSCResourceName
+
+        Mock -CommandName Restart-SqlService -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'Change the system to the desired state' {
             It 'Should enable SQL Always On when Ensure is Present' {
@@ -176,6 +180,7 @@ try
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Disable-SqlAlwaysOn -Scope It -Times 0
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Enable-SqlAlwaysOn -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Restart-SqlService -Scope It -Times 1
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName New-TerminatingError -Scope It -Times 1
             }
 
             It 'Should throw the correct error message when Ensure is Absent, but IsHadrEnabled is $true' {
