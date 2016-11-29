@@ -303,7 +303,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **SQLInstanceName**: Name of the SQL instance to be configured.
 * **SetupCredential**: (Required) Credential to be used to Grant Permissions in SQL.
 
-### xSQLServerAlwaysOnService 
+### xSQLServerAlwaysOnService
 
 * **Ensure**: (Required) An enumerated value that describes if SQL server should have AlwaysOn property present or absent.
 * **SQLServer**: (Key) The hostname of the SQL Server to be configured.
