@@ -74,7 +74,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER',
+        $SQLInstanceName,
 
         [Parameter()]
         [Int32]
