@@ -156,7 +156,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER',
+        $SQLInstanceName,
 
         [Parameter()]
         [Int32]
