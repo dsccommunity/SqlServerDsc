@@ -70,3 +70,31 @@ The localized strings are placed in a file named 'xSQLServer.strings.psd1' which
 
 Helper functions or wrapper functions that are used by the resource can preferably be placed in the resource module file. If the functions are of a type that could be used by more than
 one resource, then the functions can also be placed in the common [xSQLServerHelper.psm1](https://github.com/PowerShell/xSQLServer/blob/dev/xSQLServerHelper.psm1) module file.
+
+### Tests
+
+#### Using SMO stub classes
+
+There are [stub classes](https://github.com/PowerShell/xSQLServer/blob/dev/Tests/Unit/Stubs/SMO.cs) for the SMO classes which can be used and improved on when creating tests where SMO classes are used in the code being tested.
+
+#### AppVeyor
+
+AppVeyor is the platform where the tests is run when sending in a Pull Request (PR). Due to a change in the build worker that AppVeyor provides it has already have the SMO assemblies loaded, which make our stub SMO classes unable to be initiated.
+To get around this we need to get a clean PowerShell environment to run our tests in. One way is to use `Start-Job`. So this change needs to be done to the unit test template before sending in a Pull Request (PR).
+
+```powershell
+#
+    AppVeyor build worker loads the SMO assembly which makes the SMO stub classes unable to be initiated.
+    Running the tests in a Start-Job script block give us a clean environment. This is a workaround.
+#>
+$testJob = Start-Job -ArgumentList $PSScriptRoot -ScriptBlock {
+    param
+    (
+        [System.String] $PSScriptRoot
+    )
+
+    # Unit test template goes here
+}
+
+$testJob | Receive-Job -Wait
+```
