@@ -157,7 +157,7 @@ function Test-TargetResource
         $RestartTimeout = 120
     )
     
-    # Determine the current state of Alway On 
+    # Determine the current state of Always On 
     $params = @{
         Ensure = $Ensure
         SQLServer = $SQLServer
