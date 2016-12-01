@@ -26,9 +26,9 @@ function Get-TargetResource
         [System.String]
         $Ensure,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLServer,
 
         [Parameter()]
         [System.String]
@@ -66,9 +66,9 @@ function Set-TargetResource
         [System.String]
         $Ensure,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLServer,
 
         [Parameter()]
         [System.String]
@@ -146,9 +146,9 @@ function Test-TargetResource
         [System.String]
         $Ensure,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLServer,
 
         [Parameter()]
         [System.String]
