@@ -18,6 +18,7 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
 function Get-TargetResource
 {
     [CmdletBinding()]
+    [OutputType([Hashtable])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -137,6 +138,7 @@ function Set-TargetResource
 function Test-TargetResource
 {
     [CmdletBinding()]
+    [OutputType([Boolean])]
     param
     (
         [parameter(Mandatory = $true)]
