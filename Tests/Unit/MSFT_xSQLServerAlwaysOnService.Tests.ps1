@@ -15,25 +15,25 @@ $TestEnvironment = Initialize-TestEnvironment `
     -DSCResourceName $script:DSCResourceName `
     -TestType Unit 
 
-$absentState = @{
+$disableHadr = @{
     Ensure = 'Absent'
     SQLServer = 'Server01'
     SQLInstanceName = 'MSSQLSERVER'
 }
 
-$presentState = @{
+$enableHadr = @{
     Ensure = 'Present'
     SQLServer = 'Server01'
     SQLInstanceName = 'MSSQLSERVER'
 }
 
-$absentStateNamedInstance = @{
+$disableHadrNamedInstance = @{
     Ensure = 'Absent'
     SQLServer = 'Server01'
     SQLInstanceName = 'NamedInstance'
 }
 
-$presentStateNamedInstance = @{
+$enableHadrNamedInstance = @{
     Ensure = 'Present'
     SQLServer = 'Server01'
     SQLInstanceName = 'NamedInstance'
@@ -53,10 +53,10 @@ try
             } -ModuleName $script:DSCResourceName -Verifiable
 
             # Get the current state
-            $result = Get-TargetResource @presentState
+            $result = Get-TargetResource @enableHadr
 
             It 'Should return the state as $false' {
-                $result.IsHadrEnabled | Should Not Be @{ 'Present' = $true; 'Absent' = $false }[$presentState.Ensure]
+                $result.IsHadrEnabled | Should Not Be @{ 'Present' = $true; 'Absent' = $false }[$enableHadr.Ensure]
             }
 
             It 'Should call Connect-SQL mock when getting the current state' {
@@ -73,10 +73,10 @@ try
             } -ModuleName $script:DSCResourceName -Verifiable
 
             # Get the current state
-            $result = Get-TargetResource @presentState
+            $result = Get-TargetResource @enableHadr
 
             It 'Should return the state as $true' {
-                $result.IsHadrEnabled | Should Be ( @{ 'Present' = $true; 'Absent' = $false }[$presentState.Ensure] )
+                $result.IsHadrEnabled | Should Be ( @{ 'Present' = $true; 'Absent' = $false }[$enableHadr.Ensure] )
             }
 
             It 'Should call Connect-SQL mock when getting the current state' {
@@ -115,7 +115,7 @@ try
                     }
                 } -ModuleName $script:DSCResourceName -Verifiable
                 
-                Set-TargetResource @presentState
+                Set-TargetResource @enableHadr
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Disable-SqlAlwaysOn -Scope It -Times 0
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Enable-SqlAlwaysOn -Scope It -Times 1
@@ -130,7 +130,7 @@ try
                     }
                 } -ModuleName $script:DSCResourceName -Verifiable
                 
-                Set-TargetResource @absentState
+                Set-TargetResource @disableHadr
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Disable-SqlAlwaysOn -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Enable-SqlAlwaysOn -Scope It -Times 0
@@ -145,7 +145,7 @@ try
                     }
                 } -ModuleName $script:DSCResourceName -Verifiable
                 
-                Set-TargetResource @presentStateNamedInstance
+                Set-TargetResource @enableHadrNamedInstance
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Disable-SqlAlwaysOn -Scope It -Times 0
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Enable-SqlAlwaysOn -Scope It -Times 1
@@ -160,7 +160,7 @@ try
                     }
                 } -ModuleName $script:DSCResourceName -Verifiable
                 
-                Set-TargetResource @absentStateNamedInstance
+                Set-TargetResource @disableHadrNamedInstance
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Disable-SqlAlwaysOn -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Enable-SqlAlwaysOn -Scope It -Times 0
@@ -175,7 +175,7 @@ try
                     }
                 } -ModuleName $script:DSCResourceName -Verifiable
                 
-                { Set-TargetResource @presentState } | Should Throw 'AlterAlwaysOnServiceFailed'
+                { Set-TargetResource @enableHadr } | Should Throw 'AlterAlwaysOnServiceFailed'
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Disable-SqlAlwaysOn -Scope It -Times 0
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Enable-SqlAlwaysOn -Scope It -Times 1
@@ -191,7 +191,7 @@ try
                     }
                 } -ModuleName $script:DSCResourceName -Verifiable
                 
-                { Set-TargetResource @absentState } | Should Throw 'AlterAlwaysOnServiceFailed'
+                { Set-TargetResource @disableHadr } | Should Throw 'AlterAlwaysOnServiceFailed'
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Disable-SqlAlwaysOn -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Enable-SqlAlwaysOn -Scope It -Times 0
@@ -210,11 +210,11 @@ try
         } -ModuleName $script:DSCResourceName -Verifiable
         
         It 'Should cause Test-TargetResource to return false when not in the desired state' {
-            Test-TargetResource @absentState | Should be $false
+            Test-TargetResource @disableHadr | Should be $false
         }
 
         It 'Should cause Test-TargetResource to return true when in the desired state' {
-            Test-TargetResource @presentState | Should be $true
+            Test-TargetResource @enableHadr | Should be $true
         }
     }
 }
