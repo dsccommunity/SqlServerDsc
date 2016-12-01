@@ -1225,11 +1225,9 @@ function Restart-SqlService
         [String]
         $SQLServer,
 
-        [Parameter()]
         [String]
         $SQLInstanceName = 'MSSQLSERVER',
 
-        [Parameter()]
         [Int32]
         $Timeout = 120
     )
