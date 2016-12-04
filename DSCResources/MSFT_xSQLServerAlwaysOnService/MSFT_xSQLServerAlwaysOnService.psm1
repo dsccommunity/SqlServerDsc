@@ -4,7 +4,7 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
 
 <#
     .SYNOPSIS
-    Gets the current value of the SQL Server HADR property. 
+    Gets the current value of the SQL Server HADR property.
 
     .PARAMETER Ensure
     HADR is Present (enabled) or Absent (disabled).
@@ -30,7 +30,7 @@ function Get-TargetResource
         [System.String]
         $SQLServer,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SQLInstanceName
     )
@@ -72,7 +72,7 @@ function Set-TargetResource
         [System.String]
         $SQLServer,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SQLInstanceName,
 
@@ -153,7 +153,7 @@ function Test-TargetResource
         [System.String]
         $SQLServer,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SQLInstanceName,
 
