@@ -124,9 +124,9 @@ try
 
         Mock -CommandName Restart-SqlService -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
 
-        Context 'Change the system to the desired state' {
+        Context 'When HADR is not in the desired state' {
 
-            It 'Should enable SQL Always On when Ensure is Present' {
+            It 'Should enable SQL Always On when Ensure is set to Present' {
                 
                 Mock -CommandName Connect-SQL -MockWith {
                     return New-Object PSObject -Property @{ 
@@ -141,7 +141,7 @@ try
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Restart-SqlService -Scope It -Times 1
             }
 
-            It 'Should disable SQL Always On when Ensure is Absent' {
+            It 'Should disable SQL Always On when Ensure is set to Absent' {
                 
                 Mock -CommandName Connect-SQL -MockWith {
                 return New-Object PSObject -Property @{ 
@@ -156,7 +156,7 @@ try
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Restart-SqlService -Scope It -Times 1
             }
 
-            It 'Should enable SQL Always On on a named instance when Ensure is Present' {
+            It 'Should enable SQL Always On on a named instance when Ensure is set to Present' {
                 
                 Mock -CommandName Connect-SQL -MockWith {
                     return New-Object PSObject -Property @{ 
@@ -171,7 +171,7 @@ try
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Restart-SqlService -Scope It -Times 1
             }
 
-            It 'Should disable SQL Always On on a named instance when Ensure is Absent' {
+            It 'Should disable SQL Always On on a named instance when Ensure is set to Absent' {
                 
                 Mock -CommandName Connect-SQL -MockWith {
                     return New-Object PSObject -Property @{ 
@@ -186,7 +186,7 @@ try
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Restart-SqlService -Scope It -Times 1
             }
 
-            It 'Should throw the correct error message when Ensure is Present, but IsHadrEnabled is $false' {
+            It 'Should throw the correct error message when Ensure is set to Present, but IsHadrEnabled is $false' {
                 
                 Mock -CommandName Connect-SQL -MockWith {
                     return New-Object PSObject -Property @{ 
@@ -202,7 +202,7 @@ try
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName New-TerminatingError -Scope It -Times 1
             }
 
-            It 'Should throw the correct error message when Ensure is Absent, but IsHadrEnabled is $true' {
+            It 'Should throw the correct error message when Ensure is set to Absent, but IsHadrEnabled is $true' {
                 
                 Mock -CommandName Connect-SQL -MockWith {
                     return New-Object PSObject -Property @{ 
