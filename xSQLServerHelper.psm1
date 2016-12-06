@@ -1202,13 +1202,13 @@ function Set-SqlDatabaseOwner
     Hostname of the SQL Server to be configured
     
     .PARAMETER SQLInstanceName
-    Name of the SQL instance to be configued. Default is 'MSSQLSERVER'.
+    Name of the SQL instance to be configued. Default is 'MSSQLSERVER'
 
     .PARAMETER Timeout
     Timeout value for restarting the SQL services. The default value is 120 seconds.
 
     .EXAMPLE
-    Restart-SqlService -SQLServer $env:COMPUTERNAME
+    Restart-SqlService -SQLServer localhost
 
     .EXAMPLE
     Restart-SqlService -SQLServer localhost -SQLInstanceName 'NamedInstance'
@@ -1225,11 +1225,9 @@ function Restart-SqlService
         [String]
         $SQLServer,
 
-        [Parameter()]
         [String]
         $SQLInstanceName = 'MSSQLSERVER',
 
-        [Parameter()]
         [Int32]
         $Timeout = 120
     )
@@ -1271,7 +1269,7 @@ function Restart-SqlService
         New-VerboseMessage -Message 'Getting SQL Service information'
         $sqlService = Get-Service -DisplayName "SQL Server ($($serverObject.ServiceName))"
 
-        ## Get all dependent services that are running
+        ## Get all dependent services that are running.
         ## There are scenarios where an automatic service is stopped and should not be restarted automatically.
         $agentService = $sqlService.DependentServices | Where-Object { $_.Status -eq "Running" }
 
@@ -1279,7 +1277,7 @@ function Restart-SqlService
         New-VerboseMessage -Message 'SQL Server service restarting'
         $sqlService | Restart-Service -Force
 
-        ## Start dependent services 
+        ## Start dependent services
         $agentService | ForEach-Object {
             New-VerboseMessage -Message "Starting $($_.DisplayName)"
             $_ | Start-Service
