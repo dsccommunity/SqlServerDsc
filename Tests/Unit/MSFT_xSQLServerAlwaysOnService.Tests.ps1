@@ -105,23 +105,19 @@ try
 
     Describe "$($script:DSCResourceName)\Set-TargetResource" {
 
-        # Loading stub cmdlets
+                # Loading stub cmdlets
         Import-Module -Name ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SQLPSStub.psm1 ) -Force
 
         Mock -CommandName Disable-SqlAlwaysOn -MockWith {} -ModuleName $script:DSCResourceName
 
         Mock -CommandName Enable-SqlAlwaysOn -MockWith {} -ModuleName $script:DSCResourceName
-        
-        Mock -CommandName New-TerminatingError { $ErrorType } -ModuleName $script:DSCResourceName
 
-        Mock -CommandName Restart-SqlService -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
-
-        Mock -CommandName Enable-SqlAlwaysOn -MockWith {} -ModuleName $script:DSCResourceName
+        Mock -CommandName Import-SQLPSModule -MockWith {} -ModuleName $script:DSCResourceName
         
         Mock -CommandName New-TerminatingError { $ErrorType } -ModuleName $script:DSCResourceName
 
         Mock -CommandName New-VerboseMessage -MockWith {} -ModuleName $script:DSCResourceName
-
+        
         Mock -CommandName Restart-SqlService -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When HADR is not in the desired state' {
