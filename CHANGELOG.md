@@ -11,6 +11,8 @@
   - xSQLServerSetup
   - xSQLServerDatabaseRole
   - xSQLAOGroupJoin
+  - xSQLServerHelper and moved the existing tests for Restart-SqlService to it.
+  - xSQLServerAlwaysOnService
 - Fixes in xSQLAOGroupJoin
   - Availability Group name now appears in the error message for a failed Availability Group join attempt.
   - Get-TargetResource now works with Get-DscConfiguration
@@ -30,6 +32,11 @@
   - BREAKING CHANGE: Fixed so the same user can now be added to a role in one or more databases, and/or one or more instances. Now the parameters `SQLServer` and `SQLInstanceName` are mandatory.
   - Enhanced so the same user can now be added to more than one role
 - BREAKING CHANGE: Renamed xSQLAlias to xSQLServerAlias to align wíth naming convention.
+- Changes to xSQLServerAlwaysOnService
+  - Added RestartTimeout parameter
+  - Fixed bug where the SQL Agent service did not get restarted after the IsHadrEnabled property was set.
+  - BREAKING CHANGE: The mandatory parameters now include Ensure, SQLServer, and SQLInstanceName. SQLServer and SQLInstanceName are keys which will be used to uniquely identify the resource which allows AlwaysOn to be enabled on multiple instances on the same machine.
+- Moved Restart-SqlService from MSFT_xSQLServerConfiguration.psm1 to xSQLServerHelper.psm1.
 
 ## 3.0.0.0
 
