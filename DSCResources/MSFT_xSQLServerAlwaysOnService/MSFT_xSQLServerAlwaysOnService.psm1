@@ -7,6 +7,7 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
     Gets the current value of the SQL Server HADR property.
 
     .PARAMETER Ensure
+    *** Not used in this function ***
     HADR is Present (enabled) or Absent (disabled).
     
     .PARAMETER SQLServer

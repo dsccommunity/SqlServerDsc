@@ -1,4 +1,3 @@
-
 [ClassVersion("1.0.0.0"), FriendlyName("xSQLServerAlwaysOnService")]
 class MSFT_xSQLServerAlwaysOnService : OMI_BaseResource
 {
@@ -7,4 +6,3 @@ class MSFT_xSQLServerAlwaysOnService : OMI_BaseResource
     [Key, Description("Name of the SQL instance to be configured.")] String SQLInstanceName;
     [Write, Description("The length of time, in seconds, to wait for the service to restart. Default is 120 seconds.")] Sint32 RestartTimeout;
 };
-
