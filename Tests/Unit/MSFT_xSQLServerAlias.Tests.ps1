@@ -1,5 +1,5 @@
 $script:DSCModuleName      = 'xSQLServer' 
-$script:DSCResourceName    = 'MSFT_xSQLAlias' 
+$script:DSCResourceName    = 'MSFT_xSQLServerAlias' 
 
 #region HEADER
 
@@ -13,10 +13,9 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 
-$TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
-    -TestType Unit 
+$TestEnvironment = Initialize-TestEnvironment -DSCModuleName $script:DSCModuleName `
+                                              -DSCResourceName $script:DSCResourceName `
+                                              -TestType Unit 
 
 #endregion HEADER
 
@@ -29,6 +28,7 @@ try
     $name = 'MyAlias'
     $serverNameTcp = 'sqlnode.company.local'
     $tcpPort = 1433
+    $UseDynamicTcpPort = $false
     $serverNameNamedPipes = 'sqlnode'
     $pipeName = "\\$serverNameNamedPipes\PIPE\sql\query"
 
@@ -43,6 +43,14 @@ try
     $differentPipeName = "\\$unknownServerName\PIPE\sql\query"
 
     $nameWow6432NodeDifferFrom64BitOS = 'Wow6432NodeDifferFrom64BitOS'
+
+    $defaultParameters = @{
+        Name = $name
+        ServerName = $serverNameTcp
+        Protocol = 'TCP'
+        TcpPort = '1433'
+        Ensure = 'Present'
+    }
     #endregion Pester Test Initialization
 
     #region Get-TargetResource
@@ -89,10 +97,10 @@ try
         } -ModuleName $script:DSCResourceName -Verifiable
 
         # Mocking 64-bit OS
-        Mock -CommandName Get-WmiObject -MockWith {
+        Mock -CommandName Get-CimInstance -MockWith {
             return New-Object Object | 
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
-        } -ParameterFilter { $Class -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
+        } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is in the desired present state for 64-bit OS using TCP' {
             $testParameters = @{
@@ -124,7 +132,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -149,10 +157,7 @@ try
 
             It 'Should return the same values as passed as parameters' {
                 $result.Name | Should Be $testParameters.Name
-            }
-
-            It 'Should not return the value passed in the ServerName parameter' {
-                $result.ServerName | Should Be ''
+                $result.ServerName | Should Be $testParameters.ServerName
             }
 
             It 'Should not return any protocol' {
@@ -168,7 +173,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -209,7 +214,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -253,7 +258,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -264,17 +269,30 @@ try
             }
         }
 
-        # Mocking 32-bit OS
-        Mock -CommandName Get-WmiObject -MockWith {
-            return New-Object Object | 
-                Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '32-bit' -PassThru -Force
-        } -ParameterFilter { $Class -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
-
-        Context 'When the system is in the desired present state for 32-bit OS using TCP' {
+        Context 'When the system is not in the desired present state for 64-bit OS using UseDynamicTcpPort' {
             $testParameters = @{
                 Name = $name
                 ServerName = $serverNameTcp
             }
+            
+            # Testing protocol TCP "With Dynamically determine port"
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $name } -MockWith {
+                return @{
+                    'MyAlias' = 'DBMSSOCN,sqlnode.company.local,1433'
+                }
+            } -ModuleName $script:DSCResourceName -Verifiable
+
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node -and $Name -eq $name } -MockWith {
+                return @{
+                    'MyAlias' = 'DBMSSOCN,sqlnode.company.local,1433'
+                }
+            } -ModuleName $script:DSCResourceName -Verifiable
+
+            # Mocking 64-bit OS
+            Mock -CommandName Get-CimInstance -MockWith {
+                return New-Object Object | 
+                    Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
+            } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
             $result = Get-TargetResource @testParameters
 
@@ -291,8 +309,53 @@ try
                 $result.Protocol | Should Be 'TCP'
             }
             
-            It "Should return $tcpPort as the port number used" {
-                $result.TcpPort | Should Be $tcpPort
+            It 'Should return the UseDynamicTcpPort parameter as false' {
+                $result.UseDynamicTcpPort | Should Be $false
+            }
+            
+            It "Should not return any pipe name" {
+                $result.PipeName | Should Be ''
+            }
+
+            It 'Should not return any TCP Port' {
+                $result.TcpPort | Should Be 1433
+            }
+
+            It 'Should call the mocked functions exactly 1 time each' {
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+                
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+            }
+        }
+
+        # Mocking 32-bit OS
+        Mock -CommandName Get-CimInstance -MockWith {
+            return New-Object Object | 
+                Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '32-bit' -PassThru -Force
+        } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
+
+        Context 'When the system is in the desired present state for 32-bit OS using TCP' {
+            $testParameters = @{
+                Name = $name
+                ServerName = $serverNameTcp
+            }
+
+            $result = Get-TargetResource @testParameters
+
+            It 'Should return the state as present' {
+                $result.Ensure | Should Be 'Present'
+            }
+
+            It 'Should return the same values as passed as parameters' {
+                $result.Name | Should Be $testParameters.Name
+                $result.ServerName | Should Be $testParameters.ServerName
+                $result.Protocol | Should Be $defaultParameters.Protocol
+                $result.TcpPort | Should Be $defaultParameters.TcpPort
             }
 
             It 'Should not return any pipe name' {
@@ -300,13 +363,73 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
             }
 
+            It 'Should not call the Get-ItemProperty for the Wow6432Node-path' {
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    -Exactly -Times 0 -ModuleName $script:DSCResourceName -Scope Context
+            }
+        }
+
+        Context 'When the system is in the desired present state for 32-bit OS using UseDynamicTcpPort' {
+            $testParameters = @{
+                Name = $name
+                ServerName = $serverNameTcp
+            }
+
+            # Testing protocol TCP "With Dynamically determine port"
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $name } -MockWith {
+                return @{
+                    'MyAlias' = 'DBMSSOCN,sqlnode.company.local,1433'
+                }
+            } -ModuleName $script:DSCResourceName -Verifiable
+
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node -and $Name -eq $name } -MockWith {
+                return @{
+                    'MyAlias' = 'DBMSSOCN,sqlnode.company.local,1433'
+                }
+            } -ModuleName $script:DSCResourceName -Verifiable
+
+            $result = Get-TargetResource @testParameters
+
+            It 'Should return the state as present' {
+                $result.Ensure | Should Be 'Present'
+            }
+
+            It 'Should return the same values as passed as parameters' {
+                $result.Name | Should Be $testParameters.Name
+                $result.ServerName | Should Be $testParameters.ServerName
+            }
+
+            It 'Should return TCP as the protocol used' {
+                $result.Protocol | Should Be 'TCP'
+            }
+            
+            It 'Should return the UseDynamicTcpPort parameter as false' {
+                $result.UseDynamicTcpPort | Should Be $false
+            }
+            
+            It "Should not return any pipe name" {
+                $result.PipeName | Should Be ''
+            }
+
+            It 'Should not return any TCP Port' {
+                $result.TcpPort | Should Be 1433
+            }
+
+            It 'Should call the mocked functions exactly 1 time each' {
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+            }
+                        
             It 'Should not call the Get-ItemProperty for the Wow6432Node-path' {
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                     -Exactly -Times 0 -ModuleName $script:DSCResourceName -Scope Context
@@ -327,10 +450,7 @@ try
 
             It 'Should return the same values as passed as parameters' {
                 $result.Name | Should Be $testParameters.Name
-            }
-
-            It 'Should not return the value passed in the ServerName parameter' {
-                $result.ServerName | Should Be ''
+                $result.ServerName | Should Be $testParameters.ServerName
             }
 
             It 'Should not return any protocol' {
@@ -346,7 +466,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -397,10 +517,10 @@ try
         } -ModuleName $script:DSCResourceName -Verifiable
 
         # Mocking 64-bit OS
-        Mock -CommandName Get-WmiObject -MockWith {
+        Mock -CommandName Get-CimInstance -MockWith {
             return New-Object Object | 
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
-        } -ParameterFilter { $Class -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
+        } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is in the desired present state for 64-bit OS using Named Pipes' {
             $testParameters = @{
@@ -414,12 +534,9 @@ try
                 $result.Ensure | Should Be 'Present'
             }
 
-            It 'Should return the same value as passed in the Name parameter' {
+            It 'Should return the same values as passed as parameters' {
                 $result.Name | Should Be $testParameters.Name
-            }
-
-            It 'Should not return the value passed in the ServerName parameter' {
-                $result.ServerName | Should Be ''
+                $result.ServerName | Should Be $testParameters.ServerName
             }
 
             It 'Should return NP as the protocol used' {
@@ -435,7 +552,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -460,10 +577,7 @@ try
 
             It 'Should return the same values as passed as parameters' {
                 $result.Name | Should Be $testParameters.Name
-            }
-
-            It 'Should not return the value passed in the ServerName parameter' {
-                $result.ServerName | Should Be ''
+                $result.ServerName | Should Be $testParameters.ServerName
             }
 
             It 'Should return NP as the protocol used' {
@@ -479,7 +593,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -504,10 +618,7 @@ try
 
             It 'Should return the same values as passed as parameters' {
                 $result.Name | Should Be $testParameters.Name
-            }
-
-            It 'Should not return the value passed in the ServerName parameter' {
-                $result.ServerName | Should Be ''
+                $result.ServerName | Should Be $testParameters.ServerName
             }
 
             It 'Should not return any protocol' {
@@ -523,7 +634,7 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
@@ -535,10 +646,10 @@ try
         }
 
         # Mocking 32-bit OS
-        Mock -CommandName Get-WmiObject -MockWith {
+        Mock -CommandName Get-CimInstance -MockWith {
             return New-Object Object | 
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '32-bit' -PassThru -Force
-        } -ParameterFilter { $Class -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
+        } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is in the desired present state for 32-bit OS using Named Pipes' {
             $testParameters = @{
@@ -552,12 +663,9 @@ try
                 $result.Ensure | Should Be 'Present'
             }
 
-            It 'Should return the same value as passed in the Name parameter' {
+            It 'Should return the same values as passed as parameters' {
                 $result.Name | Should Be $testParameters.Name
-            }
-
-            It 'Should not return the value passed in the ServerName parameter' {
-                $result.ServerName | Should Be ''
+                $result.ServerName | Should Be $testParameters.ServerName
             }
 
             It 'Should return NP as the protocol used' {
@@ -573,13 +681,143 @@ try
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
-                Assert-MockCalled Get-WmiObject -ParameterFilter { $Class -eq 'win32_OperatingSystem' } `
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
 
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                     -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
             }
 
+            It 'Should not call the Get-ItemProperty for the Wow6432Node-path' {
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    -Exactly -Times 0 -ModuleName $script:DSCResourceName -Scope Context
+            }
+        }
+
+        # Mocking 64-bit OS
+        Mock -CommandName Get-CimInstance -MockWith {
+            return New-Object Object | 
+                Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
+        } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
+
+        Context 'When the system is in the desired present state for 64-bit OS using UseDynamicTcpPort' {
+            $testParameters = @{
+                Name = $name
+                ServerName = $serverNameTcp
+            }
+            
+            # Testing protocol TCP "With Dynamically determine port"
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $name } -MockWith {
+                return @{
+                    'MyAlias' = 'DBMSSOCN,sqlnode.company.local'
+                }
+            } -ModuleName $script:DSCResourceName -Verifiable
+
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node -and $Name -eq $name } -MockWith {
+                return @{
+                    'MyAlias' = 'DBMSSOCN,sqlnode.company.local'
+                }
+            } -ModuleName $script:DSCResourceName -Verifiable
+
+            $result = Get-TargetResource @testParameters
+
+            It 'Should return the state as present' {
+                $result.Ensure | Should Be 'Present'
+            }
+
+            It 'Should return the same values as passed as parameters' {
+                $result.Name | Should Be $testParameters.Name
+                $result.ServerName | Should Be $testParameters.ServerName
+            }
+
+            It 'Should return TCP as the protocol used' {
+                $result.Protocol | Should Be 'TCP'
+            }
+            
+            It 'Should return the UseDynamicTcpPort parameter as true' {
+                $result.UseDynamicTcpPort | Should Be $true
+            }
+            
+            It "Should not return any pipe name" {
+                $result.PipeName | Should Be ''
+            }
+
+            It 'Should not return any TCP Port' {
+                $result.TcpPort | Should Be 0
+            }
+
+            It 'Should call the mocked functions exactly 1 time each' {
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+                
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+            }
+        }
+                
+        # Mocking 32-bit OS
+        Mock -CommandName Get-CimInstance -MockWith {
+            return New-Object Object | 
+                Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '32-bit' -PassThru -Force
+        } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
+
+        Context 'When the system is in the desired present state for 32-bit OS using UseDynamicTcpPort' {
+            $testParameters = @{
+                Name = $name
+                ServerName = $serverNameTcp
+            }
+
+            # Testing protocol TCP "With Dynamically determine port"
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $name } -MockWith {
+                return @{
+                    'MyAlias' = 'DBMSSOCN,sqlnode.company.local'
+                }
+            } -ModuleName $script:DSCResourceName -Verifiable
+
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node -and $Name -eq $name } -MockWith {
+                return @{
+                    'MyAlias' = 'DBMSSOCN,sqlnode.company.local'
+                }
+            } -ModuleName $script:DSCResourceName -Verifiable
+
+            $result = Get-TargetResource @testParameters
+
+            It 'Should return the state as present' {
+                $result.Ensure | Should Be 'Present'
+            }
+
+            It 'Should return the same values as passed as parameters' {
+                $result.Name | Should Be $testParameters.Name
+                $result.ServerName | Should Be $testParameters.ServerName
+            }
+
+            It 'Should return TCP as the protocol used' {
+                $result.Protocol | Should Be 'TCP'
+            }
+            
+            It 'Should return the UseDynamicTcpPort parameter as true' {
+                $result.UseDynamicTcpPort | Should Be $true
+            }
+            
+            It "Should not return any pipe name" {
+                $result.PipeName | Should Be ''
+            }
+
+            It 'Should not return any TCP Port' {
+                $result.TcpPort | Should Be 0
+            }
+
+            It 'Should call the mocked functions exactly 1 time each' {
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+            }
+                        
             It 'Should not call the Get-ItemProperty for the Wow6432Node-path' {
                 Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                     -Exactly -Times 0 -ModuleName $script:DSCResourceName -Scope Context
@@ -600,10 +838,10 @@ try
         } -ModuleName $script:DSCResourceName -Verifiable
 
         # Mocking 64-bit OS
-        Mock -CommandName Get-WmiObject -MockWith {
+        Mock -CommandName Get-CimInstance -MockWith {
             return New-Object Object | 
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
-        } -ParameterFilter { $Class -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
+        } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
         
         Context 'When the system is not in the desired state for 64-bit OS using TCP' {
             It 'Should call mocked functions Test-Path, New-Item and Set-ItemProperty twice each when desired state should be present for protocol TCP' {
@@ -651,14 +889,61 @@ try
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Test-Path -Exactly 2 -Scope It
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Remove-ItemProperty -Exactly 2 -Scope It
             }
+        }
 
+        Context 'When the system is not in the desired state for 64-bit OS using UseDynamicTcpPort' {
+            It 'Should call mocked functions Test-Path, New-Item and Set-ItemProperty twice each when desired state should be present for protocol TCP' {
+                $testParameters = @{
+                    Name = $name
+                    Protocol = 'TCP'
+                    ServerName = $serverNameTcp
+                    UseDynamicTcpPort = $true
+                }
+
+                Set-TargetResource @testParameters
+
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Test-Path -Exactly 2 -Scope It
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName New-Item -Exactly 2 -Scope It
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Set-ItemProperty -Exactly 2 -Scope It
+            }
+
+            It 'Should call mocked functions Test-Path, New-Item and Set-ItemProperty twice each when desired state should be present for protocol Named Pipes' {
+                $testParameters = @{
+                    Name = $name
+                    Protocol = 'NP'
+                    ServerName = $serverNameNamedPipes
+                }
+
+                Set-TargetResource @testParameters
+
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Test-Path -Exactly 2 -Scope It
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName New-Item -Exactly 2 -Scope It
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Set-ItemProperty -Exactly 2 -Scope It
+            }
+
+            It 'Should call mocked functions Test-Path and Remove-ItemProperty twice each when desired state should be absent for 64-bit OS' {
+                Mock -CommandName Test-Path -MockWith {
+                    return $true
+                } -ModuleName $script:DSCResourceName -Verifiable
+
+                $testParameters = @{
+                    Ensure = 'Absent'
+                    Name = $name
+                    ServerName = $serverNameTcp
+                }
+
+                Set-TargetResource @testParameters
+
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Test-Path -Exactly 2 -Scope It
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Remove-ItemProperty -Exactly 2 -Scope It
+            }
         }
 
         # Mocking 32-bit OS
-        Mock -CommandName Get-WmiObject -MockWith {
+        Mock -CommandName Get-CimInstance -MockWith {
             return New-Object Object | 
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '32-bit' -PassThru -Force
-        } -ParameterFilter { $Class -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
+        } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is not in the desired state for 32-bit OS using TCP' {
             It 'Should call mocked functions Test-Path, New-Item and Set-ItemProperty once each when desired state should be present for protocol TCP' {
@@ -667,6 +952,54 @@ try
                     Protocol = 'TCP'
                     ServerName = $serverNameTcp
                     TcpPort = $tcpPort
+                }
+
+                Set-TargetResource @testParameters
+
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Test-Path -Exactly 1 -Scope It
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName New-Item -Exactly 1 -Scope It
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Set-ItemProperty -Exactly 1 -Scope It
+            }
+
+            It 'Should call mocked functions Test-Path, New-Item and Set-ItemProperty once each when desired state should be present for protocol Named Pipes' {
+                $testParameters = @{
+                    Name = $name
+                    Protocol = 'NP'
+                    ServerName = $serverNameNamedPipes
+                }
+
+                Set-TargetResource @testParameters
+
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Test-Path -Exactly 1 -Scope It
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName New-Item -Exactly 1 -Scope It
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Set-ItemProperty -Exactly 1 -Scope It
+            }
+
+            It 'Should call mocked functions Test-Path and Remove-ItemProperty once each when desired state should be absent for 32-bit OS' {
+                Mock -CommandName Test-Path -MockWith {
+                    return $true
+                } -ModuleName $script:DSCResourceName -Verifiable
+
+                $testParameters = @{
+                    Ensure = 'Absent'
+                    Name = $name
+                    ServerName = $serverNameNamedPipes
+                }
+
+                Set-TargetResource @testParameters
+
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Test-Path -Exactly 1 -Scope It
+                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Remove-ItemProperty -Exactly 1 -Scope It
+            }
+        }
+
+        Context 'When the system is not in the desired state for 32-bit OS using UseDynamicTcpPort' {
+            It 'Should call mocked functions Test-Path, New-Item and Set-ItemProperty once each when desired state should be present for protocol TCP' {
+                $testParameters = @{
+                    Name = $name
+                    Protocol = 'TCP'
+                    ServerName = $serverNameTcp
+                    UseDynamicTcpPort = $true
                 }
 
                 Set-TargetResource @testParameters
@@ -726,37 +1059,99 @@ try
 
         Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $unknownName } -MockWith {
             return $null
-        } -ModuleName $script:DSCResourceName -Verifiable
-
+        } -ModuleName $script:DSCResourceName -Verifiable      
+        
         # Mocking 64-bit OS
-        Mock -CommandName Get-WmiObject -MockWith {
+        Mock -CommandName Get-CimInstance -MockWith {
             return New-Object Object | 
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
-        } -ParameterFilter { $Class -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
+        } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is in the desired state (when using TCP)' {
-            It 'Should return state as present ($true)' {
-                $testParameters = @{
-                    Name = $name
-                    Protocol = 'TCP'
-                    ServerName = $serverNameTcp
-                    TcpPort = $tcpPort
-                }
-
+            $testParameters = @{
+                Name = $name
+                ServerName = $serverNameTcp
+            }
+    
+            It "Should return true from the test method" {
                 Test-TargetResource @testParameters | Should Be $true
+            }
+
+            It 'Should call the mocked functions exactly 1 time each' {
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+                
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+            }
+        }
+        
+        Context 'When the system is in the desired state (when using UseDynamicTcpPort)' {
+            $testParameters = @{
+                Name = $name
+                ServerName = $serverNameTcp
+            }
+    
+            It "Should return true from the test method" {
+                Test-TargetResource @testParameters | Should Be $true
+            }
+
+            It 'Should call the mocked functions exactly 1 time each' {
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+                
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
             }
         }
 
         Context 'When the system is not in the desired state (when using TCP)' {
-            It 'Should return state as absent ($false)' {
-                $testParameters = @{
-                    Name = $unknownName
-                    Protocol = 'TCP'
-                    ServerName = $serverNameTcp
-                    TcpPort = $tcpPort
-                }
-
+            $testParameters = @{
+                Name = $unknownName
+                ServerName = $serverNameTcp
+            }
+    
+            It "Should return false from the test method" {
                 Test-TargetResource @testParameters | Should Be $false
+            }
+
+            It 'Should call the mocked functions exactly 1 time each' {
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+                
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+            }
+        }
+                
+        Context 'When the system is not in the desired state (when using UseDynamicTcpPort)' {
+            $testParameters = @{
+                Name = $unknownName
+                ServerName = $serverNameTcp
+            }
+    
+            It "Should return false from the test method" {
+                Test-TargetResource @testParameters | Should Be $false
+            }
+
+            It 'Should call the mocked functions exactly 1 time each' {
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+                
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
             }
         }
 
@@ -777,26 +1172,47 @@ try
         } -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is in the desired state (when using Named Pipes)' {
-            It 'Should return state as present ($true)' {
-                $testParameters = @{
-                    Name = $name
-                    Protocol = 'NP'
-                    ServerName = $serverNameNamedPipes
-                }
-
+            $testParameters = @{
+                Name = $name
+                ServerName = $serverNameNamedPipes
+            }
+    
+            It "Should return true from the test method" {
+                $testParameters.Add('Protocol','NP')
                 Test-TargetResource @testParameters | Should Be $true
             }
+
+            It 'Should call the mocked functions exactly 1 time each' {
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+                
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+            }
         }
-
+        
         Context 'When the system is not in the desired state (when using Named Pipes)' {
-            It 'Should return state as absent ($false)' {
-                $testParameters = @{
-                    Name = $unknownName
-                    Protocol = 'NP'
-                    ServerName = $serverNameNamedPipes
-                }
-
+            $testParameters = @{
+                Name = $unknownName
+                ServerName = $unknownServerName
+            }
+    
+            It "Should return false from the test method" {
                 Test-TargetResource @testParameters | Should Be $false
+            }
+
+            It 'Should call the mocked functions exactly 1 time each' {
+                Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
+                
+                Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
             }
         }
     }
