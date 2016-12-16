@@ -67,6 +67,7 @@
     - 1-SetDatabaseRecoveryModel.ps1
 - Added tests for resources
   - xSQLServerDatabaseRecoveryModel
+  - xSQLServerDatabasePermissions
 - Changes to xSQLServerDatabaseRecoveryModel
   - BREAKING CHANGE: Renamed xSQLDatabaseRecoveryModel to xSQLServerDatabaseRecoveryModel to align wíth naming convention.
   - BREAKING CHANGE: The mandatory parameters now include SQLServer, and SQLInstanceName.
@@ -84,7 +85,6 @@
   - xSQLAOGroupJoin
   - xSQLServerHelper and moved the existing tests for Restart-SqlService to it.
   - xSQLServerAlwaysOnService
-  - xSQLServerDatabasePermissions
 - Fixes in xSQLAOGroupJoin
   - Availability Group name now appears in the error message for a failed Availability Group join attempt.
   - Get-TargetResource now works with Get-DscConfiguration
