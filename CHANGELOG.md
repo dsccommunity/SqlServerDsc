@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Improvements how tests are initiated in AppVeyor
+  - Removed previous workaround (issue #201) from unit tests.
+  - Changes in appveyor.yml so that SQL modules are removed before common test is run.
+
 ## 4.0.0.0
 
 - Fixes in xSQLServerConfiguration
