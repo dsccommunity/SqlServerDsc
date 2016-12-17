@@ -73,28 +73,13 @@ one resource, then the functions can also be placed in the common [xSQLServerHel
 
 ### Tests
 
+For a review of a Pull Request (PR) to start, all tests must pass without error. If you need help to figure why some test don't pass, just write a comment in the Pull Request (PR), or submit an issue, and somebody will come along an assist.
+
 #### Using SMO stub classes
 
 There are [stub classes](https://github.com/PowerShell/xSQLServer/blob/dev/Tests/Unit/Stubs/SMO.cs) for the SMO classes which can be used and improved on when creating tests where SMO classes are used in the code being tested.
 
 #### AppVeyor
 
-AppVeyor is the platform where the tests is run when sending in a Pull Request (PR). Due to a change in the build worker that AppVeyor provides it has already have the SMO assemblies loaded, which make our stub SMO classes unable to be initiated.
-To get around this we need to get a clean PowerShell environment to run our tests in. One way is to use `Start-Job`. So this change needs to be done to the unit test template before sending in a Pull Request (PR).
-
-```powershell
-#
-    AppVeyor build worker loads the SMO assembly which makes the SMO stub classes unable to be initiated.
-    Running the tests in a Start-Job script block give us a clean environment. This is a workaround.
-#>
-$testJob = Start-Job -ArgumentList $PSScriptRoot -ScriptBlock {
-    param
-    (
-        [System.String] $PSScriptRoot
-    )
-
-    # Unit test template goes here
-}
-
-$testJob | Receive-Job -Wait
-```
+AppVeyor is the platform where the tests is run when sending in a Pull Request (PR). All tests are run on a clean AppVeyor build worker for each push to the Pull Request (PR).
+The tests that are run on the build worker are common tests, unit test and integration tests (with some limitations).
