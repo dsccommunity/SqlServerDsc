@@ -33,6 +33,9 @@
 - Changes to the unit test for resource
   - xSQLServerSetup
     - Added test coverage for helper function Copy-ItemWithRoboCopy
+- Changes to xSSQLServerLogin
+  - Removed ShouldProcess statements
+  - Added the ability to enforce password policies on SQL logins
 
 ## 4.0.0.0
 
