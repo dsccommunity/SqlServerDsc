@@ -73,7 +73,7 @@ one resource, then the functions can also be placed in the common [xSQLServerHel
 
 ### Tests
 
-For a review of a Pull Request (PR) to start, all tests must pass without error. If you need help to figure why some test don't pass, just write a comment in the Pull Request (PR), or submit an issue, and somebody will come along an assist.
+For a review of a Pull Request (PR) to start, all tests must pass without error. If you need help to figure why some test don't pass, just write a comment in the Pull Request (PR), or submit an issue, and somebody will come along and assist.
 
 #### Using SMO stub classes
 
@@ -82,4 +82,4 @@ There are [stub classes](https://github.com/PowerShell/xSQLServer/blob/dev/Tests
 #### AppVeyor
 
 AppVeyor is the platform where the tests is run when sending in a Pull Request (PR). All tests are run on a clean AppVeyor build worker for each push to the Pull Request (PR).
-The tests that are run on the build worker are common tests, unit test and integration tests (with some limitations).
+The tests that are run on the build worker are common tests, unit tests and integration tests (with some limitations).
