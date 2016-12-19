@@ -102,38 +102,22 @@ try
             return @()
         }
 
-        $mockGetWmiObject_SqlProduct = {
+        $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber = '{72AB7E6F-BC24-481E-8C45-1AB5B3DD795D}'
+        $mockSqlServerManagementStudio2012_ProductIdentifyingNumber = '{B5FE23CC-0151-4595-84C3-F1DE6F44FE9B}'
+        $mockSqlServerManagementStudio2014_ProductIdentifyingNumber = '{A7037EB2-F953-4B12-B843-195F4D988DA1}'
+        $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber = '{7842C220-6E9A-4D5A-AE70-0E138271F883}'
+        $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber = '{75A54138-3B98-4705-92E4-F619825B121F}'
+        $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber = '{B5ECFA5C-AC4F-45A4-A12E-A76ABDD9CCBA}'
+
+        $mockRegistryUninstallProductsPath = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall'
+        $mockGetItemProperty_UninstallProducts = {
             return @(
-                (
-                    # Mock product SSMS 2008 and SSMS 2008 R2
-                    New-Object Object | 
-                        Add-Member -MemberType NoteProperty -Name 'IdentifyingNumber' -Value '{72AB7E6F-BC24-481E-8C45-1AB5B3DD795D}' -PassThru -Force
-                ),
-                (
-                    # Mock product ADV_SSMS 2008 and SSMS 2008 R2
-                    New-Object Object | 
-                        Add-Member -MemberType NoteProperty -Name 'IdentifyingNumber' -Value '{B5FE23CC-0151-4595-84C3-F1DE6F44FE9B}' -PassThru -Force
-                ),
-                (
-                    # Mock product SSMS 2012
-                    New-Object Object | 
-                        Add-Member -MemberType NoteProperty -Name 'IdentifyingNumber' -Value '{A7037EB2-F953-4B12-B843-195F4D988DA1}' -PassThru -Force
-                ),
-                (
-                    # Mock product ADV_SSMS 2012
-                    New-Object Object | 
-                        Add-Member -MemberType NoteProperty -Name 'IdentifyingNumber' -Value '{7842C220-6E9A-4D5A-AE70-0E138271F883}' -PassThru -Force
-                ),
-                (
-                    # Mock product SSMS 2014
-                    New-Object Object | 
-                        Add-Member -MemberType NoteProperty -Name 'IdentifyingNumber' -Value '{75A54138-3B98-4705-92E4-F619825B121F}' -PassThru -Force
-                ),
-                (
-                    # Mock product ADV_SSMS 2014
-                    New-Object Object | 
-                        Add-Member -MemberType NoteProperty -Name 'IdentifyingNumber' -Value '{B5ECFA5C-AC4F-45A4-A12E-A76ABDD9CCBA}' -PassThru -Force
-                )
+                $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber,  # Mock product SSMS 2008 and SSMS 2008 R2
+                $mockSqlServerManagementStudio2012_ProductIdentifyingNumber,    # Mock product ADV_SSMS 2008 and ADV_SSMS 2008 R2
+                $mockSqlServerManagementStudio2014_ProductIdentifyingNumber,    # Mock product SSMS 2012
+                $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber,  # Mock product ADV_SSMS 2012
+                $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber,    # Mock product SSMS 2014
+                $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber     # Mock product ADV_SSMS 2014
             )
         }
 
@@ -443,22 +427,36 @@ try
                             SourceCredential = $null
                             SourcePath = $mockSourcePath
                         }
-                        
+
                         if ($mockSqlMajorVersion -eq 13) {
                             # Mock all SSMS products here to make sure we don't return any when testing SQL Server 2016
-                            Mock -CommandName Get-WmiObject -ParameterFilter { 
-                                $Class -eq 'Win32_Product' 
-                            } -MockWith $mockGetWmiObject_SqlProduct -Verifiable
+                            Mock -CommandName Get-ItemProperty -ParameterFilter { 
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                            } -MockWith $mockGetItemProperty_UninstallProducts -Verifiable
                         } else {
-                            Mock -CommandName Get-WmiObject -ParameterFilter { 
-                                $Class -eq 'Win32_Product' 
+                            Mock -CommandName Get-ItemProperty -ParameterFilter { 
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                             } -MockWith $mockEmptyHashtable -Verifiable
                         }
+
+                        Mock -CommandName Get-WmiObject -ParameterFilter { 
+                            $Class -eq 'Win32_Service' 
+                        } -MockWith $mockGetService_DefaultInstance -Verifiable
 
                         Mock -CommandName NetUse -Verifiable
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
-                                $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable 
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter { 
@@ -474,13 +472,25 @@ try
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-                        Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                        } -Exactly -Times 6 -Scope It
 
                         Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                             -Exactly -Times 0 -Scope It
-
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                            -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should not return any names of installed features' {
@@ -531,19 +541,29 @@ try
                         
                         if ($mockSqlMajorVersion -eq 13) {
                             # Mock all SSMS products here to make sure we don't return any when testing SQL Server 2016
-                            Mock -CommandName Get-WmiObject -ParameterFilter { 
-                                $Class -eq 'Win32_Product' 
-                            } -MockWith $mockGetWmiObject_SqlProduct -Verifiable
+                            Mock -CommandName Get-ItemProperty -ParameterFilter { 
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                            } -MockWith $mockGetItemProperty_UninstallProducts -Verifiable
                         } else {
-                            Mock -CommandName Get-WmiObject -ParameterFilter { 
-                                $Class -eq 'Win32_Product' 
+                            Mock -CommandName Get-ItemProperty -ParameterFilter { 
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                             } -MockWith $mockEmptyHashtable -Verifiable
                         }
 
                         Mock -CommandName NetUse -Verifiable
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
-                                $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable 
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter { 
@@ -559,13 +579,25 @@ try
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-                        Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                        } -Exactly -Times 6 -Scope It
 
                         Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                             -Exactly -Times 0 -Scope It
-
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                            -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should not return any names of installed features' {
@@ -614,9 +646,14 @@ try
                             SourcePath = $mockSourcePath
                         }
 
-                        Mock -CommandName Get-WmiObject -ParameterFilter { 
-                            $Class -eq 'Win32_Product' 
-                        } -MockWith $mockGetWmiObject_SqlProduct -Verifiable
+                        Mock -CommandName Get-ItemProperty -ParameterFilter { 
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                        } -MockWith $mockGetItemProperty_UninstallProducts -Verifiable
 
                         Mock -CommandName NetUse -Verifiable
                         Mock -CommandName Get-Service -MockWith $mockGetService_DefaultInstance -Verifiable
@@ -625,7 +662,7 @@ try
                         } -MockWith $mockGetService_DefaultInstance -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
-                                $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable 
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter { 
@@ -641,13 +678,25 @@ try
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-                        Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 6 -Scope It
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                        } -Exactly -Times 6 -Scope It
 
                         Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                             -Exactly -Times 6 -Scope It
-
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                            -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should return correct names of installed features' {
@@ -700,9 +749,14 @@ try
                             SourcePath = $mockSourcePathUNC
                         }
 
-                        Mock -CommandName Get-WmiObject -ParameterFilter { 
-                            $Class -eq 'Win32_Product' 
-                        } -MockWith $mockGetWmiObject_SqlProduct -Verifiable
+                        Mock -CommandName Get-ItemProperty -ParameterFilter { 
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                        } -MockWith $mockGetItemProperty_UninstallProducts -Verifiable
 
                         Mock -CommandName NetUse -Verifiable
                         Mock -CommandName Get-Service -MockWith $mockGetService_DefaultInstance -Verifiable
@@ -711,7 +765,7 @@ try
                         } -MockWith $mockGetService_DefaultInstance -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
-                                $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable 
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter { 
@@ -727,13 +781,25 @@ try
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-                        Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 6 -Scope It
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                        } -Exactly -Times 6 -Scope It
 
                         Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                             -Exactly -Times 6 -Scope It
-
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                            -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should return correct names of installed features' {
@@ -795,22 +861,31 @@ try
                             SourcePath = $mockSourcePath
                         }
 
-                        # Mock this here to make sure we don't return any older components (<=2014) when testing SQL Server 2016
                         if ($mockSqlMajorVersion -eq 13) {
                             # Mock this here to make sure we don't return any older components (<=2014) when testing SQL Server 2016
-                            Mock -CommandName Get-WmiObject -ParameterFilter { 
-                                $Class -eq 'Win32_Product' 
-                            } -MockWith $mockGetWmiObject_SqlProduct -Verifiable
+                            Mock -CommandName Get-ItemProperty -ParameterFilter { 
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                            } -MockWith $mockGetItemProperty_UninstallProducts -Verifiable
                         } else {
-                            Mock -CommandName Get-WmiObject -ParameterFilter { 
-                                $Class -eq 'Win32_Product' 
+                            Mock -CommandName Get-ItemProperty -ParameterFilter { 
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                             } -MockWith $mockEmptyHashtable -Verifiable
                         }
 
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
-                                $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\ConfigurationState"
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\ConfigurationState"
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable 
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter { 
@@ -825,13 +900,25 @@ try
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-                        Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\ConfigurationState"
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                        } -Exactly -Times 6 -Scope It
 
                         Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                             -Exactly -Times 0 -Scope It
-
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                            -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should not return any names of installed features' {
@@ -880,10 +967,14 @@ try
                             SourcePath = $mockSourcePath
                         }
 
-                        # Mock this here to make sure we don't return any older components (<=2014) when testing SQL Server 2016
-                        Mock -CommandName Get-WmiObject -ParameterFilter { 
-                            $Class -eq 'Win32_Product' 
-                        } -MockWith $mockGetWmiObject_SqlProduct -Verifiable
+                        Mock -CommandName Get-ItemProperty -ParameterFilter { 
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                        } -MockWith $mockGetItemProperty_UninstallProducts -Verifiable
 
                         Mock -CommandName Get-Service -MockWith $mockGetService_NamedInstance -Verifiable
 
@@ -892,7 +983,7 @@ try
                         } -MockWith $mockGetService_NamedInstance -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
-                                $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\ConfigurationState"
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\ConfigurationState"
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable 
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter { 
@@ -907,13 +998,25 @@ try
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-                        Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 6 -Scope It
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\ConfigurationState"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                        } -Exactly -Times 6 -Scope It
 
                         Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                             -Exactly -Times 6 -Scope It
-
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                            -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should return correct names of installed features' {
@@ -1041,12 +1144,17 @@ try
                     }
 
                     # Mock all SSMS products here to make sure we don't return any when testing SQL Server 2016
-                    Mock -CommandName Get-WmiObject -ParameterFilter { 
-                        $Class -eq 'Win32_Product' 
-                    } -MockWith $mockGetWmiObject_SqlProduct -Verifiable
-
+                    Mock -CommandName Get-ItemProperty -ParameterFilter { 
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                    } -MockWith $mockGetItemProperty_UninstallProducts -Verifiable
+                        
                     Mock -CommandName Get-ItemProperty -ParameterFilter {
-                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
+                        $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
                     } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable 
 
                     Mock -CommandName Get-ItemProperty -ParameterFilter { 
@@ -1067,13 +1175,25 @@ try
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                     Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
                     Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-                    Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                        $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
+                    } -Exactly -Times 0 -Scope It
+
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                        $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
+                    } -Exactly -Times 0 -Scope It
+
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                    } -Exactly -Times 6 -Scope It
 
                     Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                         -Exactly -Times 0 -Scope It
-
-                    Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                        -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return that the desired state is asbent when SSMS product is missing' {
@@ -1092,13 +1212,25 @@ try
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-                    Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 6 -Scope It
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                        $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                        $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                    } -Exactly -Times 6 -Scope It
 
                     Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                         -Exactly -Times 6 -Scope It
-
-                    Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                        -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return that the desired state is asbent when ADV_SSMS product is missing' {
@@ -1117,13 +1249,25 @@ try
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-                    Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 6 -Scope It
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                        $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                        $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                    } -Exactly -Times 6 -Scope It
 
                     Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                         -Exactly -Times 6 -Scope It
-
-                    Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                        -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -1136,10 +1280,15 @@ try
                         SourcePath = $mockSourcePath
                     }
 
-                    Mock -CommandName Get-WmiObject -ParameterFilter { 
-                        $Class -eq 'Win32_Product' 
-                    } -MockWith $mockGetWmiObject_SqlProduct -Verifiable
-
+                    Mock -CommandName Get-ItemProperty -ParameterFilter { 
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                    } -MockWith $mockGetItemProperty_UninstallProducts -Verifiable
+                        
                     Mock -CommandName Get-Service -MockWith $mockGetService_DefaultInstance -Verifiable
 
                     Mock -CommandName Get-WmiObject -ParameterFilter {
@@ -1147,7 +1296,7 @@ try
                     } -MockWith $mockGetService_DefaultInstance -Verifiable
 
                     Mock -CommandName Get-ItemProperty -ParameterFilter {
-                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
+                        $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
                     } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable 
 
                     Mock -CommandName Get-ItemProperty -ParameterFilter { 
@@ -1162,13 +1311,25 @@ try
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-                    Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 6 -Scope It
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                        $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                        $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                        $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                    } -Exactly -Times 6 -Scope It
 
                     Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                         -Exactly -Times 6 -Scope It
-
-                    Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                        -Exactly -Times 1 -Scope It
                 }
             }
             
@@ -1266,21 +1427,18 @@ try
                         Mock -CommandName Get-TemporaryFolder -MockWith $mockGetTemporaryFolder -Verifiable
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
 
-                        Mock -CommandName Get-WmiObject -ParameterFilter { 
-                            $Class -eq 'Win32_Product' 
+                        Mock -CommandName Get-ItemProperty -ParameterFilter { 
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                         } -MockWith $mockEmptyHashtable -Verifiable
-
+                        
                         Mock -CommandName Get-WmiObject -ParameterFilter {
                             $Class -eq 'Win32_Service'
                         } -MockWith $mockEmptyHashtable -Verifiable
-
-                        Mock -CommandName Get-ItemProperty -ParameterFilter {
-                                $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
-                        } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable 
-
-                        Mock -CommandName Get-ItemProperty -ParameterFilter { 
-                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
-                        } -MockWith $mockGetItemProperty_Setup -Verifiable 
                     }
 
                     It 'Should set the system in the desired state when feature is SQLENGINE' {
@@ -1310,8 +1468,14 @@ try
                         Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                             -Exactly -Times 0 -Scope It
 
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                            -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                        } -Exactly -Times 6 -Scope It
 
                         Assert-MockCalled -CommandName StartWin32Process -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName WaitForWin32ProcessEnd -Exactly -Times 1 -Scope It
@@ -1356,8 +1520,14 @@ try
                             Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                                 -Exactly -Times 0 -Scope It
 
-                            Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                                -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                            } -Exactly -Times 6 -Scope It
 
                             Assert-MockCalled -CommandName StartWin32Process -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName WaitForWin32ProcessEnd -Exactly -Times 1 -Scope It
@@ -1387,8 +1557,15 @@ try
                             Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                                 -Exactly -Times 0 -Scope It
 
-                            Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                                -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                            } -Exactly -Times 6 -Scope It
+
 
                             Assert-MockCalled -CommandName StartWin32Process -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName WaitForWin32ProcessEnd -Exactly -Times 1 -Scope It
@@ -1414,18 +1591,15 @@ try
                         Mock -CommandName Get-WmiObject -ParameterFilter {
                             $Class -eq 'Win32_Service'
                         } -MockWith $mockEmptyHashtable -Verifiable
-
-                        Mock -CommandName Get-WmiObject -ParameterFilter { 
-                            $Class -eq 'Win32_Product' 
-                        } -MockWith $mockEmptyHashtable -Verifiable
-
-                        Mock -CommandName Get-ItemProperty -ParameterFilter {
-                                $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft copSQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
-                        } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable 
-
+                      
                         Mock -CommandName Get-ItemProperty -ParameterFilter { 
-                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
-                        } -MockWith $mockGetItemProperty_Setup -Verifiable 
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                        } -MockWith $mockEmptyHashtable -Verifiable
                     }
 
                     It 'Should set the system in the desired state when feature is SQLENGINE' {
@@ -1455,8 +1629,15 @@ try
                         Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                             -Exactly -Times 0 -Scope It
 
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                            -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                        } -Exactly -Times 6 -Scope It
+
 
                         Assert-MockCalled -CommandName StartWin32Process -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName WaitForWin32ProcessEnd -Exactly -Times 1 -Scope It
@@ -1501,8 +1682,15 @@ try
                             Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                                 -Exactly -Times 0 -Scope It
 
-                            Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                                -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                            } -Exactly -Times 6 -Scope It
+
 
                             Assert-MockCalled -CommandName StartWin32Process -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName WaitForWin32ProcessEnd -Exactly -Times 1 -Scope It
@@ -1531,8 +1719,14 @@ try
                             Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                                 -Exactly -Times 0 -Scope It
 
-                            Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                                -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                            } -Exactly -Times 6 -Scope It
 
                             Assert-MockCalled -CommandName StartWin32Process -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName WaitForWin32ProcessEnd -Exactly -Times 1 -Scope It
@@ -1559,8 +1753,13 @@ try
                             SourcePath = $mockSourcePath
                         }
 
-                        Mock -CommandName Get-WmiObject -ParameterFilter { 
-                            $Class -eq 'Win32_Product' 
+                        Mock -CommandName Get-ItemProperty -ParameterFilter { 
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                         } -MockWith $mockEmptyHashtable -Verifiable
 
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
@@ -1568,14 +1767,6 @@ try
                         Mock -CommandName Get-WmiObject -ParameterFilter {
                             $Class -eq 'Win32_Service'
                         } -MockWith $mockEmptyHashtable -Verifiable
-
-                        Mock -CommandName Get-ItemProperty -ParameterFilter {
-                                $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\ConfigurationState"
-                        } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable 
-
-                        Mock -CommandName Get-ItemProperty -ParameterFilter { 
-                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
-                        } -MockWith $mockGetItemProperty_Setup -Verifiable 
                     }
 
                     It 'Should set the system in the desired state when feature is SQLENGINE' {
@@ -1602,8 +1793,14 @@ try
                         Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                             -Exactly -Times 0 -Scope It
 
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                            -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                        } -Exactly -Times 6 -Scope It
 
                         Assert-MockCalled -CommandName StartWin32Process -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName WaitForWin32ProcessEnd -Exactly -Times 1 -Scope It
@@ -1648,8 +1845,14 @@ try
                             Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                                 -Exactly -Times 0 -Scope It
 
-                            Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                                -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                            } -Exactly -Times 6 -Scope It
 
                             Assert-MockCalled -CommandName StartWin32Process -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName WaitForWin32ProcessEnd -Exactly -Times 1 -Scope It
@@ -1678,8 +1881,14 @@ try
                             Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
                                 -Exactly -Times 0 -Scope It
 
-                            Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Product' } `
-                                -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                            } -Exactly -Times 6 -Scope It
 
                             Assert-MockCalled -CommandName StartWin32Process -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName WaitForWin32ProcessEnd -Exactly -Times 1 -Scope It

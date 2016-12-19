@@ -181,50 +181,52 @@ function Get-TargetResource
         $integrationServiceAccountUsername = (Get-WmiObject -Class Win32_Service | Where-Object {$_.Name -eq $integrationServiceName}).StartName
     }
 
-    $products = Get-WmiObject -Class Win32_Product
+    $registryUninstallPath = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall'
 
-    switch ($sqlVersion)
-    {
-        '10'
-        {
-            $identifyingNumber = '{72AB7E6F-BC24-481E-8C45-1AB5B3DD795D}'
-        }
-
-        '11'
-        {
-            $identifyingNumber = '{A7037EB2-F953-4B12-B843-195F4D988DA1}'
-        }
-
-        '12'
-        {
-            $identifyingNumber = '{75A54138-3B98-4705-92E4-F619825B121F}'
-        }
-    }
-
-    if ($products | Where-Object {$_.IdentifyingNumber -eq $identifyingNumber})
+    # Verify if SQL Server Management Studio 2008 or SQL Server Management Studio 2008 R2 (major version 10) is installed
+    $installedProductSqlServerManagementStudio2008R2 = Get-ItemProperty -Path (
+        Join-Path -Path $registryUninstallPath -ChildPath '{72AB7E6F-BC24-481E-8C45-1AB5B3DD795D}'
+    ) -ErrorAction SilentlyContinue
+    
+    # Verify if SQL Server Management Studio 2012 (major version 11) is installed
+    $installedProductSqlServerManagementStudio2012 = Get-ItemProperty -Path (
+        Join-Path -Path $registryUninstallPath -ChildPath '{A7037EB2-F953-4B12-B843-195F4D988DA1}'
+    ) -ErrorAction SilentlyContinue
+    
+    # Verify if SQL Server Management Studio 2014 (major version 12) is installed
+    $installedProductSqlServerManagementStudio2014 = Get-ItemProperty -Path (
+        Join-Path -Path $registryUninstallPath -ChildPath '{75A54138-3B98-4705-92E4-F619825B121F}'
+    ) -ErrorAction SilentlyContinue
+    
+    if (
+        $sqlVersion -eq 10 -and $installedProductSqlServerManagementStudio2008R2 -or
+        $sqlVersion -eq 11 -and $installedProductSqlServerManagementStudio2012 -or
+        $sqlVersion -eq 12 -and $installedProductSqlServerManagementStudio2014
+        )
     {
         $features += 'SSMS,'
     }
 
-    switch ($sqlVersion)
-    {
-        '10'
-        {
-            $identifyingNumber = '{B5FE23CC-0151-4595-84C3-F1DE6F44FE9B}'
-        }
+    # Evaluating if SQL Server Management Studio Advanced 2008  or SQL Server Management Studio Advanced 2008 R2 (major version 10) is installed
+    $installedProductSqlServerManagementStudioAdvanced2008R2 = Get-ItemProperty -Path (
+        Join-Path -Path $registryUninstallPath -ChildPath '{B5FE23CC-0151-4595-84C3-F1DE6F44FE9B}'
+    ) -ErrorAction SilentlyContinue
+    
+    # Evaluating if SQL Server Management Studio Advanced 2012 (major version 11) is installed
+    $installedProductSqlServerManagementStudioAdvanced2012 = Get-ItemProperty -Path (
+        Join-Path -Path $registryUninstallPath -ChildPath '{7842C220-6E9A-4D5A-AE70-0E138271F883}'
+    ) -ErrorAction SilentlyContinue
 
-        '11'
-        {
-            $identifyingNumber = '{7842C220-6E9A-4D5A-AE70-0E138271F883}'
-        }
+    # Evaluating if SQL Server Management Studio Advanced 2014 (major version 12) is installed
+    $installedProductSqlServerManagementStudioAdvanced2014 = Get-ItemProperty -Path (
+        Join-Path -Path $registryUninstallPath -ChildPath '{B5ECFA5C-AC4F-45A4-A12E-A76ABDD9CCBA}'
+    ) -ErrorAction SilentlyContinue
 
-        '12'
-        {
-            $identifyingNumber = '{B5ECFA5C-AC4F-45A4-A12E-A76ABDD9CCBA}'
-        }
-    }
-
-    if ($Products | Where-Object {$_.IdentifyingNumber -eq $identifyingNumber})
+    if (
+        $sqlVersion -eq 10 -and $installedProductSqlServerManagementStudioAdvanced2008R2 -or
+        $sqlVersion -eq 11 -and $installedProductSqlServerManagementStudioAdvanced2012 -or
+        $sqlVersion -eq 12 -and $installedProductSqlServerManagementStudioAdvanced2014
+        )
     {
         $features += 'ADV_SSMS,'
     }
