@@ -1,9 +1,21 @@
-$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-Write-Verbose -Message "CurrentPath: $currentPath"
+Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) -ChildPath 'xSQLServerHelper.psm1') -Force
 
-# Load Common Code
-Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
+<#
+    .SYNOPSIS
+    This function gets all Key properties defined in the resource schema file
 
+    .PARAMETER Database
+    This is the SQL database
+
+    .PARAMETER RecoveryModel
+    This is the RecoveryModel of the SQL database
+
+    .PARAMETER SQLServer
+    This is a the SQL Server for the database
+
+    .PARAMETER SQLInstanceName
+    This is a the SQL instance for the database
+#>
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -11,13 +23,17 @@ function Get-TargetResource
     param
     (
         [parameter(Mandatory = $true)]
-        [ValidateSet("Full","Simple","BulkLogged")]
+        [ValidateSet('Full','Simple','BulkLogged')]
         [System.String]
-        $RecoveryModel = "Full",
+        $RecoveryModel = 'Full',
 
         [parameter(Mandatory = $true)]
         [System.String]
-        $SqlServerInstance,
+        $SQLServer = $env:COMPUTERNAME,
+
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $SQLInstanceName = 'MSSQLSERVER',
 
         [parameter(Mandatory = $true)]
         [System.String]
@@ -40,25 +56,44 @@ function Get-TargetResource
     $returnValue
 }
 
+<#
+    .SYNOPSIS
+    This function gets all Key properties defined in the resource schema file
 
+    .PARAMETER Database
+    This is the SQL database
+
+    .PARAMETER RecoveryModel
+    This is the RecoveryModel of the SQL database
+
+    .PARAMETER SQLServer
+    This is a the SQL Server for the database
+
+    .PARAMETER SQLInstanceName
+    This is a the SQL instance for the database
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
     param
     (
         [parameter(Mandatory = $true)]
-        [ValidateSet("Full","Simple","BulkLogged")]
+        [ValidateSet('Full','Simple','BulkLogged')]
         [System.String]
-        $RecoveryModel = "Full",
+        $RecoveryModel = 'Full',
 
         [parameter(Mandatory = $true)]
         [System.String]
-        $SqlServerInstance,
+        $SQLServer = $env:COMPUTERNAME,
+
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $SQLInstanceName = 'MSSQLSERVER',
 
         [parameter(Mandatory = $true)]
         [System.String]
         $DatabaseName
-    )  
+    )
  
     $SqlServerInstance = $SqlServerInstance.Replace('\MSSQLSERVER','')  
     $db = Get-SqlDatabase -ServerInstance $SqlServerInstance -Name $DatabaseName    
@@ -77,7 +112,22 @@ function Set-TargetResource
     }    
 }
 
+<#
+    .SYNOPSIS
+    This function gets all Key properties defined in the resource schema file
 
+    .PARAMETER Database
+    This is the SQL database
+
+    .PARAMETER RecoveryModel
+    This is the RecoveryModel of the SQL database
+
+    .PARAMETER SQLServer
+    This is a the SQL Server for the database
+
+    .PARAMETER SQLInstanceName
+    This is a the SQL instance for the database
+#>
 function Test-TargetResource
 {
     [CmdletBinding()]
@@ -85,24 +135,27 @@ function Test-TargetResource
     param
     (
         [parameter(Mandatory = $true)]
-        [ValidateSet("Full","Simple","BulkLogged")]
+        [ValidateSet('Full','Simple','BulkLogged')]
         [System.String]
-        $RecoveryModel = "Full",
+        $RecoveryModel = 'Full',
 
         [parameter(Mandatory = $true)]
         [System.String]
-        $SqlServerInstance,
+        $SQLServer = $env:COMPUTERNAME,
+
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $SQLInstanceName = 'MSSQLSERVER',
 
         [parameter(Mandatory = $true)]
         [System.String]
         $DatabaseName
-    )   
+    )
+     
     $SqlServerInstance = $SqlServerInstance.Replace('\MSSQLSERVER','')  
     $result = ((Get-TargetResource @PSBoundParameters).RecoveryModel -eq $RecoveryModel)
     
     $result
 }
 
-
 Export-ModuleMember -Function *-TargetResource
-
