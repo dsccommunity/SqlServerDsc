@@ -58,7 +58,7 @@ function Get-TargetResource
         {
             if ($sqlDatabase[$Name])
             {
-                $getSqlDatabaseRecoveryModel = $sqlDatabase[$Name].RecoveryModel
+                $getSqlDatabaseRecoveryModel = Get-SqlDatabaseRecoveryModel -Sql $sql -Name $Name
                 New-VerboseMessage -Message "RecoveryModel of SQL Database name $Name is $getSqlDatabaseRecoveryModel"
                 if ($getSqlDatabaseRecoveryModel -eq $RecoveryModel)
                 {
@@ -151,12 +151,11 @@ function Set-TargetResource
             if ($Ensure -eq 'Present')
             {
                 Write-Verbose -Message "Setting database '$Name' with RecoveryModel '$RecoveryModel'"
-                if($sqlDatabase.RecoveryModel -ne $RecoveryModel)
-                {
-                    $sqlDatabase.RecoveryModel = $RecoveryModel
-                    $sqlDatabase.Alter()
-                    New-VerboseMessage -Message "Database $Name recovery model is changed to $RecoveryModel."
-                } 
+                Set-SqlDatabaseRecoveryModel -Sql $sql -Name $Name -RecoveryModel $RecoveryModel
+            }
+            else
+            {
+                New-WarningMessage -Message 'Ensure is setting to absent, No changes will be made.'
             }
         }
         else

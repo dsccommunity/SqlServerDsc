@@ -1605,3 +1605,105 @@ function Remove-SqlDatabasePermission
                                    -ErrorCategory InvalidResult
     }
 }
+
+<#
+    .SYNOPSIS
+    This cmdlet is used to return the recovery model of a SQL database
+
+    .PARAMETER Sql
+    This is an object of the SQL server that contains the result of Connect-SQL
+
+    .PARAMETER Name
+    This is the name of the SQL database that will be getting
+#>
+function Get-SqlDatabaseRecoveryModel
+{
+    [CmdletBinding()]    
+    param
+    (   
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNull()] 
+        [System.Object]
+        $Sql,
+        
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNull()] 
+        [System.String]
+        $Name
+    )
+
+    Write-Verbose -Message "Getting recovery model of Sql Database $Name"
+    $sqlDatabase = $Sql.Databases[$Name]
+    $sqlInstanceName = $Sql.InstanceName
+    $sqlServer = $Sql.ComputerNamePhysicalNetBIOS
+
+    if ($sqlDatabase)
+    {        
+        $sqlDatabaseRecoveryModel = $sqlDatabase.RecoveryModel
+        Write-Verbose -Message "The current recovery model of Sql Database $Name is $sqlDatabaseRecoveryModel"
+    }
+    else
+    {
+        throw New-TerminatingError -ErrorType NoDatabase `
+                                   -FormatArgs @($Name,$sqlServer,$sqlInstanceName) `
+                                   -ErrorCategory InvalidResult
+    }
+
+    $sqlDatabaseRecoveryModel
+}
+
+<#
+    .SYNOPSIS
+    This cmdlet is used to set the recovery model of a SQL database
+
+    .PARAMETER Sql
+    This is an object of the SQL server that contains the result of Connect-SQL
+
+    .PARAMETER Name
+    This is the name of the SQL database that will be setting
+
+    .PARAMETER RecoveryModel
+    This is the recovery model that will be setting for the sql database
+#>
+function Set-SqlDatabaseRecoveryModel
+{
+    [CmdletBinding()]    
+    param
+    (   
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNull()] 
+        [System.Object]
+        $Sql,
+        
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNull()] 
+        [System.String]
+        $Name,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNull()] 
+        [System.String]
+        $RecoveryModel
+    )
+
+    Write-Verbose -Message "Setting recovery model of Sql Database $Name"
+    $sqlDatabase = $Sql.Databases[$Name]
+    $sqlInstanceName = $Sql.InstanceName
+    $sqlServer = $Sql.ComputerNamePhysicalNetBIOS
+
+    if ($sqlDatabase)
+    {  
+        if($sqlDatabase.RecoveryModel -ne $RecoveryModel)
+        {
+            $sqlDatabase.RecoveryModel = $RecoveryModel
+            $sqlDatabase.Alter()
+            New-VerboseMessage -Message "Recovery model of Database $Name is changed to $RecoveryModel."
+        }
+    }
+    else
+    {
+        throw New-TerminatingError -ErrorType NoDatabase `
+                                   -FormatArgs @($Name,$sqlServer,$sqlInstanceName) `
+                                   -ErrorCategory InvalidResult
+    }
+}
