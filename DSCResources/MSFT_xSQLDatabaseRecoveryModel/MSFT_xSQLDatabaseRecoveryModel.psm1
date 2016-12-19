@@ -145,33 +145,25 @@ function Set-TargetResource
     
     if ($sql)
     {
-        Write-Verbose -Message "Setting RecoveryModel of database '$Name'"
-        if ($Ensure -eq 'Present')
+        $sqlDatabase = $Sql.Databases[$Name]
+        if ($sqlDatabase)
         {
-            Add-SqlDatabasePermission -SQL $sql `
-                                      -Name $Name `
-                                      -Database $Database `
-                                      -PermissionState $PermissionState `
-                                      -Permissions $Permissions
-            New-VerboseMessage -Message "$PermissionState - SQL Permissions for $Name, successfullly added in $Database"
+            if ($Ensure -eq 'Present')
+            {
+                Write-Verbose -Message "Setting database '$Name' with RecoveryModel '$RecoveryModel'"
+                if($sqlDatabase.RecoveryModel -ne $RecoveryModel)
+                {
+                    $sqlDatabase.RecoveryModel = $RecoveryModel
+                    $sqlDatabase.Alter()
+                    New-VerboseMessage -Message "Database $Name recovery model is changed to $RecoveryModel."
+                } 
+            }
+        }
+        else
+        {
+            New-VerboseMessage -Message "SQL Database name $Name does not exist"
         }
     }
-
-    $SqlServerInstance = $SqlServerInstance.Replace('\MSSQLSERVER','')  
-    $db = Get-SqlDatabase -ServerInstance $SqlServerInstance -Name $DatabaseName    
-    New-VerboseMessage -Message "Database $DatabaseName recovery mode is $db.RecoveryModel."
-    
-    if($db.RecoveryModel -ne $RecoveryModel)
-    {
-        $db.RecoveryModel = $RecoveryModel;
-        $db.Alter();
-        New-VerboseMessage -Message "DB $DatabaseName recovery mode is changed to $RecoveryModel."
-    }
-    
-    if(!(Test-TargetResource @PSBoundParameters))
-    {
-        throw New-TerminatingError -ErrorType TestFailedAfterSet -ErrorCategory InvalidResult
-    }    
 }
 
 <#
