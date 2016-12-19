@@ -53,6 +53,18 @@
   - Added section 'Tests for style check of Markdown files'
   - Added section 'Documentation with Markdown'
   - Added texts to section 'Tests'
+- Changes to xSQLServerHelper
+  - added functions
+    - Get-SqlDatabaseRecoveryModel
+    - Set-SqlDatabaseRecoveryModel
+- Examples
+  - xSQLServerDatabaseRecoveryModel
+    - 1-SetDatabaseRecoveryModel.ps1
+- Added tests for resources
+  - xSQLServerDatabaseRecoveryModel  
+- Changes to xSQLServerDatabaseRecoveryModel
+  - BREAKING CHANGE: Renamed xSQLDatabaseRecoveryModel to xSQLServerDatabaseRecoveryModel to align wíth naming convention.
+  - BREAKING CHANGE: The mandatory parameters now include SQLServer, and SQLInstanceName.
 
 ## 4.0.0.0
 
