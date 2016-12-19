@@ -37,22 +37,41 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.String]
-        $DatabaseName
+        $Name
     )
     
-    $SqlServerInstance = $SqlServerInstance.Replace('\MSSQLSERVER','')  
-    New-VerboseMessage -Message "Checking Database $DatabaseName recovery mode for $RecoveryModel"
+    $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
-    $db = Get-SqlDatabase -ServerInstance $SqlServerInstance -Name $DatabaseName
-    $value = ($db.RecoveryModel -eq $RecoveryModel)
-    New-VerboseMessage -Message "Database $DatabaseName recovery mode comparison $value."
-    
-    $returnValue = @{
-        RecoveryModel = $db.RecoveryModel
-        SqlServerInstance = $SqlServerInstance
-        DatabaseName = $DatabaseName
+    if ($sql)
+    {
+        Write-Verbose -Message "Getting RecoveryModel of SQL database '$Name'"
+        $sqlDatabase = $sql.Databases
+        
+        if ($sqlDatabase)
+        {
+            if ($sqlDatabase[$Name])
+            {
+                $getSqlDatabasePermission = $sqlDatabase[$Name].RecoveryModel
+                New-VerboseMessage -Message "RecoveryModel of SQL Database name $Name is $getSqlDatabasePermission"
+            }
+            else
+            {
+                New-VerboseMessage -Message "SQL Database name $Name does not exist"
+            }
+        }
+        else
+        {
+            New-WarningMessage -Message 'Failed getting SQL databases'
+        }
     }
     
+    $returnValue = @{
+        Name = $Name
+        RecoveryModel = $getSqlDatabasePermission
+        SQLServer = $SQLServer
+        SQLInstanceName = $SQLInstanceName
+    }
+
     $returnValue
 }
 
@@ -92,7 +111,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.String]
-        $DatabaseName
+        $Name
     )
  
     $SqlServerInstance = $SqlServerInstance.Replace('\MSSQLSERVER','')  
@@ -149,9 +168,9 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.String]
-        $DatabaseName
+        $Name
     )
-     
+
     $SqlServerInstance = $SqlServerInstance.Replace('\MSSQLSERVER','')  
     $result = ((Get-TargetResource @PSBoundParameters).RecoveryModel -eq $RecoveryModel)
     
