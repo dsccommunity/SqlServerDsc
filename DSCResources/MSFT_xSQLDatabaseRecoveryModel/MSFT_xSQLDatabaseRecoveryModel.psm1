@@ -171,10 +171,13 @@ function Test-TargetResource
         $Name
     )
 
-    $SqlServerInstance = $SqlServerInstance.Replace('\MSSQLSERVER','')  
-    $result = ((Get-TargetResource @PSBoundParameters).RecoveryModel -eq $RecoveryModel)
-    
-    $result
+    Write-Verbose -Message "Testing RecoveryModel of database '$Name'"
+
+    $currentValues = Get-TargetResource @PSBoundParameters
+
+    return Test-SQLDscParameterState -CurrentValues $CurrentValues `
+                                     -DesiredValues $PSBoundParameters `
+                                     -ValuesToCheck @('Name', 'RecoveryModel')
 }
 
 Export-ModuleMember -Function *-TargetResource
