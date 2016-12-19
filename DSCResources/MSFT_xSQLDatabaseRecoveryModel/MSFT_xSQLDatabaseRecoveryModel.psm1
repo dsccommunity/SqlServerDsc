@@ -58,9 +58,9 @@ function Get-TargetResource
         {
             if ($sqlDatabase[$Name])
             {
-                $getSqlDatabasePermission = $sqlDatabase[$Name].RecoveryModel
-                New-VerboseMessage -Message "RecoveryModel of SQL Database name $Name is $getSqlDatabasePermission"
-                if ($getSqlDatabasePermission -eq $RecoveryModel)
+                $getSqlDatabaseRecoveryModel = $sqlDatabase[$Name].RecoveryModel
+                New-VerboseMessage -Message "RecoveryModel of SQL Database name $Name is $getSqlDatabaseRecoveryModel"
+                if ($getSqlDatabaseRecoveryModel -eq $RecoveryModel)
                 {
                     $Ensure = 'Present'
                 }
@@ -72,14 +72,14 @@ function Get-TargetResource
             else
             {
                 New-VerboseMessage -Message "SQL Database name $Name does not exist"
-                $getSqlDatabasePermission = $RecoveryModel
+                $getSqlDatabaseRecoveryModel = $RecoveryModel
                 $Ensure = 'Absent'
             }
         }
         else
         {
             New-WarningMessage -Message 'Failed getting SQL databases'
-            $getSqlDatabasePermission = $RecoveryModel
+            $getSqlDatabaseRecoveryModel = $RecoveryModel
             $Ensure = 'Absent'
         }
     }
@@ -87,7 +87,7 @@ function Get-TargetResource
     $returnValue = @{
         Ensure          = $Ensure
         Name            = $Name
-        RecoveryModel   = $getSqlDatabasePermission
+        RecoveryModel   = $getSqlDatabaseRecoveryModel
         SQLServer       = $SQLServer
         SQLInstanceName = $SQLInstanceName
     }
