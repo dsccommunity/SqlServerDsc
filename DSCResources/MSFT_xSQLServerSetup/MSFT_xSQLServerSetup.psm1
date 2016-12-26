@@ -199,9 +199,9 @@ function Get-TargetResource
     ) -ErrorAction SilentlyContinue
     
     if (
-        $sqlVersion -eq 10 -and $installedProductSqlServerManagementStudio2008R2 -or
-        $sqlVersion -eq 11 -and $installedProductSqlServerManagementStudio2012 -or
-        $sqlVersion -eq 12 -and $installedProductSqlServerManagementStudio2014
+        ($sqlVersion -eq 10 -and $installedProductSqlServerManagementStudio2008R2) -or
+        ($sqlVersion -eq 11 -and $installedProductSqlServerManagementStudio2012) -or
+        ($sqlVersion -eq 12 -and $installedProductSqlServerManagementStudio2014)
         )
     {
         $features += 'SSMS,'
@@ -223,9 +223,9 @@ function Get-TargetResource
     ) -ErrorAction SilentlyContinue
 
     if (
-        $sqlVersion -eq 10 -and $installedProductSqlServerManagementStudioAdvanced2008R2 -or
-        $sqlVersion -eq 11 -and $installedProductSqlServerManagementStudioAdvanced2012 -or
-        $sqlVersion -eq 12 -and $installedProductSqlServerManagementStudioAdvanced2014
+        ($sqlVersion -eq 10 -and $installedProductSqlServerManagementStudioAdvanced2008R2) -or
+        ($sqlVersion -eq 11 -and $installedProductSqlServerManagementStudioAdvanced2012) -or
+        ($sqlVersion -eq 12 -and $installedProductSqlServerManagementStudioAdvanced2014)
         )
     {
         $features += 'ADV_SSMS,'
