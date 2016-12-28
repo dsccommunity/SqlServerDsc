@@ -711,7 +711,7 @@ function Set-TargetResource
         'InstanceDir'
     )
 
-    if ($BrowserSvcStartupType -ne $null)
+    if ($null -ne $BrowserSvcStartupType)
     {
         $argumentVars += 'BrowserSvcStartupType'
     }
