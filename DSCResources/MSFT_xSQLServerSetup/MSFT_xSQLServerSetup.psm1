@@ -437,6 +437,8 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
+    # Suppressing this rule because $global:DSCMachineStatus is used to trigger a reboot, either by force or when there are pending changes.
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
     [CmdletBinding()]
     param
     (
