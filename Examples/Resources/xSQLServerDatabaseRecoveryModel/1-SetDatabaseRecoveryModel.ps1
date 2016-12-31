@@ -1,7 +1,7 @@
 <#
 .EXAMPLE
-    This example shows how to ensure that the user account CONTOSO\SQLAdmin
-    is "Owner" of SQL database "AdventureWorks". 
+    This example shows how to set the Recovery Model
+    to "Full" for SQL database "AdventureWorks". 
 #>
 
 Configuration Example 
@@ -18,22 +18,21 @@ Configuration Example
 
     node localhost 
     {
-        xSQLServerLogin Add_SqlServerLogin_SQLAdmin
+        xSQLServerDatabase Add_SqlDatabaseAdventureworks
         {
             DependsOn = '[xSqlServerSetup]SETUP_SqlMSSQLSERVER'
             Ensure = 'Present'
-            Name = 'CONTOSO\SQLAdmin'   
-            LoginType = 'WindowsUser'        
+            Name = 'Adventureworks'   
             SQLServer = 'SQLServer'
             SQLInstanceName = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount
         }
 
-        xSQLServerDatabaseOwner Set_SqlDatabaseOwner_SQLAdmin
+        xSQLServerDatabaseRecoveryModel Set_SqlDatabaseRecoveryModel_Adventureworks
         {
-            DependsOn = '[xSQLServerLogin]Add_SqlServerLogin_SQLAdmin'
-            Name = 'CONTOSO\SQLAdmin'
-            Database = 'AdventureWorks'
+            DependsOn = '[xSQLServerDatabase]Add_SqlDatabaseAdventureworks'
+            Name = 'Adventureworks'
+            RecoveryModel = 'Full'
             SQLServer = 'SQLServer'
             SQLInstanceName = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount

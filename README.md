@@ -227,11 +227,13 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 
 ### xSQLServerDatabasePermissions
 
+* **Ensure**: If the values should be present or absent. Valid values are 'Present' or 'Absent'. 
 * **Database**: (Key) The SQL Database
-* **Name**: (Required) The name of permissions for the SQL database
+* **Name**: (Key) The name of permissions for the SQL database
+* **PermissionState**: (Required) The state of permission set. Valid values are 'Grant' or 'Deny'.
 * **Permissions**: (Required) The set of Permissions for the SQL database
-* **SQLServer**: The SQL Server for the database
-* **SQLInstanceName**: The SQL instance for the database
+* **SQLServer**: (Key) The SQL Server for the database
+* **SQLInstanceName**: (Key) The SQL instance for the database
 
 ### xSQLServerDatabaseOwner
 
@@ -240,11 +242,13 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **SQLServer**: The SQL Server for the database
 * **SQLInstance**: The SQL instance for the database
 
-### xSQLDatabaseRecoveryModel
+### xSQLServerDatabaseRecoveryModel
 
-* **DatabaseName**: (key) The SQL database name
-* **SQLServerInstance**: (Required) The SQL server and instance
-* **RecoveryModel**: (Required) Recovery Model (Full, Simple, BulkLogged)
+* **Ensure**: If the values should be present or absent. Valid values are 'Present' or 'Absent'. 
+* **Name**: (Key) The SQL Database
+* **RecoveryModel**: (Required) The recovery model for the SQL Database. Valid values are 'Full', 'Simple' or 'BulkLogged'.
+* **SQLServer**: (Key) The SQL Server for the database
+* **SQLInstanceName**: (Key) The SQL instance for the database
 
 ### xSQLServerMaxDop
 

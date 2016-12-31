@@ -1,19 +1,40 @@
-$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-Write-Debug -Message "CurrentPath: $currentPath"
+Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) -ChildPath 'xSQLServerHelper.psm1') -Force
 
-# Load Common Code
-Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
+<#
+    .SYNOPSIS
+    This function gets all Key properties defined in the resource schema file
 
-# DSC resource to manage SQL database permissions
+    .PARAMETER Ensure
+    This is The Ensure Set to 'present' to specificy that the permission should be configured.
 
-# NOTE: This resource requires WMF5 and PsDscRunAsCredential
+    .PARAMETER Database
+    This is the SQL database
 
+    .PARAMETER Name
+    This is the name of the SQL login for the permission set
+
+    .PARAMETER PermissionState
+    This is the state of permission set. Valid values are 'Grant' or 'Deny'
+
+    .PARAMETER Permissions
+    This is a list boolean that set of permissions for the SQL database
+
+    .PARAMETER SQLServer
+    This is a the SQL Server for the database
+
+    .PARAMETER SQLInstanceName
+    This is a the SQL instance for the database
+#>
 function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
     (
+        [ValidateSet('Present','Absent')]
+        [System.String]
+        $Ensure,
+
         [parameter(Mandatory = $true)]
         [System.String]
         $Database,
@@ -23,71 +44,104 @@ function Get-TargetResource
         $Name,
 
         [parameter(Mandatory = $true)]
+        [ValidateSet('Grant','Deny')]
+        [System.String]
+        $PermissionState,
+
+        [parameter(Mandatory = $true)]
         [System.String[]]
         $Permissions,
 
+        [parameter(Mandatory = $true)]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
+        [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName = "MSSQLSERVER"
+        $SQLInstanceName = 'MSSQLSERVER'
     )
 
-    if(!$SQL)
+    $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+
+    if ($sql)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-    }
-
-    if($SQL)
-    {
-        # Check database exists
-        if(!($SQLDatabase = $SQL.Databases[$Database]))
+        Write-Verbose -Message "Getting permissions of database '$Database' for login '$Name'"
+        $getSqlDatabasePermission = Get-SqlDatabasePermission -SQL $sql `
+                                                              -Name $Name `
+                                                              -Database $Database `
+                                                              -PermissionState $PermissionState
+        
+        if ($getSqlDatabasePermission)
         {
-            throw New-TerminatingError -ErrorType NoDatabase -FormatArgs @($Database,$SQLServer,$SQLInstanceName) -ErrorCategory InvalidResult
-        }
-
-        # Check login exists
-        if(!($SQLLogin = $SQL.Logins[$Name]))
-        {
-            throw New-TerminatingError -ErrorType LoginNotFound -FormatArgs @($Name,$SQLServer,$SQLInstanceName) -ErrorCategory ObjectNotFound
-        }
-
-        $Permissions = @()
-        $PermissionSet = $SQLDatabase.EnumDatabasePermissions($Name)
-        foreach($Permission in $PermissionSet)
-        {
-            $Properties = ($Permission.PermissionType | Get-Member -MemberType Property).Name
-            foreach($Property in $Properties)
+            $comparePermissions = Compare-Object -ReferenceObject $Permissions `
+                                                 -DifferenceObject $getSqlDatabasePermission
+            if ($null -eq $comparePermissions)
             {
-                if($Permission.PermissionType."$Property")
-                {
-                    $Permissions += $Property
-                }
+                $Ensure = 'Present'
             }
+            else
+            {
+                $Ensure = 'Absent'
+            }
+        }
+        else 
+        {
+            $Ensure = 'Absent'
         }
     }
     else
     {
-        $Name = $null
+        $null = $getSqlDatabasePermission
+        $Ensure = 'Absent'
     }
-
+    
     $returnValue = @{
-        Database = $Database
-        Name = $Name
-        Permissions = $Permissions
-        SQLServer = $SQLServer
+        Ensure          = $Ensure
+        Database        = $Database
+        Name            = $Name
+        PermissionState = $PermissionState
+        Permissions     = $getSqlDatabasePermission
+        SQLServer       = $SQLServer
         SQLInstanceName = $SQLInstanceName
     }
 
     $returnValue
 }
 
+<#
+    .SYNOPSIS
+    This function sets all Key properties defined in the resource schema file
 
+    .PARAMETER Ensure
+    This is The Ensure Set to 'present' to specificy that the permission should be configured.
+
+    .PARAMETER Database
+    This is the SQL database
+
+    .PARAMETER Name
+    This is the name of the SQL login for the permission set
+
+    .PARAMETER PermissionState
+    This is the state of permission set. Valid values are 'Grant' or 'Deny'
+
+    .PARAMETER Permissions
+    This is a list boolean that set of permissions for the SQL database
+
+    .PARAMETER SQLServer
+    This is a the SQL Server for the database
+
+    .PARAMETER SQLInstanceName
+    This is a the SQL instance for the database
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
     param
     (
+        [ValidateSet('Present','Absent')]
+        [System.String]
+        $Ensure,
+
         [parameter(Mandatory = $true)]
         [System.String]
         $Database,
@@ -97,72 +151,84 @@ function Set-TargetResource
         $Name,
 
         [parameter(Mandatory = $true)]
+        [ValidateSet('Grant','Deny')]
+        [System.String]
+        $PermissionState,
+
+        [parameter(Mandatory = $true)]
         [System.String[]]
         $Permissions,
 
+        [parameter(Mandatory = $true)]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
+        [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName = "MSSQLSERVER"
+        $SQLInstanceName = 'MSSQLSERVER'
     )
 
-    if(!$SQL)
+    $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+    
+    if ($sql)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-    }
-
-    if($SQL)
-    {
-        $SQLDatabase = $SQL.Databases[$Database]
-        
-        if(!$SQLDatabase.Users[$Name])
+        Write-Verbose -Message "Setting permissions of database '$Database' for login '$Name'"
+        if ($Ensure -eq 'Present')
         {
-            try
-            {
-                Write-Verbose "Adding SQL login $Name as a user of database $Database on $SQLServer\$SQLInstanceName"
-                $SQLDatabaseUser = New-Object Microsoft.SqlServer.Management.Smo.User $SQLDatabase,$Name
-                $SQLDatabaseUser.Login = $Name
-                $SQLDatabaseUser.Create()
-            }
-            catch
-            {
-                Write-Verbose "Failed adding SQL login $Name as a user of database $Database on $SQLServer\$SQLInstanceName"
-            }
+            Add-SqlDatabasePermission -SQL $sql `
+                                      -Name $Name `
+                                      -Database $Database `
+                                      -PermissionState $PermissionState `
+                                      -Permissions $Permissions
+            New-VerboseMessage -Message "$PermissionState - SQL Permissions for $Name, successfullly added in $Database"
         }
-        
-        if($SQLDatabase.Users[$Name])
+        else
         {
-            try
-            {
-                Write-Verbose "Granting SQL login $Name to permissions $Permissions on database $Database on $SQLServer\$SQLInstanceName"
-                $PermissionSet = New-Object -TypeName Microsoft.SqlServer.Management.Smo.DatabasePermissionSet
-                foreach($Permission in $Permissions)
-                {
-                    $PermissionSet."$Permission" = $true
-                }
-                $SQLDatabase.Grant($PermissionSet,$Name)
-            }
-            catch
-            {
-                Write-Verbose "Failed granting SQL login $Name to permissions $Permissions on database $Database on $SQLServer\$SQLInstanceName"
-            }
+            Remove-SqlDatabasePermission -SQL $sql `
+                                         -Name $Name `
+                                         -Database $Database `
+                                         -PermissionState $PermissionState `
+                                         -Permissions $Permissions
+            New-VerboseMessage -Message "$PermissionState - SQL Permissions for $Name, successfullly removed in $Database"
         }
-    }
-
-    if(!(Test-TargetResource @PSBoundParameters))
-    {
-        throw New-TerminatingError -ErrorType TestFailedAfterSet -ErrorCategory InvalidResult
     }
 }
 
+<#
+    .SYNOPSIS
+    This function tests all Key properties defined in the resource schema file
 
+    .PARAMETER Ensure
+    This is The Ensure Set to 'present' to specificy that the permission should be configured.
+
+    .PARAMETER Database
+    This is the SQL database
+
+    .PARAMETER Name
+    This is the name of the SQL login for the permission set
+
+    .PARAMETER PermissionState
+    This is the state of permission set. Valid values are 'Grant' or 'Deny'
+
+    .PARAMETER Permissions
+    This is a list boolean that set of permissions for the SQL database
+
+    .PARAMETER SQLServer
+    This is a the SQL Server for the database
+
+    .PARAMETER SQLInstanceName
+    This is a the SQL instance for the database
+#>
 function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
     (
+        [ValidateSet('Present','Absent')]
+        [System.String]
+        $Ensure,
+
         [parameter(Mandatory = $true)]
         [System.String]
         $Database,
@@ -172,30 +238,30 @@ function Test-TargetResource
         $Name,
 
         [parameter(Mandatory = $true)]
+        [ValidateSet('Grant','Deny')]
+        [System.String]
+        $PermissionState,
+
+        [parameter(Mandatory = $true)]
         [System.String[]]
         $Permissions,
 
+        [parameter(Mandatory = $true)]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
+        [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName = "MSSQLSERVER"
+        $SQLInstanceName = 'MSSQLSERVER'
     )
 
-    $SQLDatabasePermissions = (Get-TargetResource @PSBoundParameters).Permissions
+    Write-Verbose -Message "Testing permissions of database '$Database' for login '$Name'"
 
-    $result = $true
-    foreach($Permission in $Permissions)
-    {
-        if($SQLDatabasePermissions -notcontains $Permission)
-        {
-            Write-Verbose "Failed test for permission $Permission"
-            $result = $false
-        }
-    }
-    
-    $result
+    $currentValues = Get-TargetResource @PSBoundParameters
+
+    return Test-SQLDscParameterState -CurrentValues $CurrentValues `
+                                     -DesiredValues $PSBoundParameters `
+                                     -ValuesToCheck @('Name', 'Ensure', 'PermissionState', 'Permissions')
 }
-
 
 Export-ModuleMember -Function *-TargetResource
