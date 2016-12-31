@@ -20,6 +20,7 @@
   - Resolved all of the PSScriptAnalyzer warnings that was triggered in the common tests.
 - Changes to xSQLServerScript
   - All credential parameters now also has the type [System.Management.Automation.Credential()] to work with PowerShell 4.0.
+  - It is now possible to configure two instances on the same node, with the same script.
 
 ## 4.0.0.0
 
