@@ -7,6 +7,8 @@
   - Changes in appveyor.yml so that SQL modules are removed before common test is run.
 - Changes to xSQLServerSetup
   - The resource no longer uses Win32_Product WMI class when evaluating if SQL Server Management Studio is installed. See article [kb974524](https://support.microsoft.com/en-us/kb/974524) for more information.
+  - Now it uses CIM cmdlets to get information from WMI classes.
+  - Resolved all of the PSScriptAnalyzer warnings that was triggered in the common tests.
 
 ## 4.0.0.0
 

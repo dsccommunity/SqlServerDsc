@@ -143,6 +143,66 @@ try
             )
         }
 
+        $mockGetCimInstance_DefaultInstance_DatabaseService = {
+            return @(
+                (
+                    New-Object Object | 
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_DatabaseServiceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                )
+            )
+        }
+
+        $mockGetCimInstance_DefaultInstance_AgentService = {
+            return @(
+                (
+                    New-Object Object | 
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_AgentServiceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockAgentServiceAccount -PassThru -Force
+                )
+            )
+        }
+
+        $mockGetCimInstance_DefaultInstance_FullTextService = {
+            return @(
+                (
+                    New-Object Object | 
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_FullTextServiceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                )
+            )
+        }
+
+        $mockGetCimInstance_DefaultInstance_ReportingService = {
+            return @(
+                (
+                    New-Object Object | 
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_ReportingServiceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                )
+            )
+        }
+
+        $mockGetCimInstance_DefaultInstance_IntegrationService = {
+            return @(
+                (
+                    New-Object Object | 
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value ($mockDefaultInstance_IntegrationServiceName -f $mockSqlMajorVersion) -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                )
+            )
+        }
+
+        $mockGetCimInstance_DefaultInstance_AnalysisService = {
+            return @(
+                (
+                    New-Object Object | 
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_AnalysisServiceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                )
+            )
+        }
+
         $mockGetService_DefaultInstance = {
             return @(
                 (
@@ -173,6 +233,66 @@ try
                 (
                     New-Object Object | 
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_AnalysisServiceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                )
+            )
+        }
+
+        $mockGetCimInstance_NamedInstance_DatabaseService = {
+            return @(
+                (
+                    New-Object Object | 
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_DatabaseServiceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                )
+            )
+        }
+
+        $mockGetCimInstance_NamedInstance_AgentService = {
+            return @(
+                (
+                    New-Object Object | 
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_AgentServiceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockAgentServiceAccount -PassThru -Force
+                )
+            )
+        }
+
+        $mockGetCimInstance_NamedInstance_FullTextService = {
+            return @(
+                (
+                    New-Object Object | 
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_FullTextServiceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                )
+            )
+        }
+
+        $mockGetCimInstance_NamedInstance_ReportingService = {
+            return @(
+                (
+                    New-Object Object | 
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_ReportingServiceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                )
+            )
+        }
+
+        $mockGetCimInstance_NamedInstance_IntegrationService = {
+            return @(
+                (
+                    New-Object Object | 
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value ($mockNamedInstance_IntegrationServiceName -f $mockSqlMajorVersion) -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                )
+            )
+        }
+
+        $mockGetCimInstance_NamedInstance_AnalysisService = {
+            return @(
+                (
+                    New-Object Object | 
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_AnalysisServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 )
             )
@@ -471,12 +591,9 @@ try
                             } -MockWith $mockEmptyHashtable -Verifiable
                         }
 
-                        Mock -CommandName Get-WmiObject -ParameterFilter { 
-                            $Class -eq 'Win32_Service' 
-                        } -MockWith $mockGetService_DefaultInstance -Verifiable
-
                         Mock -CommandName NetUse -Verifiable
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
+                        Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable 
@@ -511,8 +628,7 @@ try
                             $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                         } -Exactly -Times 6 -Scope It
 
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                            -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
                     }
 
                     It 'Should not return any names of installed features' {
@@ -618,8 +734,7 @@ try
                             $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                         } -Exactly -Times 6 -Scope It
 
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                            -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
                     }
 
                     It 'Should not return any names of installed features' {
@@ -691,10 +806,44 @@ try
 
                         Mock -CommandName NetUse -Verifiable
                         Mock -CommandName Get-Service -MockWith $mockGetService_DefaultInstance -Verifiable
-                        Mock -CommandName Get-WmiObject -ParameterFilter {
-                            $Class -eq 'Win32_Service'
-                        } -MockWith $mockGetService_DefaultInstance -Verifiable
 
+                        #region Mock Get-CimInstance
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_DatabaseServiceName'"
+                        } -MockWith $mockGetCimInstance_DefaultInstance_DatabaseService -Verifiable
+
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_AgentServiceName'"
+                        } -MockWith $mockGetCimInstance_DefaultInstance_AgentService -Verifiable
+
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_FullTextServiceName'"
+                        } -MockWith $mockGetCimInstance_DefaultInstance_FullTextService -Verifiable
+
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_ReportingServiceName'"
+                        } -MockWith $mockGetCimInstance_DefaultInstance_ReportingService -Verifiable
+
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$(($mockDefaultInstance_IntegrationServiceName -f $mockSqlMajorVersion))'"
+                        } -MockWith $mockGetCimInstance_DefaultInstance_IntegrationService -Verifiable
+
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_AnalysisServiceName'"
+                        } -MockWith $mockGetCimInstance_DefaultInstance_AnalysisService -Verifiable
+
+                        # If Get-CimInstance is used in any other way than those mocks with a ParameterFilter, then throw and error
+                        Mock -CommandName Get-CimInstance -MockWith {
+                            throw "Mock Get-CimInstance was called with unexpected parameters. ClassName=$ClassName, Filter=$Filter"
+                        }
+                        #endregion Mock Get-CimInstance
+                        
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable 
@@ -740,8 +889,37 @@ try
                             } -Exactly -Times 2 -Scope It                           
                         }
 
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                            -Exactly -Times 6 -Scope It
+                        #region Assert Get-CimInstance
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_DatabaseServiceName'"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_AgentServiceName'"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_FullTextServiceName'"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_ReportingServiceName'"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$(($mockDefaultInstance_IntegrationServiceName -f $mockSqlMajorVersion))'"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_AnalysisServiceName'"
+                        } -Exactly -Times 1 -Scope It
+                        #endregion Assert Get-CimInstance
                     }
 
                     It 'Should return correct names of installed features' {
@@ -817,9 +995,43 @@ try
 
                         Mock -CommandName NetUse -Verifiable
                         Mock -CommandName Get-Service -MockWith $mockGetService_DefaultInstance -Verifiable
-                        Mock -CommandName Get-WmiObject -ParameterFilter {
-                            $Class -eq 'Win32_Service'
-                        } -MockWith $mockGetService_DefaultInstance -Verifiable
+                        
+                        #region Mock Get-CimInstance
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_DatabaseServiceName'"
+                        } -MockWith $mockGetCimInstance_DefaultInstance_DatabaseService -Verifiable
+
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_AgentServiceName'"
+                        } -MockWith $mockGetCimInstance_DefaultInstance_AgentService -Verifiable
+
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_FullTextServiceName'"
+                        } -MockWith $mockGetCimInstance_DefaultInstance_FullTextService -Verifiable
+
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_ReportingServiceName'"
+                        } -MockWith $mockGetCimInstance_DefaultInstance_ReportingService -Verifiable
+
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$(($mockDefaultInstance_IntegrationServiceName -f $mockSqlMajorVersion))'"
+                        } -MockWith $mockGetCimInstance_DefaultInstance_IntegrationService -Verifiable
+
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_AnalysisServiceName'"
+                        } -MockWith $mockGetCimInstance_DefaultInstance_AnalysisService -Verifiable
+
+                        # If Get-CimInstance is used in any other way than those mocks with a ParameterFilter, then throw and error
+                        Mock -CommandName Get-CimInstance -MockWith {
+                            throw "Mock Get-CimInstance was called with unexpected parameters. ClassName=$ClassName, Filter=$Filter"
+                        }
+                        #endregion Mock Get-CimInstance
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
@@ -866,8 +1078,37 @@ try
                             } -Exactly -Times 2 -Scope It                           
                         }
 
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                            -Exactly -Times 6 -Scope It
+                        #region Assert Get-CimInstance
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_DatabaseServiceName'"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_AgentServiceName'"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_FullTextServiceName'"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_ReportingServiceName'"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$(($mockDefaultInstance_IntegrationServiceName -f $mockSqlMajorVersion))'"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockDefaultInstance_AnalysisServiceName'"
+                        } -Exactly -Times 1 -Scope It
+                        #endregion Assert Get-CimInstance
                     }
 
                     It 'Should return correct names of installed features' {
@@ -951,7 +1192,7 @@ try
                         }
 
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
-
+                        Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\ConfigurationState"
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable 
@@ -985,8 +1226,7 @@ try
                             $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                         } -Exactly -Times 6 -Scope It
 
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                            -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
                     }
 
                     It 'Should not return any names of installed features' {
@@ -1058,9 +1298,42 @@ try
 
                         Mock -CommandName Get-Service -MockWith $mockGetService_NamedInstance -Verifiable
 
-                        Mock -CommandName Get-WmiObject -ParameterFilter {
-                            $Class -eq 'Win32_Service'
-                        } -MockWith $mockGetService_NamedInstance -Verifiable
+                        #region Mock Get-CimInstance
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockNamedInstance_DatabaseServiceName'"
+                        } -MockWith $mockGetCimInstance_NamedInstance_DatabaseService -Verifiable
+
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockNamedInstance_AgentServiceName'"
+                        } -MockWith $mockGetCimInstance_NamedInstance_AgentService -Verifiable
+
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockNamedInstance_FullTextServiceName'"
+                        } -MockWith $mockGetCimInstance_NamedInstance_FullTextService -Verifiable
+
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockNamedInstance_ReportingServiceName'"
+                        } -MockWith $mockGetCimInstance_NamedInstance_ReportingService -Verifiable
+
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$(($mockNamedInstance_IntegrationServiceName -f $mockSqlMajorVersion))'"
+                        } -MockWith $mockGetCimInstance_NamedInstance_IntegrationService -Verifiable
+
+                        Mock -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockNamedInstance_AnalysisServiceName'"
+                        } -MockWith $mockGetCimInstance_NamedInstance_AnalysisService -Verifiable
+
+                        # If Get-CimInstance is used in any other way than those mocks with a ParameterFilter, then throw and error
+                        Mock -CommandName Get-CimInstance -MockWith {
+                            throw "Mock Get-CimInstance was called with unexpected parameters. ClassName=$ClassName, Filter=$Filter"
+                        }
+                        #endregion Mock Get-CimInstance
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\ConfigurationState"
@@ -1106,8 +1379,37 @@ try
                             } -Exactly -Times 2 -Scope It                           
                         }
 
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                            -Exactly -Times 6 -Scope It
+                        #region Assert Get-CimInstance
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockNamedInstance_DatabaseServiceName'"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockNamedInstance_AgentServiceName'"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockNamedInstance_FullTextServiceName'"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockNamedInstance_ReportingServiceName'"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$(($mockNamedInstance_IntegrationServiceName -f $mockSqlMajorVersion))'"
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            $ClassName -eq 'Win32_Service' -and
+                            $Filter -eq "Name = '$mockNamedInstance_AnalysisServiceName'"
+                        } -Exactly -Times 1 -Scope It
+                        #endregion Assert Get-CimInstance
                     }
 
                     It 'Should return correct names of installed features' {
@@ -1256,9 +1558,7 @@ try
                 It 'Should return that the desired state is absent when no products are installed' {
                     Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
 
-                    Mock -CommandName Get-WmiObject -ParameterFilter {
-                        $Class -eq 'Win32_Service'
-                    } -MockWith $mockEmptyHashtable -Verifiable
+                    Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable -Verifiable
 
                     $result = Test-TargetResource @testParameters
                     $result| Should Be $false
@@ -1283,16 +1583,48 @@ try
                         $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                     } -Exactly -Times 6 -Scope It
 
-                    Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                        -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
                 }
 
                 It 'Should return that the desired state is asbent when SSMS product is missing' {
                     Mock -CommandName Get-Service -MockWith $mockGetService_DefaultInstance -Verifiable
 
-                    Mock -CommandName Get-WmiObject -ParameterFilter {
-                        $Class -eq 'Win32_Service'
-                    } -MockWith $mockGetService_DefaultInstance -Verifiable
+                    #region Mock Get-CimInstance
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_DatabaseServiceName'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_DatabaseService -Verifiable
+
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_AgentServiceName'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_AgentService -Verifiable
+
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_FullTextServiceName'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_FullTextService -Verifiable
+
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_ReportingServiceName'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_ReportingService -Verifiable
+
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$(($mockDefaultInstance_IntegrationServiceName -f $mockSqlMajorVersion))'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_IntegrationService -Verifiable
+
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_AnalysisServiceName'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_AnalysisService -Verifiable
+
+                    # If Get-CimInstance is used in any other way than those mocks with a ParameterFilter, then throw and error
+                    Mock -CommandName Get-CimInstance -MockWith {
+                        throw "Mock Get-CimInstance was called with unexpected parameters. ClassName=$ClassName, Filter=$Filter"
+                    }
+                    #endregion Mock Get-CimInstance
 
                     # Change the default features for this test.
                     $testParameters.Features = 'SSMS'
@@ -1320,16 +1652,78 @@ try
                         $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                     } -Exactly -Times 6 -Scope It
 
-                    Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                        -Exactly -Times 6 -Scope It
+                    #region Assert Get-CimInstance
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_DatabaseServiceName'"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_AgentServiceName'"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_FullTextServiceName'"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_ReportingServiceName'"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$(($mockDefaultInstance_IntegrationServiceName -f $mockSqlMajorVersion))'"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_AnalysisServiceName'"
+                    } -Exactly -Times 1 -Scope It
+                    #endregion Assert Get-CimInstance
                 }
 
                 It 'Should return that the desired state is asbent when ADV_SSMS product is missing' {
                     Mock -CommandName Get-Service -MockWith $mockGetService_DefaultInstance -Verifiable
 
-                    Mock -CommandName Get-WmiObject -ParameterFilter {
-                        $Class -eq 'Win32_Service'
-                    } -MockWith $mockGetService_DefaultInstance -Verifiable
+                    #region Mock Get-CimInstance
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_DatabaseServiceName'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_DatabaseService -Verifiable
+
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_AgentServiceName'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_AgentService -Verifiable
+
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_FullTextServiceName'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_FullTextService -Verifiable
+
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_ReportingServiceName'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_ReportingService -Verifiable
+
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$(($mockDefaultInstance_IntegrationServiceName -f $mockSqlMajorVersion))'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_IntegrationService -Verifiable
+
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_AnalysisServiceName'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_AnalysisService -Verifiable
+
+                    # If Get-CimInstance is used in any other way than those mocks with a ParameterFilter, then throw and error
+                    Mock -CommandName Get-CimInstance -MockWith {
+                        throw "Mock Get-CimInstance was called with unexpected parameters. ClassName=$ClassName, Filter=$Filter"
+                    }
+                    #endregion Mock Get-CimInstance
 
                     # Change the default features for this test.
                     $testParameters.Features = 'ADV_SSMS'
@@ -1357,8 +1751,37 @@ try
                         $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                     } -Exactly -Times 6 -Scope It
 
-                    Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                        -Exactly -Times 6 -Scope It
+                    #region Assert Get-CimInstance
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_DatabaseServiceName'"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_AgentServiceName'"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_FullTextServiceName'"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_ReportingServiceName'"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$(($mockDefaultInstance_IntegrationServiceName -f $mockSqlMajorVersion))'"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_AnalysisServiceName'"
+                    } -Exactly -Times 1 -Scope It
+                    #endregion Assert Get-CimInstance
                 }
             }
 
@@ -1388,9 +1811,42 @@ try
 
                     Mock -CommandName Get-Service -MockWith $mockGetService_DefaultInstance -Verifiable
 
-                    Mock -CommandName Get-WmiObject -ParameterFilter {
-                        $Class -eq 'Win32_Service'
-                    } -MockWith $mockGetService_DefaultInstance -Verifiable
+                    #region Mock Get-CimInstance
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_DatabaseServiceName'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_DatabaseService -Verifiable
+
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_AgentServiceName'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_AgentService -Verifiable
+
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_FullTextServiceName'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_FullTextService -Verifiable
+
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_ReportingServiceName'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_ReportingService -Verifiable
+
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$(($mockDefaultInstance_IntegrationServiceName -f $mockSqlMajorVersion))'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_IntegrationService -Verifiable
+
+                    Mock -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_AnalysisServiceName'"
+                    } -MockWith $mockGetCimInstance_DefaultInstance_AnalysisService -Verifiable
+
+                    # If Get-CimInstance is used in any other way than those mocks with a ParameterFilter, then throw and error
+                    Mock -CommandName Get-CimInstance -MockWith {
+                        throw "Mock Get-CimInstance was called with unexpected parameters. ClassName=$ClassName, Filter=$Filter"
+                    }
+                    #endregion Mock Get-CimInstance
 
                     Mock -CommandName Get-ItemProperty -ParameterFilter {
                         $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
@@ -1425,8 +1881,37 @@ try
                         $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                     } -Exactly -Times 6 -Scope It
 
-                    Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                        -Exactly -Times 6 -Scope It
+                    #region Assert Get-CimInstance
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_DatabaseServiceName'"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_AgentServiceName'"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_FullTextServiceName'"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_ReportingServiceName'"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$(($mockDefaultInstance_IntegrationServiceName -f $mockSqlMajorVersion))'"
+                    } -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                        $ClassName -eq 'Win32_Service' -and
+                        $Filter -eq "Name = '$mockDefaultInstance_AnalysisServiceName'"
+                    } -Exactly -Times 1 -Scope It
+                    #endregion Assert Get-CimInstance
                 }
             }
             
@@ -1533,9 +2018,7 @@ try
                             $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                         } -MockWith $mockEmptyHashtable -Verifiable
                         
-                        Mock -CommandName Get-WmiObject -ParameterFilter {
-                            $Class -eq 'Win32_Service'
-                        } -MockWith $mockEmptyHashtable -Verifiable
+                        Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable -Verifiable
                     }
 
                     It 'Should set the system in the desired state when feature is SQLENGINE' {
@@ -1562,9 +2045,7 @@ try
                             ($Name -eq $mockDefaultInstance_InstanceName) 
                         } -Exactly -Times 0 -Scope It
 
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                            -Exactly -Times 0 -Scope It
-
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                             $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -1614,9 +2095,7 @@ try
                                 ($Name -eq $mockDefaultInstance_InstanceName) 
                             } -Exactly -Times 0 -Scope It
 
-                            Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                                -Exactly -Times 0 -Scope It
-
+                            Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
                             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -1651,9 +2130,7 @@ try
                                 ($Name -eq $mockDefaultInstance_InstanceName) 
                             } -Exactly -Times 0 -Scope It
 
-                            Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                                -Exactly -Times 0 -Scope It
-
+                            Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
                             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -1685,10 +2162,7 @@ try
                         Mock -CommandName Get-TemporaryFolder -MockWith $mockGetTemporaryFolder -Verifiable
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
 
-                        Mock -CommandName Get-WmiObject -ParameterFilter {
-                            $Class -eq 'Win32_Service'
-                        } -MockWith $mockEmptyHashtable -Verifiable
-                      
+                        Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable -Verifiable
                         Mock -CommandName Get-ItemProperty -ParameterFilter { 
                             $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                             $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -1723,9 +2197,7 @@ try
                             ($Name -eq $mockDefaultInstance_InstanceName) 
                         } -Exactly -Times 0 -Scope It
 
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                            -Exactly -Times 0 -Scope It
-
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                             $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -1776,9 +2248,7 @@ try
                                 ($Name -eq $mockDefaultInstance_InstanceName) 
                             } -Exactly -Times 0 -Scope It
 
-                            Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                                -Exactly -Times 0 -Scope It
-
+                            Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
                             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -1813,9 +2283,7 @@ try
                                 ($Name -eq $mockDefaultInstance_InstanceName) 
                             } -Exactly -Times 0 -Scope It
 
-                            Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                                -Exactly -Times 0 -Scope It
-
+                            Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
                             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -1860,10 +2328,7 @@ try
                         } -MockWith $mockEmptyHashtable -Verifiable
 
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
-
-                        Mock -CommandName Get-WmiObject -ParameterFilter {
-                            $Class -eq 'Win32_Service'
-                        } -MockWith $mockEmptyHashtable -Verifiable
+                        Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable -Verifiable
                     }
 
                     It 'Should set the system in the desired state when feature is SQLENGINE' {
@@ -1887,8 +2352,7 @@ try
                             ($Name -eq $mockDefaultInstance_InstanceName) 
                         } -Exactly -Times 0 -Scope It
 
-                        Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                            -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
 
                         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
@@ -1939,9 +2403,7 @@ try
                                 ($Name -eq $mockDefaultInstance_InstanceName) 
                             } -Exactly -Times 0 -Scope It
 
-                            Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                                -Exactly -Times 0 -Scope It
-
+                            Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
                             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -1975,9 +2437,7 @@ try
                                 ($Name -eq $mockDefaultInstance_InstanceName) 
                             } -Exactly -Times 0 -Scope It
 
-                            Assert-MockCalled -CommandName Get-WmiObject -ParameterFilter { $Class -eq 'Win32_Service' } `
-                                -Exactly -Times 0 -Scope It
-
+                            Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
                             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
