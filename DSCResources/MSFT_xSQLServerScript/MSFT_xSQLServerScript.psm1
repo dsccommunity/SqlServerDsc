@@ -28,6 +28,7 @@ function Get-TargetResource
         $TestFilePath,
 
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String[]]
@@ -74,6 +75,7 @@ function Set-TargetResource
         $TestFilePath,
 
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String[]]
@@ -108,6 +110,7 @@ function Test-TargetResource
         $TestFilePath,
 
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String[]]
@@ -119,7 +122,7 @@ function Test-TargetResource
         $result = Invoke-SqlScript -ServerInstance $ServerInstance -SqlScriptPath $TestFilePath `
                 -Credential $Credential -Variable $Variable -ErrorAction Stop
 
-        if($result -eq $null)
+        if($null -eq $result)
         {
             return $true
         }
@@ -148,6 +151,7 @@ function Invoke-SqlScript
         $SqlScriptPath,
 
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String[]]
