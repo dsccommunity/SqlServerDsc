@@ -9,8 +9,23 @@ For more information see the [Code of Conduct FAQ](https://opensource.microsoft.
 
 ## Contributing
 
-Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
-Also please check out the [specific guidelines](https://github.com/PowerShell/xSQLServer/blob/dev/CONTRIBUTING.md) for contributing to xSQLServer.
+Regardless of the way you want to contribute we are tremendously happy to have you here.
+
+There are several ways you can contribute. You can submit an issue to report a bug. You can submit an issue to request an improvment. You can take part in discussions for issues. You can review pull requests and comment on other contributors changes.
+And you can improve the resources and tests, or even create new resources, by sending in pull requests yourself.
+
+* If you want to submit an issue or take part in discussions, please browse the list of [issues](https://github.com/PowerShell/xSQLServer/issues). Please check out [Contributing to the DSC Resource Kit](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md) on how to work with issues.
+* If you want to review pull requests, please first check out the [Review Pull Request guidelines](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md#reviewing-pull-requests), and the browse the list of [pull requests](https://github.com/PowerShell/xSQLServer/pulls) and look for those pull requests with label 'needs review'.
+* If you want to improve the resources or tests, or create a new resource, then please check out the follwing guidelines.
+  * The [Contributing to the DSC Resource Kit](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md) guidelines.
+  * The specific [Contributing to xSQLServer](https://github.com/PowerShell/xSQLServer/blob/dev/CONTRIBUTING.md) guidelines.
+  * The common [Style Guidelines](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md).
+  * The common [Best Practices](https://github.com/PowerShell/DscResources/blob/master/BestPractices.md) guidelines.
+  * The common [Testing Guidelines](https://github.com/PowerShell/DscResources/blob/master/TestsGuidelines.md).
+  * If you are new to GitHub (and git), then please check out [Getting Started with GitHub](https://github.com/PowerShell/DscResources/blob/master/GettingStartedWithGitHub.md).
+  * If you are new to Pester and writing test, then please check out [Getting started with Pester](https://github.com/PowerShell/DscResources/blob/master/GettingStartedWithPester.md).
+
+And if you need any help along the way, don't be afraid to ask. We are here for each other.
 
 ## Installation
 
@@ -43,34 +58,34 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 
 ## Resources
 
-* **xSQLServerSetup** installs a standalone SQL Server instance
-* **xSQLServerFirewall** configures firewall settings to allow remote access to a SQL Server instance.
-* **xSQLServerRSSecureConnectionLevel** sets the secure connection level for SQL Server Reporting Services.
-* **xSQLServerFailoverClusterSetup** installs SQL Server failover cluster instances.
-* **xSQLServerRSConfig** configures SQL Server Reporting Services to use a database engine in another instance.
-* **xSQLServerLogin** resource to manage SQL logins
-* **xSQLServerRole** resource to manage SQL server roles
-* **xSQLServerDatabaseRole** resource to manage SQL database roles
-* **xSQLServerDatabasePermissions** resource to manage SQL database permissions
-* **xSQLServerDatabaseOwner** resource to manage SQL database owners
-* **xSQLDatabaseRecoveryModel** resource to manage database recovery model
-* **xSQLServerMaxDop** resource to manage MaxDegree of Parallelism for SQL Server
-* **xSQLServerMemory** resource to manage Memory for SQL Server
-* **xSQLServerNetwork** resource to manage SQL Server Network Protocols
-* **xSQLServerDatabase** resource to manage ensure database is present or absent
-* **xSQLAOGroupEnsure** resource to ensure availability group is present or absent
-* **xSQLAOGroupJoin** resource to join a replica to an existing availability group
-* **xSQLServerAlwaysOnService** resource to enable always on on a SQL Server
-* **xSQLServerEndpoint** resource to ensure database endpoint is present or absent
-* **xWaitForAvailabilityGroup** resource to wait till availability group is created on primary server
-* **xSQLServerConfiguration** resource to manage [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
-* **xSQLServerPermission** Grant or revoke permission on the SQL Server.
-* **xSQLServerEndpointState** Change state of the endpoint.
-* **xSQLServerEndpointPermission** Grant or revoke permission on the endpoint.
-* **xSQLServerAvailabilityGroupListener** Create or remove an availability group listener.
-* **xSQLServerReplication** resource to manage SQL Replication distribution and publishing.
-* **xSQLServerScript** resource to extend DSCs Get/Set/Test functionality to T-SQL
-* **xSQLServerAlias** resource to manage SQL Server client Aliases
+* [**xSQLAOGroupEnsure**](#xsqlaogroupensure) resource to ensure availability group is present or absent
+* [**xSQLAOGroupJoin**](#xsqlaogroupjoin) resource to join a replica to an existing availability group
+* [**xSQLDatabaseRecoveryModel**](#xsqldatabaserecoverymodel) resource to manage database recovery model
+* [**xSQLServerAlias**](#xsqlserveralias) resource to manage SQL Server client Aliases
+* [**xSQLServerAlwaysOnService**](#xsqlserveralwaysonservice) resource to enable always on on a SQL Server
+* [**xSQLServerAvailabilityGroupListener**](#xsqlserveravailabilitygrouplistener) Create or remove an availability group listener.
+* [**xSQLServerConfiguration**](#xsqlserverconfiguration) resource to manage [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
+* [**xSQLServerDatabase**](#xsqlserverdatabase) resource to manage ensure database is present or absent
+* [**xSQLServerDatabaseRole**](#xsqlserverdatabaserole) resource to manage SQL database roles
+* [**xSQLServerDatabaseOwner**](#xsqlserverdatabaseowner) resource to manage SQL database owners
+* [**xSQLServerDatabasePermissions**](#xsqlserverdatabasepermissions) resource to manage SQL database permissions
+* [**xSQLServerEndpoint**](#xsqlserverendpoint) resource to ensure database endpoint is present or absent
+* [**xSQLServerEndpointPermission**](#xsqlserverendpointpermission) Grant or revoke permission on the endpoint.
+* [**xSQLServerEndpointState**](#xsqlserverendpointstate) Change state of the endpoint.
+* [**xSQLServerFailoverClusterSetup**](#xsqlserverfailoverclustersetup) installs SQL Server failover cluster instances.
+* [**xSQLServerFirewall**](#xsqlserverfirewall) configures firewall settings to allow remote access to a SQL Server instance.
+* [**xSQLServerLogin**](#xsqlserverlogin) resource to manage SQL logins
+* [**xSQLServerMaxDop**](#xsqlservermaxdop) resource to manage MaxDegree of Parallelism for SQL Server
+* [**xSQLServerMemory**](#xsqlservermemory) resource to manage Memory for SQL Server
+* [**xSQLServerNetwork**](#xsqlservernetwork) resource to manage SQL Server Network Protocols
+* [**xSQLServerPermission**](#xsqlserverpermission) Grant or revoke permission on the SQL Server.
+* [**xSQLServerRole**](#xsqlserverrole) resource to manage SQL server roles
+* [**xSQLServerReplication**](#xsqlserverreplication) resource to manage SQL Replication distribution and publishing.
+* [**xSQLServerRSConfig**](#xsqlserverrsconfig) configures SQL Server Reporting Services to use a database engine in another instance.
+* [**xSQLServerRSSecureConnectionLevel**](#xsqlserverrssecureconnectionlevel) sets the secure connection level for SQL Server Reporting Services.
+* [**xSQLServerScript**](#xsqlserverscript) resource to extend DSCs Get/Set/Test functionality to T-SQL
+* [**xSQLServerSetup**](#xsqlserversetup) installs a standalone SQL Server instance
+* [**xWaitForAvailabilityGroup**](#xwaitforavailabilitygroup) resource to wait till availability group is created on primary server
 
 ### xSQLServerSetup
 
