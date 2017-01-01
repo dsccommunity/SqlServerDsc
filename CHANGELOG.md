@@ -5,6 +5,12 @@
 - Improvements how tests are initiated in AppVeyor
   - Removed previous workaround (issue #201) from unit tests.
   - Changes in appveyor.yml so that SQL modules are removed before common test is run.
+- Changes to README.md
+  - Changed the contributing section to help new contributors.
+  - Added links for each resource so it is easier to navigate to the parameter list for each resource.
+  - Moved the list of resources in alphabetical order.
+  - Moved each resource parameter list into alphabetical order.
+  - Removed old text mentioning System Center.
 - Changes to xSQLServerSetup
   - The resource no longer uses Win32_Product WMI class when evaluating if SQL Server Management Studio is installed. See article [kb974524](https://support.microsoft.com/en-us/kb/974524) for more information.
   - Now it uses CIM cmdlets to get information from WMI classes.
