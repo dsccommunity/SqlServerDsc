@@ -354,6 +354,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 
 ### xSQLServerScript
 
+_Note: There is a known problem running this resource using PowerShell 4.0. See [issue #273](https://github.com/PowerShell/xSQLServer/issues/273) for more information._
+
 * **ServerInstance**: (Key) The name of an instance of the Database Engine. For default instances, only specify the computer name. For named instances, use the format ComputerName\\InstanceName.
 * **SetFilePath**: (Key) Path to SQL file that will perform Set action.
 * **GetFilePath**: (Key) Path to SQL file that will perform Get action. SQL Queries returned by this function are returned by the Get-DscConfiguration cmdlet with the GetResult parameter.
