@@ -731,42 +731,14 @@ function Set-TargetResource
             'SQLBackupDir'
         )
 
-		$NTServiceAccounts = @("NT AUTHORITY\SYSTEM","SYSTEM","NT AUTHORITY\NETWORKSERVICE", "NETWORKSERVICE", "NT AUTHORITY\LOCALSERVICE", "LOCALSERVICE")
-
         if ($PSBoundParameters.ContainsKey('SQLSvcAccount'))
         {
-            if ($NTServiceaccounts -contains $SQLSvcAccount.UserName.ToUpper())
-            {
-				$SQLSvcAccount.UserName.ToUpper() -match "(NT AUTHORITY\\)?(\S+)"
-                $arguments += " /SQLSVCACCOUNT=`"NT AUTHORITY\$($matches[2])`""
-            }
-			elseif ($SQLSvcAccount.UserName -like '*$')
-			{
-				$arguments += " /SQLSVCACCOUNT=`"$($SQLSvcAccount.UserName)`""
-			}
-            else
-            {
-                $arguments += " /SQLSVCACCOUNT=`"" + $SQLSvcAccount.UserName + "`""
-                $arguments += " /SQLSVCPASSWORD=`"" + $SQLSvcAccount.GetNetworkCredential().Password + "`""
-            }
+			Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "SQLSVC" -User $SQLSvcAccount
         }
 
         if($PSBoundParameters.ContainsKey('AgtSvcAccount'))
         {
-			if ($NTServiceaccounts -contains $AgtSvcAccount.UserName.ToUpper())
-            {
-				$AgtSvcAccount.UserName.ToUpper() -match "(NT AUTHORITY\\)?(\S+)"
-                $arguments += " /AGTSVCACCOUNT=`"NT AUTHORITY\$($matches[2])`""
-            }
-			elseif ($AgtSvcAccount.UserName -like '*$')
-			{
-				$arguments += " /AGTSVCACCOUNT=`"$($AgtSvcAccount.UserName)`""
-			}
-            else
-            {
-                $arguments += " /AGTSVCACCOUNT=`"" + $AgtSvcAccount.UserName + "`""
-                $arguments += " /AGTSVCPASSWORD=`"" + $AgtSvcAccount.GetNetworkCredential().Password + "`""
-            }
+			Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "AGTSVC" -User $AgtSvcAccount
         }
 
         $arguments += ' /AGTSVCSTARTUPTYPE=Automatic'
@@ -776,20 +748,7 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey('FTSvcAccount'))
         {
-			if ($NTServiceaccounts -contains $FTSvcAccount.UserName.ToUpper())
-            {
-				$FTSvcAccount.UserName.ToUpper() -match "(NT AUTHORITY\\)?(\S+)"
-                $arguments += " /FTSVCACCOUNT=`"NT AUTHORITY\$($matches[2])`""
-            }
-			elseif ($FTSvcAccount.UserName -like '*$')
-			{
-				$arguments += " /FTSVCACCOUNT=`"$($FTSvcAccount.UserName)`""
-			}
-            else
-            {
-                $arguments += " /FTSVCACCOUNT=`"" + $FTSvcAccount.UserName + "`""
-                $arguments += " /FTSVCPASSWORD=`"" + $FTSvcAccount.GetNetworkCredential().Password + "`""
-            }
+			Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "FTSVC" -User $FTSvcAccount
         }
     }
 
@@ -797,20 +756,7 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey("RSSvcAccount"))
         {
-			if ($NTServiceaccounts -contains $RSSvcAccount.UserName.ToUpper())
-            {
-				$RSSvcAccount.UserName.ToUpper() -match "(NT AUTHORITY\\)?(\S+)"
-                $arguments += " /RSSVCACCOUNT=`"NT AUTHORITY\$($matches[2])`""
-            }
-			elseif ($RSSvcAccount.UserName -like '*$')
-			{
-				$arguments += " /RSSVCACCOUNT=`"$($RSSvcAccount.UserName)`""
-			}
-            else
-            {
-                $arguments += " /RSSVCACCOUNT=`"" + $RSSvcAccount.UserName + "`""
-                $arguments += " /RSSVCPASSWORD=`"" + $RSSvcAccount.GetNetworkCredential().Password + "`""
-            }
+			Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "RSSVC" -User $RSSvcAccount
         }
     }
 
@@ -827,20 +773,7 @@ function Set-TargetResource
 
         if ($PSBoundParameters.ContainsKey('ASSvcAccount'))
         {
-			if ($NTServiceaccounts -contains $ASSvcAccount.UserName.ToUpper())
-            {
-				$ASSvcAccount.UserName.ToUpper() -match "(NT AUTHORITY\\)?(\S+)"
-                $arguments += " /ASSVCACCOUNT=`"NT AUTHORITY\$($matches[2])`""
-            }
-			elseif ($ASSvcAccount.UserName -like '*$')
-			{
-				$arguments += " /ASSVCACCOUNT=`"$($ASSvcAccount.UserName)`""
-			}
-            else
-            {
-                $arguments += " /ASSVCACCOUNT=`"" + $ASSvcAccount.UserName + "`""
-                $arguments += " /ASSVCPASSWORD=`"" + $ASSvcAccount.GetNetworkCredential().Password + "`""
-            }
+			Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "ASSVC" -User $ASSvcAccount
         }
     }
 
@@ -848,20 +781,7 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey('ISSvcAccount'))
         {
-			if ($NTServiceaccounts -contains $ISSvcAccount.UserName.ToUpper())
-            {
-				$ISSvcAccount.UserName.ToUpper() -match "(NT AUTHORITY\\)?(\S+)"
-                $arguments += " /ISSVCACCOUNT=`"NT AUTHORITY\$($matches[2])`""
-            }
-			elseif ($ISSvcAccount.UserName -like '*$')
-			{
-				$arguments += " /ISSVCACCOUNT=`"$($ISSvcAccount.UserName)`""
-			}
-            else
-            {
-                $arguments += " /ISSVCACCOUNT=`"" + $ISSvcAccount.UserName + "`""
-                $arguments += " /ISSVCPASSWORD=`"" + $ISSvcAccount.GetNetworkCredential().Password + "`""
-            }
+			Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "ISSVC" -User $ISSvcAccount
         }
     }
 
@@ -1327,6 +1247,26 @@ function Get-TemporaryFolder
     param()
 
     return [IO.Path]::GetTempPath()
+}
+
+Function Append-ServiceAccountInfo ([ref]$Arguments, [string]$UserAbbrev ,[PSCredential]$User)
+{
+	$NTServiceAccounts = @("NT AUTHORITY\SYSTEM","SYSTEM","NT AUTHORITY\NETWORKSERVICE", "NETWORKSERVICE", "NT AUTHORITY\LOCALSERVICE", "LOCALSERVICE")
+
+	if ($NTServiceaccounts -contains $User.UserName.ToUpper())
+    {
+		$UserAbbrev.UserName.ToUpper() -match "(NT AUTHORITY\\)?(\S+)"
+        $arguments += [string]::Format(" /{0}ACCOUNT=`"NT AUTHORITY\{1}`"",$UserAbbrev,$matches[2])
+    }
+	elseif ($User.UserName -like '*$')
+	{
+		$arguments += [string]::Format(" /{0}ACCOUNT=`"{1}`"",$UserAbbrev,$User.UserName)
+	}
+    else
+    {
+        $arguments += [string]::Format(" /{0}ACCOUNT=`"{1}`"",$UserAbbrev,$User.UserName)
+		$arguments += [string]::Format(" /{0}PASSWORD=`"{1}`"",$UserAbbrev,$UserAbbrev.GetNetworkCredential().Password)
+    }
 }
 
 Export-ModuleMember -Function *-TargetResource
