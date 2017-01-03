@@ -356,12 +356,13 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 
 _Note: There is a known problem running this resource using PowerShell 4.0. See [issue #273](https://github.com/PowerShell/xSQLServer/issues/273) for more information._
 
-* **ServerInstance**: (Key) The name of an instance of the Database Engine. For default instances, only specify the computer name. For named instances, use the format ComputerName\\InstanceName.
-* **SetFilePath**: (Key) Path to SQL file that will perform Set action.
-* **GetFilePath**: (Key) Path to SQL file that will perform Get action. SQL Queries returned by this function are returned by the Get-DscConfiguration cmdlet with the GetResult parameter.
-* **TestFilePath**: (Key) Path to SQL file that will perform Test action. Any Script that does not throw an error and returns null is evaluated to true. Invoke-SqlCmd treats SQL Print statements as verbose text, this will not cause a Test to return false.
+* **ServerInstance**: (Key) The name of an instance of the Database Engine. For a default instance, only specify the computer name. For a named instances, use the format ComputerName\\InstanceName.
+* **SetFilePath**: (Key) Path to the T-SQL file that will perform Set action.
+* **GetFilePath**: (Key) Path to the T-SQL file that will perform Get action. Any values returned by the T-SQL queries will also be returned by the cmdlet Get-DscConfiguration thru the `GetResult` property.
+* **TestFilePath**: (Key) Path to the T-SQL file that will perform Test action. Any script that does not throw an error or returns null is evaluated to true. The cmdlet Invoke-SqlCmd treats T-SQL Print statements as verbose text, and will not cause the test to return false.
 * **Credential**: The credentials to use to authenticate using SQL Authentication. To authenticate using Windows Authentication, assing the credentials to the built-in parameter `PsDscRunAsCredential`. If both parameters `Credential` and `PsDscRunAsCredential` are not assigned, then SYSTEM account will be used to authenticate using Windows Authentication.
-* **Variable**: Creates a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable.
+* **Variable**: Specifies, as a string array, a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable. Use a Windows PowerShell array to specify multiple variables and their values. For more information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx).
+* **GetResult**: (Read) Contains the values returned from the T-SQL script provided in the parameter `GetFilePath` when cmdlet Get-DscConfiguration is run.
 
 ### xSQLServerSetup
 

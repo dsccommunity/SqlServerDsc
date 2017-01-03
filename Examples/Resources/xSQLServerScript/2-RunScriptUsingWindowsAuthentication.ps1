@@ -11,7 +11,7 @@ Configuration Example
         [PSCredential]
         $WindowsCredential
     )
-    
+
     Import-DscResource -ModuleName xSQLServer
 
     Node localhost
@@ -34,18 +34,18 @@ Configuration Example
             TestFilePath = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript-AsUSER.sql'
             GetFilePath = 'C:\DSCTemp\SQLScripts\Get-RunSQLScript-AsUSER.sql'
             Variable = @("FilePath=C:\temp\log\AuditFiles")
-            
+
             PsDscRunAsCredential = $WindowsCredential
-        } 
+        }
     }
 }
 
-$configurationData = @{ 
-    AllNodes = @(  
-        @{ 
+$configurationData = @{
+    AllNodes = @(
+        @{
             NodeName = 'localhost'
         }
-    ) 
+    )
 }
 
 Example -SqlCredential (Get-Credential) -ConfigurationData $configurationData -OutputPath 'C:\DSCTemp\Configuration'

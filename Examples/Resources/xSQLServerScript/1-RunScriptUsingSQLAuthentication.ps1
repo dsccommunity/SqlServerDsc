@@ -10,7 +10,7 @@ Configuration Example
         [PSCredential]
         $SqlCredential
     )
-    
+
     Import-DscResource -ModuleName xSQLServer
 
     Node localhost
@@ -24,16 +24,16 @@ Configuration Example
             TestFilePath = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript.sql'
             GetFilePath = 'C:\DSCTemp\SQLScripts\Get-RunSQLScript.sql'
             Variable = @("FilePath=C:\temp\log\AuditFiles")
-        }  
+        }
     }
 }
 
 $configurationData = @{ 
-    AllNodes = @(  
-        @{ 
+    AllNodes = @(
+        @{
             NodeName = 'localhost'
         }
-    ) 
+    )
 }
 
 Example -SqlCredential (Get-Credential) -ConfigurationData $configurationData -OutputPath 'C:\DSCTemp\Configuration'

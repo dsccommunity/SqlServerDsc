@@ -22,7 +22,7 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName 'xSQLServer' `
     -DSCResourceName 'MSFT_xSQLServerScript'  `
-    -TestType Unit 
+    -TestType Unit
 
 #endregion HEADER
 
@@ -41,7 +41,7 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope 'MSFT_xSQLServerScript' { 
+    InModuleScope 'MSFT_xSQLServerScript' {
 
         $script:DSCModuleName       = 'xSQLServer'
         $resourceName     = 'MSFT_xSQLServerScript'
@@ -49,12 +49,12 @@ try
 
         $testParameters = @{
             ServerInstance = $env:COMPUTERNAME
-            SetFilePath = "set.sql" 
-            GetFilePath = "get.sql" 
+            SetFilePath = "set.sql"
+            GetFilePath = "get.sql"
             TestFilePath = "test.sql"
         }
 
-        Describe "$resourceName\Get-TargetResource" {         
+        Describe "$resourceName\Get-TargetResource" {
 
             Context 'Get-TargetResource fails to import SQLPS module' {
                 $throwMessage = "Failed to import SQLPS module."
@@ -95,7 +95,7 @@ try
                 It 'Should throw the correct error from Invoke-Sqlcmd' {
                     { Get-TargetResource @testParameters } | Should Throw $errorMessage
                 }
-            } 
+            }
         }
 
         Describe "$resourceName\Set-TargetResource" {
@@ -135,7 +135,7 @@ try
                 }
             }
         }
-        
+
         Describe "$resourceName\Test-TargetResource" {
             Context 'Test-TargetResource fails to import SQLPS module' {
                 $throwMessage = 'Failed to import SQLPS module.'
@@ -181,14 +181,14 @@ try
 
                 It 'Should throw the correct error from Invoke-Sqlcmd' {
                     { Test-TargetResource @testParameters } | Should Throw $errorMessage
-                }            
+                }
             }
         }
 
         Describe "$resourceName\Invoke-SqlScript" {
             $invokeScriptParameters = @{
-                ServerInstance = $env:COMPUTERNAME 
-                SqlScriptPath = "set.sql" 
+                ServerInstance = $env:COMPUTERNAME
+                SqlScriptPath = "set.sql"
             }
 
             Context 'Invoke-SqlScript fails to import SQLPS module' {
@@ -219,7 +219,7 @@ try
                     $invokeScriptParameters.Add("Credential", $cred)
                     $null = Invoke-SqlScript @invokeScriptParameters
 
-                    Assert-MockCalled -CommandName Invoke-Sqlcmd -ParameterFilter { 
+                    Assert-MockCalled -CommandName Invoke-Sqlcmd -ParameterFilter {
                         ($Username -eq $user) -and ($Password -eq $passwordPlain)
                     } -Times 1 -Exactly -Scope It
                 }
@@ -235,9 +235,9 @@ try
 
                 It 'Should throw the correct error from Invoke-Sqlcmd' {
                     { Invoke-SqlScript @invokeScriptParameters } | Should Throw $errorMessage
-                } 
+                }
             }
-        }  
+        }
     }
 }
 finally

@@ -23,6 +23,7 @@
   - It is now possible to configure two instances on the same node, with the same script.
   - Added to the description text for the parameter `Credential` describing how to authenticate using Windows Authentication.
   - Added examples to show how to authenticate using either SQL or Windows authentication.
+  - A recent issue showed that there is a known problem running this resource using PowerShell 4.0. For more information, see [issue #273](https://github.com/PowerShell/xSQLServer/issues/273)
 
 ## 4.0.0.0
 
