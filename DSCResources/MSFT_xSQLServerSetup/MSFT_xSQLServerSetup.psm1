@@ -733,12 +733,12 @@ function Set-TargetResource
 
         if ($PSBoundParameters.ContainsKey('SQLSvcAccount'))
         {
-			Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "SQLSVC" -User $SQLSvcAccount
+            Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "SQLSVC" -User $SQLSvcAccount
         }
 
         if($PSBoundParameters.ContainsKey('AgtSvcAccount'))
         {
-			Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "AGTSVC" -User $AgtSvcAccount
+            Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "AGTSVC" -User $AgtSvcAccount
         }
 
         $arguments += ' /AGTSVCSTARTUPTYPE=Automatic'
@@ -748,7 +748,7 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey('FTSvcAccount'))
         {
-			Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "FTSVC" -User $FTSvcAccount
+            Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "FTSVC" -User $FTSvcAccount
         }
     }
 
@@ -756,7 +756,7 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey("RSSvcAccount"))
         {
-			Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "RSSVC" -User $RSSvcAccount
+            Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "RSSVC" -User $RSSvcAccount
         }
     }
 
@@ -773,7 +773,7 @@ function Set-TargetResource
 
         if ($PSBoundParameters.ContainsKey('ASSvcAccount'))
         {
-			Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "ASSVC" -User $ASSvcAccount
+            Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "ASSVC" -User $ASSvcAccount
         }
     }
 
@@ -781,7 +781,7 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey('ISSvcAccount'))
         {
-			Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "ISSVC" -User $ISSvcAccount
+            Append-ServiceAccountInfo -Arguments ([ref]$arguments) -UserAbbrev "ISSVC" -User $ISSvcAccount
         }
     }
 
@@ -1251,21 +1251,21 @@ function Get-TemporaryFolder
 
 Function Append-ServiceAccountInfo ([ref]$Arguments, [string]$UserAbbrev ,[PSCredential]$User)
 {
-	$NTServiceAccounts = @("NT AUTHORITY\SYSTEM","SYSTEM","NT AUTHORITY\NETWORKSERVICE", "NETWORKSERVICE", "NT AUTHORITY\LOCALSERVICE", "LOCALSERVICE")
+    $NTServiceAccounts = @("NT AUTHORITY\SYSTEM","SYSTEM","NT AUTHORITY\NETWORKSERVICE", "NETWORKSERVICE", "NT AUTHORITY\LOCALSERVICE", "LOCALSERVICE")
 
-	if ($NTServiceaccounts -contains $User.UserName.ToUpper())
+    if ($NTServiceaccounts -contains $User.UserName.ToUpper())
     {
-		$UserAbbrev.UserName.ToUpper() -match "(NT AUTHORITY\\)?(\S+)"
+        $UserAbbrev.UserName.ToUpper() -match "(NT AUTHORITY\\)?(\S+)"
         $arguments += [string]::Format(" /{0}ACCOUNT=`"NT AUTHORITY\{1}`"",$UserAbbrev,$matches[2])
     }
-	elseif ($User.UserName -like '*$')
-	{
-		$arguments += [string]::Format(" /{0}ACCOUNT=`"{1}`"",$UserAbbrev,$User.UserName)
-	}
+    elseif ($User.UserName -like '*$')
+    {
+        $arguments += [string]::Format(" /{0}ACCOUNT=`"{1}`"",$UserAbbrev,$User.UserName)
+    }
     else
     {
         $arguments += [string]::Format(" /{0}ACCOUNT=`"{1}`"",$UserAbbrev,$User.UserName)
-		$arguments += [string]::Format(" /{0}PASSWORD=`"{1}`"",$UserAbbrev,$UserAbbrev.GetNetworkCredential().Password)
+        $arguments += [string]::Format(" /{0}PASSWORD=`"{1}`"",$UserAbbrev,$UserAbbrev.GetNetworkCredential().Password)
     }
 }
 
