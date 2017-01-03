@@ -11,6 +11,9 @@
   - Moved the list of resources in alphabetical order.
   - Moved each resource parameter list into alphabetical order.
   - Removed old text mentioning System Center.
+  - Now the correct product name is written in the installation section, and a typo was also fixed.
+  - Fixed a typo in the Requirements section.
+  - Added link to Examples folder in the Examples section.
 - Changes to xSQLServerSetup
   - The resource no longer uses Win32_Product WMI class when evaluating if SQL Server Management Studio is installed. See article [kb974524](https://support.microsoft.com/en-us/kb/974524) for more information.
   - Now it uses CIM cmdlets to get information from WMI classes.

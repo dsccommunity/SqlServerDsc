@@ -29,7 +29,7 @@ If you need any help along the way, don't be afraid to ask. We are here for each
 
 ## Installation
 
-To manually install the module, download the source code and unzip the contents of the '\Modules\xSQLServer' directory to the '$env:ProgramFiles\WindowsPowerShell\Modules folder'.
+To manually install the module, download the source code and unzip the contents of the '\Modules\xSQLServer' directory to the '$env:ProgramFiles\WindowsPowerShell\Modules' folder.
 
 To install from the PowerShell gallery using PowerShellGet (in PowerShell 5.0) run the following command:
 
@@ -37,7 +37,7 @@ To install from the PowerShell gallery using PowerShellGet (in PowerShell 5.0) r
 Find-Module -Name xSQLServer -Repository PSGallery | Install-Module
 ```
 
-To confirm installation, run the below command and ensure you see the Office Online Server DSC resoures available:
+To confirm installation, run the below command and ensure you see the SQL Server DSC resources available:
 
 ```powershell
 Get-DscResource -Module xSQLServer
@@ -45,12 +45,12 @@ Get-DscResource -Module xSQLServer
 
 ## Requirements
 
-The minimum PowerShell version required is 4.0, which ships in Windows 8.1 or Windows Server 2012R2 (or higher versions). But PowerShell 4.0 can also be installed on Windows Server 2008 R2.
+The minimum PowerShell version required is 4.0, which ships in Windows 8.1 or Windows Server 2012 R2 (or higher versions). But PowerShell 4.0 can also be installed on Windows Server 2008 R2.
 The preferred version is PowerShell 5.0 or higher, which ships with Windows 10 or Windows Server 2016.
 
 ## Examples
 
-You can review the "examples" directory in the xSQLServer module for some general use scenarios for all of the resources that are in the module.
+You can review the [Examples](/Examples) directory in the xSQLServer module for some general use scenarios for all of the resources that are in the module.
 
 ## Change log
 
