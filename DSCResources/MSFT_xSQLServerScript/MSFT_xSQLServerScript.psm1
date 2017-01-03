@@ -14,7 +14,7 @@ Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script
 
     .PARAMETER GetFilePath
         Path to the T-SQL file that will perform Get action.
-        Any values returned by the T-SQL queries will also be returned by the cmdlet Get-DscConfiguration thru the 'GetResult' property.
+        Any values returned by the T-SQL queries will also be returned by the cmdlet Get-DscConfiguration through the `GetResult` property.
 
     .PARAMETER TestFilePath
         Path to the T-SQL file that will perform Test action.
@@ -22,9 +22,9 @@ Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script
         The cmdlet Invoke-SqlCmd treats T-SQL Print statements as verbose text, and will not cause the test to return false.
 
     .PARAMETER Credential
-        The credentials to use to authenticate using SQL Authentication.
-        To authenticate using Windows Authentication, assing the credentials to the built-in parameter 'PsDscRunAsCredential'.
-        If both parameters 'Credential' and 'PsDscRunAsCredential' are not assigned, then SYSTEM account will be used to authenticate using Windows Authentication.
+        The credentials to authenticate with, using SQL Authentication. To authenticate using Windows Authentication, assign the credentials
+        to the built-in parameter `PsDscRunAsCredential`. If both parameters `Credential` and `PsDscRunAsCredential` are not assigned,
+        then SYSTEM account will be used to authenticate using Windows Authentication.
 
     .PARAMETER Variable
         Specifies, as a string array, a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable.
@@ -95,7 +95,7 @@ function Get-TargetResource
 
     .PARAMETER GetFilePath
         Path to the T-SQL file that will perform Get action.
-        Any values returned by the T-SQL queries will also be returned by the cmdlet Get-DscConfiguration thru the 'GetResult' property.
+        Any values returned by the T-SQL queries will also be returned by the cmdlet Get-DscConfiguration through the `GetResult` property.
 
     .PARAMETER TestFilePath
         Path to the T-SQL file that will perform Test action.
@@ -103,9 +103,9 @@ function Get-TargetResource
         The cmdlet Invoke-SqlCmd treats T-SQL Print statements as verbose text, and will not cause the test to return false.
 
     .PARAMETER Credential
-        The credentials to use to authenticate using SQL Authentication.
-        To authenticate using Windows Authentication, assing the credentials to the built-in parameter 'PsDscRunAsCredential'.
-        If both parameters 'Credential' and 'PsDscRunAsCredential' are not assigned, then SYSTEM account will be used to authenticate using Windows Authentication.
+        The credentials to authenticate with, using SQL Authentication. To authenticate using Windows Authentication, assign the credentials
+        to the built-in parameter `PsDscRunAsCredential`. If both parameters `Credential` and `PsDscRunAsCredential` are not assigned,
+        then SYSTEM account will be used to authenticate using Windows Authentication.
 
     .PARAMETER Variable
         Specifies, as a string array, a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable.
@@ -158,7 +158,7 @@ function Set-TargetResource
 
     .PARAMETER GetFilePath
         Path to the T-SQL file that will perform Get action.
-        Any values returned by the T-SQL queries will also be returned by the cmdlet Get-DscConfiguration thru the 'GetResult' property.
+        Any values returned by the T-SQL queries will also be returned by the cmdlet Get-DscConfiguration through the `GetResult` property.
 
     .PARAMETER TestFilePath
         Path to the T-SQL file that will perform Test action.
@@ -166,9 +166,9 @@ function Set-TargetResource
         The cmdlet Invoke-SqlCmd treats T-SQL Print statements as verbose text, and will not cause the test to return false.
 
     .PARAMETER Credential
-        The credentials to use to authenticate using SQL Authentication.
-        To authenticate using Windows Authentication, assing the credentials to the built-in parameter 'PsDscRunAsCredential'.
-        If both parameters 'Credential' and 'PsDscRunAsCredential' are not assigned, then SYSTEM account will be used to authenticate using Windows Authentication.
+        The credentials to authenticate with, using SQL Authentication. To authenticate using Windows Authentication, assign the credentials
+        to the built-in parameter `PsDscRunAsCredential`. If both parameters `Credential` and `PsDscRunAsCredential` are not assigned,
+        then SYSTEM account will be used to authenticate using Windows Authentication.
 
     .PARAMETER Variable
         Specifies, as a string array, a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable.
