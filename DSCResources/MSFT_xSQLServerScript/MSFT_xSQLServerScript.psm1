@@ -8,7 +8,7 @@ Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script
     .PARAMETER ServerInstance
         The name of an instance of the Database Engine. For a default instance, only specify the computer name. For a named instances,
         use the format ComputerName\InstanceName.
-    
+
     .PARAMETER SetFilePath
         Path to the T-SQL file that will perform Set action.
 
@@ -62,13 +62,13 @@ function Get-TargetResource
 
         [System.String[]]
         $Variable
-    )   
+    )
 
     $result = Invoke-SqlScript -ServerInstance $ServerInstance -SqlScriptPath $GetFilePath `
                 -Credential $Credential -Variable $Variable -ErrorAction Stop
 
     $getResult = Out-String -InputObject $result
-        
+
     $returnValue = @{
         ServerInstance = [System.String] $ServerInstance
         SetFilePath = [System.String] $SetFilePath
@@ -89,7 +89,7 @@ function Get-TargetResource
     .PARAMETER ServerInstance
         The name of an instance of the Database Engine. For a default instance, only specify the computer name. For a named instances,
         use the format ComputerName\InstanceName.
-    
+
     .PARAMETER SetFilePath
         Path to the T-SQL file that will perform Set action.
 
@@ -152,7 +152,7 @@ function Set-TargetResource
     .PARAMETER ServerInstance
         The name of an instance of the Database Engine. For a default instance, only specify the computer name. For a named instances,
         use the format ComputerName\InstanceName.
-    
+
     .PARAMETER SetFilePath
         Path to the T-SQL file that will perform Set action.
 
@@ -207,7 +207,7 @@ function Test-TargetResource
     )
 
     try
-    {   
+    {
         $result = Invoke-SqlScript -ServerInstance $ServerInstance -SqlScriptPath $TestFilePath `
                 -Credential $Credential -Variable $Variable -ErrorAction Stop
 
@@ -271,7 +271,7 @@ function Invoke-SqlScript
     if($null -ne $Credential)
     {
         $null = $PSBoundParameters.Add("Username", $Credential.UserName)
-        $null = $PSBoundParameters.Add("Password", $Credential.GetNetworkCredential().password)   
+        $null = $PSBoundParameters.Add("Password", $Credential.GetNetworkCredential().password)
     }
 
     $null = $PSBoundParameters.Remove("Credential")
