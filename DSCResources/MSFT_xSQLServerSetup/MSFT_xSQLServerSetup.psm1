@@ -1251,21 +1251,21 @@ function Get-TemporaryFolder
 
 Function Append-ServiceAccountInfo ([ref]$Arguments, [string]$UserAbbrev ,[PSCredential]$User)
 {
-    $NTServiceAccounts = @("NT AUTHORITY\SYSTEM","SYSTEM","NT AUTHORITY\NETWORKSERVICE", "NETWORKSERVICE", "NT AUTHORITY\LOCALSERVICE", "LOCALSERVICE")
+    $NTServiceAccounts = @("NTAUTHORITY\SYSTEM","SYSTEM","NTAUTHORITY\NETWORKSERVICE", "NETWORKSERVICE", "NTAUTHORITY\LOCALSERVICE", "LOCALSERVICE")
 
     if ($NTServiceaccounts -contains $User.UserName.ToUpper())
     {
-        $UserAbbrev.UserName.ToUpper() -match "(NT AUTHORITY\\)?(\S+)"
-        $arguments += [string]::Format(" /{0}ACCOUNT=`"NT AUTHORITY\{1}`"",$UserAbbrev,$matches[2])
+        $User.UserName.ToUpper() -match "(NTAUTHORITY\\)?(\S+)"
+        $arguments.Value += [string]::Format(" /{0}ACCOUNT=`"NT AUTHORITY\{1}`"",$UserAbbrev,$matches[2])
     }
     elseif ($User.UserName -like '*$')
     {
-        $arguments += [string]::Format(" /{0}ACCOUNT=`"{1}`"",$UserAbbrev,$User.UserName)
+        $arguments.Value += [string]::Format(" /{0}ACCOUNT=`"{1}`"",$UserAbbrev,$User.UserName)
     }
     else
     {
-        $arguments += [string]::Format(" /{0}ACCOUNT=`"{1}`"",$UserAbbrev,$User.UserName)
-        $arguments += [string]::Format(" /{0}PASSWORD=`"{1}`"",$UserAbbrev,$UserAbbrev.GetNetworkCredential().Password)
+        $arguments.Value += [string]::Format(" /{0}ACCOUNT=`"{1}`"",$UserAbbrev,$User.UserName)
+        $arguments.Value += [string]::Format(" /{0}PASSWORD=`"{1}`"",$UserAbbrev,$User.GetNetworkCredential().Password)
     }
 }
 
