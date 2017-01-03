@@ -12,7 +12,7 @@ For more information see the [Code of Conduct FAQ](https://opensource.microsoft.
 Regardless of the way you want to contribute we are tremendously happy to have you here.
 
 There are several ways you can contribute. You can submit an issue to report a bug. You can submit an issue to request an improvment. You can take part in discussions for issues. You can review pull requests and comment on other contributors changes.
-And you can improve the resources and tests, or even create new resources, by sending in pull requests yourself.
+You can also improve the resources and tests, or even create new resources, by sending in pull requests yourself.
 
 * If you want to submit an issue or take part in discussions, please browse the list of [issues](https://github.com/PowerShell/xSQLServer/issues). Please check out [Contributing to the DSC Resource Kit](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md) on how to work with issues.
 * If you want to review pull requests, please first check out the [Review Pull Request guidelines](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md#reviewing-pull-requests), and the browse the list of [pull requests](https://github.com/PowerShell/xSQLServer/pulls) and look for those pull requests with label 'needs review'.
@@ -25,7 +25,7 @@ And you can improve the resources and tests, or even create new resources, by se
   * If you are new to GitHub (and git), then please check out [Getting Started with GitHub](https://github.com/PowerShell/DscResources/blob/master/GettingStartedWithGitHub.md).
   * If you are new to Pester and writing test, then please check out [Getting started with Pester](https://github.com/PowerShell/DscResources/blob/master/GettingStartedWithPester.md).
 
-And if you need any help along the way, don't be afraid to ask. We are here for each other.
+If you need any help along the way, don't be afraid to ask. We are here for each other.
 
 ## Installation
 
