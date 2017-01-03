@@ -37,7 +37,7 @@ To install from the PowerShell gallery using PowerShellGet (in PowerShell 5.0) r
 Find-Module -Name xSQLServer -Repository PSGallery | Install-Module
 ```
 
-To confirm installation, run the below command and ensure you see the Office Online Server DSC resoures available:
+To confirm installation, run the below command and ensure you see the SQL Server DSC resoures available:
 
 ```powershell
 Get-DscResource -Module xSQLServer
