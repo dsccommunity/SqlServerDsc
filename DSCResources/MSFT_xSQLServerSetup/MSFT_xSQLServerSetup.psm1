@@ -731,12 +731,19 @@ function Set-TargetResource
             'SQLBackupDir'
         )
 
+		$NTServiceAccounts = @("NT AUTHORITY\SYSTEM","SYSTEM","NT AUTHORITY\NETWORKSERVICE", "NETWORKSERVICE", "NT AUTHORITY\LOCALSERVICE", "LOCALSERVICE")
+
         if ($PSBoundParameters.ContainsKey('SQLSvcAccount'))
         {
-            if ($SQLSvcAccount.UserName -eq "SYSTEM")
+            if ($NTServiceaccounts -contains $SQLSvcAccount.UserName.ToUpper())
             {
-                $arguments += " /SQLSVCACCOUNT=`"NT AUTHORITY\SYSTEM`""
+				$SQLSvcAccount.UserName.ToUpper() -match "(NT AUTHORITY\\)?(\S+)"
+                $arguments += " /SQLSVCACCOUNT=`"NT AUTHORITY\$($matches[2])`""
             }
+			elseif ($SQLSvcAccount.UserName -like '*$')
+			{
+				$arguments += " /SQLSVCACCOUNT=`"$($SQLSvcAccount.UserName)`""
+			}
             else
             {
                 $arguments += " /SQLSVCACCOUNT=`"" + $SQLSvcAccount.UserName + "`""
@@ -746,16 +753,20 @@ function Set-TargetResource
 
         if($PSBoundParameters.ContainsKey('AgtSvcAccount'))
         {
-            if($AgtSvcAccount.UserName -eq 'SYSTEM')
+			if ($NTServiceaccounts -contains $AgtSvcAccount.UserName.ToUpper())
             {
-                $arguments += " /AGTSVCACCOUNT=`"NT AUTHORITY\SYSTEM`""
+				$AgtSvcAccount.UserName.ToUpper() -match "(NT AUTHORITY\\)?(\S+)"
+                $arguments += " /AGTSVCACCOUNT=`"NT AUTHORITY\$($matches[2])`""
             }
+			elseif ($AgtSvcAccount.UserName -like '*$')
+			{
+				$arguments += " /AGTSVCACCOUNT=`"$($AgtSvcAccount.UserName)`""
+			}
             else
             {
                 $arguments += " /AGTSVCACCOUNT=`"" + $AgtSvcAccount.UserName + "`""
                 $arguments += " /AGTSVCPASSWORD=`"" + $AgtSvcAccount.GetNetworkCredential().Password + "`""
             }
-
         }
 
         $arguments += ' /AGTSVCSTARTUPTYPE=Automatic'
@@ -765,10 +776,15 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey('FTSvcAccount'))
         {
-            if ($FTSvcAccount.UserName -eq 'SYSTEM')
+			if ($NTServiceaccounts -contains $FTSvcAccount.UserName.ToUpper())
             {
-                $arguments += " /FTSVCACCOUNT=`"NT AUTHORITY\LOCAL SERVICE`""
+				$FTSvcAccount.UserName.ToUpper() -match "(NT AUTHORITY\\)?(\S+)"
+                $arguments += " /FTSVCACCOUNT=`"NT AUTHORITY\$($matches[2])`""
             }
+			elseif ($FTSvcAccount.UserName -like '*$')
+			{
+				$arguments += " /FTSVCACCOUNT=`"$($FTSvcAccount.UserName)`""
+			}
             else
             {
                 $arguments += " /FTSVCACCOUNT=`"" + $FTSvcAccount.UserName + "`""
@@ -781,10 +797,15 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey("RSSvcAccount"))
         {
-            if ($RSSvcAccount.UserName -eq "SYSTEM")
+			if ($NTServiceaccounts -contains $RSSvcAccount.UserName.ToUpper())
             {
-                $arguments += " /RSSVCACCOUNT=`"NT AUTHORITY\SYSTEM`""
+				$RSSvcAccount.UserName.ToUpper() -match "(NT AUTHORITY\\)?(\S+)"
+                $arguments += " /RSSVCACCOUNT=`"NT AUTHORITY\$($matches[2])`""
             }
+			elseif ($RSSvcAccount.UserName -like '*$')
+			{
+				$arguments += " /RSSVCACCOUNT=`"$($RSSvcAccount.UserName)`""
+			}
             else
             {
                 $arguments += " /RSSVCACCOUNT=`"" + $RSSvcAccount.UserName + "`""
@@ -806,10 +827,15 @@ function Set-TargetResource
 
         if ($PSBoundParameters.ContainsKey('ASSvcAccount'))
         {
-            if($ASSvcAccount.UserName -eq 'SYSTEM')
+			if ($NTServiceaccounts -contains $ASSvcAccount.UserName.ToUpper())
             {
-                $arguments += " /ASSVCACCOUNT=`"NT AUTHORITY\SYSTEM`""
+				$ASSvcAccount.UserName.ToUpper() -match "(NT AUTHORITY\\)?(\S+)"
+                $arguments += " /ASSVCACCOUNT=`"NT AUTHORITY\$($matches[2])`""
             }
+			elseif ($ASSvcAccount.UserName -like '*$')
+			{
+				$arguments += " /ASSVCACCOUNT=`"$($ASSvcAccount.UserName)`""
+			}
             else
             {
                 $arguments += " /ASSVCACCOUNT=`"" + $ASSvcAccount.UserName + "`""
@@ -822,10 +848,15 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey('ISSvcAccount'))
         {
-            if ($ISSvcAccount.UserName -eq 'SYSTEM')
+			if ($NTServiceaccounts -contains $ISSvcAccount.UserName.ToUpper())
             {
-                $arguments += " /ISSVCACCOUNT=`"NT AUTHORITY\SYSTEM`""
+				$ISSvcAccount.UserName.ToUpper() -match "(NT AUTHORITY\\)?(\S+)"
+                $arguments += " /ISSVCACCOUNT=`"NT AUTHORITY\$($matches[2])`""
             }
+			elseif ($ISSvcAccount.UserName -like '*$')
+			{
+				$arguments += " /ISSVCACCOUNT=`"$($ISSvcAccount.UserName)`""
+			}
             else
             {
                 $arguments += " /ISSVCACCOUNT=`"" + $ISSvcAccount.UserName + "`""
