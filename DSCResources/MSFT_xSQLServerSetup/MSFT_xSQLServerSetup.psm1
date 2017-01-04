@@ -1270,12 +1270,14 @@ Function Join-ServiceAccountInfo
         $User,
 
         [Parameter(Mandatory)]
+        [Alias("UserAlias")]
         [string]
-        $UserAlias,
+        $UAlias,
 
         [Parameter(Mandatory)]
+        [Alias("PasswordAlias")]
         [string]
-        $PasswordAlias      
+        $PAlias      
     )
 
     begin {
@@ -1289,19 +1291,19 @@ Function Join-ServiceAccountInfo
             #Dealing with NT Authority user
             if($User.UserName.ToUpper() -match "(NTAUTHORITY\\)?(\S+)")
             {
-                $ArgumentString += [string]::Format(" /{0}=`"NT AUTHORITY\{1}`"",$UserAlias,$matches[2])
+                $ArgumentString += [string]::Format(" /{0}=`"NT AUTHORITY\{1}`"",$UAlias,$matches[2])
             }
         }
         elseif ($User.UserName -like '*$')
         {
             #Dealing with Managed Service Account
-            $ArgumentString += [string]::Format(" /{0}=`"{1}`"",$UserAlias,$User.UserName)
+            $ArgumentString += [string]::Format(" /{0}=`"{1}`"",$UAlias,$User.UserName)
         }
         else
         {
             #Dealing with local or domain user
-            $ArgumentString += [string]::Format(" /{0}=`"{1}`"",$UserAlias,$User.UserName)
-            $ArgumentString += [string]::Format(" /{0}=`"{1}`"",$PasswordAlias,$User.GetNetworkCredential().Password)
+            $ArgumentString += [string]::Format(" /{0}=`"{1}`"",$UAlias,$User.UserName)
+            $ArgumentString += [string]::Format(" /{0}=`"{1}`"",$PAlias,$User.GetNetworkCredential().Password)
         }
 
         return $ArgumentString
