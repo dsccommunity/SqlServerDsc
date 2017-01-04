@@ -1355,7 +1355,7 @@ function Copy-ItemWithRoboCopy
 <#
     .SYNOPSIS
         Returns the path of the current user's temporary folder. 
-#>Join-ServiceAccountInfo
+#>
 function Get-TemporaryFolder
 {
     [CmdletBinding()]
