@@ -84,8 +84,8 @@ function Get-TargetResource
         $analysisServiceName = "MSOLAP`$$InstanceName"
     }
 
-	$DREPPLAYControllerServiceName = "SQL Server Distributed Replay Controller"
-	$DREPPLAYClientServiceName = "SQL Server Distributed Replay Client"
+    $DREPPLAYControllerServiceName = "SQL Server Distributed Replay Controller"
+    $DREPPLAYClientServiceName = "SQL Server Distributed Replay Client"
     
     $integrationServiceName = "MsDtsServer$($sqlVersion)0"
     
@@ -234,7 +234,7 @@ function Get-TargetResource
         $features += 'ADV_SSMS,'
     }
 
-	$installedProductSqlDataQualityClient2016 = Get-ItemProperty -Path (
+    $installedProductSqlDataQualityClient2016 = Get-ItemProperty -Path (
         Join-Path -Path $registryUninstallPath -ChildPath '{51B449C1-3374-4009-B9E2-2D4D02C33B2A}'
     ) -ErrorAction SilentlyContinue
 
@@ -245,7 +245,7 @@ function Get-TargetResource
         $features += 'DQC,'
     }
 
-	$installedProductSqlDataQualityServer2016 = Get-ItemProperty -Path (
+    $installedProductSqlDataQualityServer2016 = Get-ItemProperty -Path (
         Join-Path -Path $registryUninstallPath -ChildPath '{0A8BB454-0B51-4F00-AF55-D0F7951F30BD}'
     ) -ErrorAction SilentlyContinue
 
@@ -256,19 +256,19 @@ function Get-TargetResource
         $features += 'DQ,'
     }
 
-	if ($services | Where-Object {$_.Name -eq $DREPPLAYControllerServiceName})
+    if ($services | Where-Object {$_.Name -eq $DREPPLAYControllerServiceName})
     {
         $features += 'DREPLAY_CTLR,'
         $DREPPLAYControllerServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$DREPPLAYControllerServiceName'").StartName
     }
 
-	if ($services | Where-Object {$_.Name -eq $DREPPLAYClientServiceName})
+    if ($services | Where-Object {$_.Name -eq $DREPPLAYClientServiceName})
     {
         $features += 'DREPLAY_CLT,'
         $DREPPLAYClientServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$DREPPLAYClientServiceName'").StartName
     }
 
-	$installedProductSqlMDS2016 = Get-ItemProperty -Path (
+    $installedProductSqlMDS2016 = Get-ItemProperty -Path (
         Join-Path -Path $registryUninstallPath -ChildPath '{188FADC4-041B-4C80-9CF5-4F547AB457F3}'
     ) -ErrorAction SilentlyContinue
 
@@ -279,7 +279,7 @@ function Get-TargetResource
         $features += 'MDS,'
     }
 
-	$installedProductSqlSP2016 = Get-ItemProperty -Path (
+    $installedProductSqlSP2016 = Get-ItemProperty -Path (
         Join-Path -Path $registryUninstallPath -ChildPath '{6617D06D-092C-4F43-B6F5-FBE3C169E840}'
     ) -ErrorAction SilentlyContinue
 
@@ -290,7 +290,7 @@ function Get-TargetResource
         $features += 'RS_SHP,'
     }
 
-	$installedProductSqlSPAddin2016 = Get-ItemProperty -Path (
+    $installedProductSqlSPAddin2016 = Get-ItemProperty -Path (
         Join-Path -Path $registryUninstallPath -ChildPath '{FB1A9DFF-FAF9-44EB-902D-8D9FCF3B04D5}'
     ) -ErrorAction SilentlyContinue
 
@@ -301,7 +301,7 @@ function Get-TargetResource
         $features += 'RS_SHPWFE,'
     }
 
-	$installedProductSqlBOL2016 = Get-ItemProperty -Path (
+    $installedProductSqlBOL2016 = Get-ItemProperty -Path (
         Join-Path -Path $registryUninstallPath -ChildPath '{060F438D-A367-4B23-9487-7431025E0F87}'
     ) -ErrorAction SilentlyContinue
 
@@ -311,8 +311,8 @@ function Get-TargetResource
     {
         $features += 'BOL,'
     }
-	
-	$installedProductSqlCONN2016 = Get-ItemProperty -Path (
+    
+    $installedProductSqlCONN2016 = Get-ItemProperty -Path (
         Join-Path -Path $registryUninstallPath -ChildPath '{74940EE5-66DB-42E3-AC30-295D13B461A7}'
     ) -ErrorAction SilentlyContinue
 
@@ -323,7 +323,7 @@ function Get-TargetResource
         $features += 'CONN,'
     }
 
-	$installedProductSqlBC2016 = Get-ItemProperty -Path (
+    $installedProductSqlBC2016 = Get-ItemProperty -Path (
         Join-Path -Path $registryUninstallPath -ChildPath '{74940EE5-66DB-42E3-AC30-295D13B461A7}'
     ) -ErrorAction SilentlyContinue
 
@@ -334,7 +334,7 @@ function Get-TargetResource
         $features += 'BC,'
     }
 
-	$installedProductSqlSPCONN2016 = Get-ItemProperty -Path (
+    $installedProductSqlSPCONN2016 = Get-ItemProperty -Path (
         Join-Path -Path $registryUninstallPath -ChildPath '{74940EE5-66DB-42E3-AC30-295D13B461A7}'
     ) -ErrorAction SilentlyContinue
 
@@ -419,8 +419,8 @@ function Get-TargetResource
         ASTempDir = $analysisTempDirectory
         ASConfigDir = $analysisConfigDirectory
         ISSvcAccountUsername = $integrationServiceAccountUsername
-		DREPPLAYClientSvcAccountUsername = $DREPPLAYClientServiceAccountUsername
-		DREPPLAYControllerSvcAccountUsername = $DREPPLAYControllerServiceAccountUsername
+        DREPPLAYClientSvcAccountUsername = $DREPPLAYClientServiceAccountUsername
+        DREPPLAYControllerSvcAccountUsername = $DREPPLAYControllerServiceAccountUsername
     }
 }
 
@@ -1371,52 +1371,52 @@ function Get-TemporaryFolder
 #>
 Function Join-ServiceAccountInfo
 {
-	param(
-		[Parameter(Mandatory, ValueFromPipeline=$true)]
-		[string]
-		$ArgumentString,
+    param(
+        [Parameter(Mandatory, ValueFromPipeline=$true)]
+        [string]
+        $ArgumentString,
 
-		[Parameter(Mandatory)]
-		[PSCredential]
-		$User,
+        [Parameter(Mandatory)]
+        [PSCredential]
+        $User,
 
-		[Parameter(Mandatory)]
-		[string]
-		$UserAlias,
+        [Parameter(Mandatory)]
+        [string]
+        $UserAlias,
 
-		[Parameter(Mandatory)]
-		[string]
-		$PasswordAlias		
-	)
+        [Parameter(Mandatory)]
+        [string]
+        $PasswordAlias		
+    )
 
-	begin {
-		#List of ntauthority accounts used to determine in given account is such.
-		$NTServiceAccounts = @("NTAUTHORITY\SYSTEM","SYSTEM","NTAUTHORITY\NETWORKSERVICE", "NETWORKSERVICE", "NTAUTHORITY\LOCALSERVICE", "LOCALSERVICE")
-	}
-	
-	process {
-		if ($NTServiceaccounts -contains $User.UserName.ToUpper())
-		{
-			#Dealing with NT Authority user
-			if($User.UserName.ToUpper() -match "(NTAUTHORITY\\)?(\S+)")
-			{
-				$ArgumentString += [string]::Format(" /{0}=`"NT AUTHORITY\{1}`"",$UserAlias,$matches[2])
-			}
-		}
-		elseif ($User.UserName -like '*$')
-		{
-			#Dealing with Managed Service Account
-			$ArgumentString += [string]::Format(" /{0}=`"{1}`"",$UserAlias,$User.UserName)
-		}
-		else
-		{
-			#Dealing with local or domain user
-			$ArgumentString += [string]::Format(" /{0}=`"{1}`"",$UserAlias,$User.UserName)
-			$ArgumentString += [string]::Format(" /{0}=`"{1}`"",$PasswordAlias,$User.GetNetworkCredential().Password)
-		}
+    begin {
+        #List of ntauthority accounts used to determine in given account is such.
+        $NTServiceAccounts = @("NTAUTHORITY\SYSTEM","SYSTEM","NTAUTHORITY\NETWORKSERVICE", "NETWORKSERVICE", "NTAUTHORITY\LOCALSERVICE", "LOCALSERVICE")
+    }
+    
+    process {
+        if ($NTServiceaccounts -contains $User.UserName.ToUpper())
+        {
+            #Dealing with NT Authority user
+            if($User.UserName.ToUpper() -match "(NTAUTHORITY\\)?(\S+)")
+            {
+                $ArgumentString += [string]::Format(" /{0}=`"NT AUTHORITY\{1}`"",$UserAlias,$matches[2])
+            }
+        }
+        elseif ($User.UserName -like '*$')
+        {
+            #Dealing with Managed Service Account
+            $ArgumentString += [string]::Format(" /{0}=`"{1}`"",$UserAlias,$User.UserName)
+        }
+        else
+        {
+            #Dealing with local or domain user
+            $ArgumentString += [string]::Format(" /{0}=`"{1}`"",$UserAlias,$User.UserName)
+            $ArgumentString += [string]::Format(" /{0}=`"{1}`"",$PasswordAlias,$User.GetNetworkCredential().Password)
+        }
 
-		return $ArgumentString
-	}
+        return $ArgumentString
+    }
 }
 
 Export-ModuleMember -Function *-TargetResource
