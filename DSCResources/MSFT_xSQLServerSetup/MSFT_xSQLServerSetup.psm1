@@ -234,117 +234,6 @@ function Get-TargetResource
         $features += 'ADV_SSMS,'
     }
 
-    $installedProductSqlDataQualityClient2016 = Get-ItemProperty -Path (
-        Join-Path -Path $registryUninstallPath -ChildPath '{51B449C1-3374-4009-B9E2-2D4D02C33B2A}'
-    ) -ErrorAction SilentlyContinue
-
-    if (
-        ($sqlVersion -eq 13 -and $installedProductSqlDataQualityClient2016)
-        )
-    {
-        $features += 'DQC,'
-    }
-
-    $installedProductSqlDataQualityServer2016 = Get-ItemProperty -Path (
-        Join-Path -Path $registryUninstallPath -ChildPath '{0A8BB454-0B51-4F00-AF55-D0F7951F30BD}'
-    ) -ErrorAction SilentlyContinue
-
-    if (
-        ($sqlVersion -eq 13 -and $installedProductSqlDataQualityServer2016)
-        )
-    {
-        $features += 'DQ,'
-    }
-
-    if ($services | Where-Object {$_.Name -eq $DREPPLAYControllerServiceName})
-    {
-        $features += 'DREPLAY_CTLR,'
-        $DREPPLAYControllerServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$DREPPLAYControllerServiceName'").StartName
-    }
-
-    if ($services | Where-Object {$_.Name -eq $DREPPLAYClientServiceName})
-    {
-        $features += 'DREPLAY_CLT,'
-        $DREPPLAYClientServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$DREPPLAYClientServiceName'").StartName
-    }
-
-    $installedProductSqlMDS2016 = Get-ItemProperty -Path (
-        Join-Path -Path $registryUninstallPath -ChildPath '{188FADC4-041B-4C80-9CF5-4F547AB457F3}'
-    ) -ErrorAction SilentlyContinue
-
-    if (
-        ($sqlVersion -eq 13 -and $installedProductSqlMDS2016)
-        )
-    {
-        $features += 'MDS,'
-    }
-
-    $installedProductSqlSP2016 = Get-ItemProperty -Path (
-        Join-Path -Path $registryUninstallPath -ChildPath '{6617D06D-092C-4F43-B6F5-FBE3C169E840}'
-    ) -ErrorAction SilentlyContinue
-
-    if (
-        ($sqlVersion -eq 13 -and $installedProductSqlSP2016)
-        )
-    {
-        $features += 'RS_SHP,'
-    }
-
-    $installedProductSqlSPAddin2016 = Get-ItemProperty -Path (
-        Join-Path -Path $registryUninstallPath -ChildPath '{FB1A9DFF-FAF9-44EB-902D-8D9FCF3B04D5}'
-    ) -ErrorAction SilentlyContinue
-
-    if (
-        ($sqlVersion -eq 13 -and $installedProductSqlSPAddin2016)
-        )
-    {
-        $features += 'RS_SHPWFE,'
-    }
-
-    $installedProductSqlBOL2016 = Get-ItemProperty -Path (
-        Join-Path -Path $registryUninstallPath -ChildPath '{060F438D-A367-4B23-9487-7431025E0F87}'
-    ) -ErrorAction SilentlyContinue
-
-    if (
-        ($sqlVersion -eq 13 -and $installedProductSqlBOL2016)
-        )
-    {
-        $features += 'BOL,'
-    }
-    
-    $installedProductSqlCONN2016 = Get-ItemProperty -Path (
-        Join-Path -Path $registryUninstallPath -ChildPath '{74940EE5-66DB-42E3-AC30-295D13B461A7}'
-    ) -ErrorAction SilentlyContinue
-
-    if (
-        ($sqlVersion -eq 13 -and $installedProductSqlCONN2016)
-        )
-    {
-        $features += 'CONN,'
-    }
-
-    $installedProductSqlBC2016 = Get-ItemProperty -Path (
-        Join-Path -Path $registryUninstallPath -ChildPath '{74940EE5-66DB-42E3-AC30-295D13B461A7}'
-    ) -ErrorAction SilentlyContinue
-
-    if (
-        ($sqlVersion -eq 13 -and $installedProductSqlBC2016)
-        )
-    {
-        $features += 'BC,'
-    }
-
-    $installedProductSqlSPCONN2016 = Get-ItemProperty -Path (
-        Join-Path -Path $registryUninstallPath -ChildPath '{74940EE5-66DB-42E3-AC30-295D13B461A7}'
-    ) -ErrorAction SilentlyContinue
-
-    if (
-        ($sqlVersion -eq 13 -and $installedProductSqlSPCONN2016)
-        )
-    {
-        $features += 'SDK,'
-    }
-
     $features = $features.Trim(',')
     if ($features -ne '')
     {
@@ -1386,7 +1275,7 @@ Function Join-ServiceAccountInfo
 
         [Parameter(Mandatory)]
         [string]
-        $PasswordAlias		
+        $PasswordAlias      
     )
 
     begin {
