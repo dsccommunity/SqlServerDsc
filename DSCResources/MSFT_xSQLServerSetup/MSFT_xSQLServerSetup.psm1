@@ -733,12 +733,12 @@ function Set-TargetResource
 
         if ($PSBoundParameters.ContainsKey('SQLSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'SQLSVCACCOUNT' -PassArgumentName 'SQLSVCPASSWORD' -User $SQLSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UsernameArgumentName 'SQLSVCACCOUNT' -PasswordArgumentName 'SQLSVCPASSWORD' -User $SQLSvcAccount
         }
 
         if($PSBoundParameters.ContainsKey('AgtSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'AGTSVCACCOUNT' -PassArgumentName 'AGTSVCPASSWORD' -User $AgtSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UsernameArgumentName 'AGTSVCACCOUNT' -PasswordArgumentName 'AGTSVCPASSWORD' -User $AgtSvcAccount
         }
 
         $arguments += ' /AGTSVCSTARTUPTYPE=Automatic'
@@ -748,7 +748,7 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey('FTSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'FTSVCACCOUNT' -PassArgumentName 'FTSVCPASSWORD' -User $FTSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UsernameArgumentName 'FTSVCACCOUNT' -PasswordArgumentName 'FTSVCPASSWORD' -User $FTSvcAccount
         }
     }
 
@@ -756,7 +756,7 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey('RSSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'RSSVCACCOUNT' -PassArgumentName 'RSSVCPASSWORD' -User $RSSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UsernameArgumentName 'RSSVCACCOUNT' -PasswordArgumentName 'RSSVCPASSWORD' -User $RSSvcAccount
         }
     }
 
@@ -773,7 +773,7 @@ function Set-TargetResource
 
         if ($PSBoundParameters.ContainsKey('ASSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'ASSVCACCOUNT' -PassArgumentName 'ASSVCPASSWORD' -User $ASSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UsernameArgumentName 'ASSVCACCOUNT' -PasswordArgumentName 'ASSVCPASSWORD' -User $ASSvcAccount
         }
     }
 
@@ -781,7 +781,7 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey('ISSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'ISSVCACCOUNT' -PassArgumentName 'ISSVCPASSWORD' -User $ISSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UsernameArgumentName 'ISSVCACCOUNT' -PasswordArgumentName 'ISSVCPASSWORD' -User $ISSvcAccount
         }
     }
 
@@ -1253,8 +1253,14 @@ function Get-TemporaryFolder
     .SYNOPSIS
         Returns the argument string appeneded with the account information as is given in UserAlias and User parameters
 #>
-Function Join-ServiceAccountInfo
+function Join-ServiceAccountInfo
 {
+    <#
+        Suppressing this rule because there are parameters that contain the text 'UserName' and 'Password' 
+        but they are not actually used to pass any credentials. Instead the parameters are used to provide the
+        argument that should be evaluated for setup.exe.
+    #>
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingUsernameAndPasswordParams', '')]
     param(
         [Parameter(Mandatory, ValueFromPipeline=$true)]
         [string]
@@ -1266,11 +1272,11 @@ Function Join-ServiceAccountInfo
 
         [Parameter(Mandatory)]
         [string]
-        $UserArgumentName,
+        $UsernameArgumentName,
 
         [Parameter(Mandatory)]
         [string]
-        $PassArgumentName
+        $PasswordArgumentName
     )
 
     process {
@@ -1283,18 +1289,18 @@ Function Join-ServiceAccountInfo
         if($User.UserName.ToUpper() -match '^(NT ?AUTHORITY\\)?(SYSTEM|LOCALSERVICE|NETWORKSERVICE)$')
         {
             # Dealing with NT Authority user
-            $ArgumentString += (' /{0}="NT AUTHORITY\{1}"' -f $UserArgumentName, $matches[2])
+            $ArgumentString += (' /{0}="NT AUTHORITY\{1}"' -f $UsernameArgumentName, $matches[2])
         }
         elseif ($User.UserName -like '*$')
         {
             # Dealing with Managed Service Account
-            $ArgumentString += (' /{0}="{1}"' -f $UserArgumentName, $User.UserName)
+            $ArgumentString += (' /{0}="{1}"' -f $UsernameArgumentName, $User.UserName)
         }
         else
         {
             # Dealing with local or domain user
-            $ArgumentString += (' /{0}="{1}"' -f $UserArgumentName, $User.UserName)
-            $ArgumentString += (' /{0}="{1}"' -f $PassArgumentName, $User.GetNetworkCredential().Password)
+            $ArgumentString += (' /{0}="{1}"' -f $UsernameArgumentName, $User.UserName)
+            $ArgumentString += (' /{0}="{1}"' -f $PasswordArgumentName, $User.GetNetworkCredential().Password)
         }
 
         return $ArgumentString
