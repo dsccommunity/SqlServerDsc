@@ -83,9 +83,6 @@ function Get-TargetResource
         $reportServiceName = "ReportServer`$$InstanceName"
         $analysisServiceName = "MSOLAP`$$InstanceName"
     }
-
-    $DREPPLAYControllerServiceName = "SQL Server Distributed Replay Controller"
-    $DREPPLAYClientServiceName = "SQL Server Distributed Replay Client"
     
     $integrationServiceName = "MsDtsServer$($sqlVersion)0"
     
@@ -308,8 +305,6 @@ function Get-TargetResource
         ASTempDir = $analysisTempDirectory
         ASConfigDir = $analysisConfigDirectory
         ISSvcAccountUsername = $integrationServiceAccountUsername
-        DREPPLAYClientSvcAccountUsername = $DREPPLAYClientServiceAccountUsername
-        DREPPLAYControllerSvcAccountUsername = $DREPPLAYControllerServiceAccountUsername
     }
 }
 
@@ -738,12 +733,12 @@ function Set-TargetResource
 
         if ($PSBoundParameters.ContainsKey('SQLSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserAlias "SQLSVCACCOUNT" -PasswordAlias "SQLSVCPASSWORD" -User $SQLSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'SQLSVCACCOUNT' -PasswordArgumentName 'SQLSVCPASSWORD' -User $SQLSvcAccount
         }
 
         if($PSBoundParameters.ContainsKey('AgtSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserAlias "AGTSVCACCOUNT" -PasswordAlias "AGTSVCPASSWORD" -User $AgtSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'AGTSVCACCOUNT' -PasswordArgumentName 'AGTSVCPASSWORD' -User $AgtSvcAccount
         }
 
         $arguments += ' /AGTSVCSTARTUPTYPE=Automatic'
@@ -753,15 +748,15 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey('FTSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserAlias "FTSVCACCOUNT" -PasswordAlias "FTSVCPASSWORD" -User $FTSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'FTSVCACCOUNT' -PasswordArgumentName 'FTSVCPASSWORD' -User $FTSvcAccount
         }
     }
 
     if ($Features.Contains('RS'))
     {
-        if ($PSBoundParameters.ContainsKey("RSSvcAccount"))
+        if ($PSBoundParameters.ContainsKey('RSSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserAlias "RSSVCACCOUNT" -PasswordAlias "RSSVCPASSWORD" -User $RSSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'RSSVCACCOUNT' -PasswordArgumentName 'RSSVCPASSWORD' -User $RSSvcAccount
         }
     }
 
@@ -778,7 +773,7 @@ function Set-TargetResource
 
         if ($PSBoundParameters.ContainsKey('ASSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserAlias "ASSVCACCOUNT" -PasswordAlias "ASSVCPASSWORD" -User $ASSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'ASSVCACCOUNT' -PasswordArgumentName 'ASSVCPASSWORD' -User $ASSvcAccount
         }
     }
 
@@ -786,7 +781,7 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey('ISSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserAlias "ISSVCACCOUNT" -PasswordAlias "ISSVCPASSWORD" -User $ISSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'ISSVCACCOUNT' -PasswordArgumentName 'ISSVCPASSWORD' -User $ISSvcAccount
         }
     }
 
@@ -1270,40 +1265,34 @@ Function Join-ServiceAccountInfo
         $User,
 
         [Parameter(Mandatory)]
-        [Alias("UserAlias")]
         [string]
-        $UAlias,
+        $UserArgumentName,
 
         [Parameter(Mandatory)]
-        [Alias("PasswordAlias")]
         [string]
-        $PAlias      
+        $PasswordArgumentName      
     )
 
-    begin {
-        #List of ntauthority accounts used to determine in given account is such.
-        $NTServiceAccounts = @("NTAUTHORITY\SYSTEM","SYSTEM","NTAUTHORITY\NETWORKSERVICE", "NETWORKSERVICE", "NTAUTHORITY\LOCALSERVICE", "LOCALSERVICE")
-    }
-    
     process {
-        if ($NTServiceaccounts -contains $User.UserName.ToUpper())
+        
+        <# Regex to determine if given username is an NT Authority account or not.
+           Accepted inputs are optional ntauthority with or without space between nt and authority
+           then a predefined list of users system, networkservice and localservice #>
+        if($User.UserName.ToUpper() -match "^(NT ?AUTHORITY\\)?(SYSTEM|LOCALSERVICE|NETWORKSERVICE)$")
         {
-            #Dealing with NT Authority user
-            if($User.UserName.ToUpper() -match "(NTAUTHORITY\\)?(\S+)")
-            {
-                $ArgumentString += [string]::Format(" /{0}=`"NT AUTHORITY\{1}`"",$UAlias,$matches[2])
-            }
+            # Dealing with NT Authority user
+            $ArgumentString += (" /{0}=`"NT AUTHORITY\{1}`"" -f $UserArgumentName, $matches[2])
         }
         elseif ($User.UserName -like '*$')
         {
-            #Dealing with Managed Service Account
-            $ArgumentString += [string]::Format(" /{0}=`"{1}`"",$UAlias,$User.UserName)
+            # Dealing with Managed Service Account
+            $ArgumentString += (" /{0}=`"{1}`"" -f $UserArgumentName, $User.UserName)
         }
         else
         {
-            #Dealing with local or domain user
-            $ArgumentString += [string]::Format(" /{0}=`"{1}`"",$UAlias,$User.UserName)
-            $ArgumentString += [string]::Format(" /{0}=`"{1}`"",$PAlias,$User.GetNetworkCredential().Password)
+            # Dealing with local or domain user
+            $ArgumentString += (" /{0}=`"{1}`"" -f $UserArgumentName, $User.UserName)
+            $ArgumentString += (" /{0}=`"{1}`"" -f $PasswordArgumentName, $User.GetNetworkCredential().Password)
         }
 
         return $ArgumentString
