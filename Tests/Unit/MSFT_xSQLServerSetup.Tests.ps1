@@ -2462,22 +2462,22 @@ try
             Context "When called it should return a string with service account information appended" {
                 It "Should return string" {
                     $mockSqlServiceAccountCredential = New-Object System.Management.Automation.PSCredential( "Company\SQLServer", (ConvertTo-SecureString "password" -AsPlainText -Force) )
-                    "MyExe.exe" | Join-ServiceAccountInfo -UserAlias "ServiceAccount" -PasswordAlias "SQLSVCPASSWORD" -User $mockSqlServiceAccountCredential | Should BeOfType System.String
+                    "MyExe.exe" | Join-ServiceAccountInfo -UserArgumentName "ServiceAccount" -PasswordArgumentName "SQLSVCPASSWORD" -User $mockSqlServiceAccountCredential | Should BeOfType System.String
                 }
 
                 It "Should return string with service account information and password appended if not NT Authority or Managed Service Account" {
                     $mockSqlServiceAccountCredential = New-Object System.Management.Automation.PSCredential( "Company\SQLServer", (ConvertTo-SecureString "password" -AsPlainText -Force) )
-                    "MyExe.exe" | Join-ServiceAccountInfo -UserAlias "SQLSVCACCOUNT" -PasswordAlias "SQLSVCPASSWORD" -User $mockSqlServiceAccountCredential | Should BeExactly "MyExe.exe /SQLSVCACCOUNT=`"Company\SQLServer`" /SQLSVCPASSWORD=`"password`""
+                    "MyExe.exe" | Join-ServiceAccountInfo -UserArgumentName "SQLSVCACCOUNT" -PasswordArgumentName "SQLSVCPASSWORD" -User $mockSqlServiceAccountCredential | Should BeExactly "MyExe.exe /SQLSVCACCOUNT=`"Company\SQLServer`" /SQLSVCPASSWORD=`"password`""
                 }
 
                 It "Should return string service account information and no password appended for Managed Service Account" {
                     $mockSqlServiceAccountCredential = New-Object System.Management.Automation.PSCredential( "Company\SQLServer$", (ConvertTo-SecureString "password" -AsPlainText -Force) )
-                    "MyExe.exe" | Join-ServiceAccountInfo -UserAlias "SQLSVCACCOUNT" -PasswordAlias "SQLSVCPASSWORD" -User $mockSqlServiceAccountCredential | Should BeExactly "MyExe.exe /SQLSVCACCOUNT=`"Company\SQLServer$`""
+                    "MyExe.exe" | Join-ServiceAccountInfo -UserArgumentName "SQLSVCACCOUNT" -PasswordArgumentName "SQLSVCPASSWORD" -User $mockSqlServiceAccountCredential | Should BeExactly "MyExe.exe /SQLSVCACCOUNT=`"Company\SQLServer$`""
                 }
 
                 It "Should return string service account information and no password appended for NT Authority" {
                     $mockSqlServiceAccountCredential = New-Object System.Management.Automation.PSCredential( "SYSTEM", (ConvertTo-SecureString "password" -AsPlainText -Force) )
-                    "MyExe.exe" | Join-ServiceAccountInfo -UserAlias "SQLSVCACCOUNT" -PasswordAlias "SQLSVCPASSWORD" -User $mockSqlServiceAccountCredential | Should BeExactly "MyExe.exe /SQLSVCACCOUNT=`"NT AUTHORITY\SYSTEM`""
+                    "MyExe.exe" | Join-ServiceAccountInfo -UserArgumentName "SQLSVCACCOUNT" -PasswordArgumentName "SQLSVCPASSWORD" -User $mockSqlServiceAccountCredential | Should BeExactly "MyExe.exe /SQLSVCACCOUNT=`"NT AUTHORITY\SYSTEM`""
                 }
             }
         }
