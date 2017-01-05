@@ -1270,29 +1270,31 @@ Function Join-ServiceAccountInfo
 
         [Parameter(Mandatory)]
         [string]
-        $PassArgumentName      
+        $PassArgumentName
     )
 
     process {
         
-        <# Regex to determine if given username is an NT Authority account or not.
-           Accepted inputs are optional ntauthority with or without space between nt and authority
-           then a predefined list of users system, networkservice and localservice #>
-        if($User.UserName.ToUpper() -match "^(NT ?AUTHORITY\\)?(SYSTEM|LOCALSERVICE|NETWORKSERVICE)$")
+        <#
+            Regex to determine if given username is an NT Authority account or not.
+            Accepted inputs are optional ntauthority with or without space between nt and authority
+            then a predefined list of users system, networkservice and localservice
+        #>
+        if($User.UserName.ToUpper() -match '^(NT ?AUTHORITY\\)?(SYSTEM|LOCALSERVICE|NETWORKSERVICE)$')
         {
             # Dealing with NT Authority user
-            $ArgumentString += (" /{0}=`"NT AUTHORITY\{1}`"" -f $UserArgumentName, $matches[2])
+            $ArgumentString += (' /{0}="NT AUTHORITY\{1}"' -f $UserArgumentName, $matches[2])
         }
         elseif ($User.UserName -like '*$')
         {
             # Dealing with Managed Service Account
-            $ArgumentString += (" /{0}=`"{1}`"" -f $UserArgumentName, $User.UserName)
+            $ArgumentString += (' /{0}="{1}"' -f $UserArgumentName, $User.UserName)
         }
         else
         {
             # Dealing with local or domain user
-            $ArgumentString += (" /{0}=`"{1}`"" -f $UserArgumentName, $User.UserName)
-            $ArgumentString += (" /{0}=`"{1}`"" -f $PassArgumentName, $User.GetNetworkCredential().Password)
+            $ArgumentString += (' /{0}="{1}"' -f $UserArgumentName, $User.UserName)
+            $ArgumentString += (' /{0}="{1}"' -f $PassArgumentName, $User.GetNetworkCredential().Password)
         }
 
         return $ArgumentString
