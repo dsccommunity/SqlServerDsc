@@ -181,7 +181,8 @@ No description.
 
 #### Examples
 
-None.
+* [Add an SQL Server alias](/Examples/Resources/xSQLServerAlias/1-AddSQLServerAlias.ps1)
+* [Remove an SQL Server alias](/Examples/Resources/xSQLServerAlias/2-RemoveSQLServerAlias.ps1)
 
 ### xSQLServerAlwaysOnService
 
@@ -289,7 +290,7 @@ No description.
 
 #### Examples
 
-None.
+* [Set database owner](/Examples/Resources/xSQLServerDatabaseOwner/1-SetDatabaseOwner.ps1)
 
 ### xSQLServerDatabasePermissions
 
@@ -625,7 +626,8 @@ No description.
 
 #### Examples
 
-None.
+* [Add a server role to a login](/Examples/Resources/xSQLServerRole/1-AddServerRole.ps1)
+* [Remove server role from a login](/Examples/Resources/xSQLServerRole/2-RemoveServerRole.ps1)
 
 ### xSQLServerReplication
 
