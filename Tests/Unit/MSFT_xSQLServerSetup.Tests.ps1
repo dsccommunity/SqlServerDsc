@@ -490,7 +490,7 @@ try
         $mockStartProcessExitCode = 0  # Set dynamically during runtime
 
         $mockStartProcess = {
-            if ( $ArgumentList -ne $mockStartProcessExpectedArgument )
+            if ( $ArgumentList -cne $mockStartProcessExpectedArgument )
             {
                 throw "Expected arguments was not the same as the arguments in the function call.`nExpected: '$mockStartProcessExpectedArgument' `n But was: '$ArgumentList'"
             }
