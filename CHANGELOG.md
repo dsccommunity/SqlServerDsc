@@ -18,6 +18,12 @@
   - The resource no longer uses Win32_Product WMI class when evaluating if SQL Server Management Studio is installed. See article [kb974524](https://support.microsoft.com/en-us/kb/974524) for more information.
   - Now it uses CIM cmdlets to get information from WMI classes.
   - Resolved all of the PSScriptAnalyzer warnings that was triggered in the common tests.
+- Changes to xSQLServerScript
+  - All credential parameters now also has the type [System.Management.Automation.Credential()] to better work with PowerShell 4.0.
+  - It is now possible to configure two instances on the same node, with the same script.
+  - Added to the description text for the parameter `Credential` describing how to authenticate using Windows Authentication.
+  - Added examples to show how to authenticate using either SQL or Windows authentication.
+  - A recent issue showed that there is a known problem running this resource using PowerShell 4.0. For more information, see [issue #273](https://github.com/PowerShell/xSQLServer/issues/273)
 
 ## 4.0.0.0
 
