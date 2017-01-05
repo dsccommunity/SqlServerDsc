@@ -733,12 +733,12 @@ function Set-TargetResource
 
         if ($PSBoundParameters.ContainsKey('SQLSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'SQLSVCACCOUNT' -PasswordArgumentName 'SQLSVCPASSWORD' -User $SQLSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'SQLSVCACCOUNT' -PassArgumentName 'SQLSVCPASSWORD' -User $SQLSvcAccount
         }
 
         if($PSBoundParameters.ContainsKey('AgtSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'AGTSVCACCOUNT' -PasswordArgumentName 'AGTSVCPASSWORD' -User $AgtSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'AGTSVCACCOUNT' -PassArgumentName 'AGTSVCPASSWORD' -User $AgtSvcAccount
         }
 
         $arguments += ' /AGTSVCSTARTUPTYPE=Automatic'
@@ -748,7 +748,7 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey('FTSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'FTSVCACCOUNT' -PasswordArgumentName 'FTSVCPASSWORD' -User $FTSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'FTSVCACCOUNT' -PassArgumentName 'FTSVCPASSWORD' -User $FTSvcAccount
         }
     }
 
@@ -756,7 +756,7 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey('RSSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'RSSVCACCOUNT' -PasswordArgumentName 'RSSVCPASSWORD' -User $RSSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'RSSVCACCOUNT' -PassArgumentName 'RSSVCPASSWORD' -User $RSSvcAccount
         }
     }
 
@@ -773,7 +773,7 @@ function Set-TargetResource
 
         if ($PSBoundParameters.ContainsKey('ASSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'ASSVCACCOUNT' -PasswordArgumentName 'ASSVCPASSWORD' -User $ASSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'ASSVCACCOUNT' -PassArgumentName 'ASSVCPASSWORD' -User $ASSvcAccount
         }
     }
 
@@ -781,7 +781,7 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey('ISSvcAccount'))
         {
-            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'ISSVCACCOUNT' -PasswordArgumentName 'ISSVCPASSWORD' -User $ISSvcAccount
+            $arguments = $arguments | Join-ServiceAccountInfo -UserArgumentName 'ISSVCACCOUNT' -PassArgumentName 'ISSVCPASSWORD' -User $ISSvcAccount
         }
     }
 
@@ -1270,7 +1270,7 @@ Function Join-ServiceAccountInfo
 
         [Parameter(Mandatory)]
         [string]
-        $PasswordArgumentName      
+        $PassArgumentName      
     )
 
     process {
@@ -1292,7 +1292,7 @@ Function Join-ServiceAccountInfo
         {
             # Dealing with local or domain user
             $ArgumentString += (" /{0}=`"{1}`"" -f $UserArgumentName, $User.UserName)
-            $ArgumentString += (" /{0}=`"{1}`"" -f $PasswordArgumentName, $User.GetNetworkCredential().Password)
+            $ArgumentString += (" /{0}=`"{1}`"" -f $PassArgumentName, $User.GetNetworkCredential().Password)
         }
 
         return $ArgumentString
