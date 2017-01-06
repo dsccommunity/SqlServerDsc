@@ -277,12 +277,53 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 
 ### xSQLServerLogin
 
-* **Ensure**: If the values should be present or absent. Valid values are 'Present' or 'Absent'.
-* **Name**: (Key) The name of the SQL login. If LoginType is 'WindowsUser' or 'WindowsGroup' then provide the name in the format DOMAIN\name.
+* **Ensure**: The specified login is Present or Absent.
+* **Name**: (Key) The name of the login.
+* **LoginType**: The type of login to be created. If LoginType is 'WindowsUser' or 'WindowsGroup' then provide the name in the format DOMAIN\name. Default is WindowsUser. Unsupported login types are Certificate, AsymmetricKey, ExternalUser, and ExternalGroup.
+* **SQLServer**: (Key) The hostname of the SQL Server to be configured.
+* **SQLInstanceName**: (Key) Name of the SQL instance to be configured.
 * **LoginCredential**: If LoginType is 'SqlLogin' then a PSCredential is needed for the password to the login.
-* **LoginType**: The SQL login type. Valid values are 'SqlLogin', 'WindowsUser' or 'WindowsGroup'.
-* **SQLServer**: (Key) The SQL Server for the login.
-* **SQLInstanceName**: (Key) The SQL instance for the login.
+* **LoginMustChangePassword**: Specifies if the login is required to have its password change on the next login. Only applies to SQL Logins. Default is $true.
+* **LoginPasswordExpirationEnabled**: Specifies if the login password is required to expire in accordance to the operating system security policy. Only applies to SQL Logins. Default is $true.
+* **LoginPasswordPolicyEnforced**: Specifies if the login password is required to conform to the password policy specified in the system security policy. Only applies to SQL Logins. Default is $true.
+
+### xSQLServerRole
+
+* **Name**: (Key) Name of the SQL Login to create
+* **Ensure**: If the values should be present or absent. Valid values are 'Present' or 'Absent'.
+* **ServerRole**: Type of SQL role to add.(bulkadmin, dbcreator, diskadmin, processadmin , public, securityadmin, serveradmin , setupadmin, sysadmin)
+* **SQLServer**: SQL Server where login should be created
+* **SQLInstance**: (Key) SQL Instance for the login
+
+### xSQLServerDatabaseRole
+
+* **Ensure**: If 'Present' (the default value) then the login (user) will be added to the role(s). If 'Absent' then the login (user) will be removed from the role(s).
+* **Name**: (Key) The name of the login that will become a member, or removed as a member, of the role(s).
+* **SQLServer**: (Key) The SQL server on which the instance exist.
+* **SQLInstanceName**: (Key) The SQL instance in which the database exist.
+* **Database**: (Key) The database in which the login (user) and role(s) exist.
+* **Role**: One or more roles to which the login (user) will be added or removed.
+
+### xSQLServerDatabasePermissions
+
+* **Database**: (Key) The SQL Database
+* **Name**: (Required) The name of permissions for the SQL database
+* **Permissions**: (Required) The set of Permissions for the SQL database
+* **SQLServer**: The SQL Server for the database
+* **SQLInstanceName**: The SQL instance for the database
+
+### xSQLServerDatabaseOwner
+
+* **Database**: (Key) The SQL Database
+* **Name**: (Required) The name of the SQL login for the owner
+* **SQLServer**: The SQL Server for the database
+* **SQLInstance**: The SQL instance for the database
+
+### xSQLDatabaseRecoveryModel
+
+* **DatabaseName**: (key) The SQL database name
+* **SQLServerInstance**: (Required) The SQL server and instance
+* **RecoveryModel**: (Required) Recovery Model (Full, Simple, BulkLogged)
 
 ### xSQLServerMaxDop
 
