@@ -411,19 +411,21 @@ function Update-SQLServerLogin
         $Login
     )
 
-    $originalErrorActionPreference = $ErrorActionPreference
-    $ErrorActionPreference = 'Stop'
-
     try
     {
+        $originalErrorActionPreference = $ErrorActionPreference
+        $ErrorActionPreference = 'Stop'
+        
         $Login.Alter()
     }
     catch
     {
         throw New-TerminatingError -ErrorType AlterLoginFailed -FormatArgs $Login.Name -ErrorCategory NotSpecified
     }
-
-    $ErrorActionPreference = 'Continue'
+    finally
+    {
+        $ErrorActionPreference = $originalErrorActionPreference
+    }
 }
 
 <#
@@ -473,6 +475,9 @@ function New-SQLServerLogin
         { 
             try
             {
+                $originalErrorActionPreference = $ErrorActionPreference
+                $ErrorActionPreference = 'Stop'
+                
                 $login.Create($SecureString,$LoginCreateOptions) 
             }
             catch [Microsoft.SqlServer.Management.Smo.FailedOperationException]
@@ -483,12 +488,16 @@ function New-SQLServerLogin
                 }
                 else
                 {
-                    throw New-TerminatingError -ErrorType LoginCreationFailed -FormatArgs $Name -ErrorCategory NotSpecified
+                    throw New-TerminatingError -ErrorType LoginCreationFailedFailedOperation -FormatArgs $Name -ErrorCategory NotSpecified
                 }
             }
             catch
             {
-                throw New-TerminatingError -ErrorType LoginCreationFailed -FormatArgs $Name -ErrorCategory NotSpecified
+                throw New-TerminatingError -ErrorType LoginCreationFailedSqlNotSpecified -FormatArgs $Name -ErrorCategory NotSpecified
+            }
+            finally
+            {
+                $ErrorActionPreference = $originalErrorActionPreference
             }
         }
 
@@ -496,11 +505,18 @@ function New-SQLServerLogin
         {
             try
             {
+                $originalErrorActionPreference = $ErrorActionPreference
+                $ErrorActionPreference = 'Stop'
+                
                 $login.Create()
             }
             catch
             {
-                throw New-TerminatingError -ErrorType LoginCreationFailed -FormatArgs $Name -ErrorCategory NotSpecified
+                throw New-TerminatingError -ErrorType LoginCreationFailedWindowsNotSpecified -FormatArgs $Name -ErrorCategory NotSpecified
+            }
+            finally
+            {
+                $ErrorActionPreference = $originalErrorActionPreference
             }
         }
     }
@@ -527,11 +543,18 @@ function Remove-SQLServerLogin
 
     try
     {
+        $originalErrorActionPreference = $ErrorActionPreference
+        $ErrorActionPreference = 'Stop'
+        
         $Login.Drop()
     }
     catch
     {
         throw New-TerminatingError -ErrorType DropLoginFailed -FormatArgs $Login.Name -ErrorCategory NotSpecified
+    }
+    finally
+    {
+        $ErrorActionPreference = $originalErrorActionPreference
     }
 }
 
@@ -563,6 +586,9 @@ function Set-SQLServerLoginPassword
 
     try
     {
+        $originalErrorActionPreference = $ErrorActionPreference
+        $ErrorActionPreference = 'Stop'
+        
         $Login.ChangePassword($SecureString)
     }
     catch [Microsoft.SqlServer.Management.Smo.FailedOperationException]
@@ -579,6 +605,10 @@ function Set-SQLServerLoginPassword
     catch
     {
         throw New-TerminatingError -ErrorType PasswordChangeFailed -FormatArgs $Name -ErrorCategory NotSpecified
+    }
+    finally
+    {
+        $ErrorActionPreference = $originalErrorActionPreference
     }
 }
 

@@ -787,7 +787,7 @@ try
                     $login.LoginType = 'WindowsUser'
                     $login.MockLoginType = 'SqlLogin'
 
-                    { New-SQLServerLogin -Login $login } | Should Throw 'LoginCreationFailed'
+                    { New-SQLServerLogin -Login $login } | Should Throw 'LoginCreationFailedWindowsNotSpecified'
                 }
 
                 It 'Should throw the correct error when password validation fails when creating a SQL Login' {
@@ -813,7 +813,7 @@ try
                         LoginCreateOptions = 'None'
                     }
 
-                    { New-SQLServerLogin @createLoginParams } | Should Throw 'LoginCreationFailed'
+                    { New-SQLServerLogin @createLoginParams } | Should Throw 'LoginCreationFailedFailedOperation'
                 }
 
                 It 'Should throw the correct error when creating a SQL Login fails with an unhandled exception' {
@@ -826,7 +826,7 @@ try
                         LoginCreateOptions = 'None'
                     }
 
-                    { New-SQLServerLogin @createLoginParams } | Should Throw 'LoginCreationFailed'
+                    { New-SQLServerLogin @createLoginParams } | Should Throw 'LoginCreationFailedSqlNotSpecified'
                 }
             }
         }

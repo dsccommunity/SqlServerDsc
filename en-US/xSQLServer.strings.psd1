@@ -42,7 +42,9 @@ AlterAlwaysOnServiceFailed = Failed to ensure Always On is {0} on the instance '
 
 # Login
 PasswordValidationFailed = Creation of the login '{0}' failed due to the following error: {1}
-LoginCreationFailed = Creation of the login '{0}' failed.
+LoginCreationFailedFailedOperation = Creation of the login '{0}' failed due to a failed operation.
+LoginCreationFailedSqlNotSpecified = Creation of the SQL login '{0}' failed due to an unspecified error.
+LoginCreationFailedWindowsNotSpecified = Creation of the Windows login '{0}' failed due to an unspecified error.
 LoginTypeNotImplemented = The login type '{0}' is not implemented in this resource.
 IncorrectLoginMode = The instance '{0}\{1}' is currently in '{2}' authentication mode. To create a SQL Login, it must be set to 'Mixed' authentication mode.
 LoginCredentialNotFound = The credential for the SQL Login '{0}' was not found.
