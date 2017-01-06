@@ -16,7 +16,8 @@ Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script
         Credential to be used to perform the installation.
 
     .PARAMETER SourceCredential
-        Credential to be used to access SourcePath.
+        Credentials used to access the path set in the parameter `SourcePath` and `SourceFolder`. The parameter `SourceCredential` is used
+        to evaluate what major version the file 'setup.exe' has in the path set, again, by the parameter `SourcePath` and `SourceFolder`.
 
     .PARAMETER InstanceName
         Name of the SQL instance to be installed.
@@ -322,7 +323,10 @@ function Get-TargetResource
         Credential to be used to perform the installation.
 
     .PARAMETER SourceCredential
-        Credential to be used to access SourcePath.
+        Credentials used to access the path set in the parameter `SourcePath` and `SourceFolder`. Using this parameter will trigger a copy
+        of the installation media to a temp folder on the target node. Setup will then be started from the temp folder on the target node.
+        For any subsequent calls to the resource, the parameter `SourceCredential` is used to evaluate what major version the file 'setup.exe'
+        has in the path set, again, by the parameter `SourcePath` and `SourceFolder`.
 
     .PARAMETER SuppressReboot
         Suppressed reboot.
@@ -881,7 +885,8 @@ function Set-TargetResource
         Credential to be used to perform the installation.
 
     .PARAMETER SourceCredential
-        Credential to be used to access SourcePath.
+        Credentials used to access the path set in the parameter `SourcePath` and `SourceFolder`. The parameter `SourceCredential` is used
+        to evaluate what major version the file 'setup.exe' has in the path set, again, by the parameter `SourcePath` and `SourceFolder`.
 
     .PARAMETER SuppressReboot
         Suppresses reboot.
@@ -1224,16 +1229,80 @@ function Copy-ItemWithRoboCopy
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [String]
         $Path,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [String]
         $DestinationPath
     )
 
-    & robocopy.exe $Path $DestinationPath /e
+    $robocopyExecutable = Get-Command -Name "Robocopy.exe" -ErrorAction Stop
+
+    $robocopyArgumentSilent = '/njh /njs /ndl /nc /ns /nfl'
+    $robocopyArgumentCopySubDirectoriesIncludingEmpty = '/e'
+    $robocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource = '/purge'
+
+    if ([System.Version]$robocopyExecutable.FileVersionInfo.ProductVersion -ge [System.Version]'6.3.9600.16384')
+    {
+        Write-Verbose "Robocopy is using unbuffered I/O."
+        $robocopyArgumentUseUnbufferedIO = '/J'
+    }
+    else
+    {
+        Write-Verbose 'Unbuffered I/O cannot be used due to incompatible version of Robocopy.'
+    }
+
+    $robocopyArgumentList = '{0} {1} {2} {3} {4} {5}' -f $Path,
+                                                         $DestinationPath,
+                                                         $robocopyArgumentCopySubDirectoriesIncludingEmpty,
+                                                         $robocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource,
+                                                         $robocopyArgumentUseUnbufferedIO,
+                                                         $robocopyArgumentSilent
+
+    $robocopyStartProcessParameters = @{
+        FilePath = $robocopyExecutable.Name
+        ArgumentList = $robocopyArgumentList
+    }
+
+    Write-Verbose ('Robocopy is started with the following arguments: {0}' -f $robocopyArgumentList )
+    $robocopyProcess = Start-Process @robocopyStartProcessParameters -Wait -NoNewWindow -PassThru
+
+    switch ($($robocopyProcess.ExitCode))
+    {
+        {$_ -in 8, 16}
+        {
+            throw "Robocopy reported errors when copying files. Error code: $_."
+        }
+
+        {$_ -gt 7 }
+        {
+            throw "Robocopy reported that failures occured when copying files. Error code: $_."
+        }
+
+        1
+        {
+            Write-Verbose 'Robocopy copied files sucessfully'
+        }
+
+        2
+        {
+            Write-Verbose 'Robocopy found files at the destination path that is not present at the source path, these extra files was remove at the destination path.'
+        }
+
+        3
+        {
+            Write-Verbose 'Robocopy copied files to destination sucessfully. Robocopy also found files at the destination path that is not present at the source path, these extra files was remove at the destination path.'
+        }
+
+        {$_ -eq 0 -or $null -eq $_ }
+        {
+            Write-Verbose 'Robocopy reported that all files already present.'
+        }
+    }
 }
 
 <#

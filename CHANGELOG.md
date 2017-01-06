@@ -19,12 +19,20 @@
   - Now it uses CIM cmdlets to get information from WMI classes.
   - Resolved all of the PSScriptAnalyzer warnings that was triggered in the common tests.
   - Improvement for service accounts to enable support for Managed Service Accounts as well as other nt authority accounts
+  - Changes to the helper function Copy-ItemWithRoboCopy
+    - Robocopy is now started using Start-Process and the error handling has been improved.
+    - Robocopy now removes files at the destination path if they no longer exists at the source.
+    - Robocopy copies using unbuffered I/O when available (recommended for large files).
+  - Added a more descriptive text for the parameter `SourceCredential` to further explain how the parameter work.
 - Changes to xSQLServerScript
   - All credential parameters now also has the type [System.Management.Automation.Credential()] to better work with PowerShell 4.0.
   - It is now possible to configure two instances on the same node, with the same script.
   - Added to the description text for the parameter `Credential` describing how to authenticate using Windows Authentication.
   - Added examples to show how to authenticate using either SQL or Windows authentication.
   - A recent issue showed that there is a known problem running this resource using PowerShell 4.0. For more information, see [issue #273](https://github.com/PowerShell/xSQLServer/issues/273)
+- Changes to the unit test for resource
+  - xSQLServerSetup
+    - Added test coverage for helper function Copy-ItemWithRoboCopy
 
 ## 4.0.0.0
 
