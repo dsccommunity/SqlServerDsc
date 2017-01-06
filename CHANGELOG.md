@@ -16,8 +16,7 @@
   - Added link to Examples folder in the Examples section.
   - Change the layout of the README.md to closer match the one of PSDscResources
   - Added more detailed text explaining what operating systemes WMF5.0 can be installed on.
-  - Fixed alphabetical order, one resource was not in the right order.
-  - Verified all resource schema files with the README.md and fixed any errors.
+  - Verified all resource schema files with the README.md and fixed some errors (descriptions was not verified).
 - Changes to xSQLServerSetup
   - The resource no longer uses Win32_Product WMI class when evaluating if SQL Server Management Studio is installed. See article [kb974524](https://support.microsoft.com/en-us/kb/974524) for more information.
   - Now it uses CIM cmdlets to get information from WMI classes.
