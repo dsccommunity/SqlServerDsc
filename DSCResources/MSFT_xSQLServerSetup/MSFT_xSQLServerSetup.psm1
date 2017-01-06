@@ -1261,6 +1261,7 @@ function Join-ServiceAccountInfo
         argument that should be evaluated for setup.exe.
     #>
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingUsernameAndPasswordParams', '')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '')]
     param(
         [Parameter(Mandatory, ValueFromPipeline=$true)]
         [string]
