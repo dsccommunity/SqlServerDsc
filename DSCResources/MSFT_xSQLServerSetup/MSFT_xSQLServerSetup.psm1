@@ -30,11 +30,11 @@ function Get-TargetResource
     (
         [Parameter()]
         [System.String]
-        $SourcePath = "$PSScriptRoot\..\..\",
+        $SourcePath,
 
         [Parameter()]
         [System.String]
-        $SourceFolder = 'Source',
+        $SourceFolder,
 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
@@ -447,10 +447,10 @@ function Set-TargetResource
     param
     (
         [System.String]
-        $SourcePath = "$PSScriptRoot\..\..\",
+        $SourcePath,
 
         [System.String]
-        $SourceFolder = 'Source',
+        $SourceFolder,
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
@@ -1006,10 +1006,10 @@ function Test-TargetResource
     param
     (
         [System.String]
-        $SourcePath = "$PSScriptRoot\..\..\",
+        $SourcePath,
 
         [System.String]
-        $SourceFolder = 'Source',
+        $SourceFolder,
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
@@ -1325,7 +1325,7 @@ function Get-TemporaryFolder
 function Join-ServiceAccountInfo
 {
     <#
-        Suppressing this rule because there are parameters that contain the text 'UserName' and 'Password' 
+        Suppressing this rule because there are parameters that contain the text 'UserName' and 'Password'
         but they are not actually used to pass any credentials. Instead the parameters are used to provide the
         argument that should be evaluated for setup.exe.
     #>
