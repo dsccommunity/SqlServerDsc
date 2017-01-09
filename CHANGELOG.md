@@ -27,8 +27,12 @@
     - Robocopy now removes files at the destination path if they no longer exists at the source.
     - Robocopy copies using unbuffered I/O when available (recommended for large files).
   - Added a more descriptive text for the parameter `SourceCredential` to further explain how the parameter work.
+  - BREAKING CHANGE: Removed parameter SourceFolder.
   - BREAKING CHANGE: Removed default value "$PSScriptRoot\..\..\" from parameter SourcePath.
-  - BREAKING CHANGE: Removed default value "Source" from parameter SourceFolder.
+  - Old code, that no longer filled any function, has been replaced.
+      - Function `ResolvePath` has been replaced with `[Environment]::ExpandEnvironmentVariables($SourcePath)` so that environment variables still can be used in Source Path.
+      - Function `NetUse` has been replaced with `New-SmbMapping` and `Remove-SmbMapping`.
+  - Renamed function `GetSQLVersion` to `Get-SqlMajorVersion`.
 - Changes to xSQLServerScript
   - All credential parameters now also has the type [System.Management.Automation.Credential()] to better work with PowerShell 4.0.
   - It is now possible to configure two instances on the same node, with the same script.

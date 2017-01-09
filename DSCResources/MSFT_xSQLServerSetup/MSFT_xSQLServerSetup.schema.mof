@@ -1,10 +1,9 @@
 [ClassVersion("1.0.0.0"), FriendlyName("xSQLServerSetup")]
 class MSFT_xSQLServerSetup : OMI_BaseResource
 {
-    [Write, Description("The path to the root of the source files for installation. I.e and UNC path to a shared resource.")] String SourcePath;
-    [Write, Description("Folder within the source path containing the source files for installation. Default value is 'Source'.")] String SourceFolder;
+    [Write, Description("The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.")] String SourcePath;
     [Required, EmbeddedInstance("MSFT_Credential"), Description("Credential to be used to perform the installation.")] String SetupCredential;
-    [Write, EmbeddedInstance("MSFT_Credential"), Description("Credentials used to access the path set in the parameter 'SourcePath' and 'SourceFolder'. Using this parameter will trigger a copy of the installation media to a temp folder on the target node. Setup will then be started from the temp folder on the target node. For any subsequent calls to the resource, the parameter 'SourceCredential' is used to evaluate what major version the file 'setup.exe' has in the path set, again, by the parameter 'SourcePath' and 'SourceFolder'.")] String SourceCredential;
+    [Write, EmbeddedInstance("MSFT_Credential"), Description("Credentials used to access the path set in the parameter 'SourcePath'. Using this parameter will trigger a copy of the installation media to a temp folder on the target node. Setup will then be started from the temp folder on the target node. For any subsequent calls to the resource, the parameter 'SourceCredential' is used to evaluate what major version the file 'setup.exe' has in the path set, again, by the parameter 'SourcePath'.  If the path set in parameter 'SourcePath' contains a leaf folder, for example '\\server\share\folder', then the that leaf folder will be used as the name of the temporary folder. If the path set in parameter 'SourcePath' does not have a leaf folder, for example '\\server\share', then a unique guid will be used as the name of the temporary folder.")] String SourceCredential;
     [Write, Description("Suppresses reboot.")] Boolean SuppressReboot;
     [Write, Description("Forces reboot.")] Boolean ForceReboot;
     [Write, Description("SQL features to be installed.")] String Features;

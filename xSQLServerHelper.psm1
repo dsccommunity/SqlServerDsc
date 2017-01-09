@@ -1,8 +1,8 @@
 # Set Global Module Verbose
-$VerbosePreference = 'Continue' 
+$VerbosePreference = 'Continue'
 
-# Load Localization Data 
-Import-LocalizedData LocalizedData -filename xSQLServer.strings.psd1 -ErrorAction SilentlyContinue 
+# Load Localization Data
+Import-LocalizedData LocalizedData -filename xSQLServer.strings.psd1 -ErrorAction SilentlyContinue
 Import-LocalizedData USLocalizedData -filename xSQLServer.strings.psd1 -UICulture en-US -ErrorAction SilentlyContinue
 
 <#
@@ -12,11 +12,11 @@ Import-LocalizedData USLocalizedData -filename xSQLServer.strings.psd1 -UICultur
     .PARAMETER SQLServer
         String containing the host name of the SQL Server to connect to.
 
-    .PARAMETER SQLInstanceName 
-        String containing the SQL Server Database Engine instance to connect to. 
+    .PARAMETER SQLInstanceName
+        String containing the SQL Server Database Engine instance to connect to.
 
     .PARAMETER SetupCredential
-        PSCredential object with the credentials to use to impersonate a user when connecting. 
+        PSCredential object with the credentials to use to impersonate a user when connecting.
         If this is not provided then the current user will be used to connect to the SQL Server Database Engine instance.
 #>
 function Connect-SQL
@@ -24,21 +24,21 @@ function Connect-SQL
     [CmdletBinding()]
     param
     (
-        [ValidateNotNull()] 
+        [ValidateNotNull()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
-        
-        [ValidateNotNull()] 
+
+        [ValidateNotNull()]
         [System.String]
         $SQLInstanceName = "MSSQLSERVER",
 
-        [ValidateNotNull()] 
+        [ValidateNotNull()]
         [System.Management.Automation.PSCredential]
         $SetupCredential
     )
-    
+
     $null = [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.Smo')
-    
+
     if ($SQLInstanceName -eq "MSSQLSERVER")
     {
         $connectSql = $SQLServer
@@ -47,13 +47,13 @@ function Connect-SQL
     {
         $connectSql = "$SQLServer\$SQLInstanceName"
     }
-    
+
     if ($SetupCredential)
     {
         $sql = New-Object Microsoft.SqlServer.Management.Smo.Server
         $sql.ConnectionContext.ConnectAsUser = $true
         $sql.ConnectionContext.ConnectAsUserPassword = $SetupCredential.GetNetworkCredential().Password
-        $sql.ConnectionContext.ConnectAsUserName = $SetupCredential.GetNetworkCredential().UserName 
+        $sql.ConnectionContext.ConnectAsUserName = $SetupCredential.GetNetworkCredential().UserName
         $sql.ConnectionContext.ServerInstance = $connectSQL
         $sql.ConnectionContext.connect()
     }
@@ -79,11 +79,11 @@ function Connect-SQL
     .PARAMETER SQLServer
         String containing the host name of the SQL Server to connect to.
 
-    .PARAMETER SQLInstanceName 
-        String containing the SQL Server Analysis Service instance to connect to. 
+    .PARAMETER SQLInstanceName
+        String containing the SQL Server Analysis Service instance to connect to.
 
     .PARAMETER SetupCredential
-        PSCredential object with the credentials to use to impersonate a user when connecting. 
+        PSCredential object with the credentials to use to impersonate a user when connecting.
         If this is not provided then the current user will be used to connect to the SQL Server Analysis Service instance.
 #>
 function Connect-SQLAnalysis
@@ -91,21 +91,21 @@ function Connect-SQLAnalysis
     [CmdletBinding()]
     param
     (
-        [ValidateNotNull()] 
+        [ValidateNotNull()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
-        
-        [ValidateNotNull()] 
+
+        [ValidateNotNull()]
         [System.String]
         $SQLInstanceName = "MSSQLSERVER",
 
-        [ValidateNotNull()] 
+        [ValidateNotNull()]
         [System.Management.Automation.PSCredential]
         $SetupCredential
     )
-    
+
     $null = [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.AnalysisServices')
-    
+
     if ($SQLInstanceName -eq "MSSQLSERVER")
     {
         $connectSql = $SQLServer
@@ -114,12 +114,12 @@ function Connect-SQLAnalysis
     {
         $connectSql = "$SQLServer\$SQLInstanceName"
     }
-    
+
     $sql = New-Object Microsoft.AnalysisServices.Server
 
     if ($SetupCredential)
     {
-        $userName = $SetupCredential.GetNetworkCredential().UserName 
+        $userName = $SetupCredential.GetNetworkCredential().UserName
         $password = $SetupCredential.GetNetworkCredential().Password
 
         $sql.Connect("Data Source=$connectSql;User ID=$userName;Password=$password")
@@ -151,15 +151,15 @@ function Connect-SQLAnalysis
 
     .PARAMETER ErrorCategory
         The category to use for the error message. Default value is 'OperationStopped'.
-        Valid values are a value from the enumeration System.Management.Automation.ErrorCategory. 
+        Valid values are a value from the enumeration System.Management.Automation.ErrorCategory.
 
     .PARAMETER TargetObject
-        The object that was being operated on when the error occurred. 
+        The object that was being operated on when the error occurred.
 
     .PARAMETER InnerException
-        Exception object that was thorwn when the error occured, which will be added to the final error message.  
+        Exception object that was thorwn when the error occured, which will be added to the final error message.
 #>
-function New-TerminatingError 
+function New-TerminatingError
 {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.ErrorRecord])]
@@ -177,7 +177,7 @@ function New-TerminatingError
         [Parameter(Mandatory = $false)]
         [System.Management.Automation.ErrorCategory]
         $ErrorCategory = [System.Management.Automation.ErrorCategory]::OperationStopped,
-        
+
         [Parameter(Mandatory = $false)]
         [Object]
         $TargetObject = $null,
@@ -186,9 +186,9 @@ function New-TerminatingError
         [System.Exception]
         $InnerException = $null
     )
-    
+
     $errorMessage = $LocalizedData.$ErrorType
-    
+
     if(!$errorMessage)
     {
         $errorMessage = ($LocalizedData.NoKeyFound -f $ErrorType)
@@ -200,13 +200,13 @@ function New-TerminatingError
     }
 
     $errorMessage = ($errorMessage -f $FormatArgs)
-    
+
     if( $InnerException )
     {
         $errorMessage += " InnerException: $($InnerException.Message)"
     }
-    
-    $callStack = Get-PSCallStack 
+
+    $callStack = Get-PSCallStack
 
     # Get Name of calling script
     if($callStack[1] -and $callStack[1].ScriptName)
@@ -214,7 +214,7 @@ function New-TerminatingError
         $scriptPath = $callStack[1].ScriptName
 
         $callingScriptName = $scriptPath.Split('\')[-1].Split('.')[0]
-    
+
         $errorId = "$callingScriptName.$ErrorType"
     }
     else
@@ -224,7 +224,7 @@ function New-TerminatingError
 
     Write-Verbose -Message "$($USLocalizedData.$ErrorType -f $FormatArgs) | ErrorType: $errorId"
 
-    $exception = New-Object System.Exception $errorMessage, $InnerException    
+    $exception = New-Object System.Exception $errorMessage, $InnerException
     $errorRecord = New-Object System.Management.Automation.ErrorRecord $exception, $errorId, $ErrorCategory, $TargetObject
 
     return $errorRecord
@@ -236,7 +236,7 @@ function New-TerminatingError
 
     .PARAMETER WarningType
         String containing the key of the localized warning message.
-    
+
     .PARAMETER FormatArgs
         Collection of strings to replace format objects in warning message.
 #>
@@ -268,7 +268,7 @@ function New-WarningMessage
         }
 
         ## Raise an error indicating the localization data is not present
-        throw New-TerminatingError @errorParams 
+        throw New-TerminatingError @errorParams
     }
 
     ## Apply formatting
@@ -305,27 +305,27 @@ function New-VerboseMessage
     .PARAMETER CurrentValues
         This is hashtable of the current values that are applied to the resource.
 
-    .PARAMETER DesiredValues 
+    .PARAMETER DesiredValues
         This is a PSBoundParametersDictionary of the desired values for the resource.
 
     .PARAMETER ValuesToCheck
         This is a list of which properties in the desired values list should be checked.
         If this is empty then all values in DesiredValues are checked.
 #>
-function Test-SQLDscParameterState 
+function Test-SQLDscParameterState
 {
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory = $true)]  
+        [Parameter(Mandatory = $true)]
         [HashTable]
         $CurrentValues,
-        
-        [Parameter(Mandatory = $true)]  
+
+        [Parameter(Mandatory = $true)]
         [Object]
         $DesiredValues,
 
-        [Parameter()] 
+        [Parameter()]
         [Array]
         $ValuesToCheck
     )
@@ -334,66 +334,66 @@ function Test-SQLDscParameterState
 
     if (($DesiredValues.GetType().Name -ne "HashTable") `
         -and ($DesiredValues.GetType().Name -ne "CimInstance") `
-        -and ($DesiredValues.GetType().Name -ne "PSBoundParametersDictionary")) 
+        -and ($DesiredValues.GetType().Name -ne "PSBoundParametersDictionary"))
     {
         throw "Property 'DesiredValues' in Test-SQLDscParameterState must be either a " + `
               "Hashtable or CimInstance. Type detected was $($DesiredValues.GetType().Name)"
     }
 
-    if (($DesiredValues.GetType().Name -eq "CimInstance") -and ($null -eq $ValuesToCheck)) 
+    if (($DesiredValues.GetType().Name -eq "CimInstance") -and ($null -eq $ValuesToCheck))
     {
         throw "If 'DesiredValues' is a CimInstance then property 'ValuesToCheck' must contain a value"
     }
 
-    if (($null -eq $ValuesToCheck) -or ($ValuesToCheck.Count -lt 1)) 
+    if (($null -eq $ValuesToCheck) -or ($ValuesToCheck.Count -lt 1))
     {
         $keyList = $DesiredValues.Keys
-    } 
-    else 
+    }
+    else
     {
         $keyList = $ValuesToCheck
     }
 
     $keyList | ForEach-Object -Process {
-        if (($_ -ne "Verbose")) 
+        if (($_ -ne "Verbose"))
         {
             if (($CurrentValues.ContainsKey($_) -eq $false) `
             -or ($CurrentValues.$_ -ne $DesiredValues.$_) `
-            -or (($DesiredValues.ContainsKey($_) -eq $true) -and ($DesiredValues.$_.GetType().IsArray))) 
+            -or (($DesiredValues.ContainsKey($_) -eq $true) -and ($DesiredValues.$_.GetType().IsArray)))
             {
                 if ($DesiredValues.GetType().Name -eq "HashTable" -or `
-                    $DesiredValues.GetType().Name -eq "PSBoundParametersDictionary") 
+                    $DesiredValues.GetType().Name -eq "PSBoundParametersDictionary")
                 {
-                    
+
                     $checkDesiredValue = $DesiredValues.ContainsKey($_)
-                } 
-                else 
+                }
+                else
                 {
                     $checkDesiredValue = Test-SPDSCObjectHasProperty $DesiredValues $_
                 }
 
-                if ($checkDesiredValue) 
+                if ($checkDesiredValue)
                 {
                     $desiredType = $DesiredValues.$_.GetType()
                     $fieldName = $_
-                    if ($desiredType.IsArray -eq $true) 
+                    if ($desiredType.IsArray -eq $true)
                     {
                         if (($CurrentValues.ContainsKey($fieldName) -eq $false) `
-                        -or ($null -eq $CurrentValues.$fieldName)) 
+                        -or ($null -eq $CurrentValues.$fieldName))
                         {
                             New-VerboseMessage -Message ("Expected to find an array value for " + `
                                                          "property $fieldName in the current " + `
                                                          "values, but it was either not present or " + `
                                                          "was null. This has caused the test method " + `
                                                          "to return false.")
-                            
+
                             $returnValue = $false
-                        } 
-                        else 
+                        }
+                        else
                         {
                             $arrayCompare = Compare-Object -ReferenceObject $CurrentValues.$fieldName `
                                                            -DifferenceObject $DesiredValues.$fieldName
-                            if ($null -ne $arrayCompare) 
+                            if ($null -ne $arrayCompare)
                             {
                                 New-VerboseMessage -Message ("Found an array for property $fieldName " + `
                                                              "in the current values, but this array " + `
@@ -402,14 +402,14 @@ function Test-SQLDscParameterState
                                 $arrayCompare | ForEach-Object -Process {
                                     New-VerboseMessage -Message "$($_.InputObject) - $($_.SideIndicator)"
                                 }
-                                
+
                                 $returnValue = $false
                             }
                         }
-                    } 
-                    else 
+                    }
+                    else
                     {
-                        switch ($desiredType.Name) 
+                        switch ($desiredType.Name)
                         {
                             "String" {
                                 if (-not [String]::IsNullOrEmpty($CurrentValues.$fieldName) -or `
@@ -418,46 +418,46 @@ function Test-SQLDscParameterState
                                     New-VerboseMessage -Message ("String value for property $fieldName does not match. " + `
                                                                  "Current state is '$($CurrentValues.$fieldName)' " + `
                                                                  "and Desired state is '$($DesiredValues.$fieldName)'")
-                                    
+
                                     $returnValue = $false
                                 }
                             }
                             "Int32" {
                                 if (-not ($DesiredValues.$fieldName -eq 0) -or `
                                     -not ($null -eq $CurrentValues.$fieldName))
-                                { 
+                                {
                                     New-VerboseMessage -Message ("Int32 value for property " + "$fieldName does not match. " + `
                                                                  "Current state is " + "'$($CurrentValues.$fieldName)' " + `
                                                                  "and desired state is " + "'$($DesiredValues.$fieldName)'")
-                                    
+
                                     $returnValue = $false
                                 }
                             }
                             "Int16" {
                                 if (-not ($DesiredValues.$fieldName -eq 0) -or `
                                     -not ($null -eq $CurrentValues.$fieldName))
-                                { 
+                                {
                                     New-VerboseMessage -Message ("Int32 value for property " + "$fieldName does not match. " + `
                                                                  "Current state is " + "'$($CurrentValues.$fieldName)' " + `
                                                                  "and desired state is " + "'$($DesiredValues.$fieldName)'")
-                                    
+
                                     $returnValue = $false
                                 }
                             }
                             default {
                                 New-VerboseMessage -Message ("Unable to compare property $fieldName " + `
                                                              "as the type ($($desiredType.Name)) is " + `
-                                                             "not handled by the Test-SQLDscParameterState cmdlet")                                
-                                
+                                                             "not handled by the Test-SQLDscParameterState cmdlet")
+
                                 $returnValue = $false
                             }
                         }
                     }
-                }            
+                }
             }
-        } 
+        }
     }
-    
+
     return $returnValue
 }
 
@@ -468,11 +468,11 @@ function Test-SQLDscParameterState
     .PARAMETER SQLServer
         String containing the host name of the SQL Server to connect to.
 
-    .PARAMETER SQLInstanceName 
-        String containing the SQL Server Database Engine instance to connect to. 
+    .PARAMETER SQLInstanceName
+        String containing the SQL Server Database Engine instance to connect to.
 
     .PARAMETER SetupCredential
-        PSCredential object with the credentials to use to impersonate a user when connecting. 
+        PSCredential object with the credentials to use to impersonate a user when connecting.
         If this is not provided then the current user will be used to connect to the SQL Server Database Engine instance.
 
     .PARAMETER AuthorizedUser
@@ -483,25 +483,25 @@ function Grant-ServerPerms
     [CmdletBinding()]
     param
     (
-        [ValidateNotNull()]         
+        [ValidateNotNull()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
-        [ValidateNotNull()] 
+        [ValidateNotNull()]
         [System.String]
         $SQLInstanceName= "MSSQLSERVER",
 
-        [ValidateNotNullOrEmpty()]  
+        [ValidateNotNullOrEmpty()]
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [Parameter(Mandatory = $true)]
         [System.String]
         $AuthorizedUser
     )
-    
+
     if(!$SQL)
     {
         $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -SetupCredential $SetupCredential
@@ -524,20 +524,20 @@ function Grant-ServerPerms
     .PARAMETER AvailabilityGroupNameListener
         String containing the name of the Availabilty Group's Virtual Computer Object (VCO).
 
-    .PARAMETER CNO 
-        String containing the name of the Cluster Name Object (CNO) for the failover cluster. 
+    .PARAMETER CNO
+        String containing the name of the Cluster Name Object (CNO) for the failover cluster.
 #>
 function Grant-CNOPerms
 {
 [CmdletBinding()]
     Param
     (
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [Parameter(Mandatory = $true)]
         [System.String]
         $AvailabilityGroupNameListener,
-        
-        [ValidateNotNullOrEmpty()] 
+
+        [ValidateNotNullOrEmpty()]
         [Parameter(Mandatory = $true)]
         [System.String]
         $CNO
@@ -551,26 +551,26 @@ function Grant-CNOPerms
     else{Import-Module ActiveDirectory -ErrorAction Stop -Verbose:$false}
     Try{
         $AG = Get-ADComputer $AvailabilityGroupNameListener
-        
+
         $comp = $AG.DistinguishedName  # input AD computer distinguishedname
-        $acl = Get-Acl "AD:\$comp" 
+        $acl = Get-Acl "AD:\$comp"
         $u = Get-ADComputer $CNO                        # get the AD user object given full control to computer
         $SID = [System.Security.Principal.SecurityIdentifier] $u.SID
-        
+
         $identity = [System.Security.Principal.IdentityReference] $SID
         $adRights = [System.DirectoryServices.ActiveDirectoryRights] "GenericAll"
         $type = [System.Security.AccessControl.AccessControlType] "Allow"
         $inheritanceType = [System.DirectoryServices.ActiveDirectorySecurityInheritance] "All"
         $ace = New-Object System.DirectoryServices.ActiveDirectoryAccessRule $identity,$adRights,$type,$inheritanceType
-        
-        $acl.AddAccessRule($ace) 
+
+        $acl.AddAccessRule($ace)
         Set-Acl -AclObject $acl "AD:\$comp"
         New-VerboseMessage -Message "Granted privileges on $comp to $CNO"
         }
     Catch{
         Throw "Failed to grant Permissions on $comp."
         Exit
-        } 
+        }
 }
 
 <#
@@ -583,11 +583,11 @@ function Grant-CNOPerms
     .PARAMETER SQLServer
         String containing the host name of the SQL Server to connect to.
 
-    .PARAMETER SQLInstanceName 
-        String containing the SQL Server Database Engine instance to connect to. 
+    .PARAMETER SQLInstanceName
+        String containing the SQL Server Database Engine instance to connect to.
 
     .PARAMETER SetupCredential
-        PSCredential object with the credentials to use to impersonate a user when connecting. 
+        PSCredential object with the credentials to use to impersonate a user when connecting.
         If this is not provided then the current user will be used to connect to the SQL Server Database Engine instance.
 #>
 function New-ListenerADObject
@@ -595,20 +595,20 @@ function New-ListenerADObject
 [CmdletBinding()]
     Param
     (
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [Parameter(Mandatory = $true)]
         [System.String]
         $AvailabilityGroupNameListener,
-        
-        [ValidateNotNull()] 
+
+        [ValidateNotNull()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
-        [ValidateNotNull()] 
+        [ValidateNotNull()]
         [System.String]
         $SQLInstanceName = "MSSQLSERVER",
-    
-        [ValidateNotNullOrEmpty()] 
+
+        [ValidateNotNullOrEmpty()]
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential
@@ -620,7 +620,7 @@ function New-ListenerADObject
     }
 
     $CNO= $SQL.ClusterName
-        
+
     #Verify Active Directory Tools are installed, if they are load if not Throw Error
     If (!(Get-Module -ListAvailable | Where-Object {$_.Name -eq "ActiveDirectory"})){
         Throw "Active Directory Module is not installed and is Required."
@@ -640,10 +640,10 @@ function New-ListenerADObject
         Throw ": Failed to find Computer in AD"
         exit
     }
-    
-    
+
+
     $m = Get-ADComputer -Filter {Name -eq $AvailabilityGroupNameListener} -Server $env:USERDOMAIN | Select-Object -Property * | Measure-Object
-    
+
     If ($m.Count -eq 0)
     {
         Try{
@@ -655,16 +655,16 @@ function New-ListenerADObject
                Throw "Failed to Create $AvailabilityGroupNameListener in $OUPath"
             Exit
             }
-            
+
             $SucccessChk =0
-    
-        #Check for AD Object Validate at least three successful attempts 
+
+        #Check for AD Object Validate at least three successful attempts
         $i=1
         While ($i -le 5) {
             Try{
                 $ListChk = Get-ADComputer -filter {Name -like $AvailabilityGroupNameListener}
                 If ($ListChk){$SuccessChk++}
-                Start-Sleep -Seconds 10  
+                Start-Sleep -Seconds 10
                 If($SuccesChk -eq 3){break}
                }
             Catch{
@@ -672,7 +672,7 @@ function New-ListenerADObject
                  Exit
             }
             $i++
-        }            
+        }
     }
     Try{
         Grant-CNOPerms -AvailabilityGroupNameListener $AvailabilityGroupNameListener -CNO $CNO
@@ -692,21 +692,21 @@ function Import-SQLPSModule {
     [CmdletBinding()]
     param()
 
-    
+
     <# If SQLPS is not removed between resources (if it was started by another DSC resource) getting
     objects with the SQL PS provider will fail in some instances because of some sort of inconsistency. Uncertain why this happens. #>
     if( (Get-Module SQLPS).Count -ne 0 ) {
         Write-Debug "Unloading SQLPS module."
         Remove-Module -Name SQLPS -Force -Verbose:$False
     }
-    
+
     Write-Debug "SQLPS module changes CWD to SQLSERVER:\ when loading, pushing location to pop it when module is loaded."
     Push-Location
 
     try {
         New-VerboseMessage -Message "Importing SQLPS module."
         Import-Module -Name SQLPS -DisableNameChecking -Verbose:$False -ErrorAction Stop # SQLPS has unapproved verbs, disable checking to ignore Warnings.
-        Write-Debug "SQLPS module imported." 
+        Write-Debug "SQLPS module imported."
     }
     catch {
         throw New-TerminatingError -ErrorType FailedToImportSQLPSModule -ErrorCategory InvalidOperation -InnerException $_.Exception
@@ -726,8 +726,8 @@ function Import-SQLPSModule {
         The SQLPS Provider doesn't use the default instance name of MSSQLSERVER, instead it uses DEFAULT.
         This function make sure the correct default instance name is returned.
 
-    .PARAMETER InstanceName 
-        String containing the SQL Server Database Engine instance to validate. 
+    .PARAMETER InstanceName
+        String containing the SQL Server Database Engine instance to validate.
 #>
 function Get-SQLPSInstanceName
 {
@@ -741,9 +741,9 @@ function Get-SQLPSInstanceName
     )
 
     if( $InstanceName -eq "MSSQLSERVER" ) {
-        $InstanceName = "DEFAULT"            
+        $InstanceName = "DEFAULT"
     }
-    
+
     return $InstanceName
 }
 
@@ -751,11 +751,11 @@ function Get-SQLPSInstanceName
     .SYNOPSIS
         Returns the SQL Server SQLPS provider server object.
 
-    .PARAMETER InstanceName 
-        String containing the SQL Server Database Engine instance to connect to. 
+    .PARAMETER InstanceName
+        String containing the SQL Server Database Engine instance to connect to.
 
-    .PARAMETER NodeName 
-        String containing the host name of the SQL Server to connect to. 
+    .PARAMETER NodeName
+        String containing the host name of the SQL Server to connect to.
 #>
 function Get-SQLPSInstance
 {
@@ -769,17 +769,17 @@ function Get-SQLPSInstance
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $NodeName 
+        $NodeName
     )
 
-    $InstanceName = Get-SQLPSInstanceName -InstanceName $InstanceName 
+    $InstanceName = Get-SQLPSInstanceName -InstanceName $InstanceName
     $Path = "SQLSERVER:\SQL\$NodeName\$InstanceName"
-    
+
     New-VerboseMessage -Message "Connecting to $Path as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
 
     Import-SQLPSModule
     $instance = Get-Item $Path
-    
+
     return $instance
 }
 
@@ -787,14 +787,14 @@ function Get-SQLPSInstance
     .SYNOPSIS
         Returns the SQL Server SQLPS provider endpoint object.
 
-    .PARAMETER Name 
-        String containing the name of the endpoint to return. 
+    .PARAMETER Name
+        String containing the name of the endpoint to return.
 
-    .PARAMETER InstanceName 
-        String containing the SQL Server Database Engine instance to connect to. 
+    .PARAMETER InstanceName
+        String containing the SQL Server Database Engine instance to connect to.
 
-    .PARAMETER NodeName 
-        String containing the host name of the SQL Server to connect to. 
+    .PARAMETER NodeName
+        String containing the host name of the SQL Server to connect to.
 #>
 function Get-SQLAlwaysOnEndpoint
 {
@@ -812,21 +812,21 @@ function Get-SQLAlwaysOnEndpoint
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $NodeName 
+        $NodeName
     )
 
     $instance = Get-SQLPSInstance -InstanceName $InstanceName -NodeName $NodeName
     $Path = "$($instance.PSPath)\Endpoints"
 
     Write-Debug "Connecting to $Path as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
-    
+
     [String[]] $presentEndpoint = Get-ChildItem $Path
     if( $presentEndpoint.Count -ne 0 -and $presentEndpoint.Contains("[$Name]") ) {
         Write-Debug "Connecting to endpoint $Name as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
         $endpoint = Get-Item "$Path\$Name"
     } else {
         $endpoint = $null
-    }    
+    }
 
     return $endpoint
 }
@@ -835,26 +835,26 @@ function Get-SQLAlwaysOnEndpoint
     .SYNOPSIS
         Create a new database in the SQL Server instance provided.
 
-    .PARAMETER SQL 
-        An object returned from Connect-SQL function in which the database will be created. 
+    .PARAMETER SQL
+        An object returned from Connect-SQL function in which the database will be created.
 
-    .PARAMETER Name 
-        String containing the database name to be created. 
+    .PARAMETER Name
+        String containing the database name to be created.
 #>
 function New-SqlDatabase
 {
-    [CmdletBinding()]    
+    [CmdletBinding()]
     param
-    (   
-        [ValidateNotNull()] 
+    (
+        [ValidateNotNull()]
         [System.Object]
         $SQL,
-        
-        [ValidateNotNull()] 
+
+        [ValidateNotNull()]
         [System.String]
         $Name
     )
-    
+
     $newDatabase = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $SQL,$Name
     if ($newDatabase)
     {
@@ -864,33 +864,33 @@ function New-SqlDatabase
     else
     {
         New-VerboseMessage -Message "Failed to adding the database $Name"
-    }    
+    }
 }
 
 <#
     .SYNOPSIS
         Remove a database in the SQL Server instance provided.
 
-    .PARAMETER SQL 
-        An object returned from Connect-SQL function in which a database will be removed. 
+    .PARAMETER SQL
+        An object returned from Connect-SQL function in which a database will be removed.
 
-    .PARAMETER Name 
-        String containing the database name to be removed. 
+    .PARAMETER Name
+        String containing the database name to be removed.
 #>
 function Remove-SqlDatabase
 {
-    [CmdletBinding()]    
+    [CmdletBinding()]
     param
-    (   
-        [ValidateNotNull()] 
+    (
+        [ValidateNotNull()]
         [System.Object]
         $Sql,
-        
-        [ValidateNotNull()] 
+
+        [ValidateNotNull()]
         [System.String]
         $Name
     )
-    
+
     $getDatabase = $Sql.Databases[$Name]
     if ($getDatabase)
     {
@@ -900,7 +900,7 @@ function Remove-SqlDatabase
     else
     {
         New-VerboseMessage -Message "Failed to deleting the database $Name"
-    }    
+    }
 }
 
 <#
@@ -908,33 +908,33 @@ function Remove-SqlDatabase
         Add a user to a server role in the SQL Server instance provided.
 
     .PARAMETER Sql
-        An object returned from Connect-SQL function. 
+        An object returned from Connect-SQL function.
 
-    .PARAMETER LoginName 
-        String containing the login (user) which should be added as a member to the server role. 
+    .PARAMETER LoginName
+        String containing the login (user) which should be added as a member to the server role.
 
-    .PARAMETER ServerRole 
-        String containing the name of the server role which the user will be added as a member to. 
+    .PARAMETER ServerRole
+        String containing the name of the server role which the user will be added as a member to.
 #>
 function Add-SqlServerRoleMember
 {
-    [CmdletBinding()]    
+    [CmdletBinding()]
     param
-    (   
-        [ValidateNotNull()] 
+    (
+        [ValidateNotNull()]
         [System.Object]
         $Sql,
-        
-        [ValidateNotNull()] 
+
+        [ValidateNotNull()]
         [System.String]
         $LoginName,
 
-        [ValidateNotNull()] 
+        [ValidateNotNull()]
         [System.String[]]
         $ServerRole
 
     )
-    
+
     $sqlRole = $Sql.Roles
     if ($sqlRole)
     {
@@ -961,34 +961,34 @@ function Add-SqlServerRoleMember
     .SYNOPSIS
         Remove a user in a server role in the SQL Server instance provided.
 
-    .PARAMETER Sql 
-        An object returned from Connect-SQL function. 
+    .PARAMETER Sql
+        An object returned from Connect-SQL function.
 
-    .PARAMETER LoginName 
-        String containing the login (user) which should be removed as a member in the server role. 
+    .PARAMETER LoginName
+        String containing the login (user) which should be removed as a member in the server role.
 
-    .PARAMETER ServerRole 
-        String containing the name of the server role for which the user will be removed as a member. 
+    .PARAMETER ServerRole
+        String containing the name of the server role for which the user will be removed as a member.
 #>
 function Remove-SqlServerRoleMember
 {
-    [CmdletBinding()]    
+    [CmdletBinding()]
     param
-    (   
-        [ValidateNotNull()] 
+    (
+        [ValidateNotNull()]
         [System.Object]
         $Sql,
-        
-        [ValidateNotNull()] 
+
+        [ValidateNotNull()]
         [System.String]
         $LoginName,
 
-        [ValidateNotNull()] 
+        [ValidateNotNull()]
         [System.String[]]
         $ServerRole
 
     )
-    
+
     $sqlRole = $Sql.Roles
     if ($sqlRole)
     {
@@ -1017,34 +1017,34 @@ function Remove-SqlServerRoleMember
         The function returns $true is the login (user) is a member in the provided server role.
         It will return $false if the user is not member of the provided server role.
 
-    .PARAMETER SQL 
-        An object returned from Connect-SQL function. 
+    .PARAMETER SQL
+        An object returned from Connect-SQL function.
 
-    .PARAMETER LoginName 
-        String containing the login (user) which should be verified as a member in the server role. 
+    .PARAMETER LoginName
+        String containing the login (user) which should be verified as a member in the server role.
 
-    .PARAMETER ServerRole 
-        String containing the name of the server role which the user will be verified if a member of. 
+    .PARAMETER ServerRole
+        String containing the name of the server role which the user will be verified if a member of.
 #>
 function Confirm-SqlServerRoleMember
 {
-    [CmdletBinding()]    
+    [CmdletBinding()]
     param
-    (   
-        [ValidateNotNull()] 
+    (
+        [ValidateNotNull()]
         [System.Object]
         $Sql,
-        
-        [ValidateNotNull()] 
+
+        [ValidateNotNull()]
         [System.String]
         $LoginName,
 
-        [ValidateNotNull()] 
+        [ValidateNotNull()]
         [System.String[]]
         $ServerRole
 
     )
-    
+
     $sqlRole = $Sql.Roles
     if ($sqlRole)
     {
@@ -1052,7 +1052,7 @@ function Confirm-SqlServerRoleMember
         {
             if ($sqlRole[$currentServerRole])
             {
-                $membersInRole = $sqlRole[$currentServerRole].EnumMemberNames()             
+                $membersInRole = $sqlRole[$currentServerRole].EnumMemberNames()
                 if ($membersInRole.Contains($Name))
                 {
                     $confirmServerRole = $true
@@ -1092,18 +1092,18 @@ function Confirm-SqlServerRoleMember
 #>
 function Get-SqlDatabaseOwner
 {
-    [CmdletBinding()]    
+    [CmdletBinding()]
     param
-    (   
-        [ValidateNotNull()] 
+    (
+        [ValidateNotNull()]
         [System.Object]
         $SQL,
 
-        [ValidateNotNull()] 
+        [ValidateNotNull()]
         [System.String]
         $Database
     )
-    
+
     Write-Verbose -Message 'Getting SQL Databases'
     $sqlDatabase = $SQL.Databases
     if ($sqlDatabase)
@@ -1134,7 +1134,7 @@ function Get-SqlDatabaseOwner
     .PARAMETER SQL
         This is an object of the SQL server that contains the result of Connect-SQL.
 
-    .PARAMETER Name 
+    .PARAMETER Name
         This is the name of the desired owner for the SQL database.
 
     .PARAMETER Database
@@ -1142,22 +1142,22 @@ function Get-SqlDatabaseOwner
 #>
 function Set-SqlDatabaseOwner
 {
-    [CmdletBinding()]    
+    [CmdletBinding()]
     param
-    (   
-        [ValidateNotNull()] 
+    (
+        [ValidateNotNull()]
         [System.Object]
         $SQL,
-        
-        [ValidateNotNull()] 
+
+        [ValidateNotNull()]
         [System.String]
         $Name,
 
-        [ValidateNotNull()] 
+        [ValidateNotNull()]
         [System.String]
         $Database
     )
-    
+
     Write-Verbose -Message 'Getting SQL Databases'
     $sqlDatabase = $SQL.Databases
     $sqlLogins = $SQL.Logins
@@ -1200,7 +1200,7 @@ function Set-SqlDatabaseOwner
 
     .PARAMETER SQLServer
     Hostname of the SQL Server to be configured
-    
+
     .PARAMETER SQLInstanceName
     Name of the SQL instance to be configued. Default is 'MSSQLSERVER'
 
@@ -1240,8 +1240,8 @@ function Restart-SqlService
     if ($serverObject.IsClustered)
     {
         ## Get the cluster resources
-        New-VerboseMessage -Message 'Getting cluster resource for SQL Server' 
-        $sqlService = Get-CimInstance -Namespace root/MSCluster -ClassName MSCluster_Resource -Filter "Type = 'SQL Server'" | 
+        New-VerboseMessage -Message 'Getting cluster resource for SQL Server'
+        $sqlService = Get-CimInstance -Namespace root/MSCluster -ClassName MSCluster_Resource -Filter "Type = 'SQL Server'" |
                         Where-Object { $_.PrivateProperties.InstanceName -eq $serverObject.ServiceName }
 
         New-VerboseMessage -Message 'Getting active cluster resource SQL Server Agent'
