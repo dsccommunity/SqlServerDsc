@@ -154,6 +154,9 @@ Describe 'xSQLServer module common tests' {
                     Start-Process -FilePath "npm" -ArgumentList "uninstall through2" -WorkingDirectory $script:moduleRoot -Wait -PassThru  -WindowStyle Hidden
                     Start-Process -FilePath "npm" -ArgumentList "uninstall gulp" -WorkingDirectory $script:moduleRoot -Wait -PassThru  -WindowStyle Hidden
                     Start-Process -FilePath "npm" -ArgumentList "uninstall -g gulp" -WorkingDirectory $script:moduleRoot -Wait -PassThru  -WindowStyle Hidden
+
+                    # Remove folder node_modules that npm created.
+                    Remove-Item -Path (Join-Path -Path $script:moduleRoot -ChildPath 'node_modules') -Recurse -Force
                 } | Should Not Throw
             }
         }
