@@ -1,18 +1,12 @@
-Thanks for submitting a Pull Request (PR) to this project. This template will help you create your pull request (PR).
+_Thanks for submitting a Pull Request (PR) to this project. Your contribution to this project is greatly appreciated!_
 
-Please make sure you have read:
-
-- The common guidelines [Contribution Guidelines](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md).
-- The specific guidelines [Contributing to xSQLServer](https://github.com/PowerShell/xSQLServer/blob/dev/CONTRIBUTING.md).
-
-To aid community reviewers in reviewing and merging your pull request (PR), please take the time to run through the below checklist
-
-Your contribution to this project is greatly appreciated!
-
----- Pull Request Title format ----
+Please make sure you have read the [contributing section](https://github.com/PowerShell/xSQLServer#contributing)
 
 Please prefix the PR title with the resource name, i.e. 'xSQLServerSetup: My short description'
 If this is a breaking change, then also prefix the PR title with 'BREAKING CHANGE:', i.e. 'BREAKING CHANGE: xSQLServerSetup: My short description'
+
+To aid community reviewers in reviewing and merging your PR, please take the time to run through the below checklist.
+Change to [x] for each task in the task list that applies to this PR.
 
 ---- DELETE THIS LINE AND EVERYTHING ABOVE ----
 
