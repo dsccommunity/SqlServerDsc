@@ -85,7 +85,7 @@ Invoke-Pester
 
 #### Tests for style check of Markdown files
 
-When sending in a Pull Request (PR) style check will be performed on all Markdown files, and if the tests find any error the build will fail.
+When sending in a Pull Request (PR) a style check will be performed on all Markdown files, and if the tests find any error the build will fail.
 See the section [Documentation with Markdown](#documentation-with-markdown) how these errors kan be found before sending in the PR.
 
 The Markdown tests can be run locally if the packet manager 'npm' is available. To have npm available you need to install [node.js](https://nodejs.org/en/download/).
@@ -93,7 +93,7 @@ If 'npm' is not available, a warning text will print and the rest of the tests w
 
 #### Tests for examples files
 
-When sending in a Pull Request (PR) all example files will be tested so they can be compiled to a .mof file. If the tests find any error the build will fail.
+When sending in a Pull Request (PR) all example files will be tested so they can be compiled to a .mof file. If the tests find any errors the build will fail.
 Before the test runs in AppVeyor the module will be copied to the first path of `$env:PSModulePath`.
 To run this test locally, make sure you have the xSQLServer module deployed to a path where it can be used. See `$env:PSModulePath` to view the existing paths.
 

@@ -1,5 +1,5 @@
 [CmdletBinding()]
-# Suppressing this because we need to generate a mocked credential to pass examples that need in in the tests
+# Suppressing this because we need to generate a mocked credentials that will be passed along to the examples that are needed in the tests.
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
 param()
 
@@ -52,7 +52,7 @@ Describe 'xSQLServer module common tests' {
                             }
                             finally
                             {
-                                # Remove the function we dot-sourced so next example doesn't use the previous.
+                                # Remove the function we dot-sourced so next example file doesn't use the previous Example-function.
                                 Remove-Item function:Example
                             }
                         }
@@ -106,7 +106,7 @@ Describe 'xSQLServer module common tests' {
                     # This executes the gulpfile.js in the root folder of the module.
                     Start-Process -FilePath "gulp" -ArgumentList "test-mdsyntax --silent" -WorkingDirectory $script:moduleRoot -Wait -NoNewWindow
 
-                    # Wait 3 second so the locks on file 'markdownerror.txt' has been released.
+                    # Wait 3 seconds so the locks on file 'markdownerror.txt' has been released.
                     Start-Sleep -Seconds 3
 
                     $markdownFoundErrorPath = Join-Path -Path $script:moduleRoot -ChildPath "markdownerror.txt"
@@ -124,7 +124,7 @@ Describe 'xSQLServer module common tests' {
                     }
 
                     <#
-                        When running in AppVeyor. Wait 5 second so the output have time to be sent to AppVeyor Console.
+                        When running in AppVeyor. Wait 5 seconds so the output have time to be sent to AppVeyor Console.
                         If there are many errors, the AppVeyor Console doesn't have time to print all warning messages
                         and messages comes out of order.
                     #>
