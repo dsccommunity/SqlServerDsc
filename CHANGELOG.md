@@ -17,6 +17,7 @@
   - Change the layout of the README.md to closer match the one of PSDscResources
   - Added more detailed text explaining what operating systemes WMF5.0 can be installed on.
   - Verified all resource schema files with the README.md and fixed some errors (descriptions was not verified).
+  - Added security requirements section for resource xSQLServerEndpoint and xSQLAOGroupEnsure.
 - Changes to xSQLServerSetup
   - The resource no longer uses Win32_Product WMI class when evaluating if SQL Server Management Studio is installed. See article [kb974524](https://support.microsoft.com/en-us/kb/974524) for more information.
   - Now it uses CIM cmdlets to get information from WMI classes.
