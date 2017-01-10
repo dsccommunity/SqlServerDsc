@@ -264,8 +264,8 @@ No description.
 #### Parameters
 
 * **[String] SQLServer** _(Key)_: The SQL Server for the database
-* **[String] SQLInstance** _(Key)_: The SQL instance for the database
-* **[String] Database** _(Key)_: Database to be created or dropped
+* **[String] SQLInstanceName** _(Key)_: The SQL instance for the database
+* **[String] Name** _(Key)_: Database to be created or dropped
 * **[String] Ensure** _(Write)_: If the values should be present or absent. Valid values are 'Present' or 'Absent'. Default Value is 'Present'. { *Present* | Absent }.
 
 #### Examples
