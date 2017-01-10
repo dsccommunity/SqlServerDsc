@@ -36,7 +36,6 @@ Describe 'xSQLServer module common tests' {
 
                 It "Should compile MOFs for example '$exampleDescriptiveName' correctly" {
                     {
-                        #Start-Job -ScriptBlock {
                         . $exampleToValidate.FullName
 
                         $exampleCommand = Get-Command Example -ErrorAction SilentlyContinue
@@ -74,7 +73,7 @@ Describe 'xSQLServer module common tests' {
         }
     }
 
-    Context -Name 'Validate Markdown files' {
+    Context -Name 'When there are Markdown files in the module' {
         if (Get-Command npm)
         {
             It 'Should not throw an error when installing dependencies' {
