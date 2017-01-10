@@ -75,6 +75,28 @@ one resource, then the functions can also be placed in the common [xSQLServerHel
 
 For a review of a Pull Request (PR) to start, all tests must pass without error. If you need help to figure why some test don't pass, just write a comment in the Pull Request (PR), or submit an issue, and somebody will come along and assist.
 
+To run all tests manually run the following.
+
+```powershell
+Install-Module Pester
+cd '<path to cloned repository>\Tests'
+Invoke-Pester
+```
+
+#### Tests for style check of Markdown files
+
+When sending in a Pull Request (PR) a style check will be performed on all Markdown files, and if the tests find any error the build will fail.
+See the section [Documentation with Markdown](#documentation-with-markdown) how these errors kan be found before sending in the PR.
+
+The Markdown tests can be run locally if the packet manager 'npm' is available. To have npm available you need to install [node.js](https://nodejs.org/en/download/).
+If 'npm' is not available, a warning text will print and the rest of the tests will continue run.
+
+#### Tests for examples files
+
+When sending in a Pull Request (PR) all example files will be tested so they can be compiled to a .mof file. If the tests find any errors the build will fail.
+Before the test runs in AppVeyor the module will be copied to the first path of `$env:PSModulePath`.
+To run this test locally, make sure you have the xSQLServer module deployed to a path where it can be used. See `$env:PSModulePath` to view the existing paths.
+
 #### Using SMO stub classes
 
 There are [stub classes](https://github.com/PowerShell/xSQLServer/blob/dev/Tests/Unit/Stubs/SMO.cs) for the SMO classes which can be used and improved on when creating tests where SMO classes are used in the code being tested.
@@ -83,3 +105,8 @@ There are [stub classes](https://github.com/PowerShell/xSQLServer/blob/dev/Tests
 
 AppVeyor is the platform where the tests is run when sending in a Pull Request (PR). All tests are run on a clean AppVeyor build worker for each push to the Pull Request (PR).
 The tests that are run on the build worker are common tests, unit tests and integration tests (with some limitations).
+
+### Documentation with Markdown
+
+If using Visual Studio Code to edit Markdown files it can be a good idea to install the markdownlint extension. It will help to do style checking.
+The file [.markdownlint.json](/.markdownlint.json) is prepared with a default set of rules which will automatically be used by the extension.

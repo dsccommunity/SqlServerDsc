@@ -33,12 +33,25 @@
   - Added to the description text for the parameter `Credential` describing how to authenticate using Windows Authentication.
   - Added examples to show how to authenticate using either SQL or Windows authentication.
   - A recent issue showed that there is a known problem running this resource using PowerShell 4.0. For more information, see [issue #273](https://github.com/PowerShell/xSQLServer/issues/273)
+  - The examples 'AddServerRole' and 'RemoveServerRole' can now compile correctly.
 - Changes to the unit test for resource
   - xSQLServerSetup
     - Added test coverage for helper function Copy-ItemWithRoboCopy
 - Changes to xSQLServerLogin
   - Removed ShouldProcess statements
   - Added the ability to enforce password policies on SQL logins
+- Added common test (xSQLServerCommon.Tests) for xSQLServer module
+  - Now all markdown files will be style checked when tests are running in AppVeyor after sending in a pull request.
+  - Now all [Examples](/Examples/Resources) will be tested by compiling to a .mof file after sending in a pull request.
+- Changes to xSQLServerDatabaseOwner
+  - The example 'SetDatabaseOwner' can now compile, it wrongly had a `DependsOn` in the example.
+- Changes to SQLServerRole
+  - The examples 'AddServerRole' and 'RemoveServerRole' can now compile, it wrongly had a `DependsOn` in the example.
+- Changes to CONTRIBUTING.md
+  - Added section 'Tests for examples files'
+  - Added section 'Tests for style check of Markdown files'
+  - Added section 'Documentation with Markdown'
+  - Added texts to section 'Tests'
 
 ## 4.0.0.0
 

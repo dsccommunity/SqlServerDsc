@@ -4,7 +4,7 @@
     First example shows how the resource is run as account SYSTEM. And the second example shows how the resource is run with a user account.
 #>
 
-Configuration Example 
+Configuration Example
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -39,15 +39,3 @@ Configuration Example
         }
     }
 }
-
-$configurationData = @{
-    AllNodes = @(
-        @{
-            NodeName = 'localhost'
-        }
-    )
-}
-
-Example -SqlCredential (Get-Credential) -ConfigurationData $configurationData -OutputPath 'C:\DSCTemp\Configuration'
-
-Start-DscConfiguration -Path 'C:\DSCTemp\Configuration' -Wait -Verbose -Force

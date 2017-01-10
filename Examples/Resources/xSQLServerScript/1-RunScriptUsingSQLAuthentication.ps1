@@ -3,7 +3,7 @@
     This example shows how to run SQL script using SQL Authentication.
 #>
 
-Configuration Example 
+Configuration Example
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -27,15 +27,3 @@ Configuration Example
         }
     }
 }
-
-$configurationData = @{ 
-    AllNodes = @(
-        @{
-            NodeName = 'localhost'
-        }
-    )
-}
-
-Example -SqlCredential (Get-Credential) -ConfigurationData $configurationData -OutputPath 'C:\DSCTemp\Configuration'
-
-Start-DscConfiguration -Path 'C:\DSCTemp\Configuration' -Wait -Verbose -Force
