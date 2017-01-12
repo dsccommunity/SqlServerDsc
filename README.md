@@ -96,6 +96,9 @@ No description.
 * Target machine must be running Windows Server 2008 R2.
 * Target machine must be running SQL Server Database Engine 2012 or later.
 * Target machine must have access to the Active Directory module.
+
+#### Security Requirements
+
 * The credentials provided in the parameter `SetupCredential` must have the right **Create Computer Object** in the origanization unit (OU) in which the Cluster Name Object (CNO) resides.
 
 #### Parameters
@@ -343,6 +346,10 @@ No description.
 
 * Target machine must be running Windows Server 2008 R2.
 * Target machine must be running SQL Server Database Engine 2008 or later.
+
+#### Security Requirements
+
+* The built-in parameter `PsDscRunAsCredential` must be set to the credentials of an account with the permission to enumerate logins, create the endpoint, and alter the permission on an endpoint.
 
 #### Parameters
 
