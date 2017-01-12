@@ -16,7 +16,7 @@ You can also improve the resources and tests, or even create new resources, by s
 
 * If you want to submit an issue or take part in discussions, please browse the list of [issues](https://github.com/PowerShell/xSQLServer/issues). Please check out [Contributing to the DSC Resource Kit](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md) on how to work with issues.
 * If you want to review pull requests, please first check out the [Review Pull Request guidelines](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md#reviewing-pull-requests), and the browse the list of [pull requests](https://github.com/PowerShell/xSQLServer/pulls) and look for those pull requests with label 'needs review'.
-* If you want to improve the resources or tests, or create a new resource, then please check out the follwing guidelines.
+* If you want to improve the resources or tests, or create a new resource, then please check out the following guidelines.
   * The [Contributing to the DSC Resource Kit](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md) guidelines.
   * The specific [Contributing to xSQLServer](https://github.com/PowerShell/xSQLServer/blob/dev/CONTRIBUTING.md) guidelines.
   * The common [Style Guidelines](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md).
