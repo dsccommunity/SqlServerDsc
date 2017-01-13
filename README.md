@@ -162,7 +162,7 @@ Read more about recovery model in this article [View or Change the Recovery Mode
 
 #### Examples
 
-None.
+* [Set the RecoveryModel of a database](/Examples/Resources/xSQLServerDatabaseRecoveryModel/1-SetDatabaseRecoveryModel.ps1)
 
 ### xSQLServerAlias
 
