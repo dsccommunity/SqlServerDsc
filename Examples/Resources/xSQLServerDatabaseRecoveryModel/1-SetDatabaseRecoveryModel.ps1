@@ -27,10 +27,28 @@ Configuration Example
             PsDscRunAsCredential = $SysAdminAccount
         }
 
+        xSQLServerDatabase Add_SqlDatabaseAdventureWorks2012
+        {
+            Ensure = 'Present'
+            Name = 'AdventureWorks2012'   
+            SQLServer = 'SQLServer'
+            SQLInstanceName = 'DSC'
+            PsDscRunAsCredential = $SysAdminAccount
+        }
+
         xSQLServerDatabaseRecoveryModel Set_SqlDatabaseRecoveryModel_Adventureworks
         {
             Name = 'Adventureworks'
             RecoveryModel = 'Full'
+            SQLServer = 'SQLServer'
+            SQLInstanceName = 'DSC'
+            PsDscRunAsCredential = $SysAdminAccount
+        }
+
+        xSQLServerDatabaseRecoveryModel Set_SqlDatabaseRecoveryModel_AdventureWorks2012
+        {
+            Name = 'AdventureWorks2012'
+            RecoveryModel = 'Simple'
             SQLServer = 'SQLServer'
             SQLInstanceName = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount
