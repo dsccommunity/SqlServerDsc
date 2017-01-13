@@ -20,7 +20,6 @@ Configuration Example
     {
         xSQLServerDatabase Add_SqlDatabaseAdventureworks
         {
-            DependsOn = '[xSqlServerSetup]SETUP_SqlMSSQLSERVER'
             Ensure = 'Present'
             Name = 'Adventureworks'   
             SQLServer = 'SQLServer'
@@ -30,7 +29,6 @@ Configuration Example
 
         xSQLServerDatabaseRecoveryModel Set_SqlDatabaseRecoveryModel_Adventureworks
         {
-            DependsOn = '[xSQLServerDatabase]Add_SqlDatabaseAdventureworks'
             Name = 'Adventureworks'
             RecoveryModel = 'Full'
             SQLServer = 'SQLServer'
