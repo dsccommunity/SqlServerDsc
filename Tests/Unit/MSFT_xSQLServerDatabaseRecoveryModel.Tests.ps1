@@ -71,15 +71,14 @@ $testJob = Start-Job -ArgumentList $PSScriptRoot -ScriptBlock {
 
                 $result = Get-TargetResource @testParameters
 
-                It 'Should return the state as absent' {
-                    $result.Ensure | Should Be 'Absent'
+                It 'Should return null for RecoveryModel' {
+                    $result.RecoveryModel | Should Be $null
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result.SQLServer | Should Be $testParameters.SQLServer
                     $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
                     $result.Name | Should Be $testParameters.Name
-                    $result.RecoveryModel | Should Be $testParameters.RecoveryModel
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -99,8 +98,8 @@ $testJob = Start-Job -ArgumentList $PSScriptRoot -ScriptBlock {
 
                 $result = Get-TargetResource @testParameters
 
-                It 'Should return the state as absent' {
-                    $result.Ensure | Should Be 'Absent'
+                It 'Should return simple for RecoveryModel' {
+                    $result.RecoveryModel | Should Be 'Simple'
                 }
 
                 It 'Should return the same values as passed as parameters' {
@@ -124,8 +123,8 @@ $testJob = Start-Job -ArgumentList $PSScriptRoot -ScriptBlock {
         
                 $result = Get-TargetResource @testParameters
 
-                It 'Should return the state as present' {
-                    $result.Ensure | Should Be 'Present'
+                It 'Should return simple for RecoveryModel' {
+                    $result.RecoveryModel | Should Be 'Simple'
                 }
 
                 It 'Should return the same values as passed as parameters' {

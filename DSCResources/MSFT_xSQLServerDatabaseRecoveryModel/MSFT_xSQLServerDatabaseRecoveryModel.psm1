@@ -4,9 +4,6 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
     .SYNOPSIS
     This function gets all Key properties defined in the resource schema file
 
-    .PARAMETER Ensure
-    This is The Ensure Set to 'present' to specificy that the RecoveryModel should be configured.
-
     .PARAMETER Database
     This is the SQL database
 
@@ -25,14 +22,10 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [ValidateSet('Present','Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
         [parameter(Mandatory = $true)]
         [ValidateSet('Full','Simple','BulkLogged')]
         [System.String]
-        $RecoveryModel = 'Full',
+        $RecoveryModel,
 
         [parameter(Mandatory = $true)]
         [System.String]
@@ -46,7 +39,7 @@ function Get-TargetResource
         [System.String]
         $Name
     )
-    
+
     $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
     if ($sql)
@@ -60,32 +53,21 @@ function Get-TargetResource
             {
                 $getSqlDatabaseRecoveryModel = Get-SqlDatabaseRecoveryModel -Sql $sql -Name $Name
                 New-VerboseMessage -Message "RecoveryModel of SQL Database name $Name is $getSqlDatabaseRecoveryModel"
-                if ($getSqlDatabaseRecoveryModel -eq $RecoveryModel)
-                {
-                    $Ensure = 'Present'
-                }
-                else
-                {
-                    $Ensure = 'Absent'
-                }
             }
             else
             {
                 New-VerboseMessage -Message "SQL Database name $Name does not exist"
-                $getSqlDatabaseRecoveryModel = $RecoveryModel
-                $Ensure = 'Absent'
+                $null = $getSqlDatabaseRecoveryModel
             }
         }
         else
         {
             New-WarningMessage -Message 'Failed getting SQL databases'
-            $getSqlDatabaseRecoveryModel = $RecoveryModel
-            $Ensure = 'Absent'
+            $null = $getSqlDatabaseRecoveryModel
         }
     }
     
     $returnValue = @{
-        Ensure          = $Ensure
         Name            = $Name
         RecoveryModel   = $getSqlDatabaseRecoveryModel
         SQLServer       = $SQLServer
@@ -98,9 +80,6 @@ function Get-TargetResource
 <#
     .SYNOPSIS
     This function gets all Key properties defined in the resource schema file
-
-    .PARAMETER Ensure
-    This is The Ensure Set to 'present' to specificy that the RecoveryModel should be configured.
 
     .PARAMETER Database
     This is the SQL database
@@ -119,10 +98,6 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [ValidateSet('Present','Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
         [parameter(Mandatory = $true)]
         [ValidateSet('Full','Simple','BulkLogged')]
         [System.String]
@@ -148,15 +123,8 @@ function Set-TargetResource
         $sqlDatabase = $Sql.Databases[$Name]
         if ($sqlDatabase)
         {
-            if ($Ensure -eq 'Present')
-            {
-                Write-Verbose -Message "Setting database '$Name' with RecoveryModel '$RecoveryModel'"
-                Set-SqlDatabaseRecoveryModel -Sql $sql -Name $Name -RecoveryModel $RecoveryModel
-            }
-            else
-            {
-                New-WarningMessage -Message 'Ensure is setting to absent, No changes will be made.'
-            }
+            Write-Verbose -Message "Setting database '$Name' with RecoveryModel '$RecoveryModel'"
+            Set-SqlDatabaseRecoveryModel -Sql $sql -Name $Name -RecoveryModel $RecoveryModel
         }
         else
         {
@@ -168,9 +136,6 @@ function Set-TargetResource
 <#
     .SYNOPSIS
     This function gets all Key properties defined in the resource schema file
-
-    .PARAMETER Ensure
-    This is The Ensure Set to 'present' to specificy that the RecoveryModel should be configured.
 
     .PARAMETER Database
     This is the SQL database
@@ -190,14 +155,10 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [ValidateSet('Present','Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
         [parameter(Mandatory = $true)]
         [ValidateSet('Full','Simple','BulkLogged')]
         [System.String]
-        $RecoveryModel = 'Full',
+        $RecoveryModel,
 
         [parameter(Mandatory = $true)]
         [System.String]
@@ -218,7 +179,7 @@ function Test-TargetResource
 
     return Test-SQLDscParameterState -CurrentValues $CurrentValues `
                                      -DesiredValues $PSBoundParameters `
-                                     -ValuesToCheck @('Ensure','Name','RecoveryModel')
+                                     -ValuesToCheck @('Name','RecoveryModel')
 }
 
 Export-ModuleMember -Function *-TargetResource
