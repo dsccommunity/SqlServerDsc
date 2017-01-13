@@ -29,11 +29,11 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLServer,
 
         [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER',
+        $SQLInstanceName,
 
         [parameter(Mandatory = $true)]
         [System.String]
@@ -101,15 +101,15 @@ function Set-TargetResource
         [parameter(Mandatory = $true)]
         [ValidateSet('Full','Simple','BulkLogged')]
         [System.String]
-        $RecoveryModel = 'Full',
+        $RecoveryModel,
 
         [parameter(Mandatory = $true)]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLServer,
 
         [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER',
+        $SQLInstanceName,
 
         [parameter(Mandatory = $true)]
         [System.String]
@@ -162,11 +162,11 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLServer,
 
         [parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER',
+        $SQLInstanceName,
 
         [parameter(Mandatory = $true)]
         [System.String]

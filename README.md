@@ -158,7 +158,7 @@ Read more about recovery model in this article [View or Change the Recovery Mode
 * **[String] Name** _(Key)_: The SQL database name.
 * **[String] SQLServer** _(Key)_: The host name of the SQL Server to be configured.
 * **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **[String] RecoveryModel** _(Required)_: The recovery model to use for the database. { *Full* | Simple | BulkLogged }.
+* **[String] RecoveryModel** _(Required)_: The recovery model to use for the database. { Full | Simple | BulkLogged }.
 
 #### Examples
 
