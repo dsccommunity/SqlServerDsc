@@ -1291,11 +1291,11 @@ function Restart-SqlService
     .SYNOPSIS
     This cmdlet is used to return the recovery model of a SQL database
 
-    .PARAMETER Sql
-    This is an object of the SQL server that contains the result of Connect-SQL
+    .PARAMETER SqlServerObject
+    This is the SQL Server object returned by Connect-SQL
 
-    .PARAMETER Name
-    This is the name of the SQL database that will be getting
+    .PARAMETER DatabaseName
+    This is the name of the SQL database
 #>
 function Get-SqlDatabaseRecoveryModel
 {
@@ -1305,28 +1305,28 @@ function Get-SqlDatabaseRecoveryModel
         [Parameter(Mandatory = $true)]
         [ValidateNotNull()] 
         [System.Object]
-        $Sql,
+        $SqlServerObject,
         
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateNotNullOrEmpty()] 
         [System.String]
-        $Name
+        $DatabaseName
     )
 
-    Write-Verbose -Message "Getting recovery model of Sql Database $Name"
-    $sqlDatabase = $Sql.Databases[$Name]
-    $sqlInstanceName = $Sql.InstanceName
-    $sqlServer = $Sql.ComputerNamePhysicalNetBIOS
+    Write-Verbose -Message "Getting the recovery model used by the database $DatabaseName"
+    $sqlDatabase = $SqlServerObject.Databases[$DatabaseName]
+    $sqlInstanceName = $SqlServerObject.InstanceName
+    $sqlServer = $SqlServerObject.ComputerNamePhysicalNetBIOS
 
     if ($sqlDatabase)
     {        
         $sqlDatabaseRecoveryModel = $sqlDatabase.RecoveryModel
-        Write-Verbose -Message "The current recovery model of Sql Database $Name is $sqlDatabaseRecoveryModel"
+        Write-Verbose -Message "The current recovery model used by database $Name is '$sqlDatabaseRecoveryModel'"
     }
     else
     {
         throw New-TerminatingError -ErrorType NoDatabase `
-                                   -FormatArgs @($Name,$sqlServer,$sqlInstanceName) `
+                                   -FormatArgs @($DatabaseName,$sqlServer,$sqlInstanceName) `
                                    -ErrorCategory InvalidResult
     }
 
@@ -1337,14 +1337,14 @@ function Get-SqlDatabaseRecoveryModel
     .SYNOPSIS
     This cmdlet is used to set the recovery model of a SQL database
 
-    .PARAMETER Sql
-    This is an object of the SQL server that contains the result of Connect-SQL
+    .PARAMETER SqlServerObject
+    This is the SQL Server object returned by Connect-SQL
 
-    .PARAMETER Name
-    This is the name of the SQL database that will be setting
+    .PARAMETER DatabaseName
+    This is the name of the SQL database
 
     .PARAMETER RecoveryModel
-    This is the recovery model that will be setting for the sql database
+    The recovery model to set on the databases. Valid values are 'Simple','Full' and 'BulkLogged'
 #>
 function Set-SqlDatabaseRecoveryModel
 {
@@ -1354,23 +1354,24 @@ function Set-SqlDatabaseRecoveryModel
         [Parameter(Mandatory = $true)]
         [ValidateNotNull()] 
         [System.Object]
-        $Sql,
+        $SqlServerObject,
         
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateNotNullOrEmpty()] 
         [System.String]
-        $Name,
+        $DatabaseName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateNotNullOrEmpty()]
+        [ValidateSet('Full','Simple','BulkLogged')]
         [System.String]
         $RecoveryModel
     )
 
-    Write-Verbose -Message "Setting recovery model of Sql Database $Name"
-    $sqlDatabase = $Sql.Databases[$Name]
-    $sqlInstanceName = $Sql.InstanceName
-    $sqlServer = $Sql.ComputerNamePhysicalNetBIOS
+    Write-Verbose -Message "Setting the recovery model for the database $DatabaseName"
+    $sqlDatabase = $SqlServerObject.Databases[$DatabaseName]
+    $sqlInstanceName = $SqlServerObject.InstanceName
+    $sqlServer = $SqlServerObject.ComputerNamePhysicalNetBIOS
 
     if ($sqlDatabase)
     {  
@@ -1378,13 +1379,13 @@ function Set-SqlDatabaseRecoveryModel
         {
             $sqlDatabase.RecoveryModel = $RecoveryModel
             $sqlDatabase.Alter()
-            New-VerboseMessage -Message "Recovery model of Database $Name is changed to $RecoveryModel."
+            New-VerboseMessage -Message "The recovery model for database $DatabaseName is changed to '$RecoveryModel'."
         }
     }
     else
     {
         throw New-TerminatingError -ErrorType NoDatabase `
-                                   -FormatArgs @($Name,$sqlServer,$sqlInstanceName) `
+                                   -FormatArgs @($DatabaseName,$sqlServer,$sqlInstanceName) `
                                    -ErrorCategory InvalidResult
     }
 }

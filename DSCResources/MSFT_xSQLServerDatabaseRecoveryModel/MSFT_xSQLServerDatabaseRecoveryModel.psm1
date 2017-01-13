@@ -51,7 +51,7 @@ function Get-TargetResource
         {
             if ($sqlDatabase[$Name])
             {
-                $getSqlDatabaseRecoveryModel = Get-SqlDatabaseRecoveryModel -Sql $sql -Name $Name
+                $getSqlDatabaseRecoveryModel = Get-SqlDatabaseRecoveryModel -SqlServerObject $sql -DatabaseName $Name
                 New-VerboseMessage -Message "RecoveryModel of SQL Database name $Name is $getSqlDatabaseRecoveryModel"
             }
             else
@@ -124,7 +124,7 @@ function Set-TargetResource
         if ($sqlDatabase)
         {
             Write-Verbose -Message "Setting database '$Name' with RecoveryModel '$RecoveryModel'"
-            Set-SqlDatabaseRecoveryModel -Sql $sql -Name $Name -RecoveryModel $RecoveryModel
+            Set-SqlDatabaseRecoveryModel -SqlServerObject $sql -DatabaseName $Name -RecoveryModel $RecoveryModel
         }
         else
         {

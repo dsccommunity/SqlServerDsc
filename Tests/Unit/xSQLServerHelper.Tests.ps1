@@ -215,8 +215,8 @@ InModuleScope $script:moduleName {
         
         Context 'When the specified database does not exist' {
             $testParameters = @{
-                Sql = $mockSqlServerObject
-                Name = 'UnknownDatabase'
+                SqlServerObject = $mockSqlServerObject
+                DatabaseName    = 'UnknownDatabase'
             }
             
             It 'Should throw the correct error' {
@@ -226,8 +226,8 @@ InModuleScope $script:moduleName {
 
         Context 'When the specified database and the system is not in desired state' {
             $testParameters = @{
-                Sql = $mockSqlServerObject
-                Name = 'AdventureWorks'
+                SqlServerObject = $mockSqlServerObject
+                DatabaseName    = 'AdventureWorks'
             }
 
             It 'Should not return the correct RecoveryModel' {
@@ -238,8 +238,8 @@ InModuleScope $script:moduleName {
 
         Context 'When the specified database and the system is in desired state' {
             $testParameters = @{
-                Sql = $mockSqlServerObject
-                Name = 'AdventureWorks'
+                SqlServerObject = $mockSqlServerObject
+                DatabaseName    = 'AdventureWorks'
             }
 
             It 'Should return the correct RecoveryModel' {
@@ -264,9 +264,9 @@ InModuleScope $script:moduleName {
 
         Context 'When the specified database does not exist' {
             $testParameters = @{
-                Sql = $mockSqlServerObject
-                Name = 'UnknownDatabase'
-                RecoveryModel = 'Simple'
+                SqlServerObject = $mockSqlServerObject
+                DatabaseName    = 'UnknownDatabase'
+                RecoveryModel   = 'Simple'
             }
             
             It 'Should throw the correct error' {
@@ -276,9 +276,9 @@ InModuleScope $script:moduleName {
 
         Context 'When the specified database and the system is not in desired state' {
             $testParameters = @{
-                Sql = $mockSqlServerObject
-                Name = 'AdventureWorks'
-                RecoveryModel = 'Simple'
+                SqlServerObject = $mockSqlServerObject
+                DatabaseName    = 'AdventureWorks'
+                RecoveryModel   = 'Simple'
             }
 
             It 'Should not trow' {
