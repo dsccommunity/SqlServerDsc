@@ -144,7 +144,9 @@ None.
 
 ### xSQLServerDatabaseRecoveryModel
 
-No description.
+This resource set the recovery model for a database. The recovery model controls how transactions are logged, whether the transaction log requires (and allows) backing up, and what kinds of restore operations are available.
+Three recovery models exist: full, simple, and bulk-logged.
+Read more about recovery model in this article [View or Change the Recovery Model of a Database](https://msdn.microsoft.com/en-us/library/ms189272.aspx)
 
 #### Requirements
 
@@ -153,11 +155,11 @@ No description.
 
 #### Parameters
 
-* **[String] Ensure** _(Write)_: If the values should be present or absent. Valid values are 'Present' or 'Absent'. 
+* **[String] Ensure** _(Write)_: If the values should be present or absent. Valid values are 'Present' or 'Absent'.
 * **[String] Name** _(Key)_: The SQL database name
-* **[String] SQLServer** _(Key)_: The SQL Server for the database
-* **[String] SQLInstanceName** _(Key)_: The SQL server and instance
-* **[String] RecoveryModel** _(Required)_: Recovery Model (Full, Simple, BulkLogged). { *Full* | Simple | BulkLogged }.
+* **[String] SQLServer** _(Key)_: The host name of the SQL Server to be configured.
+* **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **[String] RecoveryModel** _(Required)_: The recovery model to use for the database. { *Full* | Simple | BulkLogged }.
 
 #### Examples
 
