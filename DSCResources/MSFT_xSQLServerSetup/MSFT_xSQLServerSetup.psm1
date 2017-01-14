@@ -17,9 +17,9 @@ Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script
         of the installation media to a temp folder on the target node. Setup will then be started from the temp folder on the target node.
         For any subsequent calls to the resource, the parameter `SourceCredential` is used to evaluate what major version the file 'setup.exe'
         has in the path set, again, by the parameter `SourcePath`.
-        If the path set in parameter `SourcePath` contains a leaf folder, for example '\\server\share\folder', then the that leaf
-        folder will be used as the name of the temporary folder. If the path set in parameter `SourcePath` does not have a leaf folder,
-        for example '\\server\share', then a unique guid will be used as the name of the temporary folder.
+        If the path, that is assigned to parameter `SourcePath`, contains a leaf folder, for example '\\server\share\folder', then that leaf
+        folder will be used as the name of the temporary folder. If the path, that is assigned to parameter `SourcePath`, does not have a
+        leaf folder, for example '\\server\share', then a unique guid will be used as the name of the temporary folder.
 
     .PARAMETER InstanceName
         Name of the SQL instance to be installed.
@@ -328,9 +328,9 @@ function Get-TargetResource
         of the installation media to a temp folder on the target node. Setup will then be started from the temp folder on the target node.
         For any subsequent calls to the resource, the parameter `SourceCredential` is used to evaluate what major version the file 'setup.exe'
         has in the path set, again, by the parameter `SourcePath`.
-        If the path set in parameter `SourcePath` contains a leaf folder, for example '\\server\share\folder', then the that leaf
-        folder will be used as the name of the temporary folder. If the path set in parameter `SourcePath` does not have a leaf folder,
-        for example '\\server\share', then a unique guid will be used as the name of the temporary folder.
+        If the path, that is assigned to parameter `SourcePath`, contains a leaf folder, for example '\\server\share\folder', then that leaf
+        folder will be used as the name of the temporary folder. If the path, that is assigned to parameter `SourcePath`, does not have a
+        leaf folder, for example '\\server\share', then a unique guid will be used as the name of the temporary folder.
 
     .PARAMETER SuppressReboot
         Suppressed reboot.
@@ -898,9 +898,9 @@ function Set-TargetResource
         of the installation media to a temp folder on the target node. Setup will then be started from the temp folder on the target node.
         For any subsequent calls to the resource, the parameter `SourceCredential` is used to evaluate what major version the file 'setup.exe'
         has in the path set, again, by the parameter `SourcePath`.
-        If the path set in parameter `SourcePath` contains a leaf folder, for example '\\server\share\folder', then the that leaf
-        folder will be used as the name of the temporary folder. If the path set in parameter `SourcePath` does not have a leaf folder,
-        for example '\\server\share', then a unique guid will be used as the name of the temporary folder.
+        If the path, that is assigned to parameter `SourcePath`, contains a leaf folder, for example '\\server\share\folder', then that leaf
+        folder will be used as the name of the temporary folder. If the path, that is assigned to parameter `SourcePath`, does not have a
+        leaf folder, for example '\\server\share', then a unique guid will be used as the name of the temporary folder.
 
     .PARAMETER SuppressReboot
         Suppresses reboot.
