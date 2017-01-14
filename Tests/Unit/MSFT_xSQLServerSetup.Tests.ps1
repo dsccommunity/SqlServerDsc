@@ -91,10 +91,8 @@ try
         $mockSqlServiceAccount = 'COMPANY\SqlAccount'
         $mockAgentServiceAccount = 'COMPANY\AgentAccount'
 
-        $mockSourceFolder = 'Source' #  The parameter SourceFolder has a default value of 'Source', so lets mock that as well.
-
         #region Function mocks
-        $mockGetSQLVersion = {
+        $mockGetSqlMajorVersion = {
             return $mockSqlMajorVersion
         }
 
@@ -504,6 +502,13 @@ try
                         Add-Member -MemberType NoteProperty -Name 'ExitCode' -Value $mockStartProcessExitCode -PassThru -Force
         }
 
+        $mockSourcePathUNCWithoutLeaf = '\\server\share'
+        $mockSourcePathGuid = 'cc719562-0f46-4a16-8605-9f8a47c70402'
+        $mockNewGuid = {
+            return New-Object Object |
+                        Add-Member -MemberType NoteProperty -Name 'Guid' -Value $mockSourcePathGuid -PassThru -Force
+        }
+
         $mockGetTemporaryFolder = {
             return $mockSourcePathUNC
         }
@@ -537,22 +542,16 @@ try
 
             # Local path to TestDrive:\
             $mockSourcePath = $TestDrive.FullName
-            $mockSqlMediaPath = Join-Path -Path $mockSourcePath -ChildPath $mockSourceFolder
 
             # UNC path to TestDrive:\
             $testDrive_DriveShare = (Split-Path -Path $mockSourcePath -Qualifier) -replace ':','$'
             $mockSourcePathUNC = Join-Path -Path "\\localhost\$testDrive_DriveShare" -ChildPath (Split-Path -Path $mockSourcePath -NoQualifier)
-            $mockSqlMediaPathUNC = Join-Path -Path $mockSourcePathUNC -ChildPath $mockSourceFolder
-
-            # Mocking folder structure and mocking setup.exe
-            New-Item -Path $mockSqlMediaPath -ItemType Directory
-            Set-Content (Join-Path -Path $mockSqlMediaPath -ChildPath 'setup.exe') -Value 'Mock exe file'
 
             #endregion Setting up TestDrive:\
 
             BeforeEach {
                 # General mocks
-                Mock -CommandName GetSQLVersion -MockWith $mockGetSQLVersion -Verifiable
+                Mock -CommandName Get-SqlMajorVersion -MockWith $mockGetSqlMajorVersion -Verifiable
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
                 Mock -CommandName Connect-SQLAnalysis -MockWith $mockConnectSQLAnalysis -Verifiable
                 Mock -CommandName Get-ItemProperty -ParameterFilter {
@@ -634,7 +633,8 @@ try
                             } -MockWith $mockEmptyHashtable -Verifiable
                         }
 
-                        Mock -CommandName NetUse -Verifiable
+                        Mock -CommandName New-SmbMapping -Verifiable
+                        Mock -CommandName Remove-SmbMapping -Verifiable
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
                         Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
@@ -650,7 +650,8 @@ try
                         $result = Get-TargetResource @testParameters
                         $result.InstanceName | Should Be $testParameters.InstanceName
 
-                        Assert-MockCalled -CommandName NetUse -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -682,7 +683,6 @@ try
                     It 'Should return the correct values in the hash table' {
                         $result = Get-TargetResource @testParameters
                         $result.SourcePath | Should Be $mockSourcePath
-                        $result.SourceFolder | Should Be $mockSourceFolder
                         $result.InstanceName | Should Be $mockDefaultInstance_InstanceName
                         $result.InstanceID | Should BeNullOrEmpty
                         $result.InstallSharedDir | Should BeNullOrEmpty
@@ -741,7 +741,8 @@ try
                             } -MockWith $mockEmptyHashtable -Verifiable
                         }
 
-                        Mock -CommandName NetUse -Verifiable
+                        Mock -CommandName New-SmbMapping -Verifiable
+                        Mock -CommandName Remove-SmbMapping -Verifiable
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
@@ -756,7 +757,8 @@ try
                         $result = Get-TargetResource @testParameters
                         $result.InstanceName | Should Be $testParameters.InstanceName
 
-                        Assert-MockCalled -CommandName NetUse -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -788,7 +790,6 @@ try
                     It 'Should return the correct values in the hash table' {
                         $result = Get-TargetResource @testParameters
                         $result.SourcePath | Should Be $mockSourcePathUNC
-                        $result.SourceFolder | Should Be $mockSourceFolder
                         $result.InstanceName | Should Be $mockDefaultInstance_InstanceName
                         $result.InstanceID | Should BeNullOrEmpty
                         $result.InstallSharedDir | Should BeNullOrEmpty
@@ -847,7 +848,8 @@ try
                             } -MockWith $mockGetItemProperty_UninstallProducts2014 -Verifiable
                         }
 
-                        Mock -CommandName NetUse -Verifiable
+                        Mock -CommandName New-SmbMapping -Verifiable
+                        Mock -CommandName Remove-SmbMapping -Verifiable
                         Mock -CommandName Get-Service -MockWith $mockGetService_DefaultInstance -Verifiable
 
                         #region Mock Get-CimInstance
@@ -900,7 +902,8 @@ try
                         $result = Get-TargetResource @testParameters
                         $result.InstanceName | Should Be $testParameters.InstanceName
 
-                        Assert-MockCalled -CommandName NetUse -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -977,7 +980,6 @@ try
                     It 'Should return the correct values in the hash table' {
                         $result = Get-TargetResource @testParameters
                         $result.SourcePath | Should Be $mockSourcePath
-                        $result.SourceFolder | Should Be $mockSourceFolder
                         $result.InstanceName | Should Be $mockDefaultInstance_InstanceName
                         $result.InstanceID | Should Be $mockDefaultInstance_InstanceName
                         $result.InstallSharedDir | Should Be $mockSqlSharedDirectory
@@ -1036,7 +1038,8 @@ try
                             } -MockWith $mockGetItemProperty_UninstallProducts2014 -Verifiable
                         }
 
-                        Mock -CommandName NetUse -Verifiable
+                        Mock -CommandName New-SmbMapping -Verifiable
+                        Mock -CommandName Remove-SmbMapping -Verifiable
                         Mock -CommandName Get-Service -MockWith $mockGetService_DefaultInstance -Verifiable
 
                         #region Mock Get-CimInstance
@@ -1089,7 +1092,8 @@ try
                         $result = Get-TargetResource @testParameters
                         $result.InstanceName | Should Be $testParameters.InstanceName
 
-                        Assert-MockCalled -CommandName NetUse -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -1166,7 +1170,6 @@ try
                     It 'Should return the correct values in the hash table' {
                         $result = Get-TargetResource @testParameters
                         $result.SourcePath | Should Be $mockSourcePathUNC
-                        $result.SourceFolder | Should Be $mockSourceFolder
                         $result.InstanceName | Should Be $mockDefaultInstance_InstanceName
                         $result.InstanceID | Should Be $mockDefaultInstance_InstanceName
                         $result.InstallSharedDir | Should Be $mockSqlSharedDirectory
@@ -1280,7 +1283,6 @@ try
                     It 'Should return the correct values in the hash table' {
                         $result = Get-TargetResource @testParameters
                         $result.SourcePath | Should Be $mockSourcePath
-                        $result.SourceFolder | Should Be $mockSourceFolder
                         $result.InstanceName | Should Be $mockNamedInstance_InstanceName
                         $result.InstanceID | Should BeNullOrEmpty
                         $result.InstallSharedDir | Should BeNullOrEmpty
@@ -1467,7 +1469,6 @@ try
                     It 'Should return the correct values in the hash table' {
                         $result = Get-TargetResource @testParameters
                         $result.SourcePath | Should Be $mockSourcePath
-                        $result.SourceFolder | Should Be $mockSourceFolder
                         $result.InstanceName | Should Be $mockNamedInstance_InstanceName
                         $result.InstanceID | Should Be $mockNamedInstance_InstanceName
                         $result.InstallSharedDir | Should Be $mockSqlSharedDirectory
@@ -1504,22 +1505,16 @@ try
 
             # Local path to TestDrive:\
             $mockSourcePath = $TestDrive.FullName
-            $mockSqlMediaPath = Join-Path -Path $mockSourcePath -ChildPath $mockSourceFolder
 
             # UNC path to TestDrive:\
             $testDrive_DriveShare = (Split-Path -Path $mockSourcePath -Qualifier) -replace ':','$'
             $mockSourcePathUNC = Join-Path -Path "\\localhost\$testDrive_DriveShare" -ChildPath (Split-Path -Path $mockSourcePath -NoQualifier)
-            $mockSqlMediaPathUNC = Join-Path -Path $mockSourcePathUNC -ChildPath $mockSourceFolder
-
-            # Mocking folder structure and mocking setup.exe
-            New-Item -Path $mockSqlMediaPath -ItemType Directory
-            Set-Content (Join-Path -Path $mockSqlMediaPath -ChildPath 'setup.exe') -Value 'Mock exe file'
 
             #endregion Setting up TestDrive:\
 
             BeforeEach {
                 # General mocks
-                Mock -CommandName GetSQLVersion -MockWith $mockGetSQLVersion -Verifiable
+                Mock -CommandName Get-SqlMajorVersion -MockWith $mockGetSqlMajorVersion -Verifiable
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
                 Mock -CommandName Connect-SQLAnalysis -MockWith $mockConnectSQLAnalysis -Verifiable
                 Mock -CommandName Get-ItemProperty -ParameterFilter {
@@ -1604,7 +1599,7 @@ try
                     Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable -Verifiable
 
                     $result = Test-TargetResource @testParameters
-                    $result| Should Be $false
+                    $result | Should Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                     Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
@@ -1673,7 +1668,7 @@ try
                     $testParameters.Features = 'SSMS'
 
                     $result = Test-TargetResource @testParameters
-                    $result| Should Be $false
+                    $result | Should Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
@@ -1772,7 +1767,7 @@ try
                     $testParameters.Features = 'ADV_SSMS'
 
                     $result = Test-TargetResource @testParameters
-                    $result| Should Be $false
+                    $result | Should Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
@@ -1902,7 +1897,7 @@ try
 
                 It 'Should return that the desired state is present' {
                     $result = Test-TargetResource @testParameters
-                    $result| Should Be $true
+                    $result | Should Be $true
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
@@ -1966,22 +1961,49 @@ try
 
             # Local path to TestDrive:\
             $mockSourcePath = $TestDrive.FullName
-            $mockSqlMediaPath = Join-Path -Path $mockSourcePath -ChildPath $mockSourceFolder
 
             # UNC path to TestDrive:\
             $testDrive_DriveShare = (Split-Path -Path $mockSourcePath -Qualifier) -replace ':','$'
             $mockSourcePathUNC = Join-Path -Path "\\localhost\$testDrive_DriveShare" -ChildPath (Split-Path -Path $mockSourcePath -NoQualifier)
-            $mockSqlMediaPathUNC = Join-Path -Path $mockSourcePathUNC -ChildPath $mockSourceFolder
 
-            # Mocking folder structure and mocking setup.exe
-            New-Item -Path $mockSqlMediaPath -ItemType Directory
-            Set-Content (Join-Path -Path $mockSqlMediaPath -ChildPath 'setup.exe') -Value 'Mock exe file'
+            <#
+                Mocking folder structure. This takes the leaf from the $mockSourcePath (the Guid in this case) and
+                uses that to create a mock folder to mimic the temp folder that would be created in, for example,
+                temp folder 'C:\Windows\Temp'.
+                This folder is used when SourcePath is called with a leaf, for example '\\server\share\folder'.
+            #>
+            $mediaTempSourcePathWithLeaf = (Join-Path -Path $mockSourcePath -ChildPath (Split-Path -Path $mockSourcePath -Leaf))
+            if (-not (Test-Path $mediaTempSourcePathWithLeaf))
+            {
+                New-Item -Path $mediaTempSourcePathWithLeaf -ItemType Directory
+            }
+
+            <#
+                Mocking folder structure. This takes the leaf from the New-Guid mock and uses that
+                to create a mock folder to mimic the temp folder that would be created in, for example,
+                temp folder 'C:\Windows\Temp'.
+                This folder is used when SourcePath is called without a leaf, for example '\\server\share'.
+            #>
+            $mediaTempSourcePathWithoutLeaf = (Join-Path -Path $mockSourcePath -ChildPath $mockSourcePathGuid)
+            if (-not (Test-Path $mediaTempSourcePathWithoutLeaf))
+            {
+                New-Item -Path $mediaTempSourcePathWithoutLeaf -ItemType Directory
+            }
+
+            # Mocking executable setup.exe which will be used for tests without parameter SourceCredential
+            Set-Content (Join-Path -Path $mockSourcePath -ChildPath 'setup.exe') -Value 'Mock exe file'
+
+            # Mocking executable setup.exe which will be used for tests with parameter SourceCredential and an UNC path with leaf
+            Set-Content (Join-Path -Path $mediaTempSourcePathWithLeaf -ChildPath 'setup.exe') -Value 'Mock exe file'
+
+            # Mocking executable setup.exe which will be used for tests with parameter SourceCredential and an UNC path without leaf
+            Set-Content (Join-Path -Path $mediaTempSourcePathWithoutLeaf -ChildPath 'setup.exe') -Value 'Mock exe file'
 
             #endregion Setting up TestDrive:\
 
             BeforeEach {
                 # General mocks
-                Mock -CommandName GetSQLVersion -MockWith $mockGetSQLVersion -Verifiable
+                Mock -CommandName Get-SqlMajorVersion -MockWith $mockGetSqlMajorVersion -Verifiable
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
                 Mock -CommandName Connect-SQLAnalysis -MockWith $mockConnectSQLAnalysis -Verifiable
                 Mock -CommandName Get-ItemProperty -ParameterFilter {
@@ -2047,9 +2069,11 @@ try
                             SourcePath = $mockSourcePath
                         }
 
-                        Mock -CommandName NetUse -Verifiable
+                        Mock -CommandName New-SmbMapping -Verifiable
+                        Mock -CommandName Remove-SmbMapping -Verifiable
                         Mock -CommandName Start-Process -Verifiable
                         Mock -CommandName Get-TemporaryFolder -MockWith $mockGetTemporaryFolder -Verifiable
+                        Mock -CommandName New-Guid -MockWith $mockNewGuid -Verifiable
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
@@ -2077,8 +2101,10 @@ try
 
                         { Set-TargetResource @testParameters } | Should Not Throw
 
-                        Assert-MockCalled -CommandName NetUse -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-TemporaryFolder -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName New-Guid -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Start-Process -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
@@ -2191,7 +2217,7 @@ try
                     }
                 }
 
-                Context "When using SourceCredential parameter and SQL Server version is $mockSqlMajorVersion and the system is not in the desired state for a default instance" {
+                Context "When using SourceCredential parameter, and using a UNC path with a leaf, and SQL Server version is $mockSqlMajorVersion and the system is not in the desired state for a default instance" {
                     BeforeEach {
                         $testParameters = $mockDefaultParameters
                         $testParameters += @{
@@ -2200,9 +2226,11 @@ try
                             SourcePath = $mockSourcePathUNC
                         }
 
-                        Mock -CommandName NetUse -Verifiable
+                        Mock -CommandName New-SmbMapping -Verifiable
+                        Mock -CommandName Remove-SmbMapping -Verifiable
                         Mock -CommandName Start-Process -Verifiable
                         Mock -CommandName Get-TemporaryFolder -MockWith $mockGetTemporaryFolder -Verifiable
+                        Mock -CommandName New-Guid -MockWith $mockNewGuid -Verifiable
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
 
                         Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable -Verifiable
@@ -2229,8 +2257,166 @@ try
 
                         { Set-TargetResource @testParameters } | Should Not Throw
 
-                        Assert-MockCalled -CommandName NetUse -Exactly -Times 4 -Scope It
+                        Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Get-TemporaryFolder -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName New-Guid -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Start-Process -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' -and
+                            ($Name -eq $mockDefaultInstance_InstanceName)
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                        } -Exactly -Times 6 -Scope It
+
+
+                        Assert-MockCalled -CommandName StartWin32Process -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName WaitForWin32ProcessEnd -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+                    }
+
+                    if( $mockSqlMajorVersion -eq 13 ) {
+                        It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016' {
+                            $testParameters.Features = 'SSMS'
+                            $mockStartWin32ProcessExpectedArgument = ''
+
+                            { Set-TargetResource @testParameters } | Should Throw "'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
+                        }
+
+                        It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016' {
+                            $testParameters.Features = 'ADV_SSMS'
+                            $mockStartWin32ProcessExpectedArgument = ''
+
+                            { Set-TargetResource @testParameters } | Should Throw "'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
+                        }
+                    } else {
+                        It 'Should set the system in the desired state when feature is SSMS' {
+                            $testParameters.Features = 'SSMS'
+
+                            $mockStartWin32ProcessExpectedArgument =
+                                '/Quiet="True"',
+                                '/IAcceptSQLServerLicenseTerms="True"',
+                                '/Action="Install"',
+                                '/InstanceName="MSSQLSERVER"',
+                                '/Features="SSMS"' -join ' '
+
+                            { Set-TargetResource @testParameters } | Should Not Throw
+
+                            Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' -and
+                                ($Name -eq $mockDefaultInstance_InstanceName)
+                            } -Exactly -Times 0 -Scope It
+
+                            Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                            } -Exactly -Times 6 -Scope It
+
+
+                            Assert-MockCalled -CommandName StartWin32Process -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName WaitForWin32ProcessEnd -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+                        }
+
+                        It 'Should set the system in the desired state when feature is ADV_SSMS' {
+                            $testParameters.Features = 'ADV_SSMS'
+
+                            $mockStartWin32ProcessExpectedArgument =
+                                '/Quiet="True"',
+                                '/IAcceptSQLServerLicenseTerms="True"',
+                                '/Action="Install"',
+                                '/InstanceName="MSSQLSERVER"',
+                                '/Features="ADV_SSMS"' -join ' '
+
+                            { Set-TargetResource @testParameters } | Should Not Throw
+
+                            Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' -and
+                                ($Name -eq $mockDefaultInstance_InstanceName)
+                            } -Exactly -Times 0 -Scope It
+
+                            Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                                $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                            } -Exactly -Times 6 -Scope It
+
+                            Assert-MockCalled -CommandName StartWin32Process -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName WaitForWin32ProcessEnd -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+                        }
+                    }
+                }
+
+                Context "When using SourceCredential parameter, and using a UNC path without a leaf, and SQL Server version is $mockSqlMajorVersion and the system is not in the desired state for a default instance" {
+                    BeforeEach {
+                        $testParameters = $mockDefaultParameters
+                        $testParameters += @{
+                            InstanceName = $mockDefaultInstance_InstanceName
+                            SourceCredential = $mockSetupCredential
+                            SourcePath = $mockSourcePathUNCWithoutLeaf
+                        }
+
+                        Mock -CommandName New-SmbMapping -Verifiable
+                        Mock -CommandName Remove-SmbMapping -Verifiable
+                        Mock -CommandName Start-Process -Verifiable
+                        Mock -CommandName Get-TemporaryFolder -MockWith $mockGetTemporaryFolder -Verifiable
+                        Mock -CommandName New-Guid -MockWith $mockNewGuid -Verifiable
+                        Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
+
+                        Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable -Verifiable
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                        } -MockWith $mockEmptyHashtable -Verifiable
+                    }
+
+                    It 'Should set the system in the desired state when feature is SQLENGINE' {
+                        $mockStartWin32ProcessExpectedArgument =
+                            '/Quiet="True"',
+                            '/IAcceptSQLServerLicenseTerms="True"',
+                            '/Action="Install"',
+                            '/AGTSVCSTARTUPTYPE=Automatic',
+                            '/InstanceName="MSSQLSERVER"',
+                            '/Features="SQLENGINE,REPLICATION,FULLTEXT,RS,IS,AS"',
+                            '/SQLSysAdminAccounts="COMPANY\sqladmin"',
+                            '/ASSysAdminAccounts="COMPANY\sqladmin"' -join ' '
+
+                        { Set-TargetResource @testParameters } | Should Not Throw
+
+                        Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName Get-TemporaryFolder -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName New-Guid -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Start-Process -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It

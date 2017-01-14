@@ -7,17 +7,19 @@ Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script
         Returns the current state of the SQL Server features.
 
     .PARAMETER SourcePath
-        The path to the root of the source files for installation. I.e and UNC path to a shared resource.
-
-    .PARAMETER SourceFolder
-        Folder within the source path containing the source files for installation. Default value is 'Source'.
+        The path to the root of the source files for installation. I.e and UNC path to a shared resource.  Environment variables can be used in the path.
 
     .PARAMETER SetupCredential
         Credential to be used to perform the installation.
 
     .PARAMETER SourceCredential
-        Credentials used to access the path set in the parameter `SourcePath` and `SourceFolder`. The parameter `SourceCredential` is used
-        to evaluate what major version the file 'setup.exe' has in the path set, again, by the parameter `SourcePath` and `SourceFolder`.
+        Credentials used to access the path set in the parameter `SourcePath`. Using this parameter will trigger a copy
+        of the installation media to a temp folder on the target node. Setup will then be started from the temp folder on the target node.
+        For any subsequent calls to the resource, the parameter `SourceCredential` is used to evaluate what major version the file 'setup.exe'
+        has in the path set, again, by the parameter `SourcePath`.
+        If the path, that is assigned to parameter `SourcePath`, contains a leaf folder, for example '\\server\share\folder', then that leaf
+        folder will be used as the name of the temporary folder. If the path, that is assigned to parameter `SourcePath`, does not have a
+        leaf folder, for example '\\server\share', then a unique guid will be used as the name of the temporary folder.
 
     .PARAMETER InstanceName
         Name of the SQL instance to be installed.
@@ -30,11 +32,7 @@ function Get-TargetResource
     (
         [Parameter()]
         [System.String]
-        $SourcePath = "$PSScriptRoot\..\..\",
-
-        [Parameter()]
-        [System.String]
-        $SourceFolder = 'Source',
+        $SourcePath,
 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
@@ -51,21 +49,28 @@ function Get-TargetResource
 
     $InstanceName = $InstanceName.ToUpper()
 
+    $SourcePath = [Environment]::ExpandEnvironmentVariables($SourcePath)
+
     if ($SourceCredential)
     {
-        NetUse -SourcePath $SourcePath -Credential $SourceCredential -Ensure 'Present'
+        $newSmbMappingParameters = @{
+            RemotePath = $SourcePath
+            UserName = "$($SourceCredential.GetNetworkCredential().Domain)\$($SourceCredential.GetNetworkCredential().UserName)"
+            Password = $($SourceCredential.GetNetworkCredential().Password)
+        }
+
+        $null = New-SmbMapping @newSmbMappingParameters
     }
 
-    $path = Join-Path -Path (Join-Path -Path $SourcePath -ChildPath $SourceFolder) -ChildPath 'setup.exe'
-    $path = ResolvePath -Path $path
+    $path = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
 
     New-VerboseMessage -Message "Using path: $path"
 
-    $sqlVersion = GetSQLVersion -Path $path
+    $sqlVersion = Get-SqlMajorVersion -Path $path
 
     if ($SourceCredential)
     {
-        NetUse -SourcePath $SourcePath -Credential $SourceCredential -Ensure 'Absent'
+        Remove-SmbMapping -RemotePath $SourcePath -Force
     }
 
     if ($InstanceName -eq 'MSSQLSERVER')
@@ -277,7 +282,6 @@ function Get-TargetResource
 
     return @{
         SourcePath = $SourcePath
-        SourceFolder = $SourceFolder
         Features = $features
         InstanceName = $InstanceName
         InstanceID = $instanceID
@@ -314,19 +318,19 @@ function Get-TargetResource
         Installs the SQL Server features to the node.
 
     .PARAMETER SourcePath
-        The path to the root of the source files for installation. I.e and UNC path to a shared resource.
-
-    .PARAMETER SourceFolder
-        Folder within the source path containing the source files for installation. Default value is 'Source'.
+        The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.
 
     .PARAMETER SetupCredential
         Credential to be used to perform the installation.
 
     .PARAMETER SourceCredential
-        Credentials used to access the path set in the parameter `SourcePath` and `SourceFolder`. Using this parameter will trigger a copy
+        Credentials used to access the path set in the parameter `SourcePath`. Using this parameter will trigger a copy
         of the installation media to a temp folder on the target node. Setup will then be started from the temp folder on the target node.
         For any subsequent calls to the resource, the parameter `SourceCredential` is used to evaluate what major version the file 'setup.exe'
-        has in the path set, again, by the parameter `SourcePath` and `SourceFolder`.
+        has in the path set, again, by the parameter `SourcePath`.
+        If the path, that is assigned to parameter `SourcePath`, contains a leaf folder, for example '\\server\share\folder', then that leaf
+        folder will be used as the name of the temporary folder. If the path, that is assigned to parameter `SourcePath`, does not have a
+        leaf folder, for example '\\server\share', then a unique guid will be used as the name of the temporary folder.
 
     .PARAMETER SuppressReboot
         Suppressed reboot.
@@ -447,10 +451,7 @@ function Set-TargetResource
     param
     (
         [System.String]
-        $SourcePath = "$PSScriptRoot\..\..\",
-
-        [System.String]
-        $SourceFolder = 'Source',
+        $SourcePath,
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
@@ -575,38 +576,49 @@ function Set-TargetResource
 
     $parameters = @{
         SourcePath = $SourcePath
-        SourceFolder = $SourceFolder
         SetupCredential = $SetupCredential
         SourceCredential = $SourceCredential
         InstanceName = $InstanceName
     }
 
-    $sqlData = Get-TargetResource @parameters
+    $getTargetResourceResult = Get-TargetResource @parameters
 
     $InstanceName = $InstanceName.ToUpper()
 
-    $mediaSourcePath = (Join-Path -Path $SourcePath -ChildPath $SourceFolder)
+    $SourcePath = [Environment]::ExpandEnvironmentVariables($SourcePath)
 
     if ($SourceCredential)
     {
-        NetUse -SourcePath $SourcePath -Credential $SourceCredential -Ensure 'Present'
+        $newSmbMappingParameters = @{
+            RemotePath = $SourcePath
+            UserName = "$($SourceCredential.GetNetworkCredential().Domain)\$($SourceCredential.GetNetworkCredential().UserName)"
+            Password = $($SourceCredential.GetNetworkCredential().Password)
+        }
 
-        $tempPath = Get-TemporaryFolder
-        $mediaDestinationPath = (Join-Path -Path $tempPath -ChildPath $SourceFolder)
+        $null = New-SmbMapping @newSmbMappingParameters
 
-        New-VerboseMessage -Message "Robocopy is copying media from source '$mediaSourcePath' to destination '$mediaDestinationPath'"
-        Copy-ItemWithRoboCopy -Path $mediaSourcePath -DestinationPath $mediaDestinationPath
+        # Create a destination folder so the media files aren't written to the root of the Temp folder.
+        $mediaDestinationFolder = Split-Path -Path $SourcePath -Leaf
+        if (-not $mediaDestinationFolder )
+        {
+            $mediaDestinationFolder = New-Guid | Select-Object -ExpandProperty Guid
+        }
 
-        NetUse -SourcePath $SourcePath -Credential $SourceCredential -Ensure 'Absent'
+        $mediaDestinationPath = Join-Path -Path (Get-TemporaryFolder) -ChildPath $mediaDestinationFolder
 
-        $mediaSourcePath = $mediaDestinationPath
+        New-VerboseMessage -Message "Robocopy is copying media from source '$SourcePath' to destination '$mediaDestinationPath'"
+        Copy-ItemWithRoboCopy -Path $SourcePath -DestinationPath $mediaDestinationPath
+
+        Remove-SmbMapping -RemotePath $SourcePath -Force
+
+        $SourcePath = $mediaDestinationPath
     }
 
-    $path = ResolvePath (Join-Path -Path $mediaSourcePath -ChildPath 'setup.exe')
+    $path = ResolvePath (Join-Path -Path $SourcePath -ChildPath 'setup.exe')
 
     New-VerboseMessage -Message "Using path: $path"
 
-    $sqlVersion = GetSQLVersion -Path $path
+    $sqlVersion = Get-SqlMajorVersion -Path $path
 
     # Determine features to install
     $featuresToInstall = ""
@@ -620,7 +632,7 @@ function Set-TargetResource
             Throw New-TerminatingError -ErrorType FeatureNotSupported -FormatArgs @($feature) -ErrorCategory InvalidData
         }
 
-        if (!($sqlData.Features.Contains($feature)))
+        if (!($getTargetResourceResult.Features.Contains($feature)))
         {
             $featuresToInstall += "$feature,"
         }
@@ -876,17 +888,19 @@ function Set-TargetResource
         Tests if the SQL Server features are installed on the node.
 
     .PARAMETER SourcePath
-        The path to the root of the source files for installation. I.e and UNC path to a shared resource.
-
-    .PARAMETER SourceFolder
-        Folder within the source path containing the source files for installation. Default value is 'Source'.
+        The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.
 
     .PARAMETER SetupCredential
         Credential to be used to perform the installation.
 
     .PARAMETER SourceCredential
-        Credentials used to access the path set in the parameter `SourcePath` and `SourceFolder`. The parameter `SourceCredential` is used
-        to evaluate what major version the file 'setup.exe' has in the path set, again, by the parameter `SourcePath` and `SourceFolder`.
+        Credentials used to access the path set in the parameter `SourcePath`. Using this parameter will trigger a copy
+        of the installation media to a temp folder on the target node. Setup will then be started from the temp folder on the target node.
+        For any subsequent calls to the resource, the parameter `SourceCredential` is used to evaluate what major version the file 'setup.exe'
+        has in the path set, again, by the parameter `SourcePath`.
+        If the path, that is assigned to parameter `SourcePath`, contains a leaf folder, for example '\\server\share\folder', then that leaf
+        folder will be used as the name of the temporary folder. If the path, that is assigned to parameter `SourcePath`, does not have a
+        leaf folder, for example '\\server\share', then a unique guid will be used as the name of the temporary folder.
 
     .PARAMETER SuppressReboot
         Suppresses reboot.
@@ -1006,10 +1020,7 @@ function Test-TargetResource
     param
     (
         [System.String]
-        $SourcePath = "$PSScriptRoot\..\..\",
-
-        [System.String]
-        $SourceFolder = 'Source',
+        $SourcePath,
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
@@ -1134,17 +1145,16 @@ function Test-TargetResource
 
     $parameters = @{
         SourcePath = $SourcePath
-        SourceFolder = $SourceFolder
         SetupCredential = $SetupCredential
         SourceCredential = $SourceCredential
         InstanceName = $InstanceName
     }
 
-    $sqlData = Get-TargetResource @parameters
+    $getTargetResourceResult = Get-TargetResource @parameters
     New-VerboseMessage -Message "Features found: '$($SQLData.Features)'"
 
     $result = $false
-    if ($sqlData.Features )
+    if ($getTargetResourceResult.Features )
     {
         $result = $true
 
@@ -1153,9 +1163,9 @@ function Test-TargetResource
             # Given that all the returned features are uppercase, make sure that the feature to search for is also uppercase
             $feature = $feature.ToUpper();
 
-            if(!($sqlData.Features.Contains($feature)))
+            if(!($getTargetResourceResult.Features.Contains($feature)))
             {
-                New-VerboseMessage -Message "Unable to find feature '$feature' among the installed features: '$($sqlData.Features)'"
+                New-VerboseMessage -Message "Unable to find feature '$feature' among the installed features: '$($getTargetResourceResult.Features)'"
                 $result = $false
             }
         }
@@ -1171,7 +1181,7 @@ function Test-TargetResource
     .PARAMETER Path
         String containing the path to the SQL Server setup.exe executable.
 #>
-function GetSQLVersion
+function Get-SqlMajorVersion
 {
     [CmdletBinding()]
     param
@@ -1325,7 +1335,7 @@ function Get-TemporaryFolder
 function Join-ServiceAccountInfo
 {
     <#
-        Suppressing this rule because there are parameters that contain the text 'UserName' and 'Password' 
+        Suppressing this rule because there are parameters that contain the text 'UserName' and 'Password'
         but they are not actually used to pass any credentials. Instead the parameters are used to provide the
         argument that should be evaluated for setup.exe.
     #>
