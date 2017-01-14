@@ -861,9 +861,9 @@ function Set-TargetResource
 
     New-VerboseMessage -Message "Starting setup using arguments: $log"
 
-    $process = StartWin32Process -Path $path -Arguments $arguments
+    $process = StartWin32Process -Path $pathToSetupExecutable -Arguments $arguments
     New-VerboseMessage -Message $process
-    WaitForWin32ProcessEnd -Path $path -Arguments $arguments
+    WaitForWin32ProcessEnd -Path $pathToSetupExecutable -Arguments $arguments
 
     if ($ForceReboot -or ($null -ne (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue)))
     {
