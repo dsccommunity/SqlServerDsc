@@ -1299,16 +1299,16 @@ function Restart-SqlService
 #>
 function Get-SqlDatabaseRecoveryModel
 {
-    [CmdletBinding()]    
+    [CmdletBinding()]
     param
-    (   
+    (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateNotNull()]
         [System.Object]
         $SqlServerObject,
-        
+
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $DatabaseName
     )
@@ -1319,7 +1319,7 @@ function Get-SqlDatabaseRecoveryModel
     $sqlServer = $SqlServerObject.ComputerNamePhysicalNetBIOS
 
     if ($sqlDatabase)
-    {        
+    {
         $sqlDatabaseRecoveryModel = $sqlDatabase.RecoveryModel
         Write-Verbose -Message "The current recovery model used by database $Name is '$sqlDatabaseRecoveryModel'"
     }
@@ -1348,16 +1348,16 @@ function Get-SqlDatabaseRecoveryModel
 #>
 function Set-SqlDatabaseRecoveryModel
 {
-    [CmdletBinding()]    
+    [CmdletBinding()]
     param
-    (   
+    (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateNotNull()]
         [System.Object]
         $SqlServerObject,
-        
+
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $DatabaseName,
 
@@ -1374,7 +1374,7 @@ function Set-SqlDatabaseRecoveryModel
     $sqlServer = $SqlServerObject.ComputerNamePhysicalNetBIOS
 
     if ($sqlDatabase)
-    {  
+    {
         if($sqlDatabase.RecoveryModel -ne $RecoveryModel)
         {
             $sqlDatabase.RecoveryModel = $RecoveryModel
@@ -1408,27 +1408,27 @@ function Set-SqlDatabaseRecoveryModel
 #>
 function Get-SqlDatabasePermission
 {
-    [CmdletBinding()]    
+    [CmdletBinding()]
     param
-    (   
+    (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.Object]
         $SqlServerObject,
-        
+
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Database,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('Grant','Deny')]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $PermissionState
     )
@@ -1443,13 +1443,13 @@ function Get-SqlDatabasePermission
     [System.String[]] $permission = @()
 
     if ($sqlDatabase)
-    {        
+    {
         if ($sqlLogin)
         {
             Write-Verbose -Message "Getting permissions for user '$Name' in database '$Database'."
 
             $databasePermissionInfo = $sqlDatabase.EnumDatabasePermissions($Name)
-            $databasePermissionInfo = $databasePermissionInfo | Where-Object -FilterScript { 
+            $databasePermissionInfo = $databasePermissionInfo | Where-Object -FilterScript {
                 $_.PermissionState -eq $PermissionState
             }
 
@@ -1469,7 +1469,7 @@ function Get-SqlDatabasePermission
         {
             throw New-TerminatingError -ErrorType LoginNotFound `
                                        -FormatArgs @($Name,$sqlServer,$sqlInstanceName) `
-                                       -ErrorCategory ObjectNotFound 
+                                       -ErrorCategory ObjectNotFound
         }
     }
     else
@@ -1499,33 +1499,33 @@ function Get-SqlDatabasePermission
     If the permission should be granted or denied. Valid values are Grant or Deny
 
     .PARAMETER Permissions
-    The permissions to be granted or denied for the user in the database. 
+    The permissions to be granted or denied for the user in the database.
     Valid permissions can be found in the article SQL Server Permissions:
     https://msdn.microsoft.com/en-us/library/ms191291.aspx#SQL Server Permissions
 #>
 function Add-SqlDatabasePermission
 {
-    [CmdletBinding()]    
+    [CmdletBinding()]
     param
-    (   
+    (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.Object]
         $SqlServerObject,
-        
+
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Database,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('Grant','Deny')]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $PermissionState,
 
@@ -1542,7 +1542,7 @@ function Add-SqlDatabasePermission
     $sqlServer = $SqlServerObject.ComputerNamePhysicalNetBIOS
 
     if ($sqlDatabase)
-    {        
+    {
         if ($sqlLogin)
         {
             if (!$sqlDatabase.Users[$Name])
@@ -1575,9 +1575,9 @@ function Add-SqlDatabasePermission
                         $permissionSet."$permission" = $true
                     }
 
-                    switch ($PermissionState) 
+                    switch ($PermissionState)
                     {
-                        'Grant' 
+                        'Grant'
                         {
                             $sqlDatabase.Grant($permissionSet,$Name)
                         }
@@ -1586,7 +1586,7 @@ function Add-SqlDatabasePermission
                         {
                             $sqlDatabase.Deny($permissionSet,$Name)
                         }
-                    }                    
+                    }
                 }
                 catch
                 {
@@ -1633,27 +1633,27 @@ function Add-SqlDatabasePermission
 #>
 function Remove-SqlDatabasePermission
 {
-    [CmdletBinding()]    
+    [CmdletBinding()]
     param
-    (   
+    (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.Object]
         $SqlServerObject,
-        
+
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
-        
+
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Database,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('Grant','Deny')]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $PermissionState,
 
@@ -1670,7 +1670,7 @@ function Remove-SqlDatabasePermission
     $sqlServer = $SqlServerObject.ComputerNamePhysicalNetBIOS
 
     if ($sqlDatabase)
-    {        
+    {
         if ($sqlLogin)
         {
             if (!$sqlDatabase.Users[$Name])
@@ -1704,18 +1704,18 @@ function Remove-SqlDatabasePermission
                         $permissionSet."$permission" = $false
                     }
 
-                    switch ($PermissionState) 
+                    switch ($PermissionState)
                     {
                         'Grant'
                         {
                             $sqlDatabase.Grant($permissionSet,$Name)
                         }
-                        
+
                         'Deny'
                         {
                             $sqlDatabase.Deny($permissionSet,$Name)
                         }
-                    }                    
+                    }
                 }
                 catch
                 {
@@ -1737,4 +1737,24 @@ function Remove-SqlDatabasePermission
                                    -FormatArgs @($Database,$sqlServer,$sqlInstanceName) `
                                    -ErrorCategory InvalidResult
     }
+}
+
+<#
+    .SYNOPSIS
+        Returns the SQL Server major version from the setup.exe executable provided in the Path parameter.
+
+    .PARAMETER Path
+        String containing the path to the SQL Server setup.exe executable.
+#>
+function Get-SqlMajorVersion
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [String]
+        $Path
+    )
+
+    (Get-Item -Path $Path).VersionInfo.ProductVersion.Split('.')[0]
 }
