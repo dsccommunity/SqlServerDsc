@@ -62,11 +62,11 @@ function Get-TargetResource
         $null = New-SmbMapping @newSmbMappingParameters
     }
 
-    $path = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
+    $pathToSetupExecutable = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
 
-    New-VerboseMessage -Message "Using path: $path"
+    New-VerboseMessage -Message "Using path: $pathToSetupExecutable"
 
-    $sqlVersion = Get-SqlMajorVersion -Path $path
+    $sqlVersion = Get-SqlMajorVersion -Path $pathToSetupExecutable
 
     if ($SourceCredential)
     {
@@ -614,11 +614,11 @@ function Set-TargetResource
         $SourcePath = $mediaDestinationPath
     }
 
-    $path = ResolvePath (Join-Path -Path $SourcePath -ChildPath 'setup.exe')
+    $pathToSetupExecutable = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
 
-    New-VerboseMessage -Message "Using path: $path"
+    New-VerboseMessage -Message "Using path: $pathToSetupExecutable"
 
-    $sqlVersion = Get-SqlMajorVersion -Path $path
+    $sqlVersion = Get-SqlMajorVersion -Path $pathToSetupExecutable
 
     # Determine features to install
     $featuresToInstall = ""
