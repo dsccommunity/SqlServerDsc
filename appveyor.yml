@@ -27,8 +27,9 @@ test_script:
         Get-Module -ListAvailable -Name 'sql*' | ForEach-Object -Process { Write-Host $_.Path; Remove-Item $_.Path -Force; }
 
         # Start the tests
-        $testResultsFile = ".\TestsResults.xml"
-        $res = Invoke-Pester -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
+        Write-Warning -Message 'Code coverage statistics are being calculated. This will slow the start of the tests while the code matrix is built. Please be patient.'
+        $testResultsFile = '.\TestsResults.xml'
+        $res = Invoke-Pester -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru -CodeCoverage @("$env:APPVEYOR_BUILD_FOLDER\*.psm1","$env:APPVEYOR_BUILD_FOLDER\DSCResources\**\*.psm1")
         (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsFile))
         if ($res.FailedCount -gt 0) {
             throw "$($res.FailedCount) tests failed."
