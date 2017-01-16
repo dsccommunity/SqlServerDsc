@@ -40,7 +40,6 @@
   - Added to the description text for the parameter `Credential` describing how to authenticate using Windows Authentication.
   - Added examples to show how to authenticate using either SQL or Windows authentication.
   - A recent issue showed that there is a known problem running this resource using PowerShell 4.0. For more information, see [issue #273](https://github.com/PowerShell/xSQLServer/issues/273)
-  - The examples 'AddServerRole' and 'RemoveServerRole' can now compile correctly.
 - Changes to the unit test for resource
   - xSQLServerSetup
     - Added test coverage for helper function Copy-ItemWithRoboCopy
