@@ -79,6 +79,13 @@
 - Changes to xSQLServerDatabasePermission
   - BREAKING CHANGE: Renamed xSQLServerDatabasePermissions to xSQLServerDatabasePermission to align wíth naming convention.
   - BREAKING CHANGE: The mandatory parameters now include PermissionState, SQLServer, and SQLInstanceName.
+- Added support for clustered installations to xSQLServerSetup
+  - Migrated relevant code from xSQLServerFailoverClusterSetup
+  - Removed Get-WmiObject usage
+  - Clustered storage mapping now supports asymmetric cluster storage
+  - Added support for multi-subnet clusters
+  - Added localized error messages for cluster object mapping
+  - Updated README.md to reflect new parameters
 
 ## 4.0.0.0
 
