@@ -1379,7 +1379,7 @@ function Set-SqlDatabaseRecoveryModel
         {
             $sqlDatabase.RecoveryModel = $RecoveryModel
             $sqlDatabase.Alter()
-            New-VerboseMessage -Message "The recovery model for database $DatabaseName is changed to '$RecoveryModel'."
+            New-VerboseMessage -Message "The recovery model for the database $DatabaseName is changed to '$RecoveryModel'."
         }
     }
     else

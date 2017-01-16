@@ -224,28 +224,16 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Context 'When the specified database and the system is not in desired state' {
+        Context 'When the specified database exist' {
             $testParameters = @{
                 SqlServerObject = $mockSqlServerObject
                 DatabaseName    = 'AdventureWorks'
             }
 
-            It 'Should not return the correct RecoveryModel' {
+            It 'Should return the current RecoveryModel' {
                 $recoveryModel = Get-SqlDatabaseRecoveryModel @testParameters 
-                $recoveryModel -contains 'Simple' | Should Be $false
+                $recoveryModel | Should Be $testParameters.SqlServerObject.Databases.AdventureWorks.RecoveryModel
             }            
-        }
-
-        Context 'When the specified database and the system is in desired state' {
-            $testParameters = @{
-                SqlServerObject = $mockSqlServerObject
-                DatabaseName    = 'AdventureWorks'
-            }
-
-            It 'Should return the correct RecoveryModel' {
-                $recoveryModel = Get-SqlDatabaseRecoveryModel @testParameters
-                $recoveryModel -contains 'Full' | Should Be $true
-            }
         }
 
         Assert-VerifiableMocks
@@ -258,7 +246,12 @@ InModuleScope $script:moduleName {
             Databases = @{
                 AdventureWorks = @{
                     RecoveryModel = 'Full'
-                } | Add-Member -MemberType ScriptMethod -Name Alter -Value {} -PassThru -Force
+                } | Add-Member -MemberType ScriptMethod -Name Alter -Value {
+                    if ( $this.RecoveryModel -ne $mockExpectedRecoveryModelForAlterMethod )
+                    {
+                        throw "Called mocked Alter() method without setting the right RecoveryModel. Expected '{0}'. But was '{1}'." -f $mockExpectedRecoveryModelForAlterMethod, $this.RecoveryModel
+                    }
+                } -PassThru -Force
             }
         }
 
@@ -281,8 +274,9 @@ InModuleScope $script:moduleName {
                 RecoveryModel   = 'Simple'
             }
 
-            It 'Should not trow' {
-                { Set-SqlDatabaseRecoveryModel @testParameters } | Should not Throw
+            It 'Should set the correct RecoveryModel without throwing an error' {
+                $mockExpectedRecoveryModelForAlterMethod = $testParameters.RecoveryModel
+                { Set-SqlDatabaseRecoveryModel @testParameters } | Should Not Throw
             }            
         }
 
