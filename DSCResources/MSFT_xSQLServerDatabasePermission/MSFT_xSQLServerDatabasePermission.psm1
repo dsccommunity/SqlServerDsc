@@ -66,7 +66,7 @@ function Get-TargetResource
     if ($sql)
     {
         Write-Verbose -Message "Getting permissions of database '$Database' for login '$Name'"
-        $getSqlDatabasePermission = Get-SqlDatabasePermission -SQL $sql `
+        $getSqlDatabasePermission = Get-SqlDatabasePermission -SqlServerObject $sql `
                                                               -Name $Name `
                                                               -Database $Database `
                                                               -PermissionState $PermissionState
@@ -175,7 +175,7 @@ function Set-TargetResource
         Write-Verbose -Message "Setting permissions of database '$Database' for login '$Name'"
         if ($Ensure -eq 'Present')
         {
-            Add-SqlDatabasePermission -SQL $sql `
+            Add-SqlDatabasePermission -SqlServerObject $sql `
                                       -Name $Name `
                                       -Database $Database `
                                       -PermissionState $PermissionState `
@@ -184,7 +184,7 @@ function Set-TargetResource
         }
         else
         {
-            Remove-SqlDatabasePermission -SQL $sql `
+            Remove-SqlDatabasePermission -SqlServerObject $sql `
                                          -Name $Name `
                                          -Database $Database `
                                          -PermissionState $PermissionState `

@@ -1392,19 +1392,19 @@ function Set-SqlDatabaseRecoveryModel
 
 <#
     .SYNOPSIS
-    This cmdlet is used to return the permissions of a SQL database
+    This cmdlet is used to return the permission for a user in a database
 
-    .PARAMETER Sql
-    This is an object of the SQL server that contains the result of Connect-SQL
+    .PARAMETER SqlServerObject
+    This is the Server object returned by Connect-SQL
 
     .PARAMETER Name
-    This is the name of the desired login for the SQL database
+    This is the name of the user to get the current permissions for
 
     .PARAMETER Database
-    This is the SQL database that will be getting
+    This is the name of the SQL database
 
     .PARAMETER PermissionState
-    This is the state of permissions (Grant or Deny) that will be getting
+    If the permission should be granted or denied. Valid values are Grant or Deny
 #>
 function Get-SqlDatabasePermission
 {
@@ -1412,31 +1412,32 @@ function Get-SqlDatabasePermission
     param
     (   
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateNotNullOrEmpty()] 
         [System.Object]
-        $Sql,
+        $SqlServerObject,
         
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateNotNullOrEmpty()] 
         [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateNotNullOrEmpty()] 
         [System.String]
         $Database,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateSet('Grant','Deny')]
+        [ValidateNotNullOrEmpty()] 
         [System.String]
         $PermissionState
     )
 
-    Write-Verbose -Message 'Getting Sql Databases and SQL Logins'
-    $sqlDatabase = $Sql.Databases[$Database]
-    $sqlLogin = $Sql.Logins[$Name]
-    $sqlInstanceName = $Sql.InstanceName
-    $sqlServer = $Sql.ComputerNamePhysicalNetBIOS
+    Write-Verbose -Message 'Evaluating database and login.'
+    $sqlDatabase = $SqlServerObject.Databases[$Database]
+    $sqlLogin = $SqlServerObject.Logins[$Name]
+    $sqlInstanceName = $SqlServerObject.InstanceName
+    $sqlServer = $SqlServerObject.ComputerNamePhysicalNetBIOS
 
     # Initialize variable permission
     [System.String[]] $permission = @()
@@ -1445,7 +1446,7 @@ function Get-SqlDatabasePermission
     {        
         if ($sqlLogin)
         {
-            Write-Verbose -Message "Getting Permissions for SQL Login $Name in database $Database"
+            Write-Verbose -Message "Getting permissions for user '$Name' in database '$Database'."
 
             $databasePermissionInfo = $sqlDatabase.EnumDatabasePermissions($Name)
             $databasePermissionInfo = $databasePermissionInfo | Where-Object -FilterScript { 
@@ -1467,15 +1468,15 @@ function Get-SqlDatabasePermission
         else
         {
             throw New-TerminatingError -ErrorType LoginNotFound `
-                                 -FormatArgs @($Name,$sqlServer,$sqlInstanceName) `
-                                 -ErrorCategory ObjectNotFound 
+                                       -FormatArgs @($Name,$sqlServer,$sqlInstanceName) `
+                                       -ErrorCategory ObjectNotFound 
         }
     }
     else
     {
         throw New-TerminatingError -ErrorType NoDatabase `
-                             -FormatArgs @($Database,$sqlServer,$sqlInstanceName) `
-                             -ErrorCategory InvalidResult
+                                   -FormatArgs @($Database,$sqlServer,$sqlInstanceName) `
+                                   -ErrorCategory InvalidResult
     }
 
     $permission
@@ -1483,22 +1484,24 @@ function Get-SqlDatabasePermission
 
 <#
     .SYNOPSIS
-    This cmdlet is used to add the permissions of a SQL database
+    This cmdlet is used to grant or deny permissions for a user in a database
 
-    .PARAMETER Sql
-    This is an object of the SQL server that contains the result of Connect-SQL
+    .PARAMETER SqlServerObject
+    This is the Server object returned by Connect-SQL
 
     .PARAMETER Name
-    This is the name of the desired login for the SQL database
+    This is the name of the user to get the current permissions for
 
     .PARAMETER Database
-    This is the SQL database that will be setting
+    This is the name of the SQL database
 
     .PARAMETER PermissionState
-    This is the state of permissions (Grant or Deny) that will be setting
+    If the permission should be granted or denied. Valid values are Grant or Deny
 
     .PARAMETER Permissions
-    This is the type of permissions (Connect, Update, etc...) that will be setting
+    The permissions to be granted or denied for the user in the database. 
+    Valid permissions can be found in the article SQL Server Permissions:
+    https://msdn.microsoft.com/en-us/library/ms191291.aspx#SQL Server Permissions
 #>
 function Add-SqlDatabasePermission
 {
@@ -1506,22 +1509,23 @@ function Add-SqlDatabasePermission
     param
     (   
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateNotNullOrEmpty()] 
         [System.Object]
-        $Sql,
+        $SqlServerObject,
         
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateNotNullOrEmpty()] 
         [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateNotNullOrEmpty()] 
         [System.String]
         $Database,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateSet('Grant','Deny')]
+        [ValidateNotNullOrEmpty()] 
         [System.String]
         $PermissionState,
 
@@ -1530,11 +1534,11 @@ function Add-SqlDatabasePermission
         $Permissions
     )
 
-    Write-Verbose -Message 'Getting SQL Databases and SQL Logins'
-    $sqlDatabase = $Sql.Databases[$Database]
-    $sqlLogin = $Sql.Logins[$Name]
-    $sqlInstanceName = $Sql.InstanceName
-    $sqlServer = $Sql.ComputerNamePhysicalNetBIOS
+    Write-Verbose -Message 'Evaluating database and login.'
+    $sqlDatabase = $SqlServerObject.Databases[$Database]
+    $sqlLogin = $SqlServerObject.Logins[$Name]
+    $sqlInstanceName = $SqlServerObject.InstanceName
+    $sqlServer = $SqlServerObject.ComputerNamePhysicalNetBIOS
 
     if ($sqlDatabase)
     {        
@@ -1561,17 +1565,25 @@ function Add-SqlDatabasePermission
             {
                 try
                 {
-                    Write-Verbose -Message ("$PermissionState - Adding SQL login $Name to permissions $permissions " + `
-                                            "on database $Database on $sqlServer\$sqlInstanceName")
+                    Write-Verbose -Message ("$PermissionState the permissions '$Permissions' to the " + `
+                                            "database '$Database' on the server $sqlServer$sqlInstanceName")
                     $permissionSet = New-Object -TypeName Microsoft.SqlServer.Management.Smo.DatabasePermissionSet
+
                     foreach ($permission in $permissions)
                     {
                         $permissionSet."$permission" = $true
                     }
+
                     switch ($PermissionState) 
                     {
-                        'Grant' { $sqlDatabase.Grant($permissionSet,$Name) }
-                        'Deny' { $sqlDatabase.Deny($permissionSet,$Name) }
+                        'Grant' 
+                        {
+                            $sqlDatabase.Grant($permissionSet,$Name)
+                        }
+                        'Deny'
+                        {
+                            $sqlDatabase.Deny($permissionSet,$Name)
+                        }
                     }                    
                 }
                 catch
@@ -1598,22 +1610,24 @@ function Add-SqlDatabasePermission
 
 <#
     .SYNOPSIS
-    This cmdlet is used to remove the permissions of a SQL database
+    This cmdlet is used to remove (revoke) permissions for a user in a database
 
-    .PARAMETER Sql
-    This is an object of the SQL server that contains the result of Connect-SQL
+    .PARAMETER SqlServerObject
+    This is the Server object returned by Connect-SQL.
 
     .PARAMETER Name
-    This is the name of the desired login for the SQL database
+    This is the name of the user for which permissions will be removed (revoked)
 
     .PARAMETER Database
-    This is the SQL database that will be setting
+    This is the name of the SQL database
 
     .PARAMETER PermissionState
-    This is the state of permissions (Grant or Deny) that will be setting
+    f the permission that should be removed was granted or denied. Valid values are Grant or Deny
 
     .PARAMETER Permissions
-    This is the type of permissions (Connect, Update, etc...) that will be setting
+    The permissions to be remove (revoked) for the user in the database.
+    Valid permissions can be found in the article SQL Server Permissions:
+    https://msdn.microsoft.com/en-us/library/ms191291.aspx#SQL Server Permissions.
 #>
 function Remove-SqlDatabasePermission
 {
@@ -1621,22 +1635,23 @@ function Remove-SqlDatabasePermission
     param
     (   
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateNotNullOrEmpty()] 
         [System.Object]
-        $Sql,
+        $SqlServerObject,
         
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateNotNullOrEmpty()] 
         [System.String]
         $Name,
         
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateNotNullOrEmpty()] 
         [System.String]
         $Database,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateSet('Grant','Deny')]
+        [ValidateNotNullOrEmpty()] 
         [System.String]
         $PermissionState,
 
@@ -1645,11 +1660,11 @@ function Remove-SqlDatabasePermission
         $Permissions
     )
 
-    Write-Verbose -Message 'Getting SQL Databases and SQL Logins'
-    $sqlDatabase = $Sql.Databases[$Database]
-    $sqlLogin = $Sql.Logins[$Name]
-    $sqlInstanceName = $Sql.InstanceName
-    $sqlServer = $Sql.ComputerNamePhysicalNetBIOS
+    Write-Verbose -Message 'Evaluating database and login'
+    $sqlDatabase = $SqlServerObject.Databases[$Database]
+    $sqlLogin = $SqlServerObject.Logins[$Name]
+    $sqlInstanceName = $SqlServerObject.InstanceName
+    $sqlServer = $SqlServerObject.ComputerNamePhysicalNetBIOS
 
     if ($sqlDatabase)
     {        
@@ -1677,17 +1692,25 @@ function Remove-SqlDatabasePermission
             {
                 try
                 {
-                    Write-Verbose -Message ("$PermissionState - Removing SQL login $Name to permissions $permissions " + `
-                                            "on database $Database on $sqlServer\$sqlInstanceName")
+                    Write-Verbose -Message ("$PermissionState the permissions '$Permissions' to the " + `
+                                            "database '$Database' on the server $sqlServer$sqlInstanceName")
                     $permissionSet = New-Object -TypeName Microsoft.SqlServer.Management.Smo.DatabasePermissionSet
+
                     foreach ($permission in $permissions)
                     {
                         $permissionSet."$permission" = $false
                     }
+
                     switch ($PermissionState) 
                     {
-                        "Grant" { $sqlDatabase.Grant($permissionSet,$Name) }
-                        "Deny" { $sqlDatabase.Deny($permissionSet,$Name) }
+                        'Grant'
+                        {
+                            $sqlDatabase.Grant($permissionSet,$Name)
+                        }
+                        'Deny'
+                        {
+                            $sqlDatabase.Deny($permissionSet,$Name)
+                        }
                     }                    
                 }
                 catch
