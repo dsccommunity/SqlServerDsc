@@ -60,7 +60,6 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 
 * [**xSQLAOGroupEnsure**](#xsqlaogroupensure) resource to ensure availability group is present or absent
 * [**xSQLAOGroupJoin**](#xsqlaogroupjoin) resource to join a replica to an existing availability group
-* [**xSQLDatabaseRecoveryModel**](#xsqldatabaserecoverymodel) resource to manage database recovery model
 * [**xSQLServerAlias**](#xsqlserveralias) resource to manage SQL Server client Aliases
 * [**xSQLServerAlwaysOnService**](#xsqlserveralwaysonservice) resource to enable always on on a SQL Server
 * [**xSQLServerAvailabilityGroupListener**](#xsqlserveravailabilitygrouplistener) Create or remove an availability group listener.
@@ -68,6 +67,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * [**xSQLServerDatabase**](#xsqlserverdatabase) resource to manage ensure database is present or absent
 * [**xSQLServerDatabaseOwner**](#xsqlserverdatabaseowner) resource to manage SQL database owners
 * [**xSQLServerDatabasePermissions**](#xsqlserverdatabasepermissions) resource to manage SQL database permissions
+* [**xSQLServerDatabaseRecoveryModel**](#xSQLServerDatabaseRecoveryModel) resource to manage database recovery model
 * [**xSQLServerDatabaseRole**](#xsqlserverdatabaserole) resource to manage SQL database roles
 * [**xSQLServerEndpoint**](#xsqlserverendpoint) resource to ensure database endpoint is present or absent
 * [**xSQLServerEndpointPermission**](#xsqlserverendpointpermission) Grant or revoke permission on the endpoint.
@@ -141,28 +141,6 @@ No description.
 #### Examples
 
 None.
-
-### xSQLServerDatabaseRecoveryModel
-
-This resource set the recovery model for a database. The recovery model controls how transactions are logged, whether the transaction log requires (and allows) backing up, and what kinds of restore operations are available.
-Three recovery models exist: full, simple, and bulk-logged.
-Read more about recovery model in this article [View or Change the Recovery Model of a Database](https://msdn.microsoft.com/en-us/library/ms189272.aspx)
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2.
-* Target machine must be running SQL Server Database Engine 2008 or later.
-
-#### Parameters
-
-* **[String] Name** _(Key)_: The SQL database name.
-* **[String] SQLServer** _(Key)_: The host name of the SQL Server to be configured.
-* **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **[String] RecoveryModel** _(Required)_: The recovery model to use for the database. { Full | Simple | BulkLogged }.
-
-#### Examples
-
-* [Set the RecoveryModel of a database](/Examples/Resources/xSQLServerDatabaseRecoveryModel/1-SetDatabaseRecoveryModel.ps1)
 
 ### xSQLServerAlias
 
@@ -318,6 +296,28 @@ No description.
 #### Examples
 
 None.
+
+### xSQLServerDatabaseRecoveryModel
+
+This resource set the recovery model for a database. The recovery model controls how transactions are logged, whether the transaction log requires (and allows) backing up, and what kinds of restore operations are available.
+Three recovery models exist: full, simple, and bulk-logged.
+Read more about recovery model in this article [View or Change the Recovery Model of a Database](https://msdn.microsoft.com/en-us/library/ms189272.aspx)
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running SQL Server Database Engine 2008 or later.
+
+#### Parameters
+
+* **[String] Name** _(Key)_: The SQL database name.
+* **[String] SQLServer** _(Key)_: The host name of the SQL Server to be configured.
+* **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **[String] RecoveryModel** _(Required)_: The recovery model to use for the database. { Full | Simple | BulkLogged }.
+
+#### Examples
+
+* [Set the RecoveryModel of a database](/Examples/Resources/xSQLServerDatabaseRecoveryModel/1-SetDatabaseRecoveryModel.ps1)
 
 ### xSQLServerDatabaseRole
 
