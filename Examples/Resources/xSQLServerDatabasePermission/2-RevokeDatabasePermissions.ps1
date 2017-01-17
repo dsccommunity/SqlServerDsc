@@ -1,7 +1,7 @@
 <#
 .DESCRIPTION
     This example shows how to ensure that the user account CONTOSO\SQLAdmin
-    has "Connect" and "Update" SQL Permissions for database "AdventureWorks". 
+    hasn't "Select" and "Create Table" SQL Permissions for database "AdventureWorks". 
 #>
 
 Configuration Example 
@@ -25,13 +25,25 @@ Configuration Example
             PsDscRunAsCredential = $SysAdminAccount
         }
 
-        xSQLServerDatabasePermission Add_SqlDatabasePermissions_SQLAdmin
+        xSQLServerDatabasePermission RevokeGrant_SqlDatabasePermissions_SQLAdmin
         {
-            Ensure = 'Present'
+            Ensure = 'Absent'
             Name = 'CONTOSO\SQLAdmin'
             Database = 'AdventureWorks'
             PermissionState = 'Grant'
             Permissions = 'Connect','Update'
+            SQLServer = 'SQLServer'
+            SQLInstanceName = 'DSC'
+            PsDscRunAsCredential = $SysAdminAccount
+        }
+
+        xSQLServerDatabasePermission RevokeDeny_SqlDatabasePermissions_SQLAdmin
+        {
+            Ensure = 'Absent'
+            Name = 'CONTOSO\SQLAdmin'
+            Database = 'AdventureWorks'
+            PermissionState = 'Deny'
+            Permissions = 'Select','Create Table'
             SQLServer = 'SQLServer'
             SQLInstanceName = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount

@@ -66,8 +66,9 @@
   - xSQLServerDatabaseRecoveryModel
     - 1-SetDatabaseRecoveryModel.ps1
   - xSQLServerDatabasePermission
-    - 1-AddDatabasePermissions.ps1
-    - 2-RemoveDatabasePermissions.ps1
+    - 1-GrantDatabasePermissions.ps1
+    - 2-RevokeDatabasePermissions.ps1
+    - 3-DenyDatabasePermissions.ps1
 - Added tests for resources
   - xSQLServerDatabaseRecoveryModel
   - xSQLServerDatabasePermissions
