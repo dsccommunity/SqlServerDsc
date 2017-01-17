@@ -138,9 +138,7 @@ namespace Microsoft.SqlServer.Management.Smo
     {
         public DatabasePermissionSet(){}
 
-        public DatabasePermissionSet(
-            bool connect, 
-            bool update )
+        public DatabasePermissionSet( bool connect, bool update )
         {
             this.Connect = connect; 
             this.Update = update;
@@ -162,8 +160,7 @@ namespace Microsoft.SqlServer.Management.Smo
             this.PermissionType = permissionSet;
         }
 
-        public DatabasePermissionInfo( 
-            Microsoft.SqlServer.Management.Smo.DatabasePermissionSet[] permissionSet )
+        public DatabasePermissionInfo( Microsoft.SqlServer.Management.Smo.DatabasePermissionSet[] permissionSet )
         {
             this.PermissionType = permissionSet;
         }
