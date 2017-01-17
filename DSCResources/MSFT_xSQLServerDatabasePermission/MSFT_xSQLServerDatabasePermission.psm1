@@ -2,10 +2,10 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
 
 <#
     .SYNOPSIS
-    This function gets all Key properties defined in the resource schema file
+    Returns the current permissions for the user in the database
 
     .PARAMETER Ensure
-    This is The Ensure Set to 'present' to specificy that the permission should be configured.
+    This is The Ensure if the permission should be granted (Present) or revoked (Absent)
 
     .PARAMETER Database
     This is the SQL database
@@ -65,7 +65,7 @@ function Get-TargetResource
 
     if ($sql)
     {
-        Write-Verbose -Message "Getting permissions of database '$Database' for login '$Name'"
+        Write-Verbose -Message "Getting permissions for user '$Name' in database '$Database'"
         $getSqlDatabasePermission = Get-SqlDatabasePermission -SqlServerObject $sql `
                                                               -Name $Name `
                                                               -Database $Database `
@@ -73,9 +73,9 @@ function Get-TargetResource
         
         if ($getSqlDatabasePermission)
         {
-            $comparePermissions = Compare-Object -ReferenceObject $Permissions `
-                                                 -DifferenceObject $getSqlDatabasePermission
-            if ($null -eq $comparePermissions)
+            $resultOfPermissionCompare = Compare-Object -ReferenceObject $Permissions `
+                                                        -DifferenceObject $getSqlDatabasePermission
+            if ($null -eq $resultOfPermissionCompare)
             {
                 $Ensure = 'Present'
             }
@@ -93,6 +93,9 @@ function Get-TargetResource
     {
         $null = $getSqlDatabasePermission
         $Ensure = 'Absent'
+        throw New-TerminatingError -ErrorType ConnectSQLError `
+                                   -FormatArgs @($SQLServer,$SQLInstanceName) `
+                                   -ErrorCategory InvalidOperation
     }
     
     $returnValue = @{
@@ -110,10 +113,10 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-    This function sets all Key properties defined in the resource schema file
+    Sets the permissions for the user in the database.
 
     .PARAMETER Ensure
-    This is The Ensure Set to 'present' to specificy that the permission should be configured.
+    This is The Ensure if the permission should be granted (Present) or revoked (Absent)
 
     .PARAMETER Database
     This is the SQL database
@@ -173,6 +176,7 @@ function Set-TargetResource
     if ($sql)
     {
         Write-Verbose -Message "Setting permissions of database '$Database' for login '$Name'"
+
         if ($Ensure -eq 'Present')
         {
             Add-SqlDatabasePermission -SqlServerObject $sql `
@@ -180,6 +184,7 @@ function Set-TargetResource
                                       -Database $Database `
                                       -PermissionState $PermissionState `
                                       -Permissions $Permissions
+            
             New-VerboseMessage -Message "$PermissionState - SQL Permissions for $Name, successfullly added in $Database"
         }
         else
@@ -189,17 +194,24 @@ function Set-TargetResource
                                          -Database $Database `
                                          -PermissionState $PermissionState `
                                          -Permissions $Permissions
+            
             New-VerboseMessage -Message "$PermissionState - SQL Permissions for $Name, successfullly removed in $Database"
         }
+    }
+    else
+    {
+        throw New-TerminatingError -ErrorType ConnectSQLError `
+                                   -FormatArgs @($SQLServer,$SQLInstanceName) `
+                                   -ErrorCategory InvalidOperation
     }
 }
 
 <#
     .SYNOPSIS
-    This function tests all Key properties defined in the resource schema file
+    Tests if the permissions is set for the user in the database
 
     .PARAMETER Ensure
-    This is The Ensure Set to 'present' to specificy that the permission should be configured.
+    This is The Ensure if the permission should be granted (Present) or revoked (Absent)
 
     .PARAMETER Database
     This is the SQL database
@@ -255,11 +267,11 @@ function Test-TargetResource
         $SQLInstanceName = 'MSSQLSERVER'
     )
 
-    Write-Verbose -Message "Testing permissions of database '$Database' for login '$Name'"
+    Write-Verbose -Message "Evaluating permissions for user '$Name' in database '$Database'."
 
-    $currentValues = Get-TargetResource @PSBoundParameters
+    $getTargetResourceResult = Get-TargetResource @PSBoundParameters
 
-    return Test-SQLDscParameterState -CurrentValues $CurrentValues `
+    return Test-SQLDscParameterState -CurrentValues $getTargetResourceResult `
                                      -DesiredValues $PSBoundParameters `
                                      -ValuesToCheck @('Name', 'Ensure', 'PermissionState', 'Permissions')
 }

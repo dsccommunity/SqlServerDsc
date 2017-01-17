@@ -47,7 +47,6 @@ try
             $testParameters += @{
                 PermissionState = 'Grant'
                 Permissions = @( 'Connect','Update' )
-                Ensure = 'Present'
             }
 
             Mock -CommandName Get-SqlDatabasePermission -MockWith { 
@@ -79,7 +78,6 @@ try
             $testParameters += @{
                 PermissionState = 'Grant'
                 Permissions     = @( 'Connect','Update' )
-                Ensure          = 'Present'
             }
 
             Mock -CommandName Get-SqlDatabasePermission -MockWith { return @( 'Connect','Update' ) } -ModuleName $script:DSCResourceName -Verifiable
@@ -109,7 +107,6 @@ try
             $testParameters += @{
                 PermissionState = 'Deny'
                 Permissions     = @( 'Connect','Update' )
-                Ensure          = 'Present'
             }
 
             Mock -CommandName Get-SqlDatabasePermission -MockWith { return @( 'Connect','Update' ) } -ModuleName $script:DSCResourceName -Verifiable
