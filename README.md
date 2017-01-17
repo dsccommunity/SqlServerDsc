@@ -287,13 +287,13 @@ No description.
 
 #### Parameters
 
-* **[String] Ensure** _(Write)_: If the values should be present or absent. Valid values are 'Present' or 'Absent'.
-* **[String] Database** _(Key)_: The SQL Database
-* **[String] Name** _(Key)_: The name of permissions for the SQL database
-* **[String[]] Permissions** _(Required)_: The set of Permissions for the SQL database
-* **[String] PermissionState** _(Required)_: The state of permission set. Valid values are 'Grant' or 'Deny'.
-* **[String] SQLServer** _(Key)_: The SQL Server for the database
-* **[String] SQLInstanceName** _(Key)_: The SQL instance for the database
+* **[String] Ensure** _(Write)_: If the permission should be granted (Present) or revoked (Absent). { Present | Absent }
+* **[String] Database** _(Key)_: The name of the database
+* **[String] Name** _(Key)_: The name of the user that should be granted or denied the permission
+* **[String[]] Permissions** _(Required)_: The permissions to be granted or denied for the user in the database. Valid permissions can be found in the article [SQL Server Permissions](https://msdn.microsoft.com/en-us/library/ms191291.aspx#SQL Server Permissions)
+* **[String] PermissionState** _(Required)_: The state of the permission. { Grant | Deny }
+* **[String] SQLServer** _(Key)_: The host name of the SQL Server to be configured
+* **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured
 
 #### Examples
 
