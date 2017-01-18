@@ -67,7 +67,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * [**xSQLServerDatabase**](#xsqlserverdatabase) resource to manage ensure database is present or absent
 * [**xSQLServerDatabaseOwner**](#xsqlserverdatabaseowner) resource to manage SQL database owners
 * [**xSQLServerDatabasePermissions**](#xsqlserverdatabasepermissions) resource to manage SQL database permissions
-* [**xSQLServerDatabaseRecoveryModel**](#xSQLServerDatabaseRecoveryModel) resource to manage database recovery model
+* [**xSQLServerDatabaseRecoveryModel**](#xsqlserverdatabaserecoverymodel) resource to manage database recovery model
 * [**xSQLServerDatabaseRole**](#xsqlserverdatabaserole) resource to manage SQL database roles
 * [**xSQLServerEndpoint**](#xsqlserverendpoint) resource to ensure database endpoint is present or absent
 * [**xSQLServerEndpointPermission**](#xsqlserverendpointpermission) Grant or revoke permission on the endpoint.
