@@ -636,7 +636,7 @@ try
                         Mock -CommandName New-SmbMapping -Verifiable
                         Mock -CommandName Remove-SmbMapping -Verifiable
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
-                        Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable
+                        Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable -Verifiable
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable
@@ -743,6 +743,7 @@ try
 
                         Mock -CommandName New-SmbMapping -Verifiable
                         Mock -CommandName Remove-SmbMapping -Verifiable
+                        Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable -Verifiable
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
@@ -886,7 +887,7 @@ try
                         # If Get-CimInstance is used in any other way than those mocks with a ParameterFilter, then throw and error
                         Mock -CommandName Get-CimInstance -MockWith {
                             throw "Mock Get-CimInstance was called with unexpected parameters. ClassName=$ClassName, Filter=$Filter"
-                        }
+                        } -Verifiable
                         #endregion Mock Get-CimInstance
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
@@ -1076,7 +1077,7 @@ try
                         # If Get-CimInstance is used in any other way than those mocks with a ParameterFilter, then throw and error
                         Mock -CommandName Get-CimInstance -MockWith {
                             throw "Mock Get-CimInstance was called with unexpected parameters. ClassName=$ClassName, Filter=$Filter"
-                        }
+                        } -Verifiable
                         #endregion Mock Get-CimInstance
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
@@ -1238,7 +1239,7 @@ try
                         }
 
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
-                        Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable
+                        Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable -Verifiable
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\ConfigurationState"
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable
@@ -1377,7 +1378,7 @@ try
                         # If Get-CimInstance is used in any other way than those mocks with a ParameterFilter, then throw and error
                         Mock -CommandName Get-CimInstance -MockWith {
                             throw "Mock Get-CimInstance was called with unexpected parameters. ClassName=$ClassName, Filter=$Filter"
-                        }
+                        } -Verifiable
                         #endregion Mock Get-CimInstance
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
@@ -1661,7 +1662,7 @@ try
                     # If Get-CimInstance is used in any other way than those mocks with a ParameterFilter, then throw and error
                     Mock -CommandName Get-CimInstance -MockWith {
                         throw "Mock Get-CimInstance was called with unexpected parameters. ClassName=$ClassName, Filter=$Filter"
-                    }
+                    } -Verifiable
                     #endregion Mock Get-CimInstance
 
                     # Change the default features for this test.
@@ -1760,7 +1761,7 @@ try
                     # If Get-CimInstance is used in any other way than those mocks with a ParameterFilter, then throw and error
                     Mock -CommandName Get-CimInstance -MockWith {
                         throw "Mock Get-CimInstance was called with unexpected parameters. ClassName=$ClassName, Filter=$Filter"
-                    }
+                    } -Verifiable
                     #endregion Mock Get-CimInstance
 
                     # Change the default features for this test.
@@ -1883,7 +1884,7 @@ try
                     # If Get-CimInstance is used in any other way than those mocks with a ParameterFilter, then throw and error
                     Mock -CommandName Get-CimInstance -MockWith {
                         throw "Mock Get-CimInstance was called with unexpected parameters. ClassName=$ClassName, Filter=$Filter"
-                    }
+                    } -Verifiable
                     #endregion Mock Get-CimInstance
 
                     Mock -CommandName Get-ItemProperty -ParameterFilter {
