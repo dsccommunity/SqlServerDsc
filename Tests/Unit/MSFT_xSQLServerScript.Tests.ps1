@@ -80,7 +80,7 @@ try
                     $result.SetFilePath | Should Be $testParameters.SetFilePath
                     $result.GetFilePath | Should Be $testParameters.GetFilePath
                     $result.TestFilePath | Should Be $testParameters.TestFilePath
-                    $result.GetType() | Should Be "hashtable"
+                    $result | Should BeOfType Hashtable
                 }
             }
 
