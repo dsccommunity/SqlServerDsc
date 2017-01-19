@@ -15,7 +15,7 @@ Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\
 
 $TestEnvironment = Initialize-TestEnvironment -DSCModuleName $script:DSCModuleName `
                                             -DSCResourceName $script:DSCResourceName `
-                                            -TestType Unit 
+                                            -TestType Unit
 #endregion HEADER
 
 # Begin Testing
@@ -35,12 +35,12 @@ try
 
     Describe "$($script:DSCResourceName)\Get-TargetResource" {
         Mock -CommandName Connect-SQL -MockWith {
-            return New-Object Object | 
+            return New-Object Object |
                 Add-Member ScriptProperty Databases {
                     return @{
                         'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') ) )
                     }
-                } -PassThru -Force 
+                } -PassThru -Force
         } -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is not in the desired state' {
@@ -50,7 +50,7 @@ try
                 Name = 'CONTOSO\SqlServiceAcct'
             }
 
-            Mock -CommandName Get-SqlDatabaseOwner -MockWith { 
+            Mock -CommandName Get-SqlDatabaseOwner -MockWith {
                 return $null
             } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -79,7 +79,7 @@ try
                 Name = 'CONTOSO\SqlServiceAcct'
             }
 
-            Mock -CommandName Get-SqlDatabaseOwner -MockWith { 
+            Mock -CommandName Get-SqlDatabaseOwner -MockWith {
                 return $null
             } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -133,12 +133,12 @@ try
 
     Describe "$($script:DSCResourceName)\Test-TargetResource" {
         Mock -CommandName Connect-SQL -MockWith {
-            return New-Object Object | 
+            return New-Object Object |
                 Add-Member ScriptProperty Databases {
                     return @{
                         'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') ) )
                     }
-                } -PassThru -Force 
+                } -PassThru -Force
         } -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is not in the desired state' {
@@ -147,9 +147,9 @@ try
                 $testParameters += @{
                     Database = 'AdventureWorks'
                     Name = 'CONTOSO\SqlServiceAcct'
-                }       
+                }
 
-                Mock -CommandName Get-SqlDatabaseOwner -MockWith { 
+                Mock -CommandName Get-SqlDatabaseOwner -MockWith {
                     return $null
                 } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -167,10 +167,10 @@ try
                 $testParameters += @{
                     Database = 'AdventureWorks'
                     Name = 'CONTOSO\SqlServiceAcct'
-                } 
+                }
 
-                Mock -CommandName Get-SqlDatabaseOwner -MockWith { 
-                    'CONTOSO\SqlServiceAcct' 
+                Mock -CommandName Get-SqlDatabaseOwner -MockWith {
+                    'CONTOSO\SqlServiceAcct'
                 } -ModuleName $script:DSCResourceName -Verifiable
 
                 $result = Test-TargetResource @testParameters
@@ -186,12 +186,12 @@ try
 
     Describe "$($script:DSCResourceName)\Set-TargetResource" {
         Mock -CommandName Connect-SQL -MockWith {
-            return New-Object Object | 
+            return New-Object Object |
                 Add-Member ScriptProperty Databases {
                     return @{
                         'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') ) )
                     }
-                } -PassThru -Force 
+                } -PassThru -Force
         } -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When the system is not in the desired state' {
@@ -203,22 +203,22 @@ try
 
             It 'Should call the function Set-SqlDatabaseOwner when desired login is not the database owner' {
                 Mock -CommandName Set-SqlDatabaseOwner -MockWith { } -ModuleName $script:DSCResourceName -Verifiable
-                
+
                 Set-TargetResource @testParameters
-            
+
                 Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
                 Assert-MockCalled Set-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
             }
-            
+
             $testParameters.Database = 'UnknownDatabase'
 
             It 'Should throw an error when desired database does not exist' {
                 Mock -CommandName Set-SqlDatabaseOwner -MockWith {
                     return Throw
                 } -ModuleName $script:DSCResourceName -Verifiable
-                
+
                 { Set-TargetResource @testParameters } | Should Throw "Failed to setting the owner of database UnknownDatabase"
-                
+
                 Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
                 Assert-MockCalled Set-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
             }
@@ -232,12 +232,16 @@ try
             }
 
             It 'Should not call the function Set-SqlDatabaseOwner when desired login is the database owner' {
-                Mock -CommandName Get-SqlDatabaseOwner -MockWith { 
-                    'CONTOSO\SqlServiceAcct' 
+                Mock -CommandName Get-SqlDatabaseOwner -MockWith {
+                    'CONTOSO\SqlServiceAcct'
                 } -ModuleName $script:DSCResourceName -Verifiable
-                
+
+                Mock -CommandName Set-SqlDatabaseOwner -MockWith {
+                    return Throw
+                } -ModuleName $script:DSCResourceName -Verifiable
+
                 $result = Get-TargetResource @testParameters
-            
+
                 Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
                 Assert-MockCalled Get-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
                 Assert-MockCalled Set-SqlDatabaseOwner -Exactly -Times 0 -ModuleName $script:DSCResourceName -Scope It
@@ -251,7 +255,7 @@ finally
 {
     #region FOOTER
 
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment 
+    Restore-TestEnvironment -TestEnvironment $TestEnvironment
 
     #endregion
 }
