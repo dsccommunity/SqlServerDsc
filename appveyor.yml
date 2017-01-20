@@ -54,7 +54,7 @@ deploy_script:
       # Creating NuGet package artifact
       New-Nuspec -packageName $env:APPVEYOR_PROJECT_NAME -version $env:APPVEYOR_BUILD_VERSION -author "Microsoft" -owners "Microsoft" -licenseUrl "https://github.com/PowerShell/DscResources/blob/master/LICENSE" -projectUrl "https://github.com/$($env:APPVEYOR_REPO_NAME)" -packageDescription $env:APPVEYOR_PROJECT_NAME -tags "DesiredStateConfiguration DSC DSCResourceKit" -destinationPath .
 
-      # Force to use the downloaded Nuget v3.4.4, becuase newer versions of Nuget is failing the deploy step.
+      # Force to use the downloaded Nuget v3.4.4, because newer versions of Nuget is failing the deploy step.
       # See issue https://github.com/PowerShell/xNetworking/issues/177
       Start-Process -FilePath "$($env:APPVEYOR_BUILD_FOLDER)\nuget" -Wait -ArgumentList @(
         "pack",
