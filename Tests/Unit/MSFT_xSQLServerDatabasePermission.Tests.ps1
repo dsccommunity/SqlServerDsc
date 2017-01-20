@@ -336,6 +336,7 @@ try
 
             It 'Should not call the function Remove-SqlDatabasePermission when desired state is already absent' {
                 Mock -CommandName Get-SqlDatabasePermission -MockWith { return $null } -ModuleName $script:DSCResourceName -Verifiable
+                Mock -CommandName Remove-SqlDatabasePermission -MockWith { } -ModuleName $script:DSCResourceName -Verifiable
 
                 $result = Get-TargetResource @testParameters
 
