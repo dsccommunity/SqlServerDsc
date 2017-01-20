@@ -66,15 +66,15 @@ function Get-TargetResource
     if ($sql)
     {
         Write-Verbose -Message "Getting permissions for user '$Name' in database '$Database'"
-        $getSqlDatabasePermission = Get-SqlDatabasePermission -SqlServerObject $sql `
-                                                              -Name $Name `
-                                                              -Database $Database `
-                                                              -PermissionState $PermissionState
+        $getSqlDatabasePermissionResult = Get-SqlDatabasePermission -SqlServerObject $sql `
+                                                                    -Name $Name `
+                                                                    -Database $Database `
+                                                                    -PermissionState $PermissionState
         
-        if ($getSqlDatabasePermission)
+        if ($getSqlDatabasePermissionResult)
         {
             $resultOfPermissionCompare = Compare-Object -ReferenceObject $Permissions `
-                                                        -DifferenceObject $getSqlDatabasePermission
+                                                        -DifferenceObject $getSqlDatabasePermissionResult
             if ($null -eq $resultOfPermissionCompare)
             {
                 $Ensure = 'Present'
@@ -91,7 +91,7 @@ function Get-TargetResource
     }
     else
     {
-        $null = $getSqlDatabasePermission
+        $null = $getSqlDatabasePermissionResult
         $Ensure = 'Absent'
         throw New-TerminatingError -ErrorType ConnectSQLError `
                                    -FormatArgs @($SQLServer,$SQLInstanceName) `
@@ -103,7 +103,7 @@ function Get-TargetResource
         Database        = $Database
         Name            = $Name
         PermissionState = $PermissionState
-        Permissions     = $getSqlDatabasePermission
+        Permissions     = $getSqlDatabasePermissionResult
         SQLServer       = $SQLServer
         SQLInstanceName = $SQLInstanceName
     }

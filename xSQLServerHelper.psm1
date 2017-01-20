@@ -1530,6 +1530,7 @@ function Add-SqlDatabasePermission
         $PermissionState,
 
         [parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String[]]
         $Permissions
     )
@@ -1656,6 +1657,7 @@ function Remove-SqlDatabasePermission
         $PermissionState,
 
         [parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String[]]
         $Permissions
     )
