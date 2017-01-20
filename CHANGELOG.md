@@ -5,6 +5,7 @@
 - Improvements how tests are initiated in AppVeyor
   - Removed previous workaround (issue #201) from unit tests.
   - Changes in appveyor.yml so that SQL modules are removed before common test is run.
+  - Now the deploy step are no longer failing when merging code into Dev. Neither is the deploy step failing if a contributor had AppVeyor connected to the fork of xSQLServer and pushing code to the fork.
 - Changes to README.md
   - Changed the contributing section to help new contributors.
   - Added links for each resource so it is easier to navigate to the parameter list for each resource.
