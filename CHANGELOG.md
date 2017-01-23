@@ -74,6 +74,7 @@
   - xSQLServerDatabasePermissions
 - Changes to xSQLServerDatabaseRecoveryModel
   - BREAKING CHANGE: Renamed xSQLDatabaseRecoveryModel to xSQLServerDatabaseRecoveryModel to align wíth naming convention.
+  - BREAKING CHANGE: The mandatory parameters now include SQLServer, and SQLInstanceName.
 - Changes to xSQLServerDatabasePermission
   - BREAKING CHANGE: Renamed xSQLServerDatabasePermissions to xSQLServerDatabasePermission to align wíth naming convention.
   - BREAKING CHANGE: The mandatory parameters now include PermissionState, SQLServer, and SQLInstanceName.
