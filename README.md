@@ -418,7 +418,7 @@ None.
 
 ### xSQLServerFailoverClusterSetup
 
-No description.
+**This resource is deprecated.** The functionality of this resource has been merged with [xSQLServerSetup](#xsqlserversetup). Please do not use this resource for new development efforts.
 
 #### Requirements
 
@@ -758,6 +758,7 @@ Installs SQL Server on the target node.
 
 #### Parameters
 
+* **[String] Action** _(Write)_: The action to be performed. Defaults to 'Install'. { _Install_ | InstallFailoverCluster | AddNode | PrepareFailoverCluster | CompleteFailoverCluster }
 * **[String] InstanceName** _(Key)_: SQL instance to be installed.
 * **[PSCredential] SetupCredential** _(Required)_: Credential to be used to perform the installation.
 * **[String] SourcePath** _(Write)_: The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.
@@ -796,8 +797,11 @@ Installs SQL Server on the target node.
 * **[String] ASBackupDir** _(Write)_: Path for Analysis Services backup files.
 * **[String] ASTempDir** _(Write)_: Path for Analysis Services temp files.
 * **[String] ASConfigDir** _(Write)_: Path for Analysis Services config.
-* **ISSvcAccount** _(Write)_: Service account for Integration Services service.
+* **[PSCredential] ISSvcAccount** _(Write)_: Service account for Integration Services service.
 * **[String] BrowserSvcStartupType** _(Write)_: Specifies the startup mode for SQL Server Browser service. { Automatic | Disabled | 'Manual' }
+* **[String] FailoverClusterGroupName** _(Write)_: The name of the resource group to create for the clustered SQL Server instance. Defaults to 'SQL Server (_InstanceName_)'.
+* **[String[]]FailoverClusterIPAddress** _(Write)_: Array of IP Addresses to be assigned to the clustered SQL Server instance. IP addresses must be in [dotted-decimal notation](https://en.wikipedia.org/wiki/Dot-decimal_notation), for example ````10.0.0.100````. If no IP address is specified, uses 'DEFAULT' for this setup parameter.
+* **[String] FailoverClusterNetworkName** _(Write)_: Host name to be assigned to the clustered SQL Server instance.
 
 #### Read-Only Properties from Get-TargetResource
 
