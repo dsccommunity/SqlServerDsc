@@ -278,7 +278,7 @@ No description.
 
 ### xSQLServerDatabasePermission
 
-This resource is used to grant, deny or revoke permissions for a user in a database. 
+This resource is used to grant, deny or revoke permissions for a user in a database.
 For more information about permissions, please read the article [Permissions (Database Engine)](https://msdn.microsoft.com/en-us/library/ms191291.aspx).
 
 #### Requirements
