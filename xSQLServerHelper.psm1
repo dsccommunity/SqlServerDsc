@@ -292,7 +292,7 @@ function New-VerboseMessage
         [Parameter(Mandatory=$true)]
         $Message
     )
-    Write-Verbose -Message ((Get-Date -format yyyy-MM-dd_HH-mm-ss) + ": $Message");
+    Write-Verbose -Message ((Get-Date -format yyyy-MM-dd_HH-mm-ss) + ": $Message") -Verbose
 }
 
 <#
