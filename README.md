@@ -66,7 +66,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * [**xSQLServerConfiguration**](#xsqlserverconfiguration) resource to manage [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
 * [**xSQLServerDatabase**](#xsqlserverdatabase) resource to manage ensure database is present or absent
 * [**xSQLServerDatabaseOwner**](#xsqlserverdatabaseowner) resource to manage SQL database owners
-* [**xSQLServerDatabasePermissions**](#xsqlserverdatabasepermissions) resource to manage SQL database permissions
+* [**xSQLServerDatabasePermission**](#xsqlserverdatabasepermission) resource to manage SQL database permissions
 * [**xSQLServerDatabaseRecoveryModel**](#xsqlserverdatabaserecoverymodel) resource to manage database recovery model
 * [**xSQLServerDatabaseRole**](#xsqlserverdatabaserole) resource to manage SQL database roles
 * [**xSQLServerEndpoint**](#xsqlserverendpoint) resource to ensure database endpoint is present or absent
@@ -276,9 +276,10 @@ No description.
 
 * [Set database owner](/Examples/Resources/xSQLServerDatabaseOwner/1-SetDatabaseOwner.ps1)
 
-### xSQLServerDatabasePermissions
+### xSQLServerDatabasePermission
 
-No description.
+This resource is used to grant, deny or revoke permissions for a user in a database.
+For more information about permissions, please read the article [Permissions (Database Engine)](https://msdn.microsoft.com/en-us/library/ms191291.aspx).
 
 #### Requirements
 
@@ -287,15 +288,19 @@ No description.
 
 #### Parameters
 
-* **[String] Database** _(Key)_: The SQL Database
-* **[String] Name** _(Required)_: The name of permissions for the SQL database
-* **[String[]] Permissions** _(Required)_: The set of Permissions for the SQL database
-* **[String] SQLServer** _(Write)_: The SQL Server for the database
-* **[String] SQLInstanceName** _(Write)_: The SQL instance for the database
+* **[String] Ensure** _(Write)_: If the permission should be granted (Present) or revoked (Absent). { Present | Absent }.
+* **[String] Database** _(Key)_: The name of the database.
+* **[String] Name** _(Key)_: The name of the user that should be granted or denied the permission.
+* **[String[]] Permissions** _(Required)_: The permissions to be granted or denied for the user in the database. Valid permissions can be found in the article [SQL Server Permissions](https://msdn.microsoft.com/en-us/library/ms191291.aspx#Anchor_3).
+* **[String] PermissionState** _(Key)_: The state of the permission. { Grant | Deny }.
+* **[String] SQLServer** _(Key)_: The host name of the SQL Server to be configured. Default values is 'env:COMPUTERNAME'.
+* **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured. Default value is 'MSSQLSERVER'.
 
 #### Examples
 
-None.
+* [Grant Database Permission](/Examples/Resources/xSQLServerDatabasePermission/1-GrantDatabasePermissions.ps1)
+* [Revoke Database Permission](/Examples/Resources/xSQLServerDatabasePermission/2-RevokeDatabasePermissions.ps1)
+* [Deny Database Permission](/Examples/Resources/xSQLServerDatabasePermission/3-DenyDatabasePermissions.ps1)
 
 ### xSQLServerDatabaseRecoveryModel
 
@@ -413,7 +418,7 @@ None.
 
 ### xSQLServerFailoverClusterSetup
 
-No description.
+**This resource is deprecated.** The functionality of this resource has been merged with [xSQLServerSetup](#xsqlserversetup). Please do not use this resource for new development efforts.
 
 #### Requirements
 
@@ -479,7 +484,36 @@ None.
 
 ### xSQLServerFirewall
 
-No description.
+This will set default firewall rules for the supported features. Currently the features supported are Database Engine,
+Analysis Services, SQL Browser, SQL Reporting Services and Integration Services.
+
+#### Firewall rules
+
+##### Default rules for default instance
+
+| Feature | Component | Enable Firewall Rule | Firewall Name |
+| --- | --- | --- | --- |
+| SQLENGINE | Database Engine | Application: sqlservr.exe | SQL Server Database Engine instance MSSQLSERVER |
+| SQLENGINE | Database Engine | Service: SQLBrowser | SQL Server Browser |
+| AS | Analysis Services | Service: MSSQLServerOLAPService | SQL Server Analysis Services instance MSSQLSERVER |
+| AS | Analysis Services | Service: SQLBrowser | SQL Server Browser |
+| RS | Reporting Services | Port: tcp/80 | SQL Server Reporting Services 80 |
+| RS | Reporting Services | Port: tcp/443 | SQL Server Reporting Services 443 |
+| IS | Integration Services | Application: MsDtsSrvr.exe | SQL Server Integration Services Application |
+| IS | Integration Services | Port: tcp/135 | SQL Server Integration Services Port |
+
+##### Default rules for named instance
+
+| Feature | Component | Enable Firewall Rule | Firewall Name |
+| --- | --- | --- | --- |
+| SQLENGINE | Database Engine | Application: sqlservr.exe | SQL Server Database Engine instance \<NAMED_INSTANCE\> |
+| SQLENGINE | Database Engine | Service: SQLBrowser | SQL Server Browser |
+| AS | Analysis Services | Service: MSOLAP$INSTANCE | | SQL Server Analysis Services instance \<NAMED_INSTANCE\> |
+| AS | Analysis Services | Service: SQLBrowser | SQL Server Browser |
+| RS | Reporting Services | Port: tcp/80 | SQL Server Reporting Services 80 |
+| RS | Reporting Services | Port: tcp/443 | SQL Server Reporting Services 443 |
+| IS | Integration Services | Application: MsDtsSrvr.exe | SQL Server Integration Services Application |
+| IS | Integration Services | Port: tcp/135 | SQL Server Integration Services Port |
 
 #### Requirements
 
@@ -491,7 +525,7 @@ No description.
 * **[String] InstanceName** _(Key)_: SQL instance to enable firewall rules for.
 * **[String] Ensure** _(Write)_: Ensures that SQL firewall rules are **Present** or **Absent** on the machine. { *Present* | Absent }.
 * **[String] SourcePath** _(Write)_: UNC path to the root of the source files for installation.
-* **[String] SourceFolder** _(Write)_: Folder within the source path containing the source files for installation.
+* **[String] SourceCredential** _(Write)_: Credentials used to access the path set in the parameter 'SourcePath'. This parmeter is optional either if built-in parameter 'PsDscRunAsCredential' is used, or if the source path can be access using the SYSTEM account.
 
 #### Read-Only Properties from Get-TargetResource
 
@@ -503,7 +537,8 @@ No description.
 
 #### Examples
 
-None.
+* [Create inbound firewall rules](/Examples/Resources/xSQLServerFirewall/1-CreateInboundFirewallRules.ps1)
+* [Remove inbound firewall rules](/Examples/Resources/xSQLServerFirewall/2-RemoveInboundFirewallRules.ps1)
 
 ### xSQLServerLogin
 
@@ -753,6 +788,7 @@ Installs SQL Server on the target node.
 
 #### Parameters
 
+* **[String] Action** _(Write)_: The action to be performed. Defaults to 'Install'. { _Install_ | InstallFailoverCluster | AddNode | PrepareFailoverCluster | CompleteFailoverCluster }
 * **[String] InstanceName** _(Key)_: SQL instance to be installed.
 * **[PSCredential] SetupCredential** _(Required)_: Credential to be used to perform the installation.
 * **[String] SourcePath** _(Write)_: The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.
@@ -791,8 +827,11 @@ Installs SQL Server on the target node.
 * **[String] ASBackupDir** _(Write)_: Path for Analysis Services backup files.
 * **[String] ASTempDir** _(Write)_: Path for Analysis Services temp files.
 * **[String] ASConfigDir** _(Write)_: Path for Analysis Services config.
-* **ISSvcAccount** _(Write)_: Service account for Integration Services service.
+* **[PSCredential] ISSvcAccount** _(Write)_: Service account for Integration Services service.
 * **[String] BrowserSvcStartupType** _(Write)_: Specifies the startup mode for SQL Server Browser service. { Automatic | Disabled | 'Manual' }
+* **[String] FailoverClusterGroupName** _(Write)_: The name of the resource group to create for the clustered SQL Server instance. Defaults to 'SQL Server (_InstanceName_)'.
+* **[String[]]FailoverClusterIPAddress** _(Write)_: Array of IP Addresses to be assigned to the clustered SQL Server instance. IP addresses must be in [dotted-decimal notation](https://en.wikipedia.org/wiki/Dot-decimal_notation), for example ````10.0.0.100````. If no IP address is specified, uses 'DEFAULT' for this setup parameter.
+* **[String] FailoverClusterNetworkName** _(Write)_: Host name to be assigned to the clustered SQL Server instance.
 
 #### Read-Only Properties from Get-TargetResource
 

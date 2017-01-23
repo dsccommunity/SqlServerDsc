@@ -76,6 +76,10 @@ try
         $mockDefaultInstance_IntegrationServiceName = $mockSqlIntegrationName
         $mockDefaultInstance_AnalysisServiceName = 'MSSQLServerOLAPService'
 
+        $mockDefaultInstance_FailoverClusterNetworkName = 'TestDefaultCluster'
+        $mockDefaultInstance_FailoverClusterIPAddress = '10.0.0.10'
+        $mockDefaultInstance_FailoverClusterGroupName = "SQL Server ($mockDefaultInstance_InstanceName)"
+
         $mockNamedInstance_InstanceName = 'TEST'
         $mockNamedInstance_DatabaseServiceName = "$($mockSqlDatabaseEngineName)`$$($mockNamedInstance_InstanceName)"
         $mockNamedInstance_AgentServiceName = "$($mockSqlAgentName)`$$($mockNamedInstance_InstanceName)"
@@ -84,12 +88,40 @@ try
         $mockNamedInstance_IntegrationServiceName = $mockSqlIntegrationName
         $mockNamedInstance_AnalysisServiceName = "$($mockSqlAnalysisName)`$$($mockNamedInstance_InstanceName)"
 
-        $mockmockSetupCredentialUserName = "COMPANY\sqladmin"
+        $mockNamedInstance_FailoverClusterNetworkName = 'TestDefaultCluster'
+        $mockNamedInstance_FailoverClusterIPAddress = '10.0.0.20'
+        $mockNamedInstance_FailoverClusterGroupName = "SQL Server ($mockNamedInstance_InstanceName)"
+
+        $mockmockSetupCredentialUserName = "COMPANY\sqladmin" 
+
         $mockmockSetupCredentialPassword = "dummyPassw0rd" | ConvertTo-SecureString -asPlainText -Force
         $mockSetupCredential = New-Object System.Management.Automation.PSCredential( $mockmockSetupCredentialUserName, $mockmockSetupCredentialPassword )
 
         $mockSqlServiceAccount = 'COMPANY\SqlAccount'
         $mockAgentServiceAccount = 'COMPANY\AgentAccount'
+
+        $mockClusterNodes = @($env:COMPUTERNAME,'SQL01','SQL02')
+
+        $mockClusterDiskMap = @{
+            UserData = 'K:'
+            UserLogs = 'L:'
+            TempDbData = 'M:'
+            TempDbLogs = 'N:'
+            SQLBackup = 'O:'
+        }
+
+        $mockClusterSites = @(
+            @{
+                Name = 'SiteA'
+                Address = '10.0.0.100'
+                Mask = '255.255.255.0'
+            },
+            @{
+                Name = 'SiteB'
+                Address = '10.0.10.100'
+                Mask = '255.255.255.0'
+            }
+        )
 
         #region Function mocks
         $mockGetSqlMajorVersion = {
@@ -431,6 +463,31 @@ try
             )
         }
 
+        $mockConnectSQLCluster = {
+            return @(
+                (
+                    New-Object Object | 
+                        Add-Member -MemberType NoteProperty -Name 'LoginMode' -Value $mockSqlLoginMode -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'Collation' -Value $mockSqlCollation -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'InstallDataDirectory' -Value $mockSqlInstallPath -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'BackupDirectory' -Value $mockSqlBackupPath -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'SQLTempDBDir' -Value $mockSqlTempDatabasePath -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'SQLTempDBLogDir' -Value $mockSqlTempDatabaseLogPath -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'DefaultFile' -Value $mockSqlDefaultDatabaseFilePath -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'DefaultLog' -Value $mockSqlDefaultDatabaseLogPath -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'IsClustered' -Value $true -PassThru |
+                        Add-Member ScriptProperty Logins {
+                            return @( ( New-Object Object |
+                                    Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockSqlSystemAdministrator -PassThru | 
+                                    Add-Member ScriptMethod ListMembers {
+                                        return @('sysadmin')
+                                    } -PassThru -Force
+                                ) )
+                        } -PassThru -Force
+                )
+            )
+        }
+
         $mockConnectSQLAnalysis = {
             return @(
                 (
@@ -513,20 +570,169 @@ try
             return $mockSourcePathUNC
         }
 
+        $mockGetCimInstance_MSClusterResource = {
+            return @(
+                (
+                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource','root/MSCluster' |
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server ($mockCurrentInstanceName)" -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String' -PassThru -Force | 
+                        Add-Member -MemberType NoteProperty -Name 'PrivateProperties' -Value @{ InstanceName = $mockCurrentInstanceName } -PassThru -Force
+                )
+            )
+        }
+
+        $mockGetCimInstance_MSClusterResourceGroup_AvailableStorage = {
+            return @(
+                (
+                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ResourceGroup', 'root/MSCluster' |
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Available Storage' -PassThru -Force
+                )
+            )
+        }
+
+        $mockGetCimInstance_MSClusterNetwork = {
+            return @(
+                (
+                    $mockClusterSites | ForEach-Object {
+                        $network = $_
+
+                        New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Network', 'root/MSCluster' |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value "$($network.Name)_Prod" -PassThru -Force | 
+                            Add-Member -MemberType NoteProperty -Name 'Role' -Value 2 -PassThru -Force |
+                            Add-Member -MemberType NoteProperty -Name 'Address' -Value $network.Address -PassThru -Force |
+                            Add-Member -MemberType NoteProperty -Name 'AddressMask' -Value $network.Mask -PassThru -Force
+                    }
+                )
+            )
+        }
+
+        $mockGetCimAssociatedInstance_MSClusterResourceGroup_DefaultInstance = {
+            return @(
+                (
+                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ResourceGroup', 'root/MSCluster' |
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_FailoverClusterGroupName -PassThru -Force
+                )
+            )
+        }
+
+        $mockGetCimAssociatedInstance_MSClusterResource_DefaultInstance = {
+            return @(
+                (
+                    @('Network Name','IP Address') | ForEach-Object {
+                        $resourceType = $_
+
+                        $propertyValue = @{
+                            MemberType = 'NoteProperty'
+                            Name = 'PrivateProperties'
+                            Value = $null
+                        }
+
+                        switch ($resourceType)
+                        {
+                            'Network Name'
+                            {
+                                $propertyValue.Value = @{ DnsName = $mockDefaultInstance_FailoverClusterNetworkName }
+                            }
+
+                            'IP Address'
+                            {
+                                $propertyValue.Value = @{ Address = $mockDefaultInstance_FailoverClusterIPAddress }
+                            }
+                        }
+
+                        return New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource', 'root/MSCluster' |
+                            Add-Member -MemberType NoteProperty -Name 'Type' -Value $resourceType -PassThru -Force |
+                            Add-Member @propertyValue -PassThru -Force
+                    }
+                )
+            )
+        }
+
+        # Mock to return physical disks that are part of the "Available Storage" cluster role
+        $mockGetCimAssociatedInstance_MSCluster_ResourceGroupToResource = {
+            return @(
+                (
+                    $mockClusterDiskMap.Keys | ForEach-Object {
+                        $diskName = $_
+                        New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource','root/MSCluster' |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value $diskName -PassThru -Force | 
+                            Add-Member -MemberType NoteProperty -Name 'State' -Value 2 -PassThru -Force |
+                            Add-Member -MemberType NoteProperty -Name 'Type' -Value 'Physical Disk' -PassThru -Force
+                    }
+                )
+            )
+        }
+
+        $mockGetCimAssociatedInstance_MSCluster_ResourceToPossibleOwner = {
+            return @(
+                (
+                    $mockClusterNodes | ForEach-Object {
+                        $node = $_
+                        New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Node', 'root/MSCluster' | 
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value $node -PassThru -Force
+                    }
+                )
+            )
+        }
+
+        $mockGetCimAssociatedInstance_MSCluster_DiskPartition = {
+            $clusterDiskName = $InputObject.Name
+            $clusterDiskPath = $mockClusterDiskMap.$clusterDiskName
+
+            return @(
+                (
+                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_DiskPartition','root/MSCluster' |
+                        Add-Member -MemberType NoteProperty -Name 'Path' -Value $clusterDiskPath -PassThru -Force
+                )
+            )
+        }
+
         <#
         Needed a way to see into the Set-method for the arguments the Set-method is building and sending to 'setup.exe', and fail
         the test if the arguments is different from the expected arguments.
         Solved this by dynamically set the expected arguments before each It-block. If the arguments differs the mock of
         StartWin32Process throws an error message, similiar to what Pester would have reported (expected -> but was).
         #>
-        $mockStartWin32ProcessExpectedArgument = '' # Set dynamically during runtime
+        $mockStartWin32ProcessExpectedArgument = @{}
+
+        $mockStartWin32ProcessExpectedArgumentClusterDefault = @{
+            IAcceptSQLServerLicenseTerms = 'True'
+            Quiet = 'True'
+            InstanceName = 'MSSQLSERVER'
+            AGTSVCSTARTUPTYPE = 'Automatic'
+            Features = 'SQLENGINE'
+            SQLSysAdminAccounts = 'COMPANY\sqladmin'
+            FailoverClusterGroup = 'SQL Server (MSSQLSERVER)'
+        }
+
         $mockStartWin32Process = {
-            if ( $Arguments -ne $mockStartWin32ProcessExpectedArgument )
-            {
-                throw "Expected arguments was not the same as the arguments in the function call.`nExpected: '$mockStartWin32ProcessExpectedArgument' `n But was: '$Arguments'"
+            $argumentHashTable = @{}
+
+            # Break the argument string into a hash table
+            ($Arguments -split ' ?/') | ForEach-Object {
+                if ($_ -imatch '(\w+)="?([^/]+)"?') 
+                {
+                    $key = $Matches[1]
+                    $value = ($Matches[2] -replace '" "','; ') -replace '"',''
+                    $null = $argumentHashTable.Add($key, $value)
+                }
             }
 
-            return 'Process started'
+            # Start by checking whether we have the same number of parameters
+            New-VerboseMessage 'Verifying argument count (expected vs actual)'
+            $mockStartWin32ProcessExpectedArgument.Keys.Count | Should BeExactly $argumentHashTable.Keys.Count
+
+            foreach ($argumentKey in $mockStartWin32ProcessExpectedArgument.Keys)
+            {
+                New-VerboseMessage "Testing Parameter [$argumentKey]"
+                $argumentPassed = $argumentHashTable.ContainsKey($argumentKey)
+                $argumentPassed | Should Be $true
+
+                $argumentValue = $argumentHashTable.$argumentKey
+                $argumentValue | Should Be $mockStartWin32ProcessExpectedArgument.$argumentKey
+            }
+
+            return 'Process Started'
         }
         #endregion Function mocks
 
@@ -535,6 +741,19 @@ try
             SetupCredential = $mockSetupCredential
             # These are written with both lower-case and upper-case to make sure we support that.
             Features = 'SQLEngine,Replication,FullText,Rs,Is,As'
+        }
+
+        $mockDefaultClusterParameters = @{
+            SetupCredential = $mockSetupCredential
+
+            # Feature support is tested elsewhere, so just include the minimum
+            Features = 'SQLEngine'
+
+            # Ensure we use "clustered" disks for our paths
+            SQLUserDBDir = 'K:\MSSQL\Data\'
+            SQLUserDBLogDir = 'L:\MSSQL\Logs'
+            SQLTempDbDir = 'M:\MSSQL\TempDb\Data\'
+            SQLTempDbLogDir = 'N:\MSSQL\TempDb\Logs'
         }
 
         Describe "xSQLServerSetup\Get-TargetResource" -Tag 'Get' {
@@ -1496,6 +1715,90 @@ try
                         $result.ISSvcAccountUsername | Should Be $mockSqlServiceAccount
                     }
                 }
+
+                Context "When SQL Server version is $mockSqlMajorVersion and the system is not in the desired state for a clustered default instance" {
+
+                    BeforeAll {
+                        $testParams = $mockDefaultParameters.Clone()
+                        $testParams.Remove('Features')
+                        $testParams += @{
+                            InstanceName = $mockDefaultInstance_InstanceName
+                            SourceCredential = $null
+                            SourcePath = $mockSourcePath
+                        }
+
+                        Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+
+                        Mock -CommandName Get-CimInstance -MockWith {} -Verifiable
+
+                        Mock -CommandName Get-CimAssociatedInstance -MockWith {} -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -MockWith $mockGetItemProperty_Setup -Verifiable
+
+                        Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
+                    }
+
+                    It 'Should not attempt to collect cluster information for a standalone instance' {
+
+                        $currentState = Get-TargetResource @testParams
+
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Get-CimAssociatedInstance -Exactly -Times 0 -Scope It
+
+                        $currentState.FailoverClusterGroupName | Should BeNullOrEmpty
+                        $currentState.FailoverClusterNetworkName | Should BeNullOrEmpty
+                        $currentState.FailoverClusterIPAddress | Should BeNullOrEmpty
+                    }
+                }
+
+                Context "When SQL Server version is $mockSqlMajorVersion and the system is in the desired state for a clustered default instance" {
+                    
+                    BeforeEach {
+                        $testParams = $mockDefaultParameters.Clone()
+                        $testParams.Remove('Features')
+                        $testParams += @{
+                            InstanceName = $mockDefaultInstance_InstanceName
+                            SourceCredential = $null
+                            SourcePath = $mockSourcePath
+                        }
+
+                        $mockCurrentInstanceName = $mockDefaultInstance_InstanceName
+
+                        Mock -CommandName Connect-SQL -MockWith $mockConnectSQLCluster -Verifiable
+
+                        Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterResource -Verifiable -ParameterFilter {
+                            $Filter -eq "Type = 'SQL Server'"
+                        }
+
+                        Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSClusterResourceGroup_DefaultInstance -Verifiable -ParameterFilter { $ResultClassName -eq 'MSCluster_ResourceGroup' }
+
+                        Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSClusterResource_DefaultInstance -Verifiable -ParameterFilter { $ResultClassName -eq 'MSCluster_Resource' }
+
+                        Mock -CommandName Get-ItemProperty -MockWith $mockGetItemProperty_Setup -Verifiable
+
+                        Mock -CommandName Get-Service -MockWith $mockGetService_DefaultInstance -Verifiable
+                    }
+
+                    It 'Should collect information for a clustered instance' {
+                        $currentState = Get-TargetResource @testParams
+
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 1 -Scope It -ParameterFilter { $Filter -eq "Type = 'SQL Server'" }
+                        Assert-MockCalled -CommandName Get-CimAssociatedInstance -Exactly -Times 1 -Scope It -ParameterFilter { $ResultClassName -eq 'MSCluster_ResourceGroup' }
+                        Assert-MockCalled -CommandName Get-CimAssociatedInstance -Exactly -Times 2 -Scope It -ParameterFilter { $ResultClassName -eq 'MSCluster_Resource' }
+
+                        $currentState.InstanceName | Should Be $testParams.InstanceName
+                    }
+
+                    It 'Should return correct cluster information' {
+                        $currentState = Get-TargetResource @testParams
+
+                        $currentState.FailoverClusterGroupName | Should Be $mockDefaultInstance_FailoverClusterGroupName
+                        $currentState.FailoverClusterIPAddress | Should Be $mockDefaultInstance_FailoverClusterIPAddress
+                        $currentSTate.FailoverClusterNetworkName | Should Be $mockDefaultInstance_FailoverClusterNetworkName
+                    }
+                }
             }
 
             Assert-VerifiableMocks
@@ -1566,7 +1869,7 @@ try
             $mockSqlDefaultDatabaseFilePath = "C:\Program Files\Microsoft SQL Server\$($mockDefaultInstance_InstanceId)\MSSQL\DATA\"
             $mockSqlDefaultDatabaseLogPath = "C:\Program Files\Microsoft SQL Server\$($mockDefaultInstance_InstanceId)\MSSQL\DATA\"
 
-            Context "When the system is not in the desired state" {
+            Context 'When the system is not in the desired state' {
                 BeforeEach {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
@@ -1822,6 +2125,20 @@ try
                     } -Exactly -Times 1 -Scope It
                     #endregion Assert Get-CimInstance
                 }
+
+                It 'Should return that the desired state is absent when a clustered instance cannot be found' {
+                    $testClusterParameters = $testParameters.Clone()
+
+                    $testClusterParameters += @{
+                        FailoverClusterGroupName = $mockDefaultInstance_FailoverClusterGroupName
+                        FailoverClusterIPAddress = $mockDefaultInstance_FailoverClusterIPAddress
+                        FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+                    }
+
+                    $result = Test-TargetResource @testClusterParameters
+                    
+                    $result | Should Be $false
+                }
             }
 
             Context "When the system is in the desired state" {
@@ -1951,6 +2268,36 @@ try
                         $Filter -eq "Name = '$mockDefaultInstance_AnalysisServiceName'"
                     } -Exactly -Times 1 -Scope It
                     #endregion Assert Get-CimInstance
+                }
+
+                It 'Should return that the desired state is present when the correct clustered instance was found' {
+                    $mockCurrentInstanceName = $mockDefaultInstance_InstanceName
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQLCluster -Verifiable
+
+                    Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterResource -Verifiable -ParameterFilter { 
+                        $Filter -eq "Type = 'SQL Server'"
+                    }
+
+                    Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSClusterResourceGroup_DefaultInstance -Verifiable -ParameterFilter { $ResultClassName -eq 'MSCluster_ResourceGroup' }
+
+                    Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSClusterResource_DefaultInstance -Verifiable -ParameterFilter { $ResultClassName -eq 'MSCluster_Resource' }
+
+                    $testClusterParameters = $testParameters.Clone()
+
+                    $testClusterParameters += @{
+                        FailoverClusterGroupName = $mockDefaultInstance_FailoverClusterGroupName
+                        FailoverClusterIPAddress = $mockDefaultInstance_FailoverClusterIPAddress
+                        FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+                    }
+
+                    $result = Test-TargetResource @testClusterParameters
+
+                    $result | Should Be $true
+
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 1 -Scope It -ParameterFilter { $Filter -eq "Type = 'SQL Server'" }
+                    Assert-MockCalled -CommandName Get-CimAssociatedInstance -Exactly -Times 3 -Scope It
                 }
             }
 
@@ -2090,15 +2437,16 @@ try
                     }
 
                     It 'Should set the system in the desired state when feature is SQLENGINE' {
-                        $mockStartWin32ProcessExpectedArgument =
-                            '/Quiet="True"',
-                            '/IAcceptSQLServerLicenseTerms="True"',
-                            '/Action="Install"',
-                            '/AGTSVCSTARTUPTYPE=Automatic',
-                            '/InstanceName="MSSQLSERVER"',
-                            '/Features="SQLENGINE,REPLICATION,FULLTEXT,RS,IS,AS"',
-                            '/SQLSysAdminAccounts="COMPANY\sqladmin"',
-                            '/ASSysAdminAccounts="COMPANY\sqladmin"' -join ' '
+                        $mockStartWin32ProcessExpectedArgument = @{
+                            Quiet = 'True'
+                            IAcceptSQLServerLicenseTerms = 'True'
+                            Action = 'Install'
+                            AGTSVCSTARTUPTYPE = 'Automatic'
+                            InstanceName = 'MSSQLSERVER'
+                            Features = 'SQLENGINE,REPLICATION,FULLTEXT,RS,IS,AS'
+                            SQLSysAdminAccounts = 'COMPANY\sqladmin'
+                            ASSysAdminAccounts = 'COMPANY\sqladmin'
+                        }
 
                         { Set-TargetResource @testParameters } | Should Not Throw
 
@@ -2133,14 +2481,14 @@ try
                     if( $mockSqlMajorVersion -eq 13 ) {
                         It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016' {
                             $testParameters.Features = 'SSMS'
-                            $mockStartWin32ProcessExpectedArgument = ''
+                            $mockStartWin32ProcessExpectedArgument = @{}
 
                             { Set-TargetResource @testParameters } | Should Throw "'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
 
                         It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016' {
                             $testParameters.Features = 'ADV_SSMS'
-                            $mockStartWin32ProcessExpectedArgument = ''
+                            $mockStartWin32ProcessExpectedArgument = @{}
 
                             { Set-TargetResource @testParameters } | Should Throw "'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
@@ -2148,12 +2496,13 @@ try
                         It 'Should set the system in the desired state when feature is SSMS' {
                             $testParameters.Features = 'SSMS'
 
-                            $mockStartWin32ProcessExpectedArgument =
-                                '/Quiet="True"',
-                                '/IAcceptSQLServerLicenseTerms="True"',
-                                '/Action="Install"',
-                                '/InstanceName="MSSQLSERVER"',
-                                '/Features="SSMS"' -join ' '
+                            $mockStartWin32ProcessExpectedArgument = @{
+                                Quiet = 'True'
+                                IAcceptSQLServerLicenseTerms = 'True'
+                                Action = 'Install'
+                                InstanceName = 'MSSQLSERVER'
+                                Features = 'SSMS'
+                            }
 
                             { Set-TargetResource @testParameters } | Should Not Throw
 
@@ -2183,12 +2532,13 @@ try
                         It 'Should set the system in the desired state when feature is ADV_SSMS' {
                             $testParameters.Features = 'ADV_SSMS'
 
-                            $mockStartWin32ProcessExpectedArgument =
-                                '/Quiet="True"',
-                                '/IAcceptSQLServerLicenseTerms="True"',
-                                '/Action="Install"',
-                                '/InstanceName="MSSQLSERVER"',
-                                '/Features="ADV_SSMS"' -join ' '
+                            $mockStartWin32ProcessExpectedArgument = @{
+                                Quiet = 'True'
+                                IAcceptSQLServerLicenseTerms = 'True'
+                                Action = 'Install'
+                                InstanceName = 'MSSQLSERVER'
+                                Features = 'ADV_SSMS'
+                            }
 
                             { Set-TargetResource @testParameters } | Should Not Throw
 
@@ -2246,15 +2596,17 @@ try
                     }
 
                     It 'Should set the system in the desired state when feature is SQLENGINE' {
-                        $mockStartWin32ProcessExpectedArgument =
-                            '/Quiet="True"',
-                            '/IAcceptSQLServerLicenseTerms="True"',
-                            '/Action="Install"',
-                            '/AGTSVCSTARTUPTYPE=Automatic',
-                            '/InstanceName="MSSQLSERVER"',
-                            '/Features="SQLENGINE,REPLICATION,FULLTEXT,RS,IS,AS"',
-                            '/SQLSysAdminAccounts="COMPANY\sqladmin"',
-                            '/ASSysAdminAccounts="COMPANY\sqladmin"' -join ' '
+                        
+                        $mockStartWin32ProcessExpectedArgument = @{
+                            Quiet = 'True'
+                            IAcceptSQLServerLicenseTerms = 'True'
+                            Action = 'Install'
+                            AgtSvcStartupType = 'Automatic'
+                            InstanceName = 'MSSQLSERVER'
+                            Features = 'SQLENGINE,REPLICATION,FULLTEXT,RS,IS,AS'
+                            SQLSysAdminAccounts = 'COMPANY\sqladmin'
+                            ASSysAdminAccounts = 'COMPANY\sqladmin'
+                        }
 
                         { Set-TargetResource @testParameters } | Should Not Throw
 
@@ -2305,12 +2657,13 @@ try
                         It 'Should set the system in the desired state when feature is SSMS' {
                             $testParameters.Features = 'SSMS'
 
-                            $mockStartWin32ProcessExpectedArgument =
-                                '/Quiet="True"',
-                                '/IAcceptSQLServerLicenseTerms="True"',
-                                '/Action="Install"',
-                                '/InstanceName="MSSQLSERVER"',
-                                '/Features="SSMS"' -join ' '
+                            $mockStartWin32ProcessExpectedArgument = @{
+                                Quiet = 'True'
+                                IAcceptSQLServerLicenseTerms = 'True'
+                                Action = 'Install'
+                                InstanceName = 'MSSQLSERVER'
+                                Features = 'SSMS'
+                            }
 
                             { Set-TargetResource @testParameters } | Should Not Throw
 
@@ -2341,12 +2694,13 @@ try
                         It 'Should set the system in the desired state when feature is ADV_SSMS' {
                             $testParameters.Features = 'ADV_SSMS'
 
-                            $mockStartWin32ProcessExpectedArgument =
-                                '/Quiet="True"',
-                                '/IAcceptSQLServerLicenseTerms="True"',
-                                '/Action="Install"',
-                                '/InstanceName="MSSQLSERVER"',
-                                '/Features="ADV_SSMS"' -join ' '
+                            $mockStartWin32ProcessExpectedArgument = @{
+                                Quiet = 'True'
+                                IAcceptSQLServerLicenseTerms = 'True'
+                                Action = 'Install'
+                                InstanceName = 'MSSQLSERVER'
+                                Features = 'ADV_SSMS'
+                            }
 
                             { Set-TargetResource @testParameters } | Should Not Throw
 
@@ -2401,16 +2755,17 @@ try
                         } -MockWith $mockEmptyHashtable -Verifiable
                     }
 
-                    It 'Should set the system in the desired state when feature is SQLENGINE' {
-                        $mockStartWin32ProcessExpectedArgument =
-                            '/Quiet="True"',
-                            '/IAcceptSQLServerLicenseTerms="True"',
-                            '/Action="Install"',
-                            '/AGTSVCSTARTUPTYPE=Automatic',
-                            '/InstanceName="MSSQLSERVER"',
-                            '/Features="SQLENGINE,REPLICATION,FULLTEXT,RS,IS,AS"',
-                            '/SQLSysAdminAccounts="COMPANY\sqladmin"',
-                            '/ASSysAdminAccounts="COMPANY\sqladmin"' -join ' '
+                    It 'Should set the system in the desired state when feature is SQLENGINE' {                       
+                        $mockStartWin32ProcessExpectedArgument = @{
+                            Quiet = 'True'
+                            IAcceptSQLServerLicenseTerms = 'True'
+                            Action = 'Install'
+                            AGTSVCSTARTUPTYPE = 'Automatic'
+                            InstanceName = 'MSSQLSERVER'
+                            Features = 'SQLENGINE,REPLICATION,FULLTEXT,RS,IS,AS'
+                            SQLSysAdminAccounts = 'COMPANY\sqladmin'
+                            ASSysAdminAccounts = 'COMPANY\sqladmin'
+                        }
 
                         { Set-TargetResource @testParameters } | Should Not Throw
 
@@ -2446,14 +2801,14 @@ try
                     if( $mockSqlMajorVersion -eq 13 ) {
                         It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016' {
                             $testParameters.Features = 'SSMS'
-                            $mockStartWin32ProcessExpectedArgument = ''
+                            $mockStartWin32ProcessExpectedArgument = @{}
 
                             { Set-TargetResource @testParameters } | Should Throw "'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
 
                         It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016' {
                             $testParameters.Features = 'ADV_SSMS'
-                            $mockStartWin32ProcessExpectedArgument = ''
+                            $mockStartWin32ProcessExpectedArgument = @{}
 
                             { Set-TargetResource @testParameters } | Should Throw "'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
@@ -2461,12 +2816,13 @@ try
                         It 'Should set the system in the desired state when feature is SSMS' {
                             $testParameters.Features = 'SSMS'
 
-                            $mockStartWin32ProcessExpectedArgument =
-                                '/Quiet="True"',
-                                '/IAcceptSQLServerLicenseTerms="True"',
-                                '/Action="Install"',
-                                '/InstanceName="MSSQLSERVER"',
-                                '/Features="SSMS"' -join ' '
+                            $mockStartWin32ProcessExpectedArgument = @{
+                                Quiet = 'True'
+                                IAcceptSQLServerLicenseTerms = 'True'
+                                Action = 'Install'
+                                InstanceName = 'MSSQLSERVER'
+                                Features = 'SSMS'
+                            }
 
                             { Set-TargetResource @testParameters } | Should Not Throw
 
@@ -2497,12 +2853,13 @@ try
                         It 'Should set the system in the desired state when feature is ADV_SSMS' {
                             $testParameters.Features = 'ADV_SSMS'
 
-                            $mockStartWin32ProcessExpectedArgument =
-                                '/Quiet="True"',
-                                '/IAcceptSQLServerLicenseTerms="True"',
-                                '/Action="Install"',
-                                '/InstanceName="MSSQLSERVER"',
-                                '/Features="ADV_SSMS"' -join ' '
+                            $mockStartWin32ProcessExpectedArgument = @{
+                                Quiet = 'True'
+                                IAcceptSQLServerLicenseTerms = 'True'
+                                Action = 'Install'
+                                InstanceName = 'MSSQLSERVER'
+                                Features = 'ADV_SSMS'
+                            }
 
                             { Set-TargetResource @testParameters } | Should Not Throw
 
@@ -2562,15 +2919,16 @@ try
                     }
 
                     It 'Should set the system in the desired state when feature is SQLENGINE' {
-                        $mockStartWin32ProcessExpectedArgument =
-                            '/Quiet="True"',
-                            '/IAcceptSQLServerLicenseTerms="True"',
-                            '/Action="Install"',
-                            '/AGTSVCSTARTUPTYPE=Automatic',
-                            '/InstanceName="TEST"',
-                            '/Features="SQLENGINE,REPLICATION,FULLTEXT,RS,IS,AS"',
-                            '/SQLSysAdminAccounts="COMPANY\sqladmin"',
-                            '/ASSysAdminAccounts="COMPANY\sqladmin"' -join ' '
+                        $mockStartWin32ProcessExpectedArgument = @{
+                            Quiet = 'True'
+                            IAcceptSQLServerLicenseTerms = 'True'
+                            Action = 'Install'
+                            AGTSVCSTARTUPTYPE = 'Automatic'
+                            InstanceName = 'TEST'
+                            Features = 'SQLENGINE,REPLICATION,FULLTEXT,RS,IS,AS'
+                            SQLSysAdminAccounts = 'COMPANY\sqladmin'
+                            ASSysAdminAccounts = 'COMPANY\sqladmin'
+                        }
 
                         { Set-TargetResource @testParameters } | Should Not Throw
 
@@ -2601,14 +2959,14 @@ try
                     if( $mockSqlMajorVersion -eq 13 ) {
                         It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016' {
                             $testParameters.Features = $($testParameters.Features), 'SSMS' -join ','
-                            $mockStartWin32ProcessExpectedArgument = ''
+                            $mockStartWin32ProcessExpectedArgument = @{}
 
                             { Set-TargetResource @testParameters } | Should Throw "'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
 
                         It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016' {
                             $testParameters.Features = $($testParameters.Features), 'ADV_SSMS' -join ','
-                            $mockStartWin32ProcessExpectedArgument = ''
+                            $mockStartWin32ProcessExpectedArgument = @{}
 
                             { Set-TargetResource @testParameters } | Should Throw "'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
@@ -2616,12 +2974,13 @@ try
                         It 'Should set the system in the desired state when feature is SSMS' {
                             $testParameters.Features = 'SSMS'
 
-                            $mockStartWin32ProcessExpectedArgument =
-                                '/Quiet="True"',
-                                '/IAcceptSQLServerLicenseTerms="True"',
-                                '/Action="Install"',
-                                '/InstanceName="TEST"',
-                                '/Features="SSMS"' -join ' '
+                            $mockStartWin32ProcessExpectedArgument = @{
+                                Quiet = 'True'
+                                IAcceptSQLServerLicenseTerms = 'True'
+                                Action = 'Install'
+                                InstanceName = 'TEST'
+                                Features = 'SSMS'
+                            }
 
                             { Set-TargetResource @testParameters } | Should Not Throw
 
@@ -2651,12 +3010,13 @@ try
                         It 'Should set the system in the desired state when feature is ADV_SSMS' {
                             $testParameters.Features = 'ADV_SSMS'
 
-                            $mockStartWin32ProcessExpectedArgument =
-                                '/Quiet="True"',
-                                '/IAcceptSQLServerLicenseTerms="True"',
-                                '/Action="Install"',
-                                '/InstanceName="TEST"',
-                                '/Features="ADV_SSMS"' -join ' '
+                            $mockStartWin32ProcessExpectedArgument = @{
+                                Quiet = 'True'
+                                IAcceptSQLServerLicenseTerms = 'True'
+                                Action = 'Install'
+                                InstanceName = 'TEST'
+                                Features = 'ADV_SSMS'
+                            }
 
                             { Set-TargetResource @testParameters } | Should Not Throw
 
@@ -2683,57 +3043,273 @@ try
                         }
                     }
                 }
+
+                Context "When SQL Server version is $mockSqlMajorVersion and the system is not in the desired state and the action is PrepareFailoverCluster" {
+                    BeforeAll {
+                        $testParameters = $mockDefaultParameters.Clone()
+                        $testParameters.Remove('Features')
+                        $testParameters.Remove('SourceCredential')
+                        $testParameters.Remove('ASSysAdminAccounts')
+
+                        $testParameters += @{
+                            Features = 'SQLENGINE'
+                            InstanceName = 'MSSQLSERVER'
+                            SourcePath = $mockSourcePath
+                            Action = 'PrepareFailoverCluster'
+                        }
+
+                        Mock -CommandName NetUse -Verifiable
+                        Mock -CommandName Copy-ItemWithRoboCopy -Verifiable
+                        Mock -CommandName Get-TemporaryFolder -MockWith $mockGetTemporaryFolder -Verifiable
+                        Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
+                                $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
+                        } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable 
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter { 
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
+                        } -MockWith $mockGetItemProperty_Setup -Verifiable 
+
+                        Mock -CommandName StartWin32Process -MockWith $mockStartWin32Process -Verifiable
+
+                        Mock -CommandName Get-CimInstance -MockWith {} -ParameterFilter {
+                            ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_ResourceGroup') -and ($Filter -eq "Name = 'Available Storage'")
+                        } -Verifiable
+
+                        Mock -CommandName Get-CimAssociatedInstance -MockWith {} -ParameterFilter { 
+                            ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
+                        } -Verfiable
+
+                        Mock -CommandName Get-CimAssociatedInstance -MockWith {} -ParameterFilter {
+                            $Association -eq 'MSCluster_ResourceToPossibleOwner'
+                        } -Verifiable
+
+                        Mock -CommandName Get-CimAssociatedInstance -MockWith {} -ParameterFilter {
+                            $ResultClass -eq 'MSCluster_DiskPartition'
+                        } -Verifiable
+
+                        Mock -CommandName Get-CimInstance -MockWith {} -ParameterFilter { 
+                            ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
+                        } -Verifiable
+                    }
+
+                    It 'Should add the SkipRules parameter to the installation arguments' {
+
+                        $mockStartWin32ProcessExpectedArgument = $mockStartWin32ProcessExpectedArgumentClusterDefault.Clone()
+                        $mockStartWin32ProcessExpectedArgument += @{ 
+                            Action = 'PrepareFailoverCluster'
+                            SkipRules = 'Cluster_VerifyForErrors'
+                        }
+
+                        { Set-TargetResource @testParameters } | Should Not throw
+
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { 
+                            $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' -and 
+                            ($Name -eq $mockDefaultInstance_InstanceName) 
+                        } -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName StartWin32Process -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName WaitForWin32ProcessEnd -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter {
+                            ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_ResourceGroup') -and ($Filter -eq "Name = 'Available Storage'")
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimAssociatedInstance -ParameterFilter { 
+                            ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimAssociatedInstance -ParameterFilter {
+                            $Association -eq 'MSCluster_ResourceToPossibleOwner'
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimAssociatedInstance -ParameterFilter {
+                            $ResultClass -eq 'MSCluster_DiskPartition'
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { 
+                            ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
+                        } -Exactly -Times 0 -Scope It
+                    }
+                }
+
+                Context "When SQL Server version is $mockSqlMajorVersion and the system is not in the desired state and the action is CompleteFailoverCluster." {
+                    BeforeEach {
+                        $testParameters = $mockDefaultClusterParameters.Clone()
+
+                        $testParameters += @{
+                            InstanceName = 'MSSQLSERVER'
+                            SourcePath = $mockSourcePath
+                            Action = 'CompleteFailoverCluster'
+                            FailoverClusterGroupName = 'SQL Server (MSSQLSERVER)'
+                            FailoverClusterNetworkName = 'TestCluster'
+                            FailoverClusterIPAddress = '10.0.0.100'
+                        }
+                    }
+
+                    BeforeAll {
+                        Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterResourceGroup_AvailableStorage -ParameterFilter {
+                            $Filter -eq "Name = 'Available Storage'"
+                        } -Verifiable
+
+                        Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceGroupToResource -ParameterFilter { 
+                            ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
+                        } -Verfiable
+
+                        Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceToPossibleOwner -ParameterFilter {
+                            $Association -eq 'MSCluster_ResourceToPossibleOwner'
+                        } -Verifiable
+
+                        Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_DiskPartition -ParameterFilter {
+                            $ResultClassName -eq 'MSCluster_DiskPartition'
+                        } -Verifiable
+
+                        Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterNetwork -ParameterFilter { 
+                            ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
+                        } -Verifiable
+                    }
+
+                    It 'Should throw an error when one or more paths are not resolved to clustered storage' {
+                        $badPathParameters = $testParameters.Clone()
+                        
+                        # Pass in a bad path
+                        $badPathParameters.SQLUserDBDir = 'C:\MSSQL\'
+
+                        { Set-TargetResource @badPathParameters } | Should Throw 'Unable to map the specified paths to valid cluster storage. Drives mapped: TempDbData; TempDbLogs; UserLogs'
+                    }
+
+                    It 'Should properly map paths to clustered disk resources' {
+                        
+                        $mockStartWin32ProcessExpectedArgument = $mockStartWin32ProcessExpectedArgumentClusterDefault.Clone()
+                        $mockStartWin32ProcessExpectedArgument += @{ 
+                            Action = 'CompleteFailoverCluster'
+                            FailoverClusterIPAddresses = 'IPV4; 10.0.0.100; SiteA_Prod; 255.255.255.0'
+                            SQLUserDBDir = 'K:\MSSQL\Data'
+                            SQLUserDBLogDir = 'L:\MSSQL\Logs'
+                            SQLTempDBDir = 'M:\MSSQL\TempDb\Data'
+                            SQLTempDBLogDir = 'N:\MSSQL\TempDb\Logs'
+                            SkipRules = 'Cluster_VerifyForErrors'
+                            
+                            FailoverClusterDisks = 'TempDbData; TempDbLogs; UserData; UserLogs' 
+                        }
+
+                        { Set-TargetResource @testParameters } | Should Not Throw
+                    }
+
+                    It 'Should build a DEFAULT address string when no network is specified' {
+                        $missingNetworkParams = $testParameters.Clone()
+                        $missingNetworkParams.Remove('FailoverClusterIPAddress')
+
+                        $mockStartWin32ProcessExpectedArgument = $mockStartWin32ProcessExpectedArgumentClusterDefault.Clone()
+                        $mockStartWin32ProcessExpectedArgument += @{
+                            Action = 'CompleteFailoverCluster'
+                            FailoverClusterIPAddresses = 'DEFAULT'
+
+                            SQLUserDBDir = 'K:\MSSQL\Data'
+                            SQLUserDBLogDir = 'L:\MSSQL\Logs'
+                            SQLTempDBDir = 'M:\MSSQL\TempDb\Data'
+                            SQLTempDBLogDir = 'N:\MSSQL\TempDb\Logs'
+                            FailoverClusterDisks = 'TempDbData; TempDbLogs; UserData; UserLogs'
+                            SkipRules = 'Cluster_VerifyForErrors'
+                        }
+
+                        { Set-TargetResource @missingNetworkParams } | Should Not Throw
+                    }
+
+                    It 'Should throw an error when an invalid IP Address is specified' {
+                        $invalidAddressParameters = $testParameters.Clone()
+
+                        $invalidAddressParameters.Remove('FailoverClusterIPAddress')
+                        $invalidAddressParameters += @{
+                            FailoverClusterIPAddress = '192.168.0.100'
+                        }
+
+                        { Set-TargetResource @invalidAddressParameters } | Should Throw 'Unable to map the specified IP Address(es) to valid cluster networks.'
+                    }
+
+                    It 'Should throw an error when an invalid IP Address is specified for a multi-subnet instance' {
+                        $invalidAddressParameters = $testParameters.Clone()
+
+                        $invalidAddressParameters.Remove('FailoverClusterIPAddress')
+                        $invalidAddressParameters += @{
+                            FailoverClusterIPAddress = @('10.0.0.100','192.168.0.100')
+                        }
+
+                        { Set-TargetResource @invalidAddressParameters } | Should Throw 'Unable to map the specified IP Address(es) to valid cluster networks.'
+                    }
+
+                    It 'Should build a valid IP address string for a single address' {
+
+                        $mockStartWin32ProcessExpectedArgument = $mockStartWin32ProcessExpectedArgumentClusterDefault.Clone()
+                        $mockStartWin32ProcessExpectedArgument += @{
+                            FailoverClusterIPAddresses = 'IPv4; 10.0.0.100; SiteA_Prod; 255.255.255.0'
+
+                            SQLUserDBDir = 'K:\MSSQL\Data'
+                            SQLUserDBLogDir = 'L:\MSSQL\Logs'
+                            SQLTempDBDir = 'M:\MSSQL\TempDb\Data'
+                            SQLTempDBLogDir = 'N:\MSSQL\TempDb\Logs'
+                            FailoverClusterDisks = 'TempDbData; TempDbLogs; UserData; UserLogs'
+                            SkipRules = 'Cluster_VerifyForErrors'
+                            Action = 'CompleteFailoverCluster'
+                        }
+
+                        { Set-TargetResource @testParameters } | Should Not Throw
+                    }
+
+                    It 'Should build a valid IP address string for a multi-subnet cluster' {
+                        $multiSubnetParameters = $testParameters.Clone()
+                        $multiSubnetParameters.Remove('FailoverClusterIPAddress')
+                        $multiSubnetParameters += @{
+                            FailoverClusterIPAddress = ($mockClusterSites | ForEach-Object { $_.Address })
+                        }
+
+                        $mockStartWin32ProcessExpectedArgument = $mockStartWin32ProcessExpectedArgumentClusterDefault.Clone()
+                        $mockStartWin32ProcessExpectedArgument += @{
+                            FailoverClusterIPAddresses = 'IPv4; 10.0.0.100; SiteA_Prod; 255.255.255.0; IPv4; 10.0.10.100; SiteB_Prod; 255.255.255.0'
+
+                            SQLUserDBDir = 'K:\MSSQL\Data'
+                            SQLUserDBLogDir = 'L:\MSSQL\Logs'
+                            SQLTempDBDir = 'M:\MSSQL\TempDb\Data'
+                            SQLTempDBLogDir = 'N:\MSSQL\TempDb\Logs'
+                            FailoverClusterDisks = 'TempDbData; TempDbLogs; UserData; UserLogs' 
+                            SkipRules = 'Cluster_VerifyForErrors'
+                            Action = 'CompleteFailoverCluster'
+                        }
+
+                        { Set-TargetResource @multiSubnetParameters } | Should Not Throw
+                    }
+
+                    It 'Should pass proper parameters to setup' {
+                        $mockStartWin32ProcessExpectedArgument = @{
+                            IAcceptSQLServerLicenseTerms = 'True'
+                            SkipRules = 'Cluster_VerifyForErrors'
+                            Quiet = 'True'
+                            AgtSvcStartupType = 'Automatic'
+                            SQLSysAdminAccounts = 'COMPANY\sqladmin'
+
+                            Action = 'CompleteFailoverCluster'
+                            InstanceName = 'MSSQLSERVER'
+                            Features = 'SQLEngine'
+                            FailoverClusterDisks = 'TempDbData; TempDbLogs; UserData; UserLogs'
+                            FailoverClusterIPAddresses = 'IPV4; 10.0.0.100; SiteA_Prod; 255.255.255.0'
+                            FailoverClusterGroup = 'SQL Server (MSSQLSERVER)'
+                            SQLUserDBDir = 'K:\MSSQL\Data'
+                            SQLUserDBLogDir = 'L:\MSSQL\Logs'
+                            SQLTempDBDir = 'M:\MSSQL\TempDb\Data'
+                            SQLTempDBLogDir = 'N:\MSSQL\TempDb\Logs'
+                        }
+
+                        { Set-TargetResource @testParameters } | Should Not Throw
+                    }
+                }
+
             }
 
             Assert-VerifiableMocks
-        }
-
-        Describe 'Join-ServiceAccountInfo' -Tag 'Helper' {
-            Context 'When called it should return a string with service account information appended to the original argument string' {
-
-                $Params = @{ UsernameArgumentname = 'SQLSVCACCOUNT'; PasswordArgumentName = 'SQLSVCPASSWORD'; ArgumentString = "C:\Install\SQLSource\setup.exe" }
-
-                $mockSetupDomainCredential = New-Object System.Management.Automation.PSCredential( 'Company\SQLServer', (ConvertTo-SecureString 'password' -AsPlainText -Force) )
-                $mockSetupMSACredential = New-Object System.Management.Automation.PSCredential( 'Company\SQLServer$', (ConvertTo-SecureString 'password' -AsPlainText -Force) )
-                $mockSetupSystemCredential = New-Object System.Management.Automation.PSCredential( 'SYSTEM', (ConvertTo-SecureString 'password' -AsPlainText -Force) )
-                $mockSetupLocalServiceCredential = New-Object System.Management.Automation.PSCredential( 'LOCALSERVICE', (ConvertTo-SecureString 'password' -AsPlainText -Force) )
-                $mockSetupNetworkServiceCredential = New-Object System.Management.Automation.PSCredential( 'NETWORKSERVICE', (ConvertTo-SecureString 'password' -AsPlainText -Force) )
-                $mockSetupNTSystemCredential = New-Object System.Management.Automation.PSCredential( 'NT AUTHORITY\SYSTEM', (ConvertTo-SecureString 'password' -AsPlainText -Force) )
-                $mockSetupNTLocalServiceCredential = New-Object System.Management.Automation.PSCredential( 'NT AUTHORITY\LOCALSERVICE', (ConvertTo-SecureString 'password' -AsPlainText -Force) )
-                $mockSetupNTNetworkServiceCredential = New-Object System.Management.Automation.PSCredential( 'NT AUTHORITY\NETWORKSERVICE', (ConvertTo-SecureString 'password' -AsPlainText -Force) )
-
-                It 'Should return string with service account information and password appended Domain/Local Account' {
-                   Join-ServiceAccountInfo @Params -User $mockSetupDomainCredential | Should BeExactly ('{0} /{1}="{2}" /{3}="{4}"' -f $Params['ArgumentString'], $Params['UsernameArgumentname'], $mockSetupDomainCredential.UserName, $Params['PasswordArgumentname'], $mockSetupDomainCredential.GetNetworkCredential().Password)
-                }
-
-                It 'Should return string service account information and no password appended for Managed Service Account' {
-                    Join-ServiceAccountInfo @Params -User $mockSetupMSACredential | Should BeExactly ('{0} /{1}="{2}"' -f $Params['ArgumentString'], $Params['UsernameArgumentname'], $mockSetupMSACredential.UserName)
-                }
-
-                It 'Should return string service account information and no password appended for NT AUTHORITY\SYSTEM. Test without NT AUTHORITY prepended' {
-                    Join-ServiceAccountInfo @Params -User $mockSetupSystemCredential | Should BeExactly ('{0} /{1}="NT AUTHORITY\{2}"' -f $Params['ArgumentString'], $Params['UsernameArgumentname'], $mockSetupSystemCredential.UserName)
-                }
-
-                It 'Should return string service account information and no password appended for NT AUTHORITY\LOCALSERVICE. Test without NT AUTHORITY prepended' {
-                    Join-ServiceAccountInfo @Params -User $mockSetupLocalServiceCredential | Should BeExactly ('{0} /{1}="NT AUTHORITY\{2}"' -f $Params['ArgumentString'], $Params['UsernameArgumentname'], $mockSetupLocalServiceCredential.UserName)
-                }
-
-                It 'Should return string service account information and no password appended for NT AUTHORITY\NETWORKSERVICE. Test without NT AUTHORITY prepended' {
-                    Join-ServiceAccountInfo @Params -User $mockSetupNetworkServiceCredential | Should BeExactly ('{0} /{1}="NT AUTHORITY\{2}"' -f $Params['ArgumentString'], $Params['UsernameArgumentname'], $mockSetupNetworkServiceCredential.UserName)
-                }
-
-                It 'Should return string service account information and no password appended for NT AUTHORITY\SYSTEM. Test with NT AUTHORITY prepended' {
-                    Join-ServiceAccountInfo @Params -User $mockSetupNTSystemCredential | Should BeExactly ('{0} /{1}="{2}"' -f $Params['ArgumentString'], $Params['UsernameArgumentname'], $mockSetupNTSystemCredential.UserName)
-                }
-
-                It 'Should return string service account information and no password appended for NT AUTHORITY\LOCALSERVICE. Test with NT AUTHORITY prepended' {
-                    Join-ServiceAccountInfo @Params -User $mockSetupNTLocalServiceCredential | Should BeExactly ('{0} /{1}="{2}"' -f $Params['ArgumentString'], $Params['UsernameArgumentname'], $mockSetupNTLocalServiceCredential.UserName)
-                }
-
-                It 'Should return string service account information and no password appended for NT AUTHORITY\NETWORKSERVICE. Test with NT AUTHORITY prepended' {
-                    Join-ServiceAccountInfo @Params -User $mockSetupNTNetworkServiceCredential | Should BeExactly ('{0} /{1}="{2}"' -f $Params['ArgumentString'], $Params['UsernameArgumentname'], $mockSetupNTNetworkServiceCredential.UserName)
-                }
-            }
         }
 
         # Tests only the parts of the code that does not already get tested thru the other tests.
@@ -2892,7 +3468,67 @@ try
                 }
             }
         }
-   }
+
+        Describe 'Get-ServiceAccountParameters' -Tag 'Helper' {
+            $serviceTypes = @('SQL','AGT','IS','RS','AS','FT')
+
+            BeforeAll {
+                $mockServiceAccountPassword = ConvertTo-SecureString 'Password' -AsPlainText -Force
+
+                $mockSystemServiceAccount = (
+                    New-Object System.Management.Automation.PSCredential 'NT AUTHORITY\SYSTEM', $mockServiceAccountPassword
+                )
+
+                $mockVirtualServiceAccount = (
+                    New-Object System.Management.Automation.PSCredential 'NT SERVICE\MSSQLSERVER', $mockServiceAccountPassword
+                )
+
+                $mockManagedServiceAccount = (
+                    New-Object System.Management.Automation.PSCredential 'COMPANY\ManagedAccount$', $mockServiceAccountPassword
+                )
+
+                $mockDomainServiceAccount = (
+                    New-Object System.Management.Automation.PSCredential 'COMPANY\sql.service', $mockServiceAccountPassword
+                )
+            }
+
+            $serviceTypes | ForEach-Object {
+
+                $serviceType = $_
+
+                Context "When service type is $serviceType" {
+
+                    It "Should return the correct parameters when the account is a system account." {
+                        $result = Get-ServiceAccountParameters -ServiceAccount $mockSystemServiceAccount -ServiceType $serviceType
+
+                        $result.$("$($serviceType)SVCACCOUNT") | Should BeExactly $mockSystemServiceAccount.UserName
+                        $result.ContainsKey("$($serviceType)SVCPASSWORD") | Should Be $false
+                    }
+
+                    It "Should return the correct parameters when the account is a virtual service account" {
+                        $result = Get-ServiceAccountParameters -ServiceAccount $mockVirtualServiceAccount -ServiceType $serviceType
+
+                        $result.$("$($serviceType)SVCACCOUNT") | Should BeExactly $mockVirtualServiceAccount.UserName
+                        $result.ContainsKey("$($serviceType)SVCPASSWORD") | Should Be $false
+                    }
+
+                    It "Should return the correct parameters when the account is a managed service account" {
+                        $result = Get-ServiceAccountParameters -ServiceAccount $mockManagedServiceAccount -ServiceType $serviceType
+
+                        $result.$("$($serviceType)SVCACCOUNT") | Should BeExactly $mockManagedServiceAccount.UserName
+                        $result.ContainsKey("$($serviceType)SVCPASSWORD") | Should Be $false
+                    }
+
+                    It "Should return the correct parameters when the account is a domain account" {
+                        $result = Get-ServiceAccountParameters -ServiceAccount $mockDomainServiceAccount -ServiceType $serviceType
+
+                        $result.$("$($serviceType)SVCACCOUNT") | Should BeExactly $mockDomainServiceAccount.UserName
+                        $result.$("$($serviceType)SVCPASSWORD") | Should BeExactly $mockDomainServiceAccount.GetNetworkCredential().Password
+                    }
+                }
+            }
+        }
+    }
 }
 finally
 {

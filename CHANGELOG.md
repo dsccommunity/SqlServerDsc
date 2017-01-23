@@ -42,6 +42,14 @@
   - Added to the description text for the parameter `Credential` describing how to authenticate using Windows Authentication.
   - Added examples to show how to authenticate using either SQL or Windows authentication.
   - A recent issue showed that there is a known problem running this resource using PowerShell 4.0. For more information, see [issue #273](https://github.com/PowerShell/xSQLServer/issues/273)
+- Changes to xSQLServerFirewall
+  - BREAKING CHANGE: Removed parameter SourceFolder.
+  - BREAKING CHANGE: Removed default value "$PSScriptRoot\..\..\" from parameter SourcePath.
+  - Old code, that no longer filled any function, has been replaced.
+    - Function `ResolvePath` has been replaced with `[Environment]::ExpandEnvironmentVariables($SourcePath)` so that environment variables still can be used in Source Path.
+  - Adding new optional parameter SourceCredential that can be used to authenticate against SourcePath.
+  - Solved PSSA rules errors in the code.
+  - Get-TargetResource no longer return $true when no products was installed.
 - Changes to the unit test for resource
   - xSQLServerSetup
     - Added test coverage for helper function Copy-ItemWithRoboCopy
@@ -67,11 +75,38 @@
 - Examples
   - xSQLServerDatabaseRecoveryModel
     - 1-SetDatabaseRecoveryModel.ps1
+  - xSQLServerDatabasePermission
+    - 1-GrantDatabasePermissions.ps1
+    - 2-RevokeDatabasePermissions.ps1
+    - 3-DenyDatabasePermissions.ps1
+  - xSQLServerFirewall
+    - 1-CreateInboundFirewallRules
+    - 2-RemoveInboundFirewallRules
 - Added tests for resources
   - xSQLServerDatabaseRecoveryModel
+  - xSQLServerDatabasePermissions
+  - xSQLServerFirewall
 - Changes to xSQLServerDatabaseRecoveryModel
   - BREAKING CHANGE: Renamed xSQLDatabaseRecoveryModel to xSQLServerDatabaseRecoveryModel to align wíth naming convention.
   - BREAKING CHANGE: The mandatory parameters now include SQLServer, and SQLInstanceName.
+- Changes to xSQLServerDatabasePermission
+  - BREAKING CHANGE: Renamed xSQLServerDatabasePermissions to xSQLServerDatabasePermission to align wíth naming convention.
+  - BREAKING CHANGE: The mandatory parameters now include PermissionState, SQLServer, and SQLInstanceName.
+- Added support for clustered installations to xSQLServerSetup
+  - Migrated relevant code from xSQLServerFailoverClusterSetup
+  - Removed Get-WmiObject usage
+  - Clustered storage mapping now supports asymmetric cluster storage
+  - Added support for multi-subnet clusters
+  - Added localized error messages for cluster object mapping
+  - Updated README.md to reflect new parameters
+- Updated description for xSQLServerFailoverClusterSetup to indicate it is deprecated.
+- xPDT helper module
+  - Function GetxPDTVariable was removed since it no longer was used by any resources.
+  - File xPDT.xml was removed since it was not used by any resources, and did not provide any value to the module.
+- Changes xSQLServerHelper moduled
+  - Removed the globally defined `$VerbosePreference = 'Continue'` from xSQLServerHelper.
+  - Fixed a typo in a variable name in the function New-ListenerADObject.
+  - Now Restart-SqlService will correctly show the services it restarts. Also fixed PSSA warnings.
 
 ## 4.0.0.0
 
