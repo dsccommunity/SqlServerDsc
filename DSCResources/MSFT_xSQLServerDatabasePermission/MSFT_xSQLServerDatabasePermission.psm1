@@ -6,6 +6,7 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
 
     .PARAMETER Ensure
     This is The Ensure if the permission should be granted (Present) or revoked (Absent)
+    Not used in Get-TargetResource
 
     .PARAMETER Database
     This is the SQL database
@@ -17,13 +18,13 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
     This is the state of permission set. Valid values are 'Grant' or 'Deny'
 
     .PARAMETER Permissions
-    This is a list boolean that set of permissions for the SQL database
+    This is a list that represents a SQL Server set of database permissions
 
     .PARAMETER SQLServer
-    This is a the SQL Server for the database
+    This is the SQL Server for the database
 
     .PARAMETER SQLInstanceName
-    This is a the SQL instance for the database
+    This is the SQL instance for the database
 #>
 function Get-TargetResource
 {
@@ -61,12 +62,12 @@ function Get-TargetResource
         $SQLInstanceName = 'MSSQLSERVER'
     )
 
-    $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+    $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
-    if ($sql)
+    if ($sqlServerObject)
     {
         Write-Verbose -Message "Getting permissions for user '$Name' in database '$Database'"
-        $getSqlDatabasePermissionResult = Get-SqlDatabasePermission -SqlServerObject $sql `
+        $getSqlDatabasePermissionResult = Get-SqlDatabasePermission -SqlServerObject $sqlServerObject `
                                                                     -Name $Name `
                                                                     -Database $Database `
                                                                     -PermissionState $PermissionState
@@ -91,8 +92,6 @@ function Get-TargetResource
     }
     else
     {
-        $null = $getSqlDatabasePermissionResult
-        $Ensure = 'Absent'
         throw New-TerminatingError -ErrorType ConnectSQLError `
                                    -FormatArgs @($SQLServer,$SQLInstanceName) `
                                    -ErrorCategory InvalidOperation
@@ -128,13 +127,13 @@ function Get-TargetResource
     This is the state of permission set. Valid values are 'Grant' or 'Deny'
 
     .PARAMETER Permissions
-    This is a list boolean that set of permissions for the SQL database
+    This is a list that represents a SQL Server set of database permissions
 
     .PARAMETER SQLServer
-    This is a the SQL Server for the database
+    This is the SQL Server for the database
 
     .PARAMETER SQLInstanceName
-    This is a the SQL instance for the database
+    This is the SQL instance for the database
 #>
 function Set-TargetResource
 {
@@ -143,7 +142,7 @@ function Set-TargetResource
     (
         [ValidateSet('Present','Absent')]
         [System.String]
-        $Ensure,
+        $Ensure = 'Present',
 
         [parameter(Mandatory = $true)]
         [System.String]
@@ -171,15 +170,15 @@ function Set-TargetResource
         $SQLInstanceName = 'MSSQLSERVER'
     )
 
-    $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+    $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
     
-    if ($sql)
+    if ($sqlServerObject)
     {
         Write-Verbose -Message "Setting permissions of database '$Database' for login '$Name'"
 
         if ($Ensure -eq 'Present')
         {
-            Add-SqlDatabasePermission -SqlServerObject $sql `
+            Add-SqlDatabasePermission -SqlServerObject $sqlServerObject `
                                       -Name $Name `
                                       -Database $Database `
                                       -PermissionState $PermissionState `
@@ -189,7 +188,7 @@ function Set-TargetResource
         }
         else
         {
-            Remove-SqlDatabasePermission -SqlServerObject $sql `
+            Remove-SqlDatabasePermission -SqlServerObject $sqlServerObject `
                                          -Name $Name `
                                          -Database $Database `
                                          -PermissionState $PermissionState `
@@ -223,13 +222,13 @@ function Set-TargetResource
     This is the state of permission set. Valid values are 'Grant' or 'Deny'
 
     .PARAMETER Permissions
-    This is a list boolean that set of permissions for the SQL database
+    This is a list that represents a SQL Server set of database permissions
 
     .PARAMETER SQLServer
-    This is a the SQL Server for the database
+    This is the SQL Server for the database
 
     .PARAMETER SQLInstanceName
-    This is a the SQL instance for the database
+    This is the SQL instance for the database
 #>
 function Test-TargetResource
 {
@@ -239,7 +238,7 @@ function Test-TargetResource
     (
         [ValidateSet('Present','Absent')]
         [System.String]
-        $Ensure,
+        $Ensure = 'Present',
 
         [parameter(Mandatory = $true)]
         [System.String]

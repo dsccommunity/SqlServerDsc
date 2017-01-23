@@ -278,7 +278,8 @@ No description.
 
 ### xSQLServerDatabasePermission
 
-No description.
+This resource is used to grant, deny or revoke permissions for a user in a database. 
+For more information about permissions, please read the article [Permissions (Database Engine)](https://msdn.microsoft.com/en-us/library/ms191291.aspx).
 
 #### Requirements
 
@@ -290,15 +291,16 @@ No description.
 * **[String] Ensure** _(Write)_: If the permission should be granted (Present) or revoked (Absent). { Present | Absent }.
 * **[String] Database** _(Key)_: The name of the database.
 * **[String] Name** _(Key)_: The name of the user that should be granted or denied the permission.
-* **[String[]] Permissions** _(Required)_: The permissions to be granted or denied for the user in the database. Valid permissions can be found in the article [SQL Server Permissions](https://msdn.microsoft.com/en-us/library/ms191291.aspx#SQL Server Permissions).
+* **[String[]] Permissions** _(Required)_: The permissions to be granted or denied for the user in the database. Valid permissions can be found in the article [SQL Server Permissions](https://msdn.microsoft.com/en-us/library/ms191291.aspx#Anchor_3).
 * **[String] PermissionState** _(Key)_: The state of the permission. { Grant | Deny }.
 * **[String] SQLServer** _(Key)_: The host name of the SQL Server to be configured. Default values is 'env:COMPUTERNAME'.
 * **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured. Default value is 'MSSQLSERVER'.
 
 #### Examples
 
-* [Add Database Permission](/Examples/Resources/xSQLServerDatabasePermission/1-AddDatabasePermissions.ps1)
-* [Remove Database Permission](/Examples/Resources/xSQLServerDatabasePermission/2-RemoveDatabasePermissions.ps1)
+* [Grant Database Permission](/Examples/Resources/xSQLServerDatabasePermission/1-GrantDatabasePermissions.ps1)
+* [Revoke Database Permission](/Examples/Resources/xSQLServerDatabasePermission/2-RevokeDatabasePermissions.ps1)
+* [Deny Database Permission](/Examples/Resources/xSQLServerDatabasePermission/3-DenyDatabasePermissions.ps1)
 
 ### xSQLServerDatabaseRecoveryModel
 

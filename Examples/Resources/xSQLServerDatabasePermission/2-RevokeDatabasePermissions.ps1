@@ -15,16 +15,6 @@ Configuration Example
     Import-DscResource -ModuleName xSqlServer
 
     node localhost {
-        xSQLServerLogin Add_SqlServerLogin_SQLAdmin
-        {
-            Ensure = 'Present'
-            Name = 'CONTOSO\SQLAdmin'
-            LoginType = 'WindowsUser'        
-            SQLServer = 'SQLServer'
-            SQLInstanceName = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
-        }
-
         xSQLServerDatabasePermission RevokeGrant_SqlDatabasePermissions_SQLAdmin
         {
             Ensure = 'Absent'
