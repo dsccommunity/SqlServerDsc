@@ -1581,6 +1581,7 @@ function Add-SqlDatabasePermission
                         {
                             $sqlDatabase.Grant($permissionSet,$Name)
                         }
+
                         'Deny'
                         {
                             $sqlDatabase.Deny($permissionSet,$Name)
@@ -1694,7 +1695,7 @@ function Remove-SqlDatabasePermission
             {
                 try
                 {
-                    Write-Verbose -Message ("$PermissionState the permissions '$Permissions' to the " + `
+                    Write-Verbose -Message ("Revoking $PermissionState permissions '$Permissions' to the " + `
                                             "database '$Database' on the server $sqlServer$sqlInstanceName")
                     $permissionSet = New-Object -TypeName Microsoft.SqlServer.Management.Smo.DatabasePermissionSet
 
@@ -1709,6 +1710,7 @@ function Remove-SqlDatabasePermission
                         {
                             $sqlDatabase.Grant($permissionSet,$Name)
                         }
+                        
                         'Deny'
                         {
                             $sqlDatabase.Deny($permissionSet,$Name)
