@@ -78,9 +78,13 @@
     - 1-GrantDatabasePermissions.ps1
     - 2-RevokeDatabasePermissions.ps1
     - 3-DenyDatabasePermissions.ps1
+  - xSQLServerFirewall
+    - 1-CreateInboundFirewallRules
+    - 2-RemoveInboundFirewallRules
 - Added tests for resources
   - xSQLServerDatabaseRecoveryModel
   - xSQLServerDatabasePermissions
+  - xSQLServerFirewall
 - Changes to xSQLServerDatabaseRecoveryModel
   - BREAKING CHANGE: Renamed xSQLDatabaseRecoveryModel to xSQLServerDatabaseRecoveryModel to align wíth naming convention.
   - BREAKING CHANGE: The mandatory parameters now include SQLServer, and SQLInstanceName.
@@ -102,8 +106,6 @@
   - Removed the globally defined `$VerbosePreference = 'Continue'` from xSQLServerHelper.
   - Fixed a typo in a variable name in the function New-ListenerADObject.
   - Now Restart-SqlService will correctly show the services it restarts. Also fixed PSSA warnings.
-- Added tests for resources
-  - xSQLServerFirewall
 
 ## 4.0.0.0
 
