@@ -1,6 +1,3 @@
-# Set Global Module Verbose
-$VerbosePreference = 'Continue'
-
 # Load Localization Data
 Import-LocalizedData LocalizedData -filename xSQLServer.strings.psd1 -ErrorAction SilentlyContinue
 Import-LocalizedData USLocalizedData -filename xSQLServer.strings.psd1 -UICulture en-US -ErrorAction SilentlyContinue
@@ -295,7 +292,7 @@ function New-VerboseMessage
         [Parameter(Mandatory=$true)]
         $Message
     )
-    Write-Verbose -Message ((Get-Date -format yyyy-MM-dd_HH-mm-ss) + ": $Message");
+    Write-Verbose -Message ((Get-Date -format yyyy-MM-dd_HH-mm-ss) + ": $Message") -Verbose
 }
 
 <#
@@ -656,7 +653,7 @@ function New-ListenerADObject
             Exit
             }
 
-            $SucccessChk =0
+            $SuccessChk =0
 
         #Check for AD Object Validate at least three successful attempts
         $i=1
@@ -1249,10 +1246,10 @@ function Restart-SqlService
                             Where-Object { ($_.Type -eq "SQL Server Agent") -and ($_.State -eq 2) }
 
         ## Build a listing of resources being acted upon
-        $resourceNames = @($sqlService.Name, ($agentService | Select -ExpandProperty Name)) -join ","
+        $resourceNames = @($sqlService.Name, ($agentService | Select-Object -ExpandProperty Name)) -join ","
 
         ## Stop the SQL Server and dependent resources
-        New-VerboseMessage -Message 'Bringing the SQL Server resources $resourceNames offline.'
+        New-VerboseMessage -Message "Bringing the SQL Server resources $resourceNames offline."
         $sqlService | Invoke-CimMethod -MethodName TakeOffline -Arguments @{ Timeout = $Timeout }
 
         ## Start the SQL server resource
@@ -1299,16 +1296,16 @@ function Restart-SqlService
 #>
 function Get-SqlDatabaseRecoveryModel
 {
-    [CmdletBinding()]    
+    [CmdletBinding()]
     param
-    (   
+    (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateNotNull()]
         [System.Object]
         $SqlServerObject,
-        
+
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $DatabaseName
     )
@@ -1319,7 +1316,7 @@ function Get-SqlDatabaseRecoveryModel
     $sqlServer = $SqlServerObject.ComputerNamePhysicalNetBIOS
 
     if ($sqlDatabase)
-    {        
+    {
         $sqlDatabaseRecoveryModel = $sqlDatabase.RecoveryModel
         Write-Verbose -Message "The current recovery model used by database $Name is '$sqlDatabaseRecoveryModel'"
     }
@@ -1348,16 +1345,16 @@ function Get-SqlDatabaseRecoveryModel
 #>
 function Set-SqlDatabaseRecoveryModel
 {
-    [CmdletBinding()]    
+    [CmdletBinding()]
     param
-    (   
+    (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNull()] 
+        [ValidateNotNull()]
         [System.Object]
         $SqlServerObject,
-        
+
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $DatabaseName,
 
@@ -1374,7 +1371,7 @@ function Set-SqlDatabaseRecoveryModel
     $sqlServer = $SqlServerObject.ComputerNamePhysicalNetBIOS
 
     if ($sqlDatabase)
-    {  
+    {
         if($sqlDatabase.RecoveryModel -ne $RecoveryModel)
         {
             $sqlDatabase.RecoveryModel = $RecoveryModel
@@ -1408,27 +1405,27 @@ function Set-SqlDatabaseRecoveryModel
 #>
 function Get-SqlDatabasePermission
 {
-    [CmdletBinding()]    
+    [CmdletBinding()]
     param
-    (   
+    (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.Object]
         $SqlServerObject,
-        
+
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Database,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('Grant','Deny')]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $PermissionState
     )
@@ -1443,13 +1440,13 @@ function Get-SqlDatabasePermission
     [System.String[]] $permission = @()
 
     if ($sqlDatabase)
-    {        
+    {
         if ($sqlLogin)
         {
             Write-Verbose -Message "Getting permissions for user '$Name' in database '$Database'."
 
             $databasePermissionInfo = $sqlDatabase.EnumDatabasePermissions($Name)
-            $databasePermissionInfo = $databasePermissionInfo | Where-Object -FilterScript { 
+            $databasePermissionInfo = $databasePermissionInfo | Where-Object -FilterScript {
                 $_.PermissionState -eq $PermissionState
             }
 
@@ -1469,7 +1466,7 @@ function Get-SqlDatabasePermission
         {
             throw New-TerminatingError -ErrorType LoginNotFound `
                                        -FormatArgs @($Name,$sqlServer,$sqlInstanceName) `
-                                       -ErrorCategory ObjectNotFound 
+                                       -ErrorCategory ObjectNotFound
         }
     }
     else
@@ -1499,33 +1496,33 @@ function Get-SqlDatabasePermission
     If the permission should be granted or denied. Valid values are Grant or Deny
 
     .PARAMETER Permissions
-    The permissions to be granted or denied for the user in the database. 
+    The permissions to be granted or denied for the user in the database.
     Valid permissions can be found in the article SQL Server Permissions:
     https://msdn.microsoft.com/en-us/library/ms191291.aspx#SQL Server Permissions
 #>
 function Add-SqlDatabasePermission
 {
-    [CmdletBinding()]    
+    [CmdletBinding()]
     param
-    (   
+    (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.Object]
         $SqlServerObject,
-        
+
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Database,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('Grant','Deny')]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $PermissionState,
 
@@ -1542,7 +1539,7 @@ function Add-SqlDatabasePermission
     $sqlServer = $SqlServerObject.ComputerNamePhysicalNetBIOS
 
     if ($sqlDatabase)
-    {        
+    {
         if ($sqlLogin)
         {
             if (!$sqlDatabase.Users[$Name])
@@ -1575,9 +1572,9 @@ function Add-SqlDatabasePermission
                         $permissionSet."$permission" = $true
                     }
 
-                    switch ($PermissionState) 
+                    switch ($PermissionState)
                     {
-                        'Grant' 
+                        'Grant'
                         {
                             $sqlDatabase.Grant($permissionSet,$Name)
                         }
@@ -1586,7 +1583,7 @@ function Add-SqlDatabasePermission
                         {
                             $sqlDatabase.Deny($permissionSet,$Name)
                         }
-                    }                    
+                    }
                 }
                 catch
                 {
@@ -1633,27 +1630,27 @@ function Add-SqlDatabasePermission
 #>
 function Remove-SqlDatabasePermission
 {
-    [CmdletBinding()]    
+    [CmdletBinding()]
     param
-    (   
+    (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.Object]
         $SqlServerObject,
-        
+
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
-        
+
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Database,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('Grant','Deny')]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $PermissionState,
 
@@ -1670,7 +1667,7 @@ function Remove-SqlDatabasePermission
     $sqlServer = $SqlServerObject.ComputerNamePhysicalNetBIOS
 
     if ($sqlDatabase)
-    {        
+    {
         if ($sqlLogin)
         {
             if (!$sqlDatabase.Users[$Name])
@@ -1704,18 +1701,18 @@ function Remove-SqlDatabasePermission
                         $permissionSet."$permission" = $false
                     }
 
-                    switch ($PermissionState) 
+                    switch ($PermissionState)
                     {
                         'Grant'
                         {
                             $sqlDatabase.Grant($permissionSet,$Name)
                         }
-                        
+
                         'Deny'
                         {
                             $sqlDatabase.Deny($permissionSet,$Name)
                         }
-                    }                    
+                    }
                 }
                 catch
                 {

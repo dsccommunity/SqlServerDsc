@@ -484,7 +484,36 @@ None.
 
 ### xSQLServerFirewall
 
-No description.
+This will set default firewall rules for the supported features. Currently the features supported are Database Engine,
+Analysis Services, SQL Browser, SQL Reporting Services and Integration Services.
+
+#### Firewall rules
+
+##### Default rules for default instance
+
+| Feature | Component | Enable Firewall Rule | Firewall Name |
+| --- | --- | --- | --- |
+| SQLENGINE | Database Engine | Application: sqlservr.exe | SQL Server Database Engine instance MSSQLSERVER |
+| SQLENGINE | Database Engine | Service: SQLBrowser | SQL Server Browser |
+| AS | Analysis Services | Service: MSSQLServerOLAPService | SQL Server Analysis Services instance MSSQLSERVER |
+| AS | Analysis Services | Service: SQLBrowser | SQL Server Browser |
+| RS | Reporting Services | Port: tcp/80 | SQL Server Reporting Services 80 |
+| RS | Reporting Services | Port: tcp/443 | SQL Server Reporting Services 443 |
+| IS | Integration Services | Application: MsDtsSrvr.exe | SQL Server Integration Services Application |
+| IS | Integration Services | Port: tcp/135 | SQL Server Integration Services Port |
+
+##### Default rules for named instance
+
+| Feature | Component | Enable Firewall Rule | Firewall Name |
+| --- | --- | --- | --- |
+| SQLENGINE | Database Engine | Application: sqlservr.exe | SQL Server Database Engine instance \<NAMED_INSTANCE\> |
+| SQLENGINE | Database Engine | Service: SQLBrowser | SQL Server Browser |
+| AS | Analysis Services | Service: MSOLAP$INSTANCE | | SQL Server Analysis Services instance \<NAMED_INSTANCE\> |
+| AS | Analysis Services | Service: SQLBrowser | SQL Server Browser |
+| RS | Reporting Services | Port: tcp/80 | SQL Server Reporting Services 80 |
+| RS | Reporting Services | Port: tcp/443 | SQL Server Reporting Services 443 |
+| IS | Integration Services | Application: MsDtsSrvr.exe | SQL Server Integration Services Application |
+| IS | Integration Services | Port: tcp/135 | SQL Server Integration Services Port |
 
 #### Requirements
 
@@ -496,7 +525,7 @@ No description.
 * **[String] InstanceName** _(Key)_: SQL instance to enable firewall rules for.
 * **[String] Ensure** _(Write)_: Ensures that SQL firewall rules are **Present** or **Absent** on the machine. { *Present* | Absent }.
 * **[String] SourcePath** _(Write)_: UNC path to the root of the source files for installation.
-* **[String] SourceFolder** _(Write)_: Folder within the source path containing the source files for installation.
+* **[String] SourceCredential** _(Write)_: Credentials used to access the path set in the parameter 'SourcePath'. This parmeter is optional either if built-in parameter 'PsDscRunAsCredential' is used, or if the source path can be access using the SYSTEM account.
 
 #### Read-Only Properties from Get-TargetResource
 
@@ -508,7 +537,8 @@ No description.
 
 #### Examples
 
-None.
+* [Create inbound firewall rules](/Examples/Resources/xSQLServerFirewall/1-CreateInboundFirewallRules.ps1)
+* [Remove inbound firewall rules](/Examples/Resources/xSQLServerFirewall/2-RemoveInboundFirewallRules.ps1)
 
 ### xSQLServerLogin
 
