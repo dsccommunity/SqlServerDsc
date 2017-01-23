@@ -1746,9 +1746,9 @@ try
                         Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-CimAssociatedInstance -Exactly -Times 0 -Scope It
 
-                        $currentState.FailoverClusterGroupName | Should Be ''
-                        $currentState.FailoverClusterNetworkName | Should Be ''
-                        $currentState.FailoverClusterIPAddress | Should Be ''
+                        $currentState.FailoverClusterGroupName | Should BeNullOrEmpty
+                        $currentState.FailoverClusterNetworkName | Should BeNullOrEmpty
+                        $currentState.FailoverClusterIPAddress | Should BeNullOrEmpty
                     }
                 }
 
