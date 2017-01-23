@@ -66,11 +66,19 @@
 - Examples
   - xSQLServerDatabaseRecoveryModel
     - 1-SetDatabaseRecoveryModel.ps1
+  - xSQLServerDatabasePermission
+    - 1-GrantDatabasePermissions.ps1
+    - 2-RevokeDatabasePermissions.ps1
+    - 3-DenyDatabasePermissions.ps1
 - Added tests for resources
   - xSQLServerDatabaseRecoveryModel
+  - xSQLServerDatabasePermissions
 - Changes to xSQLServerDatabaseRecoveryModel
   - BREAKING CHANGE: Renamed xSQLDatabaseRecoveryModel to xSQLServerDatabaseRecoveryModel to align wíth naming convention.
   - BREAKING CHANGE: The mandatory parameters now include SQLServer, and SQLInstanceName.
+- Changes to xSQLServerDatabasePermission
+  - BREAKING CHANGE: Renamed xSQLServerDatabasePermissions to xSQLServerDatabasePermission to align wíth naming convention.
+  - BREAKING CHANGE: The mandatory parameters now include PermissionState, SQLServer, and SQLInstanceName.
 
 ## 4.0.0.0
 

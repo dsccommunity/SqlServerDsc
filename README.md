@@ -66,7 +66,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * [**xSQLServerConfiguration**](#xsqlserverconfiguration) resource to manage [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
 * [**xSQLServerDatabase**](#xsqlserverdatabase) resource to manage ensure database is present or absent
 * [**xSQLServerDatabaseOwner**](#xsqlserverdatabaseowner) resource to manage SQL database owners
-* [**xSQLServerDatabasePermissions**](#xsqlserverdatabasepermissions) resource to manage SQL database permissions
+* [**xSQLServerDatabasePermission**](#xsqlserverdatabasepermission) resource to manage SQL database permissions
 * [**xSQLServerDatabaseRecoveryModel**](#xsqlserverdatabaserecoverymodel) resource to manage database recovery model
 * [**xSQLServerDatabaseRole**](#xsqlserverdatabaserole) resource to manage SQL database roles
 * [**xSQLServerEndpoint**](#xsqlserverendpoint) resource to ensure database endpoint is present or absent
@@ -276,9 +276,10 @@ No description.
 
 * [Set database owner](/Examples/Resources/xSQLServerDatabaseOwner/1-SetDatabaseOwner.ps1)
 
-### xSQLServerDatabasePermissions
+### xSQLServerDatabasePermission
 
-No description.
+This resource is used to grant, deny or revoke permissions for a user in a database.
+For more information about permissions, please read the article [Permissions (Database Engine)](https://msdn.microsoft.com/en-us/library/ms191291.aspx).
 
 #### Requirements
 
@@ -287,15 +288,19 @@ No description.
 
 #### Parameters
 
-* **[String] Database** _(Key)_: The SQL Database
-* **[String] Name** _(Required)_: The name of permissions for the SQL database
-* **[String[]] Permissions** _(Required)_: The set of Permissions for the SQL database
-* **[String] SQLServer** _(Write)_: The SQL Server for the database
-* **[String] SQLInstanceName** _(Write)_: The SQL instance for the database
+* **[String] Ensure** _(Write)_: If the permission should be granted (Present) or revoked (Absent). { Present | Absent }.
+* **[String] Database** _(Key)_: The name of the database.
+* **[String] Name** _(Key)_: The name of the user that should be granted or denied the permission.
+* **[String[]] Permissions** _(Required)_: The permissions to be granted or denied for the user in the database. Valid permissions can be found in the article [SQL Server Permissions](https://msdn.microsoft.com/en-us/library/ms191291.aspx#Anchor_3).
+* **[String] PermissionState** _(Key)_: The state of the permission. { Grant | Deny }.
+* **[String] SQLServer** _(Key)_: The host name of the SQL Server to be configured. Default values is 'env:COMPUTERNAME'.
+* **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured. Default value is 'MSSQLSERVER'.
 
 #### Examples
 
-None.
+* [Grant Database Permission](/Examples/Resources/xSQLServerDatabasePermission/1-GrantDatabasePermissions.ps1)
+* [Revoke Database Permission](/Examples/Resources/xSQLServerDatabasePermission/2-RevokeDatabasePermissions.ps1)
+* [Deny Database Permission](/Examples/Resources/xSQLServerDatabasePermission/3-DenyDatabasePermissions.ps1)
 
 ### xSQLServerDatabaseRecoveryModel
 
