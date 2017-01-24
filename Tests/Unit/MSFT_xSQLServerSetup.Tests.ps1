@@ -699,7 +699,6 @@ try
             IAcceptSQLServerLicenseTerms = 'True'
             Quiet = 'True'
             InstanceName = 'MSSQLSERVER'
-            AGTSVCSTARTUPTYPE = 'Automatic'
             Features = 'SQLENGINE'
             SQLSysAdminAccounts = 'COMPANY\sqladmin'
             FailoverClusterGroup = 'SQL Server (MSSQLSERVER)'
@@ -3301,7 +3300,6 @@ try
                             IAcceptSQLServerLicenseTerms = 'True'
                             SkipRules = 'Cluster_VerifyForErrors'
                             Quiet = 'True'
-                            AgtSvcStartupType = 'Automatic'
                             SQLSysAdminAccounts = 'COMPANY\sqladmin'
 
                             Action = 'CompleteFailoverCluster'

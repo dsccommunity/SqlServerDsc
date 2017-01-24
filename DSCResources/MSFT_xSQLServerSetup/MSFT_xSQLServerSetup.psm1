@@ -935,7 +935,10 @@ function Set-TargetResource
             $setupArguments += @{ SAPwd = $SAPwd.GetNetworkCredential().Password }
         }
 
-        $setupArguments += @{ AgtSvcStartupType = 'Automatic' }
+        if ($Action -notin @('PrepareFailoverCluster','CompleteFailoverCluster','InstallFailoverCluster','AddNode'))
+        {
+            $setupArguments += @{ AgtSvcStartupType = 'Automatic' }
+        }
     }
 
     if ($Features.Contains('FULLTEXT'))
