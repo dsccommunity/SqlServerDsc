@@ -788,6 +788,14 @@ function Set-TargetResource
         }
     }
 
+    # Add the failover cluster network name if the action is either installing or completing a cluster
+    if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
+    {
+        $setupArguments += @{
+            FailoverClusterNetworkName = $FailoverClusterNetworkName
+        };
+    }
+
     # Perform disk mapping for specific cluster installation types
     if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
     {

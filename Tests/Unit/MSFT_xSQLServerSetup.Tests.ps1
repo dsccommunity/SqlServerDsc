@@ -78,6 +78,9 @@ try
 
         $mockDefaultInstance_FailoverClusterNetworkName = 'TestDefaultCluster'
         $mockDefaultInstance_FailoverClusterIPAddress = '10.0.0.10'
+        $mockDefaultInstance_FailoverClusterIPAddress_SecondSite = '10.0.10.100'
+        $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite = 'IPV4; 10.0.0.10; SiteA_Prod; 255.255.255.0'
+        $mockDefaultInstance_FailoverClusterIPAddressParameter_MultiSite = 'IPv4; 10.0.0.10; SiteA_Prod; 255.255.255.0; IPv4; 10.0.10.100; SiteB_Prod; 255.255.255.0'
         $mockDefaultInstance_FailoverClusterGroupName = "SQL Server ($mockDefaultInstance_InstanceName)"
 
         $mockNamedInstance_InstanceName = 'TEST'
@@ -113,12 +116,12 @@ try
         $mockClusterSites = @(
             @{
                 Name = 'SiteA'
-                Address = '10.0.0.100'
+                Address = $mockDefaultInstance_FailoverClusterIPAddress
                 Mask = '255.255.255.0'
             },
             @{
                 Name = 'SiteB'
-                Address = '10.0.10.100'
+                Address = $mockDefaultInstance_FailoverClusterIPAddress_SecondSite
                 Mask = '255.255.255.0'
             }
         )
@@ -3126,7 +3129,6 @@ try
 
                         { Set-TargetResource @testParameters } | Should Not Throw
                     }
-
                     It 'Should throw an error when one or more paths are not resolved to clustered storage' {
                         $badPathParameters = $testParameters.Clone()
                         
@@ -3342,8 +3344,8 @@ try
                             SourcePath = $mockSourcePath
                             Action = 'CompleteFailoverCluster'
                             FailoverClusterGroupName = 'SQL Server (MSSQLSERVER)'
-                            FailoverClusterNetworkName = 'TestCluster'
-                            FailoverClusterIPAddress = '10.0.0.100'
+                            FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+                            FailoverClusterIPAddress = $mockDefaultInstance_FailoverClusterIPAddress
                         }
                     }
 
@@ -3383,14 +3385,14 @@ try
                         $mockStartWin32ProcessExpectedArgument = $mockStartWin32ProcessExpectedArgumentClusterDefault.Clone()
                         $mockStartWin32ProcessExpectedArgument += @{
                             Action = 'CompleteFailoverCluster'
-                            FailoverClusterIPAddresses = 'IPV4; 10.0.0.100; SiteA_Prod; 255.255.255.0'
+                            FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
                             SQLUserDBDir = 'K:\MSSQL\Data'
                             SQLUserDBLogDir = 'L:\MSSQL\Logs'
                             SQLTempDBDir = 'M:\MSSQL\TempDb\Data'
                             SQLTempDBLogDir = 'N:\MSSQL\TempDb\Logs'
                             SkipRules = 'Cluster_VerifyForErrors'
-
-                            FailoverClusterDisks = 'TempDbData; TempDbLogs; UserData; UserLogs'
+                            FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+                            FailoverClusterDisks = 'TempDbData; TempDbLogs; UserData; UserLogs' 
                         }
 
                         { Set-TargetResource @testParameters } | Should Not Throw
@@ -3404,7 +3406,7 @@ try
                         $mockStartWin32ProcessExpectedArgument += @{
                             Action = 'CompleteFailoverCluster'
                             FailoverClusterIPAddresses = 'DEFAULT'
-
+                            FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
                             SQLUserDBDir = 'K:\MSSQL\Data'
                             SQLUserDBLogDir = 'L:\MSSQL\Logs'
                             SQLTempDBDir = 'M:\MSSQL\TempDb\Data'
@@ -3442,8 +3444,8 @@ try
 
                         $mockStartWin32ProcessExpectedArgument = $mockStartWin32ProcessExpectedArgumentClusterDefault.Clone()
                         $mockStartWin32ProcessExpectedArgument += @{
-                            FailoverClusterIPAddresses = 'IPv4; 10.0.0.100; SiteA_Prod; 255.255.255.0'
-
+                            FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
+                            FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
                             SQLUserDBDir = 'K:\MSSQL\Data'
                             SQLUserDBLogDir = 'L:\MSSQL\Logs'
                             SQLTempDBDir = 'M:\MSSQL\TempDb\Data'
@@ -3465,8 +3467,8 @@ try
 
                         $mockStartWin32ProcessExpectedArgument = $mockStartWin32ProcessExpectedArgumentClusterDefault.Clone()
                         $mockStartWin32ProcessExpectedArgument += @{
-                            FailoverClusterIPAddresses = 'IPv4; 10.0.0.100; SiteA_Prod; 255.255.255.0; IPv4; 10.0.10.100; SiteB_Prod; 255.255.255.0'
-
+                            FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_MultiSite
+                            FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
                             SQLUserDBDir = 'K:\MSSQL\Data'
                             SQLUserDBLogDir = 'L:\MSSQL\Logs'
                             SQLTempDBDir = 'M:\MSSQL\TempDb\Data'
@@ -3490,8 +3492,9 @@ try
                             InstanceName = 'MSSQLSERVER'
                             Features = 'SQLEngine'
                             FailoverClusterDisks = 'TempDbData; TempDbLogs; UserData; UserLogs'
-                            FailoverClusterIPAddresses = 'IPV4; 10.0.0.100; SiteA_Prod; 255.255.255.0'
+                            FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
                             FailoverClusterGroup = 'SQL Server (MSSQLSERVER)'
+                            FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
                             SQLUserDBDir = 'K:\MSSQL\Data'
                             SQLUserDBLogDir = 'L:\MSSQL\Logs'
                             SQLTempDBDir = 'M:\MSSQL\TempDb\Data'
