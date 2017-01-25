@@ -99,6 +99,7 @@
   - xSQLServerMaxDop
     - 1-SetMaxDopToOne.ps1
     - 2-SetMaxDopToAuto.ps1
+    - 3-SetMaxDopToDefault.ps1
 - Added tests for resources
   - xSQLServerDatabaseRecoveryModel
   - xSQLServerDatabasePermissions
