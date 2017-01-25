@@ -863,7 +863,7 @@ function Set-TargetResource
                     if (Test-IPAddress -IPAddress $address -NetworkID $network.Address -SubnetMask $network.AddressMask)
                     {
                         # Add the formatted string to our array
-                        $clusterIPAddresses += "IPv4; $address; $($network.Name); $($network.AddressMask)"
+                        $clusterIPAddresses += "IPv4;$address;$($network.Name);$($network.AddressMask)"
                     }
                 }
             }

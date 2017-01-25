@@ -79,8 +79,8 @@ try
         $mockDefaultInstance_FailoverClusterNetworkName = 'TestDefaultCluster'
         $mockDefaultInstance_FailoverClusterIPAddress = '10.0.0.10'
         $mockDefaultInstance_FailoverClusterIPAddress_SecondSite = '10.0.10.100'
-        $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite = 'IPV4; 10.0.0.10; SiteA_Prod; 255.255.255.0'
-        $mockDefaultInstance_FailoverClusterIPAddressParameter_MultiSite = 'IPv4; 10.0.0.10; SiteA_Prod; 255.255.255.0; IPv4; 10.0.10.100; SiteB_Prod; 255.255.255.0'
+        $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
+        $mockDefaultInstance_FailoverClusterIPAddressParameter_MultiSite = 'IPv4;10.0.0.10;SiteA_Prod;255.255.255.0; IPv4;10.0.10.100;SiteB_Prod;255.255.255.0'
         $mockDefaultInstance_FailoverClusterGroupName = "SQL Server ($mockDefaultInstance_InstanceName)"
 
         $mockNamedInstance_InstanceName = 'TEST'
