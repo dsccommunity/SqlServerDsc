@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Changes to xSQLServerConfiguration
+  - Updated xSQLServerConfiguration.schema.mof so SQLInstance parameter is now a Key. This allows for the use case scenario where there     are multiple DB Instances on one box.
 - Improvements how tests are initiated in AppVeyor
   - Removed previous workaround (issue #201) from unit tests.
   - Changes in appveyor.yml so that SQL modules are removed before common test is run.
