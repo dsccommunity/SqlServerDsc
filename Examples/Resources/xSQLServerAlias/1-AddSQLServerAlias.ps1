@@ -1,17 +1,17 @@
 <#
 .EXAMPLE
     This example shows how to ensure that the SQL Alias
-    SQLDSC* exists with Named Pipes or TCP. 
+    SQLDSC* exists with Named Pipes or TCP.
 #>
 
-Configuration Example 
+Configuration Example
 {
     param(
         [Parameter(Mandatory = $true)]
         [PSCredential]
         $SysAdminAccount
     )
-    
+
     Import-DscResource -ModuleName xSqlServer
 
     node localhost {
