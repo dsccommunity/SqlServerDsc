@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Changes to xSQLServerConfiguration
+  - Updated xSQLServerConfiguration.schema.mof so SQLInstance parameter is now a Key. This allows for the use case scenario where there are multiple DB Instances on one box.
+
 ## 5.0.0.0
 
 - Improvements how tests are initiated in AppVeyor
