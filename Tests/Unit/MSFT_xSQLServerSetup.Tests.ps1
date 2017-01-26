@@ -2415,6 +2415,7 @@ try
                             InstanceName = $mockDefaultInstance_InstanceName
                             SourceCredential = $null
                             SourcePath = $mockSourcePath
+                            ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
                         }
 
                         Mock -CommandName New-SmbMapping -Verifiable
@@ -2446,6 +2447,7 @@ try
                             Features = 'SQLENGINE,REPLICATION,FULLTEXT,RS,IS,AS'
                             SQLSysAdminAccounts = 'COMPANY\sqladmin'
                             ASSysAdminAccounts = 'COMPANY\sqladmin'
+                            PID = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
                         }
 
                         { Set-TargetResource @testParameters } | Should Not Throw
@@ -2502,6 +2504,7 @@ try
                                 Action = 'Install'
                                 InstanceName = 'MSSQLSERVER'
                                 Features = 'SSMS'
+                                PID = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
                             }
 
                             { Set-TargetResource @testParameters } | Should Not Throw
@@ -2538,6 +2541,7 @@ try
                                 Action = 'Install'
                                 InstanceName = 'MSSQLSERVER'
                                 Features = 'ADV_SSMS'
+                                PID = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
                             }
 
                             { Set-TargetResource @testParameters } | Should Not Throw
