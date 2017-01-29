@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Rework of xSQLServerRSConfig
+  - Update the resoruce to match the HQRM criterias
+  - Fix the virtual directory creation for SQL 2016 (Web Portal)
+  - Fix issues related to SQL 2016
+
 ## 5.0.0.0
 
 - Improvements how tests are initiated in AppVeyor

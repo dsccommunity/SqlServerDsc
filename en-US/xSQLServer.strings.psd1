@@ -12,7 +12,8 @@ NotConnectedToInstance = Was unable to connect to the instance '{0}\\{1}'
 
 # SQLServer
 NoDatabase = Database '{0}' does not exist on SQL server '{1}\\{2}'.
-SSRSNotFound = SQL Reporting Services instance '{0}' does not exist!
+SSRSNotFound = SQL Reporting Services instance {0} does not exist!
+SSRSPrerequisite = SQL Reporting Services DSC resource prerequisite not installed or configured: {0}
 RoleNotFound = Role '{0}' does not exist on database '{1}' on SQL server '{2}\\{3}'."
 LoginNotFound = Login '{0}' does not exist on SQL server '{1}\\{2}'."
 FailedLogin = Creating a login of type 'SqlLogin' requires LoginCredential
