@@ -1,7 +1,8 @@
 # Change log for xSQLServer
 
 ## Unreleased
-
+-Changes to xSQLServerRole  
+  -xSQLServerRole now correctly reports that the desired state is present when the login is already a member of the server roles
 ## 5.0.0.0
 
 - Improvements how tests are initiated in AppVeyor
