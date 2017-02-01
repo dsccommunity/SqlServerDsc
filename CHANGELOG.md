@@ -5,6 +5,10 @@
 - Changes to xSQLServerConfiguration
   - Updated xSQLServerConfiguration.schema.mof so SQLInstance parameter is now a Key. This allows for the use case scenario where there are multiple DB Instances on one box.
 
+- Changes to xSQLServerRole
+  - xSQLServerRole now correctly reports that the desired state is present when the login is already a member of the server roles
+
+
 ## 5.0.0.0
 
 - Improvements how tests are initiated in AppVeyor
