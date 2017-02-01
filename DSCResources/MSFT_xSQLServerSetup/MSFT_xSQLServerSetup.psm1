@@ -1450,6 +1450,8 @@ function Test-TargetResource
         InstanceName = $InstanceName
     }
 
+    $boundParams = $PSBoundParameters;
+
     $getTargetResourceResult = Get-TargetResource @parameters
     New-VerboseMessage -Message "Features found: '$($getTargetResourceResult.Features)'"
 
@@ -1477,11 +1479,11 @@ function Test-TargetResource
 
         $result = $true
 
-        Get-Variable -Name FailoverCluster* | ForEach-Object {
-            $variableName = $_.Name
+        $boundParams.Keys | Where-Object {$_ -imatch "^FailoverCluster"} | ForEach-Object {
+            $variableName = $_
 
-            if ($getTargetResourceResult.$variableName -ne $_.Value) {
-                New-VerboseMessage -Message "$variableName '$($_.Value)' is not in the desired state for this cluster."
+            if ($getTargetResourceResult.$variableName -ne $boundParams[$variableName]) {
+                New-VerboseMessage -Message "$variableName '$($boundParams[$variableName])' is not in the desired state for this cluster."
                 $result = $false
             }
         }
