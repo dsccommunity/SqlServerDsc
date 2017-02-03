@@ -3,7 +3,8 @@
 ## Unreleased
 
 - Changes to xSQLServerConfiguration
-  - Updated xSQLServerConfiguration.schema.mof so SQLInstance parameter is now a Key. This allows for the use case scenario where there are multiple DB Instances on one box.
+  - BREAKING CHANGE: Resource can be used to define the configuration of two or more different DB instances on the same server. 
+  The parameter SQLInstanceName is now mandatory.
 
 - Changes to xSQLServerRole
   - xSQLServerRole now correctly reports that the desired state is present when the login is already a member of the server roles
