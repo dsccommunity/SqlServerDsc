@@ -3,7 +3,7 @@
     This example shows how to configure 2 DB Instances on the same server to have CLR enabled.
 #>
 
-$configData = @{
+$configurationData = @{
     AllNodes = @(
         @{
             NodeName = "localhost"
