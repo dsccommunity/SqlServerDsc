@@ -24,7 +24,7 @@ test_script:
         Write-Verbose -Message 'Removing all SQL related PowerShell modules so they can not be used by the common tests.' -Verbose
         Write-Verbose -Message 'This is a workaround because the AppVeyor build worker image contains SQL Server. More information in issue #239.' -Verbose
         Write-Verbose -Message 'Modules that are being removed:' -Verbose
-        Get-Module -ListAvailable -Name 'sql*' | ForEach-Object -Process { Write-Host $_.Path; Remove-Item $_.Path -Force; }
+        Get-Module -ListAvailable -Name 'sql*' | ForEach-Object -Process { Write-Verbose $_.Path -Verbose; Remove-Item $_.Path -Force -Verbose; }
 
         Invoke-AppveyorTestScriptTask -CodeCoverage
 
