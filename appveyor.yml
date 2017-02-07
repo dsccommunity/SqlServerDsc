@@ -26,7 +26,7 @@ test_script:
         Write-Host 'Modules that are being removed:'
         Get-Module -ListAvailable -Name 'sql*' | ForEach-Object -Process { Write-Host $_.Path; Remove-Item $_.Path -Force; }
 
-        Invoke-AppveyorTestScriptTask -CodeCoverage -ExcludeTag 'Markdown'
+        Invoke-AppveyorTestScriptTask -CodeCoverage
 
 #---------------------------------#
 #      deployment configuration   #

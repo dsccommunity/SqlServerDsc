@@ -39,9 +39,9 @@ function Invoke-TestCleanup {
 # Begin Testing
 try
 {
-    Invoke-TestSetup
-
     InModuleScope 'MSFT_xSQLServerScript' {
+        # Moved into the module scope so that cmdlets shall be find from the stubs.
+        Invoke-TestSetup
 
         $script:DSCModuleName       = 'xSQLServer'
         $resourceName     = 'MSFT_xSQLServerScript'
