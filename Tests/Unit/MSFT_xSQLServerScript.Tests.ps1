@@ -28,7 +28,7 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 function Invoke-TestSetup {
     Add-Type -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests') -ChildPath 'Unit') -ChildPath 'Stubs') -ChildPath 'SqlPowerShellSqlExecutionException.cs')
-    Import-Module -Name (Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests') -ChildPath 'Unit') -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Force
+    Import-Module -Name (Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests') -ChildPath 'Unit') -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Global -Force
 }
 
 function Invoke-TestCleanup {
@@ -42,7 +42,6 @@ try
     Invoke-TestSetup
 
     InModuleScope 'MSFT_xSQLServerScript' {
-
         $script:DSCModuleName       = 'xSQLServer'
         $resourceName     = 'MSFT_xSQLServerScript'
         $sqlServerHelperModuleName = 'xSQLServerHelper'
