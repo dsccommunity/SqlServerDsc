@@ -3,8 +3,7 @@
 #---------------------------------#
 version: 5.0.{build}.0
 install:
-    - git clone https://github.com/johlju/DscResource.Tests
-    - git checkout changes-to-example-test
+    - git clone https://github.com/PowerShell/DscResource.Tests
 
     - ps: |
         Import-Module "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
@@ -27,7 +26,7 @@ test_script:
         Write-Host 'Modules that are being removed:'
         Get-Module -ListAvailable -Name 'sql*' | ForEach-Object -Process { Write-Host $_.Path; Remove-Item $_.Path -Force; }
 
-        Invoke-AppveyorTestScriptTask -CodeCoverage
+        Invoke-AppveyorTestScriptTask -CodeCoverage -ExcludeTag 'Markdown'
 
 #---------------------------------#
 #      deployment configuration   #
