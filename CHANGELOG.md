@@ -8,6 +8,8 @@
 
 - Changes to xSQLServerRole
   - xSQLServerRole now correctly reports that the desired state is present when the login is already a member of the server roles
+- Added new resources
+  - xSQLServerAlwaysOnAvailabilityGroup
 
 ## 5.0.0.0
 
