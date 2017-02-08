@@ -488,7 +488,7 @@ try
                     $result.FailureConditionLevel | Should Be 'OnServerDown'
                     $result.FailoverMode | Should Be 'Manual'
                     $result.HealthCheckTimeout | Should Be 30000
-                    $result.BasicAvailabilityGroup | Should Be $null
+                    $result.BasicAvailabilityGroup | Should BeNullOrEmpty
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }
@@ -518,7 +518,7 @@ try
                     $result.FailureConditionLevel | Should Be 'OnServerDown'
                     $result.FailoverMode | Should Be 'Manual'
                     $result.HealthCheckTimeout | Should Be 30000
-                    $result.BasicAvailabilityGroup | Should Be $null
+                    $result.BasicAvailabilityGroup | Should BeNullOrEmpty
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }
