@@ -7,25 +7,24 @@ $ConfigurationData = @{
     AllNodes = @(
         @{
             NodeName= '*'
-            CertificateFile = '763E73C85EA410AADCE94584687573F65EDC45FB'
             SQLInstanceName = 'MSSQLSERVER'
         },
 
-        @{ 
+        @{
             NodeName = 'SP23-VM-SQL1'
             Role = 'PrimaryReplica'
         }
     )
 }
 
-Configuration Example 
+Configuration Example
 {
     param(
         [Parameter(Mandatory = $true)]
         [PSCredential]
         $SysAdminAccount
     )
-    
+
     Import-DscResource -ModuleName xSqlServer
 
     Node $AllNodes.NodeName {
