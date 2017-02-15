@@ -26,7 +26,7 @@ test_script:
         Write-Verbose -Message 'Modules that are being removed:' -Verbose
         Get-Module -ListAvailable -Name 'sql*' | ForEach-Object -Process { Write-Verbose $_.Path -Verbose; Remove-Item $_.Path -Force -Verbose; }
 
-        Invoke-AppveyorTestScriptTask -CodeCoverage
+        Invoke-AppveyorTestScriptTask -CodeCoverage -CodeCovIo
 
 #---------------------------------#
 #      deployment configuration   #
