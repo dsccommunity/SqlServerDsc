@@ -11,6 +11,7 @@
   - xSQLServerAlwaysOnAvailabilityGroup
 - Changes to xSQLServerSetup
   - Properly checks for use of SQLSysAdminAccounts parameter in $PSBoundParameters. The test now also properly evaluates the setup argument for SQLSysAdminAccounts.
+- Enables CodeCov.io code coverage reporting
 
 ## 5.0.0.0
 
