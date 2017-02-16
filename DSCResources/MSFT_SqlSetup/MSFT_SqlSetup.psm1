@@ -798,7 +798,7 @@ function Set-TargetResource
         $ASConfigDir,
 
         [Parameter()]
-		[ValidateSet('MULTIDIMENSIONAL','TABULAR','POWERPIVOT')]
+        [ValidateSet('MULTIDIMENSIONAL','TABULAR','POWERPIVOT', IgnoreCase = $false)]
         [System.String]
         $ASServerMode,
 
@@ -1250,10 +1250,10 @@ function Set-TargetResource
         )
 
 
-		if ($PSBoundParameters.ContainsKey('ASServerMode'))
-		{
-			$setupArguments['ASServerMode'] = "$ASServerMode"
-		}
+        if ($PSBoundParameters.ContainsKey('ASServerMode'))
+        {
+            $setupArguments['ASServerMode'] = "$ASServerMode"
+        }
 
         if ($PSBoundParameters.ContainsKey('ASSvcAccount'))
         {
@@ -1729,7 +1729,7 @@ function Test-TargetResource
         $ASConfigDir,
 
         [Parameter()]
-		[ValidateSet('MULTIDIMENSIONAL','TABULAR','POWERPIVOT')]
+        [ValidateSet('MULTIDIMENSIONAL','TABULAR','POWERPIVOT', IgnoreCase = $false)]
         [System.String]
         $ASServerMode,
 
