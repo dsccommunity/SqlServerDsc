@@ -6,12 +6,13 @@
   - BREAKING CHANGE: The parameter SQLInstanceName is now mandatory.
   - Resource can now be used to define the configuration of two or more different DB instances on the same server.
 - Changes to xSQLServerRole
-  - xSQLServerRole now correctly reports that the desired state is present when the login is already a member of the server roles
+  - xSQLServerRole now correctly reports that the desired state is present when the login is already a member of the server roles.
 - Added new resources
   - xSQLServerAlwaysOnAvailabilityGroup
 - Changes to xSQLServerSetup
   - Properly checks for use of SQLSysAdminAccounts parameter in $PSBoundParameters. The test now also properly evaluates the setup argument for SQLSysAdminAccounts.
-- Enables CodeCov.io code coverage reporting
+- Enables CodeCov.io code coverage reporting.
+- Added badge for CodeCov.io to README.md.
 
 ## 5.0.0.0
 
