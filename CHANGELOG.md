@@ -12,6 +12,9 @@
     ([issue #930](https://github.com/PowerShell/SqlServerDsc/issues/930)).
   - Made the description of parameter RestartService more descriptive
     ([issue #960](https://github.com/PowerShell/SqlServerDsc/issues/960)).
+- Changes to SqlSetup
+  - Added parameter `ASServerMode` to support installing Analysis Services in
+    tabular mode.
 
 ## 10.0.0.0
 
