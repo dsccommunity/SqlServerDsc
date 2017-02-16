@@ -1374,7 +1374,7 @@ installing feature Database Engine and Analysis Services respectively.
 * **`[String]` ASBackupDir** _(Write)_: Path for Analysis Services backup files.
 * **`[String]` ASTempDir** _(Write)_: Path for Analysis Services temp files.
 * **`[String]` ASConfigDir** _(Write)_: Path for Analysis Services config.
-* **`[String]` ASServerMOde** _(Write)_: Mode for SQL Server Analysis Services.
+* **`[String]` ASServerMode** _(Write)_: Mode for SQL Server Analysis Services.
   { MULTIDIMENSIONAL | TABULAR | POWERPIVOT }.
 * **`[PSCredential]` ISSvcAccount** _(Write)_: Service account for Integration
   Services service.
