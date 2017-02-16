@@ -76,4 +76,10 @@ ExecuteNonQueryFailed = Executing non-query failed on database '{0}'.
 # Max degree of parallelism
 MaxDopSetError = Unexpected result when trying to configure the max degree of parallelism server configuration option.
 MaxDopParamMustBeNull = MaxDop parameter must be set to $null or not assigned if DynamicAlloc parameter is set to $true.
+
+# Server Memory
+MaxMemoryParamMustBeNull = The parameter MaxMemory must be null when DynamicAlloc is set to true.
+MaxMemoryParamMustNotBeNull = The parameter MaxMemory must not be null when DynamicAlloc is set to false.
+AlterServerMemoryFailed = Failed to alter the server configuration memory for {0}\\{1}.
+ErrorGetDynamicMaxMemory = Failed to calculate dynamically the maximum memory.
 '@
