@@ -862,6 +862,7 @@ Installs SQL Server on the target node.
 * **[String] ASBackupDir** _(Write)_: Path for Analysis Services backup files.
 * **[String] ASTempDir** _(Write)_: Path for Analysis Services temp files.
 * **[String] ASConfigDir** _(Write)_: Path for Analysis Services config.
+* **[String] ASServerMode** _(Write)_: Mode for SQL Server Analysis Services.
 * **[PSCredential] ISSvcAccount** _(Write)_: Service account for Integration Services service.
 * **[String] BrowserSvcStartupType** _(Write)_: Specifies the startup mode for SQL Server Browser service. { Automatic | Disabled | 'Manual' }
 * **[String] FailoverClusterGroupName** _(Write)_: The name of the resource group to create for the clustered SQL Server instance. Defaults to 'SQL Server (_InstanceName_)'.

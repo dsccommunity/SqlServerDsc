@@ -619,6 +619,10 @@ function Set-TargetResource
         [System.String]
         $ASConfigDir,
 
+        [ValidateSet('MULTIDIMENSIONAL','TABULAR','POWERPIVOT', IgnoreCase = $false)]
+        [System.String]
+        $ASServerMode,
+
         [System.Management.Automation.PSCredential]
         $ISSvcAccount,
 
@@ -964,6 +968,12 @@ function Set-TargetResource
             'ASTempDir',
             'ASConfigDir'
         )
+
+
+        if ($PSBoundParameters.ContainsKey('ASServerMode'))
+        {
+            $setupArguments['ASServerMode'] = "$ASServerMode"
+        }
 
         if ($PSBoundParameters.ContainsKey('ASSvcAccount'))
         {
@@ -1349,6 +1359,10 @@ function Test-TargetResource
 
         [System.String]
         $ASConfigDir,
+
+        [ValidateSet('MULTIDIMENSIONAL','TABULAR','POWERPIVOT', IgnoreCase = $false)]
+        [System.String]
+        $ASServerMode,
 
         [System.Management.Automation.PSCredential]
         $ISSvcAccount,
