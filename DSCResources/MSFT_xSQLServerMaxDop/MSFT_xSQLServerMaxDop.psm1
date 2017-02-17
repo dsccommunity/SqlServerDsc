@@ -17,11 +17,12 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLInstanceName,
 
+        [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME
@@ -70,23 +71,27 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLInstanceName,
 
+        [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
+        [Parameter()]
         [ValidateSet('Present','Absent')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Ensure = 'Present',
 
+        [Parameter()]
         [System.Boolean]
         $DynamicAlloc,
 
+        [Parameter()]
         [System.Int32]
         $MaxDop
     )
@@ -168,23 +173,27 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLInstanceName,
 
+        [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
+        [Parameter()]
         [ValidateSet('Present','Absent')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Ensure = 'Present',
 
+        [Parameter()]
         [System.Boolean]
         $DynamicAlloc,
 
+        [Parameter()]
         [System.Int32]
         $MaxDop
     )
