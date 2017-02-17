@@ -45,7 +45,7 @@ class MSFT_xSQLServerSetup : OMI_BaseResource
     [Write, Description("Path for Analysis Services backup files.")] String ASBackupDir;
     [Write, Description("Path for Analysis Services temp files.")] String ASTempDir;
     [Write, Description("Path for Analysis Services config.")] String ASConfigDir;
-    [Write, Description("Mode for SQL Server Analysis Services.")] String ASServerMode;
+    [Write, Description("Mode for SQL Server Analysis Services."), ValueMap{"MULTIDIMENSIONAL", "TABULAR", "POWERPIVOT"}, Values{"MULTIDIMENSIONAL", "TABULAR", "POWERPIVOT"}] String ASServerMode;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("Service account for Integration Services service.")] String ISSvcAccount;
     [Read, Description("Output username for the Integration Services service.")] String ISSvcAccountUsername;
     [Write, Description("Specifies the startup mode for SQL Server Browser service."), ValueMap{"Automatic", "Disabled", "Manual"}, Values{"Automatic", "Disabled", "Manual"}] String BrowserSvcStartupType;

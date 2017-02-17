@@ -1359,7 +1359,7 @@ function Test-TargetResource
 
         [System.String]
         $ASConfigDir,
-		
+
         [ValidateSet('MULTIDIMENSIONAL','TABULAR','POWERPIVOT', IgnoreCase = $false)]
         [System.String]
         $ASServerMode,
