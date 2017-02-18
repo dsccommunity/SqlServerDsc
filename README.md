@@ -868,6 +868,30 @@ Installs SQL Server on the target node.
 * **[String[]]FailoverClusterIPAddress** _(Write)_: Array of IP Addresses to be assigned to the clustered SQL Server instance. IP addresses must be in [dotted-decimal notation](https://en.wikipedia.org/wiki/Dot-decimal_notation), for example ````10.0.0.100````. If no IP address is specified, uses 'DEFAULT' for this setup parameter.
 * **[String] FailoverClusterNetworkName** _(Write)_: Host name to be assigned to the clustered SQL Server instance.
 
+##### Required Parameters
+
+For configurations that utilize the 'InstallFailoverCluster' action, the following parameters are required (beyond those required for the standalone installation:
+- InstanceName (can be MSSQLSERVER if you want to install a default clustered instance)
+- FailoverClusterNetworkName
+- When installation SQL Server database engine:
+  - InstallSQLDataDir
+  - SQLUserDBDir
+  - SQLUserDBLogDir
+  - SQLTempDBDir
+  - SQLTempDBLogDir
+  - SQLBackupDir
+  - AgtSvcAccount
+  - SQLSvcAccount
+- When installing SQL Analysis Services
+  - ASDataDir
+  - ASLogDir
+  - ASBackupDir
+  - ASTempDir
+  - ASConfigDir
+  - AsSvcAccount
+
+
+
 #### Read-Only Properties from Get-TargetResource
 
 * **SQLSvcAccountUsername** _(Read)_: Output user name for the SQL service.

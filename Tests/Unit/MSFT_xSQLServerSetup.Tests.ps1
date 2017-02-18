@@ -101,11 +101,11 @@ try
         $mockSetupCredential = New-Object System.Management.Automation.PSCredential( $mockmockSetupCredentialUserName, $mockmockSetupCredentialPassword )
 
         $mockSqlServiceAccount = 'COMPANY\SqlAccount'
-        $mockSqlServicePassword = 'Sqls3v!c3P@ssw0rd';
-        $mockSQLServiceCredential = new-object System.Management.Automation.PSCredential($mockSqlServiceAccount,($mockSQLServicePassword | Convertto-SecureString -AsPlainText -Force));
+        $mockSqlServicePassword = 'Sqls3v!c3P@ssw0rd'
+        $mockSQLServiceCredential = New-Object System.Management.Automation.PSCredential($mockSqlServiceAccount,($mockSQLServicePassword | ConvertTo-SecureString -AsPlainText -Force))
         $mockAgentServiceAccount = 'COMPANY\AgentAccount'
-        $mockAgentServicePassword = 'Ag3ntP@ssw0rd';
-        $mockSQLAgentCredential = new-object System.Management.Automation.PSCredential($mockAgentServiceAccount,($mockAgentServicePassword | Convertto-SecureString -AsPlainText -Force));
+        $mockAgentServicePassword = 'Ag3ntP@ssw0rd'
+        $mockSQLAgentCredential = New-Object System.Management.Automation.PSCredential($mockAgentServiceAccount,($mockAgentServicePassword | ConvertTo-SecureString -AsPlainText -Force))
 
         $mockClusterNodes = @($env:COMPUTERNAME,'SQL01','SQL02')
 
@@ -609,55 +609,55 @@ try
             return @(
                 (
                     New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                        Add-Member -MemberType NoteProperty -Name "Name" -Value $mockCSVClusterDiskMap["UserData"].Path -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockCSVClusterDiskMap['UserData'].Path -PassThru -Force
                 ),
                 (
                     New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                        Add-Member -MemberType NoteProperty -Name "Name" -Value $mockCSVClusterDiskMap["UserLogs"].Path -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockCSVClusterDiskMap['UserLogs'].Path -PassThru -Force
                 ),
                 (
                     New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                        Add-Member -MemberType NoteProperty -Name "Name" -Value $mockCSVClusterDiskMap["TempDBData"].Path -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockCSVClusterDiskMap['TempDBData'].Path -PassThru -Force
                 ),
                 (
                     New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                        Add-Member -MemberType NoteProperty -Name "Name" -Value $mockCSVClusterDiskMap["TempDBLogs"].Path -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockCSVClusterDiskMap['TempDBLogs'].Path -PassThru -Force
                 ),
                 (
                     New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                        Add-Member -MemberType NoteProperty -Name "Name" -Value $mockCSVClusterDiskMap["Backup"].Path -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockCSVClusterDiskMap['Backup'].Path -PassThru -Force
                 )
-            );
+            )
         }
 
         $mockGetCIMInstance_MSCluster_ClusterSharedVolumeToResource = {
             return @(
                 (
                     New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap["UserData"].Path}) -PassThru -Force | 
-                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap["UserData"].Name}) -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['UserData'].Path}) -PassThru -Force | 
+                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['UserData'].Name}) -PassThru -Force
                 ),
                 (
                     New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap["UserLogs"].Path}) -PassThru -Force | 
-                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap["UserLogs"].Name}) -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['UserLogs'].Path}) -PassThru -Force | 
+                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['UserLogs'].Name}) -PassThru -Force
                 ),
                 (
                     New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap["TempDBData"].Path}) -PassThru -Force | 
-                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap["TempDBData"].Name}) -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['TempDBData'].Path}) -PassThru -Force | 
+                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['TempDBData'].Name}) -PassThru -Force
                 ),
                 (
                     New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap["TempDBLogs"].Path}) -PassThru -Force | 
-                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap["TempDBLogs"].Name}) -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['TempDBLogs'].Path}) -PassThru -Force | 
+                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['TempDBLogs'].Name}) -PassThru -Force
                 ),
                 (
                     New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap["Backup"].Path}) -PassThru -Force | 
-                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap["Backup"].Name}) -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['Backup'].Path}) -PassThru -Force | 
+                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['Backup'].Name}) -PassThru -Force
                 )
-            );
+            )
         }
         
 
@@ -2400,7 +2400,7 @@ try
                         FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
                     }
 
-                    New-Variable -Name "FailoverClusterDisks" -Value $mockClusterDiskMap["UserData"];
+                    New-Variable -Name 'FailoverClusterDisks' -Value $mockClusterDiskMap['UserData']
                     
                     $result = Test-TargetResource @testClusterParameters
 
@@ -3169,11 +3169,11 @@ try
                             SqlSvcAccount = $mockSQLServiceCredential
                         }
 
-                        $testParameters.Remove("Features");
-                        $testParameters.Remove("SQLUserDBDir");
-                        $testParameters.Remove("SQLUserDBLogDir");
-                        $testParameters.Remove("SQLTempDbDir");
-                        $testParameters.Remove("SQLTempDBlogDir");
+                        $testParameters.Remove('Features')
+                        $testParameters.Remove('SQLUserDBDir')
+                        $testParameters.Remove('SQLUserDBLogDir')
+                        $testParameters.Remove('SQLTempDbDir')
+                        $testParameters.Remove('SQLTempDBlogDir')
 
                     }
 
@@ -3206,6 +3206,8 @@ try
                             $ClassName -eq 'MSCluster_ClusterSharedVolumeToResource'
                         } -Verifiable
 
+                        Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
+
                     }
 
                     It 'Should pass proper parameters to setup' {
@@ -3226,11 +3228,11 @@ try
 
                     It 'Should pass the SetupCredential object to the StartWin32Process function' {
                         $mockStartWin32Process_SetupCredential = {
-                            $Credential | Should Not Be $null;
-                            return "Process started.";
+                            $Credential | Should Not Be $null
+                            return "Process started."
                         }
 
-                        Mock -CommandName StartWin32Process -MockWith $mockStartWin32Process_SetupCredential;
+                        Mock -CommandName StartWin32Process -MockWith $mockStartWin32Process_SetupCredential
 
                         { Set-TargetResource @testParameters } | Should Not Throw
                     }
@@ -3281,6 +3283,16 @@ try
                             ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
                         } -Verifiable
 
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
+                                $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
+                        } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
+                        } -MockWith $mockGetItemProperty_Setup -Verifiable
+
+                        Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
+
                     }
 
                     It 'Should pass proper parameters to setup' {
@@ -3307,11 +3319,11 @@ try
 
                     It 'Should pass the SetupCredential object to the StartWin32Process function' {
                         $mockStartWin32Process_SetupCredential = {
-                            $Credential | Should Not Be $null;
-                            return "Process started.";
+                            $Credential | Should Not Be $null
+                            return "Process started."
                         }
 
-                        Mock -CommandName StartWin32Process -MockWith $mockStartWin32Process_SetupCredential;
+                        Mock -CommandName StartWin32Process -MockWith $mockStartWin32Process_SetupCredential
 
                         { Set-TargetResource @testParameters } | Should Not Throw
                     }
@@ -3426,12 +3438,12 @@ try
                     }
 
                     It 'Should pass proper parameters to setup when Cluster Shared volumes are specified' {
-                        $csvTestParameters = $testParameters.Clone();
+                        $csvTestParameters = $testParameters.Clone()
                         
-                        $csvTestParameters["SQLUserDBDir"] = $mockCSVClusterDiskMap["UserData"].Path;
-                        $csvTestParameters["SQLUserDBLogDir"] = $mockCSVClusterDiskMap["UserLogs"].Path;
-                        $csvTestParameters["SQLTempDBDir"] = $mockCSVClusterDiskMap["TempDBData"].Path;
-                        $csvTestParameters["SQLTempDBLogDir"] = $mockCSVClusterDiskMap["TempDBLogs"].Path;
+                        $csvTestParameters['SQLUserDBDir'] = $mockCSVClusterDiskMap['UserData'].Path
+                        $csvTestParameters['SQLUserDBLogDir'] = $mockCSVClusterDiskMap['UserLogs'].Path
+                        $csvTestParameters['SQLTempDBDir'] = $mockCSVClusterDiskMap['TempDBData'].Path
+                        $csvTestParameters['SQLTempDBLogDir'] = $mockCSVClusterDiskMap['TempDBLogs'].Path
                         
                         $mockStartWin32ProcessExpectedArgument = @{
                             IAcceptSQLServerLicenseTerms = 'True'
@@ -3441,27 +3453,27 @@ try
                             Action = 'InstallFailoverCluster'
                             InstanceName = 'MSSQLSERVER'
                             Features = 'SQLEngine'
-                            FailoverClusterDisks = "$($mockCSVClusterDiskMap["UserData"].Name); $($mockCSVClusterDiskMap["UserLogs"].Name); $($mockCSVClusterDiskMap["TempDBData"].Name); $($mockCSVClusterDiskMap["TempDBLogs"].Name)"
+                            FailoverClusterDisks = "$($mockCSVClusterDiskMap['UserData'].Name); $($mockCSVClusterDiskMap['UserLogs'].Name); $($mockCSVClusterDiskMap['TempDBData'].Name); $($mockCSVClusterDiskMap['TempDBLogs'].Name)"
                             FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
                             FailoverClusterGroup = 'SQL Server (MSSQLSERVER)'
                             FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
-                            SQLUserDBDir = $mockCSVClusterDiskMap["UserData"].Path
-                            SQLUserDBLogDir = $mockCSVClusterDiskMap["UserLogs"].Path
-                            SQLTempDBDir = $mockCSVClusterDiskMap["TempDBData"].Path
-                            SQLTempDBLogDir = $mockCSVClusterDiskMap["TempDBLogs"].Path
+                            SQLUserDBDir = $mockCSVClusterDiskMap['UserData'].Path
+                            SQLUserDBLogDir = $mockCSVClusterDiskMap['UserLogs'].Path
+                            SQLTempDBDir = $mockCSVClusterDiskMap['TempDBData'].Path
+                            SQLTempDBLogDir = $mockCSVClusterDiskMap['TempDBLogs'].Path
                         }
 
                         { Set-TargetResource @csvTestParameters } | Should Not Throw
                     }
 
                     It 'Should pass proper parameters to setup when Cluster Shared volumes are specified and are the same for one or more parameter values' {
-                        $csvTestParameters = $testParameters.Clone();
+                        $csvTestParameters = $testParameters.Clone()
                         
-                        $csvTestParameters["SQLUserDBDir"] = $mockCSVClusterDiskMap["UserData"].Path + '\Data';
-                        $csvTestParameters["SQLUserDBLogDir"] = $mockCSVClusterDiskMap["UserData"].Path + '\Logs';
-                        $csvTestParameters["SQLTempDBDir"] = $mockCSVClusterDiskMap["UserData"].Path + '\TEMPDB';
-                        $csvTestParameters["SQLTempDBLogDir"] = $mockCSVClusterDiskMap["UserData"].Path + '\TEMPDBLOG';
-                        $csvTestParameters["SQLBackupDir"] = $mockCSVClusterDiskMap["Backup"].Path + '\Backup';
+                        $csvTestParameters['SQLUserDBDir'] = $mockCSVClusterDiskMap['UserData'].Path + '\Data'
+                        $csvTestParameters['SQLUserDBLogDir'] = $mockCSVClusterDiskMap['UserData'].Path + '\Logs'
+                        $csvTestParameters['SQLTempDBDir'] = $mockCSVClusterDiskMap['UserData'].Path + '\TEMPDB'
+                        $csvTestParameters['SQLTempDBLogDir'] = $mockCSVClusterDiskMap['UserData'].Path + '\TEMPDBLOG'
+                        $csvTestParameters['SQLBackupDir'] = $mockCSVClusterDiskMap['Backup'].Path + '\Backup'
                         
                         $mockStartWin32ProcessExpectedArgument = @{
                             IAcceptSQLServerLicenseTerms = 'True'
@@ -3471,24 +3483,21 @@ try
                             Action = 'InstallFailoverCluster'
                             InstanceName = 'MSSQLSERVER'
                             Features = 'SQLEngine'
-                            FailoverClusterDisks = "$($mockCSVClusterDiskMap["Backup"].Name); $($mockCSVClusterDiskMap["UserData"].Name)"
+                            FailoverClusterDisks = "$($mockCSVClusterDiskMap['Backup'].Name); $($mockCSVClusterDiskMap['UserData'].Name)"
                             FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
                             FailoverClusterGroup = 'SQL Server (MSSQLSERVER)'
                             FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
-                            SQLUserDBDir = "$($mockCSVClusterDiskMap["UserData"].Path)\Data"
-                            SQLUserDBLogDir = "$($mockCSVClusterDiskMap["UserData"].Path)\Logs"
-                            SQLTempDBDir = "$($mockCSVClusterDiskMap["UserData"].Path)\TEMPDB"
-                            SQLTempDBLogDir = "$($mockCSVClusterDiskMap["UserData"].Path)\TEMPDBLOG"
-                            SQLBackupDir = "$($mockCSVClusterDiskMap["Backup"].Path)\Backup"
+                            SQLUserDBDir = "$($mockCSVClusterDiskMap['UserData'].Path)\Data"
+                            SQLUserDBLogDir = "$($mockCSVClusterDiskMap['UserData'].Path)\Logs"
+                            SQLTempDBDir = "$($mockCSVClusterDiskMap['UserData'].Path)\TEMPDB"
+                            SQLTempDBLogDir = "$($mockCSVClusterDiskMap['UserData'].Path)\TEMPDBLOG"
+                            SQLBackupDir = "$($mockCSVClusterDiskMap['Backup'].Path)\Backup"
                         }
 
                         { Set-TargetResource @csvTestParameters } | Should Not Throw
                     }
-
-
                 }
 
-               
                 Context "When SQL Server version is $mockSqlMajorVersion and the system is not in the desired state and the action is PrepareFailoverCluster" {
                     BeforeAll {
                         $testParameters = $mockDefaultParameters.Clone()
@@ -3537,7 +3546,6 @@ try
                         Mock -CommandName Get-CimInstance -MockWith {} -ParameterFilter {
                             ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
                         } -Verifiable
-
                     }
 
                     It 'Should add the SkipRules parameter to the installation arguments' {
@@ -3626,6 +3634,7 @@ try
                             $ClassName -eq 'MSCluster_ClusterSharedVolumeToResource'
                         } -Verifiable
 
+                        Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
                     }
 
                     It 'Should throw an error when one or more paths are not resolved to clustered storage' {

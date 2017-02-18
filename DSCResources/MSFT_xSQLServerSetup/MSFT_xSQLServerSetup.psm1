@@ -1124,15 +1124,16 @@ function Set-TargetResource
     New-VerboseMessage -Message "Starting setup using arguments: $log"
 
     $arguments = $arguments.Trim()
-    $processArgs = @{
+    $processArguments = @{
         Path = $pathToSetupExecutable
         Arguments = $arguments
-    };
+    }
+    
     if ($Action -in @('InstallFailoverCluster','AddNode'))
     {
-        $processArgs.Add('Credential',$SetupCredential);
+        $processArguments.Add('Credential',$SetupCredential)
     }
-    $process = StartWin32Process @processArgs;
+    $process = StartWin32Process @processArguments
 
     New-VerboseMessage -Message $process
     WaitForWin32ProcessEnd -Path $pathToSetupExecutable -Arguments $arguments
@@ -1451,7 +1452,7 @@ function Test-TargetResource
         InstanceName = $InstanceName
     }
 
-    $boundParams = $PSBoundParameters;
+    $boundParameters = $PSBoundParameters
 
     $getTargetResourceResult = Get-TargetResource @parameters
     New-VerboseMessage -Message "Features found: '$($getTargetResourceResult.Features)'"
@@ -1480,11 +1481,11 @@ function Test-TargetResource
 
         $result = $true
 
-        $boundParams.Keys | Where-Object {$_ -imatch "^FailoverCluster"} | ForEach-Object {
+        $boundParameters.Keys | Where-Object {$_ -imatch "^FailoverCluster"} | ForEach-Object {
             $variableName = $_
 
-            if ($getTargetResourceResult.$variableName -ne $boundParams[$variableName]) {
-                New-VerboseMessage -Message "$variableName '$($boundParams[$variableName])' is not in the desired state for this cluster."
+            if ($getTargetResourceResult.$variableName -ne $boundParameters[$variableName]) {
+                New-VerboseMessage -Message "$variableName '$($boundParameters[$variableName])' is not in the desired state for this cluster."
                 $result = $false
             }
         }
