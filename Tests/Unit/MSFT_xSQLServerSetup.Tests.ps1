@@ -3228,8 +3228,8 @@ try
 
                     It 'Should pass the SetupCredential object to the StartWin32Process function' {
                         $mockStartWin32Process_SetupCredential = {
-                            $Credential | Should Not Be $null
-                            return "Process started."
+                            $Credential | Should Not BeNullOrEmpty
+                            return 'Process started.'
                         }
 
                         Mock -CommandName StartWin32Process -MockWith $mockStartWin32Process_SetupCredential
@@ -3319,8 +3319,8 @@ try
 
                     It 'Should pass the SetupCredential object to the StartWin32Process function' {
                         $mockStartWin32Process_SetupCredential = {
-                            $Credential | Should Not Be $null
-                            return "Process started."
+                            $Credential | Should Not BeNullOrEmpty
+                            return 'Process started.'
                         }
 
                         Mock -CommandName StartWin32Process -MockWith $mockStartWin32Process_SetupCredential
