@@ -633,7 +633,27 @@ Read more about max degree of parallelism in this article [Configure the max deg
 
 ### xSQLServerMemory
 
-No description.
+This resource sets the minimum server memory and maximum server memory configuration option.
+That means it sets the minimum and the maximum amount of memory, in MB, in the buffer pool used by the instance of SQL Server
+The default setting for minimum server memory is 0, and the default setting for maximum server memory is 2147483647 MB.
+Read more about minimum server memory and maximum server memory in this article [Server Memory Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms178067.aspx).
+
+#### Formula for dynamically allocating maximum memory
+
+The formula is based on the [SQL Max Memory Calculator](http://sqlmax.chuvash.eu/) website. The website code is in the sql-max GitHub repository maintained by [@mirontoli](https://github.com/mirontoli).
+The dynamic maximum memory (in MB) is calculate with this formula:
+SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) - (1024\*CEILING(NumOfCores/4)) - OSReservedMemory.
+
+* **NumOfSQLThreads**
+  * If the number of cores is less than or equal to 4, the number of SQL threads is set to: 256 + (NumberOfCores - 4) \* 8.
+  * If the number of cores is greater than 4, the number of SQL threads is set to: 0 (zero).
+* **ThreadStackSize**
+  * If the architecture of windows server is x86, the size of thread stack is 1MB.
+  * If the architecture of windows server is x64, the size of thread stack is 2MB.
+  * If the architecture of windows server is IA64, the size of thread stack is 4MB.
+* **OSReservedMemory**
+  * If the total physical memory is less than or equal to 20GB, the percentage of reserved memory for OS is 20% of total physical memory.
+  * If the total physical memory is greater than 20GB, the percentage of reserved memory for OS is 12.5% of total physical memory.
 
 #### Requirements
 
@@ -642,16 +662,19 @@ No description.
 
 #### Parameters
 
-* **[String] SQLInstance** _(Key)_: The SQL instance for the database
-* **[Boolean] DyamicAlloc** _(Key)_: Flag to indicate if Memory is dynamically configured
-* **[String] Ensure** _(Write)_: An enumerated value that describes if Min and Max memory is configured. { *Present* | Absent }.
-* **[Sint32] MinMemory** _(Write)_: Minimum memory value to set SQL Server memory to
-* **[Sint32] MaxMemory** _(Write)_: Maximum memory value to set SQL Server memory to
-* **[String] SQLServer** _(Write)_: The SQL Server for the database
+* **[String] SQLInstance** _(Key)_: The name of the SQL instance to be configured.
+* **[String] SQLServer** _(Write)_: The host name of the SQL Server to be configured. Default value is *$env:COMPUTERNAME*.
+* **[Boolean] DyamicAlloc** _(Write)_: If set to $true then max memory will be dynamically configured. When this is set parameter is set to $true, the parameter MaxMemory must be set to $null or not be configured. Default value is *$false*.
+* **[String] Ensure** _(Write)_: When set to 'Present' then min and max memory will be set to either the value in parameter MinMemory and MaxMemory or dynamically configured when parameter DynamicAlloc is set to $true. When set to 'Absent' min and max memory will be set to default values. { *Present* | Absent }.
+* **[Sint32] MinMemory** _(Write)_: Minimum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
+* **[Sint32] MaxMemory** _(Write)_: Maximum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
 
 #### Examples
 
-None.
+* [Set SQLServerMaxMemory to 12GB](/Examples/Resources/xSQLServerMemory/1-SetMaxMemoryTo12GB.ps1)
+* [Set SQLServerMaxMemory to Auto](/Examples/Resources/xSQLServerMemory/2-SetMaxMemoryToAuto.ps1)
+* [Set SQLServerMinMemory to 2GB and SQLServerMaxMemory to Auto](/Examples/Resources/xSQLServerMemory/3-SetMinMemoryToFixedValueAndMaxMemoryToAuto.ps1)
+* [Set SQLServerMaxMemory to Default](/Examples/Resources/xSQLServerMemory/3-SetMaxMemoryToDefault.ps1)
 
 ### xSQLServerNetwork
 
