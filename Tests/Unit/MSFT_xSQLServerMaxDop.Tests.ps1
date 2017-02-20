@@ -37,6 +37,7 @@ try
         $mockSQLServerInstanceName          = 'MSSQLSERVER'
         $mockMaxDegreeOfParallelism         = 4
         $mockExpectedMaxDopForAlterMethod   = 1
+        $mockInvalidOperationForAlterMethod = $false
         $mockNumberOfLogicalProcessors      = 4
         $mockNumberOfCores                  = 4
 
@@ -72,6 +73,10 @@ try
                                 throw "Called mocked Alter() method without setting the right MaxDegreeOfParallelism. Expected '{0}'. But was '{1}'." `
                                       -f $mockExpectedMaxDopForAlterMethod, $this.Configuration.MaxDegreeOfParallelism.ConfigValue
                             }
+                            if ($mockInvalidOperationForAlterMethod)
+                            {
+                                throw 'Mock Alter Method was called with invalid operation.'
+                            }
                         } -PassThru -Force
                 )
             )
@@ -98,7 +103,7 @@ try
                 $result = Get-TargetResource @testParameters
                 
                 It 'Should return the current value for MaxDop' {
-                    $result.MaxDop | Should Be 4
+                    $result.MaxDop | Should Be $mockMaxDegreeOfParallelism
                 }
 
                 It 'Should return the same values as passed as parameters' {
@@ -115,9 +120,17 @@ try
         }
         
         Describe "MSFT_xSQLServerMaxDop\Test-TargetResource" -Tag 'Test'{
-            Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+            BeforeEach {
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
-            Mock -CommandName Get-CimInstance -MockWith $mockCimInstance_Win32Processor -ParameterFilter { $ClassName -eq 'Win32_Processor' } -Verifiable
+                Mock -CommandName Get-CimInstance -MockWith $mockCimInstance_Win32Processor -ParameterFilter { 
+                    $ClassName -eq 'Win32_Processor'
+                } -Verifiable
+
+                Mock -CommandName Get-CimInstance -MockWith {
+                    throw 'Mocked function Get-CimInstance was called with the wrong set of parameter filters.'
+                }
+            }            
 
             Context 'When the system is not in the desired state and DynamicAlloc is set to false' {
                 $testParameters = $mockDefaultParameters
@@ -136,15 +149,17 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
-                It 'Should not call the mock function Get-SqlDscDynamicMaxDop' {
+                It 'Should not call the mock function Get-CimInstance' {
                     Assert-MockCalled Get-CimInstance -Exactly -Times 0 -Scope Context
                 }
             }
 
+            $mockMaxDegreeOfParallelism = 6
+
             Context 'When the system is in the desired state and DynamicAlloc is set to false' {
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
-                    MaxDop          = 4
+                    MaxDop          = 6
                     DynamicAlloc    = $false
                 }      
 
@@ -161,6 +176,8 @@ try
                     Assert-MockCalled Get-CimInstance -Exactly -Times 0 -Scope Context
                 }
             }
+
+            $mockMaxDegreeOfParallelism = 4
 
             Context 'When the system is in the desired state and DynamicAlloc is set to true' {
                 $testParameters = $mockDefaultParameters
@@ -186,15 +203,13 @@ try
 
             $mockNumberOfCores = 2
 
-            Mock -CommandName Get-CimInstance -MockWith $mockCimInstance_Win32Processor -ParameterFilter { $ClassName -eq 'Win32_Processor' } -Verifiable
-
             Context 'When the system is not in the desired state, DynamicAlloc is set to true and NumberOfLogicalProcessors = 4' {
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     DynamicAlloc = $true
                 }      
 
-                It 'Should return the state as true when desired MaxDop is the correct value' {
+                It 'Should return the state as false when desired MaxDop is the wrong value' {
                     $result = Test-TargetResource @testParameters
                     $result | Should Be $false
                 }
@@ -212,15 +227,13 @@ try
 
             $mockNumberOfLogicalProcessors = 1
 
-            Mock -CommandName Get-CimInstance -MockWith $mockCimInstance_Win32Processor -ParameterFilter { $ClassName -eq 'Win32_Processor' } -Verifiable
-
             Context 'When the system is not in the desired state, DynamicAlloc is set to true and NumberOfLogicalProcessors = 1' {
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     DynamicAlloc = $true
                 }      
 
-                It 'Should return the state as true when desired MaxDop is the correct value' {
+                It 'Should return the state as false when desired MaxDop is the wrong value' {
                     $result = Test-TargetResource @testParameters
                     $result | Should Be $false
                 }
@@ -239,15 +252,13 @@ try
             $mockNumberOfLogicalProcessors = 4
             $mockNumberOfCores = 8
 
-            Mock -CommandName Get-CimInstance -MockWith $mockCimInstance_Win32Processor -ParameterFilter { $ClassName -eq 'Win32_Processor' } -Verifiable
-
-            Context 'When the system is not in the desired state, DynamicAlloc is set to true and NumberOfCores = 8' {
+            Context 'When the system is not in the desired state, DynamicAlloc is set to true, NumberOfLogicalProcessors = 4 and NumberOfCores = 8' {
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     DynamicAlloc = $true
                 }      
 
-                It 'Should return the state as true when desired MaxDop is the correct value' {
+                It 'Should return the state as false when desired MaxDop is the wrong value' {
                     $result = Test-TargetResource @testParameters
                     $result | Should Be $false
                 }
@@ -281,15 +292,13 @@ try
 
             $mockMaxDegreeOfParallelism = 0
 
-            Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
-
             Context 'When the system is in the desired state and Ensure is set to absent' {
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     Ensure = 'Absent'
                 }      
 
-                It 'Should return the state as false when desired MaxDop is the correct value' {
+                It 'Should return the state as true when desired MaxDop is the correct value' {
                     $result = Test-TargetResource @testParameters
                     $result | Should Be $true
                 }
@@ -319,9 +328,17 @@ try
         }
         
         Describe "MSFT_xSQLServerMaxDop\Set-TargetResource" -Tag 'Set'{
-            $mockMaxDegreeOfParallelism = 1
+            BeforeEach {
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
-            Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+                Mock -CommandName Get-CimInstance -MockWith $mockCimInstance_Win32Processor -ParameterFilter { 
+                    $ClassName -eq 'Win32_Processor'
+                } -Verifiable
+
+                Mock -CommandName Get-CimInstance -MockWith {
+                    throw 'Mocked function Get-CimInstance was called with the wrong set of parameter filters.'
+                }
+            }
 
             Context 'When the MaxDop parameter is not null and DynamicAlloc set to true' {
                 $testParameters = $mockDefaultParameters
@@ -331,7 +348,7 @@ try
                     Ensure          = 'Present'
                 }
 
-                It 'Should Throw when MaxDop parameter not null if DynamicAlloc set to true' {
+                It 'Should throw the correct error' {
                     { Set-TargetResource @testParameters } | Should Throw 'MaxDop parameter must be set to $null or not assigned if DynamicAlloc parameter is set to $true.'
                 }
 
@@ -339,6 +356,9 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
+
+            $mockMaxDegreeOfParallelism = 0
+            $mockExpectedMaxDopForAlterMethod = 0
 
             Context 'When the Ensure parameter is set to Absent' {
                 $testParameters = $mockDefaultParameters
@@ -354,6 +374,9 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
+
+            $mockMaxDegreeOfParallelism = 1
+            $mockExpectedMaxDopForAlterMethod = 1
 
             Context 'When the desired MaxDop parameter is not set' {
                 $testParameters = $mockDefaultParameters
@@ -372,10 +395,10 @@ try
                 }
             }
 
+            $mockMaxDegreeOfParallelism = 2
+            $mockExpectedMaxDopForAlterMethod = 2
             $mockNumberOfLogicalProcessors = 4
             $mockNumberOfCores = 2
-
-            Mock -CommandName Get-CimInstance -MockWith $mockCimInstance_Win32Processor -ParameterFilter { $ClassName -eq 'Win32_Processor' }
 
             Context 'When the system is not in the desired state and DynamicAlloc is set to true' {
                 $testParameters = $mockDefaultParameters
@@ -399,27 +422,7 @@ try
                 }
             }
 
-            Mock -CommandName Connect-SQL -MockWith {
-                $mockSqlServerObject = [PSCustomObject]@{
-                    InstanceName                = $mockSQLServerInstanceName
-                    ComputerNamePhysicalNetBIOS = $mockSQLServerName
-                    Configuration = @{
-                        MaxDegreeOfParallelism = @{
-                            DisplayName = 'max degree of parallelism'
-                            Description = 'maximum degree of parallelism'
-                            RunValue    = 4
-                            ConfigValue = 4
-                        }
-                    }
-                }
-                
-                # Add the Alter method
-                $mockSqlServerObject | Add-Member -MemberType ScriptMethod -Name Alter -Value {
-                    throw "Mock Alter Method was called with invalid operation."
-                }
-
-                $mockSqlServerObject
-            } -ModuleName $script:DSCResourceName -Verifiable
+            $mockInvalidOperationForAlterMethod = $true
 
             Context 'When the desired MaxDop parameter is not set' {
                 $testParameters = $mockDefaultParameters
@@ -429,7 +432,7 @@ try
                     Ensure          = 'Present'
                 }
 
-                It 'Should Throw when Alter Method was called with invalid operation' {
+                It 'Shoud throw the correct error when Alter() method was called with invalid operation' {
                     $throwInvalidOperation = ('Unexpected result when trying to configure the max degree of parallelism ' + `
                                               'server configuration option. InnerException: Exception calling "Alter" ' + `
                                               'with "0" argument(s): "Mock Alter Method was called with invalid operation."')
