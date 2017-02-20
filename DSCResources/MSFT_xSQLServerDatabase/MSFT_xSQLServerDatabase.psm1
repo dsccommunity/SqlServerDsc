@@ -76,9 +76,9 @@ function Get-TargetResource
     }
     
     $returnValue = @{
-        Name = $Name
-        Ensure = $Ensure
-        SQLServer = $SQLServer
+        Name            = $Name
+        Ensure          = $Ensure
+        SQLServer       = $SQLServer
         SQLInstanceName = $SQLInstanceName
     }
 
@@ -223,12 +223,30 @@ function Test-TargetResource
 
     Write-Verbose -Message "Checking if database named $Name is present or absent"
 
-    $sqlDatabase = Get-TargetResource @PSBoundParameters
-
-    $result = ($sqlDatabase.Ensure -eq $Ensure)
+    $currentValues = Get-TargetResource @PSBoundParameters
+    $isDatabaseInDesiredState = $true
     
-    $result
+    switch ($Ensure)
+    {
+        'Absent'
+        {
+            if ($currentValues.Ensure -ne 'Present')
+            {
+                New-VerboseMessage -Message "Ensure is set to Absent. The database $Name should be dropped"
+                $isDatabaseInDesiredState = $false
+            }
+        }
+        'Present'
+        {
+            if ($currentValues.Ensure -ne 'Absent')
+            {
+                New-VerboseMessage -Message "Ensure is set to Present. The database $Name should be created"
+                $isDatabaseInDesiredState = $false
+            }
+        }
+    }
+
+    $isDatabaseInDesiredState 
 }
 
 Export-ModuleMember -Function *-TargetResource
-

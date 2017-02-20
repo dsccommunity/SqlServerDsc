@@ -3,10 +3,10 @@ $script:DSCResourceName    = 'MSFT_xSQLServerDatabase'
 
 #region HEADER
 
-# Unit Test Template Version: 1.1.0
-[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+# Unit Test Template Version: 1.2.0
+$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-    (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
     & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
 }
@@ -16,201 +16,250 @@ Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:DSCModuleName `
     -DSCResourceName $script:DSCResourceName `
-    -TestType Unit 
+    -TestType Unit
 
 #endregion HEADER
+
+function Invoke-TestSetup {
+    # Loading mocked classes
+    Add-Type -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SMO.cs')
+}
+
+function Invoke-TestCleanup {
+    Restore-TestEnvironment -TestEnvironment $TestEnvironment
+}
 
 # Begin Testing
 try
 {
-    #region Pester Test Initialization
+    Invoke-TestSetup
 
-    # Loading mocked classes
-    Add-Type -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SMO.cs')
+    InModuleScope $script:DSCResourceName {
+        $mockSQLServerName                   = 'localhost'
+        $mockSQLServerInstanceName           = 'MSSQLSERVER'
+        $mockSQLDatabaseName                 = 'AdventureWorks'
+        $mockInvalidOperationForCreateMethod = $false
+        $mockInvalidOperationForDropMethod   = $false
+        $mockExpectedCreateForAlterMethod    = 'AdventureWorks'
+        $mockExpectedDropForAlterMethod      = 'Sales'
 
-    $nodeName = 'localhost'
-    $instanceName = 'MSSQLSERVER'
-
-    $defaultParameters = @{
-        SQLInstanceName = $instanceName
-        SQLServer = $nodeName
-    }
-
-    #endregion Pester Test Initialization
-
-    Describe "$($script:DSCResourceName)\Get-TargetResource" {
-        Mock -CommandName Connect-SQL -MockWith {
-            return New-Object Object | 
-                Add-Member ScriptProperty Databases {
-                    return @{
-                        'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') ) )
-                    }
-                } -PassThru -Force 
-        } -ModuleName $script:DSCResourceName -Verifiable
-
-        Context 'When the system is not in the desired state' {
-            $testParameters = $defaultParameters
-            $testParameters += @{
-                Name = 'UnknownDatabase'
-            }
-
-            $result = Get-TargetResource @testParameters
-
-            It 'Should return the state as absent' {
-                $result.Ensure | Should Be 'Absent'
-            }
-
-            It 'Should return the same values as passed as parameters' {
-                $result.SQLServer | Should Be $testParameters.SQLServer
-                $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                $result.Name | Should Be $testParameters.Name
-            }
-
-            It 'Should call the mock function Connect-SQL' {
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
-            }
+        # Default parameters that are used for the It-blocks
+        $mockDefaultParameters = @{
+            SQLInstanceName = $mockSQLServerInstanceName
+            SQLServer       = $mockSQLServerName
         }
-    
-        Context 'When the system is in the desired state for a database' {
-            $testParameters = $defaultParameters
-            $testParameters += @{
-                Name = 'AdventureWorks'
-            }
-    
-            $result = Get-TargetResource @testParameters
-
-            It 'Should return the state as present' {
-                $result.Ensure | Should Be 'Present'
-            }
-
-            It 'Should return the same values as passed as parameters' {
-                $result.SQLServer | Should Be $testParameters.SQLServer
-                $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                $result.Name | Should Be $testParameters.Name
-            }
-
-            It 'Should call the mock function Connect-SQL' {
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
-            }
+        
+        #region Function mocks
+        $mockConnectSQL = {
+            return @(
+                (
+                    New-Object Object | 
+                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSQLServerInstanceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSQLServerName -PassThru |
+                        Add-Member -MemberType ScriptProperty -Name Databases -Value {
+                            return @{
+                                        $mockSQLDatabaseName = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, $mockSQLDatabaseName) ) )
+                                    }
+                                } -PassThru -Force |
+                        Add-Member -MemberType ScriptMethod -Name Create -Value {
+                            if ( $this.Databases[$mockSQLDatabaseName] -ne $mockExpectedCreateForAlterMethod )
+                            {
+                                throw "Called mocked Create() method without adding the right database. Expected '{0}'. But was '{1}'." `
+                                      -f $mockExpectedCreateForAlterMethod, $this.Databases[$mockSQLDatabaseName]
+                            }
+                            if ($mockInvalidOperationForCreateMethod)
+                            {
+                                throw 'Mock Create Method was called with invalid operation.'
+                            }
+                        } -PassThru -Force | 
+                        Add-Member -MemberType ScriptMethod -Name Drop -Value {
+                            if ( $this.Databases[$mockSQLDatabaseName] -ne $mockExpectedDropForAlterMethod )
+                            {
+                                throw "Called mocked Create() method without dropping the right database. Expected '{0}'. But was '{1}'." `
+                                      -f $mockExpectedDropForAlterMethod, $this.Databases[$mockSQLDatabaseName]
+                            }
+                            if ($mockInvalidOperationForDropMethod)
+                            {
+                                throw 'Mock Drop Method was called with invalid operation.'
+                            }
+                        } -PassThru -Force
+                )
+            )
         }
+        #endregion
 
-        Assert-VerifiableMocks
-    }
-    
-    Describe "$($script:DSCResourceName)\Test-TargetResource" {
-        Mock -CommandName Connect-SQL -MockWith {
-            return New-Object Object | 
-                Add-Member ScriptProperty Databases {
-                    return @{
-                        'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') ) )
-                    }
-                } -PassThru -Force 
-        } -ModuleName $script:DSCResourceName -Verifiable
+        Describe "MSFT_xSQLServerDatabase\Get-TargetResource" -Tag 'Get'{
+            BeforeEach {
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+            }
 
-        Context 'When the system is not in the desired state' {
-            It 'Should return the state as absent when desired database does not exist' {
-                $testParameters = $defaultParameters
+            Context 'When the system is not in the desired state' {
+                $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     Name = 'UnknownDatabase'
                 }
 
-                $result = Test-TargetResource @testParameters
-                $result | Should Be $false
+                $result = Get-TargetResource @testParameters
 
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It 
+                It 'Should return the state as absent' {
+                    $result.Ensure | Should Be 'Absent'
+                }
+
+                It 'Should return the same values as passed as parameters' {
+                    $result.SQLServer | Should Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
+                    $result.Name | Should Be $testParameters.Name
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
             }
-
-            It 'Should return the state as present when desired database exist' {
-                $testParameters = $defaultParameters
+        
+            Context 'When the system is in the desired state for a database' {
+                $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     Name = 'AdventureWorks'
                 }
+        
+                $result = Get-TargetResource @testParameters
 
-                $result = Test-TargetResource @testParameters
-                $result | Should Be $true
-
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It 
-            }
-        }
-
-        Context 'When the system is in the desired state' {
-            It 'Should return the state as present when desired database exist' {
-                $testParameters = $defaultParameters
-                $testParameters += @{
-                    Name = 'AdventureWorks'
+                It 'Should return the state as present' {
+                    $result.Ensure | Should Be 'Present'
                 }
 
-                $result = Test-TargetResource @testParameters
-                $result | Should Be $true
-
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It 
-            }
-            
-            It 'Should return the state as absent when desired database does not exist' {
-                $testParameters = $defaultParameters
-                $testParameters += @{
-                    Name = 'UnknownDatabase'
+                It 'Should return the same values as passed as parameters' {
+                    $result.SQLServer | Should Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
+                    $result.Name | Should Be $testParameters.Name
                 }
 
-                $result = Test-TargetResource @testParameters
-                $result | Should Be $false
-
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It 
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
             }
-        }
 
-        Assert-VerifiableMocks
-    }
-    
-    Describe "$($script:DSCResourceName)\Set-TargetResource" {
-        Mock -CommandName Connect-SQL -MockWith {
-            return New-Object Object | 
-                Add-Member ScriptProperty Databases {
-                    return @{
-                        'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') ) )
+            Assert-VerifiableMocks
+        }
+        
+        Describe "MSFT_xSQLServerDatabase\Test-TargetResource" -Tag 'Test'{
+            BeforeEach {
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+            }
+
+            Context 'When the system is not in the desired state and Ensure is set to Present' {
+                It 'Should return the state as false when desired database does not exist' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name = 'UnknownDatabase'
+                        Ensure = 'Present'
                     }
-                } -PassThru -Force 
-        } -ModuleName $script:DSCResourceName -Verifiable
 
-        Mock -CommandName New-SqlDatabase -MockWith {} -ModuleName $script:DSCResourceName -Verifiable        
-        Mock -CommandName Remove-SqlDatabase -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
+                    $result = Test-TargetResource @testParameters
+                    $result | Should Be $false
+                }
+                
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
 
-        Context 'When the system is not in the desired state' {
-            It 'Should call the function New-SqlDatabase when desired database should be present' {
-                $testParameters = $defaultParameters
-                $testParameters += @{
-                    Name = 'NewDatabase'
-                    Ensure = 'Present'
+            Context 'When the system is not in the desired state and Ensure is set to Absent' {
+                It 'Should return the state as false when non-desired database exist' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name = 'AdventureWorks'
+                        Ensure = 'Absent'
+                    }
+
+                    $result = Test-TargetResource @testParameters
+                    $result | Should Be $false
                 }
 
-                Set-TargetResource @testParameters
-
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-                Assert-MockCalled New-SqlDatabase -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
             }
+
+            Context 'When the system is in the desired state and Ensure is set to Present' {
+                It 'Should return the state as present when desired database exist' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name = 'AdventureWorks'
+                        Ensure = 'Present'
+                    }
+
+                    $result = Test-TargetResource @testParameters
+                    $result | Should Be $true
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the system is in the desired state and Ensure is set to Absent' {
+                It 'Should return the state as absent when desired database does not exist' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name = 'UnknownDatabase'
+                        Ensure = 'Absent'
+                    }
+
+                    $result = Test-TargetResource @testParameters
+                    $result | Should Be $true
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Assert-VerifiableMocks
         }
-
-        Context 'When the system is not in the desired state' {
-            It 'Should call the function Remove-SqlDatabase when desired database should be absent' {
-                $testParameters = $defaultParameters
-                $testParameters += @{
-                    Name = 'AdventureWorks'
-                    Ensure = 'Absent'
-                }             
-
-                Set-TargetResource @testParameters
-
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-                Assert-MockCalled Remove-SqlDatabase -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
+        
+        Describe "MSFT_xSQLServerDatabase\Set-TargetResource" -Tag 'Set'{
+            BeforeEach {
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
+
+            Context 'When the system is not in the desired state' {
+                It 'Should call the method Create when desired database should be present' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name = 'NewDatabase'
+                        Ensure = 'Present'
+                    }
+
+                    Set-TargetResource @testParameters
+                }
+                
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the system is not in the desired state' {
+                It 'Should call the method Drop when desired database should be absent' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name = 'AdventureWorks'
+                        Ensure = 'Absent'
+                    }             
+
+                    Set-TargetResource @testParameters
+                }
+                
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Assert-VerifiableMocks
         }
     }
 }
 finally
 {
-    #region FOOTER
-
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment 
-
-    #endregion
+    Invoke-TestCleanup
 }
