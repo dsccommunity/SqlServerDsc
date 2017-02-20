@@ -53,24 +53,16 @@ function Get-TargetResource
     {
         Write-Verbose -Message 'Getting SQL Databases'
         # Check database exists
-        $sqlDatabase = $sqlServerObject.Databases
+        $getSqlDatabase = $sqlServerObject.Databases[$Name]
         
-        if ($sqlDatabase)
+        if ($getSqlDatabase)
         {
-            if ($sqlDatabase[$Name])
-            {
-                Write-Verbose -Message "SQL Database name $Name is present"
-                $Ensure = 'Present'
-            }
-            else
-            {
-                Write-Verbose -Message "SQL Database name $Name is absent"
-                $Ensure = 'Absent'
-            }
+            Write-Verbose -Message "SQL Database name $Name is present"
+            $Ensure = 'Present'
         }
         else
         {
-            Write-Verbose -Message 'Failed getting SQL databases'
+            Write-Verbose -Message "SQL Database name $Name is absent"
             $Ensure = 'Absent'
         }
     }
@@ -230,7 +222,7 @@ function Test-TargetResource
     {
         'Absent'
         {
-            if ($currentValues.Ensure -ne 'Present')
+            if ($currentValues.Ensure -ne 'Absent')
             {
                 New-VerboseMessage -Message "Ensure is set to Absent. The database $Name should be dropped"
                 $isDatabaseInDesiredState = $false
@@ -238,7 +230,7 @@ function Test-TargetResource
         }
         'Present'
         {
-            if ($currentValues.Ensure -ne 'Absent')
+            if ($currentValues.Ensure -ne 'Present')
             {
                 New-VerboseMessage -Message "Ensure is set to Present. The database $Name should be created"
                 $isDatabaseInDesiredState = $false
