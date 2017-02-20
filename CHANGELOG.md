@@ -13,6 +13,13 @@
   - Properly checks for use of SQLSysAdminAccounts parameter in $PSBoundParameters. The test now also properly evaluates the setup argument for SQLSysAdminAccounts.
   - xSQLServerSetup should now function correctly for the InstallFailoverCluster action, and also supports cluster shared volumes. Note that the AddNode action is not currently working.
 - Enables CodeCov.io code coverage reporting
+- Examples
+  - xSQLServerMaxDop
+    - 1-SetMaxDopToOne.ps1
+    - 2-SetMaxDopToAuto.ps1
+    - 3-SetMaxDopToDefault.ps1
+- Added tests for resources
+  - xSQLServerMaxDop
 
 ## 5.0.0.0
 

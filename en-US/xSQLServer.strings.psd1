@@ -72,4 +72,8 @@ RemoveAvailabilityGroupFailed = Failed to remove the availabilty group '{0}' fro
 # SQLServerHelper
 ExecuteQueryWithResultsFailed = Executing query with results failed on database '{0}'.
 ExecuteNonQueryFailed = Executing non-query failed on database '{0}'.
+
+# Max degree of parallelism
+MaxDopSetError = Unexpected result when trying to configure the max degree of parallelism server configuration option.
+MaxDopParamMustBeNull = MaxDop parameter must be set to $null or not assigned if DynamicAlloc parameter is set to $true.
 '@
