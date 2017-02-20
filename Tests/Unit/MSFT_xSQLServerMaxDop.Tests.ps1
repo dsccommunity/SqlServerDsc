@@ -203,7 +203,7 @@ try
 
             $mockNumberOfCores = 2
 
-            Context 'When the system is not in the desired state, DynamicAlloc is set to true and NumberOfLogicalProcessors = 4' {
+            Context 'When the system is not in the desired state, DynamicAlloc is set to true, NumberOfLogicalProcessors = 4 and NumberOfCores = 2' {
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     DynamicAlloc = $true
@@ -227,7 +227,7 @@ try
 
             $mockNumberOfLogicalProcessors = 1
 
-            Context 'When the system is not in the desired state, DynamicAlloc is set to true and NumberOfLogicalProcessors = 1' {
+            Context 'When the system is not in the desired state, DynamicAlloc is set to true, NumberOfLogicalProcessors = 1 and NumberOfCores = 2' {
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     DynamicAlloc = $true
