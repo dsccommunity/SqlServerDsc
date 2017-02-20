@@ -777,7 +777,7 @@ function Set-TargetResource
 
     $setupArguments = @{}
 
-    if ($Action -in @('PrepareFailoverCluster','CompleteFailoverCluster','InstallFailoverCluster','AddNode'))
+    if ($Action -in @('PrepareFailoverCluster','CompleteFailoverCluster','InstallFailoverCluster'))
     {
         # Set the group name for this clustered instance.
         $setupArguments += @{ 
@@ -788,18 +788,28 @@ function Set-TargetResource
         }
     }
 
+    # Add the failover cluster network name if the action is either installing or completing a cluster
+    if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
+    {
+        $setupArguments += @{
+            FailoverClusterNetworkName = $FailoverClusterNetworkName
+        }
+    }
+
     # Perform disk mapping for specific cluster installation types
     if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
     {
         $failoverClusterDisks = @()
 
         # Get a required lising of drives based on user parameters
-        $requiredDrives = Get-Variable -Name 'SQL*Dir' -ValueOnly | Where-Object { -not [String]::IsNullOrEmpty($_) } | Split-Path -Qualifier | Sort-Object -Unique
+        $requiredDrives = Get-Variable -Name 'SQL*Dir' -ValueOnly | Where-Object { -not [String]::IsNullOrEmpty($_) } | Sort-Object -Unique | Add-Member -MemberType NoteProperty -Name IsMapped -Value $false -PassThru
 
         # Get the disk resources that are available (not assigned to a cluster role)
         $availableStorage = Get-CimInstance -Namespace 'root/MSCluster' -ClassName 'MSCluster_ResourceGroup' -Filter "Name = 'Available Storage'" |
-                                Get-CimAssociatedInstance -Association MSCluster_ResourceGroupToResource -ResultClassName MSCluster_Resource
+                                Get-CimAssociatedInstance -Association MSCluster_ResourceGroupToResource -ResultClassName MSCluster_Resource | `
+                                Add-Member -MemberType NoteProperty -Name 'IsPossibleOwner' -Value $false -PassThru
 
+        # First map regular cluster volumes
         foreach ($diskResource in $availableStorage)
         {
             # Determine whether the current node is a possible owner of the disk resource
@@ -807,10 +817,52 @@ function Set-TargetResource
 
             if ($possibleOwners -icontains $env:COMPUTERNAME)
             {
-                # Determine whether this disk contains one of our required partitions
-                if ($requiredDrives -icontains ($diskResource | Get-CimAssociatedInstance -ResultClassName 'MSCluster_DiskPartition' | Select-Object -ExpandProperty Path))
+                $diskResource.IsPossibleOwner = $true
+            }
+        }
+
+        foreach ($requiredDrive in $requiredDrives)
+        {
+            foreach ($diskResource in ($availableStorage | Where-Object {$_.IsPossibleOwner -eq $true}))
+            {
+                $partitions = $diskResource | Get-CimAssociatedInstance -ResultClassName 'MSCluster_DiskPartition' | Select-Object -ExpandProperty Path
+                foreach ($partition in $partitions)
                 {
-                    $failoverClusterDisks += $diskResource.Name
+                    if ($requiredDrive -imatch $partition.Replace('\','\\'))
+                    {
+                        $requiredDrive.IsMapped = $true
+                        $failoverClusterDisks += $diskResource.Name
+                        break
+                    }
+
+                    if ($requiredDrive.IsMapped)
+                    {
+                        break
+                    }
+                }
+
+                if ($requiredDrive.IsMapped)
+                {
+                    break
+                }
+            }
+        }
+
+        # Now we handle cluster shared volumes
+        $clusterSharedVolumes = Get-CimInstance -ClassName 'MSCluster_ClusterSharedVolume' -Namespace 'root/MSCluster'
+
+        foreach ($clusterSharedVolume in $clusterSharedVolumes)
+        {
+            foreach ($requiredDrive in ($requiredDrives | Where-Object {$_.IsMapped -eq $false}))
+            {
+                if ($requiredDrive -imatch $clusterSharedVolume.Name.Replace('\','\\'))
+                {
+                    $diskName = Get-CimInstance -ClassName 'MSCluster_ClusterSharedVolumeToResource' -Namespace 'root/MSCluster' | `
+                        Where-Object {$_.GroupComponent.Name -eq $clusterSharedVolume.Name} | `
+                        Select-Object -ExpandProperty PartComponent | `
+                        Select-Object -ExpandProperty Name
+                    $failoverClusterDisks += $diskName
+                    $requiredDrive.IsMapped = $true
                 }
             }
         }
@@ -819,10 +871,8 @@ function Set-TargetResource
         $failoverClusterDisks = $failoverClusterDisks | Sort-Object -Unique
 
         # Ensure we mapped all required drives
-        $requiredDriveCount = $requiredDrives.Count
-        $mappedDriveCount = $failoverClusterDisks.Count
-
-        if ($mappedDriveCount -ne $requiredDriveCount)
+        $unMappedRequiredDrives = $requiredDrives | Where-Object {$_.IsMapped -eq $false} | Measure-Object
+        if ($unMappedRequiredDrives.Count -gt 0)
         {
             throw New-TerminatingError -ErrorType FailoverClusterDiskMappingError -FormatArgs ($failoverClusterDisks -join '; ') -ErrorCategory InvalidResult
         }
@@ -832,7 +882,7 @@ function Set-TargetResource
     }
 
     # Determine network mapping for specific cluster installation types
-    if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster','AddNode'))
+    if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
     {
         $clusterIPAddresses = @()
 
@@ -855,7 +905,7 @@ function Set-TargetResource
                     if (Test-IPAddress -IPAddress $address -NetworkID $network.Address -SubnetMask $network.AddressMask)
                     {
                         # Add the formatted string to our array
-                        $clusterIPAddresses += "IPv4; $address; $($network.Name); $($network.AddressMask)"
+                        $clusterIPAddresses += "IPv4;$address;$($network.Name);$($network.AddressMask)"
                     }
                 }
             }
@@ -901,6 +951,19 @@ function Set-TargetResource
         $argumentVars += 'BrowserSvcStartupType'
     }
 
+    if ($Action -eq 'AddNode')
+    {
+        if ($PSBoundParameters.ContainsKey('SQLSvcAccount'))
+        {
+            $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $SQLSvcAccount -ServiceType 'SQL')
+        }
+
+        if($PSBoundParameters.ContainsKey('AgtSvcAccount'))
+        {
+            $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $AgtSvcAccount -ServiceType 'AGT')
+        }
+    }
+
     if ($Features.Contains('SQLENGINE'))
     {
         $argumentVars += @(
@@ -935,7 +998,10 @@ function Set-TargetResource
             $setupArguments += @{ SAPwd = $SAPwd.GetNetworkCredential().Password }
         }
 
-        $setupArguments += @{ AgtSvcStartupType = 'Automatic' }
+        if ($Action -notin @('PrepareFailoverCluster','CompleteFailoverCluster','InstallFailoverCluster','AddNode'))
+        {
+            $setupArguments += @{ AgtSvcStartupType = 'Automatic' }
+        }
     }
 
     if ($Features.Contains('FULLTEXT'))
@@ -1058,7 +1124,16 @@ function Set-TargetResource
     New-VerboseMessage -Message "Starting setup using arguments: $log"
 
     $arguments = $arguments.Trim()
-    $process = StartWin32Process -Path $pathToSetupExecutable -Arguments $arguments
+    $processArguments = @{
+        Path = $pathToSetupExecutable
+        Arguments = $arguments
+    }
+    
+    if ($Action -in @('InstallFailoverCluster','AddNode'))
+    {
+        $processArguments.Add('Credential',$SetupCredential)
+    }
+    $process = StartWin32Process @processArguments
 
     New-VerboseMessage -Message $process
     WaitForWin32ProcessEnd -Path $pathToSetupExecutable -Arguments $arguments
@@ -1377,6 +1452,8 @@ function Test-TargetResource
         InstanceName = $InstanceName
     }
 
+    $boundParameters = $PSBoundParameters
+
     $getTargetResourceResult = Get-TargetResource @parameters
     New-VerboseMessage -Message "Features found: '$($getTargetResourceResult.Features)'"
 
@@ -1404,11 +1481,11 @@ function Test-TargetResource
 
         $result = $true
 
-        Get-Variable -Name FailoverCluster* | ForEach-Object {
-            $variableName = $_.Name
+        $boundParameters.Keys | Where-Object {$_ -imatch "^FailoverCluster"} | ForEach-Object {
+            $variableName = $_
 
-            if ($getTargetResourceResult.$variableName -ne $_.Value) {
-                New-VerboseMessage -Message "$variableName '$($_.Value)' is not in the desired state for this cluster."
+            if ($getTargetResourceResult.$variableName -ne $boundParameters[$variableName]) {
+                New-VerboseMessage -Message "$variableName '$($boundParameters[$variableName])' is not in the desired state for this cluster."
                 $result = $false
             }
         }

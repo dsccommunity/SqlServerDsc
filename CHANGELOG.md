@@ -11,6 +11,7 @@
   - xSQLServerAlwaysOnAvailabilityGroup
 - Changes to xSQLServerSetup
   - Properly checks for use of SQLSysAdminAccounts parameter in $PSBoundParameters. The test now also properly evaluates the setup argument for SQLSysAdminAccounts.
+  - xSQLServerSetup should now function correctly for the InstallFailoverCluster action, and also supports cluster shared volumes. Note that the AddNode action is not currently working.
 - Enables CodeCov.io code coverage reporting
 
 ## 5.0.0.0

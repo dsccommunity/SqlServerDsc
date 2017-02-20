@@ -821,9 +821,30 @@ Installs SQL Server on the target node.
 
 * Target machine must be running Windows Server 2008 R2.
 
+For configurations that utilize the 'InstallFailoverCluster' action, the following parameters are required (beyond those required for the standalone installation):
+
+* InstanceName (can be MSSQLSERVER if you want to install a default clustered instance)
+* FailoverClusterNetworkName
+* When installation SQL Server database engine:
+  * InstallSQLDataDir
+  * SQLUserDBDir
+  * SQLUserDBLogDir
+  * SQLTempDBDir
+  * SQLTempDBLogDir
+  * SQLBackupDir
+  * AgtSvcAccount
+  * SQLSvcAccount
+* When installing SQL Analysis Services
+  * ASDataDir
+  * ASLogDir
+  * ASBackupDir
+  * ASTempDir
+  * ASConfigDir
+  * AsSvcAccount
+
 #### Parameters
 
-* **[String] Action** _(Write)_: The action to be performed. Defaults to 'Install'. { _Install_ | InstallFailoverCluster | AddNode | PrepareFailoverCluster | CompleteFailoverCluster }
+* **[String] Action** _(Write)_: The action to be performed. Defaults to 'Install'. *Note: AddNode is not currently functional.* { _Install_ | InstallFailoverCluster | AddNode | PrepareFailoverCluster | CompleteFailoverCluster }
 * **[String] InstanceName** _(Key)_: SQL instance to be installed.
 * **[PSCredential] SetupCredential** _(Required)_: Credential to be used to perform the installation.
 * **[String] SourcePath** _(Write)_: The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.
