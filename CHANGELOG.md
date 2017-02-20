@@ -11,8 +11,24 @@
   - xSQLServerAlwaysOnAvailabilityGroup
 - Changes to xSQLServerSetup
   - Properly checks for use of SQLSysAdminAccounts parameter in $PSBoundParameters. The test now also properly evaluates the setup argument for SQLSysAdminAccounts.
+  - xSQLServerSetup should now function correctly for the InstallFailoverCluster action, and also supports cluster shared volumes. Note that the AddNode action is not currently working.
 - Enables CodeCov.io code coverage reporting.
 - Added badge for CodeCov.io to README.md.
+- Examples
+  - xSQLServerMaxDop
+    - 1-SetMaxDopToOne.ps1
+    - 2-SetMaxDopToAuto.ps1
+    - 3-SetMaxDopToDefault.ps1
+  - xSQLServerMemory
+    - 1-SetMaxMemoryTo12GB.ps1
+    - 2-SetMaxMemoryToAuto.ps1
+    - 3-SetMinMaxMemoryToAuto.ps1
+    - 4-SetMaxMemoryToDefault.ps1
+- Added tests for resources
+  - xSQLServerMaxDop
+  - xSQLServerMemory
+- Changes to xSQLServerMemory
+  - BREAKING CHANGE: The mandatory parameter now include SQLInstanceName. The DynamicAlloc parameter is no longer mandatory
 
 ## 5.0.0.0
 
