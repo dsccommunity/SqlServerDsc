@@ -273,7 +273,10 @@ None.
 
 ### xSQLServerDatabase
 
-No description.
+This resource is used to create or delete a database. For more information about database, please read:
+
+* [Create a Database](https://msdn.microsoft.com/en-us/library/ms186312.aspx).
+* [Delete a Database](https://msdn.microsoft.com/en-us/library/ms177419.aspx).
 
 #### Requirements
 
@@ -282,14 +285,15 @@ No description.
 
 #### Parameters
 
-* **[String] SQLServer** _(Key)_: The SQL Server for the database
-* **[String] SQLInstanceName** _(Key)_: The SQL instance for the database
-* **[String] Name** _(Key)_: Database to be created or dropped
-* **[String] Ensure** _(Write)_: If the values should be present or absent. Valid values are 'Present' or 'Absent'. Default Value is 'Present'. { *Present* | Absent }.
+* **[String] SQLServer** _(Key)_: The host name of the SQL Server to be configured. Default value is *env:COMPUTERNAME*.
+* **[String] SQLInstance** _(Key)_: The name of the SQL instance to be configured. Default value is *MSSQLSERVER*.
+* **[String] Name** _(Key)_: The name of database to be created or dropped.
+* **[String] Ensure** _(Write)_: When set to 'Present', the database will be created. When set to 'Absent', the database will be dropped. { *Present* | Absent }.
 
 #### Examples
 
-None.
+* [Create a Database](/Examples/Resources/xSQLServerDatabase/1-CreateDatabase.ps1)
+* [Delete a database](/Examples/Resources/xSQLServerDatabase/2-DeleteDatabase.ps1)
 
 ### xSQLServerDatabaseOwner
 
