@@ -35,9 +35,9 @@ try
     Invoke-TestSetup
 
     InModuleScope $script:DSCResourceName {
-        $mockSQLServerName                   = 'localhost'
-        $mockSQLServerInstanceName           = 'MSSQLSERVER'
-        $mockSQLDatabaseName                 = 'AdventureWorks'
+        $mockSqlServerName                   = 'localhost'
+        $mockSqlServerInstanceName           = 'MSSQLSERVER'
+        $mockSqlDatabaseName                 = 'AdventureWorks'
         $mockInvalidOperationForCreateMethod = $false
         $mockInvalidOperationForDropMethod   = $false
         $mockExpectedCreateForAlterMethod    = 'AdventureWorks'
@@ -45,45 +45,45 @@ try
 
         # Default parameters that are used for the It-blocks
         $mockDefaultParameters = @{
-            SQLInstanceName = $mockSQLServerInstanceName
-            SQLServer       = $mockSQLServerName
+            SQLInstanceName = $mockSqlServerInstanceName
+            SQLServer       = $mockSqlServerName
         }
         
         #region Function mocks
-        #$mockSQLDatabaseName = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, $mockSQLDatabaseName) ) )
+        
         $mockConnectSQL = {
             return @(
                 (
                     New-Object Object |
-                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSQLServerInstanceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSQLServerName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSqlServerInstanceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSqlServerName -PassThru |
                         Add-Member -MemberType ScriptProperty -Name Databases -Value {
                             return @{
-                                $mockSQLDatabaseName = ( New-Object Object | 
-                                    Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockSQLDatabaseName -PassThru |
+                                $mockSqlDatabaseName = ( New-Object Object | 
+                                    Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockSqlDatabaseName -PassThru |
                                     Add-Member -MemberType ScriptMethod -Name Create -Value {
-                                        if ( $this.Databases[$mockSQLDatabaseName] -ne $mockExpectedCreateForAlterMethod )
+                                        if ( $this.Databases[$mockSqlDatabaseName] -ne $mockExpectedCreateForAlterMethod )
                                         {
                                             throw "Called mocked Create() method without adding the right database. Expected '{0}'. But was '{1}'." `
-                                                  -f $mockExpectedCreateForAlterMethod, $this.Databases[$mockSQLDatabaseName]
+                                                  -f $mockExpectedCreateForAlterMethod, $this.Databases[$mockSqlDatabaseName]
                                         }
                                         if ($mockInvalidOperationForCreateMethod)
                                         {
                                             throw 'Mock Create Method was called with invalid operation.'
                                         }
-                                    } -PassThru -Force |
+                                    } -PassThru |
                                     Add-Member -MemberType ScriptMethod -Name Drop -Value {
-                                        if ( $this.Databases[$mockSQLDatabaseName] -ne $mockExpectedDropForAlterMethod )
+                                        if ( $this.Databases[$mockSqlDatabaseName] -ne $mockExpectedDropForAlterMethod )
                                         {
-                                            throw "Called mocked Create() method without dropping the right database. Expected '{0}'. But was '{1}'." `
-                                                  -f $mockExpectedDropForAlterMethod, $this.Databases[$mockSQLDatabaseName]
+                                            throw "Called mocked Drop() method without dropping the right database. Expected '{0}'. But was '{1}'." `
+                                                  -f $mockExpectedDropForAlterMethod, $this.Databases[$mockSqlDatabaseName]
                                         }
                                         if ($mockInvalidOperationForDropMethod)
                                         {
                                             throw 'Mock Drop Method was called with invalid operation.'
                                         }
-                                    } -PassThru -Force
-                                    ) 
+                                    } -PassThru
+                                    )
                                 }
                             } -PassThru -Force                                        
                 )
@@ -185,7 +185,7 @@ try
             }
 
             Context 'When the system is in the desired state and Ensure is set to Present' {
-                It 'Should return the state as present when desired database exist' {
+                It 'Should return the state as true when desired database exist' {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         Name = 'AdventureWorks'
@@ -202,7 +202,7 @@ try
             }
 
             Context 'When the system is in the desired state and Ensure is set to Absent' {
-                It 'Should return the state as absent when desired database does not exist' {
+                It 'Should return the state as true when desired database does not exist' {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         Name = 'UnknownDatabase'
@@ -268,8 +268,7 @@ try
                 }
 
                 It 'Shoud throw the correct error when Create() method was called with invalid operation' {
-                    $throwInvalidOperation = ('Unexpected result when trying to configure the max degree of parallelism ' + `
-                                              'server configuration option. InnerException: Exception calling "Create" ' + `
+                    $throwInvalidOperation = ('InnerException: Exception calling "Create" ' + `
                                               'with "0" argument(s): "Mock Create Method was called with invalid operation."')
                     
                     { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation 
@@ -290,8 +289,7 @@ try
                 }
                 
                 It 'Shoud throw the correct error when Drop() method was called with invalid operation' {
-                    $throwInvalidOperation = ('Unexpected result when trying to configure the max degree of parallelism ' + `
-                                              'server configuration option. InnerException: Exception calling "Drop" ' + `
+                    $throwInvalidOperation = ('InnerException: Exception calling "Drop" ' + `
                                               'with "0" argument(s): "Mock Drop Method was called with invalid operation."')
                     
                     { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation 
