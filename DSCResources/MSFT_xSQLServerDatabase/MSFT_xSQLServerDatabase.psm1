@@ -39,12 +39,12 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLServer,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER'
+        $SQLInstanceName
     )
 
     $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
@@ -53,9 +53,9 @@ function Get-TargetResource
     {
         Write-Verbose -Message 'Getting SQL Databases'
         # Check database exists
-        $getSqlDatabase = $sqlServerObject.Databases[$Name]
+        $sqlDatabaseObject = $sqlServerObject.Databases[$Name]
         
-        if ($getSqlDatabase)
+        if ($sqlDatabaseObject)
         {
             Write-Verbose -Message "SQL Database name $Name is present"
             $Ensure = 'Present'
@@ -113,27 +113,27 @@ function Set-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLServer,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER'
+        $SQLInstanceName
     )
 
     $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
     if ($sqlServerObject)
     {
-        if ($Ensure -eq "Present")
+        if ($Ensure -eq 'Present')
         {
             try
             {
-                $newDatabase = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $sqlServerObject,$Name
-                if ($newDatabase)
+                $sqlDatabaseObjectToCreate = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $sqlServerObject,$Name
+                if ($sqlDatabaseObjectToCreate)
                 {
                     Write-Verbose -Message "Adding to SQL the database $Name"
-                    $newDatabase.Create()
+                    $sqlDatabaseObjectToCreate.Create()
                     New-VerboseMessage -Message "Created Database $Name"
                 }
             }
@@ -149,11 +149,11 @@ function Set-TargetResource
         {
             try 
             {
-                $getDatabase = $sqlServerObject.Databases[$Name]
-                if ($getDatabase)
+                $sqlDatabaseObjectToDrop = $sqlServerObject.Databases[$Name]
+                if ($sqlDatabaseObjectToDrop)
                 {
                     Write-Verbose -Message "Deleting to SQL the database $Name"
-                    $getDatabase.Drop()
+                    $sqlDatabaseObjectToDrop.Drop()
                     New-VerboseMessage -Message "Dropped Database $Name"
                 }
             }
@@ -205,32 +205,33 @@ function Test-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLServer,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER'
+        $SQLInstanceName
     )   
 
     Write-Verbose -Message "Checking if database named $Name is present or absent"
 
-    $currentValues = Get-TargetResource @PSBoundParameters
+    $getTargetResourceResult = Get-TargetResource @PSBoundParameters
     $isDatabaseInDesiredState = $true
     
     switch ($Ensure)
     {
         'Absent'
         {
-            if ($currentValues.Ensure -ne 'Absent')
+            if ($getTargetResourceResult.Ensure -ne 'Absent')
             {
                 New-VerboseMessage -Message "Ensure is set to Absent. The database $Name should be dropped"
                 $isDatabaseInDesiredState = $false
             }
         }
+        
         'Present'
         {
-            if ($currentValues.Ensure -ne 'Present')
+            if ($getTargetResourceResult.Ensure -ne 'Present')
             {
                 New-VerboseMessage -Message "Ensure is set to Present. The database $Name should be created"
                 $isDatabaseInDesiredState = $false
