@@ -22,7 +22,6 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 function Invoke-TestSetup {
     # Loading mocked classes
-    Add-Type -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SMO.cs')
 }
 
 function Invoke-TestCleanup {
@@ -40,7 +39,7 @@ try
         $mockSqlDatabaseName                 = 'AdventureWorks'
         $mockInvalidOperationForCreateMethod = $false
         $mockInvalidOperationForDropMethod   = $false
-        $mockExpectedCreateForAlterMethod    = 'AdventureWorks'
+        $mockExpectedCreateForAlterMethod    = 'Contoso'
         $mockExpectedDropForAlterMethod      = 'Sales'
 
         # Default parameters that are used for the It-blocks
@@ -61,31 +60,40 @@ try
                             return @{
                                 $mockSqlDatabaseName = ( New-Object Object | 
                                     Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
-                                    Add-Member -MemberType ScriptMethod -Name Create -Value {
-                                        if ( $this.Name -ne $mockExpectedCreateForAlterMethod )
-                                        {
-                                            throw "Called mocked Create() method without adding the right database. Expected '{0}'. But was '{1}'." `
-                                                  -f $mockExpectedCreateForAlterMethod, $this.Name
-                                        }
-                                        if ($mockInvalidOperationForCreateMethod)
-                                        {
-                                            throw 'Mock Create Method was called with invalid operation.'
-                                        }
-                                    } -PassThru |
                                     Add-Member -MemberType ScriptMethod -Name Drop -Value {
+                                        if ($mockInvalidOperationForDropMethod)
+                                        {
+                                            throw 'Mock Drop Method was called with invalid operation.'
+                                        }
                                         if ( $this.Name -ne $mockExpectedDropForAlterMethod )
                                         {
                                             throw "Called mocked Drop() method without dropping the right database. Expected '{0}'. But was '{1}'." `
                                                   -f $mockExpectedDropForAlterMethod, $this.Name
                                         }
-                                        if ($mockInvalidOperationForDropMethod)
-                                        {
-                                            throw 'Mock Drop Method was called with invalid operation.'
-                                        }
                                     } -PassThru
                                     )
                                 }
                             } -PassThru -Force                                        
+                )
+            )
+        }
+
+        $mockNewObjectDatabase = {
+            return @(
+                (
+                    New-Object Object |
+                        Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
+                        Add-Member -MemberType ScriptMethod -Name Create -Value {
+                            if ($mockInvalidOperationForCreateMethod)
+                            {
+                                throw 'Mock Create Method was called with invalid operation.'
+                            }
+                            if ( $this.Name -ne $mockExpectedCreateForAlterMethod )
+                            {
+                                throw "Called mocked Create() method without adding the right database. Expected '{0}'. But was '{1}'." `
+                                        -f $mockExpectedCreateForAlterMethod, $this.Name
+                            }
+                        } -PassThru -Force
                 )
             )
         }
@@ -222,7 +230,12 @@ try
         Describe "MSFT_xSQLServerDatabase\Set-TargetResource" -Tag 'Set'{
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+                Mock -CommandName New-Object -MockWith $mockNewObjectDatabase -ParameterFilter {
+                    $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database'
+                } -Verifiable
             }
+
+            $mockSqlDatabaseName = 'Contoso'
 
             Context 'When the system is not in the desired state and Ensure is set to Present' {
                 It 'Should Not Throw when Ensure parameter is set to Present' {
@@ -237,6 +250,12 @@ try
                 
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+
+                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Database' {
+                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter { 
+                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database'
+                    } -Scope Context
                 }
             }
 
@@ -277,8 +296,15 @@ try
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
+
+                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Database' {
+                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter { 
+                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database'
+                    } -Scope Context
+                }
             }
 
+            $mockSqlDatabaseName = 'AdventureWorks'
             $mockInvalidOperationForDropMethod = $true
 
             Context 'When the system is not in the desired state and Ensure is set to Absent' {
