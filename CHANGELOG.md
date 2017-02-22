@@ -28,6 +28,8 @@
   - xSQLServerMemory
 - Changes to xSQLServerMemory
   - BREAKING CHANGE: The mandatory parameter now include SQLInstanceName. The DynamicAlloc parameter is no longer mandatory
+- Changes to xSQLServerDatabase
+  - Fix Test-TargetResource function that checks only Ensure parameter
 
 ## 5.0.0.0
 
