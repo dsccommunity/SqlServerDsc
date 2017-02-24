@@ -39,8 +39,8 @@ try
         $mockSqlDatabaseName                 = 'AdventureWorks'
         $mockInvalidOperationForCreateMethod = $false
         $mockInvalidOperationForDropMethod   = $false
-        $mockExpectedCreateForAlterMethod    = 'Contoso'
-        $mockExpectedDropForAlterMethod      = 'Sales'
+        $mockExpectedDatabaseNameToCreate    = 'Contoso'
+        $mockExpectedDatabaseNameToDrop      = 'Sales'
 
         # Default parameters that are used for the It-blocks
         $mockDefaultParameters = @{
@@ -65,10 +65,11 @@ try
                                         {
                                             throw 'Mock Drop Method was called with invalid operation.'
                                         }
-                                        if ( $this.Name -ne $mockExpectedDropForAlterMethod )
+                                        
+                                        if ( $this.Name -ne $mockExpectedDatabaseNameToDrop )
                                         {
                                             throw "Called mocked Drop() method without dropping the right database. Expected '{0}'. But was '{1}'." `
-                                                  -f $mockExpectedDropForAlterMethod, $this.Name
+                                                  -f $mockExpectedDatabaseNameToDrop, $this.Name
                                         }
                                     } -PassThru
                                     )
@@ -88,10 +89,11 @@ try
                             {
                                 throw 'Mock Create Method was called with invalid operation.'
                             }
-                            if ( $this.Name -ne $mockExpectedCreateForAlterMethod )
+                            
+                            if ( $this.Name -ne $mockExpectedDatabaseNameToCreate )
                             {
                                 throw "Called mocked Create() method without adding the right database. Expected '{0}'. But was '{1}'." `
-                                        -f $mockExpectedCreateForAlterMethod, $this.Name
+                                        -f $mockExpectedDatabaseNameToCreate, $this.Name
                             }
                         } -PassThru -Force
                 )
@@ -160,8 +162,8 @@ try
                 It 'Should return the state as false when desired database does not exist' {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
-                        Name = 'UnknownDatabase'
-                        Ensure = 'Present'
+                        Name    = 'UnknownDatabase'
+                        Ensure  = 'Present'
                     }
 
                     $result = Test-TargetResource @testParameters
@@ -177,8 +179,8 @@ try
                 It 'Should return the state as false when non-desired database exist' {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
-                        Name = 'AdventureWorks'
-                        Ensure = 'Absent'
+                        Name    = 'AdventureWorks'
+                        Ensure  = 'Absent'
                     }
 
                     $result = Test-TargetResource @testParameters
@@ -194,8 +196,8 @@ try
                 It 'Should return the state as true when desired database exist' {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
-                        Name = 'AdventureWorks'
-                        Ensure = 'Present'
+                        Name    = 'AdventureWorks'
+                        Ensure  = 'Present'
                     }
 
                     $result = Test-TargetResource @testParameters
@@ -211,8 +213,8 @@ try
                 It 'Should return the state as true when desired database does not exist' {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
-                        Name = 'UnknownDatabase'
-                        Ensure = 'Absent'
+                        Name    = 'UnknownDatabase'
+                        Ensure  = 'Absent'
                     }
 
                     $result = Test-TargetResource @testParameters
@@ -235,14 +237,15 @@ try
                 } -Verifiable
             }
 
-            $mockSqlDatabaseName = 'Contoso'
+            $mockSqlDatabaseName                = 'Contoso'
+            $mockExpectedDatabaseNameToCreate   = 'Contoso'
 
             Context 'When the system is not in the desired state and Ensure is set to Present' {
-                It 'Should Not Throw when Ensure parameter is set to Present' {
+                It 'Should not throw when creating the database' {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
-                        Name = 'NewDatabase'
-                        Ensure = 'Present'
+                        Name    = 'NewDatabase'
+                        Ensure  = 'Present'
                     }
 
                     { Set-TargetResource @testParameters } | Should Not Throw
@@ -259,14 +262,15 @@ try
                 }
             }
 
-            $mockSqlDatabaseName = 'Sales'
+            $mockExpectedDatabaseNameToDrop = 'Sales'
+            $mockSqlDatabaseName            = 'Sales'
 
             Context 'When the system is not in the desired state and Ensure is set to Absent' {
-                It 'Should Not Throw when Ensure parameter is set to Present' {
+                It 'Should not throw when dropping the database' {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
-                        Name = 'Sales'
-                        Ensure = 'Absent'
+                        Name    = 'Sales'
+                        Ensure  = 'Absent'
                     }
 
                     { Set-TargetResource @testParameters } | Should Not Throw
@@ -280,13 +284,13 @@ try
             $mockInvalidOperationForCreateMethod = $true
 
             Context 'When the system is not in the desired state and Ensure is set to Present' {
-                $testParameters = $mockDefaultParameters
-                $testParameters += @{
-                    Name = 'NewDatabase'
-                    Ensure = 'Present'
-                }
-
-                It 'Shoud throw the correct error when Create() method was called with invalid operation' {
+                It 'Should throw the correct error when Create() method was called with invalid operation' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name    = 'NewDatabase'
+                        Ensure  = 'Present'
+                    }
+                    
                     $throwInvalidOperation = ('InnerException: Exception calling "Create" ' + `
                                               'with "0" argument(s): "Mock Create Method was called with invalid operation."')
                     
@@ -310,8 +314,8 @@ try
             Context 'When the system is not in the desired state and Ensure is set to Absent' {
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
-                    Name = 'AdventureWorks'
-                    Ensure = 'Absent'
+                    Name    = 'AdventureWorks'
+                    Ensure  = 'Absent'
                 }
                 
                 It 'Should throw the correct error when Drop() method was called with invalid operation' {
@@ -325,6 +329,7 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
+
             Assert-VerifiableMocks
         }
     }
