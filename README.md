@@ -97,7 +97,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2012 or later.
 * Target machine must have access to the Active Directory module.
 
@@ -131,7 +131,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine2012 or later.
 
 #### Parameters
@@ -152,7 +152,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 
 #### Parameters
 
@@ -178,7 +178,7 @@ This resource is used to create, remove, and update an Always On Availability Gr
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2012 or later.
 * 'NT SERVICE\ClusSvc' or 'NT AUTHORITY\SYSTEM' must have the 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' permissions.
 
@@ -210,7 +210,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
@@ -230,7 +230,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2012 or later.
 * Target machine must have access to the SQLPS PowerShell module or the SqlServer PowerShell module.
 * Requires that the Cluster name Object (CNO) has been delegated the right _Create Computer Object_ in the organizational unit (OU) in which the Cluster Name Object (CNO) resides.
@@ -256,7 +256,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
@@ -278,7 +278,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
@@ -298,7 +298,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
@@ -319,7 +319,7 @@ For more information about permissions, please read the article [Permissions (Da
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
@@ -346,7 +346,7 @@ Read more about recovery model in this article [View or Change the Recovery Mode
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
@@ -366,7 +366,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
@@ -388,7 +388,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Security Requirements
@@ -414,7 +414,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 * Target machine must have access to the SQLPS PowerShell module or the SqlServer PowerShell module.
 
@@ -437,7 +437,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 * Target machine must have access to the SQLPS PowerShell module or the SqlServer PowerShell module.
 
@@ -458,7 +458,7 @@ None.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 R2 or later.
 
 #### Parameters
@@ -553,7 +553,7 @@ Analysis Services, SQL Browser, SQL Reporting Services and Integration Services.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 
 #### Parameters
 
@@ -582,7 +582,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
@@ -615,7 +615,7 @@ Read more about max degree of parallelism in this article [Configure the max deg
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
@@ -658,7 +658,7 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) - (102
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
@@ -683,7 +683,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
@@ -705,7 +705,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 * Target machine must have access to the SQLPS PowerShell module or the SqlServer PowerShell module.
 
@@ -727,7 +727,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
@@ -749,7 +749,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server 2008 or later.
 
 #### Parameters
@@ -774,7 +774,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Reporting Services 2008 or later.
 
 #### Parameters
@@ -798,7 +798,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Reporting Services 2008 or later.
 
 #### Parameters
@@ -823,7 +823,7 @@ Provides the means to run a user generated T-SQL script on the SQL Server instan
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server 2008 or later.
 * Target machine must have access to the SQLPS PowerShell module or the SqlServer PowerShell module.
 
@@ -853,7 +853,7 @@ Installs SQL Server on the target node.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 
 For configurations that utilize the 'InstallFailoverCluster' action, the following parameters are required (beyond those required for the standalone installation):
 
@@ -942,7 +942,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 
 #### Parameters
 
