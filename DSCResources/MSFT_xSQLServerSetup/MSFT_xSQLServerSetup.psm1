@@ -1575,15 +1575,15 @@ function Test-TargetResource
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
         $BrowserSvcStartupType,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'ClusterInstall')]
         [System.String]
         $FailoverClusterGroupName = "SQL Server ($InstanceName)",
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'ClusterInstall')]
         [System.String[]]
         $FailoverClusterIPAddress,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'ClusterInstall')]
         [System.String]
         $FailoverClusterNetworkName
     )
