@@ -13,6 +13,9 @@
   - Properly checks for use of SQLSysAdminAccounts parameter in $PSBoundParameters. The test now also properly evaluates the setup argument for SQLSysAdminAccounts.
   - xSQLServerSetup should now function correctly for the InstallFailoverCluster action, and also supports cluster shared volumes. Note that the AddNode action is not currently working.
   - It now detects that feature Client Connectivity Tools (CONN) and Client Connectivity Backwards Compatibility Tools (BC) is installed.
+  - Now it can correctly determine the right cluster when only parameter InstallSQLDataDir is assigned a path (issue #401).
+  - Now the only mandatory path parameter is InstallSQLDataDir when installing Database Engine (issue #400).
+  - It now can handle mandatory parameters, and are not using wildcards to find the variables containing paths (issue #394).
 - Enables CodeCov.io code coverage reporting.
 - Added badge for CodeCov.io to README.md.
 - Examples
