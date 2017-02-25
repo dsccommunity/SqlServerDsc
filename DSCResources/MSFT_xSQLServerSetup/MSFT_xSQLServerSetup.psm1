@@ -714,6 +714,33 @@ function Set-TargetResource
 
     $InstanceName = $InstanceName.ToUpper()
 
+    $parametersToEvaluateTrailingSlash = @(
+        'InstallSQLDataDir',
+        'SQLUserDBDir',
+        'SQLUserDBLogDir',
+        'SQLTempDBDir',
+        'SQLTempDBLogDir',
+        'SQLBackupDir',
+        'ASDataDir',
+        'ASLogDir',
+        'ASBackupDir',
+        'ASTempDir',
+        'ASConfigDir'
+    )
+
+    # Remove trailing slash ('\') from paths
+    foreach ($parameterName in $parametersToEvaluateTrailingSlash)
+    {
+        if ($PSBoundParameters.ContainsKey($parameterName))
+        {
+            $parameterValue = Get-Variable -Name $parameterName -ValueOnly
+            if ($parameterValue)
+            {
+                Set-Variable -Name $parameterName -Value $parameterValue.TrimEnd('\')
+            }
+        }
+    }
+
     $SourcePath = [Environment]::ExpandEnvironmentVariables($SourcePath)
 
     if ($SourceCredential)
@@ -821,34 +848,6 @@ function Set-TargetResource
         }
     }
 
-    $parametersToEvaluateTrailingSlash = @(
-        'InstallSQLDataDir',
-        'SQLUserDBDir',
-        'SQLUserDBLogDir',
-        'SQLTempDBDir',
-        'SQLTempDBLogDir',
-        'SQLBackupDir',
-        'ASDataDir',
-        'ASLogDir',
-        'ASBackupDir',
-        'ASTempDir',
-        'ASConfigDir'
-    )
-
-    # Remove trailing slash ('\') from paths
-    foreach ($parameter in $PSBoundParameters.GetEnumerator())
-    {
-        $parameterName = $parameter.Key
-        if ($parameterName -in $parametersToEvaluateTrailingSlash)
-        {
-            $parameterValue = $parameter.Value
-            if ($parameterValue)
-            {
-                Set-Variable -Name $parameterName -Value $parameterValue.TrimEnd('\')
-            }
-        }
-    }
-
     $setupArguments = @{}
 
     if ($Action -in @('PrepareFailoverCluster','CompleteFailoverCluster','InstallFailoverCluster'))
@@ -891,15 +890,14 @@ function Set-TargetResource
         )
 
         # Get a required listing of drives based on parameters assigned by user.
-        foreach ($parameter in $PSBoundParameters.GetEnumerator())
+        foreach ($parameterName in $parametersToEvaluateShareDisk)
         {
-            $parameterName = $parameter.Key
-            if ($parameterName -in $parametersToEvaluateShareDisk)
+            if ($PSBoundParameters.ContainsKey($parameterName))
             {
-                $parameterValue = $parameter.Value
+                $parameterValue = Get-Variable -Name $parameterName -ValueOnly
                 if ($parameterValue)
                 {
-                    New-VerboseMessage -Message ("Found assigned parameter '{0}'. Adding path '{1}' to required cluster drives." -f $parameterName, $parameterValue)
+                    New-VerboseMessage -Message ("Found assigned parameter '{0}'. Adding path '{1}' to list of paths that required cluster drive." -f $parameterName, $parameterValue)
                     $requiredDrive += $parameterValue
                 }
             }
