@@ -824,10 +824,38 @@ function Set-TargetResource
     # Perform disk mapping for specific cluster installation types
     if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
     {
-        $failoverClusterDisks = @()
 
-        # Get a required lising of drives based on user parameters
-        $requiredDrives = Get-Variable -Name 'SQL*Dir' -ValueOnly | Where-Object { -not [String]::IsNullOrEmpty($_) } | Sort-Object -Unique | Add-Member -MemberType NoteProperty -Name IsMapped -Value $false -PassThru
+        $parametersToEvaluatePathFor = @(
+            'InstallSQLDataDir'
+            'SQLUserDBDir'
+            'SQLUserDBLogDir'
+            'SQLTempDBDir'
+            'SQLTempDBLogDir'
+            'SQLBackupDir'
+        )
+
+        $requiredDrive = @()
+
+        <#
+            Get a required lising of drives based on user parameters.
+            Using $MyInvocation.MyCommand.Parameters.GetEnumerator() instead of PSBoundParameters
+            to be able to get default parameters.
+        #>
+        foreach ($parameter in $MyInvocation.MyCommand.Parameters.GetEnumerator())
+        {
+            $parameterName = $parameter.Key
+            if ($parameterName -in $parametersToEvaluatePathFor)
+            {
+                $parameterValue = Get-Variable -Name $parameterName -ValueOnly -ErrorAction SilentlyContinue
+                if ($parameterValue)
+                {
+                    New-VerboseMessage -Message ("Found assigned parameter '{0}'. Adding path '{1}' to required cluster drives." -f $parameterName, $parameterValue)
+                    $requiredDrive += $parameterValue
+                }
+            }
+        }
+
+        $requiredDrive = $requiredDrive | Sort-Object -Unique | Add-Member -MemberType NoteProperty -Name IsMapped -Value $false -PassThru
 
         # Get the disk resources that are available (not assigned to a cluster role)
         $availableStorage = Get-CimInstance -Namespace 'root/MSCluster' -ClassName 'MSCluster_ResourceGroup' -Filter "Name = 'Available Storage'" |
@@ -846,27 +874,29 @@ function Set-TargetResource
             }
         }
 
-        foreach ($requiredDrive in $requiredDrives)
+        $failoverClusterDisks = @()
+
+        foreach ($currentRequiredDrive in $requiredDrive)
         {
             foreach ($diskResource in ($availableStorage | Where-Object {$_.IsPossibleOwner -eq $true}))
             {
                 $partitions = $diskResource | Get-CimAssociatedInstance -ResultClassName 'MSCluster_DiskPartition' | Select-Object -ExpandProperty Path
                 foreach ($partition in $partitions)
                 {
-                    if ($requiredDrive -imatch $partition.Replace('\','\\'))
+                    if ($currentRequiredDrive -imatch $partition.Replace('\','\\'))
                     {
-                        $requiredDrive.IsMapped = $true
+                        $currentRequiredDrive.IsMapped = $true
                         $failoverClusterDisks += $diskResource.Name
                         break
                     }
 
-                    if ($requiredDrive.IsMapped)
+                    if ($currentRequiredDrive.IsMapped)
                     {
                         break
                     }
                 }
 
-                if ($requiredDrive.IsMapped)
+                if ($currentRequiredDrive.IsMapped)
                 {
                     break
                 }
@@ -878,16 +908,16 @@ function Set-TargetResource
 
         foreach ($clusterSharedVolume in $clusterSharedVolumes)
         {
-            foreach ($requiredDrive in ($requiredDrives | Where-Object {$_.IsMapped -eq $false}))
+            foreach ($currentRequiredDrive in ($requiredDrive | Where-Object {$_.IsMapped -eq $false}))
             {
-                if ($requiredDrive -imatch $clusterSharedVolume.Name.Replace('\','\\'))
+                if ($currentRequiredDrive -imatch $clusterSharedVolume.Name.Replace('\','\\'))
                 {
                     $diskName = Get-CimInstance -ClassName 'MSCluster_ClusterSharedVolumeToResource' -Namespace 'root/MSCluster' | `
                         Where-Object {$_.GroupComponent.Name -eq $clusterSharedVolume.Name} | `
                         Select-Object -ExpandProperty PartComponent | `
                         Select-Object -ExpandProperty Name
                     $failoverClusterDisks += $diskName
-                    $requiredDrive.IsMapped = $true
+                    $currentRequiredDrive.IsMapped = $true
                 }
             }
         }
@@ -896,7 +926,7 @@ function Set-TargetResource
         $failoverClusterDisks = $failoverClusterDisks | Sort-Object -Unique
 
         # Ensure we mapped all required drives
-        $unMappedRequiredDrives = $requiredDrives | Where-Object {$_.IsMapped -eq $false} | Measure-Object
+        $unMappedRequiredDrives = $requiredDrive | Where-Object {$_.IsMapped -eq $false} | Measure-Object
         if ($unMappedRequiredDrives.Count -gt 0)
         {
             throw New-TerminatingError -ErrorType FailoverClusterDiskMappingError -FormatArgs ($failoverClusterDisks -join '; ') -ErrorCategory InvalidResult
@@ -1153,7 +1183,7 @@ function Set-TargetResource
         Path = $pathToSetupExecutable
         Arguments = $arguments
     }
-    
+
     if ($Action -in @('InstallFailoverCluster','AddNode'))
     {
         $processArguments.Add('Credential',$SetupCredential)

@@ -109,6 +109,13 @@ try
 
         $mockClusterNodes = @($env:COMPUTERNAME,'SQL01','SQL02')
 
+        $mockSqlDataDirectoryPath = 'E:\MSSQL\Data'
+        $mockSqlUserDatabasePath = 'K:\MSSQL\Data'
+        $mockSqlUserDatabaseLogPath = 'L:\MSSQL\Logs'
+        $mockSqlTempDatabasePath = 'M:\MSSQL\TempDb\Data'
+        $mockSqlTempDatabaseLogPath = 'N:\MSSQL\TempDb\Logs'
+        $mockSqlBackupPath = 'O:\MSSQL\Backup'
+
         $mockClusterDiskMap = {
             @{
                 SysData = Split-Path -Path $mockDynamicSqlDataDirectoryPath -Qualifier
@@ -2579,12 +2586,12 @@ try
                         FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
                     }
 
-                    $mockDynamicSqlDataDirectoryPath = 'E:\MSSQL\Data'
-                    $mockDynamicSqlUserDatabasePath = 'K:\MSSQL\Data'
-                    $mockDynamicSqlUserDatabaseLogPath = 'L:\MSSQL\Logs'
-                    $mockDynamicSqlTempDatabasePath = 'M:\MSSQL\TempDb\Data'
-                    $mockDynamicSqlTempDatabaseLogPath = 'N:\MSSQL\TempDb\Logs'
-                    $mockDynamicSqlBackupPath = 'O:\MSSQL\Backup'
+                    $mockDynamicSqlDataDirectoryPath = $mockSqlDataDirectoryPath
+                    $mockDynamicSqlUserDatabasePath = $mockSqlUserDatabasePath
+                    $mockDynamicSqlUserDatabaseLogPath = $mockSqlUserDatabaseLogPath
+                    $mockDynamicSqlTempDatabasePath = $mockSqlTempDatabasePath
+                    $mockDynamicSqlTempDatabaseLogPath = $mockSqlTempDatabaseLogPath
+                    $mockDynamicSqlBackupPath = $mockSqlBackupPath
 
                     New-Variable -Name 'FailoverClusterDisks' -Value (& $mockClusterDiskMap)['UserData']
 
@@ -3451,12 +3458,12 @@ try
                 # For testing InstallFailoverCluster action
                 Context "When SQL Server version is $mockSQLMajorVersion and the system is not in the desired state and the action is InstallFailoverCluster" {
                     BeforeAll {
-                        $mockDynamicSqlDataDirectoryPath = 'E:\MSSQL\Data'
-                        $mockDynamicSqlUserDatabasePath = 'K:\MSSQL\Data'
-                        $mockDynamicSqlUserDatabaseLogPath = 'L:\MSSQL\Logs'
-                        $mockDynamicSqlTempDatabasePath = 'M:\MSSQL\TempDb\Data'
-                        $mockDynamicSqlTempDatabaseLogPath = 'N:\MSSQL\TempDb\Logs'
-                        $mockDynamicSqlBackupPath = 'O:\MSSQL\Backup'
+                        $mockDynamicSqlDataDirectoryPath = $mockSqlDataDirectoryPath
+                        $mockDynamicSqlUserDatabasePath = $mockSqlUserDatabasePath
+                        $mockDynamicSqlUserDatabaseLogPath = $mockSqlUserDatabaseLogPath
+                        $mockDynamicSqlTempDatabasePath = $mockSqlTempDatabasePath
+                        $mockDynamicSqlTempDatabaseLogPath = $mockSqlTempDatabaseLogPath
+                        $mockDynamicSqlBackupPath = $mockSqlBackupPath
 
                         $testParameters = $mockDefaultClusterParameters.Clone()
                         $testParameters += @{
@@ -3520,7 +3527,7 @@ try
                         $mockStartWin32ProcessExpectedArgument = $mockStartWin32ProcessExpectedArgumentClusterDefault.Clone()
                         $mockStartWin32ProcessExpectedArgument += @{
                             Action = 'InstallFailoverCluster'
-                            FailoverClusterDisks = 'Backup; TempDbData; TempDbLogs; UserData; UserLogs; SysData'
+                            FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
                             FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
                             FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
                             SkipRules = 'Cluster_VerifyForErrors'
@@ -3533,6 +3540,52 @@ try
                         }
 
                         { Set-TargetResource @testParameters } | Should Not Throw
+                    }
+
+                    It 'Should pass proper parameters to setup when only InstallSQLDataDir is assigned a path' {
+                        $mockStartWin32ProcessExpectedArgument = $mockStartWin32ProcessExpectedArgumentClusterDefault.Clone()
+                        $mockStartWin32ProcessExpectedArgument += @{
+                            Action = 'InstallFailoverCluster'
+                            FailoverClusterDisks = 'SysData'
+                            FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
+                            FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+                            SkipRules = 'Cluster_VerifyForErrors'
+                            InstallSQLDataDir = $mockDynamicSqlDataDirectoryPath
+                        }
+
+                        $setTargetResourceParameters = $testParameters.Clone()
+                        $setTargetResourceParameters.Remove('SQLUserDBDir')
+                        $setTargetResourceParameters.Remove('SQLUserDBLogDir')
+                        $setTargetResourceParameters.Remove('SQLTempDbDir')
+                        $setTargetResourceParameters.Remove('SQLTempDbLogDir')
+                        $setTargetResourceParameters.Remove('SQLBackupDir')
+
+                        { Set-TargetResource @setTargetResourceParameters } | Should Not Throw
+                    }
+
+                    It 'Should pass proper parameters to setup when three variables are assigned the same drive, but different paths' {
+                        $mockStartWin32ProcessExpectedArgument = $mockStartWin32ProcessExpectedArgumentClusterDefault.Clone()
+                        $mockStartWin32ProcessExpectedArgument += @{
+                            Action = 'InstallFailoverCluster'
+                            FailoverClusterDisks = 'SysData'
+                            FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
+                            FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+                            SkipRules = 'Cluster_VerifyForErrors'
+                            InstallSQLDataDir = 'E:\SQLData'
+                            SQLUserDBDir = 'E:\SQLData\UserDb'
+                            SQLUserDBLogDir = 'E:\SQLData\UserDbLogs'
+                        }
+
+                        $setTargetResourceParameters = $testParameters.Clone()
+                        $setTargetResourceParameters.Remove('SQLTempDbDir')
+                        $setTargetResourceParameters.Remove('SQLTempDbLogDir')
+                        $setTargetResourceParameters.Remove('SQLBackupDir')
+
+                        $setTargetResourceParameters['InstallSQLDataDir'] = 'E:\SQLData'
+                        $setTargetResourceParameters['SQLUserDBDir'] = 'E:\SQLData\UserDb'
+                        $setTargetResourceParameters['SQLUserDBLogDir'] = 'E:\SQLData\UserDbLogs'
+
+                        { Set-TargetResource @setTargetResourceParameters } | Should Not Throw
                     }
 
                     It 'Should pass the SetupCredential object to the StartWin32Process function' {
@@ -3552,7 +3605,7 @@ try
                         # Pass in a bad path
                         $badPathParameters.SQLUserDBDir = 'C:\MSSQL\'
 
-                        { Set-TargetResource @badPathParameters } | Should Throw 'Unable to map the specified paths to valid cluster storage. Drives mapped: Backup; TempDbData; TempDbLogs; UserLogs'
+                        { Set-TargetResource @badPathParameters } | Should Throw 'Unable to map the specified paths to valid cluster storage. Drives mapped: Backup; SysData; TempDbData; TempDbLogs; UserLogs'
                     }
 
                     It 'Should properly map paths to clustered disk resources' {
@@ -3568,7 +3621,7 @@ try
                             SQLBackupDir = $mockDynamicSqlBackupPath
                             SkipRules = 'Cluster_VerifyForErrors'
                             FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
-                            FailoverClusterDisks = 'Backup; TempDbData; TempDbLogs; UserData; UserLogs'
+                            FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
                         }
 
                         { Set-TargetResource @testParameters } | Should Not Throw
@@ -3589,7 +3642,7 @@ try
                             SQLTempDBDir = $mockDynamicSqlTempDatabasePath
                             SQLTempDBLogDir = $mockDynamicSqlTempDatabaseLogPath
                             SQLBackupDir = $mockDynamicSqlBackupPath
-                            FailoverClusterDisks = 'Backup; TempDbData; TempDbLogs; UserData; UserLogs'
+                            FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
                             SkipRules = 'Cluster_VerifyForErrors'
                         }
 
@@ -3630,7 +3683,7 @@ try
                             SQLTempDBDir = $mockDynamicSqlTempDatabasePath
                             SQLTempDBLogDir = $mockDynamicSqlTempDatabaseLogPath
                             SQLBackupDir = $mockDynamicSqlBackupPath
-                            FailoverClusterDisks = 'Backup; TempDbData; TempDbLogs; UserData; UserLogs'
+                            FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
                             SkipRules = 'Cluster_VerifyForErrors'
                             Action = 'InstallFailoverCluster'
                         }
@@ -3655,7 +3708,7 @@ try
                             SQLTempDBDir = $mockDynamicSqlTempDatabasePath
                             SQLTempDBLogDir = $mockDynamicSqlTempDatabaseLogPath
                             SQLBackupDir = $mockDynamicSqlBackupPath
-                            FailoverClusterDisks = 'Backup; TempDbData; TempDbLogs; UserData; UserLogs'
+                            FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
                             SkipRules = 'Cluster_VerifyForErrors'
                             Action = 'InstallFailoverCluster'
                         }
@@ -3681,7 +3734,7 @@ try
                             Action = 'InstallFailoverCluster'
                             InstanceName = 'MSSQLSERVER'
                             Features = 'SQLEngine'
-                            FailoverClusterDisks = "$($mockCSVClusterDiskMap['Backup'].Name); $($mockCSVClusterDiskMap['UserData'].Name); $($mockCSVClusterDiskMap['UserLogs'].Name); $($mockCSVClusterDiskMap['TempDBData'].Name); $($mockCSVClusterDiskMap['TempDBLogs'].Name)"
+                            FailoverClusterDisks = "$($mockCSVClusterDiskMap['Backup'].Name); $($mockCSVClusterDiskMap['UserData'].Name); $($mockCSVClusterDiskMap['UserLogs'].Name); $($mockCSVClusterDiskMap['SysData'].Name); $($mockCSVClusterDiskMap['TempDBData'].Name); $($mockCSVClusterDiskMap['TempDBLogs'].Name)"
                             FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
                             FailoverClusterGroup = 'SQL Server (MSSQLSERVER)'
                             FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
@@ -3699,7 +3752,7 @@ try
                     It 'Should pass proper parameters to setup when Cluster Shared volumes are specified and are the same for one or more parameter values' {
                         $csvTestParameters = $testParameters.Clone()
 
-                        $csvTestParameters['InstallSQLDataDir'] = $mockCSVClusterDiskMap['SysData'].Path + '\Data'
+                        $csvTestParameters['InstallSQLDataDir'] = $mockCSVClusterDiskMap['UserData'].Path + '\Data'
                         $csvTestParameters['SQLUserDBDir'] = $mockCSVClusterDiskMap['UserData'].Path + '\Data'
                         $csvTestParameters['SQLUserDBLogDir'] = $mockCSVClusterDiskMap['UserData'].Path + '\Logs'
                         $csvTestParameters['SQLTempDBDir'] = $mockCSVClusterDiskMap['UserData'].Path + '\TEMPDB'
@@ -3718,7 +3771,7 @@ try
                             FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
                             FailoverClusterGroup = 'SQL Server (MSSQLSERVER)'
                             FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
-                            InstallSQLDataDir = "$($mockCSVClusterDiskMap['SysData'].Path)\Data"
+                            InstallSQLDataDir = "$($mockCSVClusterDiskMap['UserData'].Path)\Data"
                             SQLUserDBDir = "$($mockCSVClusterDiskMap['UserData'].Path)\Data"
                             SQLUserDBLogDir = "$($mockCSVClusterDiskMap['UserData'].Path)\Logs"
                             SQLTempDBDir = "$($mockCSVClusterDiskMap['UserData'].Path)\TEMPDB"
@@ -3825,12 +3878,12 @@ try
 
                 Context "When SQL Server version is $mockSqlMajorVersion and the system is not in the desired state and the action is CompleteFailoverCluster." {
                     BeforeEach {
-                        $mockDynamicSqlDataDirectoryPath = 'E:\MSSQL\Data'
-                        $mockDynamicSqlUserDatabasePath = 'K:\MSSQL\Data'
-                        $mockDynamicSqlUserDatabaseLogPath = 'L:\MSSQL\Logs'
-                        $mockDynamicSqlTempDatabasePath = 'M:\MSSQL\TempDb\Data'
-                        $mockDynamicSqlTempDatabaseLogPath = 'N:\MSSQL\TempDb\Logs'
-                        $mockDynamicSqlBackupPath = 'O:\MSSQL\Backup'
+                        $mockDynamicSqlDataDirectoryPath = $mockSqlDataDirectoryPath
+                        $mockDynamicSqlUserDatabasePath = $mockSqlUserDatabasePath
+                        $mockDynamicSqlUserDatabaseLogPath = $mockSqlUserDatabaseLogPath
+                        $mockDynamicSqlTempDatabasePath = $mockSqlTempDatabasePath
+                        $mockDynamicSqlTempDatabaseLogPath = $mockSqlTempDatabaseLogPath
+                        $mockDynamicSqlBackupPath = $mockSqlBackupPath
 
                         $testParameters = $mockDefaultClusterParameters.Clone()
                         $testParameters += @{
@@ -3889,7 +3942,7 @@ try
                         # Pass in a bad path
                         $badPathParameters.SQLUserDBDir = 'C:\MSSQL\'
 
-                        { Set-TargetResource @badPathParameters } | Should Throw 'Unable to map the specified paths to valid cluster storage. Drives mapped: Backup; TempDbData; TempDbLogs; UserLogs'
+                        { Set-TargetResource @badPathParameters } | Should Throw 'Unable to map the specified paths to valid cluster storage. Drives mapped: Backup; SysData; TempDbData; TempDbLogs; UserLogs'
                     }
 
                     It 'Should properly map paths to clustered disk resources' {
@@ -3906,7 +3959,7 @@ try
                             SQLBackupDir = $mockDynamicSqlBackupPath
                             SkipRules = 'Cluster_VerifyForErrors'
                             FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
-                            FailoverClusterDisks = 'Backup; TempDbData; TempDbLogs; UserData; UserLogs'
+                            FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
                         }
 
                         { Set-TargetResource @testParameters } | Should Not Throw
@@ -3927,7 +3980,7 @@ try
                             SQLTempDBDir = $mockDynamicSqlTempDatabasePath
                             SQLTempDBLogDir = $mockDynamicSqlTempDatabaseLogPath
                             SQLBackupDir = $mockDynamicSqlBackupPath
-                            FailoverClusterDisks = 'Backup; TempDbData; TempDbLogs; UserData; UserLogs'
+                            FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
                             SkipRules = 'Cluster_VerifyForErrors'
                         }
 
@@ -3968,7 +4021,7 @@ try
                             SQLTempDBDir = $mockDynamicSqlTempDatabasePath
                             SQLTempDBLogDir = $mockDynamicSqlTempDatabaseLogPath
                             SQLBackupDir = $mockDynamicSqlBackupPath
-                            FailoverClusterDisks = 'Backup; TempDbData; TempDbLogs; UserData; UserLogs'
+                            FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
                             SkipRules = 'Cluster_VerifyForErrors'
                             Action = 'CompleteFailoverCluster'
                         }
@@ -3993,7 +4046,7 @@ try
                             SQLTempDBDir = $mockDynamicSqlTempDatabasePath
                             SQLTempDBLogDir = $mockDynamicSqlTempDatabaseLogPath
                             SQLBackupDir = $mockDynamicSqlBackupPath
-                            FailoverClusterDisks = 'Backup; TempDbData; TempDbLogs; UserData; UserLogs'
+                            FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
                             SkipRules = 'Cluster_VerifyForErrors'
                             Action = 'CompleteFailoverCluster'
                         }
@@ -4011,7 +4064,7 @@ try
                             Action = 'CompleteFailoverCluster'
                             InstanceName = 'MSSQLSERVER'
                             Features = 'SQLEngine'
-                            FailoverClusterDisks = 'Backup; TempDbData; TempDbLogs; UserData; UserLogs'
+                            FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
                             FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
                             FailoverClusterGroup = 'SQL Server (MSSQLSERVER)'
                             FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
