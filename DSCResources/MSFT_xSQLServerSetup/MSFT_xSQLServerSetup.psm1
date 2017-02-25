@@ -802,7 +802,6 @@ function Set-TargetResource
             $parameterValue = $parameter.Value
             if ($parameterValue)
             {
-                #Write-Host $parameterValue
                 Set-Variable -Name $parameterName -Value $parameterValue.TrimEnd('\')
             }
         }
