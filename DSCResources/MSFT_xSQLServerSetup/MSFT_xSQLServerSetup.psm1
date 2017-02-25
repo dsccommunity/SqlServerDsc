@@ -509,7 +509,7 @@ function Get-TargetResource
        Specifies the startup mode for SQL Server Browser service
 
     .PARAMETER FailoverClusterGroupName
-        The name of the resource group to create for the clustered SQL Server instance
+        The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (InstanceName)'.
 
     .PARAMETER FailoverClusterIPAddress
         Array of IP Addresses to be assigned to the clustered SQL Server instance
@@ -524,139 +524,181 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [ValidateSet('Install','InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
         [System.String]
         $Action = 'Install',
 
+        [Parameter()]
         [System.String]
         $SourcePath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SourceCredential,
 
+        [Parameter()]
         [System.Boolean]
         $SuppressReboot,
 
+        [Parameter()]
         [System.Boolean]
         $ForceReboot,
 
+        [Parameter()]
         [System.String]
         $Features,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
 
+        [Parameter()]
         [System.String]
         $InstanceID,
 
+        [Parameter()]
         [System.String]
         $ProductKey,
 
+        [Parameter()]
         [System.String]
         $UpdateEnabled,
 
+        [Parameter()]
         [System.String]
         $UpdateSource,
 
+        [Parameter()]
         [System.String]
         $SQMReporting,
 
+        [Parameter()]
         [System.String]
         $ErrorReporting,
 
+        [Parameter()]
         [System.String]
         $InstallSharedDir,
 
+        [Parameter()]
         [System.String]
         $InstallSharedWOWDir,
 
+        [Parameter()]
         [System.String]
         $InstanceDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SQLSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $AgtSvcAccount,
 
+        [Parameter()]
         [System.String]
         $SQLCollation,
 
+        [Parameter()]
         [System.String[]]
         $SQLSysAdminAccounts,
 
+        [Parameter()]
         [System.String]
         $SecurityMode,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SAPwd,
 
+        [Parameter()]
         [System.String]
         $InstallSQLDataDir,
 
+        [Parameter()]
         [System.String]
         $SQLUserDBDir,
 
+        [Parameter()]
         [System.String]
         $SQLUserDBLogDir,
 
+        [Parameter()]
         [System.String]
         $SQLTempDBDir,
 
+        [Parameter()]
         [System.String]
         $SQLTempDBLogDir,
 
+        [Parameter()]
         [System.String]
         $SQLBackupDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $FTSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $RSSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $ASSvcAccount,
 
+        [Parameter()]
         [System.String]
         $ASCollation,
 
+        [Parameter()]
         [System.String[]]
         $ASSysAdminAccounts,
 
+        [Parameter()]
         [System.String]
         $ASDataDir,
 
+        [Parameter()]
         [System.String]
         $ASLogDir,
 
+        [Parameter()]
         [System.String]
         $ASBackupDir,
 
+        [Parameter()]
         [System.String]
         $ASTempDir,
 
+        [Parameter()]
         [System.String]
         $ASConfigDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $ISSvcAccount,
 
+        [Parameter()]
         [System.String]
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
         $BrowserSvcStartupType,
 
+        [Parameter()]
         [System.String]
         $FailoverClusterGroupName = "SQL Server ($InstanceName)",
 
+        [Parameter()]
         [System.String[]]
         $FailoverClusterIPAddress,
 
+        [Parameter()]
         [System.String]
         $FailoverClusterNetworkName
     )
@@ -1355,7 +1397,7 @@ function Set-TargetResource
        Specifies the startup mode for SQL Server Browser service
 
     .PARAMETER FailoverClusterGroupName
-        The name of the resource group to create for the clustered SQL Server instance
+        The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (InstanceName)'.
 
     .PARAMETER FailoverClusterIPAddress
         Array of IP Addresses to be assigned to the clustered SQL Server instance
@@ -1369,142 +1411,181 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
+        [Parameter()]
         [ValidateSet('Install','InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
         [System.String]
         $Action = 'Install',
 
+        [Parameter()]
         [System.String]
         $SourcePath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SourceCredential,
 
+        [Parameter()]
         [System.Boolean]
         $SuppressReboot,
 
+        [Parameter()]
         [System.Boolean]
         $ForceReboot,
 
+        [Parameter()]
         [System.String]
         $Features,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
 
+        [Parameter()]
         [System.String]
         $InstanceID,
 
+        [Parameter()]
         [System.String]
         $ProductKey,
 
+        [Parameter()]
         [System.String]
         $UpdateEnabled,
 
+        [Parameter()]
         [System.String]
         $UpdateSource,
 
+        [Parameter()]
         [System.String]
         $SQMReporting,
 
+        [Parameter()]
         [System.String]
         $ErrorReporting,
 
+        [Parameter()]
         [System.String]
         $InstallSharedDir,
 
+        [Parameter()]
         [System.String]
         $InstallSharedWOWDir,
 
+        [Parameter()]
         [System.String]
         $InstanceDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SQLSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $AgtSvcAccount,
 
+        [Parameter()]
         [System.String]
         $SQLCollation,
 
+        [Parameter()]
         [System.String[]]
         $SQLSysAdminAccounts,
 
+        [Parameter()]
         [System.String]
         $SecurityMode,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SAPwd,
 
+        [Parameter()]
         [System.String]
         $InstallSQLDataDir,
 
+        [Parameter()]
         [System.String]
         $SQLUserDBDir,
 
+        [Parameter()]
         [System.String]
         $SQLUserDBLogDir,
 
+        [Parameter()]
         [System.String]
         $SQLTempDBDir,
 
+        [Parameter()]
         [System.String]
         $SQLTempDBLogDir,
 
+        [Parameter()]
         [System.String]
         $SQLBackupDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $FTSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $RSSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $ASSvcAccount,
 
+        [Parameter()]
         [System.String]
         $ASCollation,
 
+        [Parameter()]
         [System.String[]]
         $ASSysAdminAccounts,
 
+        [Parameter()]
         [System.String]
         $ASDataDir,
 
+        [Parameter()]
         [System.String]
         $ASLogDir,
 
+        [Parameter()]
         [System.String]
         $ASBackupDir,
 
+        [Parameter()]
         [System.String]
         $ASTempDir,
 
+        [Parameter()]
         [System.String]
         $ASConfigDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $ISSvcAccount,
 
+        [Parameter()]
         [System.String]
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
         $BrowserSvcStartupType,
 
-        [Parameter(ParameterSetName = 'ClusterInstall')]
+        [Parameter()]
         [System.String]
         $FailoverClusterGroupName = "SQL Server ($InstanceName)",
 
-        [Parameter(ParameterSetName = 'ClusterInstall')]
+        [Parameter()]
         [System.String[]]
         $FailoverClusterIPAddress,
 
-        [Parameter(ParameterSetName = 'ClusterInstall')]
+        [Parameter()]
         [System.String]
         $FailoverClusterNetworkName
     )
