@@ -698,9 +698,6 @@ try
             )
         }
 
-
-
-
         $mockGetCimInstance_MSClusterNetwork = {
             return @(
                 (
@@ -3581,7 +3578,7 @@ try
                         $setTargetResourceParameters.Remove('SQLTempDbLogDir')
                         $setTargetResourceParameters.Remove('SQLBackupDir')
 
-                        $setTargetResourceParameters['InstallSQLDataDir'] = 'E:\SQLData'
+                        $setTargetResourceParameters['InstallSQLDataDir'] = 'E:\SQLData\' # This ends with \ to test removal of paths ending with \
                         $setTargetResourceParameters['SQLUserDBDir'] = 'E:\SQLData\UserDb'
                         $setTargetResourceParameters['SQLUserDBLogDir'] = 'E:\SQLData\UserDbLogs'
 

@@ -779,8 +779,7 @@ function Set-TargetResource
         }
     }
 
-    # Remove trailing "\" from paths
-    foreach ($var in @(
+    $parametersToEvaluateTrailingSlash = @(
         'InstallSQLDataDir',
         'SQLUserDBDir',
         'SQLUserDBLogDir',
@@ -791,12 +790,21 @@ function Set-TargetResource
         'ASLogDir',
         'ASBackupDir',
         'ASTempDir',
-        'ASConfigDir')
+        'ASConfigDir'
     )
+
+    # Remove trailing slash ('\') from paths
+    foreach ($parameter in $PSBoundParameters.GetEnumerator())
     {
-        if (Get-Variable -Name $var -ErrorAction SilentlyContinue)
+        $parameterName = $parameter.Key
+        if ($parameterName -in $parametersToEvaluateTrailingSlash)
         {
-            Set-Variable -Name $var -Value (Get-Variable -Name $var).Value.TrimEnd('\')
+            $parameterValue = $parameter.Value
+            if ($parameterValue)
+            {
+                #Write-Host $parameterValue
+                Set-Variable -Name $parameterName -Value $parameterValue.TrimEnd('\')
+            }
         }
     }
 
@@ -824,29 +832,30 @@ function Set-TargetResource
     # Perform disk mapping for specific cluster installation types
     if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
     {
-
-        $parametersToEvaluatePathFor = @(
-            'InstallSQLDataDir'
-            'SQLUserDBDir'
-            'SQLUserDBLogDir'
-            'SQLTempDBDir'
-            'SQLTempDBLogDir'
-            'SQLBackupDir'
-        )
-
         $requiredDrive = @()
 
-        <#
-            Get a required lising of drives based on user parameters.
-            Using $MyInvocation.MyCommand.Parameters.GetEnumerator() instead of PSBoundParameters
-            to be able to get default parameters.
-        #>
-        foreach ($parameter in $MyInvocation.MyCommand.Parameters.GetEnumerator())
+        # This is also used to evaluate which cluster shard disks should be used.
+        $parametersToEvaluateShareDisk = @(
+            'InstallSQLDataDir',
+            'SQLUserDBDir',
+            'SQLUserDBLogDir',
+            'SQLTempDBDir',
+            'SQLTempDBLogDir',
+            'SQLBackupDir',
+            'ASDataDir',
+            'ASLogDir',
+            'ASBackupDir',
+            'ASTempDir',
+            'ASConfigDir'
+        )
+
+        # Get a required listing of drives based on parameters assigned by user.
+        foreach ($parameter in $PSBoundParameters.GetEnumerator())
         {
             $parameterName = $parameter.Key
-            if ($parameterName -in $parametersToEvaluatePathFor)
+            if ($parameterName -in $parametersToEvaluateShareDisk)
             {
-                $parameterValue = Get-Variable -Name $parameterName -ValueOnly -ErrorAction SilentlyContinue
+                $parameterValue = $parameter.Value
                 if ($parameterValue)
                 {
                     New-VerboseMessage -Message ("Found assigned parameter '{0}'. Adding path '{1}' to required cluster drives." -f $parameterName, $parameterValue)
@@ -855,6 +864,7 @@ function Set-TargetResource
             }
         }
 
+        # Only keep unique paths and add a member to keep track if the path is mapped to a disk.
         $requiredDrive = $requiredDrive | Sort-Object -Unique | Add-Member -MemberType NoteProperty -Name IsMapped -Value $false -PassThru
 
         # Get the disk resources that are available (not assigned to a cluster role)
