@@ -854,14 +854,17 @@ Installs SQL Server on the target node.
 #### Requirements
 
 * Target machine must be running Windows Server 2008 R2 or later.
-* For configurations that utilize the 'InstallFailoverCluster' action, the following parameters are required (beyond those required for the standalone installation)
-  * InstanceName (can be MSSQLSERVER if you want to install a default clustered instance)
+* For configurations that utilize the 'InstallFailoverCluster' action, the following parameters are required (beyond those required for the standalone installation). See the article [Install SQL Server from the Command Prompt](https://msdn.microsoft.com/en-us/library/ms144259.aspx) under the section [Failover Cluster Parameters](https://msdn.microsoft.com/en-us/library/ms144259.aspx#Anchor_8) for more information.
+  * InstanceName (can be MSSQLSERVER if you want to install a default clustered instance).
   * FailoverClusterNetworkName
-  * When installation SQL Server database engine:
+  * FailoverClusterIPAddress
+  * _When installing Database Engine._
     * InstallSQLDataDir
     * AgtSvcAccount
     * SQLSvcAccount
-  * When installing SQL Analysis Services
+    * SQLSysAdminAccounts
+  * _When installing Analysis Services._
+    * ASSysAdminAccounts
     * AsSvcAccount
 
 #### Parameters
