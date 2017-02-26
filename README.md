@@ -934,6 +934,7 @@ No description.
 #### Requirements
 
 * Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
 
