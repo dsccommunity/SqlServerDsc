@@ -6,6 +6,10 @@ Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script
     .SYNOPSIS
         Returns the current state of the SQL Server features.
 
+    .PARAMETER Action
+        The action to be performed. Default value is 'Install'.
+        Possible values are 'Install', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'
+
     .PARAMETER SourcePath
         The path to the root of the source files for installation. I.e and UNC path to a shared resource.  Environment variables can be used in the path.
 
@@ -23,6 +27,9 @@ Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script
 
     .PARAMETER InstanceName
         Name of the SQL instance to be installed.
+
+    .PARAMETER FailoverClusterNetworkName
+        Host name to be assigned to the clustered SQL Server instance
 #>
 function Get-TargetResource
 {
@@ -30,6 +37,11 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
+        [Parameter()]
+        [ValidateSet('Install','InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
+        [System.String]
+        $Action = 'Install',
+
         [Parameter()]
         [System.String]
         $SourcePath,
@@ -44,8 +56,21 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $InstanceName
+        $InstanceName,
+
+        [Parameter()]
+        [System.String]
+        $FailoverClusterNetworkName
     )
+
+    if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
+    {
+        $sqlHostName = $FailoverClusterNetworkName
+    }
+    else
+    {
+        $sqlHostName = $env:COMPUTERNAME
+    }
 
     $InstanceName = $InstanceName.ToUpper()
 
@@ -148,7 +173,7 @@ function Get-TargetResource
         $instanceId = $fullInstanceId.Split('.')[1]
         $instanceDirectory = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$fullInstanceId\Setup" -Name 'SqlProgramDir').SqlProgramDir.Trim("\")
 
-        $databaseServer = Connect-SQL -SQLServer 'localhost' -SQLInstanceName $InstanceName
+        $databaseServer = Connect-SQL -SQLServer $sqlHostName -SQLInstanceName $InstanceName
 
         $sqlCollation = $databaseServer.Collation
 
@@ -226,7 +251,7 @@ function Get-TargetResource
         $features += 'AS,'
         $analysisServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$analysisServiceName'").StartName
 
-        $analysisServer = Connect-SQLAnalysis -SQLServer localhost -SQLInstanceName $InstanceName
+        $analysisServer = Connect-SQLAnalysis -SQLServer $sqlHostName -SQLInstanceName $InstanceName
 
         $analysisCollation = $analysisServer.ServerProperties['CollationName'].Value
         $analysisDataDirectory = $analysisServer.ServerProperties['DataDir'].Value
@@ -703,14 +728,16 @@ function Set-TargetResource
         $FailoverClusterNetworkName
     )
 
-    $parameters = @{
+    $getTargetResourceParameters = @{
+        Action = $Action
         SourcePath = $SourcePath
         SetupCredential = $SetupCredential
         SourceCredential = $SourceCredential
         InstanceName = $InstanceName
+        FailoverClusterNetworkName = $FailoverClusterNetworkName
     }
 
-    $getTargetResourceResult = Get-TargetResource @parameters
+    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
     $InstanceName = $InstanceName.ToUpper()
 
@@ -1588,16 +1615,18 @@ function Test-TargetResource
         $FailoverClusterNetworkName
     )
 
-    $parameters = @{
+    $getTargetResourceParameters = @{
+        Action = $Action
         SourcePath = $SourcePath
         SetupCredential = $SetupCredential
         SourceCredential = $SourceCredential
         InstanceName = $InstanceName
+        FailoverClusterNetworkName = $FailoverClusterNetworkName
     }
 
     $boundParameters = $PSBoundParameters
 
-    $getTargetResourceResult = Get-TargetResource @parameters
+    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
     New-VerboseMessage -Message "Features found: '$($getTargetResourceResult.Features)'"
 
     $result = $false
