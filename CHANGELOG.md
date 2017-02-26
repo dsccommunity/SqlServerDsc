@@ -35,6 +35,8 @@
   - BREAKING CHANGE: The mandatory parameter now include SQLInstanceName. The DynamicAlloc parameter is no longer mandatory
 - Changes to xSQLServerDatabase
   - When the system is not in desired state the Test-TargetResource will now output verbose messages saying so.
+- Changes to xSQLServerDatabaseOwner
+  - Fixed code style, added updated parameter descriptions to schema.mof and README.md.
 
 ## 5.0.0.0
 

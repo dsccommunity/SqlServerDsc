@@ -298,7 +298,8 @@ This resource is used to create or delete a database. For more information about
 
 ### xSQLServerDatabaseOwner
 
-No description.
+This resource is used to configure the owner of a database.
+For more information about database owner, please read the article [Changing the Database Owner](https://technet.microsoft.com/en-us/library/ms190909.aspx).
 
 #### Requirements
 
@@ -307,10 +308,10 @@ No description.
 
 #### Parameters
 
-* **[String] Database** _(Key)_: The SQL Database
-* **[String] Name** _(Required)_: The name of the SQL login for the owner
-* **[String] SQLServer** _(Write)_: The SQL Server for the database
-* **[String] SQLInstance** _(Write)_: The SQL instance for the database
+* **[String] Database** _(Key)_: The name of database to be configured.
+* **[String] Name** _(Required)_: The name of the login that will become a owner of the desired sql database.
+* **[String] SQLServer** _(Write)_: The host name of the SQL Server to be configured.
+* **[String] SQLInstance** _(Write)_: The name of the SQL instance to be configured.
 
 #### Examples
 
