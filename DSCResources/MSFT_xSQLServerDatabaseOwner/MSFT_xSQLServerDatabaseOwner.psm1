@@ -59,21 +59,13 @@ function Get-TargetResource
         try
         {
             $getSqlDatabaseOwner = $getSqlDatabase.Owner
+            New-VerboseMessage -Message "Owner for SQL Database name $Database is $getSqlDatabaseOwner"
         }
         catch
         {
             throw New-TerminatingError -ErrorType FailedToGetOwnerDatabase `
-                                       -FormatArgs @($Database) `
+                                       -FormatArgs @($Database, $SQLServer, $SQLInstanceName) `
                                        -ErrorCategory InvalidOperation
-        }
-
-        if ($getSqlDatabaseOwner)
-        {
-            New-VerboseMessage -Message "Owner for SQL Database name $Database is $getSqlDatabaseOwner"
-        }
-        else
-        {
-            $null = $getSqlDatabaseOwner
         }
     }
 
@@ -153,6 +145,7 @@ function Set-TargetResource
         catch
         {
             throw New-TerminatingError -ErrorType FailedToSetOwnerDatabase `
+                                       -FormatArgs @($Name, $Database, $SQLServer, $SQLInstanceName) `
                                        -ErrorCategory InvalidOperation `
                                        -InnerException $_.Exception
         }

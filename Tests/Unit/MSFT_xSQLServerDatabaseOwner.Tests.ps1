@@ -3,259 +3,280 @@ $script:DSCResourceName    = 'MSFT_xSQLServerDatabaseOwner'
 
 #region HEADER
 
-# Unit Test Template Version: 1.1.0
-[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+# Unit Test Template Version: 1.2.0
+$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-    (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
     & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
 }
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 
-$TestEnvironment = Initialize-TestEnvironment -DSCModuleName $script:DSCModuleName `
-                                            -DSCResourceName $script:DSCResourceName `
-                                            -TestType Unit
+$TestEnvironment = Initialize-TestEnvironment `
+    -DSCModuleName $script:DSCModuleName `
+    -DSCResourceName $script:DSCResourceName `
+    -TestType Unit
+
 #endregion HEADER
+
+function Invoke-TestSetup {
+}
+
+function Invoke-TestCleanup {
+    Restore-TestEnvironment -TestEnvironment $TestEnvironment
+}
 
 # Begin Testing
 try
 {
-    #region Pester Test Initialization
+    Invoke-TestSetup
 
-    # Loading mocked classes
-    Add-Type -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SMO.cs')
+    InModuleScope $script:DSCResourceName {
+        $mockSqlServerName                      = 'localhost'
+        $mockSqlServerInstanceName              = 'MSSQLSERVER'
+        $mockSqlDatabaseName                    = 'AdventureWorks'
+        $mockSqlServerLogin                     = 'Zebes\SamusAran'
+        $mockSqlServerLoginType                 = 'WindowsUser'
+        $mockForSetOwnerProperty                = 'Elysia\Chozo'
+        $mockInvalidOperationForSetOwnerMethod  = $false
+        $mockExpectedForSetOwnerMethod          = 'Elysia\Chozo'
 
-    $defaultParameters = @{
-        SQLInstanceName = 'MSSQLSERVER'
-        SQLServer = 'localhost'
-    }
+        # Default parameters that are used for the It-blocks
+        $mockDefaultParameters = @{
+            SQLInstanceName = $mockSqlServerInstanceName
+            SQLServer       = $mockSqlServerName
+        }
+        
+        #region Function mocks        
+        $mockConnectSQL = {
+            return @(
+                (
+                    New-Object Object |
+                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSqlServerInstanceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSqlServerName -PassThru |
+                        Add-Member -MemberType ScriptProperty -Name Databases -Value {
+                            return @{
+                                $mockSqlDatabaseName = @(( 
+                                    New-Object Object | 
+                                        Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
+                                        Add-Member -MemberType NoteProperty -Name Owner -Value $mockForSetOwnerProperty -PassThru |
+                                        Add-Member -MemberType ScriptMethod -Name SetOwner -Value {
+                                            if ($mockInvalidOperationForSetOwnerMethod)
+                                            {
+                                                throw 'Mock SetOwner Method was called with invalid operation.'
+                                            }
+                                        
+                                            if ( $this.Owner -ne $mockForSetOwnerProperty )
+                                            {
+                                                throw "Called mocked Drop() method without dropping the right database. Expected '{0}'. But was '{1}'." `
+                                                        -f $mockExpectedForSetOwnerMethod, $this.Owner
+                                            }
+                                        } -PassThru -Force
+                                    ))
+                                }
+                            } -PassThru -Force |
+                        Add-Member -MemberType ScriptProperty -Name Logins -Value {
+                            return @{
+                                $mockSqlServerLogin = @((
+                                    New-Object Object | 
+                                        Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru 
+                                ))
+                            }
+                        } -PassThru -Force                                       
+                )
+            )
+        }
+        #endregion
 
-    #endregion Pester Test Initialization
+        Describe "MSFT_xSQLServerDatabaseOwner\Get-TargetResource" -Tag 'Get'{
+            BeforeEach {
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+            }
 
-    Describe "$($script:DSCResourceName)\Get-TargetResource" {
-        Mock -CommandName Connect-SQL -MockWith {
-            return New-Object Object |
-                Add-Member ScriptProperty Databases {
-                    return @{
-                        'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') ) )
+            Context 'When passing values to parameters and database name does not exist' {
+                It 'Should throw the correct error' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Database    = 'unknownDatabaseName'
+                        Name        = $mockSqlServerLogin
                     }
-                } -PassThru -Force
-        } -ModuleName $script:DSCResourceName -Verifiable
 
-        Context 'When the system is not in the desired state' {
-            $testParameters = $defaultParameters
-            $testParameters += @{
-                Database = 'AdventureWorks'
-                Name = 'CONTOSO\SqlServiceAcct'
-            }
+                    $throwInvalidOperation = ("Database 'unknownDatabaseName' does not exist " + `
+                                              "on SQL server 'localhost\MSSQLSERVER'.")
 
-            Mock -CommandName Get-SqlDatabaseOwner -MockWith {
-                return $null
-            } -ModuleName $script:DSCResourceName -Verifiable
-
-            $result = Get-TargetResource @testParameters
-
-            It 'Should return the name as null from the get method' {
-                $result.Name | Should Be $null
-            }
-
-            It 'Should return the same values as passed as parameters' {
-                $result.SQLServer | Should Be $testParameters.SQLServer
-                $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                $result.Database | Should Be $testParameters.Database
-            }
-
-            It 'Should call the mock functions Connect-SQL and Get-SqlDatabaseOwner' {
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
-                Assert-MockCalled Get-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
-            }
-        }
-
-        Context 'When the specified database does not exist' {
-            $testParameters = $defaultParameters
-            $testParameters += @{
-                Database = 'UnknownDatabase'
-                Name = 'CONTOSO\SqlServiceAcct'
-            }
-
-            Mock -CommandName Get-SqlDatabaseOwner -MockWith {
-                return $null
-            } -ModuleName $script:DSCResourceName -Verifiable
-
-            $result = Get-TargetResource @testParameters
-
-            It 'Should return the name as null from the get method' {
-                $result.Name | Should Be $null
-            }
-
-            It 'Should return the same values as passed as parameters' {
-                $result.SQLServer | Should Be $testParameters.SQLServer
-                $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                $result.Database | Should Be $testParameters.Database
-            }
-
-            It 'Should call the mock functions Connect-SQL and Get-SqlDatabaseOwner' {
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
-                Assert-MockCalled Get-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
-            }
-        }
-
-        Context 'When the system is in the desired state' {
-            $testParameters = $defaultParameters
-            $testParameters += @{
-                Database = 'AdventureWorks'
-                Name = 'CONTOSO\SqlServiceAcct'
-            }
-
-            Mock -CommandName Get-SqlDatabaseOwner -MockWith { return 'CONTOSO\SqlServiceAcct' } -ModuleName $script:DSCResourceName -Verifiable
-
-            $result = Get-TargetResource @testParameters
-
-            It 'Should return the name of the owner from the get method' {
-                $result.Name | Should Be $testParameters.Name
-            }
-
-            It 'Should return the same values as passed as parameters' {
-                $result.SQLServer | Should Be $testParameters.SQLServer
-                $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                $result.Database | Should Be $testParameters.Database
-            }
-
-            It 'Should call the mock functions Connect-SQL and Get-SqlDatabaseOwner' {
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
-                Assert-MockCalled Get-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
-            }
-        }
-
-        Assert-VerifiableMocks
-    }
-
-    Describe "$($script:DSCResourceName)\Test-TargetResource" {
-        Mock -CommandName Connect-SQL -MockWith {
-            return New-Object Object |
-                Add-Member ScriptProperty Databases {
-                    return @{
-                        'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') ) )
-                    }
-                } -PassThru -Force
-        } -ModuleName $script:DSCResourceName -Verifiable
-
-        Context 'When the system is not in the desired state' {
-            It 'Should return the state as false when desired login is not the database owner' {
-                $testParameters = $defaultParameters
-                $testParameters += @{
-                    Database = 'AdventureWorks'
-                    Name = 'CONTOSO\SqlServiceAcct'
+                    { Get-TargetResource @testParameters } | Should Throw $throwInvalidOperation
                 }
 
-                Mock -CommandName Get-SqlDatabaseOwner -MockWith {
-                    return $null
-                } -ModuleName $script:DSCResourceName -Verifiable
-
-                $result = Test-TargetResource @testParameters
-                $result | Should Be $false
-
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-                Assert-MockCalled Get-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
             }
-        }
 
-        Context 'When the system is in the desired state' {
-            It 'Should return the state as true when desired login is the database owner' {
-                $testParameters = $defaultParameters
-                $testParameters += @{
-                    Database = 'AdventureWorks'
-                    Name = 'CONTOSO\SqlServiceAcct'
+            Context 'When the system is either in the desired state or not in the desired state' {
+                It 'Should not throw' {
+                    $testParameters = $defaultParameters
+                    $testParameters += @{
+                        Database    = $mockSqlDatabaseName
+                        Name        = $mockSqlServerLogin
+                    }
+
+                    $result = Get-TargetResource @testParameters
                 }
 
-                Mock -CommandName Get-SqlDatabaseOwner -MockWith {
-                    'CONTOSO\SqlServiceAcct'
-                } -ModuleName $script:DSCResourceName -Verifiable
+                It 'Should return the name of the owner from the get method' {
+                    $result.Name | Should Be $testParameters.Name
+                }
 
-                $result = Test-TargetResource @testParameters
-                $result | Should Be $true
+                It 'Should return the same values as passed as parameters' {
+                    $result.SQLServer | Should Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
+                    $result.Database | Should Be $testParameters.Database
+                }
 
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-                Assert-MockCalled Get-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
             }
+
+            Assert-VerifiableMocks
         }
 
-        Assert-VerifiableMocks
-    }
+        Describe "MSFT_xSQLServerDatabaseOwner\Test-TargetResource" -Tag 'Test'{
+            BeforeEach {
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+            }
 
-    Describe "$($script:DSCResourceName)\Set-TargetResource" {
-        Mock -CommandName Connect-SQL -MockWith {
-            return New-Object Object |
-                Add-Member ScriptProperty Databases {
-                    return @{
-                        'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') ) )
+            Context 'When the system is not in the desired state' {
+                It 'Should return the state as false when desired login is not the database owner' {
+                    $testParameters = $defaultParameters
+                    $testParameters += @{
+                        Database    = $mockSqlDatabaseName
+                        Name        = $mockSqlServerLogin
                     }
-                } -PassThru -Force
-        } -ModuleName $script:DSCResourceName -Verifiable
 
-        Context 'When the system is not in the desired state' {
-            $testParameters = $defaultParameters
-            $testParameters += @{
-                Database = 'AdventureWorks'
-                Name = 'CONTOSO\SqlServiceAcct'
+                    $result = Test-TargetResource @testParameters
+                    $result | Should Be $false
+                }
+                
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
             }
 
-            It 'Should call the function Set-SqlDatabaseOwner when desired login is not the database owner' {
-                Mock -CommandName Set-SqlDatabaseOwner -MockWith { } -ModuleName $script:DSCResourceName -Verifiable
+            $mockForSetOwnerProperty = 'Zebes\SamusAran'
+            $mockSqlServerLogin = 'Zebes\SamusAran'
 
-                Set-TargetResource @testParameters
+            Context 'When the system is in the desired state' {
+                It 'Should return the state as true when desired login is the database owner' {
+                    $testParameters = $defaultParameters
+                    $testParameters += @{
+                        Database    = $mockSqlDatabaseName
+                        Name        = $mockSqlServerLogin
+                    }
 
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-                Assert-MockCalled Set-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
+                    $result = Test-TargetResource @testParameters
+                    $result | Should Be $true
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
             }
 
-            $testParameters.Database = 'UnknownDatabase'
-
-            It 'Should throw an error when desired database does not exist' {
-                Mock -CommandName Set-SqlDatabaseOwner -MockWith {
-                    return Throw
-                } -ModuleName $script:DSCResourceName -Verifiable
-
-                { Set-TargetResource @testParameters } | Should Throw "Failed to setting the owner of database UnknownDatabase"
-
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-                Assert-MockCalled Set-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-            }
+            Assert-VerifiableMocks
         }
 
-        Context 'When the system is in the desired state' {
-            $testParameters = $defaultParameters
-            $testParameters += @{
-                Database = 'AdventureWorks'
-                Name = 'CONTOSO\SqlServiceAcct'
+        Describe "MSFT_xSQLServerDatabaseOwner\Set-TargetResource" -Tag 'Set'{
+            BeforeEach {
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
 
-            It 'Should not call the function Set-SqlDatabaseOwner when desired login is the database owner' {
-                Mock -CommandName Get-SqlDatabaseOwner -MockWith {
-                    'CONTOSO\SqlServiceAcct'
-                } -ModuleName $script:DSCResourceName -Verifiable
+            Context 'When the system is not in the desired state and database name does not exist' {
+                It 'Should throw the correct error' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Database    = 'unknownDatabaseName'
+                        Name        = $mockSqlServerLogin
+                    }
 
-                Mock -CommandName Set-SqlDatabaseOwner -MockWith {
-                    return Throw
-                } -ModuleName $script:DSCResourceName -Verifiable
+                    $throwInvalidOperation = ("Database 'unknownDatabaseName' does not exist " + `
+                                              "on SQL server 'localhost\MSSQLSERVER'.")
 
-                $result = Get-TargetResource @testParameters
+                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                }
 
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-                Assert-MockCalled Get-SqlDatabaseOwner -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-                Assert-MockCalled Set-SqlDatabaseOwner -Exactly -Times 0 -ModuleName $script:DSCResourceName -Scope It
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
             }
+
+            Context 'When the system is not in the desired state and login name does not exist' {
+                It 'Should throw the correct error' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Database    = $mockSqlDatabaseName
+                        Name        = 'John'
+                    }
+
+                    $throwInvalidOperation = ("Login 'John' does not exist on " + `
+                                              "SQL server 'localhost\MSSQLSERVER'.")
+
+                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            $mockInvalidOperationForSetOwnerMethod  = $false
+            $mockExpectedForSetOwnerMethod = $mockSqlServerLogin
+
+            Context 'When the system is not in the desired state' {
+                It 'Should not throw' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Database    = $mockSqlDatabaseName
+                        Name        = $mockSqlServerLogin
+                    }
+
+                    { Set-TargetResource @testParameters } | Should Not Throw
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            $mockInvalidOperationForSetOwnerMethod  = $true
+            
+            Context 'When the system is not in the desired state' {
+                It 'Should throw the correct error' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Database    = $mockSqlDatabaseName
+                        Name        = $mockSqlServerLogin
+                    }
+
+                    $throwInvalidOperation = ('Failed to set owner named Zebes\SamusAran of the database ' + `
+                                              'named AdventureWorks on localhost\MSSQLSERVER. InnerException: ' + `
+                                              'Exception calling "SetOwner" with "1" argument(s): "Mock ' + `
+                                              'SetOwner Method was called with invalid operation.')
+
+                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Assert-VerifiableMocks
         }
-
-        Assert-VerifiableMocks
     }
 }
 finally
 {
-    #region FOOTER
-
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment
-
-    #endregion
+    Invoke-TestCleanup
 }
