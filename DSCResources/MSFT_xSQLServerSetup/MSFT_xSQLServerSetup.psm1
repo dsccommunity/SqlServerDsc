@@ -509,7 +509,7 @@ function Get-TargetResource
        Specifies the startup mode for SQL Server Browser service
 
     .PARAMETER FailoverClusterGroupName
-        The name of the resource group to create for the clustered SQL Server instance
+        The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (InstanceName)'.
 
     .PARAMETER FailoverClusterIPAddress
         Array of IP Addresses to be assigned to the clustered SQL Server instance
@@ -524,139 +524,181 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [ValidateSet('Install','InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
         [System.String]
         $Action = 'Install',
 
+        [Parameter()]
         [System.String]
         $SourcePath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SourceCredential,
 
+        [Parameter()]
         [System.Boolean]
         $SuppressReboot,
 
+        [Parameter()]
         [System.Boolean]
         $ForceReboot,
 
+        [Parameter()]
         [System.String]
         $Features,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
 
+        [Parameter()]
         [System.String]
         $InstanceID,
 
+        [Parameter()]
         [System.String]
         $ProductKey,
 
+        [Parameter()]
         [System.String]
         $UpdateEnabled,
 
+        [Parameter()]
         [System.String]
         $UpdateSource,
 
+        [Parameter()]
         [System.String]
         $SQMReporting,
 
+        [Parameter()]
         [System.String]
         $ErrorReporting,
 
+        [Parameter()]
         [System.String]
         $InstallSharedDir,
 
+        [Parameter()]
         [System.String]
         $InstallSharedWOWDir,
 
+        [Parameter()]
         [System.String]
         $InstanceDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SQLSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $AgtSvcAccount,
 
+        [Parameter()]
         [System.String]
         $SQLCollation,
 
+        [Parameter()]
         [System.String[]]
         $SQLSysAdminAccounts,
 
+        [Parameter()]
         [System.String]
         $SecurityMode,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SAPwd,
 
+        [Parameter()]
         [System.String]
         $InstallSQLDataDir,
 
+        [Parameter()]
         [System.String]
         $SQLUserDBDir,
 
+        [Parameter()]
         [System.String]
         $SQLUserDBLogDir,
 
+        [Parameter()]
         [System.String]
         $SQLTempDBDir,
 
+        [Parameter()]
         [System.String]
         $SQLTempDBLogDir,
 
+        [Parameter()]
         [System.String]
         $SQLBackupDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $FTSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $RSSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $ASSvcAccount,
 
+        [Parameter()]
         [System.String]
         $ASCollation,
 
+        [Parameter()]
         [System.String[]]
         $ASSysAdminAccounts,
 
+        [Parameter()]
         [System.String]
         $ASDataDir,
 
+        [Parameter()]
         [System.String]
         $ASLogDir,
 
+        [Parameter()]
         [System.String]
         $ASBackupDir,
 
+        [Parameter()]
         [System.String]
         $ASTempDir,
 
+        [Parameter()]
         [System.String]
         $ASConfigDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $ISSvcAccount,
 
+        [Parameter()]
         [System.String]
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
         $BrowserSvcStartupType,
 
+        [Parameter()]
         [System.String]
         $FailoverClusterGroupName = "SQL Server ($InstanceName)",
 
+        [Parameter()]
         [System.String[]]
         $FailoverClusterIPAddress,
 
+        [Parameter()]
         [System.String]
         $FailoverClusterNetworkName
     )
@@ -671,6 +713,33 @@ function Set-TargetResource
     $getTargetResourceResult = Get-TargetResource @parameters
 
     $InstanceName = $InstanceName.ToUpper()
+
+    $parametersToEvaluateTrailingSlash = @(
+        'InstallSQLDataDir',
+        'SQLUserDBDir',
+        'SQLUserDBLogDir',
+        'SQLTempDBDir',
+        'SQLTempDBLogDir',
+        'SQLBackupDir',
+        'ASDataDir',
+        'ASLogDir',
+        'ASBackupDir',
+        'ASTempDir',
+        'ASConfigDir'
+    )
+
+    # Remove trailing slash ('\') from paths
+    foreach ($parameterName in $parametersToEvaluateTrailingSlash)
+    {
+        if ($PSBoundParameters.ContainsKey($parameterName))
+        {
+            $parameterValue = Get-Variable -Name $parameterName -ValueOnly
+            if ($parameterValue)
+            {
+                Set-Variable -Name $parameterName -Value $parameterValue.TrimEnd('\')
+            }
+        }
+    }
 
     $SourcePath = [Environment]::ExpandEnvironmentVariables($SourcePath)
 
@@ -779,27 +848,6 @@ function Set-TargetResource
         }
     }
 
-    # Remove trailing "\" from paths
-    foreach ($var in @(
-        'InstallSQLDataDir',
-        'SQLUserDBDir',
-        'SQLUserDBLogDir',
-        'SQLTempDBDir',
-        'SQLTempDBLogDir',
-        'SQLBackupDir',
-        'ASDataDir',
-        'ASLogDir',
-        'ASBackupDir',
-        'ASTempDir',
-        'ASConfigDir')
-    )
-    {
-        if (Get-Variable -Name $var -ErrorAction SilentlyContinue)
-        {
-            Set-Variable -Name $var -Value (Get-Variable -Name $var).Value.TrimEnd('\')
-        }
-    }
-
     $setupArguments = @{}
 
     if ($Action -in @('PrepareFailoverCluster','CompleteFailoverCluster','InstallFailoverCluster'))
@@ -824,10 +872,39 @@ function Set-TargetResource
     # Perform disk mapping for specific cluster installation types
     if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
     {
-        $failoverClusterDisks = @()
+        $requiredDrive = @()
 
-        # Get a required lising of drives based on user parameters
-        $requiredDrives = Get-Variable -Name 'SQL*Dir' -ValueOnly | Where-Object { -not [String]::IsNullOrEmpty($_) } | Sort-Object -Unique | Add-Member -MemberType NoteProperty -Name IsMapped -Value $false -PassThru
+        # This is also used to evaluate which cluster shard disks should be used.
+        $parametersToEvaluateShareDisk = @(
+            'InstallSQLDataDir',
+            'SQLUserDBDir',
+            'SQLUserDBLogDir',
+            'SQLTempDBDir',
+            'SQLTempDBLogDir',
+            'SQLBackupDir',
+            'ASDataDir',
+            'ASLogDir',
+            'ASBackupDir',
+            'ASTempDir',
+            'ASConfigDir'
+        )
+
+        # Get a required listing of drives based on parameters assigned by user.
+        foreach ($parameterName in $parametersToEvaluateShareDisk)
+        {
+            if ($PSBoundParameters.ContainsKey($parameterName))
+            {
+                $parameterValue = Get-Variable -Name $parameterName -ValueOnly
+                if ($parameterValue)
+                {
+                    New-VerboseMessage -Message ("Found assigned parameter '{0}'. Adding path '{1}' to list of paths that required cluster drive." -f $parameterName, $parameterValue)
+                    $requiredDrive += $parameterValue
+                }
+            }
+        }
+
+        # Only keep unique paths and add a member to keep track if the path is mapped to a disk.
+        $requiredDrive = $requiredDrive | Sort-Object -Unique | Add-Member -MemberType NoteProperty -Name IsMapped -Value $false -PassThru
 
         # Get the disk resources that are available (not assigned to a cluster role)
         $availableStorage = Get-CimInstance -Namespace 'root/MSCluster' -ClassName 'MSCluster_ResourceGroup' -Filter "Name = 'Available Storage'" |
@@ -846,27 +923,29 @@ function Set-TargetResource
             }
         }
 
-        foreach ($requiredDrive in $requiredDrives)
+        $failoverClusterDisks = @()
+
+        foreach ($currentRequiredDrive in $requiredDrive)
         {
             foreach ($diskResource in ($availableStorage | Where-Object {$_.IsPossibleOwner -eq $true}))
             {
                 $partitions = $diskResource | Get-CimAssociatedInstance -ResultClassName 'MSCluster_DiskPartition' | Select-Object -ExpandProperty Path
                 foreach ($partition in $partitions)
                 {
-                    if ($requiredDrive -imatch $partition.Replace('\','\\'))
+                    if ($currentRequiredDrive -imatch $partition.Replace('\','\\'))
                     {
-                        $requiredDrive.IsMapped = $true
+                        $currentRequiredDrive.IsMapped = $true
                         $failoverClusterDisks += $diskResource.Name
                         break
                     }
 
-                    if ($requiredDrive.IsMapped)
+                    if ($currentRequiredDrive.IsMapped)
                     {
                         break
                     }
                 }
 
-                if ($requiredDrive.IsMapped)
+                if ($currentRequiredDrive.IsMapped)
                 {
                     break
                 }
@@ -878,16 +957,16 @@ function Set-TargetResource
 
         foreach ($clusterSharedVolume in $clusterSharedVolumes)
         {
-            foreach ($requiredDrive in ($requiredDrives | Where-Object {$_.IsMapped -eq $false}))
+            foreach ($currentRequiredDrive in ($requiredDrive | Where-Object {$_.IsMapped -eq $false}))
             {
-                if ($requiredDrive -imatch $clusterSharedVolume.Name.Replace('\','\\'))
+                if ($currentRequiredDrive -imatch $clusterSharedVolume.Name.Replace('\','\\'))
                 {
                     $diskName = Get-CimInstance -ClassName 'MSCluster_ClusterSharedVolumeToResource' -Namespace 'root/MSCluster' | `
                         Where-Object {$_.GroupComponent.Name -eq $clusterSharedVolume.Name} | `
                         Select-Object -ExpandProperty PartComponent | `
                         Select-Object -ExpandProperty Name
                     $failoverClusterDisks += $diskName
-                    $requiredDrive.IsMapped = $true
+                    $currentRequiredDrive.IsMapped = $true
                 }
             }
         }
@@ -896,7 +975,7 @@ function Set-TargetResource
         $failoverClusterDisks = $failoverClusterDisks | Sort-Object -Unique
 
         # Ensure we mapped all required drives
-        $unMappedRequiredDrives = $requiredDrives | Where-Object {$_.IsMapped -eq $false} | Measure-Object
+        $unMappedRequiredDrives = $requiredDrive | Where-Object {$_.IsMapped -eq $false} | Measure-Object
         if ($unMappedRequiredDrives.Count -gt 0)
         {
             throw New-TerminatingError -ErrorType FailoverClusterDiskMappingError -FormatArgs ($failoverClusterDisks -join '; ') -ErrorCategory InvalidResult
@@ -1153,7 +1232,7 @@ function Set-TargetResource
         Path = $pathToSetupExecutable
         Arguments = $arguments
     }
-    
+
     if ($Action -in @('InstallFailoverCluster','AddNode'))
     {
         $processArguments.Add('Credential',$SetupCredential)
@@ -1316,7 +1395,7 @@ function Set-TargetResource
        Specifies the startup mode for SQL Server Browser service
 
     .PARAMETER FailoverClusterGroupName
-        The name of the resource group to create for the clustered SQL Server instance
+        The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (InstanceName)'.
 
     .PARAMETER FailoverClusterIPAddress
         Array of IP Addresses to be assigned to the clustered SQL Server instance
@@ -1330,129 +1409,168 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
+        [Parameter()]
         [ValidateSet('Install','InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
         [System.String]
         $Action = 'Install',
 
+        [Parameter()]
         [System.String]
         $SourcePath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SourceCredential,
 
+        [Parameter()]
         [System.Boolean]
         $SuppressReboot,
 
+        [Parameter()]
         [System.Boolean]
         $ForceReboot,
 
+        [Parameter()]
         [System.String]
         $Features,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
 
+        [Parameter()]
         [System.String]
         $InstanceID,
 
+        [Parameter()]
         [System.String]
         $ProductKey,
 
+        [Parameter()]
         [System.String]
         $UpdateEnabled,
 
+        [Parameter()]
         [System.String]
         $UpdateSource,
 
+        [Parameter()]
         [System.String]
         $SQMReporting,
 
+        [Parameter()]
         [System.String]
         $ErrorReporting,
 
+        [Parameter()]
         [System.String]
         $InstallSharedDir,
 
+        [Parameter()]
         [System.String]
         $InstallSharedWOWDir,
 
+        [Parameter()]
         [System.String]
         $InstanceDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SQLSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $AgtSvcAccount,
 
+        [Parameter()]
         [System.String]
         $SQLCollation,
 
+        [Parameter()]
         [System.String[]]
         $SQLSysAdminAccounts,
 
+        [Parameter()]
         [System.String]
         $SecurityMode,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SAPwd,
 
+        [Parameter()]
         [System.String]
         $InstallSQLDataDir,
 
+        [Parameter()]
         [System.String]
         $SQLUserDBDir,
 
+        [Parameter()]
         [System.String]
         $SQLUserDBLogDir,
 
+        [Parameter()]
         [System.String]
         $SQLTempDBDir,
 
+        [Parameter()]
         [System.String]
         $SQLTempDBLogDir,
 
+        [Parameter()]
         [System.String]
         $SQLBackupDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $FTSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $RSSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $ASSvcAccount,
 
+        [Parameter()]
         [System.String]
         $ASCollation,
 
+        [Parameter()]
         [System.String[]]
         $ASSysAdminAccounts,
 
+        [Parameter()]
         [System.String]
         $ASDataDir,
 
+        [Parameter()]
         [System.String]
         $ASLogDir,
 
+        [Parameter()]
         [System.String]
         $ASBackupDir,
 
+        [Parameter()]
         [System.String]
         $ASTempDir,
 
+        [Parameter()]
         [System.String]
         $ASConfigDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $ISSvcAccount,
 
+        [Parameter()]
         [System.String]
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
         $BrowserSvcStartupType,

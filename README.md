@@ -858,27 +858,18 @@ Installs SQL Server on the target node.
 #### Requirements
 
 * Target machine must be running Windows Server 2008 R2 or later.
-
-For configurations that utilize the 'InstallFailoverCluster' action, the following parameters are required (beyond those required for the standalone installation):
-
-* InstanceName (can be MSSQLSERVER if you want to install a default clustered instance)
-* FailoverClusterNetworkName
-* When installation SQL Server database engine:
-  * InstallSQLDataDir
-  * SQLUserDBDir
-  * SQLUserDBLogDir
-  * SQLTempDBDir
-  * SQLTempDBLogDir
-  * SQLBackupDir
-  * AgtSvcAccount
-  * SQLSvcAccount
-* When installing SQL Analysis Services
-  * ASDataDir
-  * ASLogDir
-  * ASBackupDir
-  * ASTempDir
-  * ASConfigDir
-  * AsSvcAccount
+* For configurations that utilize the 'InstallFailoverCluster' action, the following parameters are required (beyond those required for the standalone installation). See the article [Install SQL Server from the Command Prompt](https://msdn.microsoft.com/en-us/library/ms144259.aspx) under the section [Failover Cluster Parameters](https://msdn.microsoft.com/en-us/library/ms144259.aspx#Anchor_8) for more information.
+  * InstanceName (can be MSSQLSERVER if you want to install a default clustered instance).
+  * FailoverClusterNetworkName
+  * FailoverClusterIPAddress
+  * _When installing Database Engine._
+    * InstallSQLDataDir
+    * AgtSvcAccount
+    * SQLSvcAccount
+    * SQLSysAdminAccounts
+  * _When installing Analysis Services._
+    * ASSysAdminAccounts
+    * AsSvcAccount
 
 #### Parameters
 
@@ -923,7 +914,7 @@ For configurations that utilize the 'InstallFailoverCluster' action, the followi
 * **[String] ASConfigDir** _(Write)_: Path for Analysis Services config.
 * **[PSCredential] ISSvcAccount** _(Write)_: Service account for Integration Services service.
 * **[String] BrowserSvcStartupType** _(Write)_: Specifies the startup mode for SQL Server Browser service. { Automatic | Disabled | 'Manual' }
-* **[String] FailoverClusterGroupName** _(Write)_: The name of the resource group to create for the clustered SQL Server instance. Defaults to 'SQL Server (_InstanceName_)'.
+* **[String] FailoverClusterGroupName** _(Write)_: The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (_InstanceName_)'.
 * **[String[]]FailoverClusterIPAddress** _(Write)_: Array of IP Addresses to be assigned to the clustered SQL Server instance. IP addresses must be in [dotted-decimal notation](https://en.wikipedia.org/wiki/Dot-decimal_notation), for example ````10.0.0.100````. If no IP address is specified, uses 'DEFAULT' for this setup parameter.
 * **[String] FailoverClusterNetworkName** _(Write)_: Host name to be assigned to the clustered SQL Server instance.
 
@@ -947,6 +938,7 @@ No description.
 #### Requirements
 
 * Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
 
