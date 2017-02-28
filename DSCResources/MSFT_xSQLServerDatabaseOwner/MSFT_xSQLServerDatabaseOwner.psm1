@@ -24,6 +24,7 @@ function Get-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Database,
 
@@ -49,7 +50,7 @@ function Get-TargetResource
     if ($sqlServerObject)
     {
         # Check database exists
-        if ( -NOT($getSqlDatabase = $sqlServerObject.Databases[$Database]) )
+        if ( -not ($sqlDatabaseObject = $sqlServerObject.Databases[$Database]) )
         {
             throw New-TerminatingError -ErrorType NoDatabase `
                                        -FormatArgs @($Database, $SQLServer, $SQLInstanceName) `
@@ -58,8 +59,8 @@ function Get-TargetResource
 
         try
         {
-            $getSqlDatabaseOwner = $getSqlDatabase.Owner
-            New-VerboseMessage -Message "Owner for SQL Database name $Database is $getSqlDatabaseOwner"
+            $sqlDatabaseOwner = $sqlDatabaseObject.Owner
+            New-VerboseMessage -Message "Owner for SQL Database name $Database is $sqlDatabaseOwner"
         }
         catch
         {
@@ -71,7 +72,7 @@ function Get-TargetResource
 
     $returnValue = @{
         Database        = $Database
-        Name            = $getSqlDatabaseOwner
+        Name            = $sqlDatabaseOwner
         SQLServer       = $SQLServer
         SQLInstanceName = $SQLInstanceName
     }
@@ -101,6 +102,7 @@ function Set-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Database,
 
@@ -126,20 +128,20 @@ function Set-TargetResource
     if($sqlServerObject)
     {
         # Check database exists
-        if ( -NOT($getSqlDatabase = $sqlServerObject.Databases[$Database]) )
+        if ( -not ($sqlDatabaseObject = $sqlServerObject.Databases[$Database]) )
         {
             throw New-TerminatingError -ErrorType NoDatabase -FormatArgs @($Database, $SQLServer, $SQLInstanceName) -ErrorCategory ObjectNotFound
         }
 
         # Check login exists
-        if ( -NOT($sqlServerObject.Logins[$Name]) )
+        if ( -not ($sqlServerObject.Logins[$Name]) )
         {
             throw New-TerminatingError -ErrorType LoginNotFound -FormatArgs @($Name, $SQLServer, $SQLInstanceName) -ErrorCategory ObjectNotFound
         }
         
         try
         {
-            $getSqlDatabase.SetOwner($Name)
+            $sqlDatabaseObject.SetOwner($Name)
             New-VerboseMessage -Message "Owner of SQL Database name $Database is now $Name"
         }
         catch
@@ -175,6 +177,7 @@ function Test-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Database,
 
@@ -199,7 +202,7 @@ function Test-TargetResource
     $currentValues = Get-TargetResource @PSBoundParameters
     return Test-SQLDscParameterState -CurrentValues $CurrentValues `
                                      -DesiredValues $PSBoundParameters `
-                                     -ValuesToCheck @("Name", "Database")
+                                     -ValuesToCheck @('Name', 'Database')
 }
 
 Export-ModuleMember -Function *-TargetResource
