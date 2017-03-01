@@ -67,7 +67,7 @@ try
                                                 throw 'Mock of method SetOwner() was called with invalid operation.'
                                             }
                                         
-                                            if ( $this.Owner -ne $mockDatabaseOwner )
+                                            if ( $this.Owner -ne $mockExpectedDatabaseOwner )
                                             {
                                                 throw "Called mocked SetOwner() method without setting the right login. Expected '{0}'. But was '{1}'." `
                                                         -f $mockExpectedDatabaseOwner, $this.Owner
@@ -232,6 +232,7 @@ try
             Context 'When the system is not in the desired state' {
                 It 'Should not throw' {
                     $mockExpectedDatabaseOwner = $mockSqlServerLogin
+                    $mockDatabaseOwner = $mockSqlServerLogin
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         Database    = $mockSqlDatabaseName
@@ -245,9 +246,28 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
+
+            Context 'When the system is not in the desired state' {
+                It 'Should throw the correct error when the method SetOwner() set the wrong login' {
+                    $mockExpectedDatabaseOwner = $mockSqlServerLogin
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Database    = $mockSqlDatabaseName
+                        Name        = $mockSqlServerLogin
+                    }
+                    
+                    $throwInvalidOperation = ('Failed to set owner named Zebes\SamusAran of the database ' + `                                              'named AdventureWorks on localhost\MSSQLSERVER. InnerException: ' + `                                              'Exception calling "SetOwner" with "1" argument(s): "Called mocked ' + `                                              'SetOwner() method without setting the right login. ' + `                                              "Expected 'Zebes\SamusAran'. But was 'Elysia\Chozo'.")
+
+                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
             
             Context 'When the system is not in the desired state' {
-                It 'Should throw the correct error' {
+                It 'Should throw the correct error when the method SetOwner() was called' {
                     $mockInvalidOperationForSetOwnerMethod  = $true
                     $mockExpectedDatabaseOwner = $mockSqlServerLogin
                     $testParameters = $mockDefaultParameters
