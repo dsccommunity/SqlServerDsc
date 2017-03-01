@@ -18,6 +18,8 @@
   - It now can handle mandatory parameters, and are not using wildcards to find the variables containing paths (issue #394).
   - Changed to that instead of connection to localhost it is using $env:COMPUTERNAME as the host name to which it connects. And for cluster installation it uses the parameter FailoverClusterNetworkName as the host name to which it connects (issue #407).
   - When called with Action = 'PrepareFailoverCluster', the SQLSysAdminAccounts and FailoverClusterGroup parameters are no longer passed to the setup process (issues #410 and 411).
+  - Solved the problem that InstanceDir and InstallSQLDataDir could not be set to just a qualifier 'E:'. Now all paths (except SourcePath) can be set to just the qualifier (issue #418).
+  - Improved the mock that tests the setup arguments.
 - Enables CodeCov.io code coverage reporting.
 - Added badge for CodeCov.io to README.md.
 - Examples
