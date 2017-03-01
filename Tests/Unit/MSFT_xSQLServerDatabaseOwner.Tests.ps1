@@ -38,9 +38,9 @@ try
         $mockSqlDatabaseName                    = 'AdventureWorks'
         $mockSqlServerLogin                     = 'Zebes\SamusAran'
         $mockSqlServerLoginType                 = 'WindowsUser'
-        $mockForSetOwnerProperty                = 'Elysia\Chozo'
+        $mockDatabaseOwner                      = 'Elysia\Chozo'
         $mockInvalidOperationForSetOwnerMethod  = $false
-        $mockExpectedForSetOwnerMethod          = 'Elysia\Chozo'
+        $mockExpectedDatabaseOwner              = 'Elysia\Chozo'
 
         # Default parameters that are used for the It-blocks
         $mockDefaultParameters = @{
@@ -60,17 +60,17 @@ try
                                 $mockSqlDatabaseName = @(( 
                                     New-Object Object | 
                                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
-                                        Add-Member -MemberType NoteProperty -Name Owner -Value $mockForSetOwnerProperty -PassThru |
+                                        Add-Member -MemberType NoteProperty -Name Owner -Value $mockDatabaseOwner -PassThru |
                                         Add-Member -MemberType ScriptMethod -Name SetOwner -Value {
                                             if ($mockInvalidOperationForSetOwnerMethod)
                                             {
-                                                throw 'Mock SetOwner Method was called with invalid operation.'
+                                                throw 'Mock of method SetOwner() was called with invalid operation.'
                                             }
                                         
-                                            if ( $this.Owner -ne $mockForSetOwnerProperty )
+                                            if ( $this.Owner -ne $mockDatabaseOwner )
                                             {
-                                                throw "Called mocked Drop() method without dropping the right database. Expected '{0}'. But was '{1}'." `
-                                                        -f $mockExpectedForSetOwnerMethod, $this.Owner
+                                                throw "Called mocked SetOwner() method without setting the right login. Expected '{0}'. But was '{1}'." `
+                                                        -f $mockExpectedDatabaseOwner, $this.Owner
                                             }
                                         } -PassThru -Force
                                     ))
@@ -164,11 +164,10 @@ try
                 }
             }
 
-            $mockForSetOwnerProperty = 'Zebes\SamusAran'
-            $mockSqlServerLogin = 'Zebes\SamusAran'
-
             Context 'When the system is in the desired state' {
                 It 'Should return the state as true when desired login is the database owner' {
+                    $mockDatabaseOwner = 'Zebes\SamusAran'
+                    $mockSqlServerLogin = 'Zebes\SamusAran'
                     $testParameters = $defaultParameters
                     $testParameters += @{
                         Database    = $mockSqlDatabaseName
@@ -230,11 +229,9 @@ try
                 }
             }
 
-            $mockInvalidOperationForSetOwnerMethod  = $false
-            $mockExpectedForSetOwnerMethod = $mockSqlServerLogin
-
             Context 'When the system is not in the desired state' {
                 It 'Should not throw' {
+                    $mockExpectedDatabaseOwner = $mockSqlServerLogin
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         Database    = $mockSqlDatabaseName
@@ -248,11 +245,11 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
-
-            $mockInvalidOperationForSetOwnerMethod  = $true
             
             Context 'When the system is not in the desired state' {
                 It 'Should throw the correct error' {
+                    $mockInvalidOperationForSetOwnerMethod  = $true
+                    $mockExpectedDatabaseOwner = $mockSqlServerLogin
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         Database    = $mockSqlDatabaseName
@@ -262,7 +259,7 @@ try
                     $throwInvalidOperation = ('Failed to set owner named Zebes\SamusAran of the database ' + `
                                               'named AdventureWorks on localhost\MSSQLSERVER. InnerException: ' + `
                                               'Exception calling "SetOwner" with "1" argument(s): "Mock ' + `
-                                              'SetOwner Method was called with invalid operation.')
+                                              'of method SetOwner() was called with invalid operation.')
 
                     { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
                 }
