@@ -1,7 +1,14 @@
 # xSQLServer
 
+### master
+
 [![Build status](https://ci.appveyor.com/api/projects/status/mxn453y284eab8li/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xsqlserver/branch/master)
 [![codecov](https://codecov.io/gh/PowerShell/xSQLServer/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/xSQLServer>)
+
+### dev
+
+[![Build status](https://ci.appveyor.com/api/projects/status/mxn453y284eab8li/branch/dev?svg=true)](https://ci.appveyor.com/project/PowerShell/xsqlserver/branch/dev)
+[![codecov](https://codecov.io/gh/PowerShell/xSQLServer/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/xSQLServer)
 
 The **xSQLServer** module contains DSC resources for deployment and configuration of SQL Server.
 
