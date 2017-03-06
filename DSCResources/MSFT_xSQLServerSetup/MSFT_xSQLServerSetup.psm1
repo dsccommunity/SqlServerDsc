@@ -880,10 +880,16 @@ function Set-TargetResource
     if ($Action -in @('PrepareFailoverCluster','CompleteFailoverCluster','InstallFailoverCluster'))
     {
         # Set the group name for this clustered instance.
-        $setupArguments += @{
-            FailoverClusterGroup = $FailoverClusterGroupName
+        # This is only required for CompleteFailoverCluster or InstallFailoverCluster
+        if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
+        {
+            $setupArguments += @{
+                FailoverClusterGroup = $FailoverClusterGroupName
+            }
+        }
 
-            # This was brought over from the old module. Should be removed (breaking change).
+        # This was brought over from the old module. Should be removed (breaking change).
+        $setupArguments += @{
             SkipRules = 'Cluster_VerifyForErrors'
         }
     }
@@ -1118,10 +1124,14 @@ function Set-TargetResource
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $AgtSvcAccount -ServiceType 'AGT')
         }
 
-        $setupArguments += @{ SQLSysAdminAccounts =  @($SetupCredential.UserName) }
-        if ($PSBoundParameters.ContainsKey('SQLSysAdminAccounts'))
+        # Should not be passed when PrepareFailoverCluster is specified
+        if ($Action -notin @('PrepareFailoverCluster'))
         {
-            $setupArguments['SQLSysAdminAccounts'] += $SQLSysAdminAccounts
+            $setupArguments += @{ SQLSysAdminAccounts =  @($SetupCredential.UserName) }
+            if ($PSBoundParameters.ContainsKey('SQLSysAdminAccounts'))
+            {
+                $setupArguments['SQLSysAdminAccounts'] += $SQLSysAdminAccounts
+            }
         }
 
         if ($SecurityMode -eq 'SQL')

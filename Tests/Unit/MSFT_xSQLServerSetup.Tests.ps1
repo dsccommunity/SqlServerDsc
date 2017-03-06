@@ -3786,7 +3786,7 @@ try
                         $testParameters.Remove('Features')
                         $testParameters.Remove('SourceCredential')
                         $testParameters.Remove('ASSysAdminAccounts')
-
+                        
                         $testParameters += @{
                             Features = 'SQLENGINE'
                             InstanceName = 'MSSQLSERVER'
@@ -3830,13 +3830,15 @@ try
                         } -Verifiable
                     }
 
-                    It 'Should add the SkipRules parameter to the installation arguments' {
+                    It 'Should pass correct arguments to the setup process' {
 
                         $mockStartWin32ProcessExpectedArgument = $mockStartWin32ProcessExpectedArgumentClusterDefault.Clone()
                         $mockStartWin32ProcessExpectedArgument += @{
                             Action = 'PrepareFailoverCluster'
                             SkipRules = 'Cluster_VerifyForErrors'
                         }
+                        $mockStartWin32ProcessExpectedArgument.Remove('FailoverClusterGroup')
+                        $mockStartWin32ProcessExpectedArgument.Remove('SQLSysAdminAccounts')
 
                         { Set-TargetResource @testParameters } | Should Not throw
 
