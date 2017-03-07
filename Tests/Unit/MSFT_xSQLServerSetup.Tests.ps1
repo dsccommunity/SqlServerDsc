@@ -838,13 +838,13 @@ try
 
             # Start by checking whether we have the same number of parameters
             Write-Verbose 'Verifying setup argument count (expected vs actual)' -Verbose
-            
+
             $argumentHashTable.Keys.Count | Should BeExactly $mockStartWin32ProcessExpectedArgument.Keys.Count
 
             Write-Verbose 'Verifying actual setup arguments against expected setup arguments' -Verbose
             foreach ($argumentKey in $mockStartWin32ProcessExpectedArgument.Keys)
             {
-                $argumentKeyName = $argumentHashTable.GetEnumerator() | Where-Object { $_.Name -eq $argumentKey } | Select-Object -ExpandProperty Name
+                $argumentKeyName = $argumentHashTable.GetEnumerator() | Where-Object -FilterScript { $_.Name -eq $argumentKey } | Select-Object -ExpandProperty Name
                 $argumentKeyName | Should Be $argumentKey
 
                 $argumentValue = $argumentHashTable.$argumentKey
@@ -3819,7 +3819,7 @@ try
                         $testParameters.Remove('Features')
                         $testParameters.Remove('SourceCredential')
                         $testParameters.Remove('ASSysAdminAccounts')
-                        
+
                         $testParameters += @{
                             Features = 'SQLENGINE'
                             InstanceName = 'MSSQLSERVER'
