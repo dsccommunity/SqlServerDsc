@@ -16,8 +16,9 @@
   - Now it can correctly determine the right cluster when only parameter InstallSQLDataDir is assigned a path (issue #401).
   - Now the only mandatory path parameter is InstallSQLDataDir when installing Database Engine (issue #400).
   - It now can handle mandatory parameters, and are not using wildcards to find the variables containing paths (issue #394).
-  - Changed to that instead of connection to localhost it is using $env:COMPUTERNAME as the host name to which it connects. And for cluster installation it uses the parameter FailoverClusterNetworkName as the host name to which it connects (issue #407).
+  - Changed so that instead of connection to localhost it is using $env:COMPUTERNAME as the host name to which it connects. And for cluster installation it uses the parameter FailoverClusterNetworkName as the host name to which it connects (issue #407).
   - When called with Action = 'PrepareFailoverCluster', the SQLSysAdminAccounts and FailoverClusterGroup parameters are no longer passed to the setup process (issues #410 and 411).
+  - Solved the problem that InstanceDir and InstallSQLDataDir could not be set to just a qualifier, i.e 'E:' (issue #418). All paths (except SourcePath) can now be set to just the qualifier.
 - Enables CodeCov.io code coverage reporting.
 - Added badge for CodeCov.io to README.md.
 - Examples
