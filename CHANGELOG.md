@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 6.0.0.0
+
 - Changes to xSQLServerConfiguration
   - BREAKING CHANGE: The parameter SQLInstanceName is now mandatory.
   - Resource can now be used to define the configuration of two or more different DB instances on the same server.
