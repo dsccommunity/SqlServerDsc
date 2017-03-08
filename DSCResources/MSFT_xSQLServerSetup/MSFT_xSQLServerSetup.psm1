@@ -6,6 +6,10 @@ Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script
     .SYNOPSIS
         Returns the current state of the SQL Server features.
 
+    .PARAMETER Action
+        The action to be performed. Default value is 'Install'.
+        Possible values are 'Install', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'
+
     .PARAMETER SourcePath
         The path to the root of the source files for installation. I.e and UNC path to a shared resource.  Environment variables can be used in the path.
 
@@ -23,6 +27,9 @@ Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script
 
     .PARAMETER InstanceName
         Name of the SQL instance to be installed.
+
+    .PARAMETER FailoverClusterNetworkName
+        Host name to be assigned to the clustered SQL Server instance
 #>
 function Get-TargetResource
 {
@@ -30,6 +37,11 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
+        [Parameter()]
+        [ValidateSet('Install','InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
+        [System.String]
+        $Action = 'Install',
+
         [Parameter()]
         [System.String]
         $SourcePath,
@@ -44,8 +56,21 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $InstanceName
+        $InstanceName,
+
+        [Parameter()]
+        [System.String]
+        $FailoverClusterNetworkName
     )
+
+    if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
+    {
+        $sqlHostName = $FailoverClusterNetworkName
+    }
+    else
+    {
+        $sqlHostName = $env:COMPUTERNAME
+    }
 
     $InstanceName = $InstanceName.ToUpper()
 
@@ -113,17 +138,42 @@ function Get-TargetResource
         if ($isReplicationInstalled -eq 1)
         {
             New-VerboseMessage -Message 'Replication feature detected'
-            $Features += 'REPLICATION,'
+            $features += 'REPLICATION,'
         }
         else
         {
             New-VerboseMessage -Message 'Replication feature not detected'
         }
 
+        $clientComponentsFullRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\Tools\Setup\Client_Components_Full"
+        $registryClientComponentsFullFeatureList = (Get-ItemProperty -Path $clientComponentsFullRegistryPath -ErrorAction SilentlyContinue).FeatureList
+
+        Write-Debug -Message "Detecting Client Connectivity Tools feature ($clientComponentsFullRegistryPath)"
+        if ($registryClientComponentsFullFeatureList -like '*Connectivity_FNS=3*')
+        {
+            New-VerboseMessage -Message 'Client Connectivity Tools feature detected'
+            $features += 'CONN,'
+        }
+        else
+        {
+            New-VerboseMessage -Message 'Client Connectivity Tools feature not detected'
+        }
+
+        Write-Debug -Message "Detecting Client Connectivity Backwards Compatibility Tools feature ($clientComponentsFullRegistryPath)"
+        if ($registryClientComponentsFullFeatureList -like '*Tools_Legacy_FNS=3*')
+        {
+            New-VerboseMessage -Message 'Client Connectivity Tools Backwards Compatibility feature detected'
+            $features += 'BC,'
+        }
+        else
+        {
+            New-VerboseMessage -Message 'Client Connectivity Tools Backwards Compatibility feature not detected'
+        }
+
         $instanceId = $fullInstanceId.Split('.')[1]
         $instanceDirectory = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$fullInstanceId\Setup" -Name 'SqlProgramDir').SqlProgramDir.Trim("\")
 
-        $databaseServer = Connect-SQL -SQLServer 'localhost' -SQLInstanceName $InstanceName
+        $databaseServer = Connect-SQL -SQLServer $sqlHostName -SQLInstanceName $InstanceName
 
         $sqlCollation = $databaseServer.Collation
 
@@ -168,7 +218,7 @@ function Get-TargetResource
             New-VerboseMessage -Message 'Clustered SQL Server resource located'
 
             $clusteredSqlGroup = $clusteredSqlInstance | Get-CimAssociatedInstance -ResultClassName MSCluster_ResourceGroup
-            $clusteredSqlNetworkName = $clusteredSqlGroup | Get-CimAssociatedInstance -ResultClassName MSCluster_Resource | 
+            $clusteredSqlNetworkName = $clusteredSqlGroup | Get-CimAssociatedInstance -ResultClassName MSCluster_Resource |
                 Where-Object { $_.Type -eq "Network Name" }
 
             $clusteredSqlIPAddress = ($clusteredSqlNetworkName | Get-CimAssociatedInstance -ResultClassName MSCluster_Resource |
@@ -178,7 +228,7 @@ function Get-TargetResource
             $clusteredSqlGroupName = $clusteredSqlGroup.Name
             $clusteredSqlHostname = $clusteredSqlNetworkName.PrivateProperties.DnsName
         }
-        else 
+        else
         {
             New-VerboseMessage -Message 'Clustered instance not detected'
         }
@@ -201,7 +251,7 @@ function Get-TargetResource
         $features += 'AS,'
         $analysisServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$analysisServiceName'").StartName
 
-        $analysisServer = Connect-SQLAnalysis -SQLServer localhost -SQLInstanceName $InstanceName
+        $analysisServer = Connect-SQLAnalysis -SQLServer $sqlHostName -SQLInstanceName $InstanceName
 
         $analysisCollation = $analysisServer.ServerProperties['CollationName'].Value
         $analysisDataDirectory = $analysisServer.ServerProperties['DataDir'].Value
@@ -484,7 +534,7 @@ function Get-TargetResource
        Specifies the startup mode for SQL Server Browser service
 
     .PARAMETER FailoverClusterGroupName
-        The name of the resource group to create for the clustered SQL Server instance
+        The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (InstanceName)'.
 
     .PARAMETER FailoverClusterIPAddress
         Array of IP Addresses to be assigned to the clustered SQL Server instance
@@ -499,153 +549,235 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [ValidateSet('Install','InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
         [System.String]
         $Action = 'Install',
 
+        [Parameter()]
         [System.String]
         $SourcePath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SourceCredential,
 
+        [Parameter()]
         [System.Boolean]
         $SuppressReboot,
 
+        [Parameter()]
         [System.Boolean]
         $ForceReboot,
 
+        [Parameter()]
         [System.String]
         $Features,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
 
+        [Parameter()]
         [System.String]
         $InstanceID,
 
+        [Parameter()]
         [System.String]
         $ProductKey,
 
+        [Parameter()]
         [System.String]
         $UpdateEnabled,
 
+        [Parameter()]
         [System.String]
         $UpdateSource,
 
+        [Parameter()]
         [System.String]
         $SQMReporting,
 
+        [Parameter()]
         [System.String]
         $ErrorReporting,
 
+        [Parameter()]
         [System.String]
         $InstallSharedDir,
 
+        [Parameter()]
         [System.String]
         $InstallSharedWOWDir,
 
+        [Parameter()]
         [System.String]
         $InstanceDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SQLSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $AgtSvcAccount,
 
+        [Parameter()]
         [System.String]
         $SQLCollation,
 
+        [Parameter()]
         [System.String[]]
         $SQLSysAdminAccounts,
 
+        [Parameter()]
         [System.String]
         $SecurityMode,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SAPwd,
 
+        [Parameter()]
         [System.String]
         $InstallSQLDataDir,
 
+        [Parameter()]
         [System.String]
         $SQLUserDBDir,
 
+        [Parameter()]
         [System.String]
         $SQLUserDBLogDir,
 
+        [Parameter()]
         [System.String]
         $SQLTempDBDir,
 
+        [Parameter()]
         [System.String]
         $SQLTempDBLogDir,
 
+        [Parameter()]
         [System.String]
         $SQLBackupDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $FTSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $RSSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $ASSvcAccount,
 
+        [Parameter()]
         [System.String]
         $ASCollation,
 
+        [Parameter()]
         [System.String[]]
         $ASSysAdminAccounts,
 
+        [Parameter()]
         [System.String]
         $ASDataDir,
 
+        [Parameter()]
         [System.String]
         $ASLogDir,
 
+        [Parameter()]
         [System.String]
         $ASBackupDir,
 
+        [Parameter()]
         [System.String]
         $ASTempDir,
 
+        [Parameter()]
         [System.String]
         $ASConfigDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $ISSvcAccount,
 
+        [Parameter()]
         [System.String]
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
         $BrowserSvcStartupType,
 
+        [Parameter()]
         [System.String]
         $FailoverClusterGroupName = "SQL Server ($InstanceName)",
 
+        [Parameter()]
         [System.String[]]
         $FailoverClusterIPAddress,
 
+        [Parameter()]
         [System.String]
         $FailoverClusterNetworkName
     )
 
-    $parameters = @{
+    $getTargetResourceParameters = @{
+        Action = $Action
         SourcePath = $SourcePath
         SetupCredential = $SetupCredential
         SourceCredential = $SourceCredential
         InstanceName = $InstanceName
+        FailoverClusterNetworkName = $FailoverClusterNetworkName
     }
 
-    $getTargetResourceResult = Get-TargetResource @parameters
+    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
     $InstanceName = $InstanceName.ToUpper()
+
+    $parametersToEvaluateTrailingSlash = @(
+        'InstanceDir',
+        'InstallSharedDir',
+        'InstallSharedWOWDir',       
+        'InstallSQLDataDir',
+        'SQLUserDBDir',
+        'SQLUserDBLogDir',
+        'SQLTempDBDir',
+        'SQLTempDBLogDir',
+        'SQLBackupDir',
+        'ASDataDir',
+        'ASLogDir',
+        'ASBackupDir',
+        'ASTempDir',
+        'ASConfigDir'
+    )
+
+    # Remove trailing slash ('\') from paths
+    foreach ($parameterName in $parametersToEvaluateTrailingSlash)
+    {
+        if ($PSBoundParameters.ContainsKey($parameterName))
+        {
+            $parameterValue = Get-Variable -Name $parameterName -ValueOnly
+            
+            # Trim backslash, but only if the path contains a full path and not just a qualifier. 
+            if ($parameterValue -and $parameterValue -notmatch '^[a-zA-Z]:\\$')
+            {
+                Set-Variable -Name $parameterName -Value $parameterValue.TrimEnd('\')
+            }
+
+            # If the path only contains a qualifier but no backslash ('M:'), then a backslash is added ('M:\'). 
+            if ($parameterValue -match '^[a-zA-Z]:$')
+            {
+                Set-Variable -Name $parameterName -Value "$parameterValue\"
+            }
+        }
+    }
 
     $SourcePath = [Environment]::ExpandEnvironmentVariables($SourcePath)
 
@@ -754,52 +886,76 @@ function Set-TargetResource
         }
     }
 
-    # Remove trailing "\" from paths
-    foreach ($var in @(
-        'InstallSQLDataDir',
-        'SQLUserDBDir',
-        'SQLUserDBLogDir',
-        'SQLTempDBDir',
-        'SQLTempDBLogDir',
-        'SQLBackupDir',
-        'ASDataDir',
-        'ASLogDir',
-        'ASBackupDir',
-        'ASTempDir',
-        'ASConfigDir')
-    )
+    $setupArguments = @{}
+
+    if ($Action -in @('PrepareFailoverCluster','CompleteFailoverCluster','InstallFailoverCluster'))
     {
-        if (Get-Variable -Name $var -ErrorAction SilentlyContinue)
+        # Set the group name for this clustered instance.
+        # This is only required for CompleteFailoverCluster or InstallFailoverCluster
+        if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
         {
-            Set-Variable -Name $var -Value (Get-Variable -Name $var).Value.TrimEnd('\')
+            $setupArguments += @{
+                FailoverClusterGroup = $FailoverClusterGroupName
+            }
+        }
+
+        # This was brought over from the old module. Should be removed (breaking change).
+        $setupArguments += @{
+            SkipRules = 'Cluster_VerifyForErrors'
         }
     }
 
-    $setupArguments = @{}
-
-    if ($Action -in @('PrepareFailoverCluster','CompleteFailoverCluster','InstallFailoverCluster','AddNode'))
+    # Add the failover cluster network name if the action is either installing or completing a cluster
+    if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
     {
-        # Set the group name for this clustered instance.
-        $setupArguments += @{ 
-            FailoverClusterGroup = $FailoverClusterGroupName
-
-            # This was brought over from the old module. Should be removed (breaking change).
-            SkipRules = 'Cluster_VerifyForErrors'
+        $setupArguments += @{
+            FailoverClusterNetworkName = $FailoverClusterNetworkName
         }
     }
 
     # Perform disk mapping for specific cluster installation types
     if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
     {
-        $failoverClusterDisks = @()
+        $requiredDrive = @()
 
-        # Get a required lising of drives based on user parameters
-        $requiredDrives = Get-Variable -Name 'SQL*Dir' -ValueOnly | Where-Object { -not [String]::IsNullOrEmpty($_) } | Split-Path -Qualifier | Sort-Object -Unique
+        # This is also used to evaluate which cluster shard disks should be used.
+        $parametersToEvaluateShareDisk = @(
+            'InstallSQLDataDir',
+            'SQLUserDBDir',
+            'SQLUserDBLogDir',
+            'SQLTempDBDir',
+            'SQLTempDBLogDir',
+            'SQLBackupDir',
+            'ASDataDir',
+            'ASLogDir',
+            'ASBackupDir',
+            'ASTempDir',
+            'ASConfigDir'
+        )
+
+        # Get a required listing of drives based on parameters assigned by user.
+        foreach ($parameterName in $parametersToEvaluateShareDisk)
+        {
+            if ($PSBoundParameters.ContainsKey($parameterName))
+            {
+                $parameterValue = Get-Variable -Name $parameterName -ValueOnly
+                if ($parameterValue)
+                {
+                    New-VerboseMessage -Message ("Found assigned parameter '{0}'. Adding path '{1}' to list of paths that required cluster drive." -f $parameterName, $parameterValue)
+                    $requiredDrive += $parameterValue
+                }
+            }
+        }
+
+        # Only keep unique paths and add a member to keep track if the path is mapped to a disk.
+        $requiredDrive = $requiredDrive | Sort-Object -Unique | Add-Member -MemberType NoteProperty -Name IsMapped -Value $false -PassThru
 
         # Get the disk resources that are available (not assigned to a cluster role)
         $availableStorage = Get-CimInstance -Namespace 'root/MSCluster' -ClassName 'MSCluster_ResourceGroup' -Filter "Name = 'Available Storage'" |
-                                Get-CimAssociatedInstance -Association MSCluster_ResourceGroupToResource -ResultClassName MSCluster_Resource
+                                Get-CimAssociatedInstance -Association MSCluster_ResourceGroupToResource -ResultClassName MSCluster_Resource | `
+                                Add-Member -MemberType NoteProperty -Name 'IsPossibleOwner' -Value $false -PassThru
 
+        # First map regular cluster volumes
         foreach ($diskResource in $availableStorage)
         {
             # Determine whether the current node is a possible owner of the disk resource
@@ -807,10 +963,54 @@ function Set-TargetResource
 
             if ($possibleOwners -icontains $env:COMPUTERNAME)
             {
-                # Determine whether this disk contains one of our required partitions
-                if ($requiredDrives -icontains ($diskResource | Get-CimAssociatedInstance -ResultClassName 'MSCluster_DiskPartition' | Select-Object -ExpandProperty Path))
+                $diskResource.IsPossibleOwner = $true
+            }
+        }
+
+        $failoverClusterDisks = @()
+
+        foreach ($currentRequiredDrive in $requiredDrive)
+        {
+            foreach ($diskResource in ($availableStorage | Where-Object {$_.IsPossibleOwner -eq $true}))
+            {
+                $partitions = $diskResource | Get-CimAssociatedInstance -ResultClassName 'MSCluster_DiskPartition' | Select-Object -ExpandProperty Path
+                foreach ($partition in $partitions)
                 {
-                    $failoverClusterDisks += $diskResource.Name
+                    if ($currentRequiredDrive -imatch $partition.Replace('\','\\'))
+                    {
+                        $currentRequiredDrive.IsMapped = $true
+                        $failoverClusterDisks += $diskResource.Name
+                        break
+                    }
+
+                    if ($currentRequiredDrive.IsMapped)
+                    {
+                        break
+                    }
+                }
+
+                if ($currentRequiredDrive.IsMapped)
+                {
+                    break
+                }
+            }
+        }
+
+        # Now we handle cluster shared volumes
+        $clusterSharedVolumes = Get-CimInstance -ClassName 'MSCluster_ClusterSharedVolume' -Namespace 'root/MSCluster'
+
+        foreach ($clusterSharedVolume in $clusterSharedVolumes)
+        {
+            foreach ($currentRequiredDrive in ($requiredDrive | Where-Object {$_.IsMapped -eq $false}))
+            {
+                if ($currentRequiredDrive -imatch $clusterSharedVolume.Name.Replace('\','\\'))
+                {
+                    $diskName = Get-CimInstance -ClassName 'MSCluster_ClusterSharedVolumeToResource' -Namespace 'root/MSCluster' | `
+                        Where-Object {$_.GroupComponent.Name -eq $clusterSharedVolume.Name} | `
+                        Select-Object -ExpandProperty PartComponent | `
+                        Select-Object -ExpandProperty Name
+                    $failoverClusterDisks += $diskName
+                    $currentRequiredDrive.IsMapped = $true
                 }
             }
         }
@@ -819,10 +1019,8 @@ function Set-TargetResource
         $failoverClusterDisks = $failoverClusterDisks | Sort-Object -Unique
 
         # Ensure we mapped all required drives
-        $requiredDriveCount = $requiredDrives.Count
-        $mappedDriveCount = $failoverClusterDisks.Count
-
-        if ($mappedDriveCount -ne $requiredDriveCount)
+        $unMappedRequiredDrives = $requiredDrive | Where-Object {$_.IsMapped -eq $false} | Measure-Object
+        if ($unMappedRequiredDrives.Count -gt 0)
         {
             throw New-TerminatingError -ErrorType FailoverClusterDiskMappingError -FormatArgs ($failoverClusterDisks -join '; ') -ErrorCategory InvalidResult
         }
@@ -832,7 +1030,7 @@ function Set-TargetResource
     }
 
     # Determine network mapping for specific cluster installation types
-    if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster','AddNode'))
+    if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
     {
         $clusterIPAddresses = @()
 
@@ -855,7 +1053,7 @@ function Set-TargetResource
                     if (Test-IPAddress -IPAddress $address -NetworkID $network.Address -SubnetMask $network.AddressMask)
                     {
                         # Add the formatted string to our array
-                        $clusterIPAddresses += "IPv4; $address; $($network.Name); $($network.AddressMask)"
+                        $clusterIPAddresses += "IPv4;$address;$($network.Name);$($network.AddressMask)"
                     }
                 }
             }
@@ -901,6 +1099,19 @@ function Set-TargetResource
         $argumentVars += 'BrowserSvcStartupType'
     }
 
+    if ($Action -eq 'AddNode')
+    {
+        if ($PSBoundParameters.ContainsKey('SQLSvcAccount'))
+        {
+            $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $SQLSvcAccount -ServiceType 'SQL')
+        }
+
+        if($PSBoundParameters.ContainsKey('AgtSvcAccount'))
+        {
+            $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $AgtSvcAccount -ServiceType 'AGT')
+        }
+    }
+
     if ($Features.Contains('SQLENGINE'))
     {
         $argumentVars += @(
@@ -924,18 +1135,25 @@ function Set-TargetResource
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $AgtSvcAccount -ServiceType 'AGT')
         }
 
-        $setupArguments += @{ SQLSysAdminAccounts =  @($SetupCredential.UserName) }
-        if ($PSBoundParameters -icontains 'SQLSysAdminAccounts')
+        # Should not be passed when PrepareFailoverCluster is specified
+        if ($Action -notin @('PrepareFailoverCluster'))
         {
-            $setupArguments['SQLSysAdminAccounts'] += $SQLSysAdminAccounts
+            $setupArguments += @{ SQLSysAdminAccounts =  @($SetupCredential.UserName) }
+            if ($PSBoundParameters.ContainsKey('SQLSysAdminAccounts'))
+            {
+                $setupArguments['SQLSysAdminAccounts'] += $SQLSysAdminAccounts
+            }
         }
-        
+
         if ($SecurityMode -eq 'SQL')
         {
             $setupArguments += @{ SAPwd = $SAPwd.GetNetworkCredential().Password }
         }
 
-        $setupArguments += @{ AgtSvcStartupType = 'Automatic' }
+        if ($Action -notin @('PrepareFailoverCluster','CompleteFailoverCluster','InstallFailoverCluster','AddNode'))
+        {
+            $setupArguments += @{ AgtSvcStartupType = 'Automatic' }
+        }
     }
 
     if ($Features.Contains('FULLTEXT'))
@@ -989,7 +1207,7 @@ function Set-TargetResource
     # Automatically include any additional arguments
     foreach ($argument in $argumentVars)
     {
-        if($argument -eq 'ProductKey') 
+        if($argument -eq 'ProductKey')
         {
             $setupArguments += @{ 'PID' = (Get-Variable -Name $argument -ValueOnly) }
         }
@@ -1023,7 +1241,7 @@ function Set-TargetResource
                 {
                     $setupArgumentValue = $currentSetupArgument.Value
                 }
-                else 
+                else
                 {
                     $setupArgumentValue = '"{0}"' -f $currentSetupArgument.Value
                 }
@@ -1058,9 +1276,19 @@ function Set-TargetResource
     New-VerboseMessage -Message "Starting setup using arguments: $log"
 
     $arguments = $arguments.Trim()
-    $process = StartWin32Process -Path $pathToSetupExecutable -Arguments $arguments
+    $processArguments = @{
+        Path = $pathToSetupExecutable
+        Arguments = $arguments
+    }
+
+    if ($Action -in @('InstallFailoverCluster','AddNode'))
+    {
+        $processArguments.Add('Credential',$SetupCredential)
+    }
+    $process = StartWin32Process @processArguments
 
     New-VerboseMessage -Message $process
+
     WaitForWin32ProcessEnd -Path $pathToSetupExecutable -Arguments $arguments
 
     if ($ForceReboot -or ($null -ne (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue)))
@@ -1216,7 +1444,7 @@ function Set-TargetResource
        Specifies the startup mode for SQL Server Browser service
 
     .PARAMETER FailoverClusterGroupName
-        The name of the resource group to create for the clustered SQL Server instance
+        The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (InstanceName)'.
 
     .PARAMETER FailoverClusterIPAddress
         Array of IP Addresses to be assigned to the clustered SQL Server instance
@@ -1230,129 +1458,168 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
+        [Parameter()]
         [ValidateSet('Install','InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
         [System.String]
-        $Action = 'Install', 
+        $Action = 'Install',
 
+        [Parameter()]
         [System.String]
         $SourcePath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SourceCredential,
 
+        [Parameter()]
         [System.Boolean]
         $SuppressReboot,
 
+        [Parameter()]
         [System.Boolean]
         $ForceReboot,
 
+        [Parameter()]
         [System.String]
         $Features,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
 
+        [Parameter()]
         [System.String]
         $InstanceID,
 
+        [Parameter()]
         [System.String]
         $ProductKey,
 
+        [Parameter()]
         [System.String]
         $UpdateEnabled,
 
+        [Parameter()]
         [System.String]
         $UpdateSource,
 
+        [Parameter()]
         [System.String]
         $SQMReporting,
 
+        [Parameter()]
         [System.String]
         $ErrorReporting,
 
+        [Parameter()]
         [System.String]
         $InstallSharedDir,
 
+        [Parameter()]
         [System.String]
         $InstallSharedWOWDir,
 
+        [Parameter()]
         [System.String]
         $InstanceDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SQLSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $AgtSvcAccount,
 
+        [Parameter()]
         [System.String]
         $SQLCollation,
 
+        [Parameter()]
         [System.String[]]
         $SQLSysAdminAccounts,
 
+        [Parameter()]
         [System.String]
         $SecurityMode,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $SAPwd,
 
+        [Parameter()]
         [System.String]
         $InstallSQLDataDir,
 
+        [Parameter()]
         [System.String]
         $SQLUserDBDir,
 
+        [Parameter()]
         [System.String]
         $SQLUserDBLogDir,
 
+        [Parameter()]
         [System.String]
         $SQLTempDBDir,
 
+        [Parameter()]
         [System.String]
         $SQLTempDBLogDir,
 
+        [Parameter()]
         [System.String]
         $SQLBackupDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $FTSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $RSSvcAccount,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $ASSvcAccount,
 
+        [Parameter()]
         [System.String]
         $ASCollation,
 
+        [Parameter()]
         [System.String[]]
         $ASSysAdminAccounts,
 
+        [Parameter()]
         [System.String]
         $ASDataDir,
 
+        [Parameter()]
         [System.String]
         $ASLogDir,
 
+        [Parameter()]
         [System.String]
         $ASBackupDir,
 
+        [Parameter()]
         [System.String]
         $ASTempDir,
 
+        [Parameter()]
         [System.String]
         $ASConfigDir,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $ISSvcAccount,
 
+        [Parameter()]
         [System.String]
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
         $BrowserSvcStartupType,
@@ -1370,14 +1637,18 @@ function Test-TargetResource
         $FailoverClusterNetworkName
     )
 
-    $parameters = @{
+    $getTargetResourceParameters = @{
+        Action = $Action
         SourcePath = $SourcePath
         SetupCredential = $SetupCredential
         SourceCredential = $SourceCredential
         InstanceName = $InstanceName
+        FailoverClusterNetworkName = $FailoverClusterNetworkName
     }
 
-    $getTargetResourceResult = Get-TargetResource @parameters
+    $boundParameters = $PSBoundParameters
+
+    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
     New-VerboseMessage -Message "Features found: '$($getTargetResourceResult.Features)'"
 
     $result = $false
@@ -1397,18 +1668,18 @@ function Test-TargetResource
             }
         }
     }
-    
+
     if ($PSCmdlet.ParameterSetName -eq 'ClusterInstall')
     {
         New-VerboseMessage -Message "Clustered install, checking parameters."
 
         $result = $true
 
-        Get-Variable -Name FailoverCluster* | ForEach-Object {
-            $variableName = $_.Name
+        $boundParameters.Keys | Where-Object {$_ -imatch "^FailoverCluster"} | ForEach-Object {
+            $variableName = $_
 
-            if ($getTargetResourceResult.$variableName -ne $_.Value) {
-                New-VerboseMessage -Message "$variableName '$($_.Value)' is not in the desired state for this cluster."
+            if ($getTargetResourceResult.$variableName -ne $boundParameters[$variableName]) {
+                New-VerboseMessage -Message "$variableName '$($boundParameters[$variableName])' is not in the desired state for this cluster."
                 $result = $false
             }
         }
@@ -1587,14 +1858,14 @@ function ConvertTo-Decimal
         [System.Net.IPAddress]
         $IPAddress
     )
- 
+
     $i = 3
     $DecimalIP = 0
     $IPAddress.GetAddressBytes() | ForEach-Object {
         $DecimalIP += $_ * [Math]::Pow(256,$i)
         $i--
     }
- 
+
     return [UInt32]$DecimalIP
 }
 
@@ -1628,7 +1899,7 @@ function Test-IPAddress
         [System.Net.IPAddress]
         $SubnetMask
     )
-    
+
     # Convert all values to decimal
     $IPAddressDecimal = ConvertTo-Decimal -IPAddress $IPAddress
     $NetworkDecimal = ConvertTo-Decimal -IPAddress $NetworkID
@@ -1646,7 +1917,7 @@ function Test-IPAddress
         Credential for the service account
 
     .PARAMETER ServiceType
-        Type of service account 
+        Type of service account
 #>
 function Get-ServiceAccountParameters
 {

@@ -1,11 +1,25 @@
 # xSQLServer
 
-[![Build status](https://ci.appveyor.com/api/projects/status/mxn453y284eab8li/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xsqlserver/branch/master)
-
 The **xSQLServer** module contains DSC resources for deployment and configuration of SQL Server.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+## Branches
+
+### master
+
+[![Build status](https://ci.appveyor.com/api/projects/status/mxn453y284eab8li/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xsqlserver/branch/master)
+[![codecov](https://codecov.io/gh/PowerShell/xSQLServer/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/xSQLServer>)
+
+This is the branch containing the latest release - no contributions should be made directly to this branch.
+
+### dev
+
+[![Build status](https://ci.appveyor.com/api/projects/status/mxn453y284eab8li/branch/dev?svg=true)](https://ci.appveyor.com/project/PowerShell/xsqlserver/branch/dev)
+[![codecov](https://codecov.io/gh/PowerShell/xSQLServer/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/xSQLServer)
+
+This is the development branch to which contributions should be proposed by contributors as pull requests. This development branch will periodically be merged to the master branch, and be released to [PowerShell Gallery](https://www.powershellgallery.com/).
 
 ## Contributing
 
@@ -61,6 +75,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * [**xSQLAOGroupEnsure**](#xsqlaogroupensure) resource to ensure availability group is present or absent
 * [**xSQLAOGroupJoin**](#xsqlaogroupjoin) resource to join a replica to an existing availability group
 * [**xSQLServerAlias**](#xsqlserveralias) resource to manage SQL Server client Aliases
+* [**xSQLServerAlwaysOnAvailabilityGroup**](#xsqlserveralwaysonavailabilitygroup) resource to ensure an availability group is present or absent.
 * [**xSQLServerAlwaysOnService**](#xsqlserveralwaysonservice) resource to enable always on on a SQL Server
 * [**xSQLServerAvailabilityGroupListener**](#xsqlserveravailabilitygrouplistener) Create or remove an availability group listener.
 * [**xSQLServerConfiguration**](#xsqlserverconfiguration) resource to manage [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
@@ -91,9 +106,11 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 
 No description.
 
+**This resource is deprecated.** The functionality of this resource has been replaced with * [**xSQLServerAlwaysOnAvailabilityGroup**](#xsqlserveralwaysonavailabilitygroup). Please do not use this resource for new development efforts.
+
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2012 or later.
 * Target machine must have access to the Active Directory module.
 
@@ -127,7 +144,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine2012 or later.
 
 #### Parameters
@@ -148,7 +165,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 
 #### Parameters
 
@@ -168,13 +185,45 @@ No description.
 * [Add an SQL Server alias](/Examples/Resources/xSQLServerAlias/1-AddSQLServerAlias.ps1)
 * [Remove an SQL Server alias](/Examples/Resources/xSQLServerAlias/2-RemoveSQLServerAlias.ps1)
 
+### xSQLServerAlwaysOnAvailabilityGroup
+
+This resource is used to create, remove, and update an Always On Availability Group. It will also manage the Availability Group replica on the specified node.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
+* 'NT SERVICE\ClusSvc' or 'NT AUTHORITY\SYSTEM' must have the 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' permissions.
+
+#### Parameters
+
+* **Name** _(Key)_: The name of the availability group.
+* **SQLServer** _(Required)_: Hostname of the SQL Server to be configured.
+* **SQLInstanceName** _(Key)_: Name of the SQL instance to be configued.
+* **Ensure** _(Write)_: Specifies if the availability group should be present or absent. Default is Present. { *Present* | Absent }
+* **AutomatedBackupPreference** _(Write)_: Specifies the automated backup preference for the availability group. Default is None. { Primary | SecondaryOnly | Secondary | *None* }
+* **AvailabilityMode** _(Write)_: Specifies the replica availability mode. Default is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
+* **BackupPriority** _(Write)_: Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are: integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. Default is 50.
+* **BasicAvailabilityGroup** _(Write)_: Specifies the type of availability group is Basic. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions.
+* **ConnectionModeInPrimaryRole** _(Write)_: Specifies how the availability replica handles connections when in the primary role. { AllowAllConnections | AllowReadWriteConnections }
+* **ConnectionModeInSecondaryRole** _(Write)_: Specifies how the availability replica handles connections when in the secondary role. { AllowNoConnections | AllowReadIntentConnectionsOnly | AllowAllConnections }
+* **EndpointHostName** _(Write)_: Specifies the hostname or IP address of the availability group replica endpoint. Default is the instance network name.
+* **FailureConditionLevel** _(Write)_: Specifies the automatic failover behavior of the availability group. { OnServerDown | OnServerUnresponsive | OnCriticalServerErrors | OnModerateServerErrors | OnAnyQualifiedFailureCondition }
+* **FailoverMode** _(Write)_: Specifies the failover mode. Default is 'Manual'. { Automatic | *Manual* }
+* **HealthCheckTimeout** _(Write)_: Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. Default is 30000.
+
+#### Examples
+
+* [Add a SQL Server Always On Availability Group](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroup/1-CreateAvailabilityGroup.ps1)
+* [Remove a SQL Server Always On Availability Group](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroup/2-RemoveAvailabilityGroup.ps1)
+
 ### xSQLServerAlwaysOnService
 
 No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
@@ -194,7 +243,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2012 or later.
 * Target machine must have access to the SQLPS PowerShell module or the SqlServer PowerShell module.
 * Requires that the Cluster name Object (CNO) has been delegated the right _Create Computer Object_ in the organizational unit (OU) in which the Cluster Name Object (CNO) resides.
@@ -220,16 +269,16 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
 
-* **[String] SQLServer** _(Key)_: The hostname of the SQL Server to be configured
+* **[String] SQLServer** _(Key)_: The hostname of the SQL Server to be configured.
+* **[String] SQLInstanceName** _(Key)_: Name of the SQL instance to be configured.
 * **[String] OptionName** _(Key)_: The name of the SQL configuration option to be checked. For all possible values reference [MSDN](https://msdn.microsoft.com/en-us/library/ms189631.aspx) or run sp_configure.
-* **[Sint32] OptionValue** _(Required)_: The desired value of the SQL configuration option
-* **[String] SQLInstanceName** _(Write)_: Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
-* **[Boolean] RestartService** _(Write)_: Determines whether the instance should be restarted after updating the configuration option
+* **[Sint32] OptionValue** _(Required)_: The desired value of the SQL configuration option.
+* **[Boolean] RestartService** _(Write)_: Determines whether the instance should be restarted after updating the configuration option.
 * **[Sint32] RestartTimeout** _(Write)_: The length of time, in seconds, to wait for the service to restart. Default is 120 seconds.
 
 #### Examples
@@ -238,39 +287,44 @@ None.
 
 ### xSQLServerDatabase
 
-No description.
+This resource is used to create or delete a database. For more information about database, please read:
+
+* [Create a Database](https://msdn.microsoft.com/en-us/library/ms186312.aspx).
+* [Delete a Database](https://msdn.microsoft.com/en-us/library/ms177419.aspx).
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
 
-* **[String] SQLServer** _(Key)_: The SQL Server for the database
-* **[String] SQLInstanceName** _(Key)_: The SQL instance for the database
-* **[String] Name** _(Key)_: Database to be created or dropped
-* **[String] Ensure** _(Write)_: If the values should be present or absent. Valid values are 'Present' or 'Absent'. Default Value is 'Present'. { *Present* | Absent }.
+* **[String] SQLServer** _(Key)_: The host name of the SQL Server to be configured.
+* **[String] SQLInstance** _(Key)_: The name of the SQL instance to be configured.
+* **[String] Name** _(Key)_: The name of database to be created or dropped.
+* **[String] Ensure** _(Write)_: When set to 'Present', the database will be created. When set to 'Absent', the database will be dropped. { *Present* | Absent }.
 
 #### Examples
 
-None.
+* [Create a Database](/Examples/Resources/xSQLServerDatabase/1-CreateDatabase.ps1)
+* [Delete a database](/Examples/Resources/xSQLServerDatabase/2-DeleteDatabase.ps1)
 
 ### xSQLServerDatabaseOwner
 
-No description.
+This resource is used to configure the owner of a database.
+For more information about database owner, please read the article [Changing the Database Owner](https://technet.microsoft.com/en-us/library/ms190909.aspx).
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
 
-* **[String] Database** _(Key)_: The SQL Database
-* **[String] Name** _(Required)_: The name of the SQL login for the owner
-* **[String] SQLServer** _(Write)_: The SQL Server for the database
-* **[String] SQLInstance** _(Write)_: The SQL instance for the database
+* **[String] Database** _(Key)_: The name of database to be configured.
+* **[String] Name** _(Required)_: The name of the login that will become a owner of the desired sql database.
+* **[String] SQLServer** _(Write)_: The host name of the SQL Server to be configured.
+* **[String] SQLInstance** _(Write)_: The name of the SQL instance to be configured.
 
 #### Examples
 
@@ -283,7 +337,7 @@ For more information about permissions, please read the article [Permissions (Da
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
@@ -310,7 +364,7 @@ Read more about recovery model in this article [View or Change the Recovery Mode
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
@@ -330,7 +384,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
@@ -352,7 +406,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Security Requirements
@@ -378,7 +432,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 * Target machine must have access to the SQLPS PowerShell module or the SqlServer PowerShell module.
 
@@ -401,7 +455,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 * Target machine must have access to the SQLPS PowerShell module or the SqlServer PowerShell module.
 
@@ -422,7 +476,7 @@ None.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 R2 or later.
 
 #### Parameters
@@ -517,7 +571,7 @@ Analysis Services, SQL Browser, SQL Reporting Services and Integration Services.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 
 #### Parameters
 
@@ -546,7 +600,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
@@ -567,46 +621,79 @@ None.
 
 ### xSQLServerMaxDop
 
-No description.
+This resource set the max degree of parallelism server configuration option.
+The max degree of parallelism option is used to limit the number of processors to use in parallel plan execution.
+Read more about max degree of parallelism in this article [Configure the max degree of parallelism Server Configuration Option](https://msdn.microsoft.com/en-us/library/ms189094.aspx)
+
+#### Formula for dynamically allocating max degree of parallelism
+
+* If the number of configured NUMA nodes configured in SQL Server equals 1, then max degree of parallelism is calculated using number of cores divided in 2 (numberOfCores / 2), then rounded up to the next integer (3.5 > 4).
+* If the number of cores configured in SQL Server are greater than or equal to 8 cores then max degree of parallelism will be set to 8.
+* If the number of configured NUMA nodes configured in SQL Server is greater than 2 and thenumber of cores are less than 8 then max degree of parallelism will be set to the number of cores.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
 
-* **[String] SQLInstance** (Key): The SQL instance where to set MaxDop
-* **[String] Ensure** _(Write)_: An enumerated value that describes if Min and Max memory is configured. { *Present* | Absent }.
-* **[Boolean] DyamicAlloc** _(Write)_: Flag to indicate if MaxDop is dynamically configured
-* **[Sint32] MaxDop** _(Write)_: Numeric value to configure MaxDop to
-* **[String] SQLServer** _(Write)_: The SQL Server where to set MaxDop
+* **[String] SQLInstance** (Key): The name of the SQL instance to be configured.
+* **[String] SQLServer** _(Write)_: The host name of the SQL Server to be configured. Default value is *env:COMPUTERNAME*.
+* **[String] Ensure** _(Write)_: When set to 'Present' then max degree of parallelism will be set to either the value in parameter MaxDop or dynamically configured when parameter DynamicAlloc is set to $true. When set to 'Absent' max degree of parallelism will be set to 0 which means no limit in number of processors used in parallel plan execution. { *Present* | Absent }.
+* **[Boolean] DynamicAlloc** _(Write)_: If set to $true then max degree of parallelism will be dynamically configured. When this is set parameter is set to $true, the parameter MaxDop must be set to $null or not be configured.
+* **[Sint32] MaxDop** _(Write)_: A numeric value to limit the number of processors used in parallel plan execution.
 
 #### Examples
 
-None.
+* [Set SQLServerMaxDop to 1](/Examples/Resources/xSQLServerMaxDop/1-SetMaxDopToOne.ps1)
+* [Set SQLServerMaxDop to Auto](/Examples/Resources/xSQLServerMaxDop/2-SetMaxDopToAuto.ps1)
+* [Set SQLServerMaxDop to Default](/Examples/Resources/xSQLServerMaxDop/3-SetMaxDopToDefault.ps1)
 
 ### xSQLServerMemory
 
-No description.
+This resource sets the minimum server memory and maximum server memory configuration option.
+That means it sets the minimum and the maximum amount of memory, in MB, in the buffer pool used by the instance of SQL Server
+The default setting for minimum server memory is 0, and the default setting for maximum server memory is 2147483647 MB.
+Read more about minimum server memory and maximum server memory in this article [Server Memory Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms178067.aspx).
+
+#### Formula for dynamically allocating maximum memory
+
+The formula is based on the [SQL Max Memory Calculator](http://sqlmax.chuvash.eu/) website. The website code is in the sql-max GitHub repository maintained by [@mirontoli](https://github.com/mirontoli).
+The dynamic maximum memory (in MB) is calculate with this formula:
+SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) - (1024\*CEILING(NumOfCores/4)) - OSReservedMemory.
+
+* **NumOfSQLThreads**
+  * If the number of cores is less than or equal to 4, the number of SQL threads is set to: 256 + (NumberOfCores - 4) \* 8.
+  * If the number of cores is greater than 4, the number of SQL threads is set to: 0 (zero).
+* **ThreadStackSize**
+  * If the architecture of windows server is x86, the size of thread stack is 1MB.
+  * If the architecture of windows server is x64, the size of thread stack is 2MB.
+  * If the architecture of windows server is IA64, the size of thread stack is 4MB.
+* **OSReservedMemory**
+  * If the total physical memory is less than or equal to 20GB, the percentage of reserved memory for OS is 20% of total physical memory.
+  * If the total physical memory is greater than 20GB, the percentage of reserved memory for OS is 12.5% of total physical memory.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
 
-* **[String] SQLInstance** _(Key)_: The SQL instance for the database
-* **[Boolean] DyamicAlloc** _(Key)_: Flag to indicate if Memory is dynamically configured
-* **[String] Ensure** _(Write)_: An enumerated value that describes if Min and Max memory is configured. { *Present* | Absent }.
-* **[Sint32] MinMemory** _(Write)_: Minimum memory value to set SQL Server memory to
-* **[Sint32] MaxMemory** _(Write)_: Maximum memory value to set SQL Server memory to
-* **[String] SQLServer** _(Write)_: The SQL Server for the database
+* **[String] SQLInstance** _(Key)_: The name of the SQL instance to be configured.
+* **[String] SQLServer** _(Write)_: The host name of the SQL Server to be configured. Default value is *$env:COMPUTERNAME*.
+* **[Boolean] DyamicAlloc** _(Write)_: If set to $true then max memory will be dynamically configured. When this is set parameter is set to $true, the parameter MaxMemory must be set to $null or not be configured. Default value is *$false*.
+* **[String] Ensure** _(Write)_: When set to 'Present' then min and max memory will be set to either the value in parameter MinMemory and MaxMemory or dynamically configured when parameter DynamicAlloc is set to $true. When set to 'Absent' min and max memory will be set to default values. { *Present* | Absent }.
+* **[Sint32] MinMemory** _(Write)_: Minimum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
+* **[Sint32] MaxMemory** _(Write)_: Maximum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
 
 #### Examples
 
-None.
+* [Set SQLServerMaxMemory to 12GB](/Examples/Resources/xSQLServerMemory/1-SetMaxMemoryTo12GB.ps1)
+* [Set SQLServerMaxMemory to Auto](/Examples/Resources/xSQLServerMemory/2-SetMaxMemoryToAuto.ps1)
+* [Set SQLServerMinMemory to 2GB and SQLServerMaxMemory to Auto](/Examples/Resources/xSQLServerMemory/3-SetMinMemoryToFixedValueAndMaxMemoryToAuto.ps1)
+* [Set SQLServerMaxMemory to Default](/Examples/Resources/xSQLServerMemory/3-SetMaxMemoryToDefault.ps1)
 
 ### xSQLServerNetwork
 
@@ -614,7 +701,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
@@ -636,7 +723,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 * Target machine must have access to the SQLPS PowerShell module or the SqlServer PowerShell module.
 
@@ -658,7 +745,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
@@ -680,7 +767,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server 2008 or later.
 
 #### Parameters
@@ -705,7 +792,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Reporting Services 2008 or later.
 
 #### Parameters
@@ -729,7 +816,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Reporting Services 2008 or later.
 
 #### Parameters
@@ -754,7 +841,7 @@ Provides the means to run a user generated T-SQL script on the SQL Server instan
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server 2008 or later.
 * Target machine must have access to the SQLPS PowerShell module or the SqlServer PowerShell module.
 
@@ -784,11 +871,23 @@ Installs SQL Server on the target node.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
+* For configurations that utilize the 'InstallFailoverCluster' action, the following parameters are required (beyond those required for the standalone installation). See the article [Install SQL Server from the Command Prompt](https://msdn.microsoft.com/en-us/library/ms144259.aspx) under the section [Failover Cluster Parameters](https://msdn.microsoft.com/en-us/library/ms144259.aspx#Anchor_8) for more information.
+  * InstanceName (can be MSSQLSERVER if you want to install a default clustered instance).
+  * FailoverClusterNetworkName
+  * FailoverClusterIPAddress
+  * _When installing Database Engine._
+    * InstallSQLDataDir
+    * AgtSvcAccount
+    * SQLSvcAccount
+    * SQLSysAdminAccounts
+  * _When installing Analysis Services._
+    * ASSysAdminAccounts
+    * AsSvcAccount
 
 #### Parameters
 
-* **[String] Action** _(Write)_: The action to be performed. Defaults to 'Install'. { _Install_ | InstallFailoverCluster | AddNode | PrepareFailoverCluster | CompleteFailoverCluster }
+* **[String] Action** _(Write)_: The action to be performed. Defaults to 'Install'. *Note: AddNode is not currently functional.* { _Install_ | InstallFailoverCluster | AddNode | PrepareFailoverCluster | CompleteFailoverCluster }
 * **[String] InstanceName** _(Key)_: SQL instance to be installed.
 * **[PSCredential] SetupCredential** _(Required)_: Credential to be used to perform the installation.
 * **[String] SourcePath** _(Write)_: The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.
@@ -829,7 +928,7 @@ Installs SQL Server on the target node.
 * **[String] ASConfigDir** _(Write)_: Path for Analysis Services config.
 * **[PSCredential] ISSvcAccount** _(Write)_: Service account for Integration Services service.
 * **[String] BrowserSvcStartupType** _(Write)_: Specifies the startup mode for SQL Server Browser service. { Automatic | Disabled | 'Manual' }
-* **[String] FailoverClusterGroupName** _(Write)_: The name of the resource group to create for the clustered SQL Server instance. Defaults to 'SQL Server (_InstanceName_)'.
+* **[String] FailoverClusterGroupName** _(Write)_: The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (_InstanceName_)'.
 * **[String[]]FailoverClusterIPAddress** _(Write)_: Array of IP Addresses to be assigned to the clustered SQL Server instance. IP addresses must be in [dotted-decimal notation](https://en.wikipedia.org/wiki/Dot-decimal_notation), for example ````10.0.0.100````. If no IP address is specified, uses 'DEFAULT' for this setup parameter.
 * **[String] FailoverClusterNetworkName** _(Write)_: Host name to be assigned to the clustered SQL Server instance.
 
@@ -852,7 +951,8 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2.
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
 
