@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Examples
+  - xSQLServerDatabaseRole
+    - 1-AddDatabaseRole.ps1
+    - 2-RemoveDatabaseRole.ps1
+- Changes to xSQLServerDatabaseRole
+  - Fixed code style, added updated parameter descriptions to schema.mof and README.md.
+
 ## 6.0.0.0
 
 - Changes to xSQLServerConfiguration
