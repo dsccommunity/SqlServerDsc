@@ -298,112 +298,122 @@ try
             }
 
             Context 'When the system is not in the desired state, with one role' {
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    Name        = $mockSqlServerLoginOne
+                    Database    = $mockSqlDatabaseName
+                    Role        = $mockSqlDatabaseRoleSecond
+                }
+                
                 It 'Should return the state as absent' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        Name        = $mockSqlServerLoginOne
-                        Database    = $mockSqlDatabaseName
-                        Role        = $mockSqlDatabaseRoleSecond
-                    }
-
                     $result = Get-TargetResource @testParameters                
                     $result.Ensure | Should Be 'Absent'
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should not return any granted roles' {
+                    $result = Get-TargetResource @testParameters
                     $result.Role | Should Be $null
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
+                    $result = Get-TargetResource @testParameters
                     $result.SQLServer | Should Be $testParameters.SQLServer
                     $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
                     $result.Database | Should Be $testParameters.Database
                     $result.Name | Should Be $testParameters.Name
-                }
 
-                It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
             Context 'When the system is not in the desired state, with two roles' {
-                It 'Should return the state as absent' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        Name        = $mockSqlServerLoginOne
-                        Database    = $mockSqlDatabaseName
-                        Role        = @($mockSqlDatabaseRole,$mockSqlDatabaseRoleSecond)
-                    }
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    Name        = $mockSqlServerLoginOne
+                    Database    = $mockSqlDatabaseName
+                    Role        = @($mockSqlDatabaseRole,$mockSqlDatabaseRoleSecond)
+                }
 
+                It 'Should return the state as absent' {
                     $result = Get-TargetResource @testParameters                
                     $result.Ensure | Should Be 'Absent'
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should only return the one granted role' {
-                    $result.Role | Should Be $secondRoleName
+                    $result = Get-TargetResource @testParameters
+                    $result.Role | Should Be $mockSqlDatabaseRole
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
+                    $result = Get-TargetResource @testParameters
                     $result.SQLServer | Should Be $testParameters.SQLServer
                     $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
                     $result.Database | Should Be $testParameters.Database
                     $result.Name | Should Be $testParameters.Name
-                }
 
-                It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
         
             Context 'When the system is not in the desired state, and login is not a member of the database' {
-                It 'Should return the state as absent' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        Name        = $mockSqlServerLogin
-                        Database    = $mockSqlDatabaseName
-                        Role        = $mockSqlDatabaseRole
-                    }
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    Name        = $mockSqlServerLogin
+                    Database    = $mockSqlDatabaseName
+                    Role        = $mockSqlDatabaseRole
+                }
 
+                It 'Should return the state as absent' {
                     $result = Get-TargetResource @testParameters                
                     $result.Ensure | Should Be 'Absent'
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
+                    $result = Get-TargetResource @testParameters
                     $result.SQLServer | Should Be $testParameters.SQLServer
                     $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
                     $result.Database | Should Be $testParameters.Database
                     $result.Name | Should Be $testParameters.Name
-                }
 
-                It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
             Context 'When the system is in the desired state for a Windows user' {
-                It 'Should return the state as absent' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        Name        = $mockSqlServerLoginOne
-                        Database    = $mockSqlDatabaseName
-                        Role        = $mockSqlDatabaseRole
-                    }
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    Name        = $mockSqlServerLoginOne
+                    Database    = $mockSqlDatabaseName
+                    Role        = $mockSqlDatabaseRole
+                }
 
+                It 'Should return the state as absent' {
                     $result = Get-TargetResource @testParameters               
                     $result.Ensure | Should Be 'Present'
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
+                    $result = Get-TargetResource @testParameters
                     $result.SQLServer | Should Be $testParameters.SQLServer
                     $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
                     $result.Database | Should Be $testParameters.Database
                     $result.Name | Should Be $testParameters.Name
                     $result.Role | Should Be $testParameters.Role
-                }
 
-                It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
-                }        
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                }       
             }
 
             Assert-VerifiableMocks
