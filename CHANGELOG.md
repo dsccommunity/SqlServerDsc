@@ -23,6 +23,9 @@
     - Three new parameters are added; Members, MembersToInclude and MembersToExclude.
       - Members can be set to one or more logins, and those will _replace all_ the memberships in the server role.
       - MembersToInclude and MembersToExclude can be set to one or more logins that will add or remove memberships, respectively, in the server role. MembersToInclude and MembersToExclude _can not_ be used at the same time as parameter Members. But both MembersToInclude and MembersToExclude can be used together at the same time.
+- Changes to xSQLServerSetup
+  - Added a note to the README.md saying that it is not possible to add or remove features from a SQL Server failover cluster (issue #433).
+  - Changed so that it reports false if the desired state is not correct (issue #432).
 
 ## 6.0.0.0
 
