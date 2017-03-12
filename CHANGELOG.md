@@ -8,6 +8,8 @@
     - 2-RemoveDatabaseRole.ps1
 - Changes to xSQLServerDatabaseRole
   - Fixed code style, added updated parameter descriptions to schema.mof and README.md.
+- Changes to xSQLServer
+  - Raised the CodeCov target to 70% which is the minimum and required target for HQRM resource.
 
 ## 6.0.0.0
 
