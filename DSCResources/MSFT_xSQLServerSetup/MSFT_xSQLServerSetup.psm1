@@ -63,7 +63,7 @@ function Get-TargetResource
         $FailoverClusterNetworkName
     )
 
-    if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
+    if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster','Addnode'))
     {
         $sqlHostName = $FailoverClusterNetworkName
     }
@@ -744,7 +744,7 @@ function Set-TargetResource
     $parametersToEvaluateTrailingSlash = @(
         'InstanceDir',
         'InstallSharedDir',
-        'InstallSharedWOWDir',       
+        'InstallSharedWOWDir',
         'InstallSQLDataDir',
         'SQLUserDBDir',
         'SQLUserDBLogDir',
@@ -764,14 +764,14 @@ function Set-TargetResource
         if ($PSBoundParameters.ContainsKey($parameterName))
         {
             $parameterValue = Get-Variable -Name $parameterName -ValueOnly
-            
-            # Trim backslash, but only if the path contains a full path and not just a qualifier. 
+
+            # Trim backslash, but only if the path contains a full path and not just a qualifier.
             if ($parameterValue -and $parameterValue -notmatch '^[a-zA-Z]:\\$')
             {
                 Set-Variable -Name $parameterName -Value $parameterValue.TrimEnd('\')
             }
 
-            # If the path only contains a qualifier but no backslash ('M:'), then a backslash is added ('M:\'). 
+            # If the path only contains a qualifier but no backslash ('M:'), then a backslash is added ('M:\').
             if ($parameterValue -match '^[a-zA-Z]:$')
             {
                 Set-Variable -Name $parameterName -Value "$parameterValue\"
@@ -888,28 +888,23 @@ function Set-TargetResource
 
     $setupArguments = @{}
 
-    if ($Action -in @('PrepareFailoverCluster','CompleteFailoverCluster','InstallFailoverCluster'))
+    if ($Action -in @('PrepareFailoverCluster','CompleteFailoverCluster','InstallFailoverCluster','Addnode'))
     {
-        # Set the group name for this clustered instance.
-        # This is only required for CompleteFailoverCluster or InstallFailoverCluster
-        if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
-        {
-            $setupArguments += @{
-                FailoverClusterGroup = $FailoverClusterGroupName
-            }
-        }
-
         # This was brought over from the old module. Should be removed (breaking change).
         $setupArguments += @{
             SkipRules = 'Cluster_VerifyForErrors'
         }
     }
 
-    # Add the failover cluster network name if the action is either installing or completing a cluster
+    <#
+        Set the failover cluster group name and failover cluster network name for this clustered instance
+        if the action is either installing (InstallFailoverCluster) or completing (CompleteFailoverCluster) a cluster.
+    #>
     if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
     {
         $setupArguments += @{
             FailoverClusterNetworkName = $FailoverClusterNetworkName
+            FailoverClusterGroup = $FailoverClusterGroupName
         }
     }
 
@@ -1085,45 +1080,28 @@ function Set-TargetResource
         'InstanceID',
         'UpdateEnabled',
         'UpdateSource',
-        'Features',
         'ProductKey',
         'SQMReporting',
-        'ErrorReporting',
-        'InstallSharedDir',
-        'InstallSharedWOWDir',
-        'InstanceDir'
+        'ErrorReporting'
     )
+
+    if ($Action -in @('Install','InstallFailoverCluster','PrepareFailoverCluster','CompleteFailoverCluster'))
+    {
+        $argumentVars += @(
+            'Features',
+            'InstallSharedDir',
+            'InstallSharedWOWDir',
+            'InstanceDir'
+        )
+    }
 
     if ($null -ne $BrowserSvcStartupType)
     {
         $argumentVars += 'BrowserSvcStartupType'
     }
 
-    if ($Action -eq 'AddNode')
-    {
-        if ($PSBoundParameters.ContainsKey('SQLSvcAccount'))
-        {
-            $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $SQLSvcAccount -ServiceType 'SQL')
-        }
-
-        if($PSBoundParameters.ContainsKey('AgtSvcAccount'))
-        {
-            $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $AgtSvcAccount -ServiceType 'AGT')
-        }
-    }
-
     if ($Features.Contains('SQLENGINE'))
     {
-        $argumentVars += @(
-            'SecurityMode',
-            'SQLCollation',
-            'InstallSQLDataDir',
-            'SQLUserDBDir',
-            'SQLUserDBLogDir',
-            'SQLTempDBDir',
-            'SQLTempDBLogDir',
-            'SQLBackupDir'
-        )
 
         if ($PSBoundParameters.ContainsKey('SQLSvcAccount'))
         {
@@ -1133,16 +1111,6 @@ function Set-TargetResource
         if($PSBoundParameters.ContainsKey('AgtSvcAccount'))
         {
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $AgtSvcAccount -ServiceType 'AGT')
-        }
-
-        # Should not be passed when PrepareFailoverCluster is specified
-        if ($Action -notin @('PrepareFailoverCluster'))
-        {
-            $setupArguments += @{ SQLSysAdminAccounts =  @($SetupCredential.UserName) }
-            if ($PSBoundParameters.ContainsKey('SQLSysAdminAccounts'))
-            {
-                $setupArguments['SQLSysAdminAccounts'] += $SQLSysAdminAccounts
-            }
         }
 
         if ($SecurityMode -eq 'SQL')
@@ -1150,7 +1118,28 @@ function Set-TargetResource
             $setupArguments += @{ SAPwd = $SAPwd.GetNetworkCredential().Password }
         }
 
-        if ($Action -notin @('PrepareFailoverCluster','CompleteFailoverCluster','InstallFailoverCluster','AddNode'))
+        # Should not be passed when PrepareFailoverCluster is specified
+        if ($Action -in @('Install','InstallFailoverCluster','CompleteFailoverCluster'))
+        {
+            $setupArguments += @{ SQLSysAdminAccounts =  @($SetupCredential.UserName) }
+            if ($PSBoundParameters.ContainsKey('SQLSysAdminAccounts'))
+            {
+                $setupArguments['SQLSysAdminAccounts'] += $SQLSysAdminAccounts
+            }
+
+            $argumentVars += @(
+                'SecurityMode',
+                'SQLCollation',
+                'InstallSQLDataDir',
+                'SQLUserDBDir',
+                'SQLUserDBLogDir',
+                'SQLTempDBDir',
+                'SQLTempDBLogDir',
+                'SQLBackupDir'
+            )
+        }
+
+        if ($Action -in @('Install'))
         {
             $setupArguments += @{ AgtSvcStartupType = 'Automatic' }
         }
@@ -1188,11 +1177,14 @@ function Set-TargetResource
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $ASSvcAccount -ServiceType 'AS')
         }
 
-        $setupArguments += @{ ASSysAdminAccounts = @($SetupCredential.UserName) }
-
-        if($PSBoundParameters.ContainsKey("ASSysAdminAccounts"))
+        if ($Action -in ('Install','InstallFailoverCluster','CompleteFailoverCluster'))
         {
-            $setupArguments['ASSysAdminAccounts'] += $ASSysAdminAccounts
+            $setupArguments += @{ ASSysAdminAccounts = @($SetupCredential.UserName) }
+
+            if($PSBoundParameters.ContainsKey("ASSysAdminAccounts"))
+            {
+                $setupArguments['ASSysAdminAccounts'] += $ASSysAdminAccounts
+            }
         }
     }
 
