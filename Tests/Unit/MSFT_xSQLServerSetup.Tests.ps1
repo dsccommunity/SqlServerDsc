@@ -106,6 +106,9 @@ try
         $mockAgentServiceAccount = 'COMPANY\AgentAccount'
         $mockAgentServicePassword = 'Ag3ntP@ssw0rd'
         $mockSQLAgentCredential = New-Object System.Management.Automation.PSCredential($mockAgentServiceAccount,($mockAgentServicePassword | ConvertTo-SecureString -AsPlainText -Force))
+        $mockAnalysisServiceAccount = 'COMPANY\AnalysisAccount'
+        $mockAnslysisServicePassword = 'Analysiss3v!c3P@ssw0rd'
+        $mockAnalysisServiceCredential = New-Object System.Management.Automation.PSCredential($mockAnalysisServiceAccount,($mockSQLServicePassword | ConvertTo-SecureString -AsPlainText -Force))
 
         $mockClusterNodes = @($env:COMPUTERNAME,'SQL01','SQL02')
 
@@ -838,6 +841,8 @@ try
 
             # Start by checking whether we have the same number of parameters
             Write-Verbose 'Verifying setup argument count (expected vs actual)' -Verbose
+            Write-Verbose -Message ('Expected: {0}' -f ($mockStartWin32ProcessExpectedArgument.Keys -join ',') ) -Verbose
+            Write-Verbose -Message ('Actual: {0}' -f ($argumentHashTable.Keys -join ',')) -Verbose
 
             $argumentHashTable.Keys.Count | Should BeExactly $mockStartWin32ProcessExpectedArgument.Keys.Count
 
@@ -3459,24 +3464,17 @@ try
                 Context "When SQL Server version is $mockSQLMajorVersion and the system is not in the desired state and the action is AddNode" {
                     BeforeAll {
                         $testParameters = $mockDefaultClusterParameters.Clone()
-
+                        $testParameters['Features'] += 'AS'
                         $testParameters += @{
                             InstanceName = 'MSSQLSERVER'
                             SourcePath = $mockSourcePath
                             Action = 'AddNode'
                             AgtSvcAccount = $mockSQLAgentCredential
                             SqlSvcAccount = $mockSQLServiceCredential
+                            ASSvcAccount = $mockAnalysisServiceCredential
+                            FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
                         }
 
-                        $testParameters.Remove('Features')
-                        $testParameters.Remove('SQLUserDBDir')
-                        $testParameters.Remove('SQLUserDBLogDir')
-                        $testParameters.Remove('SQLTempDbDir')
-                        $testParameters.Remove('SQLTempDBlogDir')
-
-                    }
-
-                    BeforeAll {
                         Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterResourceGroup_AvailableStorage -ParameterFilter {
                             $Filter -eq "Name = 'Available Storage'"
                         } -Verifiable
@@ -3519,7 +3517,9 @@ try
                             AgtSvcPassword = $mockSqlAgentCredential.GetNetworkCredential().Password
                             SqlSvcAccount = $mockSqlServiceAccount
                             SqlSvcPassword = $mockSQLServiceCredential.GetNetworkCredential().Password
-
+                            AsSvcAccount = $mockAnalysisServiceAccount
+                            AsSvcPassword = $mockAnalysisServiceCredential.GetNetworkCredential().Password
+                            SkipRules = 'Cluster_VerifyForErrors'
                         }
 
                         { Set-TargetResource @testParameters } | Should Not Throw
