@@ -169,7 +169,6 @@ function Set-TargetResource
     param
     (
         [Parameter()]
-        [ValidateNotNullOrEmpty()]
         [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
@@ -356,7 +355,6 @@ function Test-TargetResource
     param
     (
         [Parameter()]
-        [ValidateNotNullOrEmpty()]
         [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',

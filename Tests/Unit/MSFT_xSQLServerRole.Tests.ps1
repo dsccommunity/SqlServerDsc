@@ -165,7 +165,7 @@ try
             Context 'When the system is in the desired state and ensure is set to Absent' {
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
-                    ServerRoleName = 'UnknownUser'
+                    ServerRoleName = 'UnknownRoleName'
                 }
 
                 It 'Should return the state as absent when the role does not exist' {
@@ -198,7 +198,7 @@ try
                     ServerRoleName = $mockSqlServerRole
                 }
 
-                It 'Should not return the state as absent because the role do already exist' {
+                It 'Should not return the state as absent when the role exist' {
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should Not Be 'Absent'
 
@@ -250,7 +250,7 @@ try
                     Members        = $mockEnumMemberNames
                 }
 
-                It 'Should return the state as present and the role with correct members do exist' {
+                It 'Should return the state as present when the members are correct' {
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should Be 'Present'
 
@@ -281,7 +281,7 @@ try
                     MembersToInclude  = $mockSqlServerLoginTwo
                 }
 
-                It 'Should return the state as present and the role with correct members do exist' {
+                It 'Should return the state as present when the correct members exist' {
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should Be 'Present'
 
@@ -313,7 +313,7 @@ try
                     MembersToExclude  = $mockSqlServerLoginTree
                 }
 
-                It 'Should return the state as present and the role with correct members does not exist' {
+                It 'Should return the state as present when the members does no exist' {
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should Be 'Present'
 
@@ -339,7 +339,10 @@ try
                         Members = $mockEnumMemberNames
                         MembersToInclude = $mockSqlServerLoginTree
                     }
-                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `                                              'MembersToExclude must not be set, or be set ' + `                                              'to $null, when parameter Members are used.')
+                    
+                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `
+                                              'MembersToExclude must not be set, or be set ' + `
+                                              'to $null, when parameter Members are used.')
 
                     { Get-TargetResource @testParameters } | Should Throw $throwInvalidOperation
                 }
@@ -358,7 +361,10 @@ try
                         Members = $mockEnumMemberNames
                         MembersToExclude = $mockSqlServerLoginTree
                     }
-                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `                                              'MembersToExclude must not be set, or be set ' + `                                              'to $null, when parameter Members are used.')
+                    
+                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `
+                                              'MembersToExclude must not be set, or be set ' + `
+                                              'to $null, when parameter Members are used.')
 
                     { Get-TargetResource @testParameters } | Should Throw $throwInvalidOperation
                 }
@@ -371,19 +377,19 @@ try
             Context 'When the system is not in the desired state and ensure is set to Present' {
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
-                    ServerRoleName = $mockSqlServerRole
+                    ServerRoleName = 'UnknownRoleName'
                 }
 
-                It 'Should return the state as present when the role do exist' {
+                It 'Should return the state as absent when the role does not exist' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Present'
+                    $result.Ensure | Should Be 'Absent'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
-                It 'Should return the members as not null' {
+                It 'Should return the members as null' {
                     $result = Get-TargetResource @testParameters
-                    $result.Members | Should Not Be $null
+                    $result.Members | Should Be $null
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -405,7 +411,7 @@ try
                     Members        = @($mockSqlServerLoginOne,$mockSqlServerLoginTree)
                 }
 
-                It 'Should return the state as absent and the role with correct members does not exist' {
+                It 'Should return the state as absent when the members in the role are wrong' {
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should Be 'Absent'
 
@@ -436,7 +442,7 @@ try
                     MembersToInclude  = $mockSqlServerLoginTree
                 }
 
-                It 'Should return the state as absent and the role with correct members do exist' {
+                It 'Should return the state as absent when the members in the role are missing' {
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should Be 'Absent'
 
@@ -468,7 +474,7 @@ try
                     MembersToExclude  = $mockSqlServerLoginTwo
                 }
 
-                It 'Should return the state as present and the role with correct members does not exist' {
+                It 'Should return the state as absent when the members in the role are present' {
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should Be 'Absent'
 
@@ -565,7 +571,9 @@ try
                         MembersToInclude = $mockSqlServerLoginTree
                     }
 
-                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `                                              'MembersToExclude must not be set, or be set ' + `                                              'to $null, when parameter Members are used.')
+                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `
+                                              'MembersToExclude must not be set, or be set ' + `
+                                              'to $null, when parameter Members are used.')
 
                     { Test-TargetResource @testParameters } | Should Throw $throwInvalidOperation
                     
@@ -615,7 +623,9 @@ try
                         MembersToExclude = $mockSqlServerLoginTwo
                     }
 
-                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `                                              'MembersToExclude must not be set, or be set ' + `                                              'to $null, when parameter Members are used.')
+                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `
+                                              'MembersToExclude must not be set, or be set ' + `
+                                              'to $null, when parameter Members are used.')
 
                     { Test-TargetResource @testParameters } | Should Throw $throwInvalidOperation
 
@@ -624,7 +634,7 @@ try
             }
 
             Context 'When parameter MembersToExclude is assigned a value, parameter Members is not assigned a value, and ensure is set to Present' {            
-                It 'Should return true when desired server roled does not exist' {
+                It 'Should return true when desired server role does not exist' {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         Ensure = 'Present'
@@ -703,7 +713,7 @@ try
             }
 
             Context 'When the system is not in the desired state and ensure is set to Present' {
-                It 'Should not throw when calling the drop method' {
+                It 'Should not throw when calling the create method' {
                     $mockSqlServerRoleAdd = 'ServerRoleToAdd'
                     $mockExpectedServerRoleToCreate = 'ServerRoleToAdd'
                     $testParameters = $mockDefaultParameters
@@ -762,7 +772,9 @@ try
                         MembersToInclude = $mockSqlServerLoginTree
                     }
 
-                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `                                              'MembersToExclude must not be set, or be set ' + `                                              'to $null, when parameter Members are used.')
+                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `
+                                              'MembersToExclude must not be set, or be set ' + `
+                                              'to $null, when parameter Members are used.')
 
                     { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
                     
@@ -780,7 +792,9 @@ try
                         MembersToExclude = $mockSqlServerLoginTwo
                     }
 
-                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `                                              'MembersToExclude must not be set, or be set ' + `                                              'to $null, when parameter Members are used.')
+                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `
+                                              'MembersToExclude must not be set, or be set ' + `
+                                              'to $null, when parameter Members are used.')
 
                     { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
                     
@@ -925,7 +939,7 @@ try
             }
 
             Context 'When Members parameter is set and ensure parameter is set to Present' {            
-                It 'Should not throw when calling both the AddMember or DropMember methods' {
+                It 'Should not throw when calling both the AddMember and DropMember methods' {
                     $mockExpectedMemberToAdd = $mockSqlServerLoginTree
                     $mockSqlServerLoginToAdd = $mockSqlServerLoginTree
                     $mockExpectedMemberToDrop = $mockSqlServerLoginTwo
