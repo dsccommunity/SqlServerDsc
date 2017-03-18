@@ -313,7 +313,7 @@ try
                     MembersToExclude  = $mockSqlServerLoginTree
                 }
 
-                It 'Should return the state as present when the members does no exist' {
+                It 'Should return the state as present when the members does not exist' {
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should Be 'Present'
 
