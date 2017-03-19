@@ -672,7 +672,7 @@ try
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
                 Mock -CommandName New-Object -MockWith $mockNewObjectServerRole -ParameterFilter {
-                    $TypeName -eq 'Microsoft.SqlServer.Management.Smo.ServerRoleName'
+                    $TypeName -eq 'Microsoft.SqlServer.Management.Smo.ServerRole'
                 } 
             }
            
@@ -727,9 +727,9 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
-                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.ServerRoleName' {
+                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.ServerRole' {
                     Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter { 
-                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.ServerRoleName'
+                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.ServerRole'
                     } -Scope Context
                 }
             }
@@ -755,9 +755,9 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
-                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.ServerRoleName' {
+                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.ServerRole' {
                     Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter { 
-                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.ServerRoleName'
+                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.ServerRole'
                     } -Scope Context
                 }
             }

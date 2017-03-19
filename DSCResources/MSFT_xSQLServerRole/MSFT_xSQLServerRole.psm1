@@ -236,7 +236,7 @@ function Set-TargetResource
                 {
                     try
                     {
-                        $sqlServerRoleObjectToCreate = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerRoleName `
+                        $sqlServerRoleObjectToCreate = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerRole `
                                                                   -ArgumentList $sqlServerObject,$ServerRoleName
                         if ($sqlServerRoleObjectToCreate)
                         {
