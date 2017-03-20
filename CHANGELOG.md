@@ -6,10 +6,23 @@
   - xSQLServerDatabaseRole
     - 1-AddDatabaseRole.ps1
     - 2-RemoveDatabaseRole.ps1
+  - xSQLServerRole, add examples:
+    - 3-AddMembersToServerRole.ps1
+    - 4-MembersToIncludeInServerRole.ps1
+    - 5-MembersToExcludeInServerRole.ps1
 - Changes to xSQLServerDatabaseRole
   - Fixed code style, added updated parameter descriptions to schema.mof and README.md.
 - Changes to xSQLServer
   - Raised the CodeCov target to 70% which is the minimum and required target for HQRM resource.
+- Changes to xSQLServerRole
+  - **BREAKING CHANGE: The resource has been reworked in it's entirely.** Below is what has changed.
+    - The mandatory parameters now also include ServerRoleName.
+    - The ServerRole parameter was before an array of server roles, now this parameter is renamed to ServerRoleName and can only be set to one server role.
+      - ServerRoleName are no longer limited to built-in server roles. To add members to a built-in server role, set ServerRoleName to the name of the built-in server role.
+      - The ServerRoleName will be created when Ensure is set to 'Present' (if it does not already exist), or removed if Ensure is set to 'Absent'.
+    - Three new parameters are added; Members, MembersToInclude and MembersToExclude.
+      - Members can be set to one or more logins, and those will _replace all_ the memberships in the server role.
+      - MembersToInclude and MembersToExclude can be set to one or more logins that will add or remove memberships, respectively, in the server role. MembersToInclude and MembersToExclude _can not_ be used at the same time as parameter Members. But both MembersToInclude and MembersToExclude can be used together at the same time.
 
 ## 6.0.0.0
 
