@@ -19,14 +19,10 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 #endregion HEADER
 
-function Invoke-TestSetup {
-    # TODO: Optional init code goes here...
-}
+function Invoke-TestSetup {}
 
 function Invoke-TestCleanup {
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
-
-    # TODO: Other Optional Cleanup Code Goes Here...
 }
 
 # Begin Testing
@@ -100,6 +96,8 @@ try
 
             $mockEndpoint = @() # Will be dynamically set during tests
 
+            $mockendpointPort = 5022
+
             $mockDatabaseMirroringEndpointAbsent = @()
 
             $mockDatabaseMirroringEndpointPresent = @(
@@ -114,7 +112,7 @@ try
                                             return @(
                                                 (
                                                     New-Object Object |
-                                                        Add-Member -MemberType NoteProperty -Name ListenerPort -Value 5022 -PassThru -Force
+                                                        Add-Member -MemberType NoteProperty -Name ListenerPort -Value $mockendpointPort -PassThru -Force
                                                 )
                                             )
                                         } -PassThru -Force
@@ -150,7 +148,7 @@ try
             $mockAvailabilityGroupReplica1ConnectionModeInPrimaryRole = 'AllowAllConnections'
             $mockAvailabilityGroupReplica1ConnectionModeInSecondaryRole = 'AllowNoConnections'
             $mockAvailabilityGroupReplica1EndpointProtocol = 'TCP'
-            $mockAvailabilityGroupReplica1EndpointPort = 5022
+            $mockAvailabilityGroupReplica1EndpointPort = $mockendpointPort
             $mockAvailabilityGroupReplica1EndpointUrl = "$($mockAvailabilityGroupReplica1EndpointProtocol)://$($mockServer1Name):$($mockAvailabilityGroupReplica1EndpointPort)"
             $mockAvailabilityGroupReplica1FailoverMode = 'Manual'
             $mockAvailabilityGroupReplica1ReadOnlyRoutingConnectionUrl = "TCP://$($mockServer1Name).domain.com:1433"
@@ -162,7 +160,7 @@ try
             $mockAvailabilityGroupReplica2ConnectionModeInPrimaryRole = 'AllowAllConnections'
             $mockAvailabilityGroupReplica2ConnectionModeInSecondaryRole = 'AllowNoConnections'
             $mockAvailabilityGroupReplica2EndpointProtocol = 'TCP'
-            $mockAvailabilityGroupReplica2EndpointPort = 5022
+            $mockAvailabilityGroupReplica2EndpointPort = $mockendpointPort
             $mockAvailabilityGroupReplica2EndpointUrl = "$($mockAvailabilityGroupReplica2EndpointProtocol)://$($mockServer2Name):$($mockAvailabilityGroupReplica2EndpointPort)"
             $mockAvailabilityGroupReplica2FailoverMode = 'Manual'
             $mockAvailabilityGroupReplica2ReadOnlyRoutingConnectionUrl = "TCP://$($mockServer2Name).domain.com:1433"
@@ -174,7 +172,7 @@ try
             $mockAvailabilityGroupReplica3ConnectionModeInPrimaryRole = 'AllowAllConnections'
             $mockAvailabilityGroupReplica3ConnectionModeInSecondaryRole = 'AllowNoConnections'
             $mockAvailabilityGroupReplica3EndpointProtocol = 'TCP'
-            $mockAvailabilityGroupReplica3EndpointPort = 5022
+            $mockAvailabilityGroupReplica3EndpointPort = $mockendpointPort
             $mockAvailabilityGroupReplica3EndpointUrl = "$($mockAvailabilityGroupReplica3EndpointProtocol)://$($mockServer3Name):$($mockAvailabilityGroupReplica3EndpointPort)"
             $mockAvailabilityGroupReplica3FailoverMode = 'Manual'
             $mockAvailabilityGroupReplica3ReadOnlyRoutingConnectionUrl = "TCP://$($mockServer3Name).domain.com:1433"
@@ -650,7 +648,7 @@ try
                     $getTargetResourceResult.ConnectionModeInPrimaryRole | Should BeNullOrEmpty
                     $getTargetResourceResult.ConnectionModeInSecondaryRole | Should BeNullOrEmpty
                     $getTargetResourceResult.EndpointUrl | Should BeNullOrEmpty
-                    $getTargetResourceResult.EndpointPort | Should Be $mockAvailabilityGroupReplica2EndpointPort
+                    $getTargetResourceResult.EndpointPort | Should Be $mockendpointPort
                     $getTargetResourceResult.Ensure | Should Be 'Absent'
                     $getTargetResourceResult.FailoverMode | Should BeNullOrEmpty
                     $getTargetResourceResult.Name | Should BeNullOrEmpty
@@ -678,7 +676,7 @@ try
                     $getTargetResourceResult.ConnectionModeInPrimaryRole | Should Be $mockConnectionModeInPrimaryRole
                     $getTargetResourceResult.ConnectionModeInSecondaryRole | Should Be $mockConnectionModeInSecondaryRole
                     $getTargetResourceResult.EndpointUrl | Should Be $mockAvailabilityGroupReplica1EndpointUrl
-                    $getTargetResourceResult.EndpointPort | Should Be $mockAvailabilityGroupReplica1EndpointPort
+                    $getTargetResourceResult.EndpointPort | Should Be $mockendpointPort
                     $getTargetResourceResult.Ensure | Should Be $mockEnsure
                     $getTargetResourceResult.FailoverMode | Should Be $mockFailoverMode
                     $getTargetResourceResult.Name | Should Be $mockSqlServer
@@ -1135,7 +1133,7 @@ try
         }
 
         Describe 'xSQLServerAlwaysOnAvailabilityGroupReplica\Test-TargetResource' {
-
+            
             BeforeEach {            
                 $mockAlternateEndpointPort = $false
                 $mockAlternateEndpointProtocol = $false
@@ -1187,6 +1185,18 @@ try
 
             Context 'When the desired state is present' {
 
+                BeforeAll {
+                    $propertiesToCheck = @{
+                        AvailabilityMode = 'SynchronousCommit'
+                        BackupPriority = 42
+                        ConnectionModeInPrimaryRole = 'AllowReadWriteConnections'
+                        ConnectionModeInSecondaryRole = 'AllowReadIntentConnectionsOnly'
+                        FailoverMode = 'Automatic'
+                        ReadOnlyRoutingConnectionUrl = 'WrongUrl'
+                        ReadOnlyRoutingList = @('WrongServer')
+                    }
+                }
+
                 It 'Should return $false when the Availability Replica is absent' {
 
                     $testTargetResourceParameters.Name = $mockAvailabilityGroupReplica2Name
@@ -1202,6 +1212,17 @@ try
                     Test-TargetResource @testTargetResourceParameters | Should Be $true
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                }
+
+                foreach ( $propertyToCheck in $propertiesToCheck.GetEnumerator() )
+                {
+                    It "Should return $false when the Availability Replica is present and the property '$($propertyToCheck.Key)' is not in the desired state" {
+                        $testTargetResourceParameters.($propertyToCheck.Key) = $propertyToCheck.Value
+
+                        Test-TargetResource @testTargetResourceParameters | Should Be $false
+
+                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    }
                 }
 
                 It 'Should return $false when the Availability Replica is present and the Availabiltiy Mode is not in the desired state' {
