@@ -96,7 +96,7 @@ try
 
             $mockEndpoint = @() # Will be dynamically set during tests
 
-            $mockendpointPort = 5022
+            $mockEndpointPort = 5022
 
             $mockDatabaseMirroringEndpointAbsent = @()
 
@@ -148,7 +148,7 @@ try
             $mockAvailabilityGroupReplica1ConnectionModeInPrimaryRole = 'AllowAllConnections'
             $mockAvailabilityGroupReplica1ConnectionModeInSecondaryRole = 'AllowNoConnections'
             $mockAvailabilityGroupReplica1EndpointProtocol = 'TCP'
-            $mockAvailabilityGroupReplica1EndpointPort = $mockendpointPort
+            $mockAvailabilityGroupReplica1EndpointPort = $mockEndpointPort
             $mockAvailabilityGroupReplica1EndpointUrl = "$($mockAvailabilityGroupReplica1EndpointProtocol)://$($mockServer1Name):$($mockAvailabilityGroupReplica1EndpointPort)"
             $mockAvailabilityGroupReplica1FailoverMode = 'Manual'
             $mockAvailabilityGroupReplica1ReadOnlyRoutingConnectionUrl = "TCP://$($mockServer1Name).domain.com:1433"
@@ -160,7 +160,7 @@ try
             $mockAvailabilityGroupReplica2ConnectionModeInPrimaryRole = 'AllowAllConnections'
             $mockAvailabilityGroupReplica2ConnectionModeInSecondaryRole = 'AllowNoConnections'
             $mockAvailabilityGroupReplica2EndpointProtocol = 'TCP'
-            $mockAvailabilityGroupReplica2EndpointPort = $mockendpointPort
+            $mockAvailabilityGroupReplica2EndpointPort = $mockEndpointPort
             $mockAvailabilityGroupReplica2EndpointUrl = "$($mockAvailabilityGroupReplica2EndpointProtocol)://$($mockServer2Name):$($mockAvailabilityGroupReplica2EndpointPort)"
             $mockAvailabilityGroupReplica2FailoverMode = 'Manual'
             $mockAvailabilityGroupReplica2ReadOnlyRoutingConnectionUrl = "TCP://$($mockServer2Name).domain.com:1433"
@@ -172,7 +172,7 @@ try
             $mockAvailabilityGroupReplica3ConnectionModeInPrimaryRole = 'AllowAllConnections'
             $mockAvailabilityGroupReplica3ConnectionModeInSecondaryRole = 'AllowNoConnections'
             $mockAvailabilityGroupReplica3EndpointProtocol = 'TCP'
-            $mockAvailabilityGroupReplica3EndpointPort = $mockendpointPort
+            $mockAvailabilityGroupReplica3EndpointPort = $mockEndpointPort
             $mockAvailabilityGroupReplica3EndpointUrl = "$($mockAvailabilityGroupReplica3EndpointProtocol)://$($mockServer3Name):$($mockAvailabilityGroupReplica3EndpointPort)"
             $mockAvailabilityGroupReplica3FailoverMode = 'Manual'
             $mockAvailabilityGroupReplica3ReadOnlyRoutingConnectionUrl = "TCP://$($mockServer3Name).domain.com:1433"
