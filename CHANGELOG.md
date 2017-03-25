@@ -32,6 +32,9 @@
     - Added tests for Connect-SQLAnalysis
     - Changed to localized error messages.
     - Minor changes to error handling.
+  - This adds better support for Addnode (issue #369).
+  - Now it skips cluster validation för add node (issue #442).
+  - Now it ignores parameters that are not allowed for action Addnode (issue #441).
 - Added new resource
   - xSQLServerAlwaysOnAvailabilityGroupReplica
 
