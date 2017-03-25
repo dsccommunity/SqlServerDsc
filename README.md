@@ -996,7 +996,9 @@ Installs SQL Server on the target node.
 
 #### Examples
 
-None.
+* [Install a default instance on a single server](/Examples/Resources/xSQLServerSetup/1-InstallDefaultInstanceSingleServer.ps1)
+* [Install a named instance on a single server](/Examples/Resources/xSQLServerSetup/2-InstallNamedInstanceSingleServer.ps1)
+* [Install a named instance on a single server from an UNC path using SourceCredential](/Examples/Resources/xSQLServerSetup/3-InstallNamedInstanceSingleServerFromUncPathUsingSourceCredential.ps1)
 
 ### xWaitforAvailabilityGroup
 

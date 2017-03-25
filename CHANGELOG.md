@@ -6,10 +6,14 @@
   - xSQLServerDatabaseRole
     - 1-AddDatabaseRole.ps1
     - 2-RemoveDatabaseRole.ps1
-  - xSQLServerRole, add examples:
+  - xSQLServerRole
     - 3-AddMembersToServerRole.ps1
     - 4-MembersToIncludeInServerRole.ps1
     - 5-MembersToExcludeInServerRole.ps1
+  - xSQLServerSetup
+    - 1-InstallDefaultInstanceSingleServer.ps1
+    - 2-InstallNamedInstanceSingleServer.ps1
+    - 3-InstallNamedInstanceSingleServerFromUncPathUsingSourceCredential.ps1
 - Changes to xSQLServerDatabaseRole
   - Fixed code style, added updated parameter descriptions to schema.mof and README.md.
 - Changes to xSQLServer
