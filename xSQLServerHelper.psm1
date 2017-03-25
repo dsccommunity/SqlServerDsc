@@ -88,52 +88,66 @@ function Connect-SQLAnalysis
     [CmdletBinding()]
     param
     (
-        [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
-        [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLInstanceName = "MSSQLSERVER",
+        $SQLInstanceName = 'MSSQLSERVER',
 
-        [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $SetupCredential
     )
 
     $null = [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.AnalysisServices')
 
-    if ($SQLInstanceName -eq "MSSQLSERVER")
+    if ($SQLInstanceName -eq 'MSSQLSERVER')
     {
-        $connectSql = $SQLServer
+        $analysisServiceInstance = $SQLServer
     }
     else
     {
-        $connectSql = "$SQLServer\$SQLInstanceName"
+        $analysisServiceInstance = "$SQLServer\$SQLInstanceName"
     }
-
-    $sql = New-Object Microsoft.AnalysisServices.Server
 
     if ($SetupCredential)
     {
         $userName = $SetupCredential.GetNetworkCredential().UserName
         $password = $SetupCredential.GetNetworkCredential().Password
 
-        $sql.Connect("Data Source=$connectSql;User ID=$userName;Password=$password")
+        $analysisServicesDataSource = "Data Source=$analysisServiceInstance;User ID=$userName;Password=$password"
     }
     else
     {
-        $sql.Connect("Data Source=$connectSql")
+        $analysisServicesDataSource = "Data Source=$analysisServiceInstance"
     }
 
-    if (!$sql)
+    try
     {
-        Throw -Message "Failed connecting to Analysis Services $connectSql"
+        $analysisServicesObject = New-Object -TypeName Microsoft.AnalysisServices.Server
+        if ($analysisServicesObject)
+        {
+            $analysisServicesObject.Connect($analysisServicesDataSource)
+        }
+        else
+        {
+            throw New-TerminatingError -ErrorType AnalysisServicesNoServerObject -ErrorCategory InvalidResult
+        }
+
+        Write-Verbose -Message "Connected to Analysis Services $analysisServiceInstance." -Verbose
+    }
+    catch
+    {
+        throw New-TerminatingError -ErrorType AnalysisServicesFailedToConnect -FormatArgs @($analysisServiceInstance) -ErrorCategory ObjectNotFound -InnerException $_.Exception
     }
 
-    New-VerboseMessage -Message "Connected to Analysis Services $connectSql"
-
-    return $sql
+    return $analysisServicesObject
 }
 
 <#
@@ -1379,7 +1393,7 @@ function Remove-SqlDatabasePermission
 
     .PARAMETER SQLServer
     The hostname of the server that hosts the SQL instance.
-    
+
     .PARAMETER SQLInstanceName
     The name of the SQL instance that hosts the database.
 
