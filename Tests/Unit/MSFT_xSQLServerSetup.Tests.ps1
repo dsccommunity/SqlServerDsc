@@ -2389,12 +2389,13 @@ try
                     $result | Should Be $false
                 }
 
-                It 'Should return false if SQL Server failover cluster is missing features ' {
+                # This is a test for regression testing of issue #432
+                It 'Should return false if a SQL Server failover cluster is missing features' {
                     $mockCurrentInstanceName = $mockDefaultInstance_InstanceName
 
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                                Features = 'SQLEngine,AS'
+                                Features = 'SQLENGINE' # Must be upper-case since Get-TargetResource returns upper-case.
                                 FailoverClusterGroupName = $mockDefaultInstance_FailoverClusterGroupName
                                 FailoverClusterIPAddress = $mockDefaultInstance_FailoverClusterIPAddress
                                 FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
@@ -2623,6 +2624,32 @@ try
 
                     $result = Test-TargetResource @testClusterParameters
 
+                    $result | Should Be $true
+                }
+
+                # This is a test for regression testing of issue #432
+                It 'Should return true if a SQL Server failover cluster has all features and is in desired state' {
+                    $mockCurrentInstanceName = $mockDefaultInstance_InstanceName
+
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                                Features = 'SQLENGINE,AS' # Must be upper-case since Get-TargetResource returns upper-case.
+                                FailoverClusterGroupName = $mockDefaultInstance_FailoverClusterGroupName
+                                FailoverClusterIPAddress = $mockDefaultInstance_FailoverClusterIPAddress
+                                FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+                            }
+                    } -Verifiable
+
+                    $testClusterParameters = $testParameters.Clone()
+                    $testClusterParameters['Features'] = 'SQLEngine,AS'
+
+                    $testClusterParameters += @{
+                        FailoverClusterGroupName = $mockDefaultInstance_FailoverClusterGroupName
+                        FailoverClusterIPAddress = $mockDefaultInstance_FailoverClusterIPAddress
+                        FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+                    }
+
+                    $result = Test-TargetResource @testClusterParameters
                     $result | Should Be $true
                 }
             }
