@@ -32,6 +32,8 @@
     - Added tests for Connect-SQLAnalysis
     - Changed to localized error messages.
     - Minor changes to error handling.
+- Added new resource
+  - xSQLServerAlwaysOnAvailabilityGroupReplica
 
 ## 6.0.0.0
 

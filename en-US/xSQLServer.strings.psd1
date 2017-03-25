@@ -9,6 +9,8 @@ TODO = ToDo. Work not implemented at this time.
 UnexpectedErrorFromGet = Got unexpected result from Get-TargetResource. No change is made.
 FailedToImportSQLPSModule = Failed to import SQLPS module.
 NotConnectedToInstance = Was unable to connect to the instance '{0}\\{1}'
+AlterAvailabilityGroupFailed = Failed to alter the availability group '{0}'.
+HadrNotEnabled = HADR is not enabled.
 
 # SQLServer
 NoDatabase = Database '{0}' does not exist on SQL server '{1}\\{2}'.
@@ -64,15 +66,19 @@ FailoverClusterIPAddressNotValid = Unable to map the specified IP Address(es) to
 FailoverClusterResourceNotFound = Could not locate a SQL Server cluster resource for instance {0}.
 
 # AlwaysOnAvailabilityGroup
-AlterAvailabilityGroupFailed = Failed to alter the availability group '{0}'.
 AlterAvailabilityGroupReplicaFailed = Failed to alter the avilability group replica '{0}'.
 ClusterPermissionsMissing = The cluster does not have permissions to manage the Availability Group on '{0}\\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either 'NT SERVICE\\ClusSvc' or 'NT AUTHORITY\\SYSTEM'.
 CreateAvailabilityGroupReplicaFailed = Creating the Availability Group Replica failed.
 CreateAvailabilityGroupFailed = Creating the availability group '{0}' failed with the error '{1}'.
 DatabaseMirroringEndpointNotFound = No database mirroring endpoint was found on '{0}\{1}'.
-HadrNotEnabled = HADR is not enabled.
 InstanceNotPrimaryReplica = The instance '{0}' is not the primary replica for the availability group '{1}'.
 RemoveAvailabilityGroupFailed = Failed to remove the availabilty group '{0}' from the '{1}' instance.
+
+# AlwaysOnAvailabilityGroupReplica
+AvailabilityGroupNotFound = Unable to locate the availability group '{0}' on the instance '{1}'.
+JoinAvailabilityGroupFailed = Failed to join the availability group replica '{0}'.
+RemoveAvailabilityGroupReplicaFailed = Failed to remove the availability group replica '{0}' with the error '{1}'.
+ReplicaNotFound = Unable to find the availability group replica '{0}' on the instance '{1}'.
 
 # SQLServerHelper
 ExecuteQueryWithResultsFailed = Executing query with results failed on database '{0}'.
