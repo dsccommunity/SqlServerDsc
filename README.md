@@ -757,7 +757,7 @@ No description.
 
 #### Examples
 
-None.
+* [Enable TCP/IP on custom static port](/Examples/Resources/xSQLServerNetwork/1-EnableTcpIpOnCustomStaticPort.ps1)
 
 ### xSQLServerPermission
 
