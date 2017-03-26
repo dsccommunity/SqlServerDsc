@@ -1,6 +1,9 @@
 <#
-.EXAMPLE
-    This example shows how to install a named instance of SQL Server on a single server.
+    .EXAMPLE
+        This example shows how to install a named instance of SQL Server on a single server.
+    .NOTES
+        SQL Server setup.exe is run using the SYSTEM account. Even if SetupCredential is provided
+        it is not used to install SQL Server at this time (see issue #139).
 #>
 Configuration Example
 {
@@ -9,19 +12,19 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
-        [PsCredential]$SqlInstallCredential,
+        [PsCredential] $SqlInstallCredential,
 
         [Parameter()]
         [ValidateNotNullorEmpty()]
-        [PsCredential]$SqlAdministratorCredential = $SqlInstallCredential,
+        [PsCredential] $SqlAdministratorCredential = $SqlInstallCredential,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
-        [PsCredential]$SqlServiceCredential,
+        [PsCredential] $SqlServiceCredential,
 
         [Parameter()]
         [ValidateNotNullorEmpty()]
-        [PsCredential]$SqlAgentServiceCredential = $SqlServiceCredential
+        [PsCredential] $SqlAgentServiceCredential = $SqlServiceCredential
     )
 
     Import-DscResource -ModuleName xSQLServer
