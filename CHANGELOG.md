@@ -14,6 +14,8 @@
     - 1-InstallDefaultInstanceSingleServer.ps1
     - 2-InstallNamedInstanceSingleServer.ps1
     - 3-InstallNamedInstanceSingleServerFromUncPathUsingSourceCredential.ps1
+    - 4-InstallNamedInstanceInFailoverClusterFirstNode.ps1
+    - 5-InstallNamedInstanceInFailoverClusterSecondNode.ps1
 - Changes to xSQLServerDatabaseRole
   - Fixed code style, added updated parameter descriptions to schema.mof and README.md.
 - Changes to xSQLServer
