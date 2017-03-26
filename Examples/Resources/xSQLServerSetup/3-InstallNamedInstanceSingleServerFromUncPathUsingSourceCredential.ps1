@@ -2,9 +2,11 @@
     .EXAMPLE
         This example shows how to install a named instance of SQL Server on a single server, from an UNC path.
     .NOTES
-        For this to work the credentials assigned to SourceCredential must have read permission on the share and on the UNC path.
+        Assumes the credentials assigned to SourceCredential have read permission on the share and on the UNC path.
+        The media will be copied locally, using impersonation with the credentials provided in SourceCredential, so
+        that the SYSTEM account can access the media locally.
 
-        SQL Server setup.exe is run using the SYSTEM account. Even if SetupCredential is provided
+        SQL Server setup is run using the SYSTEM account. Even if SetupCredential is provided
         it is not used to install SQL Server at this time (see issue #139).
 #>
 Configuration Example
@@ -36,7 +38,7 @@ Configuration Example
         #region Install prerequisites for SQL Server
         WindowsFeature 'NetFramework35' {
            Name = 'NET-Framework-Core'
-           Source = $node.WindowsSourceSxs
+           Source = '\\fileserver.company.local\images$\Win2k12R2\Sources\Sxs' # Assumes Everyone has read permission
            Ensure = 'Present'
         }
 
@@ -46,6 +48,7 @@ Configuration Example
         }
         #endregion Install prerequisites for SQL Server
 
+        #region Install SQL Server
         xSQLServerSetup 'InstallNamedInstance-INST2016'
         {
             InstanceName = 'INST2016'
@@ -55,16 +58,22 @@ Configuration Example
             AgtSvcAccount = $SqlAgentServiceCredential
             ASSvcAccount = $SqlServiceCredential
             SQLSysAdminAccounts = 'COMPANY\SQL Administrators', $SqlAdministratorCredential.UserName
+            ASSysAdminAccounts = 'COMPANY\SQL Administrators', $SqlAdministratorCredential.UserName
             SetupCredential = $SqlInstallCredential
             InstallSharedDir = "C:\Program Files\Microsoft SQL Server"
             InstallSharedWOWDir = "C:\Program Files (x86)\Microsoft SQL Server"
             InstanceDir = "C:\Program Files\Microsoft SQL Server"
             InstallSQLDataDir = "C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data"
-            SQLUserDBDir = "C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data\User"
-            SQLUserDBLogDir = "C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data\User"
-            SQLTempDBDir = "C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data\Temp"
-            SQLTempDBLogDir = "C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data\Temp"
-            SQLBackupDir = "C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data\Backup"
+            SQLUserDBDir = "C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data"
+            SQLUserDBLogDir = "C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data"
+            SQLTempDBDir = "C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data"
+            SQLTempDBLogDir = "C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data"
+            SQLBackupDir = "C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Backup"
+            ASConfigDir = 'C:\MSOLAP13.INST2016\Config'
+            ASDataDir = 'C:\MSOLAP13.INST2016\Data'
+            ASLogDir = 'C:\MSOLAP13.INST2016\Log'
+            ASBackupDir = 'C:\MSOLAP13.INST2016\Backup'
+            ASTempDir = 'C:\MSOLAP13.INST2016\Temp'
             SourcePath = '\\fileserver.compant.local\images$\SQL2016RTM'
             SourceCredential = $SqlInstallCredential
             UpdateEnabled = 'False'
@@ -73,5 +82,6 @@ Configuration Example
 
             DependsOn = '[WindowsFeature]NetFramework35','[WindowsFeature]NetFramework45'
         }
+        #endregion Install SQL Server
     }
 }
