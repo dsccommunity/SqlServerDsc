@@ -804,7 +804,8 @@ No description.
 
 #### Examples
 
-None.
+* [Configure a instance as the distributor](/Examples/Resources/xSQLServerReplication/1-ConfigureInstanceAsDistributor.ps1)
+* [Configure a instance as the publisher](/Examples/Resources/xSQLServerReplication/2-ConfigureInstanceAsPublisher.ps1)
 
 ### xSQLServerRole
 
