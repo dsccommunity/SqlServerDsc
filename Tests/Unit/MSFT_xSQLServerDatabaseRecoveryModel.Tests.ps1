@@ -3,10 +3,10 @@ $script:DSCResourceName    = 'MSFT_xSQLServerDatabaseRecoveryModel'
 
 #region HEADER
 
-# Unit Test Template Version: 1.1.0
-[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+# Unit Test Template Version: 1.2.0
+$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-    (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
     & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
 }
@@ -16,221 +16,249 @@ Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:DSCModuleName `
     -DSCResourceName $script:DSCResourceName `
-    -TestType Unit 
+    -TestType Unit
 
 #endregion HEADER
+
+function Invoke-TestSetup {
+}
+
+function Invoke-TestCleanup {
+    Restore-TestEnvironment -TestEnvironment $TestEnvironment
+}
 
 # Begin Testing
 try
 {
-    #region Pester Test Initialization
+    Invoke-TestSetup
+    InModuleScope $script:DSCResourceName {
+        $mockSqlServerName                   = 'localhost'
+        $mockSqlServerInstanceName           = 'MSSQLSERVER'
+        $mockSqlDatabaseName                 = 'AdventureWorks'
+        $mockSqlDatabaseRecoveryModel        = 'Simple'
+        $mockInvalidOperationForAlterMethod  = $false
+        $mockExpectedRecoveryModel           = 'Simple'
 
-    # Loading mocked classes
-    Add-Type -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SMO.cs')
-
-    $nodeName = 'localhost'
-    $instanceName = 'MSSQLSERVER'
-
-    $defaultParameters = @{
-        SQLInstanceName = $instanceName
-        SQLServer = $nodeName
-    }
-
-    #endregion Pester Test Initialization
-
-    Describe "$($script:DSCResourceName)\Get-TargetResource" {
-        Mock -CommandName Connect-SQL -MockWith {
-            return New-Object Object | 
-                Add-Member ScriptProperty Databases {
-                    return @{
-                        'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') ) )
-                    }
-                } -PassThru -Force
-        } -ModuleName $script:DSCResourceName -Verifiable
-
-        Mock -CommandName Get-SqlDatabaseRecoveryModel -MockWith {
-            return 'Simple'
-        } -ModuleName $script:DSCResourceName -Verifiable
-
-        Context 'When the database does not exist' {
-            $testParameters = $defaultParameters
-            $testParameters += @{
-                Name = 'UnknownDatabase'
-                RecoveryModel = 'Full'
-            }
-
-            $result = Get-TargetResource @testParameters
-
-            It 'Should return null for RecoveryModel' {
-                $result.RecoveryModel | Should Be $null
-            }
-
-            It 'Should return the same values as passed as parameters' {
-                $result.SQLServer | Should Be $testParameters.SQLServer
-                $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                $result.Name | Should Be $testParameters.Name
-            }
-
-            It 'Should call the mock function Connect-SQL' {
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
-            }
-            It 'Should not call the mock function Get-SqlDatabaseRecoveryModel' {
-                Assert-MockCalled Get-SqlDatabaseRecoveryModel -Exactly -Times 0 -ModuleName $script:DSCResourceName -Scope Context
-            }
+        # Default parameters that are used for the It-blocks
+        $mockDefaultParameters = @{
+            SQLInstanceName = $mockSqlServerInstanceName
+            SQLServer       = $mockSqlServerName
         }
         
-        Context 'When the system is not in the desired state' {
-            $testParameters = $defaultParameters
-            $testParameters += @{
-                Name = 'AdventureWorks'
-                RecoveryModel = 'Full'
-            }
-
-            $result = Get-TargetResource @testParameters
-
-            It 'Should return wrong RecoveryModel' {
-                $result.RecoveryModel | Should Not Be $testParameters.RecoveryModel
-            }
-
-            It 'Should return the same values as passed as parameters' {
-                $result.SQLServer | Should Be $testParameters.SQLServer
-                $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                $result.Name | Should Be $testParameters.Name
-            }
-
-            It 'Should call the mock functions Connect-SQL and Get-SqlDatabaseRecoveryModel' {
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
-                Assert-MockCalled Get-SqlDatabaseRecoveryModel -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
-            }
+        #region Function mocks        
+        $mockConnectSQL = {
+            return @(
+                (
+                    New-Object Object |
+                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSqlServerInstanceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSqlServerName -PassThru |
+                        Add-Member -MemberType ScriptProperty -Name Databases -Value {
+                            return @{
+                                $mockSqlDatabaseName = ( New-Object Object | 
+                                    Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name RecoveryModel -Value $mockSqlDatabaseRecoveryModel -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name Alter -Value {
+                                        if ($mockInvalidOperationForAlterMethod)
+                                        {
+                                            throw 'Mock Alter Method was called with invalid operation.'
+                                        }
+                                        
+                                        if ( $this.RecoveryModel -ne $mockExpectedRecoveryModel )
+                                        {
+                                            throw "Called Alter Drop() method without setting the right recovery model. Expected '{0}'. But was '{1}'." `
+                                                  -f $mockExpectedRecoveryModel, $this.RecoveryModel
+                                        }
+                                    } -PassThru
+                                    )
+                                }
+                            } -PassThru -Force                                        
+                )
+            )
         }
-    
-        Context 'When the system is in the desired state for a database' {
-            $testParameters = $defaultParameters
-            $testParameters += @{
-                Name = 'AdventureWorks'
-                RecoveryModel = 'Simple'
-            }
-    
-            $result = Get-TargetResource @testParameters
+        #endregion
 
-            It 'Should return the correct RecoveryModel' {
-                $result.RecoveryModel | Should Be $testParameters.RecoveryModel
+        Describe "MSFT_xSQLServerDatabaseRecoveryModel\Get-TargetResource" -Tag 'Get'{
+            BeforeEach {
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
 
-            It 'Should return the same values as passed as parameters' {
-                $result.SQLServer | Should Be $testParameters.SQLServer
-                $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                $result.Name | Should Be $testParameters.Name
-            }
-
-            It 'Should call the mock functions Connect-SQL and Get-SqlDatabaseRecoveryModel' {
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
-                Assert-MockCalled Get-SqlDatabaseRecoveryModel -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
-            }
-        }
-
-        Assert-VerifiableMocks
-    }
-    
-    Describe "$($script:DSCResourceName)\Test-TargetResource" {
-        Mock -CommandName Connect-SQL -MockWith {
-            return New-Object Object | 
-                Add-Member ScriptProperty Databases {
-                    return @{
-                        'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') ) )
+            Context 'When passing values to parameters and database does not exist' {
+                It 'Should throw the correct error' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name        = 'UnknownDatabase'
+                        RecoveryModel = 'Full'
                     }
-                } -PassThru -Force
-        } -ModuleName $script:DSCResourceName -Verifiable
 
-        Mock -CommandName Get-SqlDatabaseRecoveryModel -MockWith {
-            return 'Simple'
-        } -ModuleName $script:DSCResourceName -Verifiable
+                    $throwInvalidOperation = ("Database 'UnknownDatabase' does not exist " + `
+                                              "on SQL server 'localhost\MSSQLSERVER'.")
 
-        Context 'When the system is not in the desired state' {
-            It 'Should return the state as false when desired recovery model is not correct' {
-                $testParameters = $defaultParameters
-                $testParameters += @{
-                    Name = 'AdventureWorks'
-                    RecoveryModel = 'Full'
+                    { Get-TargetResource @testParameters } | Should Throw $throwInvalidOperation
                 }
 
-                $result = Test-TargetResource @testParameters
-                $result | Should Be $false
-
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-            }                
-        }
-
-        Context 'When the system is in the desired state' {
-            It 'Should return the state as true when desired recovery model is correct' {
-                $testParameters = $defaultParameters
-                $testParameters += @{
-                    Name = 'AdventureWorks'
-                    RecoveryModel = 'Simple'
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
-
-                $result = Test-TargetResource @testParameters
-                $result | Should Be $true
-
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
             }
-        }
-
-        Assert-VerifiableMocks
-    }
-    
-    Describe "$($script:DSCResourceName)\Set-TargetResource" {
-        Mock -CommandName Connect-SQL -MockWith {
-            return New-Object Object | 
-                Add-Member ScriptProperty Databases {
-                    return @{
-                        'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') ) )
+               
+            Context 'When the system is not in the desired state' {
+                It 'Should return wrong RecoveryModel' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name = 'AdventureWorks'
+                        RecoveryModel = 'Full'
                     }
-                } -PassThru -Force
-        } -ModuleName $script:DSCResourceName -Verifiable
 
-        Context 'When desired database does not exist' {
-            It 'Should not call the mock function Set-SqlDatabaseRecoveryModel' {
-                $testParameters = $defaultParameters
-                $testParameters += @{
-                    Name = 'UnknownDatabase'
-                    RecoveryModel = 'Simple'
+                    $result = Get-TargetResource @testParameters
+                    $result.RecoveryModel | Should Not Be $testParameters.RecoveryModel
                 }
 
-                Mock -CommandName Set-SqlDatabaseRecoveryModel -MockWith {
-                    return Throw
-                } -ModuleName $script:DSCResourceName -Verifiable
-            
-                { Set-TargetResource @testParameters } | Should Not Throw
-            
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It         
-                Assert-MockCalled Set-SqlDatabaseRecoveryModel -Exactly -Times 0 -ModuleName $script:DSCResourceName -Scope It
+                It 'Should return the same values as passed as parameters' {
+                    $result.SQLServer | Should Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
+                    $result.Name | Should Be $testParameters.Name
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
             }
+    
+            Context 'When the system is in the desired state for a database' {
+                It 'Should return the correct RecoveryModel' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name = 'AdventureWorks'
+                        RecoveryModel = 'Simple'
+                    }
+    
+                    $result = Get-TargetResource @testParameters
+                    $result.RecoveryModel | Should Be $testParameters.RecoveryModel
+                }
+
+                It 'Should return the same values as passed as parameters' {
+                    $result.SQLServer | Should Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
+                    $result.Name | Should Be $testParameters.Name
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Assert-VerifiableMocks
         }
+    
+        Describe "MSFT_xSQLServerDatabaseRecoveryModel\Test-TargetResource" -Tag 'Test'{
+            BeforeEach {
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+            }
 
-        Context 'When the desired recovery model is not set' {
-            It 'Should call the function Set-SqlDatabaseRecoveryModel when desired recovery model should be present' {
-                $testParameters = $defaultParameters
-                $testParameters += @{
-                    Name = 'AdventureWorks'
-                    RecoveryModel = 'Simple'
+            Context 'When the system is not in the desired state' {
+                It 'Should return the state as false when desired recovery model is not correct' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name = 'AdventureWorks'
+                        RecoveryModel = 'Full'
+                    }
+
+                    $result = Test-TargetResource @testParameters
+                    $result | Should Be $false
+                }
+            
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }                
+            }
+
+            Context 'When the system is in the desired state' {
+                It 'Should return the state as true when desired recovery model is correct' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name = 'AdventureWorks'
+                        RecoveryModel = 'Simple'
+                    }
+
+                    $result = Test-TargetResource @testParameters
+                    $result | Should Be $true
                 }
 
-                Mock -CommandName Set-SqlDatabaseRecoveryModel -MockWith { } -ModuleName $script:DSCResourceName -Verifiable
-
-                Set-TargetResource @testParameters
-
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
-                Assert-MockCalled Set-SqlDatabaseRecoveryModel -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                } 
             }
+
+            Assert-VerifiableMocks
+        }
+    
+        Describe "MSFT_xSQLServerDatabaseRecoveryModel\Set-TargetResource" -Tag 'Set'{
+            BeforeEach {
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+            }
+
+            Context 'When the system is not in the desired state, and database does not exist' {
+                It 'Should throw the correct error' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name        = 'UnknownDatabase'
+                        RecoveryModel = 'Full'
+                    }
+
+                    $throwInvalidOperation = ("Database 'UnknownDatabase' does not exist " + `
+                                              "on SQL server 'localhost\MSSQLSERVER'.")
+
+                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the system is not in the desired state' {
+                It 'Should not throw when calling the alter method when desired recovery model should be set' {
+                    $mockExpectedRecoveryModel = 'Full'
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name = 'AdventureWorks'
+                        RecoveryModel = 'Full'
+                    }
+
+                    { Set-TargetResource @testParameters } | Should Not Throw
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                } 
+            }
+
+            Context 'When the system is not in the desired state' {
+                It 'Should throw when calling the alter method when desired recovery model should be set' {
+                    $mockInvalidOperationForAlterMethod  = $true
+                    $mockExpectedRecoveryModel = 'Full'
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name = 'AdventureWorks'
+                        RecoveryModel = 'Full'
+                    }
+
+                    $throwInvalidOperation = ('Exception calling "Alter" with "0" argument(s): ' + 
+                                              '"Mock Alter Method was called with invalid operation."')
+
+                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                } 
+            }
+        
+            Assert-VerifiableMocks
         }
     }
 }
 finally
 {
-    #region FOOTER
-
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment 
-
-    #endregion
+    Invoke-TestCleanup
 }

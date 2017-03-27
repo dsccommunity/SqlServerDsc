@@ -34,6 +34,8 @@
     - Minor changes to error handling.
 - Added new resource
   - xSQLServerAlwaysOnAvailabilityGroupReplica
+- Changes to xSQLServerDatabaseRecoveryModel
+  - Fixed code style, removed SQLServerDatabaseRecoveryModel functions from xSQLServerHelper.
 
 ## 6.0.0.0
 
