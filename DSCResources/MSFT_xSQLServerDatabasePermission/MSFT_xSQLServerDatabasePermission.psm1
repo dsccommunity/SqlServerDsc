@@ -40,7 +40,6 @@ function Get-TargetResource
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [ValidateSet('Grant','Deny')]
         [System.String]
         $PermissionState,
@@ -77,8 +76,7 @@ function Get-TargetResource
 
                 try 
                 {
-                    $databasePermissionInfo = $sqlDatabaseObject.EnumDatabasePermissions($Name)
-                    $databasePermissionInfo = $databasePermissionInfo | Where-Object -FilterScript {
+                    $databasePermissionInfo = $sqlDatabaseObject.EnumDatabasePermissions($Name) | Where-Object -FilterScript {
                         $_.PermissionState -eq $PermissionState
                     }
 
@@ -187,7 +185,6 @@ function Set-TargetResource
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [ValidateSet('Grant','Deny')]
         [System.String]
         $PermissionState,
@@ -252,10 +249,9 @@ function Set-TargetResource
                             $permissionSetIsTrue = $false                      
                         }
                     }
-                    
+
                     try
-                    {
-                        
+                    {                      
                         $permissionSet = New-Object -TypeName Microsoft.SqlServer.Management.Smo.DatabasePermissionSet
 
                         foreach ($permission in $permissions)
@@ -347,7 +343,6 @@ function Test-TargetResource
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [ValidateSet('Grant','Deny')]
         [System.String]
         $PermissionState,
