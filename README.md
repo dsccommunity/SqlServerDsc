@@ -493,7 +493,10 @@ No description.
 
 #### Examples
 
-None.
+* [Add connect permission to an Endpoint](/Examples/Resources/xSQLServerEndpointPermission/1-AddConnectPermission.ps1)
+* [Remove the connect permission for an Endpoint](/Examples/Resources/xSQLServerEndpointPermission/2-RemoveConnectPermission.ps1)
+* [Add connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/Examples/Resources/xSQLServerEndpointPermission/3-AddConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1)
+* [Remove connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/Examples/Resources/xSQLServerEndpointPermission/4-RemoveConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1)
 
 ### xSQLServerEndpointState
 
