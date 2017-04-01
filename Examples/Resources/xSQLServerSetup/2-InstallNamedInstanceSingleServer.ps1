@@ -12,19 +12,27 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
-        [PsCredential] $SqlInstallCredential,
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $SqlInstallCredential,
 
         [Parameter()]
         [ValidateNotNullorEmpty()]
-        [PsCredential] $SqlAdministratorCredential = $SqlInstallCredential,
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $SqlAdministratorCredential = $SqlInstallCredential,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
-        [PsCredential] $SqlServiceCredential,
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $SqlServiceCredential,
 
         [Parameter()]
         [ValidateNotNullorEmpty()]
-        [PsCredential] $SqlAgentServiceCredential = $SqlServiceCredential
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $SqlAgentServiceCredential = $SqlServiceCredential
     )
 
     Import-DscResource -ModuleName xSQLServer
@@ -34,7 +42,7 @@ Configuration Example
         #region Install prerequisites for SQL Server
         WindowsFeature 'NetFramework35' {
            Name = 'NET-Framework-Core'
-           Source = '\\fileserver.company.local\images$\Win2k12R2\Sources\Sxs' # Assumes Everyone has read permission
+           Source = '\\fileserver.company.local\images$\Win2k12R2\Sources\Sxs' # Assumes built-in Everyone has read permission to the share and path.
            Ensure = 'Present'
         }
 
@@ -56,15 +64,15 @@ Configuration Example
             SQLSysAdminAccounts = 'COMPANY\SQL Administrators', $SqlAdministratorCredential.UserName
             ASSysAdminAccounts = 'COMPANY\SQL Administrators', $SqlAdministratorCredential.UserName
             SetupCredential = $SqlInstallCredential
-            InstallSharedDir = "C:\Program Files\Microsoft SQL Server"
-            InstallSharedWOWDir = "C:\Program Files (x86)\Microsoft SQL Server"
-            InstanceDir = "C:\Program Files\Microsoft SQL Server"
-            InstallSQLDataDir = "C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data"
-            SQLUserDBDir = "C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data"
-            SQLUserDBLogDir = "C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data"
-            SQLTempDBDir = "C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data"
-            SQLTempDBLogDir = "C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data"
-            SQLBackupDir = "C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Backup"
+            InstallSharedDir = 'C:\Program Files\Microsoft SQL Server'
+            InstallSharedWOWDir = 'C:\Program Files (x86)\Microsoft SQL Server'
+            InstanceDir = 'C:\Program Files\Microsoft SQL Server'
+            InstallSQLDataDir = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
+            SQLUserDBDir = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
+            SQLUserDBLogDir = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
+            SQLTempDBDir = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
+            SQLTempDBLogDir = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
+            SQLBackupDir = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Backup'
             ASConfigDir = 'C:\MSOLAP13.INST2016\Config'
             ASDataDir = 'C:\MSOLAP13.INST2016\Data'
             ASLogDir = 'C:\MSOLAP13.INST2016\Log'

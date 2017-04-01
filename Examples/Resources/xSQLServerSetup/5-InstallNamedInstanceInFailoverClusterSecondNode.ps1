@@ -17,11 +17,11 @@
         The media will be copied locally, using impersonation with the credentials provided in SourceCredential, so
         that the impersonated credentials in SetupCredential can access the media locally.
 
-        Resource (Setup) cannot be run using PsDscRunAsCredential at this time (see issue #405 and issue #444). That
-        also means that PsDscRunAsCredential can not be used to access media on the UNC share at this time.
+        Setup cannot be run using PsDscRunAsCredential at this time (see issue #405 and issue #444). That
+        also means that at this time PsDscRunAsCredential can not be used to access media on the UNC share.
 
         There is currently a bug that prevents the resource to logon to the instance if the current node is not the
-        active node. This is beacuse the resource tries to logon using the SYSTEM account, instead of the credentials
+        active node. This is beacuse the resource tries to logon using the SYSTEM account instead of the credentials
         in SetupCredential, and the resource does not currently support the built-in PsDscRunAsCredential either (see
         issue #444).
 #>
@@ -32,19 +32,27 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
-        [PsCredential] $SqlInstallCredential,
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $SqlInstallCredential,
 
         [Parameter()]
         [ValidateNotNullorEmpty()]
-        [PsCredential] $SqlAdministratorCredential = $SqlInstallCredential,
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $SqlAdministratorCredential = $SqlInstallCredential,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
-        [PsCredential] $SqlServiceCredential,
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $SqlServiceCredential,
 
         [Parameter()]
         [ValidateNotNullorEmpty()]
-        [PsCredential] $SqlAgentServiceCredential = $SqlServiceCredential
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $SqlAgentServiceCredential = $SqlServiceCredential
     )
 
     Import-DscResource -ModuleName xSQLServer
@@ -54,7 +62,7 @@ Configuration Example
         #region Install prerequisites for SQL Server
         WindowsFeature 'NetFramework35' {
            Name = 'NET-Framework-Core'
-           Source = '\\fileserver.company.local\images$\Win2k12R2\Sources\Sxs' # Assumes Everyone has read permission
+           Source = '\\fileserver.company.local\images$\Win2k12R2\Sources\Sxs' # Assumes built-in Everyone has read permission to the share and path.
            Ensure = 'Present'
         }
 
