@@ -34,6 +34,9 @@
   - xSQLServerPermission
     - AddServerPermissionForLogin.ps1
     - RemoveServerPermissionForLogin.ps1
+  - xSQLServerEndpointState
+    - 1-MakeSureEndpointIsStarted.ps1
+    - 2-MakeSureEndpointIsStopped.ps1
 - Changes to xSQLServerDatabaseRole
   - Fixed code style, added updated parameter descriptions to schema.mof and README.md.
 - Changes to xSQLServer
