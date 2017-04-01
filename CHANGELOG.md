@@ -6,10 +6,16 @@
   - xSQLServerDatabaseRole
     - 1-AddDatabaseRole.ps1
     - 2-RemoveDatabaseRole.ps1
-  - xSQLServerRole, add examples:
+  - xSQLServerRole
     - 3-AddMembersToServerRole.ps1
     - 4-MembersToIncludeInServerRole.ps1
     - 5-MembersToExcludeInServerRole.ps1
+  - xSQLServerSetup
+    - 1-InstallDefaultInstanceSingleServer.ps1
+    - 2-InstallNamedInstanceSingleServer.ps1
+    - 3-InstallNamedInstanceSingleServerFromUncPathUsingSourceCredential.ps1
+    - 4-InstallNamedInstanceInFailoverClusterFirstNode.ps1
+    - 5-InstallNamedInstanceInFailoverClusterSecondNode.ps1
 - Changes to xSQLServerDatabaseRole
   - Fixed code style, added updated parameter descriptions to schema.mof and README.md.
 - Changes to xSQLServer
@@ -32,6 +38,9 @@
     - Added tests for Connect-SQLAnalysis
     - Changed to localized error messages.
     - Minor changes to error handling.
+  - This adds better support for Addnode (issue #369).
+  - Now it skips cluster validation för add node (issue #442).
+  - Now it ignores parameters that are not allowed for action Addnode (issue #441).
 - Added new resource
   - xSQLServerAlwaysOnAvailabilityGroupReplica
 - Changes to xSQLServerDatabaseRecoveryModel
