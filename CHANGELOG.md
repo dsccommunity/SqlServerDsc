@@ -31,6 +31,9 @@
     - 2-RemoveConnectPermission.ps1
     - 3-AddConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1
     - 4-RemoveConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1
+  - xSQLServerPermission
+    - AddServerPermissionForLogin.ps1
+    - RemoveServerPermissionForLogin.ps1
 - Changes to xSQLServerDatabaseRole
   - Fixed code style, added updated parameter descriptions to schema.mof and README.md.
 - Changes to xSQLServer

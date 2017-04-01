@@ -786,7 +786,8 @@ No description.
 
 #### Examples
 
-None.
+* [Add server permission for a login](/Examples/Resources/xSQLServerServerPermission/1-AddServerPermissionForLogin.ps1)
+* [Remove server permission for a login](/Examples/Resources/xSQLServerServerPermission/2-RemoveServerPermissionForLogin.ps1)
 
 ### xSQLServerReplication
 
