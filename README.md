@@ -520,7 +520,6 @@ No description.
 * [Make sure that an endpoint is started](/Examples/Resources/xSQLServerEndpointState/1-MakeSureEndpointIsStarted.ps1)
 * [Make sure that an endpoint is stopped](/Examples/Resources/xSQLServerEndpointState/2-MakeSureEndpointIsStopped.ps1)
 
-
 ### xSQLServerFailoverClusterSetup
 
 **This resource is deprecated.** The functionality of this resource has been merged with [xSQLServerSetup](#xsqlserversetup). Please do not use this resource for new development efforts.
