@@ -1017,7 +1017,7 @@ active node. This is beacuse the resource tries to logon using the SYSTEM accoun
 in SetupCredential, and the resource does not currently support the built-in PsDscRunAsCredential either (see
 issue #444).
 
-These issues are also documented in the example files [Install a named instance as the first node in SQL Server Failover Cluster](/Examples/Resources/xSQLServerSetup/4-InstallNamedInstanceInFailoverClusterFirstNode.ps1) and [Install a named instance as the second node in SQL Server Failover Cluster](/Examples/Resources/xSQLServerSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1)
+These issues are also documented in the example files [Install a named instance as the first node in SQL Server Failover Cluster](/Examples/Resources/xSQLServerSetup/4-InstallNamedInstanceInFailoverClusterFirstNode.ps1) and [Install a named instance as the second node in SQL Server Failover Cluster](/Examples/Resources/xSQLServerSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1).
 
 ### xWaitforAvailabilityGroup
 
