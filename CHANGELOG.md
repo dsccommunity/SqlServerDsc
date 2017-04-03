@@ -45,6 +45,9 @@
   - xSQLServerAlwaysOnAvailabilityGroupReplica
 - Changes to xSQLServerDatabaseRecoveryModel
   - Fixed code style, removed SQLServerDatabaseRecoveryModel functions from xSQLServerHelper.
+- Changes to xSQLServerAlwaysOnAvailabilityGroup
+  - Fixed the permissions check loop so that it exits the loop after the function determines the required permissions are in place.
+
 
 ## 6.0.0.0
 
