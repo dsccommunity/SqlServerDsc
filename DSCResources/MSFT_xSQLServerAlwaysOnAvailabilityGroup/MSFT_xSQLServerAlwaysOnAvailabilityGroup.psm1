@@ -259,7 +259,7 @@ function Set-TargetResource
 
             foreach ( $loginName in @( $clusterServiceName, $ntAuthoritySystemName ) )
             {
-                if ( $serverObject.Logins[$loginName] -and -not $clusterPermissionsPresent )
+                if ( $serverObject.Logins[$loginName] )
                 {
                     $testLoginEffectivePermissionsParams = @{
                         SQLServer = $SQLServer
@@ -270,7 +270,12 @@ function Set-TargetResource
                     
                     $clusterPermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
                     
-                    if ( -not $clusterPermissionsPresent )
+                    if ( $clusterPermissionsPresent )
+                    {
+                        # Exit the loop when the script verifies the required cluster permissions are present
+                        break
+                    }
+                    else
                     {
                         switch ( $loginName )
                         {
