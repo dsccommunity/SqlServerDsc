@@ -51,7 +51,7 @@
 - Changes to xSQLServerAvailabilityGroupListener
   - Removed the dependency of SQLPS provider (issue #460).
   - Cleaned up code.
-  - Cleaned up tests somewhat.
+  - Added test for more coverage.
   - Fixed PSSA rule warnings (issue #255).
   - Parameter Ensure now defaults to 'Present' (issue #450).
 
