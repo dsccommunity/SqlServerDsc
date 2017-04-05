@@ -345,7 +345,7 @@ function Get-TargetResource
                 $registryKeySharedWOWDir = 'C90BFAC020D87EA46811C836AD3C507F'
             }
 
-            '13'
+            { $_ -in ('13','14') }
             {
                 $registryKeySharedDir = 'FEE2E540D20152D4597229B6CFBC0A69'
                 $registryKeySharedWOWDir = 'A79497A344129F64CA7D69C56F5DD8B4'
@@ -821,12 +821,12 @@ function Set-TargetResource
         # Given that all the returned features are uppercase, make sure that the feature to search for is also uppercase
         $feature = $feature.ToUpper();
 
-        if (($sqlVersion -eq '13') -and (($feature -eq 'SSMS') -or ($feature -eq 'ADV_SSMS')))
+        if (($sqlVersion -in ('13','14')) -and ($feature -in ('ADV_SSMS','SSMS')))
         {
             Throw New-TerminatingError -ErrorType FeatureNotSupported -FormatArgs @($feature) -ErrorCategory InvalidData
         }
 
-        if (!($getTargetResourceResult.Features.Contains($feature)))
+        if (-not ($getTargetResourceResult.Features.Contains($feature)))
         {
             $featuresToInstall += "$feature,"
         }
@@ -843,6 +843,7 @@ function Set-TargetResource
             {
                 Set-Variable -Name 'InstallSharedDir' -Value ''
             }
+
             if((Get-Variable -Name 'InstallSharedWOWDir' -ErrorAction SilentlyContinue) -and (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\C90BFAC020D87EA46811C836AD3C507F' -ErrorAction SilentlyContinue))
             {
                 Set-Variable -Name 'InstallSharedWOWDir' -Value ''
@@ -855,6 +856,7 @@ function Set-TargetResource
             {
                 Set-Variable -Name 'InstallSharedDir' -Value ''
             }
+
             if((Get-Variable -Name 'InstallSharedWOWDir' -ErrorAction SilentlyContinue) -and (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\A79497A344129F64CA7D69C56F5DD8B4' -ErrorAction SilentlyContinue))
             {
                 Set-Variable -Name 'InstallSharedWOWDir' -Value ''
@@ -867,18 +869,20 @@ function Set-TargetResource
             {
                 Set-Variable -Name 'InstallSharedDir' -Value ''
             }
+
             if((Get-Variable -Name 'InstallSharedWOWDir' -ErrorAction SilentlyContinue) -and (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\C90BFAC020D87EA46811C836AD3C507F' -ErrorAction SilentlyContinue))
             {
                 Set-Variable -Name 'InstallSharedWOWDir' -Value ''
             }
         }
 
-        '13'
+        { $_ -in ('13','14') }
         {
             if((Get-Variable -Name 'InstallSharedDir' -ErrorAction SilentlyContinue) -and (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\FEE2E540D20152D4597229B6CFBC0A69' -ErrorAction SilentlyContinue))
             {
                 Set-Variable -Name 'InstallSharedDir' -Value ''
             }
+
             if((Get-Variable -Name 'InstallSharedWOWDir' -ErrorAction SilentlyContinue) -and (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\A79497A344129F64CA7D69C56F5DD8B4' -ErrorAction SilentlyContinue))
             {
                 Set-Variable -Name 'InstallSharedWOWDir' -Value ''
@@ -1285,7 +1289,7 @@ function Set-TargetResource
 
     if ($ForceReboot -or ($null -ne (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue)))
     {
-        if (!($SuppressReboot))
+        if (-not ($SuppressReboot))
         {
             $global:DSCMachineStatus = 1
         }
@@ -1295,7 +1299,7 @@ function Set-TargetResource
         }
     }
 
-    if (!(Test-TargetResource @PSBoundParameters))
+    if (-not (Test-TargetResource @PSBoundParameters))
     {
         throw New-TerminatingError -ErrorType TestFailedAfterSet -ErrorCategory InvalidResult
     }

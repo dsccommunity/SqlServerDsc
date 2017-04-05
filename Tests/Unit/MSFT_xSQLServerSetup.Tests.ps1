@@ -39,6 +39,7 @@ try
     InModuleScope $script:DSCResourceName {
         # Testing each supported SQL Server version
         $testProductVersion = @(
+            14, # SQL Server "2017"
             13, # SQL Server 2016
             12, # SQL Server 2014
             11, # SQL Server 2012
@@ -958,7 +959,8 @@ try
                             SourcePath = $mockSourcePath
                         }
 
-                        if ($mockSqlMajorVersion -eq 13) {
+                        if ($mockSqlMajorVersion -in (13,14))
+                        {
                             # Mock all SSMS products here to make sure we don't return any when testing SQL Server 2016
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
@@ -968,7 +970,9 @@ try
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                             } -MockWith $mockGetItemProperty_UninstallProducts -Verifiable
-                        } else {
+                        }
+                        else
+                        {
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -1070,7 +1074,8 @@ try
                             SourcePath = $mockSourcePathUNC
                         }
 
-                        if ($mockSqlMajorVersion -eq 13) {
+                        if ($mockSqlMajorVersion -in (13,14))
+                        {
                             # Mock all SSMS products here to make sure we don't return any when testing SQL Server 2016
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
@@ -1080,7 +1085,9 @@ try
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                             } -MockWith $mockGetItemProperty_UninstallProducts -Verifiable
-                        } else {
+                        }
+                        else
+                        {
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -1182,21 +1189,24 @@ try
                             SourcePath = $mockSourcePath
                         }
 
-                        if ($mockSqlMajorVersion -eq 10) {
+                        if ($mockSqlMajorVersion -eq 10)
+                        {
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber)
                             } -MockWith $mockGetItemProperty_UninstallProducts2008R2 -Verifiable
                         }
 
-                        if ($mockSqlMajorVersion -eq 11) {
+                        if ($mockSqlMajorVersion -eq 11)
+                        {
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber)
                             } -MockWith $mockGetItemProperty_UninstallProducts2012 -Verifiable
                         }
 
-                        if ($mockSqlMajorVersion -eq 12) {
+                        if ($mockSqlMajorVersion -eq 12)
+                        {
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
@@ -1259,10 +1269,12 @@ try
 
                     It 'Should return correct names of installed features' {
                         $result = Get-TargetResource @testParameters
-                        if ($mockSqlMajorVersion -eq 13)
+                        if ($mockSqlMajorVersion -in (13,14))
                         {
                             $result.Features | Should Be 'SQLENGINE,REPLICATION,FULLTEXT,RS,AS,IS'
-                        } else {
+                        }
+                        else
+                        {
                             $result.Features | Should Be 'SQLENGINE,REPLICATION,FULLTEXT,RS,AS,IS,SSMS,ADV_SSMS'
                         }
                     }
@@ -1278,21 +1290,24 @@ try
                             SourcePath = $mockSourcePath
                         }
 
-                        if ($mockSqlMajorVersion -eq 10) {
+                        if ($mockSqlMajorVersion -eq 10)
+                        {
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber)
                             } -MockWith $mockGetItemProperty_UninstallProducts2008R2 -Verifiable
                         }
 
-                        if ($mockSqlMajorVersion -eq 11) {
+                        if ($mockSqlMajorVersion -eq 11)
+                        {
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber)
                             } -MockWith $mockGetItemProperty_UninstallProducts2012 -Verifiable
                         }
 
-                        if ($mockSqlMajorVersion -eq 12) {
+                        if ($mockSqlMajorVersion -eq 12)
+                        {
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
@@ -1370,7 +1385,8 @@ try
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
                         } -Exactly -Times 1 -Scope It
 
-                        if ($mockSqlMajorVersion -eq 13) {
+                        if ($mockSqlMajorVersion -in (13,14))
+                        {
                             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -1379,7 +1395,9 @@ try
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                             } -Exactly -Times 0 -Scope It
-                        } else {
+                        }
+                        else
+                        {
                             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -1425,11 +1443,13 @@ try
 
                     It 'Should return correct names of installed features' {
                         $result = Get-TargetResource @testParameters
-                        if ($mockSqlMajorVersion -eq 13)
+                        if ($mockSqlMajorVersion -in (13,14))
                         {
                             $featuresForSqlServer2016 = (($mockDefaultParameters.Features.ToUpper()) -replace 'SSMS,','') -replace ',ADV_SSMS',''
                             $result.Features | Should Be $featuresForSqlServer2016
-                        } else {
+                        }
+                        else
+                        {
                             $result.Features | Should Be $mockDefaultParameters.Features.ToUpper()
                         }
                     }
@@ -1474,21 +1494,24 @@ try
                             SourcePath = $mockSourcePathUNC
                         }
 
-                        if ($mockSqlMajorVersion -eq 10) {
+                        if ($mockSqlMajorVersion -eq 10)
+                        {
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber)
                             } -MockWith $mockGetItemProperty_UninstallProducts2008R2 -Verifiable
                         }
 
-                        if ($mockSqlMajorVersion -eq 11) {
+                        if ($mockSqlMajorVersion -eq 11)
+                        {
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber)
                             } -MockWith $mockGetItemProperty_UninstallProducts2012 -Verifiable
                         }
 
-                        if ($mockSqlMajorVersion -eq 12) {
+                        if ($mockSqlMajorVersion -eq 12)
+                        {
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
@@ -1566,7 +1589,8 @@ try
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
                         } -Exactly -Times 1 -Scope It
 
-                        if ($mockSqlMajorVersion -eq 13) {
+                        if ($mockSqlMajorVersion -in (13,14))
+                        {
                             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -1575,7 +1599,9 @@ try
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                             } -Exactly -Times 0 -Scope It
-                        } else {
+                        }
+                        else
+                        {
                             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -1621,11 +1647,13 @@ try
 
                     It 'Should return correct names of installed features' {
                         $result = Get-TargetResource @testParameters
-                        if ($mockSqlMajorVersion -eq 13)
+                        if ($mockSqlMajorVersion -in (13,14))
                         {
                             $featuresForSqlServer2016 = (($mockDefaultParameters.Features.ToUpper()) -replace 'SSMS,','') -replace ',ADV_SSMS',''
                             $result.Features | Should Be $featuresForSqlServer2016
-                        } else {
+                        }
+                        else
+                        {
                             $result.Features | Should Be $mockDefaultParameters.Features.ToUpper()
                         }
                     }
@@ -1679,7 +1707,8 @@ try
                             SourcePath = $mockSourcePath
                         }
 
-                        if ($mockSqlMajorVersion -eq 13) {
+                        if ($mockSqlMajorVersion -in (13,14))
+                        {
                             # Mock this here to make sure we don't return any older components (<=2014) when testing SQL Server 2016
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
@@ -1689,7 +1718,9 @@ try
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                             } -MockWith $mockGetItemProperty_UninstallProducts -Verifiable
-                        } else {
+                        }
+                        else
+                        {
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -1787,21 +1818,24 @@ try
                             SourcePath = $mockSourcePath
                         }
 
-                        if ($mockSqlMajorVersion -eq 10) {
+                        if ($mockSqlMajorVersion -eq 10)
+                        {
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber)
                             } -MockWith $mockGetItemProperty_UninstallProducts2008R2 -Verifiable
                         }
 
-                        if ($mockSqlMajorVersion -eq 11) {
+                        if ($mockSqlMajorVersion -eq 11)
+                        {
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber)
                             } -MockWith $mockGetItemProperty_UninstallProducts2012 -Verifiable
                         }
 
-                        if ($mockSqlMajorVersion -eq 12) {
+                        if ($mockSqlMajorVersion -eq 12)
+                        {
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
@@ -1875,7 +1909,8 @@ try
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
                         } -Exactly -Times 1 -Scope It
 
-                        if ($mockSqlMajorVersion -eq 13) {
+                        if ($mockSqlMajorVersion -in (13,14))
+                        {
                             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -1884,7 +1919,9 @@ try
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
                             } -Exactly -Times 0 -Scope It
-                        } else {
+                        }
+                        else
+                        {
                             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -1930,11 +1967,13 @@ try
 
                     It 'Should return correct names of installed features' {
                         $result = Get-TargetResource @testParameters
-                        if ($mockSqlMajorVersion -eq 13)
+                        if ($mockSqlMajorVersion -in (13,14))
                         {
                             $featuresForSqlServer2016 = (($mockDefaultParameters.Features.ToUpper()) -replace 'SSMS,','') -replace ',ADV_SSMS',''
                             $result.Features | Should Be $featuresForSqlServer2016
-                        } else {
+                        }
+                        else
+                        {
                             $result.Features | Should Be $mockDefaultParameters.Features.ToUpper()
                         }
                     }
@@ -2787,7 +2826,7 @@ try
                             InstallSharedWOWDir = 'C:\Program Files (x86)\Microsoft SQL Server'
                         }
 
-                        if ( $mockSqlMajorVersion -eq 13 )
+                        if ( $mockSqlMajorVersion -in (13,14) )
                         {
                             $testParameters.Features = $testParameters.Features -replace ',SSMS,ADV_SSMS',''
                         }
@@ -2838,7 +2877,8 @@ try
                         Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
                     }
 
-                    if( $mockSqlMajorVersion -eq 13 ) {
+                    if( $mockSqlMajorVersion -in (13,14) )
+                    {
                         It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016' {
                             $testParameters = $mockDefaultParameters.Clone()
                             $testParameters += @{
@@ -2866,7 +2906,9 @@ try
 
                             { Set-TargetResource @testParameters } | Should Throw "'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
-                    } else {
+                    }
+                    else
+                    {
                         It 'Should set the system in the desired state when feature is SSMS' {
                             $testParameters = $mockDefaultParameters.Clone()
                             $testParameters += @{
@@ -2965,7 +3007,7 @@ try
                             SourcePath = $mockSourcePathUNC
                         }
 
-                        if ( $mockSqlMajorVersion -eq 13 )
+                        if ( $mockSqlMajorVersion -in (13,14) )
                         {
                             $testParameters.Features = $testParameters.Features -replace ',SSMS,ADV_SSMS',''
                         }
@@ -3045,7 +3087,8 @@ try
                         Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
                     }
 
-                    if( $mockSqlMajorVersion -eq 13 ) {
+                    if( $mockSqlMajorVersion -in (13,14) )
+                    {
                         It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016' {
                             $testParameters.Features = 'SSMS'
                             $mockStartWin32ProcessExpectedArgument = ''
@@ -3059,7 +3102,9 @@ try
 
                             { Set-TargetResource @testParameters } | Should Throw "'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
-                    } else {
+                    }
+                    else
+                    {
                         It 'Should set the system in the desired state when feature is SSMS' {
                             $testParameters.Features = 'SSMS'
 
@@ -3143,7 +3188,7 @@ try
                             SourcePath = $mockSourcePathUNCWithoutLeaf
                         }
 
-                        if ( $mockSqlMajorVersion -eq 13 )
+                        if ( $mockSqlMajorVersion -in (13,14) )
                         {
                             $testParameters.Features = $testParameters.Features -replace ',SSMS,ADV_SSMS',''
                         }
@@ -3209,7 +3254,8 @@ try
                         Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
                     }
 
-                    if( $mockSqlMajorVersion -eq 13 ) {
+                    if( $mockSqlMajorVersion -in (13,14) )
+                    {
                         It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016' {
                             $testParameters.Features = 'SSMS'
                             $mockStartWin32ProcessExpectedArgument = @{}
@@ -3223,7 +3269,9 @@ try
 
                             { Set-TargetResource @testParameters } | Should Throw "'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
-                    } else {
+                    }
+                    else
+                    {
                         It 'Should set the system in the desired state when feature is SSMS' {
                             $testParameters.Features = 'SSMS'
 
@@ -3316,7 +3364,7 @@ try
                             SourcePath = $mockSourcePath
                         }
 
-                        if ( $mockSqlMajorVersion -eq 13 )
+                        if ( $mockSqlMajorVersion -in (13,14) )
                         {
                             $testParameters.Features = $testParameters.Features -replace ',SSMS,ADV_SSMS',''
                         }
@@ -3372,7 +3420,8 @@ try
                         Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
                     }
 
-                    if( $mockSqlMajorVersion -eq 13 ) {
+                    if( $mockSqlMajorVersion -in (13,14) )
+                    {
                         It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016' {
                             $testParameters.Features = $($testParameters.Features), 'SSMS' -join ','
                             $mockStartWin32ProcessExpectedArgument = @{}
@@ -3386,7 +3435,9 @@ try
 
                             { Set-TargetResource @testParameters } | Should Throw "'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
-                    } else {
+                    }
+                    else
+                    {
                         It 'Should set the system in the desired state when feature is SSMS' {
                             $testParameters.Features = 'SSMS'
 
