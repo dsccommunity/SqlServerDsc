@@ -1281,6 +1281,7 @@ function Set-TargetResource
     {
         $processArguments.Add('Credential',$SetupCredential)
     }
+
     $process = StartWin32Process @processArguments
 
     New-VerboseMessage -Message $process

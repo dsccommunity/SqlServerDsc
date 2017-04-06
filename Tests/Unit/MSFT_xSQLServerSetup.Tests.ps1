@@ -3186,6 +3186,8 @@ try
                             InstanceName = $mockDefaultInstance_InstanceName
                             SourceCredential = $mockSetupCredential
                             SourcePath = $mockSourcePathUNCWithoutLeaf
+                            ForceReboot = $true
+                            SuppressReboot = $true
                         }
 
                         if ( $mockSqlMajorVersion -in (13,14) )
@@ -3362,6 +3364,7 @@ try
                             InstanceName = $mockNamedInstance_InstanceName
                             SourceCredential = $null
                             SourcePath = $mockSourcePath
+                            ForceReboot = $true
                         }
 
                         if ( $mockSqlMajorVersion -in (13,14) )
@@ -4433,6 +4436,18 @@ try
                         $result.$("$($serviceType)SVCACCOUNT") | Should BeExactly $mockDomainServiceAccount.UserName
                         $result.$("$($serviceType)SVCPASSWORD") | Should BeExactly $mockDomainServiceAccount.GetNetworkCredential().Password
                     }
+                }
+            }
+        }
+
+        Describe 'Get-TemporaryFolder' -Tag 'Helper' {
+            BeforeAll {
+                $mockExpectedTempPath = [IO.Path]::GetTempPath()
+            }
+
+            Context "When using Get-TemporaryFolder" {
+                It "Should return the correct temporary path." {
+                    Get-TemporaryFolder | Should BeExactly $mockExpectedTempPath
                 }
             }
         }
