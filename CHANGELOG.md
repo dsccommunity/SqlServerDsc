@@ -48,6 +48,12 @@
   - Fixed code style, removed SQLServerDatabaseRecoveryModel functions from xSQLServerHelper.
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
   - Fixed the permissions check loop so that it exits the loop after the function determines the required permissions are in place.
+- Changes to xSQLServerAvailabilityGroupListener
+  - Removed the dependency of SQLPS provider (issue #460).
+  - Cleaned up code.
+  - Added test for more coverage.
+  - Fixed PSSA rule warnings (issue #255).
+  - Parameter Ensure now defaults to 'Present' (issue #450).
 
 ## 6.0.0.0
 
