@@ -20,7 +20,7 @@ Configuration Example
         xSQLServerNetwork 'RDBMS'
         {
             InstanceName = 'MSSQLSERVER'
-            ProtocolName = "tcp"
+            ProtocolName = 'tcp'
             IsEnabled = $true
             TCPPort = 4509
             RestartService = $true

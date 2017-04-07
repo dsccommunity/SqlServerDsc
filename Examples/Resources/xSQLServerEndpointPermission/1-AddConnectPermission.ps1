@@ -24,12 +24,12 @@ Configuration Example
     {
         xSQLServerEndpointPermission SQLConfigureEndpointPermission
         {
-            Ensure = "Present"
+            Ensure = 'Present'
             NodeName = $Node.NodeName
             InstanceName = $Node.SqlInstanceName
-            Name = "DefaultMirrorEndpoint"
+            Name = 'DefaultMirrorEndpoint'
             Principal = $SqlServiceCredential.UserName
-            Permission = "CONNECT"
+            Permission = 'CONNECT'
 
             PsDscRunAsCredential = $SysAdminAccount
         }

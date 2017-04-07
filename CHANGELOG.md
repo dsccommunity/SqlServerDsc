@@ -32,11 +32,14 @@
     - 3-AddConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1
     - 4-RemoveConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1
   - xSQLServerPermission
-    - AddServerPermissionForLogin.ps1
-    - RemoveServerPermissionForLogin.ps1
+    - 1-AddServerPermissionForLogin.ps1
+    - 2-RemoveServerPermissionForLogin.ps1
   - xSQLServerEndpointState
     - 1-MakeSureEndpointIsStarted.ps1
     - 2-MakeSureEndpointIsStopped.ps1
+  - xSQLServerConfiguration
+    - 1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1
+    - 2-ConfigureInstanceToEnablePriorityBoost.ps1
 - Changes to xSQLServerDatabaseRole
   - Fixed code style, added updated parameter descriptions to schema.mof and README.md.
 - Changes to xSQLServer

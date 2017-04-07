@@ -7,18 +7,18 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName= "*"
-            SqlInstanceName = "MSSQLSERVER"
+            NodeName= '*'
+            SqlInstanceName = 'MSSQLSERVER'
         },
 
         @{
             NodeName = 'SQLNODE01.company.local'
-            Role = "PrimaryReplica"
+            Role = 'PrimaryReplica'
         },
 
         @{
             NodeName = 'SQLNODE02.company.local'
-            Role = "SecondaryReplica"
+            Role = 'SecondaryReplica'
         }
     )
 }
@@ -45,65 +45,65 @@ Configuration Example
 
     Import-DscResource -ModuleName xSQLServer
 
-    node $AllNodes.Where{$_.Role -eq "PrimaryReplica" }.NodeName
+    node $AllNodes.Where{$_.Role -eq 'PrimaryReplica' }.NodeName
     {
         xSQLServerEndpointPermission RemoveSQLConfigureEndpointPermissionPrimary
         {
-           Ensure = "Absent"
+           Ensure = 'Absent'
            NodeName = $Node.NodeName
            InstanceName = $Node.SqlInstanceName
-           Name = "DefaultMirrorEndpoint"
+           Name = 'DefaultMirrorEndpoint'
            Principal = $SqlServiceCredentialNode2.UserName
-           Permission = "CONNECT"
+           Permission = 'CONNECT'
 
            PsDscRunAsCredential = $SqlAdministratorCredential
 
-           DependsOn = "[xSQLServerEndpointPermission]SQLConfigureEndpointPermissionPrimary"
+           DependsOn = '[xSQLServerEndpointPermission]SQLConfigureEndpointPermissionPrimary'
         }
 
         xSQLServerEndpointPermission RemoveSQLConfigureEndpointPermissionSecondary
         {
-           Ensure = "Absent"
+           Ensure = 'Absent'
            NodeName = $Node.NodeName
            InstanceName = $Node.SqlInstanceName
-           Name = "DefaultMirrorEndpoint"
+           Name = 'DefaultMirrorEndpoint'
            Principal = $SqlServiceCredentialNode2.UserName
-           Permission = "CONNECT"
+           Permission = 'CONNECT'
 
            PsDscRunAsCredential = $SqlAdministratorCredential
 
-           DependsOn = "[xSQLServerEndpointPermission]SQLConfigureEndpointPermissionSecondary"
+           DependsOn = '[xSQLServerEndpointPermission]SQLConfigureEndpointPermissionSecondary'
         }
    }
 
-    Node $AllNodes.Where{ $_.Role -eq "SecondaryReplica" }.NodeName
+    Node $AllNodes.Where{ $_.Role -eq 'SecondaryReplica' }.NodeName
     {
         xSQLServerEndpointPermission RemoveSQLConfigureEndpointPermissionPrimary
         {
-           Ensure = "Absent"
+           Ensure = 'Absent'
            NodeName = $Node.NodeName
            InstanceName = $Node.SqlInstanceName
-           Name = "DefaultMirrorEndpoint"
+           Name = 'DefaultMirrorEndpoint'
            Principal = $SqlServiceCredentialNode2.UserName
-           Permission = "CONNECT"
+           Permission = 'CONNECT'
 
            PsDscRunAsCredential = $SqlAdministratorCredential
 
-           DependsOn = "[xSQLServerEndpointPermission]SQLConfigureEndpointPermissionPrimary"
+           DependsOn = '[xSQLServerEndpointPermission]SQLConfigureEndpointPermissionPrimary'
         }
 
         xSQLServerEndpointPermission RemoveSQLConfigureEndpointPermissionSecondary
         {
-           Ensure = "Absent"
+           Ensure = 'Absent'
            NodeName = $Node.NodeName
            InstanceName = $Node.SqlInstanceName
-           Name = "DefaultMirrorEndpoint"
+           Name = 'DefaultMirrorEndpoint'
            Principal = $SqlServiceCredentialNode2.UserName
-           Permission = "CONNECT"
+           Permission = 'CONNECT'
 
            PsDscRunAsCredential = $SqlAdministratorCredential
 
-           DependsOn = "[xSQLServerEndpointPermission]SQLConfigureEndpointPermissionSecondary"
+           DependsOn = '[xSQLServerEndpointPermission]SQLConfigureEndpointPermissionSecondary'
         }
     }
 }
