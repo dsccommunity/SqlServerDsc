@@ -200,20 +200,20 @@ This resource is used to create, remove, and update an Always On Availability Gr
 
 #### Parameters
 
-* **Name** _(Key)_: The name of the availability group.
-* **SQLServer** _(Required)_: Hostname of the SQL Server to be configured.
-* **SQLInstanceName** _(Key)_: Name of the SQL instance to be configued.
-* **Ensure** _(Write)_: Specifies if the availability group should be present or absent. Default is Present. { *Present* | Absent }
-* **AutomatedBackupPreference** _(Write)_: Specifies the automated backup preference for the availability group. Default is None. { Primary | SecondaryOnly | Secondary | *None* }
-* **AvailabilityMode** _(Write)_: Specifies the replica availability mode. Default is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
-* **BackupPriority** _(Write)_: Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are: integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. Default is 50.
-* **BasicAvailabilityGroup** _(Write)_: Specifies the type of availability group is Basic. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions.
-* **ConnectionModeInPrimaryRole** _(Write)_: Specifies how the availability replica handles connections when in the primary role. { AllowAllConnections | AllowReadWriteConnections }
-* **ConnectionModeInSecondaryRole** _(Write)_: Specifies how the availability replica handles connections when in the secondary role. { AllowNoConnections | AllowReadIntentConnectionsOnly | AllowAllConnections }
-* **EndpointHostName** _(Write)_: Specifies the hostname or IP address of the availability group replica endpoint. Default is the instance network name.
-* **FailureConditionLevel** _(Write)_: Specifies the automatic failover behavior of the availability group. { OnServerDown | OnServerUnresponsive | OnCriticalServerErrors | OnModerateServerErrors | OnAnyQualifiedFailureCondition }
-* **FailoverMode** _(Write)_: Specifies the failover mode. Default is 'Manual'. { Automatic | *Manual* }
-* **HealthCheckTimeout** _(Write)_: Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. Default is 30000.
+* **[String] Name** _(Key)_: The name of the availability group.
+* **[String] SQLServer** _(Required)_: Hostname of the SQL Server to be configured.
+* **[String] SQLInstanceName** _(Key)_: Name of the SQL instance to be configued.
+* **[String] Ensure** _(Write)_: Specifies if the availability group should be present or absent. Default is Present. { *Present* | Absent }
+* **[String] AutomatedBackupPreference** _(Write)_: Specifies the automated backup preference for the availability group. Default is None. { Primary | SecondaryOnly | Secondary | *None* }
+* **[String] AvailabilityMode** _(Write)_: Specifies the replica availability mode. Default is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
+* **[Uint32] BackupPriority** _(Write)_: Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are: integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. Default is 50.
+* **[Boolean] BasicAvailabilityGroup** _(Write)_: Specifies the type of availability group is Basic. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions.
+* **[String] ConnectionModeInPrimaryRole** _(Write)_: Specifies how the availability replica handles connections when in the primary role. { AllowAllConnections | AllowReadWriteConnections }
+* **[String] ConnectionModeInSecondaryRole** _(Write)_: Specifies how the availability replica handles connections when in the secondary role. { AllowNoConnections | AllowReadIntentConnectionsOnly | AllowAllConnections }
+* **[String] EndpointHostName** _(Write)_: Specifies the hostname or IP address of the availability group replica endpoint. Default is the instance network name.
+* **[String] FailureConditionLevel** _(Write)_: Specifies the automatic failover behavior of the availability group. { OnServerDown | OnServerUnresponsive | OnCriticalServerErrors | OnModerateServerErrors | OnAnyQualifiedFailureCondition }
+* **[String] FailoverMode** _(Write)_: Specifies the failover mode. Default is 'Manual'. { Automatic | *Manual* }
+* **[Uint32] HealthCheckTimeout** _(Write)_: Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. Default is 30000.
 
 #### Examples
 
@@ -232,21 +232,21 @@ This resource is used to create, remove, and update an Always On Availability Gr
 
 #### Parameters
 
-* **Name** _(Key)_: The name of the availability group replica.
-* **AvailabilityGroupName** _(Key)_: The name of the availability group.
-* **SQLServer** _(Required)_: Hostname of the SQL Server to be configured.
-* **SQLInstanceName** _(Key)_: Name of the SQL instance to be configued.
-* **PrimaryReplicaSQLServer** _(Write)_: Hostname of the SQL Server where the primary replica is expected to be active. If the primary replica is not found here, the resource will attempt to find the host that holds the primary replica and connect to it.
-* **PrimaryReplicaSQLInstanceName** _(Write)_: Name of the SQL instance where the primary replica lives.
-* **Ensure** _(Write)_: Specifies if the availability group replica should be present or absent. Default is Present. { *Present* | Absent }
-* **AvailabilityMode** _(Write)_: Specifies the replica availability mode. Default is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
-* **BackupPriority** _(Write)_: Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are: integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. Default is 50.
-* **ConnectionModeInPrimaryRole** _(Write)_: Specifies how the availability replica handles connections when in the primary role. { AllowAllConnections | AllowReadWriteConnections }
-* **ConnectionModeInSecondaryRole** _(Write)_: Specifies how the availability replica handles connections when in the secondary role. { AllowNoConnections | AllowReadIntentConnectionsOnly | AllowAllConnections }
-* **EndpointHostName** _(Write)_: Specifies the hostname or IP address of the availability group replica endpoint. Default is the instance network name.
-* **FailoverMode** _(Write)_: Specifies the failover mode. Default is 'Manual'. { Automatic | *Manual* }
-* **ReadOnlyRoutingConnectionUrl** _(Write)_: Specifies the fully-qualified domain name (FQDN) and port to use when routing to the replica for read only connections.
-* **ReadOnlyRoutingList** _(Write)_: Specifies an ordered list of replica server names that represent the probe sequence for connection director to use when redirecting read-only connections through this availability replica. This parameter applies if the availability replica is the current primary replica of the availability group.
+* **[String] Name** _(Key)_: The name of the availability group replica.
+* **[String] AvailabilityGroupName** _(Key)_: The name of the availability group.
+* **[String] SQLServer** _(Required)_: Hostname of the SQL Server to be configured.
+* **[String] SQLInstanceName** _(Key)_: Name of the SQL instance to be configued.
+* **[String] PrimaryReplicaSQLServer** _(Write)_: Hostname of the SQL Server where the primary replica is expected to be active. If the primary replica is not found here, the resource will attempt to find the host that holds the primary replica and connect to it.
+* **[String] PrimaryReplicaSQLInstanceName** _(Write)_: Name of the SQL instance where the primary replica lives.
+* **[String] Ensure** _(Write)_: Specifies if the availability group replica should be present or absent. Default is Present. { *Present* | Absent }
+* **[String] AvailabilityMode** _(Write)_: Specifies the replica availability mode. Default is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
+* **[Uint32] BackupPriority** _(Write)_: Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are: integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. Default is 50.
+* **[String] ConnectionModeInPrimaryRole** _(Write)_: Specifies how the availability replica handles connections when in the primary role. { AllowAllConnections | AllowReadWriteConnections }
+* **[String] ConnectionModeInSecondaryRole** _(Write)_: Specifies how the availability replica handles connections when in the secondary role. { AllowNoConnections | AllowReadIntentConnectionsOnly | AllowAllConnections }
+* **[String] EndpointHostName** _(Write)_: Specifies the hostname or IP address of the availability group replica endpoint. Default is the instance network name.
+* **[String] FailoverMode** _(Write)_: Specifies the failover mode. Default is 'Manual'. { Automatic | *Manual* }
+* **[String] ReadOnlyRoutingConnectionUrl** _(Write)_: Specifies the fully-qualified domain name (FQDN) and port to use when routing to the replica for read only connections.
+* **[String[]] ReadOnlyRoutingList** _(Write)_: Specifies an ordered list of replica server names that represent the probe sequence for connection director to use when redirecting read-only connections through this availability replica. This parameter applies if the availability replica is the current primary replica of the availability group.
 
 #### Read-Only Properties from Get-TargetResource
 
@@ -305,6 +305,8 @@ No description.
 * [Adds an Availablity Group listner with a different name than the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
 * [Removes an Availablity Group listner with the same name as the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1)
 * [Removes an Availablity Group listner with a different name than the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
+* [Adds an Availablity Group listner using DHCP on the default server subnet](/Examples/Resources/xSQLServerAvailabilityGroupListener/5-AddAvailabilityGroupListenerUsingDHCPWithDefaultServerSubnet.ps1)
+* [Adds an Availablity Group listner using DHCP with a specific subnet](/Examples/Resources/xSQLServerAvailabilityGroupListener/6-AddAvailabilityGroupListenerUsingDHCPWithSpecificSubnet.ps1)
 
 ### xSQLServerConfiguration
 
