@@ -301,7 +301,10 @@ No description.
 
 #### Examples
 
-None.
+* [Adds an Availablity Group listner with the same name as the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1)
+* [Adds an Availablity Group listner with a different name than the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
+* [Removes an Availablity Group listner with the same name as the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1)
+* [Removes an Availablity Group listner with a different name than the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
 
 ### xSQLServerConfiguration
 
@@ -323,7 +326,8 @@ No description.
 
 #### Examples
 
-None.
+* [Configure two instances on the same server to have CLR enabled](/Examples/Resources/xSQLServerConfiguration/1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1)
+* [Configure a instance to have 'Priority Boost' enabled](/Examples/Resources/xSQLServerConfiguration/2-ConfigureInstanceToEnablePriorityBoost.ps1)
 
 ### xSQLServerDatabase
 
@@ -489,7 +493,10 @@ No description.
 
 #### Examples
 
-None.
+* [Add connect permission to an Endpoint](/Examples/Resources/xSQLServerEndpointPermission/1-AddConnectPermission.ps1)
+* [Remove the connect permission for an Endpoint](/Examples/Resources/xSQLServerEndpointPermission/2-RemoveConnectPermission.ps1)
+* [Add connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/Examples/Resources/xSQLServerEndpointPermission/3-AddConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1)
+* [Remove connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/Examples/Resources/xSQLServerEndpointPermission/4-RemoveConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1)
 
 ### xSQLServerEndpointState
 
@@ -510,7 +517,8 @@ No description.
 
 #### Examples
 
-None.
+* [Make sure that an endpoint is started](/Examples/Resources/xSQLServerEndpointState/1-MakeSureEndpointIsStarted.ps1)
+* [Make sure that an endpoint is stopped](/Examples/Resources/xSQLServerEndpointState/2-MakeSureEndpointIsStopped.ps1)
 
 ### xSQLServerFailoverClusterSetup
 
@@ -757,7 +765,7 @@ No description.
 
 #### Examples
 
-None.
+* [Enable TCP/IP on custom static port](/Examples/Resources/xSQLServerNetwork/1-EnableTcpIpOnCustomStaticPort.ps1)
 
 ### xSQLServerPermission
 
@@ -779,7 +787,8 @@ No description.
 
 #### Examples
 
-None.
+* [Add server permission for a login](/Examples/Resources/xSQLServerPermission/1-AddServerPermissionForLogin.ps1)
+* [Remove server permission for a login](/Examples/Resources/xSQLServerPermission/2-RemoveServerPermissionForLogin.ps1)
 
 ### xSQLServerReplication
 
@@ -804,7 +813,8 @@ No description.
 
 #### Examples
 
-None.
+* [Configure a instance as the distributor](/Examples/Resources/xSQLServerReplication/1-ConfigureInstanceAsDistributor.ps1)
+* [Configure a instance as the publisher](/Examples/Resources/xSQLServerReplication/2-ConfigureInstanceAsPublisher.ps1)
 
 ### xSQLServerRole
 

@@ -16,6 +16,30 @@
     - 3-InstallNamedInstanceSingleServerFromUncPathUsingSourceCredential.ps1
     - 4-InstallNamedInstanceInFailoverClusterFirstNode.ps1
     - 5-InstallNamedInstanceInFailoverClusterSecondNode.ps1
+  - xSQLServerReplication
+    - 1-ConfigureInstanceAsDistributor.ps1
+    - 2-ConfigureInstanceAsPublisher.ps1
+  - xSQLServerNetwork
+    - 1-EnableTcpIpOnCustomStaticPort.ps1
+  - xSQLServerAvailabilityGroupListener
+    - 1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1
+    - 2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1
+    - 3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1
+    - 4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1
+  - xSQLServerEndpointPermission
+    - 1-AddConnectPermission.ps1
+    - 2-RemoveConnectPermission.ps1
+    - 3-AddConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1
+    - 4-RemoveConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1
+  - xSQLServerPermission
+    - 1-AddServerPermissionForLogin.ps1
+    - 2-RemoveServerPermissionForLogin.ps1
+  - xSQLServerEndpointState
+    - 1-MakeSureEndpointIsStarted.ps1
+    - 2-MakeSureEndpointIsStopped.ps1
+  - xSQLServerConfiguration
+    - 1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1
+    - 2-ConfigureInstanceToEnablePriorityBoost.ps1
 - Changes to xSQLServerDatabaseRole
   - Fixed code style, added updated parameter descriptions to schema.mof and README.md.
 - Changes to xSQLServer
