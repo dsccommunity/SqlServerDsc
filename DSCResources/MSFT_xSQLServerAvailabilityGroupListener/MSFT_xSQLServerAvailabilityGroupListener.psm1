@@ -202,7 +202,7 @@ function Set-TargetResource
                     }
                     else
                     {
-                        New-VerboseMessage -Message "Listener using DHCP with server default subnet"
+                        New-VerboseMessage -Message 'Listener using DHCP with server default subnet'
                     }
 
                     New-SqlAvailabilityGroupListener @newListenerParams -ErrorAction Stop | Out-Null
@@ -248,7 +248,7 @@ function Set-TargetResource
             {
                 if (-not $DHCP -and $availabilityGroupListenerState.IpAddress.Count -lt $IpAddress.Count) # Only able to add a new IP-address, not change existing ones.
                 {
-                    New-VerboseMessage -Message "Found at least one new IP-address."
+                    New-VerboseMessage -Message 'Found at least one new IP-address.'
                     $ipAddressEqual = $false
                 }
                 else
@@ -279,11 +279,11 @@ function Set-TargetResource
                     {
                         if ($availabilityGroupListenerState.Port -ne $Port -or -not $ipAddressEqual)
                         {
-                            New-VerboseMessage -Message "Listener differ in configuration."
+                            New-VerboseMessage -Message 'Listener differ in configuration.'
 
                             if ($availabilityGroupListenerState.Port -ne $Port)
                             {
-                                New-VerboseMessage -Message "Changing port configuration"
+                                New-VerboseMessage -Message 'Changing port configuration'
 
                                 $setListenerParams = @{
                                     InputObject = $availabilityGroupListenerObject
@@ -295,7 +295,7 @@ function Set-TargetResource
 
                             if (-not $ipAddressEqual)
                             {
-                                New-VerboseMessage -Message "Adding IP-address(es)"
+                                New-VerboseMessage -Message 'Adding IP-address(es)'
 
                                 $InstanceName = Get-SQLPSInstanceName -InstanceName $InstanceName
 
@@ -319,7 +319,7 @@ function Set-TargetResource
                         }
                         else
                         {
-                            New-VerboseMessage -Message "Listener configuration is already correct."
+                            New-VerboseMessage -Message 'Listener configuration is already correct.'
                         }
                     }
                     else
