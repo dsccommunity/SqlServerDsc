@@ -26,6 +26,8 @@
     - 2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1
     - 3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1
     - 4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1
+    - 5-AddAvailabilityGroupListenerUsingDHCPWithDefaultServerSubnet.ps1
+    - 6-AddAvailabilityGroupListenerUsingDHCPWithSpecificSubnet.ps1
   - xSQLServerEndpointPermission
     - 1-AddConnectPermission.ps1
     - 2-RemoveConnectPermission.ps1
