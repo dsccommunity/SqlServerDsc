@@ -63,7 +63,6 @@ Configuration Example
             EndPointName = 'HADR'
             Ensure = 'Present'
             Port = 5022
-            AuthorizedUser = 'sa'
             SQLServer = $Node.NodeName
             SQLInstanceName = $Node.SQLInstanceName
             PsDscRunAsCredential = $SysAdminAccount

@@ -450,7 +450,9 @@ Read more about database role in this article [CREATE ROLE (Transact-SQL)](https
 
 ### xSQLServerEndpoint
 
-No description.
+This resource is used to create an endpoint. Currently it only supports creating a database mirror endpoint which can be used by, for example, AlwaysOn.
+
+>Note: The endpoint will be started after creation, but will not be enforced. Please use xSQLServerEndpointState to make sure the endpoint remains in started state.
 
 #### Requirements
 
@@ -463,12 +465,12 @@ No description.
 
 #### Parameters
 
-* **[String] EndPointName** _(Key)_: Name for endpoint to be created on SQL Server
-* **[String] Ensure** _(Write)_: An enumerated value that describes if endpoint is to be present or absent on SQL Server. { Present | Absent }.
-* **[Uint32] Port** _(Write)_: Port Endpoint should listen on
-* **[String] AuthorizedUser** _(Write)_:  User who should have connect ability to endpoint
-* **[String] SQLServer** _(Write)_: The SQL Server for the database
-* **[String] SQLInstance** _(Write)_: The SQL instance for the database
+* **[String] EndpointName** _(Key)_: The name of the endpoint.
+* **[String] Ensure** _(Write)_: If the endpoint should be present or absent. Default values is 'Present'. { *Present* | Absent }.
+* **[Uint16] Port** _(Write)_: The network port the endpoint is listening on. Default value is 5022.
+* **[String] SQLServer** _(Write)_: The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+* **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **[String] IpAddress** _(Write)_: The network IP address the endpoint is listening on. Default the endpoint will listen on any valid IP address.
 
 #### Examples
 
