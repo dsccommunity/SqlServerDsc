@@ -1,7 +1,22 @@
 ﻿Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
                                -ChildPath 'xSQLServerHelper.psm1') `
                                -Force
+<#
+    .SYNOPSIS
+        Returns the current state of the permissions for the principal (login).
 
+    .PARAMETER InstanceName
+        The name of the SQL instance to be configured.
+
+    .PARAMETER NodeName
+        The host name of the SQL Server to be configured.
+
+    .PARAMETER Name
+        The name of the endpoint.
+
+    .PARAMETER Principal
+        The login to which permission will be set.
+#>
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -68,6 +83,28 @@ function Get-TargetResource
     }
 }
 
+<#
+    .SYNOPSIS
+        Grants or revokes the permission for the the principal (login).
+
+    .PARAMETER InstanceName
+        The name of the SQL instance to be configured.
+
+    .PARAMETER NodeName
+        The host name of the SQL Server to be configured.
+
+    .PARAMETER Ensure
+        If the permission should be present or absent. Default value is 'Present'.
+
+    .PARAMETER Name
+        The name of the endpoint.
+
+    .PARAMETER Permission
+        The login to which permission will be set.
+
+    .PARAMETER Principal
+        The permission to set for the login.
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
@@ -147,6 +184,28 @@ function Set-TargetResource
     }
 }
 
+<#
+    .SYNOPSIS
+        Tests if the principal (login) has the desired permissions.
+
+    .PARAMETER InstanceName
+        The name of the SQL instance to be configured.
+
+    .PARAMETER NodeName
+        The host name of the SQL Server to be configured.
+
+    .PARAMETER Ensure
+        If the permission should be present or absent. Default value is 'Present'.
+
+    .PARAMETER Name
+        The name of the endpoint.
+
+    .PARAMETER Permission
+        The login to which permission will be set.
+
+    .PARAMETER Principal
+        The permission to set for the login.
+#>
 function Test-TargetResource
 {
     [CmdletBinding()]
