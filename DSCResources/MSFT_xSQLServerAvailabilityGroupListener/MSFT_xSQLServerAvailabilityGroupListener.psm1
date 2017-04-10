@@ -297,8 +297,6 @@ function Set-TargetResource
                             {
                                 New-VerboseMessage -Message 'Adding IP-address(es)'
 
-                                $InstanceName = Get-SQLPSInstanceName -InstanceName $InstanceName
-
                                 $newIpAddress = @()
 
                                 foreach ($currentIpAddress in $IpAddress)
