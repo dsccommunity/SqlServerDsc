@@ -80,6 +80,8 @@
   - Added test for more coverage.
   - Fixed PSSA rule warnings (issue #255).
   - Parameter Ensure now defaults to 'Present' (issue #450).
+- Changes to xSQLServerFirewall
+  - Now it will correctly create rules when the resource is used for two or more instances on the same server (issue #461).
 
 ## 6.0.0.0
 
