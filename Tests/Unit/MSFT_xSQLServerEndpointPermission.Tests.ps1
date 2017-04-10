@@ -223,7 +223,7 @@ try
             Assert-VerifiableMocks
         }
 
-        Describe 'MSFT_xSQLServerEndpointPermission\Set-TargetResource' {
+        Describe 'MSFT_xSQLServerEndpointPermission\Set-TargetResource' -Tag 'Set' {
             BeforeEach {
                 $testParameters = $defaultParameters
 
