@@ -85,6 +85,9 @@
 - Changes to xSQLServerEndpointPermission
   - Added description to the README.md
   - Cleaned up code (issue #257 and issue #231)
+  - Now the default value for Ensure is 'Present'.
+  - Removed dependency of SQLPS provider (issue #483).
+  - Refactored tests so they use less code.
 
 ## 6.0.0.0
 

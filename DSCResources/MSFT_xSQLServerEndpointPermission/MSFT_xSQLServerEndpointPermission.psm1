@@ -27,15 +27,16 @@ function Get-TargetResource
 
     try
     {
-        $endpoint = Get-SQLAlwaysOnEndpoint -Name $Name -NodeName $NodeName -InstanceName $InstanceName -Verbose:$VerbosePreference
+        $sqlServerObject = Connect-SQL -SQLServer $NodeName -SQLInstanceName $InstanceName
 
-        if( $null -ne $endpoint )
+        $endpointObject = $sqlServerObject.Endpoints[$Name]
+        if( $null -ne $endpointObject )
         {
-            New-VerboseMessage -Message "Enumerating permissions for Endpoint $Name"
+            New-VerboseMessage -Message "Enumerating permissions for endpoint $Name"
 
             $permissionSet = New-Object -Property @{ Connect = $True } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
 
-            $endpointPermission = $endpoint.EnumObjectPermissions( $permissionSet ) | Where-Object { $_.PermissionState -eq "Grant" -and $_.Grantee -eq $Principal }
+            $endpointPermission = $endpointObject.EnumObjectPermissions( $permissionSet ) | Where-Object { $_.PermissionState -eq "Grant" -and $_.Grantee -eq $Principal }
             if ($endpointPermission.Count -ne 0)
             {
                 $Ensure = 'Present'
@@ -83,7 +84,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateSet('Present','Absent')]
         [System.String]
-        $Ensure,
+        $Ensure = 'Present',
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -111,8 +112,10 @@ function Set-TargetResource
     {
         if ($getTargetResourceResult.Ensure -ne $Ensure)
         {
-            $endpoint = Get-SQLAlwaysOnEndpoint -Name $Name -NodeName $NodeName -InstanceName $InstanceName -Verbose:$VerbosePreference
-            if ($null -ne $endpoint)
+            $sqlServerObject = Connect-SQL -SQLServer $NodeName -SQLInstanceName $InstanceName
+
+            $endpointObject = $sqlServerObject.Endpoints[$Name]
+            if ($null -ne $endpointObject)
             {
                 $permissionSet = New-Object -Property @{ Connect = $True } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
 
@@ -120,12 +123,12 @@ function Set-TargetResource
                 {
                     New-VerboseMessage -Message "Grant permission to $Principal on endpoint $Name"
 
-                    $endpoint.Grant($permissionSet, $Principal)
+                    $endpointObject.Grant($permissionSet, $Principal)
                 }
                 else
                 {
                     New-VerboseMessage -Message "Revoke permission to $Principal on endpoint $Name"
-                    $endpoint.Revoke($permissionSet, $Principal)
+                    $endpointObject.Revoke($permissionSet, $Principal)
                 }
             }
             else
@@ -161,7 +164,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateSet('Present','Absent')]
         [System.String]
-        $Ensure,
+        $Ensure = 'Present',
 
         [Parameter(Mandatory = $true)]
         [System.String]
