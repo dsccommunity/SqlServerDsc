@@ -97,8 +97,6 @@
   - Parameter Port now has a default value of 5022.
   - Parameter Ensure now defaults to 'Present'.
   - Resource now supports changing IP address and changing port.
-- Changes to xSQLServerEndpointPermission
-  - Added description to the README.md
 
 ## 6.0.0.0
 

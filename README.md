@@ -454,6 +454,8 @@ This resource is used to create an endpoint. Currently it only supports creating
 
 >Note: The endpoint will be started after creation, but will not be enforced. Please use xSQLServerEndpointState to make sure the endpoint remains in started state.
 
+>Note: To set connect permission to the endpoint, please use the resource xSQLServerEndpointPermission.
+
 #### Requirements
 
 * Target machine must be running Windows Server 2008 R2 or later.
@@ -478,7 +480,7 @@ None.
 
 ### xSQLServerEndpointPermission
 
-This resource is used to give connect permission to an endpoint for a user (login).
+No description.
 
 #### Requirements
 
