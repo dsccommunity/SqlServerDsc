@@ -84,6 +84,7 @@
   - Now it will correctly create rules when the resource is used for two or more instances on the same server (issue #461).
 - Changes to xSQLServerEndpointPermission
   - Added description to the README.md
+  - Cleaned up code (issue #257 and issue #231)
 
 ## 6.0.0.0
 

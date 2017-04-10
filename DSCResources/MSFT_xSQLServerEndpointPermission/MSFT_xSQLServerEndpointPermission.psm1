@@ -1,7 +1,6 @@
-﻿$ErrorActionPreference = "Stop"
-
-$script:currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -ErrorAction Stop
+﻿Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
+                               -ChildPath 'xSQLServerHelper.psm1') `
+                               -Force
 
 function Get-TargetResource
 {
@@ -11,7 +10,7 @@ function Get-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $InstanceName = "DEFAULT",
+        $InstanceName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -26,30 +25,39 @@ function Get-TargetResource
         $Principal
     )
 
-    try {
+    try
+    {
         $endpoint = Get-SQLAlwaysOnEndpoint -Name $Name -NodeName $NodeName -InstanceName $InstanceName -Verbose:$VerbosePreference
-        
-        if( $null -ne $endpoint ) {
+
+        if( $null -ne $endpoint )
+        {
             New-VerboseMessage -Message "Enumerating permissions for Endpoint $Name"
 
             $permissionSet = New-Object -Property @{ Connect = $True } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
 
             $endpointPermission = $endpoint.EnumObjectPermissions( $permissionSet ) | Where-Object { $_.PermissionState -eq "Grant" -and $_.Grantee -eq $Principal }
-            if( $endpointPermission.Count -ne 0 ) {
-                $Ensure = "Present"
-                $Permission = "CONNECT"
-            } else {
-                $Ensure = "Absent"
-                $Permission = ""
+            if ($endpointPermission.Count -ne 0)
+            {
+                $Ensure = 'Present'
+                $Permission = 'CONNECT'
             }
-        } else {
+            else
+            {
+                $Ensure = 'Absent'
+                $Permission = ''
+            }
+        }
+        else
+        {
             throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($Name) -ErrorCategory ObjectNotFound
         }
-    } catch {
+    }
+    catch
+    {
         throw New-TerminatingError -ErrorType EndpointErrorVerifyExist -FormatArgs @($Name) -ErrorCategory ObjectNotFound -InnerException $_.Exception
     }
 
-    $returnValue = @{
+    return @{
         InstanceName = [System.String] $InstanceName
         NodeName = [System.String] $NodeName
         Ensure = [System.String] $Ensure
@@ -57,24 +65,23 @@ function Get-TargetResource
         Principal = [System.String] $Principal
         Permission = [System.String] $Permission
     }
-
-    return $returnValue
 }
 
 function Set-TargetResource
 {
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding()]
     param
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $InstanceName = "DEFAULT",
+        $InstanceName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName,
 
-        [ValidateSet("Present","Absent")]
+        [Parameter()]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure,
 
@@ -86,7 +93,8 @@ function Set-TargetResource
         [System.String]
         $Principal,
 
-        [ValidateSet("CONNECT")]
+        [Parameter()]
+        [ValidateSet('CONNECT')]
         [System.String]
         $Permission
     )
@@ -97,30 +105,41 @@ function Set-TargetResource
         Name = [System.String] $Name
         Principal = [System.String] $Principal
     }
-    
-    $endPointPermissionState = Get-TargetResource @parameters 
-    if( $null -ne $endPointPermissionState ) {
-        if( $endPointPermissionState.Ensure -ne $Ensure ) {
+
+    $getTargetResourceResult = Get-TargetResource @parameters
+    if ($null -ne $getTargetResourceResult)
+    {
+        if ($getTargetResourceResult.Ensure -ne $Ensure)
+        {
             $endpoint = Get-SQLAlwaysOnEndpoint -Name $Name -NodeName $NodeName -InstanceName $InstanceName -Verbose:$VerbosePreference
-            if( $null -ne $endpoint ) {
+            if ($null -ne $endpoint)
+            {
                 $permissionSet = New-Object -Property @{ Connect = $True } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
-                
-                if( $Ensure -eq "Present") {
-                    if( ( $PSCmdlet.ShouldProcess( $Name, "Grant permission to $Principal on Endpoint" ) ) ) {
-                        $endpoint.Grant($permissionSet, $Principal )
-                    }
-                } else {
-                    if( ( $PSCmdlet.ShouldProcess( $Name, "Revoke permission to $Principal on Endpoint" ) ) ) {
-                        $endpoint.Revoke($permissionSet, $Principal )
-                    }
+
+                if ($Ensure -eq 'Present')
+                {
+                    New-VerboseMessage -Message "Grant permission to $Principal on endpoint $Name"
+
+                    $endpoint.Grant($permissionSet, $Principal)
                 }
-            } else {
+                else
+                {
+                    New-VerboseMessage -Message "Revoke permission to $Principal on endpoint $Name"
+                    $endpoint.Revoke($permissionSet, $Principal)
+                }
+            }
+            else
+            {
                 throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($Name) -ErrorCategory ObjectNotFound
             }
-        } else {
+        }
+        else
+        {
             New-VerboseMessage -Message "State is already $Ensure"
         }
-    } else {
+    }
+    else
+    {
         throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
     }
 }
@@ -133,13 +152,14 @@ function Test-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $InstanceName = "DEFAULT",
+        $InstanceName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName,
 
-        [ValidateSet("Present","Absent")]
+        [Parameter()]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure,
 
@@ -151,7 +171,8 @@ function Test-TargetResource
         [System.String]
         $Principal,
 
-        [ValidateSet("CONNECT")]
+        [Parameter()]
+        [ValidateSet('CONNECT')]
         [System.String]
         $Permission
     )
@@ -162,20 +183,16 @@ function Test-TargetResource
         Name = [System.String] $Name
         Principal = [System.String] $Principal
     }
-    
+
     New-VerboseMessage -Message "Testing state of endpoint permission for $Principal"
 
-    $endPointPermissionState = Get-TargetResource @parameters 
-    if( $null -ne $endPointPermissionState ) {
-        [System.Boolean] $result = $false
-        if( $endPointPermissionState.Ensure -eq $Ensure) {
-            $result = $true
-        }
-    } else {
+    $getTargetResourceResult = Get-TargetResource @parameters
+    if ($null -eq $getTargetResourceResult)
+    {
         throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
     }
 
-    return $result
+    return $getTargetResourceResult.Ensure -eq $Ensure
 }
 
 Export-ModuleMember -Function *-TargetResource
