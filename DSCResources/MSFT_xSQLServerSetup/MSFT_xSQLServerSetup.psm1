@@ -372,6 +372,20 @@ function Get-TargetResource
         Write-Verbose -Message $script:localizedData.ClientToolsSdkFeatureNotFound
     }
 
+    # Check if MDS sub component is configured for this server
+    New-VerboseMessage -Message "Detecting MDS feature (HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState)"
+    $isMDSInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState" -ErrorAction SilentlyContinue).MDSCoreFeature
+    New-VerboseMessage -Message "MDS Value: $isMDSInstalled"
+    if ($isMDSInstalled -eq 1)
+    {
+        New-VerboseMessage -Message 'MDS feature detected'
+        $features += 'MDS,'
+    }
+    else
+    {
+        New-VerboseMessage -Message 'MDS feature not detected'
+    }
+
     $registryUninstallPath = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall'
 
     # Verify if SQL Server Management Studio 2008 or SQL Server Management Studio 2008 R2 (major version 10) is installed
