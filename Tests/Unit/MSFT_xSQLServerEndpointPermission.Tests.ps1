@@ -278,6 +278,18 @@ try
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
                 }
+
+                $mockDynamicEndpointName = 'UnknownEndPoint'
+
+                Context 'When endpoint is missing' {
+                    It 'Should throw the correct error message' {
+                        { Set-TargetResource @testParameters } | Should Throw 'No change is made. InnerException: Endpoint 'DefaultEndpointMirror' does not exist'
+
+                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                $mockDynamicEndpointName = $mockEndpointName
             }
 
             Context 'When the system is in the desired state' {
@@ -314,18 +326,6 @@ try
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
-
-                $mockDynamicEndpointName = 'UnknownEndPoint'
-
-                Context 'When endpoint is missing' {
-                    It 'Should throw the correct error message' {
-                        { Get-TargetResource @testParameters } | Should Throw 'No change is made. InnerException: Endpoint 'DefaultEndpointMirror' does not exist'
-
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
-                    }
-                }
-
-                $mockDynamicEndpointName = $mockEndpointName
             }
 
             Assert-VerifiableMocks
