@@ -283,7 +283,13 @@ try
 
                 Context 'When endpoint is missing' {
                     It 'Should throw the correct error message' {
-                        { Set-TargetResource @testParameters } | Should Throw 'No change is made. InnerException: Endpoint 'DefaultEndpointMirror' does not exist'
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Ensure = 'Absent'
+                            }
+                        } -Verifiable
+
+                        { Set-TargetResource @testParameters } | Should Throw 'Endpoint 'DefaultEndpointMirror' does not exist'
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
