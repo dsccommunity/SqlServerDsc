@@ -41,6 +41,8 @@ try
         $mockOtherPrincipal = 'COMPANY\OtherAcct'
         $mockEndpointName = 'DefaultEndpointMirror'
 
+        $mockDynamicEndpointName = $mockEndpointName
+
         $script:mockMethodGrantRan = $false
         $script:mockMethodRevokeRan = $false
 
@@ -50,7 +52,7 @@ try
                     return @(
                         @{
                             # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
-                            'DefaultEndpointMirror' = New-Object Object |
+                            $mockDynamicEndpointName = New-Object Object |
                                                         Add-Member NoteProperty Name $mockEndpointName -PassThru |
                                                         Add-Member ScriptMethod EnumObjectPermissions {
                                                             param($permissionSet)
@@ -121,6 +123,18 @@ try
                     $result = Get-TargetResource @testParameters
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
+
+                $mockDynamicEndpointName = 'UnknownEndPoint'
+
+                Context 'When endpoint is missing' {
+                    It 'Should throw the correct error message' {
+                        { Get-TargetResource @testParameters } | Should Throw 'Got unexpected result from Get-TargetResource. No change is made. InnerException: Endpoint 'DefaultEndpointMirror' does not exist'
+
+                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                $mockDynamicEndpointName = $mockEndpointName
             }
 
             $mockDynamicPrincipal = $mockPrincipal
@@ -300,6 +314,18 @@ try
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
+
+                $mockDynamicEndpointName = 'UnknownEndPoint'
+
+                Context 'When endpoint is missing' {
+                    It 'Should throw the correct error message' {
+                        { Get-TargetResource @testParameters } | Should Throw 'No change is made. InnerException: Endpoint 'DefaultEndpointMirror' does not exist'
+
+                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                $mockDynamicEndpointName = $mockEndpointName
             }
 
             Assert-VerifiableMocks

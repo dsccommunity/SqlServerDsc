@@ -70,7 +70,7 @@ function Get-TargetResource
     }
     catch
     {
-        throw New-TerminatingError -ErrorType EndpointErrorVerifyExist -FormatArgs @($Name) -ErrorCategory ObjectNotFound -InnerException $_.Exception
+        throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -FormatArgs @($Name) -ErrorCategory ObjectNotFound -InnerException $_.Exception
     }
 
     return @{
@@ -145,42 +145,35 @@ function Set-TargetResource
     }
 
     $getTargetResourceResult = Get-TargetResource @parameters
-    if ($null -ne $getTargetResourceResult)
+    if ($getTargetResourceResult.Ensure -ne $Ensure)
     {
-        if ($getTargetResourceResult.Ensure -ne $Ensure)
+        $sqlServerObject = Connect-SQL -SQLServer $NodeName -SQLInstanceName $InstanceName
+
+        $endpointObject = $sqlServerObject.Endpoints[$Name]
+        if ($null -ne $endpointObject)
         {
-            $sqlServerObject = Connect-SQL -SQLServer $NodeName -SQLInstanceName $InstanceName
+            $permissionSet = New-Object -Property @{ Connect = $True } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
 
-            $endpointObject = $sqlServerObject.Endpoints[$Name]
-            if ($null -ne $endpointObject)
+            if ($Ensure -eq 'Present')
             {
-                $permissionSet = New-Object -Property @{ Connect = $True } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
+                New-VerboseMessage -Message "Grant permission to $Principal on endpoint $Name"
 
-                if ($Ensure -eq 'Present')
-                {
-                    New-VerboseMessage -Message "Grant permission to $Principal on endpoint $Name"
-
-                    $endpointObject.Grant($permissionSet, $Principal)
-                }
-                else
-                {
-                    New-VerboseMessage -Message "Revoke permission to $Principal on endpoint $Name"
-                    $endpointObject.Revoke($permissionSet, $Principal)
-                }
+                $endpointObject.Grant($permissionSet, $Principal)
             }
             else
             {
-                throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($Name) -ErrorCategory ObjectNotFound
+                New-VerboseMessage -Message "Revoke permission to $Principal on endpoint $Name"
+                $endpointObject.Revoke($permissionSet, $Principal)
             }
         }
         else
         {
-            New-VerboseMessage -Message "State is already $Ensure"
+            throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($Name) -ErrorCategory ObjectNotFound
         }
     }
     else
     {
-        throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
+        New-VerboseMessage -Message "State is already $Ensure"
     }
 }
 
@@ -249,10 +242,6 @@ function Test-TargetResource
     New-VerboseMessage -Message "Testing state of endpoint permission for $Principal"
 
     $getTargetResourceResult = Get-TargetResource @parameters
-    if ($null -eq $getTargetResourceResult)
-    {
-        throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
-    }
 
     return $getTargetResourceResult.Ensure -eq $Ensure
 }
