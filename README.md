@@ -452,9 +452,9 @@ Read more about database role in this article [CREATE ROLE (Transact-SQL)](https
 
 This resource is used to create an endpoint. Currently it only supports creating a database mirror endpoint which can be used by, for example, AlwaysOn.
 
->Note: The endpoint will be started after creation, but will not be enforced. Please use xSQLServerEndpointState to make sure the endpoint remains in started state.
-
->Note: To set connect permission to the endpoint, please use the resource xSQLServerEndpointPermission.
+>Note:
+>The endpoint will be started after creation, but will not be enforced. Please use [**xSQLServerEndpointState**](#xsqlserverendpointstate) to make sure the endpoint remains in started state.
+>To set connect permission to the endpoint, please use the resource [**xSQLServerEndpointPermission**](#xsqlserverendpointpermission).
 
 #### Requirements
 
