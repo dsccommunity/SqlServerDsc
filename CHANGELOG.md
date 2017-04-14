@@ -42,6 +42,10 @@
   - xSQLServerConfiguration
     - 1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1
     - 2-ConfigureInstanceToEnablePriorityBoost.ps1
+  - xSQLServerEndpoint
+    - 1-CreateEndpointWithDefaultValues.ps1
+    - 2-CreateEndpointWithSpecificPortAndIPAddress.ps1
+    - 3-RemoveEndpoint.ps1
 - Changes to xSQLServerDatabaseRole
   - Fixed code style, added updated parameter descriptions to schema.mof and README.md.
 - Changes to xSQLServer
@@ -98,6 +102,7 @@
   - Parameter Ensure now defaults to 'Present'.
   - Resource now supports changing IP address and changing port.
   - Added unit tests (issue #289)
+  - Added examples.
 
 ## 6.0.0.0
 
