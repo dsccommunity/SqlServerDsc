@@ -97,6 +97,7 @@
   - Parameter Port now has a default value of 5022.
   - Parameter Ensure now defaults to 'Present'.
   - Resource now supports changing IP address and changing port.
+  - Added unit tests (issue #289)
 
 ## 6.0.0.0
 
