@@ -50,6 +50,13 @@ function Get-TargetResource
             $getTargetResourceReturnValues.Port = $endpointObject.Protocol.Tcp.ListenerPort
             $getTargetResourceReturnValues.IpAddress = $endpointObject.Protocol.Tcp.ListenerIPAddress
         }
+        else
+        {
+            $getTargetResourceReturnValues.Ensure = 'Absent'
+            $getTargetResourceReturnValues.EndpointName = ''
+            $getTargetResourceReturnValues.Port = ''
+            $getTargetResourceReturnValues.IpAddress = ''
+        }
     }
     else
     {
@@ -101,7 +108,7 @@ function Set-TargetResource
         {
             Write-Verbose -Message ('Creating endpoint {0}.' -f $EndpointName)
 
-            $endpointObject = New-Object -typename Microsoft.SqlServer.Management.Smo.Endpoint -ArgumentList $sqlServerObject, $EndpointName
+            $endpointObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Endpoint -ArgumentList $sqlServerObject, $EndpointName
             $endpointObject.EndpointType = [Microsoft.SqlServer.Management.Smo.EndpointType]::DatabaseMirroring
             $endpointObject.ProtocolType = [Microsoft.SqlServer.Management.Smo.ProtocolType]::Tcp
             $endpointObject.Protocol.Tcp.ListenerPort = $Port
@@ -122,15 +129,19 @@ function Set-TargetResource
                 {
                     Write-Verbose -Message ('Updating endpoint {0} IP address to {1}.' -f $EndpointName, $IpAddress)
                     $endpointObject.Protocol.Tcp.ListenerIPAddress = $IpAddress
+                    $endpointObject.Alter()
                 }
 
                 if ($endpointObject.Protocol.Tcp.ListenerPort -ne $Port)
                 {
                     Write-Verbose -Message ('Updating endpoint {0} port to {1}.' -f $EndpointName, $Port)
                     $endpointObject.Protocol.Tcp.ListenerPort = $Port
+                    $endpointObject.Alter()
                 }
-
-                $endpointObject.Alter()
+            }
+            else
+            {
+                throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($EndpointName) -ErrorCategory ObjectNotFound
             }
         }
         elseif ($Ensure -eq 'Absent' -and $getTargetResourceResult.Ensure -eq 'Present')
@@ -141,6 +152,10 @@ function Set-TargetResource
             if ($endpointObject)
             {
                 $endpointObject.Drop()
+            }
+            else
+            {
+                throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($EndpointName) -ErrorCategory ObjectNotFound
             }
         }
     }

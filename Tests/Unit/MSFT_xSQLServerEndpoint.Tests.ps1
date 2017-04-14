@@ -22,7 +22,7 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 function Invoke-TestSetup {
     # Loading mocked classes
-    #Add-Type -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SMO.cs')
+    Add-Type -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SMO.cs')
 }
 
 function Invoke-TestCleanup {
@@ -40,63 +40,119 @@ try
         $mockPrincipal = 'COMPANY\SqlServiceAcct'
         $mockOtherPrincipal = 'COMPANY\OtherAcct'
         $mockEndpointName = 'DefaultEndpointMirror'
+        $mockEndpointType = 'DatabaseMirroring'
+        $mockEndpointListenerPort = 5022
+        $mockEndpointListenerIpAddress = '0.0.0.0'  # 0.0.0.0 means listen on all IP addresses.
 
-        $script:mockMethodGrantRan = $false
-        $script:mockMethodRevokeRan = $false
+        $mockOtherEndpointName = 'UnknownEndpoint'
+        $mockOtherEndpointType = 'UnknownType'
+        $mockOtherEndpointListenerPort = 9001
+        $mockOtherEndpointListenerIpAddress = '192.168.0.20'
+
+        $script:mockMethodAlterRan = $false
+        $script:mockMethodCreateRan = $false
+        $script:mockMethodDropRan = $false
+        $script:mockMethodStartRan = $false
+
+        $mockDynamicEndpointName = $mockEndpointName
+        $mockDynamicEndpointType = $mockEndpointType
+        $mockDynamicEndpointListenerPort = $mockEndpointListenerPort
+        $mockDynamicEndpointListenerIpAddress = $mockEndpointListenerIpAddress
+
+        $mockEndPointObject = {
+            # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
+            return New-Object Object |
+                Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDynamicEndpointName -PassThru |
+                Add-Member -MemberType NoteProperty -Name 'EndpointType' -Value $mockDynamicEndpointType -PassThru |
+                Add-Member -MemberType NoteProperty -Name 'ProtocolType' -Value $null -PassThru |
+                Add-Member -MemberType ScriptProperty -Name 'Protocol' {
+                    return New-Object Object |
+                        Add-Member -MemberType ScriptProperty -Name 'Tcp' {
+                            return New-Object Object |
+                                Add-Member -MemberType NoteProperty -Name 'ListenerPort' -Value $mockDynamicEndpointListenerPort -PassThru |
+                                Add-Member -MemberType NoteProperty -Name 'ListenerIPAddress' -Value $mockDynamicEndpointListenerIpAddress -PassThru -Force
+                        } -PassThru -Force
+                } -PassThru |
+                Add-Member -MemberType ScriptProperty -Name 'Payload' {
+                    return New-Object Object |
+                        Add-Member -MemberType ScriptProperty -Name 'DatabaseMirroring' {
+                            return New-Object Object |
+                                Add-Member -MemberType NoteProperty -Name 'ServerMirroringRole' -Value $null -PassThru |
+                                Add-Member -MemberType NoteProperty -Name 'EndpointEncryption' -Value $null -PassThru |
+                                Add-Member -MemberType NoteProperty -Name 'EndpointEncryptionAlgorithm' -Value $null -PassThru -Force
+                        } -PassThru -Force
+                } -PassThru |
+                Add-Member -MemberType ScriptMethod -Name 'Alter' {
+                    $script:mockMethodAlterRan = $true
+
+                    if ( $this.Name -ne $mockExpectedNameWhenCallingMethod )
+                    {
+                        throw "Called mocked Alter() method on and endpoint with wrong name. Expected '{0}'. But was '{1}'." `
+                                -f $mockExpectedNameWhenCallingMethod, $this.Name
+                    }
+                } -PassThru |
+                Add-Member -MemberType ScriptMethod -Name 'Drop' {
+                    $script:mockMethodDropRan = $true
+
+                    if ( $this.Name -ne $mockExpectedNameWhenCallingMethod )
+                    {
+                        throw "Called mocked Drop() method on and endpoint with wrong name. Expected '{0}'. But was '{1}'." `
+                                -f $mockExpectedNameWhenCallingMethod, $this.Name
+                    }
+                } -PassThru |
+                Add-Member -MemberType ScriptMethod -Name 'Start' {
+                    $script:mockMethodStartRan = $true
+                    if ( $this.Name -ne $mockExpectedNameWhenCallingMethod )
+                    {
+                        throw "Called mocked Start() method on and endpoint with wrong name. Expected '{0}'. But was '{1}'." `
+                                -f $mockExpectedNameWhenCallingMethod, $this.Name
+                    }
+                } -PassThru |
+                Add-Member -MemberType ScriptMethod -Name 'Create' {
+                    $script:mockMethodCreateRan = $true
+
+                    if ( $this.Name -ne $mockExpectedNameWhenCallingMethod )
+                    {
+                        throw "Called mocked Create() method on and endpoint with wrong name. Expected '{0}'. But was '{1}'." `
+                                -f $mockExpectedNameWhenCallingMethod, $this.Name
+                    }
+                } -PassThru -Force
+        }
 
         $mockConnectSql = {
             return New-Object Object |
                 Add-Member ScriptProperty Endpoints {
                     return @(
                         @{
-                            # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
-                            'DefaultEndpointMirror' = New-Object Object |
-                                                        Add-Member NoteProperty Name $mockEndpointName -PassThru |
-                                                        Add-Member ScriptMethod EnumObjectPermissions {
-                                                            param($permissionSet)
-                                                            return @(
-                                                                (New-Object Object |
-                                                                    Add-Member NoteProperty Grantee $mockDynamicPrincipal -PassThru |
-                                                                    Add-Member NoteProperty PermissionState 'Grant' -PassThru
-                                                                )
-                                                            )
-                                                        } -PassThru |
-                                                        Add-Member ScriptMethod Grant {
-                                                            param(
-                                                                $permissionSet,
-                                                                $mockPrincipal
-                                                            )
-
-                                                            $script:mockMethodGrantRan = $true
-                                                        } -PassThru |
-                                                        Add-Member ScriptMethod Revoke {
-                                                            param(
-                                                                $permissionSet,
-                                                                $mockPrincipal
-                                                            )
-
-                                                            $script:mockMethodRevokeRan = $true
-                                                        } -PassThru -Force
+                            $mockDynamicEndpointName =  & $mockEndPointObject
                         }
                     )
                 } -PassThru -Force
         }
 
-        $defaultParameters = @{
-            InstanceName = $mockInstanceName
-            NodeName = $mockNodeName
-            Name = $mockEndpointName
-            Principal = $mockPrincipal
+        $mockNewObjectEndPoint = {
+            return & $mockEndPointObject
         }
 
-        Describe 'MSFT_xSQLServerEndpointPermission\Get-TargetResource' -Tag 'Get' {
+        $mockNewObjectEndPoint_ParameterFilter = {
+            $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Endpoint'
+        }
+
+        $defaultParameters = @{
+            SQLInstanceName = $mockInstanceName
+            SQLServer = $mockNodeName
+            EndpointName = $mockEndpointName
+        }
+
+        Describe 'MSFT_xSQLServerEndpoint\Get-TargetResource' -Tag 'Get' {
             BeforeEach {
                 $testParameters = $defaultParameters
 
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
             }
 
-            $mockDynamicPrincipal = $mockOtherPrincipal
+            # Make sure the mock does not return the correct endpoint
+            $mockDynamicEndpointName = $mockOtherEndpointName
 
             Context 'When the system is not in the desired state' {
                 It 'Should return the desired state as absent' {
@@ -106,24 +162,25 @@ try
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.mockNodeName | Should Be $testParameters.mockNodeName
-                    $result.mockInstanceName | Should Be $testParameters.mockInstanceName
-                    $result.Name | Should Be $testParameters.Name
-                    $result.mockPrincipal | Should Be $testParameters.mockPrincipal
+                    $result.SQLServer | Should Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
                 }
 
-                It 'Should not return any permissions' {
+                It 'Should not return any values in the properties for the endpoint' {
                     $result = Get-TargetResource @testParameters
-                    $result.Permission | Should Be ''
+                    $result.EndpointName | Should Be ''
+                    $result.Port | Should Be ''
+                    $result.IpAddress | Should Be ''
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    $result = Get-TargetResource @testParameters
+                    Get-TargetResource @testParameters | Out-Null
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
-            $mockDynamicPrincipal = $mockPrincipal
+            # Make sure the mock do return the correct endpoint
+            $mockDynamicEndpointName = $mockEndpointName
 
             Context 'When the system is in the desired state' {
                 It 'Should return the desired state as present' {
@@ -133,27 +190,45 @@ try
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.mockNodeName | Should Be $testParameters.mockNodeName
-                    $result.mockInstanceName | Should Be $testParameters.mockInstanceName
-                    $result.Name | Should Be $testParameters.Name
-                    $result.mockPrincipal | Should Be $testParameters.mockPrincipal
-                }
-
-                It 'Should return the permissions passed as parameter' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Permission | Should Be 'CONNECT'
+                    $result.SQLServer | Should Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
+                    $result.EndpointName | Should Be $testParameters.EndpointName
+                    $result.Port | Should Be $mockEndpointListenerPort
+                    $result.IpAddress | Should Be $mockEndpointListenerIpAddress
                 }
 
                 It 'Should call the mock function Connect-SQL' {
                     $result = Get-TargetResource @testParameters
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
+
+                # Make sure the mock return the endpoint with wrong endpoint type
+                $mockDynamicEndpointType = $mockOtherEndpointType
+
+                Context 'When endpoint exist but with wrong endpoint type' {
+                    It 'Should throw the correct error' {
+                        { Get-TargetResource @testParameters } | Should Throw 'Endpoint ''DefaultEndpointMirror'' does exist, but it is not of type ''DatabaseMirroring''.'
+                    }
+                }
+
+                # Make sure the mock return the endpoint with correct endpoint type
+                $mockDynamicEndpointType = $mockEndpointType
+            }
+
+            Context 'When Connect-SQL returns nothing' {
+                It 'Should throw the correct error' {
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return $null
+                    }
+
+                    { Get-TargetResource @testParameters } | Should Throw 'Was unable to connect to the instance ''localhost\DEFAULT'''
+                }
             }
 
             Assert-VerifiableMocks
         }
 
-        Describe 'MSFT_xSQLServerEndpointPermission\Test-TargetResource' -Tag 'Test' {
+        Describe 'MSFT_xSQLServerEndpoint\Test-TargetResource' -Tag 'Test' {
             BeforeEach {
                 $testParameters = $defaultParameters
 
@@ -161,12 +236,12 @@ try
             }
 
             Context 'When the system is not in the desired state' {
-                $mockDynamicPrincipal = $mockOtherPrincipal
+                # Make sure the mock does not return the correct endpoint
+                $mockDynamicEndpointName = $mockOtherEndpointName
 
-                It 'Should return that desired state is absent when wanted desired state is to be Present' {
+                It 'Should return that desired state is absent when wanted desired state is to be Present (using default values)' {
                     $testParameters += @{
                         Ensure = 'Present'
-                        Permission = 'CONNECT'
                     }
 
                     $result = Test-TargetResource @testParameters
@@ -175,12 +250,25 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
-                $mockDynamicPrincipal = $mockPrincipal
+                It 'Should return that desired state is absent when wanted desired state is to be Present (setting all parameters)' {
+                    $testParameters += @{
+                        Ensure = 'Present'
+                        Port = $mockEndpointListenerPort
+                        IpAddress = $mockEndpointListenerIpAddress
+                    }
+
+                    $result = Test-TargetResource @testParameters
+                    $result | Should Be $false
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
+                # Make sure the mock do return the correct endpoint
+                $mockDynamicEndpointName = $mockEndpointName
 
                 It 'Should return that desired state is absent when wanted desired state is to be Absent' {
                     $testParameters += @{
                         Ensure = 'Absent'
-                        Permission = 'CONNECT'
                     }
 
                     $result = Test-TargetResource @testParameters
@@ -188,29 +276,67 @@ try
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
+
+                # Make sure the mock do return the correct endpoint, but does not return the correct endpoint listener port
+                $mockDynamicEndpointName = $mockEndpointName
+                $mockDynamicEndpointListenerPort = $mockOtherEndpointListenerPort
+
+                Context 'When listener port is not in desired state' {
+                    It 'Should return that desired state is absent' {
+                        $testParameters += @{
+                            Ensure = 'Present'
+                            Port = $mockEndpointListenerPort
+                        }
+
+                        $result = Test-TargetResource @testParameters
+                        $result | Should Be $false
+
+                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                # Make sure the mock do return the correct endpoint listener port
+                $mockDynamicEndpointListenerPort = $mockEndpointListenerPort
+
+                # Make sure the mock do return the correct endpoint, but does not return the correct endpoint listener IP address
+                $mockDynamicEndpointName = $mockEndpointName
+                $mockDynamicEndpointListenerIpAddress = $mockOtherEndpointListenerIpAddress
+
+                Context 'When listener IP address is not in desired state' {
+                    It 'Should return that desired state is absent' {
+                        $testParameters += @{
+                            Ensure = 'Present'
+                            IpAddress = $mockEndpointListenerIpAddress
+                        }
+
+                        $result = Test-TargetResource @testParameters
+                        $result | Should Be $false
+
+                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                # Make sure the mock do return the correct endpoint listener IP address
+                $mockDynamicEndpointListenerIpAddress = $mockEndpointListenerIpAddress
             }
 
             Context 'When the system is in the desired state' {
-                $mockDynamicPrincipal = $mockPrincipal
+                # Make sure the mock do return the correct endpoint
+                $mockDynamicEndpointName = $mockEndpointName
 
-                It 'Should return that desired state is present when wanted desired state is to be Present' {
-                    $testParameters += @{
-                        Ensure = 'Present'
-                        Permission = 'CONNECT'
-                    }
-
+                It 'Should return that desired state is present when wanted desired state is to be Present (using default values)' {
                     $result = Test-TargetResource @testParameters
                     $result | Should Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
-                $mockDynamicPrincipal = $mockOtherPrincipal
+                # Make sure the mock does not return the correct endpoint
+                $mockDynamicEndpointName = $mockOtherEndpointName
 
                 It 'Should return that desired state is present when wanted desired state is to be Absent' {
                     $testParameters += @{
                         Ensure = 'Absent'
-                        Permission = 'CONNECT'
                     }
 
                     $result = Test-TargetResource @testParameters
@@ -223,80 +349,265 @@ try
             Assert-VerifiableMocks
         }
 
-        Describe 'MSFT_xSQLServerEndpointPermission\Set-TargetResource' -Tag 'Set' {
+        Describe 'MSFT_xSQLServerEndpoint\Set-TargetResource' -Tag 'Set' {
             BeforeEach {
                 $testParameters = $defaultParameters
 
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
+                Mock -CommandName New-Object -MockWith $mockNewObjectEndPoint -ParameterFilter $mockNewObjectEndPoint_ParameterFilter -Verifiable
             }
 
             Context 'When the system is not in the desired state' {
-                $mockDynamicPrincipal = $mockOtherPrincipal
-                $script:mockMethodGrantRan = $false
-                $script:mockMethodRevokeRan = $false
+                # Make sure the mock do return the correct endpoint
+                $mockDynamicEndpointName = $mockEndpointName
 
-                It 'Should call the the method Grant when desired state is to be Present' {
-                    $testParameters += @{
-                        Ensure = 'Present'
-                        Permission = 'CONNECT'
-                    }
+                # Set all method call tests variables to $false
+                $script:mockMethodCreateRan = $false
+                $script:mockMethodStartRan = $false
+                $script:mockMethodAlterRan = $false
+                $script:mockMethodDropRan = $false
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
-                    $script:mockMethodGrantRan | Should Be $true
-                    $script:mockMethodRevokeRan | Should Be $false
+                # Set what the expected endpoint name should be when Create() method is called.
+                $mockExpectedNameWhenCallingMethod = $mockEndpointName
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
-                }
-
-                $mockDynamicPrincipal = $mockPrincipal
-                $script:mockMethodGrantRan = $false
-                $script:mockMethodRevokeRan = $false
-
-                It 'Should call the the method Revoke when desired state is to be Absent' {
-                    $testParameters += @{
-                        Ensure = 'Absent'
-                        Permission = 'CONNECT'
-                    }
+                It 'Should call the the method Create when desired state is to be Present (using default values)' {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Absent'
+                        }
+                    } -Verifiable
 
                     { Set-TargetResource @testParameters } | Should Not Throw
-                    $script:mockMethodGrantRan | Should Be $false
-                    $script:mockMethodRevokeRan | Should Be $true
-
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
-                }
-            }
-
-            Context 'When the system is in the desired state' {
-                $mockDynamicPrincipal = $mockPrincipal
-                $script:mockMethodGrantRan = $false
-                $script:mockMethodRevokeRan = $false
-
-                It 'Should not call Grant() or Revoke() method when desired state is already Present' {
-                    $testParameters += @{
-                        Ensure = 'Present'
-                        Permission = 'CONNECT'
-                    }
-
-                    { Set-TargetResource @testParameters } | Should Not Throw
-                    $script:mockMethodGrantRan | Should Be $false
-                    $script:mockMethodRevokeRan | Should Be $false
+                    $script:mockMethodCreateRan | Should Be $true
+                    $script:mockMethodStartRan | Should Be $true
+                    $script:mockMethodAlterRan | Should Be $false
+                    $script:mockMethodDropRan | Should Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
-                $mockDynamicPrincipal = $mockOtherPrincipal
-                $script:mockMethodGrantRan = $false
-                $script:mockMethodRevokeRan = $false
+                It 'Should call the the method Create when desired state is to be Present (setting all parameters)' {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Absent'
+                        }
+                    } -Verifiable
 
-                It 'Should not call Grant() or Revoke() method when desired state is already Absent' {
-                    $testParameters += @{
-                        Ensure = 'Absent'
-                        Permission = 'CONNECT'
+                   $testParameters += @{
+                        Ensure = 'Present'
+                        Port = $mockEndpointListenerPort
+                        IpAddress = $mockEndpointListenerIpAddress
                     }
 
                     { Set-TargetResource @testParameters } | Should Not Throw
-                    $script:mockMethodGrantRan | Should Be $false
-                    $script:mockMethodRevokeRan | Should Be $false
+                    $script:mockMethodCreateRan | Should Be $true
+                    $script:mockMethodStartRan | Should Be $true
+                    $script:mockMethodAlterRan | Should Be $false
+                    $script:mockMethodDropRan | Should Be $false
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
+                # Make sure the mock do return the correct endpoint
+                $mockDynamicEndpointName = $mockEndpointName
+
+                # Set all method call tests variables to $false
+                $script:mockMethodCreateRan = $false
+                $script:mockMethodStartRan = $false
+                $script:mockMethodAlterRan = $false
+                $script:mockMethodDropRan = $false
+
+                It 'Should call the the method Drop when desired state is to be Absent' {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                        }
+                    } -Verifiable
+
+                    $testParameters += @{
+                        Ensure = 'Absent'
+                    }
+
+                    { Set-TargetResource @testParameters } | Should Not Throw
+                    $script:mockMethodCreateRan | Should Be $false
+                    $script:mockMethodStartRan | Should Be $false
+                    $script:mockMethodAlterRan | Should Be $false
+                    $script:mockMethodDropRan | Should Be $true
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
+                # Set all method call tests variables to $false
+                $script:mockMethodCreateRan = $false
+                $script:mockMethodStartRan = $false
+                $script:mockMethodAlterRan = $false
+                $script:mockMethodDropRan = $false
+
+                It 'Should not call Alter method when listener port is not in desired state' {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            Port = $mockEndpointListenerPort
+                            IpAddress = $mockEndpointListenerIpAddress
+                        }
+                    } -Verifiable
+
+                    $testParameters += @{
+                        Ensure = 'Present'
+                        Port = $mockOtherEndpointListenerPort
+                        IpAddress = $mockEndpointListenerIpAddress
+                    }
+
+                    { Set-TargetResource @testParameters } | Should Not Throw
+                    $script:mockMethodCreateRan | Should Be $false
+                    $script:mockMethodStartRan | Should Be $false
+                    $script:mockMethodAlterRan | Should Be $true
+                    $script:mockMethodDropRan | Should Be $false
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
+                # Set all method call tests variables to $false
+                $script:mockMethodCreateRan = $false
+                $script:mockMethodStartRan = $false
+                $script:mockMethodAlterRan = $false
+                $script:mockMethodDropRan = $false
+
+                It 'Should not call Alter method when listener IP address is not in desired state' {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            Port = $mockEndpointListenerPort
+                            IpAddress = $mockEndpointListenerIpAddress
+                        }
+                    } -Verifiable
+
+                    $testParameters += @{
+                        Ensure = 'Present'
+                        Port = $mockEndpointListenerPort
+                        IpAddress = $mockOtherEndpointListenerIpAddress
+                    }
+
+                    { Set-TargetResource @testParameters } | Should Not Throw
+                    $script:mockMethodCreateRan | Should Be $false
+                    $script:mockMethodStartRan | Should Be $false
+                    $script:mockMethodAlterRan | Should Be $true
+                    $script:mockMethodDropRan | Should Be $false
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
+                # Make sure the mock does not return the correct endpoint
+                $mockDynamicEndpointName = $mockOtherEndpointName
+
+                Context 'When endpoint is missing when Ensure is set to Present' {
+                    It 'Should throw the correct error' {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Ensure = 'Present'
+                                Port = $mockEndpointListenerPort
+                                IpAddress = $mockEndpointListenerIpAddress
+                            }
+                        } -Verifiable
+
+                        { Set-TargetResource @testParameters } | Should Throw 'Endpoint ''DefaultEndpointMirror'' does not exist'
+                    }
+                }
+
+                Context 'When endpoint is missing when Ensure is set to Absent' {
+                    It 'Should throw the correct error' {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Ensure = 'Present'
+                                Port = $mockEndpointListenerPort
+                                IpAddress = $mockEndpointListenerIpAddress
+                            }
+                        } -Verifiable
+
+                        $testParameters += @{
+                            Ensure = 'Absent'
+                        }
+
+                        { Set-TargetResource @testParameters } | Should Throw 'Endpoint ''DefaultEndpointMirror'' does not exist'
+                    }
+                }
+
+                Context 'When Connect-SQL returns nothing' {
+                    It 'Should throw the correct error' {
+                        Mock -CommandName Get-TargetResource -MockWith {} -Verifiable
+                        Mock -CommandName Connect-SQL -MockWith {
+                            return $null
+                        }
+
+                        { Set-TargetResource @testParameters } | Should Throw 'Was unable to connect to the instance ''localhost\DEFAULT'''
+                    }
+                }
+
+                # Make sure the mock does not return the correct endpoint
+                $mockDynamicEndpointName = $mockEndpointName
+            }
+
+            Context 'When the system is in the desired state' {
+                # Make sure the mock do return the correct endpoint
+                $mockDynamicEndpointName = $mockEndpointName
+                $mockDynamicEndpointListenerPort = $mockEndpointListenerPort
+                $mockDynamicEndpointListenerIpAddress = $mockEndpointListenerIpAddress
+
+                # Set all method call tests variables to $false
+                $script:mockMethodCreateRan = $false
+                $script:mockMethodStartRan = $false
+                $script:mockMethodAlterRan = $false
+                $script:mockMethodDropRan = $false
+
+                It 'Should not call any methods when desired state is already Present' {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            Port = $mockEndpointListenerPort
+                            IpAddress = $mockEndpointListenerIpAddress
+                        }
+                    } -Verifiable
+
+                    $testParameters += @{
+                        Ensure = 'Present'
+                        Port = $mockEndpointListenerPort
+                        IpAddress = $mockEndpointListenerIpAddress
+                    }
+
+                    { Set-TargetResource @testParameters } | Should Not Throw
+                    $script:mockMethodCreateRan | Should Be $false
+                    $script:mockMethodStartRan | Should Be $false
+                    $script:mockMethodAlterRan | Should Be $false
+                    $script:mockMethodDropRan | Should Be $false
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
+                # Make sure the mock does not return the correct endpoint
+                $mockDynamicEndpointName = $mockOtherEndpointName
+
+                # Set all method call tests variables to $false
+                $script:mockMethodCreateRan = $false
+                $script:mockMethodStartRan = $false
+                $script:mockMethodAlterRan = $false
+                $script:mockMethodDropRan = $false
+
+                It 'Should not call any methods when desired state is already Absent' {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Absent'
+                        }
+                    } -Verifiable
+
+                    $testParameters += @{
+                        Ensure = 'Absent'
+                    }
+
+                    { Set-TargetResource @testParameters } | Should Not Throw
+                    $script:mockMethodCreateRan | Should Be $false
+                    $script:mockMethodStartRan | Should Be $false
+                    $script:mockMethodAlterRan | Should Be $false
+                    $script:mockMethodDropRan | Should Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }

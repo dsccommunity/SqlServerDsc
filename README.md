@@ -472,7 +472,7 @@ This resource is used to create an endpoint. Currently it only supports creating
 * **[Uint16] Port** _(Write)_: The network port the endpoint is listening on. Default value is 5022.
 * **[String] SQLServer** _(Write)_: The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 * **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **[String] IpAddress** _(Write)_: The network IP address the endpoint is listening on. Default the endpoint will listen on any valid IP address.
+* **[String] IpAddress** _(Write)_: The network IP address the endpoint is listening on. Defaults to '0.0.0.0' which means listen on any valid IP address.
 
 #### Examples
 
