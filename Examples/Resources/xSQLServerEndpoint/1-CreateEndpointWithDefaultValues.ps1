@@ -17,7 +17,7 @@ Configuration Example
 
     node localhost
     {
-        xSQLServerEndpoint SQLConfigureEndpoint
+        xSQLServerEndpoint SQLConfigureEndpoint-Instance1
         {
             EndpointName = 'HADR'
             SQLInstanceName = 'INST1'
@@ -25,7 +25,7 @@ Configuration Example
             PsDscRunAsCredential = $SysAdminAccount
         }
 
-        xSQLServerEndpoint SQLConfigureEndpoint
+        xSQLServerEndpoint SQLConfigureEndpoint-Instances2
         {
             EndpointName = 'HADR'
             SQLInstanceName = 'INST2'

@@ -17,7 +17,7 @@ Configuration Example
 
     node localhost
     {
-        xSQLServerEndpoint SQLConfigureEndpoint
+        xSQLServerEndpoint SQLConfigureEndpoint-Instance1
         {
             Ensure = 'Absent'
 
@@ -27,7 +27,7 @@ Configuration Example
             PsDscRunAsCredential = $SysAdminAccount
         }
 
-        xSQLServerEndpoint SQLConfigureEndpoint
+        xSQLServerEndpoint SQLConfigureEndpoint-Instance2
         {
             Ensure = 'Absent'
 
@@ -36,4 +36,5 @@ Configuration Example
 
             PsDscRunAsCredential = $SysAdminAccount
         }
-   }
+    }
+}
