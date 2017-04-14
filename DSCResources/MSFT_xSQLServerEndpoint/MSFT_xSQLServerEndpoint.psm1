@@ -1,7 +1,19 @@
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
                                -ChildPath 'xSQLServerHelper.psm1') `
                                -Force
+<#
+    .SYNOPSIS
+        Returns the current state of the endpoint.
 
+    .PARAMETER EndpointName
+        The name of the endpoint.
+
+    .PARAMETER SQLServer
+        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+
+    .PARAMETER SQLInstanceName
+        The name of the SQL instance to be configured.
+#>
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -68,6 +80,28 @@ function Get-TargetResource
     return $getTargetResourceReturnValues
 }
 
+<#
+    .SYNOPSIS
+        Create, changes or drops an endpoint.
+
+    .PARAMETER EndpointName
+        The name of the endpoint.
+
+    .PARAMETER Ensure
+        If the endpoint should be present or absent. Default values is 'Present'.
+
+    .PARAMETER Port
+        The network port the endpoint is listening on. Default value is 5022.
+
+    .PARAMETER SQLServer
+        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+
+    .PARAMETER SQLInstanceName
+        The name of the SQL instance to be configured.
+
+    .PARAMETER IpAddress
+        The network IP address the endpoint is listening on. Defaults to '0.0.0.0' which means listen on any valid IP address.
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
@@ -167,6 +201,28 @@ function Set-TargetResource
     }
 }
 
+<#
+    .SYNOPSIS
+        Tests if the principal (login) has the desired permissions.
+
+    .PARAMETER EndpointName
+        The name of the endpoint.
+
+    .PARAMETER Ensure
+        If the endpoint should be present or absent. Default values is 'Present'.
+
+    .PARAMETER Port
+        The network port the endpoint is listening on. Default value is 5022.
+
+    .PARAMETER SQLServer
+        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+
+    .PARAMETER SQLInstanceName
+        The name of the SQL instance to be configured.
+
+    .PARAMETER IpAddress
+        The network IP address the endpoint is listening on. Defaults to '0.0.0.0' which means listen on any valid IP address.
+#>
 function Test-TargetResource
 {
     [CmdletBinding()]
