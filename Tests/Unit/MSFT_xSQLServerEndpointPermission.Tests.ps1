@@ -48,22 +48,22 @@ try
 
         $mockConnectSql = {
             return New-Object Object |
-                Add-Member ScriptProperty Endpoints {
+                Add-Member -MemberType ScriptProperty -Name 'Endpoints' {
                     return @(
                         @{
                             # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                             $mockDynamicEndpointName = New-Object Object |
-                                                        Add-Member NoteProperty Name $mockEndpointName -PassThru |
-                                                        Add-Member ScriptMethod EnumObjectPermissions {
+                                                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockEndpointName -PassThru |
+                                                        Add-Member -MemberType ScriptMethod -Name 'EnumObjectPermissions' {
                                                             param($permissionSet)
                                                             return @(
                                                                 (New-Object Object |
-                                                                    Add-Member NoteProperty Grantee $mockDynamicPrincipal -PassThru |
-                                                                    Add-Member NoteProperty PermissionState 'Grant' -PassThru
+                                                                    Add-Member -MemberType NoteProperty Grantee $mockDynamicPrincipal -PassThru |
+                                                                    Add-Member -MemberType NoteProperty PermissionState 'Grant' -PassThru
                                                                 )
                                                             )
                                                         } -PassThru |
-                                                        Add-Member ScriptMethod Grant {
+                                                        Add-Member -MemberType ScriptMethod -Name 'Grant' {
                                                             param(
                                                                 $permissionSet,
                                                                 $mockPrincipal
@@ -71,7 +71,7 @@ try
 
                                                             $script:mockMethodGrantRan = $true
                                                         } -PassThru |
-                                                        Add-Member ScriptMethod Revoke {
+                                                        Add-Member -MemberType ScriptMethod -Name 'Revoke' {
                                                             param(
                                                                 $permissionSet,
                                                                 $mockPrincipal
@@ -108,10 +108,10 @@ try
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.mockNodeName | Should Be $testParameters.mockNodeName
-                    $result.mockInstanceName | Should Be $testParameters.mockInstanceName
+                    $result.NodeName | Should Be $testParameters.NodeName
+                    $result.InstanceName | Should Be $testParameters.InstanceName
                     $result.Name | Should Be $testParameters.Name
-                    $result.mockPrincipal | Should Be $testParameters.mockPrincipal
+                    $result.Principal | Should Be $testParameters.Principal
                 }
 
                 It 'Should not return any permissions' {
@@ -147,10 +147,10 @@ try
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.mockNodeName | Should Be $testParameters.mockNodeName
-                    $result.mockInstanceName | Should Be $testParameters.mockInstanceName
+                    $result.NodeName | Should Be $testParameters.NodeName
+                    $result.InstanceName | Should Be $testParameters.InstanceName
                     $result.Name | Should Be $testParameters.Name
-                    $result.mockPrincipal | Should Be $testParameters.mockPrincipal
+                    $result.Principal | Should Be $testParameters.Principal
                 }
 
                 It 'Should return the permissions passed as parameter' {
