@@ -103,6 +103,8 @@
   - Resource now supports changing IP address and changing port.
   - Added unit tests (issue #289)
   - Added examples.
+- Changes to xSQLServerEndpointState
+  - Cleaned up code, removed `SupportsShouldProcess` and fixed PSSA rules warnings (issue #258 and issue #230).
 
 ## 6.0.0.0
 
