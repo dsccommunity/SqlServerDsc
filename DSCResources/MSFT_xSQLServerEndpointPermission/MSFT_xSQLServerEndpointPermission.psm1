@@ -100,7 +100,7 @@ function Get-TargetResource
         The name of the endpoint.
 
     .PARAMETER Permission
-        The login to which permission will be set.
+        The permission to set for the login. Valid value for permission are only CONNECT.
 
     .PARAMETER Principal
         The permission to set for the login.
@@ -194,7 +194,7 @@ function Set-TargetResource
         The name of the endpoint.
 
     .PARAMETER Permission
-        The login to which permission will be set.
+        The permission to set for the login. Valid value for permission are only CONNECT.
 
     .PARAMETER Principal
         The permission to set for the login.
