@@ -476,19 +476,18 @@ None.
 
 ### xSQLServerEndpointPermission
 
-No description.
+This resource is used to give connect permission to an endpoint for a user (login).
 
 #### Requirements
 
 * Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
-* Target machine must have access to the SQLPS PowerShell module or the SqlServer PowerShell module.
 
 #### Parameters
 
-* **[String] InstanceName** _(Key)_: The SQL Server instance name.
-* **[String] NodeName** _(Required)_: The host name or FQDN.
-* **[String] Ensure** _(Write)_: If the permission should be present or absent. { Present | Absent }.
+* **[String] InstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **[String] NodeName** _(Required)_: The host name of the SQL Server to be configured.
+* **[String] Ensure** _(Write)_: If the permission should be present or absent. Default value is 'Present'. { *Present* | Absent }.
 * **[String] Name** _(Required)_: The name of the endpoint.
 * **[String] Principal** _(Key)_: The login to which permission will be set.
 * **[String] Permission** _(Write)_: The permission to set for the login. Valid value for permission are only CONNECT. { Connect }.
