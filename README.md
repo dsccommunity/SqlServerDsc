@@ -482,7 +482,6 @@ This resource is used to give connect permission to an endpoint for a user (logi
 
 * Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
-* Target machine must have access to the SQLPS PowerShell module or the SqlServer PowerShell module.
 
 #### Parameters
 
