@@ -89,7 +89,7 @@
   - Removed dependency of SQLPS provider (issue #483).
   - Refactored tests so they use less code.
 - Changes to README.md
-  - Adding deprecated tag to xSQLAOGroupEnsure and xSQLAOGroupJoin in README.md so it it more clear that these resources has been replaced by xSQLServerAlwaysOnAvailabilityGroup and xSQLServerAlwaysOnAvailabilityGroupReplica.
+  - Adding deprecated tag to xSQLServerFailoverClusterSetup, xSQLAOGroupEnsure and xSQLAOGroupJoin in README.md so it it more clear that these resources has been replaced by xSQLServerSetup, xSQLServerAlwaysOnAvailabilityGroup and xSQLServerAlwaysOnAvailabilityGroupReplica respectively.
 
 ## 6.0.0.0
 
