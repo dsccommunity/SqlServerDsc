@@ -480,7 +480,7 @@ None.
 
 ### xSQLServerEndpointPermission
 
-This resource is used to give connect permission to an endpoint for a user (login)
+This resource is used to give connect permission to an endpoint for a user (login).
 
 #### Requirements
 
