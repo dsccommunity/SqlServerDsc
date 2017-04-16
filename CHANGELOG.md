@@ -110,6 +110,8 @@
   - Removed dependency of SQLPS provider (issue #481).
   - The parameter NodeName is no longer mandatory and has now the default value of $env:COMPUTERNAME.
   - The parameter Name is now a key so it is now possible to change the state on more than one endpoint on the same instance. _Note: The resource still only supports Database Mirror endpoints at this time._
+- Changes to xSQLServerHelper module
+  - Removing helper function Get-SQLAlwaysOnEndpoint becuase there is no resource using it any longer.
 
 ## 6.0.0.0
 

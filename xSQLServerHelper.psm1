@@ -796,54 +796,6 @@ function Get-SQLPSInstance
 
 <#
     .SYNOPSIS
-        Returns the SQL Server SQLPS provider endpoint object.
-
-    .PARAMETER Name
-        String containing the name of the endpoint to return.
-
-    .PARAMETER InstanceName
-        String containing the SQL Server Database Engine instance to connect to.
-
-    .PARAMETER NodeName
-        String containing the host name of the SQL Server to connect to.
-#>
-function Get-SQLAlwaysOnEndpoint
-{
-    [CmdletBinding()]
-    [OutputType()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $InstanceName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $NodeName
-    )
-
-    $instance = Get-SQLPSInstance -InstanceName $InstanceName -NodeName $NodeName
-    $Path = "$($instance.PSPath)\Endpoints"
-
-    Write-Debug "Connecting to $Path as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
-
-    [String[]] $presentEndpoint = Get-ChildItem $Path
-    if( $presentEndpoint.Count -ne 0 -and $presentEndpoint.Contains("[$Name]") ) {
-        Write-Debug "Connecting to endpoint $Name as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
-        $endpoint = Get-Item "$Path\$Name"
-    } else {
-        $endpoint = $null
-    }
-
-    return $endpoint
-}
-
-<#
-    .SYNOPSIS
     Restarts a SQL Server instance and associated services
 
     .PARAMETER SQLServer
@@ -1367,7 +1319,7 @@ function Invoke-Query
 <#
     .SYNOPSIS
         Executes the alter method on an Availability Group Replica object.
-    
+
     .PARAMETER AvailabilityGroupReplica
         The Availabilty Group Replica object that must be altered.
 #>
@@ -1428,7 +1380,7 @@ function Test-LoginEffectivePermissions
         Database = 'master'
         WithResults = $true
     }
-    
+
     $queryToGetEffectivePermissionsForLogin = "
         EXECUTE AS LOGIN = '$LoginName'
         SELECT DISTINCT permission_name
@@ -1443,10 +1395,10 @@ function Test-LoginEffectivePermissions
 
     if ( $null -ne $loginEffectivePermissions )
     {
-        $loginMissingPermissions = Compare-Object -ReferenceObject $Permissions -DifferenceObject $loginEffectivePermissions | 
+        $loginMissingPermissions = Compare-Object -ReferenceObject $Permissions -DifferenceObject $loginEffectivePermissions |
             Where-Object -FilterScript { $_.SideIndicator -ne '=>' } |
-            Select-Object -ExpandProperty InputObject 
-        
+            Select-Object -ExpandProperty InputObject
+
         if ( $loginMissingPermissions.Count -eq 0 )
         {
             $permissionsPresent = $true
