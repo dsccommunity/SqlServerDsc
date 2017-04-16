@@ -518,8 +518,8 @@ This resource is used to set the state of an endpoint.
 #### Parameters
 
 * **[String] InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **[String] NodeName** _(Required)_: The host name of the SQL Server to be configured.
-* **[String] Name** _(Required)_: The name of the endpoint.
+* **[String] NodeName** _(Write)_: The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+* **[String] Name** _(Key)_: The name of the endpoint.
 * **[String] State** _(Write)_: The state of the endpoint. Valid states are Started, Stopped or Disabled. Default value is 'Started'. { *Started* | Stopped | Disabled }.
 
 #### Examples

@@ -36,7 +36,7 @@ try
 
     InModuleScope $script:DSCResourceName {
         $mockNodeName = 'localhost'
-        $mockInstanceName = 'SQL2016'
+        $mockInstanceName = 'INSTANCE1'
         $mockEndpointName = 'DefaultEndpointMirror'
         $mockEndpointStateStarted = 'Started'
         $mockEndpointStateStopped = 'Stopped'
