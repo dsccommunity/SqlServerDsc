@@ -42,6 +42,10 @@
   - xSQLServerConfiguration
     - 1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1
     - 2-ConfigureInstanceToEnablePriorityBoost.ps1
+  - xSQLServerEndpoint
+    - 1-CreateEndpointWithDefaultValues.ps1
+    - 2-CreateEndpointWithSpecificPortAndIPAddress.ps1
+    - 3-RemoveEndpoint.ps1
 - Changes to xSQLServerDatabaseRole
   - Fixed code style, added updated parameter descriptions to schema.mof and README.md.
 - Changes to xSQLServer
@@ -90,6 +94,15 @@
   - Refactored tests so they use less code.
 - Changes to README.md
   - Adding deprecated tag to xSQLServerFailoverClusterSetup, xSQLAOGroupEnsure and xSQLAOGroupJoin in README.md so it it more clear that these resources has been replaced by xSQLServerSetup, xSQLServerAlwaysOnAvailabilityGroup and xSQLServerAlwaysOnAvailabilityGroupReplica respectively.
+- Changes to xSQLServerEndpoint
+  - BREAKING CHANGE: Now SQLInstanceName is mandatory, and is a key, so SQLInstanceName has no longer a default value (issue #279).
+  - BREAKING CHANGE: Parameter AutorizedUser has been removed (issue #466, issue #275 and issue #80). Connect permissons can be set using the resource xSQLServerEndpointPermission.
+  - Optional parameter IpAddress has been added. Default is to listen on any valid IP-address. (issue #232)
+  - Parameter Port now has a default value of 5022.
+  - Parameter Ensure now defaults to 'Present'.
+  - Resource now supports changing IP address and changing port.
+  - Added unit tests (issue #289)
+  - Added examples.
 
 ## 6.0.0.0
 

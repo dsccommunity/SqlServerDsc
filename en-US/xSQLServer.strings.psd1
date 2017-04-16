@@ -35,6 +35,7 @@ AvailabilityGroupListenerDHCPChangeError = IP-address configuration mismatch. Ex
 # Endpoint
 EndpointNotFound = Endpoint '{0}' does not exist
 EndpointErrorVerifyExist = Unexpected result when trying to verify existence of endpoint '{0}'.
+EndpointFoundButWrongType = Endpoint '{0}' does exist, but it is not of type 'DatabaseMirroring'.
 
 # Permission
 PermissionGetError = Unexpected result when trying to get permissions for '{0}'.
