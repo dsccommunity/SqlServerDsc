@@ -1,6 +1,6 @@
 ﻿<#
     .EXAMPLE
-        This example will add a Database Mirror endpoint using the default values to two instances.
+        This example will add a Database Mirror endpoint, to two instances, using the default values.
 
 #>
 Configuration Example

@@ -256,7 +256,7 @@ function Test-TargetResource
     )
 
     $getTargetResourceResult = Get-TargetResource -EndpointName $EndpointName -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-    if( $getTargetResourceResult.Ensure -eq $Ensure )
+    if ($getTargetResourceResult.Ensure -eq $Ensure)
     {
         $result = $true
 

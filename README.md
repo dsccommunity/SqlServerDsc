@@ -463,7 +463,7 @@ This resource is used to create an endpoint. Currently it only supports creating
 
 #### Security Requirements
 
-* The built-in parameter `PsDscRunAsCredential` must be set to the credentials of an account with the permission to enumerate logins, create the endpoint, and alter the permission on an endpoint.
+* The built-in parameter PsDscRunAsCredential must be set to the credentials of an account with the permission to create and alter endpoints.
 
 #### Parameters
 
@@ -480,7 +480,7 @@ None.
 
 ### xSQLServerEndpointPermission
 
-No description.
+This resource is used to give connect permission to an endpoint for a user (login)
 
 #### Requirements
 

@@ -1,6 +1,6 @@
 ﻿<#
     .EXAMPLE
-        This example will add a Database Mirror endpoint with specifc listener port and listener IP address.
+        This example will add a Database Mirror endpoint with a specific listener port and a specific listener IP address.
 #>
 Configuration Example
 {
