@@ -36,7 +36,7 @@ function Get-TargetResource
         $Principal,
 
         [Parameter()]
-        [ValidateSet('AlterAnyAvailabilityGroup','ViewServerState','AlterAnyEndPoint')]
+        [ValidateSet('ConnectSql','AlterAnyAvailabilityGroup','ViewServerState','AlterAnyEndPoint')]
         [System.String[]]
         $Permission
     )
@@ -45,18 +45,19 @@ function Get-TargetResource
 
     try
     {
-        $instance = Get-SQLPSInstance -NodeName $NodeName -InstanceName $InstanceName
+        $sqlServerObject = Connect-SQL -SQLServer $NodeName -SQLInstanceName $InstanceName
 
-        $permissionSet = Get-SQLServerPermissionSet -Permission $Permission
-
-        $enumeratedPermission = $instance.EnumServerPermissions( $Principal, $permissionSet ) |
+        # Gets a set of permissions granted based on the desired permissions in $Permission
+        $desiredPermissionSet = Get-SQLServerPermissionSet -Permission $Permission
+        $grantedPermissionSet = $sqlServerObject.EnumServerPermissions( $Principal, $desiredPermissionSet ) |
                                     Where-Object { $_.PermissionState -eq 'Grant' }
 
-        if ($null -ne $enumeratedPermission)
+        if ($null -ne $grantedPermissionSet)
         {
-            $grantedPermissionSet = Get-SQLServerPermissionSet -PermissionSet $enumeratedPermission.PermissionType
+            $concatenatedGrantedPermissionSet = Get-SQLServerPermissionSet -PermissionSet $grantedPermissionSet.PermissionType
 
-            if (-not (Compare-Object -ReferenceObject $permissionSet -DifferenceObject $grantedPermissionSet -Property $Permission))
+            # Compare desired and granted permissions based on the permissions properties from $Permission.
+            if (-not (Compare-Object -ReferenceObject $desiredPermissionSet -DifferenceObject $concatenatedGrantedPermissionSet -Property $Permission))
             {
                 $ensure = 'Present'
             }
@@ -65,7 +66,8 @@ function Get-TargetResource
                 $ensure = 'Absent'
             }
 
-            $grantedPermission = Get-SQLPermission -ServerPermissionSet $grantedPermissionSet
+            # Return granted permissions as a string array.
+            $grantedPermission = Get-SQLPermission -ServerPermissionSet $concatenatedGrantedPermissionSet
         }
         else
         {
@@ -108,7 +110,7 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding()]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -129,61 +131,49 @@ function Set-TargetResource
         $Principal,
 
         [Parameter()]
-        [ValidateSet('AlterAnyAvailabilityGroup','ViewServerState','AlterAnyEndPoint')]
+        [ValidateSet('ConnectSql','AlterAnyAvailabilityGroup','ViewServerState','AlterAnyEndPoint')]
         [System.String[]]
         $Permission
     )
 
-    $parameters = @{
+    $getTargetResourceParameters = @{
         InstanceName = [System.String] $InstanceName
         NodeName = [System.String] $NodeName
         Principal = [System.String] $Principal
         Permission = [System.String[]] $Permission
     }
 
-    $permissionState = Get-TargetResource @parameters
-    if ($null -ne $permissionState)
+    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
+    if ($getTargetResourceResult.Ensure -ne $Ensure)
     {
-        if ($Ensure -ne '')
+        try
         {
-            if ($permissionState.Ensure -ne $Ensure)
+            $sqlServerObject = Connect-SQL -SQLServer $NodeName -SQLInstanceName $InstanceName
+
+            $permissionSet = Get-SQLServerPermissionSet -Permission $Permission
+
+            if ($Ensure -eq 'Present')
             {
-                $instance = Get-SQLPSInstance -NodeName $NodeName -InstanceName $InstanceName
-                if ($null -ne $instance)
-                {
-                    $permissionSet = Get-SQLServerPermissionSet -Permission $Permission
+                Write-Verbose -Message ('Grant permission for ''{0}''' -f $Principal)
 
-                    if ($Ensure -eq 'Present')
-                    {
-                        Write-Verbose -Message ('Grant permission for ''{0}''' -f $Principal)
-
-                        $instance.Grant($permissionSet, $Principal )
-                    }
-                    else
-                    {
-                        Write-Verbose -Message ('Revoke permission for ''{0}''' -f $Principal)
-
-                        $instance.Revoke($permissionSet, $Principal )
-                    }
-                }
-                else
-                {
-                    throw New-TerminatingError -ErrorType PrincipalNotFound -FormatArgs @($Principal) -ErrorCategory ObjectNotFound
-                }
+                $sqlServerObject.Grant($permissionSet, $Principal)
             }
             else
             {
-                New-VerboseMessage -Message "State is already $Ensure"
+                Write-Verbose -Message ('Revoke permission for ''{0}''' -f $Principal)
+
+                $sqlServerObject.Revoke($permissionSet, $Principal)
             }
         }
-        else
+        catch
         {
-            throw New-TerminatingError -ErrorType PermissionMissingEnsure -FormatArgs @($Principal) -ErrorCategory InvalidOperation
+            throw New-TerminatingError -ErrorType ChangingPermissionFailed -FormatArgs @($Principal) -ErrorCategory InvalidOperation -InnerException $_.Exception
         }
     }
     else
     {
-        throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
+        New-VerboseMessage -Message "State is already $Ensure"
     }
 }
 
@@ -230,36 +220,23 @@ function Test-TargetResource
         $Principal,
 
         [Parameter()]
-        [ValidateSet('AlterAnyAvailabilityGroup','ViewServerState','AlterAnyEndPoint')]
+        [ValidateSet('ConnectSql','AlterAnyAvailabilityGroup','ViewServerState','AlterAnyEndPoint')]
         [System.String[]]
         $Permission
     )
 
-    $parameters = @{
+    $getTargetResourceParameters = @{
         InstanceName = $InstanceName
         NodeName = $NodeName
         Principal = $Principal
         Permission = $Permission
     }
 
-    New-VerboseMessage -Message "Testing state of permissions for $Principal"
+    New-VerboseMessage -Message "Verifying permissions for $Principal"
 
-    $permissionState = Get-TargetResource @parameters
-    if ($null -ne $permissionState)
-    {
-        $result = $false
+    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-        if( $permissionState.Ensure -eq $Ensure)
-        {
-            $result = $true
-        }
-    }
-    else
-    {
-        throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
-    }
-
-    return $result
+    return $getTargetResourceResult.Ensure -eq $Ensure
 }
 
 <#

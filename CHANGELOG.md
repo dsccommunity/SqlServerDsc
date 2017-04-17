@@ -16,6 +16,7 @@
   - The parameter Ensure now has a default value of 'Present'.
   - Updated README.md with a description for the resources and revised the parameter descriptions.
   - Removed dependency of SQLPS provider (issue #482).
+  - Added ConnectSql permission. Now that permission can also be granted or revoked.
 
 ## 7.0.0.0
 

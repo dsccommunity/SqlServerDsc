@@ -792,7 +792,7 @@ This resource sets server permissions to a user (login).
 * **[String] Principal** _(Required)_: The login to which permission will be set.
 * **[String] Ensure** _(Write)_: If the permission should be present or absent. Default value is 'Present'. { Present | Absent }.
 * **[String] NodeName** _(Write)_: The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
-* **[String[]] Permission** _(Write)_: The permission to set for the login. Valid values are AlterAnyAvailabilityGroup, ViewServerState or AlterAnyEndPoint. { AlterAnyAvailabilityGroup | AlterAnyEndPoint | ViewServerState }.
+* **[String[]] Permission** _(Write)_: The permission to set for the login. Valid values are ConnectSql, AlterAnyAvailabilityGroup, ViewServerState or AlterAnyEndPoint. { ConnectSql, AlterAnyAvailabilityGroup | AlterAnyEndPoint | ViewServerState }.
 
 #### Examples
 
