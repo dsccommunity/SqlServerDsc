@@ -113,6 +113,8 @@
 - Changes to xSQLServerHelper module
   - Removing helper function Get-SQLAlwaysOnEndpoint becuase there is no resource using it any longer.
   - Changed helper function Import-SQLPSModule to support SqlServer module (issue #91). The SqlServer module is the preferred module so if it is found it will be used, and if not found an attempt will be done to load SQLPS module instead.
+- Changes to xSQLServerScript
+  - Updated tests for this resource, because they failed when Import-SQLPSModule was updated.
 
 ## 6.0.0.0
 
