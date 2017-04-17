@@ -16,7 +16,7 @@ Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:DSCModuleName `
     -DSCResourceName $script:DSCResourceName `
-    -TestType Unit 
+    -TestType Unit
 
 #endregion HEADER
 
@@ -56,7 +56,7 @@ try
 
                 return $mockObjectSmoServer
             } -ModuleName $script:DSCResourceName -Verifiable
-    
+
             $testParameters = $defaultParameters
 
             $result = Get-TargetResource @testParameters
@@ -76,10 +76,10 @@ try
             }
 
             It 'Should call the mock function Get-SQLPSInstance' {
-                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context 
+                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
             }
         }
-    
+
         Context 'When the system is in the desired state' {
             Mock -CommandName Get-SQLPSInstance -MockWith {
                 [Microsoft.SqlServer.Management.Smo.Globals]::GenerateMockData = $true
@@ -93,7 +93,7 @@ try
 
                 return $mockObjectSmoServer
             } -ModuleName $script:DSCResourceName -Verifiable
-    
+
             $testParameters = $defaultParameters
 
             $result = Get-TargetResource @testParameters
@@ -111,18 +111,18 @@ try
             It 'Should return the permissions passed as parameter' {
                 foreach ($currentPermission in $permission) {
                     if( $result.Permission -ccontains $currentPermission ) {
-                        $permissionState = $true 
+                        $permissionState = $true
                     } else {
                         $permissionState = $false
                         break
                     }
-                } 
-                
+                }
+
                 $permissionState | Should Be $true
             }
 
             It 'Should call the mock function Get-SQLPSInstance' {
-                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context 
+                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope Context
             }
         }
 
@@ -144,7 +144,7 @@ try
 
                     return $mockObjectSmoServer
                 } -ModuleName $script:DSCResourceName -Verifiable
-        
+
                 $testParameters = $defaultParameters
                 $testParameters += @{
                     Ensure = 'Present'
@@ -153,7 +153,7 @@ try
                 $result = Test-TargetResource @testParameters
                 $result | Should Be $false
 
-                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It 
+                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
             }
 
             It 'Should return that desired state is absent when wanted desired state is to be Absent' {
@@ -169,7 +169,7 @@ try
 
                     return $mockObjectSmoServer
                 } -ModuleName $script:DSCResourceName -Verifiable
-        
+
                 $testParameters = $defaultParameters
                 $testParameters += @{
                     Ensure = 'Absent'
@@ -178,7 +178,7 @@ try
                 $result = Test-TargetResource @testParameters
                 $result | Should Be $false
 
-                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It 
+                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
             }
         }
 
@@ -196,7 +196,7 @@ try
 
                     return $mockObjectSmoServer
                 } -ModuleName $script:DSCResourceName -Verifiable
-        
+
                 $testParameters = $defaultParameters
                 $testParameters += @{
                     Ensure = 'Present'
@@ -205,7 +205,7 @@ try
                 $result = Test-TargetResource @testParameters
                 $result | Should Be $true
 
-                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It 
+                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
             }
 
             It 'Should return that desired state is present when wanted desired state is to be Absent' {
@@ -221,7 +221,7 @@ try
 
                     return $mockObjectSmoServer
                 } -ModuleName $script:DSCResourceName -Verifiable
-        
+
                 $testParameters = $defaultParameters
                 $testParameters += @{
                     Ensure = 'Absent'
@@ -230,7 +230,7 @@ try
                 $result = Test-TargetResource @testParameters
                 $result | Should Be $true
 
-                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It 
+                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
             }
         }
 
@@ -248,11 +248,11 @@ try
                     $mockObjectSmoServer.DisplayName = $instanceName
                     $mockObjectSmoServer.InstanceName = $instanceName
                     $mockObjectSmoServer.IsHadrEnabled = $False
-                    $mockObjectSmoServer.MockGranteeName = $principal   
+                    $mockObjectSmoServer.MockGranteeName = $principal
 
                     return $mockObjectSmoServer
                 } -ModuleName $script:DSCResourceName -Verifiable
-        
+
                 $testParameters = $defaultParameters
                 $testParameters += @{
                     Ensure = 'Present'
@@ -260,7 +260,7 @@ try
 
                 { Set-TargetResource @testParameters } | Should Not Throw
 
-                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 2 -ModuleName $script:DSCResourceName -Scope It 
+                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 2 -ModuleName $script:DSCResourceName -Scope It
             }
 
             It 'Should not throw error when desired state is to be Absent' {
@@ -276,7 +276,7 @@ try
 
                     return $mockObjectSmoServer
                 } -ModuleName $script:DSCResourceName -Verifiable
-        
+
                 $testParameters = $defaultParameters
                 $testParameters += @{
                     Ensure = 'Absent'
@@ -284,7 +284,7 @@ try
 
                 { Set-TargetResource @testParameters } | Should Not Throw
 
-                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 2 -ModuleName $script:DSCResourceName -Scope It 
+                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 2 -ModuleName $script:DSCResourceName -Scope It
             }
         }
 
@@ -298,11 +298,11 @@ try
                     $mockObjectSmoServer.DisplayName = $instanceName
                     $mockObjectSmoServer.InstanceName = $instanceName
                     $mockObjectSmoServer.IsHadrEnabled = $False
-                    $mockObjectSmoServer.MockGranteeName = 'Should not call Grant() or Revoke()'   
+                    $mockObjectSmoServer.MockGranteeName = 'Should not call Grant() or Revoke()'
 
                     return $mockObjectSmoServer
                 } -ModuleName $script:DSCResourceName -Verifiable
-        
+
                 $testParameters = $defaultParameters
                 $testParameters += @{
                     Ensure = 'Present'
@@ -310,7 +310,7 @@ try
 
                 { Set-TargetResource @testParameters } | Should Not Throw
 
-                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It 
+                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
             }
 
             It 'Should not throw error when desired state is to be Absent' {
@@ -326,7 +326,7 @@ try
 
                     return $mockObjectSmoServer
                 } -ModuleName $script:DSCResourceName -Verifiable
-        
+
                 $testParameters = $defaultParameters
                 $testParameters += @{
                     Ensure = 'Absent'
@@ -334,7 +334,7 @@ try
 
                 { Set-TargetResource @testParameters } | Should Not Throw
 
-                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It 
+                Assert-MockCalled Get-SQLPSInstance -Exactly -Times 1 -ModuleName $script:DSCResourceName -Scope It
             }
         }
 #>
@@ -345,7 +345,7 @@ finally
 {
     #region FOOTER
 
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment 
+    Restore-TestEnvironment -TestEnvironment $TestEnvironment
 
     #endregion
 }
