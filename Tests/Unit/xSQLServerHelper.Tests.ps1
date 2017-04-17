@@ -247,7 +247,7 @@ InModuleScope $script:moduleName {
                 -Verifiable
         }
 
-        Context 'When connecting to the dafault instance using Windows Authentication' {
+        Context 'When connecting to the default instance using Windows Authentication' {
             It 'Should not throw when connecting' {
                 $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME"
 
@@ -676,7 +676,7 @@ InModuleScope $script:moduleName {
         Context 'When the Availability Group Replica is altered' {
             It 'Should silently alter the Availability Group Replica' {
                 $availabilityReplica = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityReplica
-                
+
                 { Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityReplica } | Should Not Throw
 
                 Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
@@ -685,7 +685,7 @@ InModuleScope $script:moduleName {
             It 'Should throw the correct error, AlterAvailabilityGroupReplicaFailed, when altering the Availaiblity Group Replica fails' {
                 $availabilityReplica = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityReplica
                 $availabilityReplica.Name = 'AlterFailed'
-                
+
                 { Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityReplica } | Should Throw 'AlterAvailabilityGroupReplicaFailed'
 
                 Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 1 -Exactly
@@ -728,9 +728,9 @@ InModuleScope $script:moduleName {
         BeforeEach {
             Mock -CommandName Invoke-Query -MockWith $mockInvokeQueryClusterServicePermissionsResult -Verifiable
         }
-        
+
         Context 'When all of the permissions are present' {
-            
+
             It 'Should return $true when the desired permissions are present' {
                 $mockInvokeQueryClusterServicePermissionsSet = $mockAllPermissionsPresent.Clone()
                 $testLoginEffectivePermissionsParams.Permissions = $mockAllPermissionsPresent.Clone()
@@ -742,7 +742,7 @@ InModuleScope $script:moduleName {
         }
 
         Context 'When a permission is missing' {
-            
+
             It 'Should return $false when the desired permissions are not present' {
                 $mockInvokeQueryClusterServicePermissionsSet = $mockPermissionsMissing.Clone()
                 $testLoginEffectivePermissionsParams.Permissions = $mockAllPermissionsPresent.Clone()
@@ -761,5 +761,123 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
             }
         }
+    }
+
+    $mockImportModule = {
+        if ($Name -ne $mockExpectedModuleNameToImport)
+        {
+            throw ('Wrong module was loaded. Expected {0}, but was {1}.' -f $mockExpectedModuleNameToImport, $Name[0])
+        }
+    }
+
+    $mockGetModule = {
+        return New-Object PSObject -Property @{
+            Name = $mockModuleNameToImport
+        }
+    }
+
+    $mockGetModule_SqlServer_ParameterFilter = {
+        $FullyQualifiedName.Name -eq 'SqlServer' -and $ListAvailable -eq $true
+    }
+
+    $mockGetModule_SQLPS_ParameterFilter = {
+        $FullyQualifiedName.Name -eq 'SQLPS' -and $ListAvailable -eq $true
+    }
+
+    Describe 'Testing Import-SQLPSModule' -Tag ImportSQLPSModule {
+        BeforeEach {
+            Mock -CommandName Push-Location -Verifiable
+            Mock -CommandName Pop-Location -Verifiable
+            Mock -CommandName Import-Module -MockWith $mockImportModule -Verifiable
+        }
+
+        Context 'When module SqlServer exists' {
+            $mockModuleNameToImport = 'SqlServer'
+            $mockExpectedModuleNameToImport = 'SqlServer'
+
+            It 'Should import the SqlServer module without throwing' {
+                Mock -CommandName Get-Module -MockWith $mockGetModule -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
+
+                { Import-SQLPSModule } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Get-Module -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Push-Location -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Pop-Location -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Import-Module -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When only module SQLPS exists' {
+            $mockModuleNameToImport = 'SQLPS'
+            $mockExpectedModuleNameToImport = 'SQLPS'
+
+            It 'Should import the SqlServer module without throwing' {
+                Mock -CommandName Get-Module -MockWith $mockGetModule -ParameterFilter $mockGetModule_SQLPS_ParameterFilter -Verifiable
+                Mock -CommandName Get-Module -MockWith {
+                    return $null
+                } -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
+
+                { Import-SQLPSModule } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Get-Module -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Get-Module -ParameterFilter $mockGetModule_SQLPS_ParameterFilter -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Push-Location -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Pop-Location -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Import-Module -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When neither SqlServer or SQLPS exists' {
+            $mockModuleNameToImport = 'UnknownModule'
+            $mockExpectedModuleNameToImport = 'SQLPS'
+
+            It 'Should throw the correct error message' {
+                Mock -CommandName Get-Module
+
+                { Import-SQLPSModule } | Should -Throw 'Neither SqlServer module or SQLPS module was found.'
+
+                Assert-MockCalled -CommandName Get-Module -Exactly -Times 2 -Scope It
+                Assert-MockCalled -CommandName Push-Location -Exactly -Times 0 -Scope It
+                Assert-MockCalled -CommandName Pop-Location -Exactly -Times 0 -Scope It
+                Assert-MockCalled -CommandName Import-Module -Exactly -Times 0 -Scope It
+            }
+        }
+
+        Context 'When Import-Module fails to load the module' {
+            $mockModuleNameToImport = 'SqlServer'
+            $mockExpectedModuleNameToImport = 'SqlServer'
+
+            It 'Should throw the correct error message' {
+                Mock -CommandName Get-Module -MockWith $mockGetModule -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
+                Mock -CommandName Import-Module -MockWith {
+                    throw 'Mock Import-Module throwing a mocked error.'
+                }
+
+                { Import-SQLPSModule } | Should -Throw 'Failed to import SqlServer module. InnerException: Mock Import-Module throwing a mocked error.'
+
+                Assert-MockCalled -CommandName Get-Module -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Push-Location -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Pop-Location -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Import-Module -Exactly -Times 1 -Scope It
+            }
+        }
+
+        # This is to test the tests (so the mock throws correctly)
+        Context 'When mock Import-Module is called with wrong module name' {
+            $mockModuleNameToImport = 'SqlServer'
+            $mockExpectedModuleNameToImport = 'UnknownModule'
+
+            It 'Should throw the correct error message' {
+                Mock -CommandName Get-Module -MockWith $mockGetModule -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
+
+                { Import-SQLPSModule } | Should -Throw 'Failed to import SqlServer module. InnerException: Wrong module was loaded. Expected UnknownModule, but was SqlServer.'
+
+                Assert-MockCalled -CommandName Get-Module -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Push-Location -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Pop-Location -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Import-Module -Exactly -Times 1 -Scope It
+            }
+        }
+        Assert-VerifiableMocks
     }
 }
