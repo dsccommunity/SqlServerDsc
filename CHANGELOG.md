@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Changes to xWaitForAvailabilityGroup
+  - Updated README.md with a description for the resources and revised the parameter descriptions.
+  - The default value for RetryIntervalSec is now 20 seconds and the default value for RetryCount is now 30 times (issue #505).
+
 ## 7.0.0.0
 
 - Examples
@@ -117,6 +121,7 @@
   - BREAKING CHANGE: Changed helper function Import-SQLPSModule to support SqlServer module (issue #91). The SqlServer module is the preferred module so if it is found it will be used, and if not found an attempt will be done to load SQLPS module instead.
 - Changes to xSQLServerScript
   - Updated tests for this resource, because they failed when Import-SQLPSModule was updated.
+  - Removing helper function Get-SQLAlwaysOnEndpoint becuase there is no resource using it any longer.
 
 ## 6.0.0.0
 
