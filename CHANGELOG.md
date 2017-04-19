@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 7.0.0.0
+
 - Examples
   - xSQLServerDatabaseRole
     - 1-AddDatabaseRole.ps1
