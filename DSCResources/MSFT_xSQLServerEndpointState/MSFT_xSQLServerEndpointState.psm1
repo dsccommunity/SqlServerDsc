@@ -1,8 +1,19 @@
-﻿$ErrorActionPreference = "Stop"
+﻿Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
+                               -ChildPath 'xSQLServerHelper.psm1') `
+                               -Force
+<#
+    .SYNOPSIS
+        Returns the current state of an endpoint.
 
-$script:currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -ErrorAction Stop
+    .PARAMETER InstanceName
+        The name of the SQL instance to be configured.
 
+    .PARAMETER NodeName
+        The host name of the SQL Server to be configured.
+
+    .PARAMETER Name
+        The name of the endpoint.
+#>
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -11,11 +22,11 @@ function Get-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $InstanceName = "DEFAULT",
+        $InstanceName,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [System.String]
-        $NodeName,
+        $NodeName = $env:COMPUTERNAME,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -23,81 +34,124 @@ function Get-TargetResource
     )
 
     New-VerboseMessage -Message "Getting state of endpoint $Name"
-    
-    try {
-        $endpoint = Get-SQLAlwaysOnEndpoint -Name $Name -NodeName $NodeName -InstanceName $InstanceName -Verbose:$VerbosePreference
-        
-        if( $null -ne $endpoint ) {
-            $state = $endpoint.EndpointState
-        } else {
+
+    try
+    {
+        $sqlServerObject = Connect-SQL -SQLServer $NodeName -SQLInstanceName $InstanceName
+
+        $endpointObject = $sqlServerObject.Endpoints[$Name]
+        if ($null -ne $endpointObject)
+        {
+            $currentState = $endpointObject.EndpointState
+        }
+        else
+        {
             throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($Name) -ErrorCategory ObjectNotFound
         }
-    } catch {
+    }
+    catch
+    {
         throw New-TerminatingError -ErrorType EndpointErrorVerifyExist -FormatArgs @($Name) -ErrorCategory ObjectNotFound -InnerException $_.Exception
     }
 
-    $returnValue = @{
+    return @{
         InstanceName = [System.String] $InstanceName
         NodeName = [System.String] $NodeName
         Name = [System.String] $Name
-        State = [System.String] $state
+        State = [System.String] $currentState
     }
-
-    return $returnValue
 }
 
+<#
+    .SYNOPSIS
+        Changes the state of an endpoint.
+
+    .PARAMETER InstanceName
+        The name of the SQL instance to be configured.
+
+    .PARAMETER NodeName
+        The host name of the SQL Server to be configured.
+
+    .PARAMETER Name
+        The name of the endpoint.
+
+    .PARAMETER State
+        The state of the endpoint. Valid states are Started, Stopped or Disabled. Default value is 'Started'.
+#>
 function Set-TargetResource
 {
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding()]
     param
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $InstanceName = "DEFAULT",
+        $InstanceName,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [System.String]
-        $NodeName,
+        $NodeName = $env:COMPUTERNAME,
 
         [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [ValidateSet("Started","Stopped","Disabled")]
+        [Parameter()]
+        [ValidateSet('Started','Stopped','Disabled')]
         [System.String]
-        $State
+        $State = 'Started'
     )
-  
+
     $parameters = @{
         InstanceName = [System.String] $InstanceName
         NodeName = [System.String] $NodeName
         Name = [System.String] $Name
     }
-    
-    $endPointState = Get-TargetResource @parameters 
-    if( $null -ne $endPointState ) {
-        if( $endPointState.State -ne $State ) {
-            if( ( $PSCmdlet.ShouldProcess( $Name, "Changing state of Endpoint" ) ) ) {
-                $endpoint = Get-SQLAlwaysOnEndpoint -Name $Name -NodeName $NodeName -InstanceName $InstanceName -Verbose:$VerbosePreference
-                $InstanceName = Get-SQLPSInstanceName -InstanceName $InstanceName
-    
-                $setEndPointParams = @{
-                    Path = "SQLSERVER:\SQL\$NodeName\$InstanceName\Endpoints\$Name"
-                    Port = $endpoint.Protocol.Tcp.ListenerPort
-                    IpAddress = $endpoint.Protocol.Tcp.ListenerIPAddress.IPAddressToString
-                    State = $State
-                }
-                
-                Set-SqlHADREndpoint @setEndPointParams -Verbose:$False | Out-Null # Suppressing Verbose because it prints the entire T-SQL statement otherwise
+
+    $getTargetResourceResult = Get-TargetResource @parameters
+    if ($null -ne $getTargetResourceResult)
+    {
+        if ($getTargetResourceResult.State -ne $State)
+        {
+            New-VerboseMessage -Message ('Changing state of endpoint ''{0}''' -f $Name)
+
+            $sqlServerObject = Connect-SQL -SQLServer $NodeName -SQLInstanceName $InstanceName
+
+            $endpointObject = $sqlServerObject.Endpoints[$Name]
+
+            $setEndpointParams = @{
+                InputObject = $endpointObject
+                State = $State
             }
-        } else {
-            New-VerboseMessage -Message "Endpoint configuration is already correct."
+
+            Set-SqlHADREndpoint @setEndpointParams -ErrorAction Stop | Out-Null
         }
-    } else {
+        else
+        {
+            New-VerboseMessage -Message ('Endpoint ''{0}'' state is already correct.' -f $Name)
+        }
+    }
+    else
+    {
         throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
     }
 }
 
+<#
+    .SYNOPSIS
+        Tests the state of an endpoint if it is in desired state.
+
+    .PARAMETER InstanceName
+        The name of the SQL instance to be configured.
+
+    .PARAMETER NodeName
+        The host name of the SQL Server to be configured.
+
+    .PARAMETER Name
+        The name of the endpoint.
+
+    .PARAMETER State
+        The state of the endpoint. Valid states are Started, Stopped or Disabled. Default value is 'Started'.
+#>
 function Test-TargetResource
 {
     [CmdletBinding()]
@@ -106,36 +160,42 @@ function Test-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $InstanceName = "DEFAULT",
+        $InstanceName,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [System.String]
-        $NodeName,
+        $NodeName = $env:COMPUTERNAME,
 
         [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [ValidateSet("Started","Stopped","Disabled")]
+        [Parameter()]
+        [ValidateSet('Started','Stopped','Disabled')]
         [System.String]
-        $State
+        $State = 'Started'
     )
 
     $parameters = @{
-        InstanceName = [System.String] $InstanceName
-        NodeName = [System.String] $NodeName
-        Name = [System.String] $Name
+        InstanceName = $InstanceName
+        NodeName = $NodeName
+        Name = $Name
     }
 
-    New-VerboseMessage -Message "Testing state $State on endpoint $Name"
-    
-    $endPointState = Get-TargetResource @parameters 
-    if( $null -ne $endPointState ) {
-        [System.Boolean] $result = $false
-        if( $endPointState.State -eq $State ) {
+    New-VerboseMessage -Message "Testing state $State on endpoint '$Name'"
+
+    $getTargetResourceResult = Get-TargetResource @parameters
+    if ($null -ne $getTargetResourceResult)
+    {
+        $result = $false
+
+        if ($getTargetResourceResult.State -eq $State)
+        {
             $result = $true
         }
-    } else {
+    }
+    else
+    {
         throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
     }
 

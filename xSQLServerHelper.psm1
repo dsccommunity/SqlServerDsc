@@ -88,52 +88,66 @@ function Connect-SQLAnalysis
     [CmdletBinding()]
     param
     (
-        [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
-        [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLInstanceName = "MSSQLSERVER",
+        $SQLInstanceName = 'MSSQLSERVER',
 
-        [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $SetupCredential
     )
 
     $null = [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.AnalysisServices')
 
-    if ($SQLInstanceName -eq "MSSQLSERVER")
+    if ($SQLInstanceName -eq 'MSSQLSERVER')
     {
-        $connectSql = $SQLServer
+        $analysisServiceInstance = $SQLServer
     }
     else
     {
-        $connectSql = "$SQLServer\$SQLInstanceName"
+        $analysisServiceInstance = "$SQLServer\$SQLInstanceName"
     }
-
-    $sql = New-Object Microsoft.AnalysisServices.Server
 
     if ($SetupCredential)
     {
         $userName = $SetupCredential.GetNetworkCredential().UserName
         $password = $SetupCredential.GetNetworkCredential().Password
 
-        $sql.Connect("Data Source=$connectSql;User ID=$userName;Password=$password")
+        $analysisServicesDataSource = "Data Source=$analysisServiceInstance;User ID=$userName;Password=$password"
     }
     else
     {
-        $sql.Connect("Data Source=$connectSql")
+        $analysisServicesDataSource = "Data Source=$analysisServiceInstance"
     }
 
-    if (!$sql)
+    try
     {
-        Throw -Message "Failed connecting to Analysis Services $connectSql"
+        $analysisServicesObject = New-Object -TypeName Microsoft.AnalysisServices.Server
+        if ($analysisServicesObject)
+        {
+            $analysisServicesObject.Connect($analysisServicesDataSource)
+        }
+        else
+        {
+            throw New-TerminatingError -ErrorType AnalysisServicesNoServerObject -ErrorCategory InvalidResult
+        }
+
+        Write-Verbose -Message "Connected to Analysis Services $analysisServiceInstance." -Verbose
+    }
+    catch
+    {
+        throw New-TerminatingError -ErrorType AnalysisServicesFailedToConnect -FormatArgs @($analysisServiceInstance) -ErrorCategory ObjectNotFound -InnerException $_.Exception
     }
 
-    New-VerboseMessage -Message "Connected to Analysis Services $connectSql"
-
-    return $sql
+    return $analysisServicesObject
 }
 
 <#
@@ -685,34 +699,53 @@ function New-ListenerADObject
     .SYNOPSIS
         Imports the module SQLPS in a standardized way.
 #>
-function Import-SQLPSModule {
+function Import-SQLPSModule
+{
     [CmdletBinding()]
     param()
 
-
-    <# If SQLPS is not removed between resources (if it was started by another DSC resource) getting
-    objects with the SQL PS provider will fail in some instances because of some sort of inconsistency. Uncertain why this happens. #>
-    if( (Get-Module SQLPS).Count -ne 0 ) {
-        Write-Debug "Unloading SQLPS module."
-        Remove-Module -Name SQLPS -Force -Verbose:$False
+    $module = (Get-Module -FullyQualifiedName 'SqlServer' -ListAvailable).Name
+    if ($module)
+    {
+        New-VerboseMessage -Message 'Preferred module SqlServer found.'
+    }
+    else
+    {
+        New-VerboseMessage -Message 'Module SqlServer not found, trying to use older SQLPS module.'
+        $module = (Get-Module -FullyQualifiedName 'SQLPS' -ListAvailable).Name
     }
 
-    Write-Debug "SQLPS module changes CWD to SQLSERVER:\ when loading, pushing location to pop it when module is loaded."
-    Push-Location
+    if ($module)
+    {
+        try
+        {
+            Write-Debug -Message 'SQLPS module changes CWD to SQLSERVER:\ when loading, pushing location to pop it when module is loaded.'
+            Push-Location
 
-    try {
-        New-VerboseMessage -Message "Importing SQLPS module."
-        Import-Module -Name SQLPS -DisableNameChecking -Verbose:$False -ErrorAction Stop # SQLPS has unapproved verbs, disable checking to ignore Warnings.
-        Write-Debug "SQLPS module imported."
-    }
-    catch {
-        throw New-TerminatingError -ErrorType FailedToImportSQLPSModule -ErrorCategory InvalidOperation -InnerException $_.Exception
-    }
-    finally {
-        Write-Debug "Popping location back to what it was before importing SQLPS module."
-        Pop-Location
-    }
+            New-VerboseMessage -Message ('Importing {0} module.' -f $module)
 
+            <#
+                SQLPS has unapproved verbs, disable checking to ignore Warnings.
+                Suppressing verbose so all cmdlet is not llsted.
+            #>
+            Import-Module -Name $module -DisableNameChecking -Verbose:$False -ErrorAction Stop
+
+            Write-Debug -Message ('Module {0} imported.' -f $module)
+        }
+        catch
+        {
+            throw New-TerminatingError -ErrorType FailedToImportSqlModule -FormatArgs @($module) -ErrorCategory InvalidOperation -InnerException $_.Exception
+        }
+        finally
+        {
+            Write-Debug -Message 'Popping location back to what it was before importing SQLPS module.'
+            Pop-Location
+        }
+    }
+    else
+    {
+        throw New-TerminatingError -ErrorType SqlModuleNotFound -ErrorCategory InvalidOperation -InnerException $_.Exception
+    }
 }
 
 <#
@@ -778,231 +811,6 @@ function Get-SQLPSInstance
     $instance = Get-Item $Path
 
     return $instance
-}
-
-<#
-    .SYNOPSIS
-        Returns the SQL Server SQLPS provider endpoint object.
-
-    .PARAMETER Name
-        String containing the name of the endpoint to return.
-
-    .PARAMETER InstanceName
-        String containing the SQL Server Database Engine instance to connect to.
-
-    .PARAMETER NodeName
-        String containing the host name of the SQL Server to connect to.
-#>
-function Get-SQLAlwaysOnEndpoint
-{
-    [CmdletBinding()]
-    [OutputType()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $InstanceName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $NodeName
-    )
-
-    $instance = Get-SQLPSInstance -InstanceName $InstanceName -NodeName $NodeName
-    $Path = "$($instance.PSPath)\Endpoints"
-
-    Write-Debug "Connecting to $Path as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
-
-    [String[]] $presentEndpoint = Get-ChildItem $Path
-    if( $presentEndpoint.Count -ne 0 -and $presentEndpoint.Contains("[$Name]") ) {
-        Write-Debug "Connecting to endpoint $Name as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
-        $endpoint = Get-Item "$Path\$Name"
-    } else {
-        $endpoint = $null
-    }
-
-    return $endpoint
-}
-
-<#
-    .SYNOPSIS
-        Add a user to a server role in the SQL Server instance provided.
-
-    .PARAMETER Sql
-        An object returned from Connect-SQL function.
-
-    .PARAMETER LoginName
-        String containing the login (user) which should be added as a member to the server role.
-
-    .PARAMETER ServerRole
-        String containing the name of the server role which the user will be added as a member to.
-#>
-function Add-SqlServerRoleMember
-{
-    [CmdletBinding()]
-    param
-    (
-        [ValidateNotNull()]
-        [System.Object]
-        $Sql,
-
-        [ValidateNotNull()]
-        [System.String]
-        $LoginName,
-
-        [ValidateNotNull()]
-        [System.String[]]
-        $ServerRole
-
-    )
-
-    $sqlRole = $Sql.Roles
-    if ($sqlRole)
-    {
-        try
-        {
-            foreach ($currentServerRole in $ServerRole)
-            {
-                New-VerboseMessage -Message "Adding SQL login $LoginName in role $currentServerRole"
-                $sqlRole[$currentServerRole].AddMember($LoginName)
-            }
-        }
-        catch
-        {
-            New-VerboseMessage -Message "Failed adding SQL login $LoginName in role $currentServerRole"
-        }
-    }
-    else
-    {
-        New-VerboseMessage -Message "Failed to getting SQL server roles"
-    }
-}
-
-<#
-    .SYNOPSIS
-        Remove a user in a server role in the SQL Server instance provided.
-
-    .PARAMETER Sql
-        An object returned from Connect-SQL function.
-
-    .PARAMETER LoginName
-        String containing the login (user) which should be removed as a member in the server role.
-
-    .PARAMETER ServerRole
-        String containing the name of the server role for which the user will be removed as a member.
-#>
-function Remove-SqlServerRoleMember
-{
-    [CmdletBinding()]
-    param
-    (
-        [ValidateNotNull()]
-        [System.Object]
-        $Sql,
-
-        [ValidateNotNull()]
-        [System.String]
-        $LoginName,
-
-        [ValidateNotNull()]
-        [System.String[]]
-        $ServerRole
-
-    )
-
-    $sqlRole = $Sql.Roles
-    if ($sqlRole)
-    {
-        try
-        {
-            foreach ($currentServerRole in $ServerRole)
-            {
-                New-VerboseMessage -Message "Deleting SQL login $LoginName in role $currentServerRole"
-                $sqlRole[$currentServerRole].DropMember($LoginName)
-            }
-        }
-        catch
-        {
-            New-VerboseMessage -Message "Failed deleting SQL login $LoginName in role $currentServerRole"
-        }
-    }
-    else
-    {
-        New-VerboseMessage -Message "Failed to getting SQL server roles"
-    }
-}
-
-<#
-    .SYNOPSIS
-        This validates if a user is a member of a server role.
-        The function returns $true is the login (user) is a member in the provided server role.
-        It will return $false if the user is not member of the provided server role.
-
-    .PARAMETER SQL
-        An object returned from Connect-SQL function.
-
-    .PARAMETER LoginName
-        String containing the login (user) which should be verified as a member in the server role.
-
-    .PARAMETER ServerRole
-        String containing the name of the server role which the user will be verified if a member of.
-#>
-function Confirm-SqlServerRoleMember
-{
-    [CmdletBinding()]
-    param
-    (
-        [ValidateNotNull()]
-        [System.Object]
-        $Sql,
-
-        [ValidateNotNull()]
-        [System.String]
-        $LoginName,
-
-        [ValidateNotNull()]
-        [System.String[]]
-        $ServerRole
-
-    )
-
-    $sqlRole = $Sql.Roles
-    if ($sqlRole)
-    {
-        foreach ($currentServerRole in $ServerRole)
-        {
-            if ($sqlRole[$currentServerRole])
-            {
-                $membersInRole = $sqlRole[$currentServerRole].EnumMemberNames()
-                if ($membersInRole.Contains($LoginName))
-                {
-                    $confirmServerRole = $true
-                    New-VerboseMessage -Message "$LoginName is present in SQL role name $currentServerRole"
-                }
-                else
-                {
-                    New-VerboseMessage -Message "$LoginName is absent in SQL role name $currentServerRole"
-                    $confirmServerRole = $false
-                }
-            }
-            else
-            {
-                New-VerboseMessage -Message "SQL role name $currentServerRole is absent"
-                $confirmServerRole = $false
-            }
-        }
-    }
-    else
-    {
-        New-VerboseMessage -Message "Failed getting SQL roles"
-        $confirmServerRole = $false
-    }
-
-    return $confirmServerRole
 }
 
 <#
@@ -1095,109 +903,6 @@ function Restart-SqlService
             New-VerboseMessage -Message "Starting $($_.DisplayName)"
             $_ | Start-Service
         }
-    }
-}
-
-<#
-    .SYNOPSIS
-    This cmdlet is used to return the recovery model of a SQL database
-
-    .PARAMETER SqlServerObject
-    This is the SQL Server object returned by Connect-SQL
-
-    .PARAMETER DatabaseName
-    This is the name of the SQL database
-#>
-function Get-SqlDatabaseRecoveryModel
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNull()]
-        [System.Object]
-        $SqlServerObject,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $DatabaseName
-    )
-
-    Write-Verbose -Message "Getting the recovery model used by the database $DatabaseName"
-    $sqlDatabase = $SqlServerObject.Databases[$DatabaseName]
-    $sqlInstanceName = $SqlServerObject.InstanceName
-    $sqlServer = $SqlServerObject.ComputerNamePhysicalNetBIOS
-
-    if ($sqlDatabase)
-    {
-        $sqlDatabaseRecoveryModel = $sqlDatabase.RecoveryModel
-        Write-Verbose -Message "The current recovery model used by database $Name is '$sqlDatabaseRecoveryModel'"
-    }
-    else
-    {
-        throw New-TerminatingError -ErrorType NoDatabase `
-                                   -FormatArgs @($DatabaseName,$sqlServer,$sqlInstanceName) `
-                                   -ErrorCategory InvalidResult
-    }
-
-    $sqlDatabaseRecoveryModel
-}
-
-<#
-    .SYNOPSIS
-    This cmdlet is used to set the recovery model of a SQL database
-
-    .PARAMETER SqlServerObject
-    This is the SQL Server object returned by Connect-SQL
-
-    .PARAMETER DatabaseName
-    This is the name of the SQL database
-
-    .PARAMETER RecoveryModel
-    The recovery model to set on the databases. Valid values are 'Simple','Full' and 'BulkLogged'
-#>
-function Set-SqlDatabaseRecoveryModel
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNull()]
-        [System.Object]
-        $SqlServerObject,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $DatabaseName,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [ValidateSet('Full','Simple','BulkLogged')]
-        [System.String]
-        $RecoveryModel
-    )
-
-    Write-Verbose -Message "Setting the recovery model for the database $DatabaseName"
-    $sqlDatabase = $SqlServerObject.Databases[$DatabaseName]
-    $sqlInstanceName = $SqlServerObject.InstanceName
-    $sqlServer = $SqlServerObject.ComputerNamePhysicalNetBIOS
-
-    if ($sqlDatabase)
-    {
-        if($sqlDatabase.RecoveryModel -ne $RecoveryModel)
-        {
-            $sqlDatabase.RecoveryModel = $RecoveryModel
-            $sqlDatabase.Alter()
-            New-VerboseMessage -Message "The recovery model for the database $DatabaseName is changed to '$RecoveryModel'."
-        }
-    }
-    else
-    {
-        throw New-TerminatingError -ErrorType NoDatabase `
-                                   -FormatArgs @($DatabaseName,$sqlServer,$sqlInstanceName) `
-                                   -ErrorCategory InvalidResult
     }
 }
 
@@ -1556,7 +1261,7 @@ function Remove-SqlDatabasePermission
 
     .PARAMETER SQLServer
     The hostname of the server that hosts the SQL instance.
-    
+
     .PARAMETER SQLInstanceName
     The name of the SQL instance that hosts the database.
 
@@ -1628,4 +1333,96 @@ function Invoke-Query
     }
 
     return $result
+}
+
+<#
+    .SYNOPSIS
+        Executes the alter method on an Availability Group Replica object.
+
+    .PARAMETER AvailabilityGroupReplica
+        The Availabilty Group Replica object that must be altered.
+#>
+function Update-AvailabilityGroupReplica
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [Microsoft.SqlServer.Management.Smo.AvailabilityReplica]
+        $AvailabilityGroupReplica
+    )
+
+    try
+    {
+        $originalErrorActionPreference = $ErrorActionPreference
+        $ErrorActionPreference = 'Stop'
+        $AvailabilityGroupReplica.Alter()
+    }
+    catch
+    {
+        throw New-TerminatingError -ErrorType AlterAvailabilityGroupReplicaFailed -FormatArgs $AvailabilityGroupReplica.Name -ErrorCategory OperationStopped
+    }
+    finally
+    {
+        $ErrorActionPreference = $originalErrorActionPreference
+    }
+}
+
+function Test-LoginEffectivePermissions
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $SQLServer,
+
+        [Parameter(Mandatory = $true)]
+        [String]
+        $SQLInstanceName,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $LoginName,
+
+        [Parameter(Mandatory = $true)]
+        [string[]]
+        $Permissions
+    )
+
+    # Assume the permissions are not present
+    $permissionsPresent = $false
+
+    $invokeQueryParams = @{
+        SQLServer = $SQLServer
+        SQLInstanceName = $SQLInstanceName
+        Database = 'master'
+        WithResults = $true
+    }
+
+    $queryToGetEffectivePermissionsForLogin = "
+        EXECUTE AS LOGIN = '$LoginName'
+        SELECT DISTINCT permission_name
+        FROM fn_my_permissions(null,'SERVER')
+        REVERT
+    "
+
+    New-VerboseMessage -Message "Getting the effective permissions for the login '$LoginName' on '$sqlInstanceName'."
+
+    $loginEffectivePermissionsResult = Invoke-Query @invokeQueryParams -Query $queryToGetEffectivePermissionsForLogin
+    $loginEffectivePermissions = $loginEffectivePermissionsResult.Tables.Rows.permission_name
+
+    if ( $null -ne $loginEffectivePermissions )
+    {
+        $loginMissingPermissions = Compare-Object -ReferenceObject $Permissions -DifferenceObject $loginEffectivePermissions |
+            Where-Object -FilterScript { $_.SideIndicator -ne '=>' } |
+            Select-Object -ExpandProperty InputObject
+
+        if ( $loginMissingPermissions.Count -eq 0 )
+        {
+            $permissionsPresent = $true
+        }
+    }
+
+    return $permissionsPresent
 }

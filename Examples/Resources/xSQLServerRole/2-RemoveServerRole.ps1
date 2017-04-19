@@ -1,7 +1,7 @@
 <#
 .EXAMPLE
-    This example shows how to ensure that the user account CONTOSO\SQLUser
-    does not have "setupadmin" SQL server role.
+    This example shows how to ensure that the server role named 
+    serverRoleToDelete is not present on instance SQLServer\DSC.
 #>
 
 Configuration Example
@@ -15,14 +15,13 @@ Configuration Example
     Import-DscResource -ModuleName xSqlServer
 
     node localhost {
-        xSQLServerRole Remove_ServerRoleFromLogin
+        xSQLServerRole Remove_ServerRole
         {
-            Ensure = 'Absent'
-            Name = 'CONTOSO\SQLUser'
-            ServerRole = "setupadmin"
-            SQLServer = 'SQLServer'
-            SQLInstanceName = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            Ensure                  = 'Absent'
+            ServerRoleName          = "serverRoleToDelete"
+            SQLServer               = 'SQLServer'
+            SQLInstanceName         = 'DSC'
+            PsDscRunAsCredential    = $SysAdminAccount
         }
     }
 }

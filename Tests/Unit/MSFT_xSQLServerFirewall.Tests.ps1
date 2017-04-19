@@ -92,6 +92,11 @@ try
         $mockmockSourceCredentialPassword = "dummyPassw0rd" | ConvertTo-SecureString -asPlainText -Force
         $mockSourceCredential = New-Object System.Management.Automation.PSCredential( $mockmockSourceCredentialUserName, $mockmockSourceCredentialPassword )
 
+        $mockDynamicSQLEngineFirewallRulePresent = $true
+        $mockDynamicSQLBrowserFirewallRulePresent = $true
+        $mockDynamicSQLIntegrationServicesRulePresent = $true
+        $mockDynamicSQLAnalysisServicesFirewallRulePresent = $true
+
         #region Function mocks
         $mockEmptyHashtable = {
             return @()
@@ -246,7 +251,7 @@ try
         }
 
         $mockGetNetFirewallApplicationFilter = {
-            if ($AssociatedNetFirewallRule.DisplayName -eq "SQL Server Database Engine instance $mockCurrentInstanceName")
+            if ($mockDynamicSQLEngineFirewallRulePresent -and $AssociatedNetFirewallRule.DisplayName -eq "SQL Server Database Engine instance $mockCurrentInstanceName")
             {
                 return @(
                     (
@@ -255,7 +260,7 @@ try
                     )
                 )
             }
-            elseif ($AssociatedNetFirewallRule.DisplayName -eq 'SQL Server Integration Services Application')
+            elseif ($mockDynamicSQLIntegrationServicesRulePresent -and $AssociatedNetFirewallRule.DisplayName -eq 'SQL Server Integration Services Application')
             {
                 return @(
                     (
@@ -264,14 +269,15 @@ try
                     )
                 )
             }
-            else
+            # Only throw if the rules should be present.
+            elseif ($mockDynamicSQLEngineFirewallRulePresent -and $mockDynamicSQLIntegrationServicesRulePresent)
             {
                 throw "Mock Get-NetFirewallApplicationFilter was called with a rule containing an unknown display name; $($AssociatedNetFirewallRule.DisplayName)"
             }
         }
 
         $mockGetNetFirewallServiceFilter = {
-            if ($AssociatedNetFirewallRule.DisplayName -eq "SQL Server Analysis Services instance $mockCurrentInstanceName")
+            if ($mockDynamicSQLAnalysisServicesFirewallRulePresent -and $AssociatedNetFirewallRule.DisplayName -eq "SQL Server Analysis Services instance $mockCurrentInstanceName")
             {
                 return @(
                     (
@@ -280,7 +286,7 @@ try
                     )
                 )
             }
-            elseif ($AssociatedNetFirewallRule.DisplayName -eq 'SQL Server Browser')
+            elseif ($mockDynamicSQLBrowserFirewallRulePresent -and $AssociatedNetFirewallRule.DisplayName -eq 'SQL Server Browser')
             {
                 return @(
                     (
@@ -289,7 +295,7 @@ try
                     )
                 )
             }
-            else
+            elseif ($mockDynamicSQLBrowserFirewallRulePresent -and $mockDynamicSQLAnalysisServicesFirewallRulePresent)
             {
                 throw "Mock Get-NetFirewallServiceFilter was called with a rule containing an unknown display name; $($AssociatedNetFirewallRule.DisplayName)"
             }
@@ -760,6 +766,119 @@ try
                         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter -Exactly -Times 1 -Scope It
                     }
                 }
+
+                Context "When SQL Server version is $mockCurrentSqlMajorVersion and the system is not in the desired state for named instance" {
+                    BeforeEach {
+                        $testParameters = $mockDefaultParameters.Clone()
+                        $testParameters += @{
+                            InstanceName = $mockCurrentInstanceName
+                            SourcePath = $mockSourcePath
+                        }
+
+                        Mock -CommandName Get-NetFirewallRule -MockWith $mockGetNetFirewallRule -Verifiable
+                        Mock -CommandName Get-NetFirewallApplicationFilter -MockWith $mockGetNetFirewallApplicationFilter -Verifiable
+                        Mock -CommandName Get-NetFirewallServiceFilter -MockWith $mockGetNetFirewallServiceFilter -Verifiable
+                        Mock -CommandName Get-NetFirewallPortFilter -MockWith $mockGetNetFirewallPortFilter -Verifiable
+                        Mock -CommandName New-NetFirewallRule -Verifiable
+                        Mock -CommandName Get-Service -MockWith $mockGetService_NamedInstance -Verifiable
+                    }
+
+                    # Change the mock to not return a rule for DB Engine
+                    $mockDynamicSQLBrowserFirewallRulePresent = $true
+                    $mockDynamicSQLIntegrationServicesRulePresent = $true
+                    $mockDynamicSQLEngineFirewallRulePresent = $false
+                    $mockDynamicSQLAnalysisServicesFirewallRulePresent = $true
+
+                    Context 'SQLBrowser rule is present, but missing SQLEngine rule' {
+                        It 'Should return the same values as passed as parameters' {
+                            $result = Get-TargetResource @testParameters
+                            $result.InstanceName | Should Be $testParameters.InstanceName
+                            $result.SourcePath | Should Be $testParameters.SourcePath
+                        }
+
+                        It 'Should return $false for the read parameter DatabaseEngineFirewall' {
+                            $result = Get-TargetResource @testParameters
+                            $result.DatabaseEngineFirewall | Should Be $false
+                        }
+
+                        It 'Should return $true for the read parameter BrowserFirewall' {
+                            $result = Get-TargetResource @testParameters
+                            $result.BrowserFirewall | Should Be $true
+                        }
+
+                        It 'Should return state as absent' {
+                            $result = Get-TargetResource @testParameters
+                            $result.Ensure | Should Be 'Absent'
+                            $result.Features | Should Be $testParameters.Features
+                        }
+
+                        It 'Should call the correct functions exact number of times' {
+                            $result = Get-TargetResource @testParameters
+                            Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-NetFirewallRule -Exactly -Times 8 -Scope It
+                            Assert-MockCalled -CommandName Get-NetFirewallApplicationFilter -Exactly -Times 2 -Scope It
+                            Assert-MockCalled -CommandName Get-NetFirewallServiceFilter -Exactly -Times 3 -Scope It
+                            Assert-MockCalled -CommandName Get-NetFirewallPortFilter -Exactly -Times 3 -Scope It
+                            Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_DatabaseEngineSqlBinRoot_ParameterFilter -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter -Exactly -Times 1 -Scope It
+                        }
+                    }
+
+                    # Change the mock to not return a rule for Analysis Services
+                    $mockDynamicSQLBrowserFirewallRulePresent = $true
+                    $mockDynamicSQLIntegrationServicesRulePresent = $true
+                    $mockDynamicSQLEngineFirewallRulePresent = $true
+                    $mockDynamicSQLAnalysisServicesFirewallRulePresent = $false
+
+                    Context 'SQLBrowser rule is present, but missing Analysis Services rule' {
+                        It 'Should return the same values as passed as parameters' {
+                            $result = Get-TargetResource @testParameters
+                            $result.InstanceName | Should Be $testParameters.InstanceName
+                            $result.SourcePath | Should Be $testParameters.SourcePath
+                        }
+
+                        It 'Should return $false for the read parameter AnalysisServicesFirewall' {
+                            $result = Get-TargetResource @testParameters
+                            $result.AnalysisServicesFirewall | Should Be $false
+                        }
+
+                        It 'Should return $true for the read parameter BrowserFirewall' {
+                            $result = Get-TargetResource @testParameters
+                            $result.BrowserFirewall | Should Be $true
+                        }
+
+                        It 'Should return state as absent' {
+                            $result = Get-TargetResource @testParameters
+                            $result.Ensure | Should Be 'Absent'
+                            $result.Features | Should Be $testParameters.Features
+                        }
+
+                        It 'Should call the correct functions exact number of times' {
+                            $result = Get-TargetResource @testParameters
+                            Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-NetFirewallRule -Exactly -Times 8 -Scope It
+                            Assert-MockCalled -CommandName Get-NetFirewallApplicationFilter -Exactly -Times 2 -Scope It
+                            Assert-MockCalled -CommandName Get-NetFirewallServiceFilter -Exactly -Times 3 -Scope It
+                            Assert-MockCalled -CommandName Get-NetFirewallPortFilter -Exactly -Times 3 -Scope It
+                            Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_DatabaseEngineSqlBinRoot_ParameterFilter -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter -Exactly -Times 1 -Scope It
+                        }
+                    }
+                }
+
+                # Set mock to return all rules.
+                $mockDynamicSQLBrowserFirewallRulePresent = $true
+                $mockDynamicSQLIntegrationServicesRulePresent = $true
+                $mockDynamicSQLEngineFirewallRulePresent = $true
+                $mockDynamicSQLAnalysisServicesFirewallRulePresent = $true
 
                 Context "When SQL Server version is $mockCurrentSqlMajorVersion and the system is in the desired state for named instance" {
                     BeforeEach {

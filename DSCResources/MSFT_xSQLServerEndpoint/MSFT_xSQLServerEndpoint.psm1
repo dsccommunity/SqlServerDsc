@@ -1,163 +1,281 @@
-$currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-Write-Verbose -Message "CurrentPath: $currentPath"
+Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
+                               -ChildPath 'xSQLServerHelper.psm1') `
+                               -Force
+<#
+    .SYNOPSIS
+        Returns the current state of the endpoint.
 
-# Load Common Code
-Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -Verbose:$false -ErrorAction Stop
+    .PARAMETER EndpointName
+        The name of the endpoint.
 
-# DSC resource to manage SQL Endpoint
+    .PARAMETER SQLServer
+        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
-# NOTE: This resource requires WMF5 and PsDscRunAsCredential
-
+    .PARAMETER SQLInstanceName
+        The name of the SQL instance to be configured.
+#>
 function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
-        $EndPointName,
+        $EndpointName,
 
-        [ValidateSet("Present","Absent")]
-        [System.String]
-        $Ensure,
-
-        [System.UInt32]
-        $Port,
-
-        [System.String]
-        $AuthorizedUser,
-
+        [Parameter()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
+        [Parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName = "MSSQLSERVER"
+        $SQLInstanceName
     )
-     
-    $vConfigured = Test-TargetResource -EndPointName $EndPointName -Ensure $Ensure -Port $Port -AuthorizedUser $AuthorizedUser
-    if(!$SQL)
-    {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-    }
-    
-    $returnValue = @{
-    EndPointName = $EndPointName
-    Ensure = $vConfigured
-    Port = $sql.Endpoints[$EndPointName].Protocol.Tcp.ListenerPort
-    AuthorizedUser = $sql.Endpoints[$EndPointName].EnumObjectPermissions().grantee
+
+    $getTargetResourceReturnValues = @{
+        SQLServer = $SQLServer
+        SQLInstanceName = $SQLInstanceName
+        Ensure = 'Absent'
+        EndpointName = ''
+        Port = ''
+        IpAddress = ''
     }
 
-    $returnValue
+    $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+    if ($sqlServerObject)
+    {
+        Write-Verbose -Message ('Connected to {0}\{1}' -f $SQLServer, $SQLInstanceName)
+
+        $endpointObject = $sqlServerObject.Endpoints[$EndpointName]
+        if ($endpointObject.Name -eq $EndpointName)
+        {
+            if ($sqlServerObject.Endpoints[$EndPointName].EndpointType -ne 'DatabaseMirroring')
+            {
+                throw New-TerminatingError -ErrorType EndpointFoundButWrongType `
+                                            -FormatArgs @($EndpointName) `
+                                            -ErrorCategory InvalidOperation
+            }
+
+            $getTargetResourceReturnValues.Ensure = 'Present'
+            $getTargetResourceReturnValues.EndpointName = $endpointObject.Name
+            $getTargetResourceReturnValues.Port = $endpointObject.Protocol.Tcp.ListenerPort
+            $getTargetResourceReturnValues.IpAddress = $endpointObject.Protocol.Tcp.ListenerIPAddress
+        }
+        else
+        {
+            $getTargetResourceReturnValues.Ensure = 'Absent'
+            $getTargetResourceReturnValues.EndpointName = ''
+            $getTargetResourceReturnValues.Port = ''
+            $getTargetResourceReturnValues.IpAddress = ''
+        }
+    }
+    else
+    {
+        throw New-TerminatingError -ErrorType NotConnectedToInstance `
+                                    -FormatArgs @($SQLServer,$SQLInstanceName) `
+                                    -ErrorCategory InvalidOperation
+    }
+
+    return $getTargetResourceReturnValues
 }
 
+<#
+    .SYNOPSIS
+        Create, changes or drops an endpoint.
 
+    .PARAMETER EndpointName
+        The name of the endpoint.
+
+    .PARAMETER Ensure
+        If the endpoint should be present or absent. Default values is 'Present'.
+
+    .PARAMETER Port
+        The network port the endpoint is listening on. Default value is 5022.
+
+    .PARAMETER SQLServer
+        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+
+    .PARAMETER SQLInstanceName
+        The name of the SQL instance to be configured.
+
+    .PARAMETER IpAddress
+        The network IP address the endpoint is listening on. Defaults to '0.0.0.0' which means listen on any valid IP address.
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
-        $EndPointName,
+        $EndpointName,
 
-        [ValidateSet("Present","Absent")]
+        [Parameter()]
+        [ValidateSet('Present','Absent')]
         [System.String]
-        $Ensure,
+        $Ensure = 'Present',
 
-        [System.UInt32]
-        $Port,
+        [Parameter()]
+        [System.UInt16]
+        $Port = 5022,
 
-        [System.String]
-        $AuthorizedUser,
-
+        [Parameter()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
+        [Parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName = "MSSQLSERVER"
+        $SQLInstanceName,
+
+        [Parameter()]
+        [System.String]
+        $IpAddress = '0.0.0.0'
     )
 
-    if(!$SQL)
-    {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-    }
-Write-Verbose "Connected to Server"
+    $getTargetResourceResult = Get-TargetResource -EndpointName $EndpointName -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
-    if($Ensure -eq "Present")
+    $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+    if ($sqlServerObject)
     {
-        Write-Verbose "Check to see login $AuthorizedUser exist on the server"
-
-        if(!$SQL.Logins.Contains($AuthorizedUser))
+        if ($Ensure -eq 'Present' -and $getTargetResourceResult.Ensure -eq 'Absent')
         {
-            throw New-TerminatingError -ErrorType NoAuthorizedUser -FormatArgs @($AuthorizedUser,$SQLServer,$SQLInstanceName) -ErrorCategory InvalidResult
+            Write-Verbose -Message ('Creating endpoint {0}.' -f $EndpointName)
+
+            $endpointObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Endpoint -ArgumentList $sqlServerObject, $EndpointName
+            $endpointObject.EndpointType = [Microsoft.SqlServer.Management.Smo.EndpointType]::DatabaseMirroring
+            $endpointObject.ProtocolType = [Microsoft.SqlServer.Management.Smo.ProtocolType]::Tcp
+            $endpointObject.Protocol.Tcp.ListenerPort = $Port
+            $endpointObject.Protocol.Tcp.ListenerIPAddress = $IpAddress
+            $endpointObject.Payload.DatabaseMirroring.ServerMirroringRole = [Microsoft.SqlServer.Management.Smo.ServerMirroringRole]::All
+            $endpointObject.Payload.DatabaseMirroring.EndpointEncryption = [Microsoft.SqlServer.Management.Smo.EndpointEncryption]::Required
+            $endpointObject.Payload.DatabaseMirroring.EndpointEncryptionAlgorithm = [Microsoft.SqlServer.Management.Smo.EndpointEncryptionAlgorithm]::Aes
+            $endpointObject.Create()
+            $endpointObject.Start()
         }
-        $Endpoint = New-Object -typename Microsoft.SqlServer.Management.Smo.Endpoint -ArgumentList $Sql,$EndpointName
-        $Endpoint.EndpointType = [Microsoft.SqlServer.Management.Smo.EndpointType]::DatabaseMirroring
-        $Endpoint.ProtocolType = [Microsoft.SqlServer.Management.Smo.ProtocolType]::Tcp
-        $Endpoint.Protocol.Tcp.ListenerPort = $Port
-        $Endpoint.Payload.DatabaseMirroring.ServerMirroringRole = [Microsoft.SqlServer.Management.Smo.ServerMirroringRole]::All
-        $Endpoint.Payload.DatabaseMirroring.EndpointEncryption = [Microsoft.SqlServer.Management.Smo.EndpointEncryption]::Required
-        $Endpoint.Payload.DatabaseMirroring.EndpointEncryptionAlgorithm = [Microsoft.SqlServer.Management.Smo.EndpointEncryptionAlgorithm]::Aes 
-        $Endpoint.Create()
-        $Endpoint.Start()
-        $ConnectPerm = New-Object -TypeName Microsoft.SqlServer.Management.SMO.ObjectPermissionSet
-        $ConnectPerm.Connect= $true
-        $Endpoint.Grant($ConnectPerm,$AuthorizedUser)
+        elseif ($Ensure -eq 'Present' -and $getTargetResourceResult.Ensure -eq 'Present')
+        {
+            # The endpoint already exist, verifying supported endpoint properties so they are in desired state.
+            $endpointObject = $sqlServerObject.Endpoints[$EndpointName]
+            if ($endpointObject)
+            {
+                if ($endpointObject.Protocol.Tcp.ListenerIPAddress -ne $IpAddress)
+                {
+                    Write-Verbose -Message ('Updating endpoint {0} IP address to {1}.' -f $EndpointName, $IpAddress)
+                    $endpointObject.Protocol.Tcp.ListenerIPAddress = $IpAddress
+                    $endpointObject.Alter()
+                }
+
+                if ($endpointObject.Protocol.Tcp.ListenerPort -ne $Port)
+                {
+                    Write-Verbose -Message ('Updating endpoint {0} port to {1}.' -f $EndpointName, $Port)
+                    $endpointObject.Protocol.Tcp.ListenerPort = $Port
+                    $endpointObject.Alter()
+                }
+            }
+            else
+            {
+                throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($EndpointName) -ErrorCategory ObjectNotFound
+            }
+        }
+        elseif ($Ensure -eq 'Absent' -and $getTargetResourceResult.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message ('Dropping endpoint {0}.' -f $EndpointName)
+
+            $endpointObject = $sqlServerObject.Endpoints[$EndpointName]
+            if ($endpointObject)
+            {
+                $endpointObject.Drop()
+            }
+            else
+            {
+                throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($EndpointName) -ErrorCategory ObjectNotFound
+            }
+        }
     }
-    elseif($Ensure -eq "Absent")
+    else
     {
-        Write-Verbose "Drop $EndPointName"
-        $SQL.Endpoints[$EndPointName].Drop()
+        throw New-TerminatingError -ErrorType NotConnectedToInstance `
+                                    -FormatArgs @($SQLServer,$SQLInstanceName) `
+                                    -ErrorCategory InvalidOperation
     }
 }
 
+<#
+    .SYNOPSIS
+        Tests if the principal (login) has the desired permissions.
 
+    .PARAMETER EndpointName
+        The name of the endpoint.
+
+    .PARAMETER Ensure
+        If the endpoint should be present or absent. Default values is 'Present'.
+
+    .PARAMETER Port
+        The network port the endpoint is listening on. Default value is 5022.
+
+    .PARAMETER SQLServer
+        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+
+    .PARAMETER SQLInstanceName
+        The name of the SQL instance to be configured.
+
+    .PARAMETER IpAddress
+        The network IP address the endpoint is listening on. Defaults to '0.0.0.0' which means listen on any valid IP address.
+#>
 function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
-        $EndPointName,
+        $EndpointName,
 
-        [ValidateSet("Present","Absent")]
+        [Parameter()]
+        [ValidateSet('Present','Absent')]
         [System.String]
-        $Ensure,
+        $Ensure = 'Present',
 
-        [System.UInt32]
-        $Port,
+        [Parameter()]
+        [System.UInt16]
+        $Port = 5022,
 
-        [System.String]
-        $AuthorizedUser,
-
+        [Parameter()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
+        [Parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName = "MSSQLSERVER"
+        $SQLInstanceName,
+
+        [Parameter()]
+        [System.String]
+        $IpAddress = '0.0.0.0'
     )
 
-    if(!$SQL)
+    $getTargetResourceResult = Get-TargetResource -EndpointName $EndpointName -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+    if ($getTargetResourceResult.Ensure -eq $Ensure)
     {
-        $SQL = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-    }
-    
-    $result = [System.Boolean]
+        $result = $true
 
-
-    if(($sql.Endpoints[$EndPointName].Name -eq $EndPointName)-and($ensure -eq "Present") )
-    {
-        $Result = $true
+        if ($getTargetResourceResult.Ensure -eq 'Present' `
+            -and (
+                $getTargetResourceResult.Port -ne $Port `
+                -or $getTargetResourceResult.IpAddress -ne $IpAddress
+                )
+            )
+        {
+            $result = $false
+        }
     }
     else
-    {$result = $false}
+    {
+        $result = $false
+    }
 
-    $result
+    return $result
 }
 
-
 Export-ModuleMember -Function *-TargetResource
-

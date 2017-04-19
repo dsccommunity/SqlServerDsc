@@ -1,8 +1,22 @@
-﻿$ErrorActionPreference = "Stop"
+﻿Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
+                               -ChildPath 'xSQLServerHelper.psm1') `
+                               -Force
+<#
+    .SYNOPSIS
+        Returns the current state of the permissions for the principal (login).
 
-$script:currentPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-Import-Module $currentPath\..\..\xSQLServerHelper.psm1 -ErrorAction Stop
+    .PARAMETER InstanceName
+        The name of the SQL instance to be configured.
 
+    .PARAMETER NodeName
+        The host name of the SQL Server to be configured.
+
+    .PARAMETER Name
+        The name of the endpoint.
+
+    .PARAMETER Principal
+        The login to which permission will be set.
+#>
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -11,7 +25,7 @@ function Get-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $InstanceName = "DEFAULT",
+        $InstanceName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -26,30 +40,40 @@ function Get-TargetResource
         $Principal
     )
 
-    try {
-        $endpoint = Get-SQLAlwaysOnEndpoint -Name $Name -NodeName $NodeName -InstanceName $InstanceName -Verbose:$VerbosePreference
-        
-        if( $null -ne $endpoint ) {
-            New-VerboseMessage -Message "Enumerating permissions for Endpoint $Name"
+    try
+    {
+        $sqlServerObject = Connect-SQL -SQLServer $NodeName -SQLInstanceName $InstanceName
+
+        $endpointObject = $sqlServerObject.Endpoints[$Name]
+        if( $null -ne $endpointObject )
+        {
+            New-VerboseMessage -Message "Enumerating permissions for endpoint $Name"
 
             $permissionSet = New-Object -Property @{ Connect = $True } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
 
-            $endpointPermission = $endpoint.EnumObjectPermissions( $permissionSet ) | Where-Object { $_.PermissionState -eq "Grant" -and $_.Grantee -eq $Principal }
-            if( $endpointPermission.Count -ne 0 ) {
-                $Ensure = "Present"
-                $Permission = "CONNECT"
-            } else {
-                $Ensure = "Absent"
-                $Permission = ""
+            $endpointPermission = $endpointObject.EnumObjectPermissions( $permissionSet ) | Where-Object { $_.PermissionState -eq "Grant" -and $_.Grantee -eq $Principal }
+            if ($endpointPermission.Count -ne 0)
+            {
+                $Ensure = 'Present'
+                $Permission = 'CONNECT'
             }
-        } else {
+            else
+            {
+                $Ensure = 'Absent'
+                $Permission = ''
+            }
+        }
+        else
+        {
             throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($Name) -ErrorCategory ObjectNotFound
         }
-    } catch {
-        throw New-TerminatingError -ErrorType EndpointErrorVerifyExist -FormatArgs @($Name) -ErrorCategory ObjectNotFound -InnerException $_.Exception
+    }
+    catch
+    {
+        throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -FormatArgs @($Name) -ErrorCategory ObjectNotFound -InnerException $_.Exception
     }
 
-    $returnValue = @{
+    return @{
         InstanceName = [System.String] $InstanceName
         NodeName = [System.String] $NodeName
         Ensure = [System.String] $Ensure
@@ -57,26 +81,47 @@ function Get-TargetResource
         Principal = [System.String] $Principal
         Permission = [System.String] $Permission
     }
-
-    return $returnValue
 }
 
+<#
+    .SYNOPSIS
+        Grants or revokes the permission for the the principal (login).
+
+    .PARAMETER InstanceName
+        The name of the SQL instance to be configured.
+
+    .PARAMETER NodeName
+        The host name of the SQL Server to be configured.
+
+    .PARAMETER Ensure
+        If the permission should be present or absent. Default value is 'Present'.
+
+    .PARAMETER Name
+        The name of the endpoint.
+
+    .PARAMETER Permission
+        The permission to set for the login. Valid value for permission are only CONNECT.
+
+    .PARAMETER Principal
+        The permission to set for the login.
+#>
 function Set-TargetResource
 {
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding()]
     param
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $InstanceName = "DEFAULT",
+        $InstanceName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName,
 
-        [ValidateSet("Present","Absent")]
+        [Parameter()]
+        [ValidateSet('Present','Absent')]
         [System.String]
-        $Ensure,
+        $Ensure = 'Present',
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -86,7 +131,8 @@ function Set-TargetResource
         [System.String]
         $Principal,
 
-        [ValidateSet("CONNECT")]
+        [Parameter()]
+        [ValidateSet('CONNECT')]
         [System.String]
         $Permission
     )
@@ -97,34 +143,62 @@ function Set-TargetResource
         Name = [System.String] $Name
         Principal = [System.String] $Principal
     }
-    
-    $endPointPermissionState = Get-TargetResource @parameters 
-    if( $null -ne $endPointPermissionState ) {
-        if( $endPointPermissionState.Ensure -ne $Ensure ) {
-            $endpoint = Get-SQLAlwaysOnEndpoint -Name $Name -NodeName $NodeName -InstanceName $InstanceName -Verbose:$VerbosePreference
-            if( $null -ne $endpoint ) {
-                $permissionSet = New-Object -Property @{ Connect = $True } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
-                
-                if( $Ensure -eq "Present") {
-                    if( ( $PSCmdlet.ShouldProcess( $Name, "Grant permission to $Principal on Endpoint" ) ) ) {
-                        $endpoint.Grant($permissionSet, $Principal )
-                    }
-                } else {
-                    if( ( $PSCmdlet.ShouldProcess( $Name, "Revoke permission to $Principal on Endpoint" ) ) ) {
-                        $endpoint.Revoke($permissionSet, $Principal )
-                    }
-                }
-            } else {
-                throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($Name) -ErrorCategory ObjectNotFound
+
+    $getTargetResourceResult = Get-TargetResource @parameters
+    if ($getTargetResourceResult.Ensure -ne $Ensure)
+    {
+        $sqlServerObject = Connect-SQL -SQLServer $NodeName -SQLInstanceName $InstanceName
+
+        $endpointObject = $sqlServerObject.Endpoints[$Name]
+        if ($null -ne $endpointObject)
+        {
+            $permissionSet = New-Object -Property @{ Connect = $True } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
+
+            if ($Ensure -eq 'Present')
+            {
+                New-VerboseMessage -Message "Grant permission to $Principal on endpoint $Name"
+
+                $endpointObject.Grant($permissionSet, $Principal)
             }
-        } else {
-            New-VerboseMessage -Message "State is already $Ensure"
+            else
+            {
+                New-VerboseMessage -Message "Revoke permission to $Principal on endpoint $Name"
+                $endpointObject.Revoke($permissionSet, $Principal)
+            }
         }
-    } else {
-        throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
+        else
+        {
+            throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($Name) -ErrorCategory ObjectNotFound
+        }
+    }
+    else
+    {
+        New-VerboseMessage -Message "State is already $Ensure"
     }
 }
 
+<#
+    .SYNOPSIS
+        Tests if the principal (login) has the desired permissions.
+
+    .PARAMETER InstanceName
+        The name of the SQL instance to be configured.
+
+    .PARAMETER NodeName
+        The host name of the SQL Server to be configured.
+
+    .PARAMETER Ensure
+        If the permission should be present or absent. Default value is 'Present'.
+
+    .PARAMETER Name
+        The name of the endpoint.
+
+    .PARAMETER Permission
+        The permission to set for the login. Valid value for permission are only CONNECT.
+
+    .PARAMETER Principal
+        The permission to set for the login.
+#>
 function Test-TargetResource
 {
     [CmdletBinding()]
@@ -133,15 +207,16 @@ function Test-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $InstanceName = "DEFAULT",
+        $InstanceName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
         $NodeName,
 
-        [ValidateSet("Present","Absent")]
+        [Parameter()]
+        [ValidateSet('Present','Absent')]
         [System.String]
-        $Ensure,
+        $Ensure = 'Present',
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -151,7 +226,8 @@ function Test-TargetResource
         [System.String]
         $Principal,
 
-        [ValidateSet("CONNECT")]
+        [Parameter()]
+        [ValidateSet('CONNECT')]
         [System.String]
         $Permission
     )
@@ -162,20 +238,12 @@ function Test-TargetResource
         Name = [System.String] $Name
         Principal = [System.String] $Principal
     }
-    
+
     New-VerboseMessage -Message "Testing state of endpoint permission for $Principal"
 
-    $endPointPermissionState = Get-TargetResource @parameters 
-    if( $null -ne $endPointPermissionState ) {
-        [System.Boolean] $result = $false
-        if( $endPointPermissionState.Ensure -eq $Ensure) {
-            $result = $true
-        }
-    } else {
-        throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
-    }
+    $getTargetResourceResult = Get-TargetResource @parameters
 
-    return $result
+    return $getTargetResourceResult.Ensure -eq $Ensure
 }
 
 Export-ModuleMember -Function *-TargetResource
