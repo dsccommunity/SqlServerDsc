@@ -112,7 +112,7 @@
   - The parameter Name is now a key so it is now possible to change the state on more than one endpoint on the same instance. _Note: The resource still only supports Database Mirror endpoints at this time._
 - Changes to xSQLServerHelper module
   - Removing helper function Get-SQLAlwaysOnEndpoint becuase there is no resource using it any longer.
-  - Changed helper function Import-SQLPSModule to support SqlServer module (issue #91). The SqlServer module is the preferred module so if it is found it will be used, and if not found an attempt will be done to load SQLPS module instead.
+  - BREAKING CHANGE: Changed helper function Import-SQLPSModule to support SqlServer module (issue #91). The SqlServer module is the preferred module so if it is found it will be used, and if not found an attempt will be done to load SQLPS module instead.
 - Changes to xSQLServerScript
   - Updated tests for this resource, because they failed when Import-SQLPSModule was updated.
 
