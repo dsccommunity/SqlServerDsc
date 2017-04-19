@@ -699,34 +699,53 @@ function New-ListenerADObject
     .SYNOPSIS
         Imports the module SQLPS in a standardized way.
 #>
-function Import-SQLPSModule {
+function Import-SQLPSModule
+{
     [CmdletBinding()]
     param()
 
-
-    <# If SQLPS is not removed between resources (if it was started by another DSC resource) getting
-    objects with the SQL PS provider will fail in some instances because of some sort of inconsistency. Uncertain why this happens. #>
-    if( (Get-Module SQLPS).Count -ne 0 ) {
-        Write-Debug "Unloading SQLPS module."
-        Remove-Module -Name SQLPS -Force -Verbose:$False
+    $module = (Get-Module -FullyQualifiedName 'SqlServer' -ListAvailable).Name
+    if ($module)
+    {
+        New-VerboseMessage -Message 'Preferred module SqlServer found.'
+    }
+    else
+    {
+        New-VerboseMessage -Message 'Module SqlServer not found, trying to use older SQLPS module.'
+        $module = (Get-Module -FullyQualifiedName 'SQLPS' -ListAvailable).Name
     }
 
-    Write-Debug "SQLPS module changes CWD to SQLSERVER:\ when loading, pushing location to pop it when module is loaded."
-    Push-Location
+    if ($module)
+    {
+        try
+        {
+            Write-Debug -Message 'SQLPS module changes CWD to SQLSERVER:\ when loading, pushing location to pop it when module is loaded.'
+            Push-Location
 
-    try {
-        New-VerboseMessage -Message "Importing SQLPS module."
-        Import-Module -Name SQLPS -DisableNameChecking -Verbose:$False -ErrorAction Stop # SQLPS has unapproved verbs, disable checking to ignore Warnings.
-        Write-Debug "SQLPS module imported."
-    }
-    catch {
-        throw New-TerminatingError -ErrorType FailedToImportSQLPSModule -ErrorCategory InvalidOperation -InnerException $_.Exception
-    }
-    finally {
-        Write-Debug "Popping location back to what it was before importing SQLPS module."
-        Pop-Location
-    }
+            New-VerboseMessage -Message ('Importing {0} module.' -f $module)
 
+            <#
+                SQLPS has unapproved verbs, disable checking to ignore Warnings.
+                Suppressing verbose so all cmdlet is not llsted.
+            #>
+            Import-Module -Name $module -DisableNameChecking -Verbose:$False -ErrorAction Stop
+
+            Write-Debug -Message ('Module {0} imported.' -f $module)
+        }
+        catch
+        {
+            throw New-TerminatingError -ErrorType FailedToImportSqlModule -FormatArgs @($module) -ErrorCategory InvalidOperation -InnerException $_.Exception
+        }
+        finally
+        {
+            Write-Debug -Message 'Popping location back to what it was before importing SQLPS module.'
+            Pop-Location
+        }
+    }
+    else
+    {
+        throw New-TerminatingError -ErrorType SqlModuleNotFound -ErrorCategory InvalidOperation -InnerException $_.Exception
+    }
 }
 
 <#
