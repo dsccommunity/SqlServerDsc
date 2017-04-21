@@ -6,7 +6,7 @@ Please provide the following information regarding your issue (place N/A if the 
 
 If you like to contribute more please feel free to read the contributing section at https://github.com/PowerShell/xSQLServer#contributing.
 -->
-**Details of the scenario you try and problem that is occurring:**
+**Details of the scenario you tried and the problem that is occurring:**
 
 **The DSC configuration that is using the resource (as detailed as possible):**
 

@@ -20,6 +20,8 @@
   - Added ConnectSql permission. Now that permission can also be granted or revoked.
 - Changes to xSQLServerHelper module
   - Removed helper function Get-SQLPSInstance and Get-SQLPSInstanceName because there is no resource using it any longer.
+- Changes to xSQLServer
+  - Fixed typos in markdown files; CHANGELOG, CONTRIBUTING, README and ISSUE_TEMPLATE.
 
 ## 7.0.0.0
 
@@ -152,7 +154,7 @@
   - It now detects that feature Client Connectivity Tools (CONN) and Client Connectivity Backwards Compatibility Tools (BC) is installed.
   - Now it can correctly determine the right cluster when only parameter InstallSQLDataDir is assigned a path (issue #401).
   - Now the only mandatory path parameter is InstallSQLDataDir when installing Database Engine (issue #400).
-  - It now can handle mandatory parameters, and are not using wildcards to find the variables containing paths (issue #394).
+  - It now can handle mandatory parameters, and are not using wildcard to find the variables containing paths (issue #394).
   - Changed so that instead of connection to localhost it is using $env:COMPUTERNAME as the host name to which it connects. And for cluster installation it uses the parameter FailoverClusterNetworkName as the host name to which it connects (issue #407).
   - When called with Action = 'PrepareFailoverCluster', the SQLSysAdminAccounts and FailoverClusterGroup parameters are no longer passed to the setup process (issues #410 and 411).
   - Solved the problem that InstanceDir and InstallSQLDataDir could not be set to just a qualifier, i.e 'E:' (issue #418). All paths (except SourcePath) can now be set to just the qualifier.
@@ -197,7 +199,7 @@
   - Fixed a typo in the Requirements section.
   - Added link to Examples folder in the Examples section.
   - Change the layout of the README.md to closer match the one of PSDscResources
-  - Added more detailed text explaining what operating systemes WMF5.0 can be installed on.
+  - Added more detailed text explaining what operating systems WMF5.0 can be installed on.
   - Verified all resource schema files with the README.md and fixed some errors (descriptions was not verified).
   - Added security requirements section for resource xSQLServerEndpoint and xSQLAOGroupEnsure.
 - Changes to xSQLServerSetup
@@ -268,10 +270,10 @@
   - xSQLServerDatabasePermissions
   - xSQLServerFirewall
 - Changes to xSQLServerDatabaseRecoveryModel
-  - BREAKING CHANGE: Renamed xSQLDatabaseRecoveryModel to xSQLServerDatabaseRecoveryModel to align wíth naming convention.
+  - BREAKING CHANGE: Renamed xSQLDatabaseRecoveryModel to xSQLServerDatabaseRecoveryModel to align with naming convention.
   - BREAKING CHANGE: The mandatory parameters now include SQLServer, and SQLInstanceName.
 - Changes to xSQLServerDatabasePermission
-  - BREAKING CHANGE: Renamed xSQLServerDatabasePermissions to xSQLServerDatabasePermission to align wíth naming convention.
+  - BREAKING CHANGE: Renamed xSQLServerDatabasePermissions to xSQLServerDatabasePermission to align with naming convention.
   - BREAKING CHANGE: The mandatory parameters now include PermissionState, SQLServer, and SQLInstanceName.
 - Added support for clustered installations to xSQLServerSetup
   - Migrated relevant code from xSQLServerFailoverClusterSetup
@@ -284,7 +286,7 @@
 - xPDT helper module
   - Function GetxPDTVariable was removed since it no longer was used by any resources.
   - File xPDT.xml was removed since it was not used by any resources, and did not provide any value to the module.
-- Changes xSQLServerHelper moduled
+- Changes xSQLServerHelper module
   - Removed the globally defined `$VerbosePreference = 'Continue'` from xSQLServerHelper.
   - Fixed a typo in a variable name in the function New-ListenerADObject.
   - Now Restart-SqlService will correctly show the services it restarts. Also fixed PSSA warnings.
@@ -320,7 +322,7 @@
 - Changes and enhancements in xSQLServerDatabaseRole
   - BREAKING CHANGE: Fixed so the same user can now be added to a role in one or more databases, and/or one or more instances. Now the parameters `SQLServer` and `SQLInstanceName` are mandatory.
   - Enhanced so the same user can now be added to more than one role
-- BREAKING CHANGE: Renamed xSQLAlias to xSQLServerAlias to align wíth naming convention.
+- BREAKING CHANGE: Renamed xSQLAlias to xSQLServerAlias to align with naming convention.
 - Changes to xSQLServerAlwaysOnService
   - Added RestartTimeout parameter
   - Fixed bug where the SQL Agent service did not get restarted after the IsHadrEnabled property was set.
@@ -462,7 +464,7 @@
   - Removed default values for parameters, to avoid compatibility issues and setup errors
   - Added Replication sub feature detection
   - Added setup parameter BrowserSvcStartupType
-  - Change SourceFolder to Source to allow for multiversion Support
+  - Change SourceFolder to Source to allow for multi version Support
   - Add Source Credential for accessing source files
   - Add Parameters for SQL Server configuration
   - Add Parameters to SuppressReboot or ForceReboot
@@ -470,7 +472,7 @@
   - Removed default values for parameters, to avoid compatibility issues
   - Updated firewall rule name to not use 2012 version, since package supports 2008, 2012 and 2014 versions
   - Additional of SQLHelper Function and error handling
-  - Change SourceFolder to Source to allow for multiversion Support
+  - Change SourceFolder to Source to allow for multi version Support
 - xSQLServerNetwork
   - Added new resource that configures network settings.
   - Currently supports only tcp network protocol
@@ -481,7 +483,7 @@
 - xSqlServerRSConfig
 - xSQLServerFailoverClusterSetup
   - Additional of SQLHelper Function and error handling
-  - Change SourceFolder to Source to allow for multiversion Support
+  - Change SourceFolder to Source to allow for multi version Support
   - Add Parameters to SuppressReboot or ForceReboot
 - Examples
   - Updated example files to use correct DebugMode parameter value ForceModuleImport, this is not boolean in WMF 5.0 RTM
@@ -489,7 +491,7 @@
 
 ## 1.3.0.0
 
-- xSqlServerSetus
+- xSqlServerSetup
   - Make Features case-insensitive.
 
 ## 1.2.1.0
