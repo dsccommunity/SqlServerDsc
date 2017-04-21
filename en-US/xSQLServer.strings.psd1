@@ -48,6 +48,7 @@ ConfigurationRestartRequired = Configuration option '{0}' has been updated, but 
 
 # AlwaysOnService
 AlterAlwaysOnServiceFailed = Failed to ensure Always On is {0} on the instance '{1}'.
+UnexpectedAlwaysOnStatus = The status of property Server.IsHadrEnabled was netiher $true or $false. Status is '{0}'.
 
 # Login
 PasswordValidationFailed = Creation of the login '{0}' failed due to the following error: {1}

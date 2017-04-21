@@ -9,12 +9,12 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
     .PARAMETER Ensure
     *** Not used in this function ***
     HADR is Present (enabled) or Absent (disabled).
-    
+
     .PARAMETER SQLServer
     Hostname of the SQL Server to be configured.
-    
+
     .PARAMETER SQLInstanceName
-    Name of the SQL instance to be configued. 
+    Name of the SQL instance to be configued.
 #>
 function Get-TargetResource
 {
@@ -36,11 +36,44 @@ function Get-TargetResource
         $SQLInstanceName
     )
 
-    $sql = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+    $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
-    New-VerboseMessage -Message ( 'SQL Always On is {0} on "{1}\{2}".' -f @{$false='disabled'; $true='enabled'}[$sql.IsHadrEnabled],$SQLServer,$SQLInstanceName )
+    $isAlwaysOnEnabled = $sqlServerObject.IsHadrEnabled
+    if ($isAlwaysOnEnabled -eq $true)
+    {
+        $statusString = 'enabled'
+    }
+    elseif ($isAlwaysOnEnabled -eq $false)
+    {
+        $statusString = 'disabled'
+    }
+    else
+    {
+        # This is a validation test for issue #519.
+        try {
+            if ($isAlwaysOnEnabled -eq $null)
+            {
+               throw 'Server.IsHadrEnabled was set to $null.'
+            }
+            else
+            {
+                $statusString = $isAlwaysOnEnabled
 
-    return @{ IsHadrEnabled = $sql.IsHadrEnabled }
+                throw 'Server.IsHadrEnabled was set to unexpected value.'
+            }
+        }
+        catch
+        {
+            throw New-TerminatingError -ErrorType UnexpectedAlwaysOnStatus -FormatArgs $statusString -ErrorCategory InvalidResult -InnerException $_.Exception
+        }
+    }
+
+
+    New-VerboseMessage -Message ( 'SQL Always On is {0} on "{1}\{2}".' -f $statusString, $SQLServer, $SQLInstanceName )
+
+    return @{
+        IsHadrEnabled = $isAlwaysOnEnabled
+    }
 }
 
 <#
@@ -52,7 +85,7 @@ function Get-TargetResource
 
     .PARAMETER SQLServer
     Hostname of the SQL Server to be configured.
-    
+
     .PARAMETER SQLInstanceName
     Name of the SQL instance to be configued.
 
@@ -128,10 +161,10 @@ function Set-TargetResource
 
     .PARAMETER Ensure
     HADR is Present (enabled) or Absent (disabled).
-    
+
     .PARAMETER SQLServer
     Hostname of the SQL Server to be configured.
-    
+
     .PARAMETER SQLInstanceName
     Name of the SQL instance to be configued.
 
@@ -162,7 +195,7 @@ function Test-TargetResource
         [Int32]
         $RestartTimeout = 120
     )
-    
+
     # Determine the current state of Always On
     $params = @{
         Ensure = $Ensure
@@ -171,8 +204,8 @@ function Test-TargetResource
     }
 
     $state = Get-TargetResource @params
-    
-    # Determine what the desired state of Always On is 
+
+    # Determine what the desired state of Always On is
     $hadrDesiredState = @{ 'Present' = $true; 'Absent' = $false }[$Ensure]
 
     # Determine whether the value matches the desired state

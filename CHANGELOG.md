@@ -22,6 +22,8 @@
   - Removed helper function Get-SQLPSInstance and Get-SQLPSInstanceName because there is no resource using it any longer.
 - Changes to xSQLServer
   - Fixed typos in markdown files; CHANGELOG, CONTRIBUTING, README and ISSUE_TEMPLATE.
+- Changes to xSQLServerAlwaysOnService
+  - Get-TargetResource should no longer fail silently with error 'Index operation failed; the array index evaluated to null.'. Now if the Server.IsHadrEnabled property return neither $true or $false the Get-TargetResource function will throw an error.
 
 ## 7.0.0.0
 
