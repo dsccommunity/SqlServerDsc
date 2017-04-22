@@ -41,6 +41,14 @@ try
 
         # Function stub of Get-ClusterGroup (when we do not have Failover Cluster powershell module available)
         function Get-ClusterGroup {
+            param
+            (
+                # Will contain the cluster group name so mock can bind filters on it.
+                [Parameter()]
+                [System.String]
+                $Name
+            )
+
             throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
         }
 
@@ -87,6 +95,14 @@ try
                     $result = Get-TargetResource @testParameters
                     $result.RetryIntervalSec | Should -Be $mockRetryInterval
                     $result.RetryCount | Should -Be $mockRetryCount
+
+                    Assert-MockCalled -CommandName Get-ClusterGroup `
+                        -ParameterFilter $mockGetClusterGroup_ParameterFilter_KnownGroup `
+                        -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-ClusterGroup `
+                        -ParameterFilter $mockGetClusterGroup_ParameterFilter_UnknownGroup `
+                        -Exactly -Times 0 -Scope It
                 }
 
                 It 'Should return that the group exist' {
@@ -106,6 +122,14 @@ try
                     $result = Get-TargetResource @testParameters
                     $result.RetryIntervalSec | Should -Be $mockRetryInterval
                     $result.RetryCount | Should -Be $mockRetryCount
+
+                    Assert-MockCalled -CommandName Get-ClusterGroup `
+                        -ParameterFilter $mockGetClusterGroup_ParameterFilter_KnownGroup `
+                        -Exactly -Times 0 -Scope It
+
+                    Assert-MockCalled -CommandName Get-ClusterGroup `
+                        -ParameterFilter $mockGetClusterGroup_ParameterFilter_UnknownGroup `
+                        -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return that the group does not exist' {
@@ -135,7 +159,13 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
 
-                    Assert-MockCalled -CommandName Get-ClusterGroup -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-ClusterGroup `
+                        -ParameterFilter $mockGetClusterGroup_ParameterFilter_KnownGroup `
+                        -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-ClusterGroup `
+                        -ParameterFilter $mockGetClusterGroup_ParameterFilter_UnknownGroup `
+                        -Exactly -Times 0 -Scope It
                 }
             }
 
@@ -148,7 +178,13 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled -CommandName Get-ClusterGroup -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-ClusterGroup `
+                        -ParameterFilter $mockGetClusterGroup_ParameterFilter_KnownGroup `
+                        -Exactly -Times 0 -Scope It
+
+                    Assert-MockCalled -CommandName Get-ClusterGroup `
+                        -ParameterFilter $mockGetClusterGroup_ParameterFilter_UnknownGroup `
+                        -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -169,11 +205,16 @@ try
             Context 'When the system is in the desired state' {
                 $mockExpectedClusterGroupName = $mockClusterGroupName
 
-                It 'Should find the cluster group and return withput throwing' {
+                It 'Should find the cluster group and return without throwing' {
                      { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                    Assert-MockCalled -CommandName Get-ClusterGroup -Exactly -Times 1 -Scope It
-                }
+                    Assert-MockCalled -CommandName Get-ClusterGroup `
+                        -ParameterFilter $mockGetClusterGroup_ParameterFilter_KnownGroup `
+                        -Exactly -Times 1 -Scope It
+
+                    Assert-MockCalled -CommandName Get-ClusterGroup `
+                        -ParameterFilter $mockGetClusterGroup_ParameterFilter_UnknownGroup `
+                        -Exactly -Times 0 -Scope It                }
             }
 
             Context 'When the system is not in the desired state' {
@@ -184,8 +225,13 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Throw 'Cluster group UnknownAG not found after 2 attempts with 1 sec interval'
 
-                    Assert-MockCalled -CommandName Get-ClusterGroup -Exactly -Times 2 -Scope It
-                }
+                    Assert-MockCalled -CommandName Get-ClusterGroup `
+                        -ParameterFilter $mockGetClusterGroup_ParameterFilter_KnownGroup `
+                        -Exactly -Times 0 -Scope It
+
+                    Assert-MockCalled -CommandName Get-ClusterGroup `
+                        -ParameterFilter $mockGetClusterGroup_ParameterFilter_UnknownGroup `
+                        -Exactly -Times 2 -Scope It                }
             }
 
             Assert-VerifiableMocks
