@@ -12,6 +12,7 @@
   - Added examples.
 - Changes to xSQLServerPermission
   - Cleaned up code, removed SupportsShouldProcess and fixed PSSA rules warnings (issue #241 and issue #262).
+  - It is now possible to add permissions to two or more logins on the same instance (issue #526).
   - The parameter NodeName is no longer mandatory and has now the default value of $env:COMPUTERNAME.
   - The parameter Ensure now has a default value of 'Present'.
   - Updated README.md with a description for the resources and revised the parameter descriptions.
