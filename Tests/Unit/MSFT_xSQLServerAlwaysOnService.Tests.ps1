@@ -257,7 +257,7 @@ try
             }
         }
 
-        Context 'When HADR is not in the desired state' {
+        Context 'When HADR is in the desired state' {
             Mock -CommandName Connect-SQL -MockWith {
                 return New-Object PSObject -Property @{
                     IsHadrEnabled = $true
