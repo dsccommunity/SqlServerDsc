@@ -40,8 +40,7 @@ EndpointFoundButWrongType = Endpoint '{0}' does exist, but it is not of type 'Da
 
 # Permission
 PermissionGetError = Unexpected result when trying to get permissions for '{0}'.
-PrincipalNotFound = Principal '{0}' does not exist.
-PermissionMissingEnsure = Ensure is not set. No change can be made.
+ChangingPermissionFailed = Changing permission for principal '{0}' failed.
 
 # Configuration
 ConfigurationOptionNotFound = Specified option '{0}' could not be found.

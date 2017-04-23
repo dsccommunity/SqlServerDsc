@@ -148,18 +148,18 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public ServerPermissionSet(
             bool alterAnyAvailabilityGroup,
-            bool alterAnyEndPoint,
+            bool alterAnyEndpoint,
             bool connectSql,
             bool viewServerState )
         {
             this.AlterAnyAvailabilityGroup = alterAnyAvailabilityGroup;
-            this.AlterAnyEndPoint = alterAnyEndPoint;
+            this.AlterAnyEndpoint = alterAnyEndpoint;
             this.ConnectSql = connectSql;
             this.ViewServerState = viewServerState;
         }
 
         public bool AlterAnyAvailabilityGroup = false;
-        public bool AlterAnyEndPoint = false;
+        public bool AlterAnyEndpoint = false;
         public bool ConnectSql = false;
         public bool ViewServerState = false;
     }
@@ -245,21 +245,28 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[] EnumServerPermissions( string principal, Microsoft.SqlServer.Management.Smo.ServerPermissionSet permissionSetQuery )
         {
-            List<Microsoft.SqlServer.Management.Smo.ServerPermissionInfo> listOfServerPermissionInfo = new List<Microsoft.SqlServer.Management.Smo.ServerPermissionInfo>();
+            Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[] permissionInfo = null;
+            List<Microsoft.SqlServer.Management.Smo.ServerPermissionInfo> listOfServerPermissionInfo = null;
 
             if( Globals.GenerateMockData ) {
+                listOfServerPermissionInfo = new List<Microsoft.SqlServer.Management.Smo.ServerPermissionInfo>();
+
                 Microsoft.SqlServer.Management.Smo.ServerPermissionSet[] permissionSet = {
+                    // AlterAnyEndpoint is set to false to test when permissions are missing.
+
+                    // AlterAnyAvailabilityGroup is set to true.
                     new Microsoft.SqlServer.Management.Smo.ServerPermissionSet( true, false, false, false ),
-                    new Microsoft.SqlServer.Management.Smo.ServerPermissionSet( false, true, false, false ),
+                    // ConnectSql is set to true.
                     new Microsoft.SqlServer.Management.Smo.ServerPermissionSet( false, false, true, false ),
+                    // ViewServerState is set to true.
                     new Microsoft.SqlServer.Management.Smo.ServerPermissionSet( false, false, false, true ) };
 
                 listOfServerPermissionInfo.Add( new Microsoft.SqlServer.Management.Smo.ServerPermissionInfo( permissionSet ) );
-            } else {
-                listOfServerPermissionInfo.Add( new Microsoft.SqlServer.Management.Smo.ServerPermissionInfo() );
             }
 
-            Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[] permissionInfo = listOfServerPermissionInfo.ToArray();
+            if( listOfServerPermissionInfo != null ) {
+                permissionInfo = listOfServerPermissionInfo.ToArray();
+            }
 
             return permissionInfo;
         }

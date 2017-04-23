@@ -10,6 +10,16 @@
   - Added descriptive text to README.md that the account that runs the resource must have permission to run the cmdlet Get-ClusterGroup (issue #307).
   - Added read-only parameter GroupExist which will return $true if the cluster role/group exist, otherwise it returns $false (issue #510).
   - Added examples.
+- Changes to xSQLServerPermission
+  - Cleaned up code, removed SupportsShouldProcess and fixed PSSA rules warnings (issue #241 and issue #262).
+  - It is now possible to add permissions to two or more logins on the same instance (issue #526).
+  - The parameter NodeName is no longer mandatory and has now the default value of $env:COMPUTERNAME.
+  - The parameter Ensure now has a default value of 'Present'.
+  - Updated README.md with a description for the resources and revised the parameter descriptions.
+  - Removed dependency of SQLPS provider (issue #482).
+  - Added ConnectSql permission. Now that permission can also be granted or revoked.
+- Changes to xSQLServerHelper module
+  - Removed helper function Get-SQLPSInstance and Get-SQLPSInstanceName because there is no resource using it any longer.
 
 ## 7.0.0.0
 
