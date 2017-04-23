@@ -25,7 +25,7 @@ This is the development branch to which contributions should be proposed by cont
 
 Regardless of the way you want to contribute we are tremendously happy to have you here.
 
-There are several ways you can contribute. You can submit an issue to report a bug. You can submit an issue to request an improvment. You can take part in discussions for issues. You can review pull requests and comment on other contributors changes.
+There are several ways you can contribute. You can submit an issue to report a bug. You can submit an issue to request an improvement. You can take part in discussions for issues. You can review pull requests and comment on other contributors changes.
 You can also improve the resources and tests, or even create new resources, by sending in pull requests yourself.
 
 * If you want to submit an issue or take part in discussions, please browse the list of [issues](https://github.com/PowerShell/xSQLServer/issues). Please check out [Contributing to the DSC Resource Kit](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md) on how to work with issues.
@@ -99,7 +99,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * [**xSQLServerReplication**](#xsqlserverreplication) resource to manage SQL Replication distribution and publishing.
 * [**xSQLServerRSConfig**](#xsqlserverrsconfig) configures SQL Server Reporting Services to use a database engine in another instance.
 * [**xSQLServerRSSecureConnectionLevel**](#xsqlserverrssecureconnectionlevel) sets the secure connection level for SQL Server Reporting Services.
-* [**xSQLServerScript**](#xsqlserverscript) resource to extend DSCs Get/Set/Test functionality to T-SQL.
+* [**xSQLServerScript**](#xsqlserverscript) resource to extend DSC Get/Set/Test functionality to T-SQL.
 * [**xSQLServerSetup**](#xsqlserversetup) installs a standalone SQL Server instance.
 * [**xWaitForAvailabilityGroup**](#xwaitforavailabilitygroup) resource to wait till availability group is created on primary server.
 
@@ -117,7 +117,7 @@ No description.
 
 #### Security Requirements
 
-* The credentials provided in the parameter `SetupCredential` must have the right **Create Computer Object** in the origanization unit (OU) in which the Cluster Name Object (CNO) resides.
+* The credentials provided in the parameter `SetupCredential` must have the right **Create Computer Object** in the organizational unit (OU) in which the Cluster Name Object (CNO) resides.
 
 #### Parameters
 
@@ -125,11 +125,11 @@ No description.
 * **[String] AvailabilityGroupName**_(Key)_: Name for availability group.
 * **[String] AvailabilityGroupNameListener** _(Write)_: Listener name for availability group.
 * **[String[]] AvailabilityGroupNameIP** _(Write)_: List of IP addresses associated with listener.
-* **[String[]] AvailabilityGroupSubMask** _(Write)_: Network subnetmask for listener.
-* **[Unint32] AvailabilityGroupPort** _(Write)_: Port availability group should listen on.
+* **[String[]] AvailabilityGroupSubMask** _(Write)_: Network subnet mask for listener.
+* **[Uint32] AvailabilityGroupPort** _(Write)_: Port availability group should listen on.
 * **[String] ReadableSecondary** _(Write)_: Mode secondaries should operate under (None, ReadOnly, ReadIntent). { None | *ReadOnly* | ReadIntent }.
 * **[String] AutoBackupPreference** _(Write)_: Where backups should be backed up from (Primary, Secondary). { *Primary* | Secondary }.
-* **[Uint32] BackupPriority** _(Write)_: The percentage weight for backup prority (default 50).
+* **[Uint32] BackupPriority** _(Write)_: The percentage weight for backup priority (default 50).
 * **[Uint32] EndPointPort** _(Write)_: The TCP port for the SQL AG Endpoint (default 5022).
 * **[String] SQLServer** _(Write)_: The SQL Server for the database.
 * **[String] SQLInstance** _(Write)_: The SQL instance for the database.
@@ -173,7 +173,7 @@ No description.
 #### Parameters
 
 * **[String] Name** _(Key)_: The name of Alias (e.g. svr01\inst01).
-* **[String] ServerName** _(Key)_: The SQL Server you are aliasing (the netbios name or FQDN).
+* **[String] ServerName** _(Key)_: The SQL Server you are aliasing (the NetBIOS name or FQDN).
 * **[String] Ensure** _(Write)_: Determines whether the alias should be added or removed. Default value is 'Present'. { *Present* | Absent }.
 * **[String] Protocol** _(Write)_: Protocol to use when connecting. Valid values are 'TCP' or 'NP' (Named Pipes). Default value is 'TCP'. { *TCP* | NP }.
 * **[Uint16] TCPPort** _(Write)_: The TCP port SQL is listening on. Only used when protocol is set to 'TCP'. Default value is port 1433.
@@ -202,7 +202,7 @@ This resource is used to create, remove, and update an Always On Availability Gr
 
 * **[String] Name** _(Key)_: The name of the availability group.
 * **[String] SQLServer** _(Required)_: Hostname of the SQL Server to be configured.
-* **[String] SQLInstanceName** _(Key)_: Name of the SQL instance to be configued.
+* **[String] SQLInstanceName** _(Key)_: Name of the SQL instance to be configured.
 * **[String] Ensure** _(Write)_: Specifies if the availability group should be present or absent. Default is Present. { *Present* | Absent }
 * **[String] AutomatedBackupPreference** _(Write)_: Specifies the automated backup preference for the availability group. Default is None. { Primary | SecondaryOnly | Secondary | *None* }
 * **[String] AvailabilityMode** _(Write)_: Specifies the replica availability mode. Default is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
@@ -235,7 +235,7 @@ This resource is used to create, remove, and update an Always On Availability Gr
 * **[String] Name** _(Key)_: The name of the availability group replica.
 * **[String] AvailabilityGroupName** _(Key)_: The name of the availability group.
 * **[String] SQLServer** _(Required)_: Hostname of the SQL Server to be configured.
-* **[String] SQLInstanceName** _(Key)_: Name of the SQL instance to be configued.
+* **[String] SQLInstanceName** _(Key)_: Name of the SQL instance to be configured.
 * **[String] PrimaryReplicaSQLServer** _(Write)_: Hostname of the SQL Server where the primary replica is expected to be active. If the primary replica is not found here, the resource will attempt to find the host that holds the primary replica and connect to it.
 * **[String] PrimaryReplicaSQLInstanceName** _(Write)_: Name of the SQL instance where the primary replica lives.
 * **[String] Ensure** _(Write)_: Specifies if the availability group replica should be present or absent. Default is Present. { *Present* | Absent }
@@ -295,18 +295,18 @@ No description.
 * **[String] NodeName** _(Write)_: The host name or FQDN of the primary replica.
 * **[String] Ensure** _(Write)_: If the availability group listener should be present or absent. Default value is 'Present'. { *Present* | Absent }.
 * **[String] Name** _(Write)_: The name of the availability group listener, max 15 characters. This name will be used as the Virtual Computer Object (VCO).
-* **[String[]] IpAddress** _(Write)_: The IP address used for the availability group listener, in the format 192.168.10.45/255.255.252.0. If using DCHP, set to the first IP-address of the DHCP subnet, in the format 192.168.8.1/255.255.252.0. Must be valid in the cluster-allowed IP range.
+* **[String[]] IpAddress** _(Write)_: The IP address used for the availability group listener, in the format 192.168.10.45/255.255.252.0. If using DHCP, set to the first IP-address of the DHCP subnet, in the format 192.168.8.1/255.255.252.0. Must be valid in the cluster-allowed IP range.
 * **[Uint16] Port** _(Write)_: The port used for the availability group listener.
 * **[Boolean] DHCP** _(Write)_: If DHCP should be used for the availability group listener instead of static IP address.
 
 #### Examples
 
-* [Adds an Availablity Group listner with the same name as the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1)
-* [Adds an Availablity Group listner with a different name than the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
-* [Removes an Availablity Group listner with the same name as the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1)
-* [Removes an Availablity Group listner with a different name than the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
-* [Adds an Availablity Group listner using DHCP on the default server subnet](/Examples/Resources/xSQLServerAvailabilityGroupListener/5-AddAvailabilityGroupListenerUsingDHCPWithDefaultServerSubnet.ps1)
-* [Adds an Availablity Group listner using DHCP with a specific subnet](/Examples/Resources/xSQLServerAvailabilityGroupListener/6-AddAvailabilityGroupListenerUsingDHCPWithSpecificSubnet.ps1)
+* [Adds an Availability Group listener with the same name as the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1)
+* [Adds an Availability Group listener with a different name than the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
+* [Removes an Availability Group listener with the same name as the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1)
+* [Removes an Availability Group listener with a different name than the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
+* [Adds an Availability Group listener using DHCP on the default server subnet](/Examples/Resources/xSQLServerAvailabilityGroupListener/5-AddAvailabilityGroupListenerUsingDHCPWithDefaultServerSubnet.ps1)
+* [Adds an Availability Group listener using DHCP with a specific subnet](/Examples/Resources/xSQLServerAvailabilityGroupListener/6-AddAvailabilityGroupListenerUsingDHCPWithSpecificSubnet.ps1)
 
 ### xSQLServerConfiguration
 
@@ -636,7 +636,7 @@ Analysis Services, SQL Browser, SQL Reporting Services and Integration Services.
 * **[String] InstanceName** _(Key)_: SQL instance to enable firewall rules for.
 * **[String] Ensure** _(Write)_: Ensures that SQL firewall rules are **Present** or **Absent** on the machine. { *Present* | Absent }.
 * **[String] SourcePath** _(Write)_: UNC path to the root of the source files for installation.
-* **[String] SourceCredential** _(Write)_: Credentials used to access the path set in the parameter 'SourcePath'. This parmeter is optional either if built-in parameter 'PsDscRunAsCredential' is used, or if the source path can be access using the SYSTEM account.
+* **[String] SourceCredential** _(Write)_: Credentials used to access the path set in the parameter 'SourcePath'. This parameter is optional either if built-in parameter 'PsDscRunAsCredential' is used, or if the source path can be access using the SYSTEM account.
 
 #### Read-Only Properties from Get-TargetResource
 
@@ -686,7 +686,7 @@ Read more about max degree of parallelism in this article [Configure the max deg
 
 * If the number of configured NUMA nodes configured in SQL Server equals 1, then max degree of parallelism is calculated using number of cores divided in 2 (numberOfCores / 2), then rounded up to the next integer (3.5 > 4).
 * If the number of cores configured in SQL Server are greater than or equal to 8 cores then max degree of parallelism will be set to 8.
-* If the number of configured NUMA nodes configured in SQL Server is greater than 2 and thenumber of cores are less than 8 then max degree of parallelism will be set to the number of cores.
+* If the number of configured NUMA nodes configured in SQL Server is greater than 2 and the number of cores are less than 8 then max degree of parallelism will be set to the number of cores.
 
 #### Requirements
 
@@ -740,7 +740,7 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) - (102
 
 * **[String] SQLInstance** _(Key)_: The name of the SQL instance to be configured.
 * **[String] SQLServer** _(Write)_: The host name of the SQL Server to be configured. Default value is *$env:COMPUTERNAME*.
-* **[Boolean] DyamicAlloc** _(Write)_: If set to $true then max memory will be dynamically configured. When this is set parameter is set to $true, the parameter MaxMemory must be set to $null or not be configured. Default value is *$false*.
+* **[Boolean] DynamicAlloc** _(Write)_: If set to $true then max memory will be dynamically configured. When this is set parameter is set to $true, the parameter MaxMemory must be set to $null or not be configured. Default value is *$false*.
 * **[String] Ensure** _(Write)_: When set to 'Present' then min and max memory will be set to either the value in parameter MinMemory and MaxMemory or dynamically configured when parameter DynamicAlloc is set to $true. When set to 'Absent' min and max memory will be set to default values. { *Present* | Absent }.
 * **[Sint32] MinMemory** _(Write)_: Minimum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
 * **[Sint32] MaxMemory** _(Write)_: Maximum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
@@ -812,7 +812,7 @@ No description.
 
 * **[String] InstanceName** _(Key)_: SQL Server instance name where replication distribution will be configured.
 * **[String] Ensure** _(Write)_: (Default = 'Present') 'Present' will configure replication, 'Absent' will disable replication.
-* **[String] DistributorMode** _(Required)_: 'Local' - Instance will be configured as it's own distributor, 'Remote' - Instace will be configure with remote distributor (remote distributor needs to be already configured for distribution).
+* **[String] DistributorMode** _(Required)_: 'Local' - Instance will be configured as it's own distributor, 'Remote' - Instance will be configure with remote distributor (remote distributor needs to be already configured for distribution).
 * **[PSCredentials] AdminLinkCredentials** _(Required)_: - AdminLink password to be used when setting up publisher distributor relationship.
 * **[String] DistributionDBName** _(Write)_: (Default = 'distribution') distribution database name. If DistributionMode='Local' this will be created, if 'Remote' needs to match distribution database on remote distributor.
 * **[String] RemoteDistributor** _(Write)_: (Required if DistributionMode='Remote') SQL Server network name that will be used as distributor for local instance.
@@ -923,7 +923,7 @@ _Note: There is a known problem running this resource using PowerShell 4.0. See 
 * **[String] GetFilePath** _(Key)_: Path to the T-SQL file that will perform Get action. Any values returned by the T-SQL queries will also be returned by the cmdlet Get-DscConfiguration through the `GetResult` property.
 * **[String] TestFilePath** _(Key)_: Path to the T-SQL file that will perform Test action. Any script that does not throw an error or returns null is evaluated to true. The cmdlet Invoke-SqlCmd treats T-SQL Print statements as verbose text, and will not cause the test to return false.
 * **[PSCredential] Credential** _(Write)_: The credentials to authenticate with, using SQL Authentication. To authenticate using Windows Authentication, assign the credentials to the built-in parameter `PsDscRunAsCredential`. If both parameters `Credential` and `PsDscRunAsCredential` are not assigned, then SYSTEM account will be used to authenticate using Windows Authentication.
-* **[String[]] Variable** _(Write)_: Specifies, as a string array, a sqlcmd scripting variable for use in the sqlcmd script, and sets a value for the variable. Use a Windows PowerShell array to specify multiple variables and their values. For more information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx).
+* **[String[]] Variable** _(Write)_: Specifies, as a string array, a scripting variable for use in the sql script, and sets a value for the variable. Use a Windows PowerShell array to specify multiple variables and their values. For more information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx).
 
 #### Read-Only Properties from Get-TargetResource
 
@@ -963,7 +963,7 @@ Installs SQL Server on the target node.
 * **[String] InstanceName** _(Key)_: SQL instance to be installed.
 * **[PSCredential] SetupCredential** _(Required)_: Credential to be used to perform the installation.
 * **[String] SourcePath** _(Write)_: The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.
-* **[PSCredential] SourceCredential** _(Write)_: Credentials used to access the path set in the parameter `SourcePath`. Using this parameter will trigger a copy of the installation media to a temp folder on the target node. Setup will then be started from the temp folder on the target node. For any subsequent calls to the resource, the parameter `SourceCredential` is used to evaluate what major version the file 'setup.exe' has in the path set, again, by the parameter `SourcePath`. To know how the temp folder is evaluated please read the online documentation for [System.IO.Path.GetTempPath()](https://msdn.microsoft.com/en-us/library/system.io.path.gettemppath(v=vs.110).aspx). If the path, that is assigned to parameter `SourcePath`, contains a leaf folder, for example '\\server\share\folder', then that leaf folder will be used as the name of the temporary folder. If the path, that is assigned to parameter `SourcePath`, does not have a leaf folder, for example '\\server\share', then a unique guid will be used as the name of the temporary folder.
+* **[PSCredential] SourceCredential** _(Write)_: Credentials used to access the path set in the parameter `SourcePath`. Using this parameter will trigger a copy of the installation media to a temp folder on the target node. Setup will then be started from the temp folder on the target node. For any subsequent calls to the resource, the parameter `SourceCredential` is used to evaluate what major version the file 'setup.exe' has in the path set, again, by the parameter `SourcePath`. To know how the temp folder is evaluated please read the online documentation for [System.IO.Path.GetTempPath()](https://msdn.microsoft.com/en-us/library/system.io.path.gettemppath(v=vs.110).aspx). If the path, that is assigned to parameter `SourcePath`, contains a leaf folder, for example '\\server\share\folder', then that leaf folder will be used as the name of the temporary folder. If the path, that is assigned to parameter `SourcePath`, does not have a leaf folder, for example '\\server\share', then a unique GUID will be used as the name of the temporary folder.
 * **[Boolean] SuppressReboot** _(Write)_: Suppresses reboot.
 * **[Boolean] ForceReboot** _(Write)_: Forces reboot.
 * **[String] Features** _(Write)_: SQL features to be installed.
@@ -1024,7 +1024,7 @@ Installs SQL Server on the target node.
 #### Known issues
 
 All issues are not listed here, see [here for all issues](https://github.com/PowerShell/xSQLServer/issues).
-This is known issues that severly impact the use of the resource.
+This is known issues that severely impact the use of the resource.
 
 ##### Failover Cluster Setup
 
@@ -1032,13 +1032,13 @@ Setup cannot be run using PsDscRunAsCredential at this time (see issue #405 and 
 also means that at this time PsDscRunAsCredential can not be used to access media on the UNC share.
 
 There is currently a bug that prevents the resource to logon to the instance if the current node is not the
-active node. This is beacuse the resource tries to logon using the SYSTEM account instead of the credentials
+active node. This is because the resource tries to logon using the SYSTEM account instead of the credentials
 in SetupCredential, and the resource does not currently support the built-in PsDscRunAsCredential either (see
 issue #444).
 
 These issues are also documented in the example files [Install a named instance as the first node in SQL Server Failover Cluster](/Examples/Resources/xSQLServerSetup/4-InstallNamedInstanceInFailoverClusterFirstNode.ps1) and [Install a named instance as the second node in SQL Server Failover Cluster](/Examples/Resources/xSQLServerSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1).
 
-### xWaitforAvailabilityGroup
+### xWaitForAvailabilityGroup
 
 This resource will wait for a cluster role/group to be created. This is used to wait for an Availability Group to create the cluster role/group in the cluster.
 
