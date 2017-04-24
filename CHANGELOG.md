@@ -38,6 +38,10 @@
   - Added an optional boolean parameter Disabled. It can be used to enable/disable existing logins or create disabled logins (new logins are created as enabled by default).
 - Changes to xSQLServerDatabaseRole
   - Updated variable passed to Microsoft.SqlServer.Management.Smo.User constructor to fix issue #530
+- Changes to xSQLServerNetwork
+  - Added optional parameter SQLServer with default value of $env:COMPUTERNAME (issue #528).
+  - Added optional parameter RestartTimeout with default value of 120 seconds.
+  - Now the resource supports restarting a sql server in a cluster (issue #527).
 
 ## 7.0.0.0
 
