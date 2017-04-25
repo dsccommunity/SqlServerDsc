@@ -31,6 +31,8 @@
   - Updated to return the exception raised when an error is thrown.
 - Changes to xSQLServerAlwaysOnAvailabilityGroupReplica
   - Updated to return the exception raised when an error is thrown.
+- Changes to xSQLServerLogin
+  - Added Disabled parameter.
 
 ## 7.0.0.0
 
