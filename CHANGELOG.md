@@ -21,6 +21,10 @@
   - Updated note in resource description to also mention ConnectSql permission.
 - Changes to xSQLServerHelper module
   - Removed helper function Get-SQLPSInstance and Get-SQLPSInstanceName because there is no resource using it any longer.
+  - Added four new helper functions.
+    - Register-SqlSmo, Register-SqlWmiManagement and Unregister-SqlAssemblies to handle the creation on the application domain and loading and unloading of the SMO and SqlWmiManagement assemblies.
+    - Get-SqlMajorVersion to get the major SQL version for a specific instance.
+  - Fixed typos in comment-based help
 - Changes to xSQLServer
   - Fixed typos in markdown files; CHANGELOG, CONTRIBUTING, README and ISSUE_TEMPLATE.
   - Fixed typos in schema.mof files (and README.md).
