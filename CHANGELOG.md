@@ -32,7 +32,7 @@
 - Changes to xSQLServerAlwaysOnAvailabilityGroupReplica
   - Updated to return the exception raised when an error is thrown.
 - Changes to xSQLServerLogin
-  - Added Disabled parameter.
+  - Added an optional boolean parameter Disabled. It can be used to enable/disable existing logins or create disabled logins (new logins are created as enabled by default).
 
 ## 7.0.0.0
 
