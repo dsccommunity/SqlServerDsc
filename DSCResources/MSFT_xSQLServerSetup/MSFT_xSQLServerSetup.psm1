@@ -145,6 +145,45 @@ function Get-TargetResource
             New-VerboseMessage -Message 'Replication feature not detected'
         }
 
+        # Check if Data Quality Client sub component is configured
+        New-VerboseMessage -Message "Detecting Data Quality Client (HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState)"
+        $isDQCInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState").SQL_DQ_CLIENT_Full
+        if ($isDQCInstalled -eq 1)
+        {
+            New-VerboseMessage -Message 'Data Quality Client feature detected'
+            $features += 'DQC,'
+        }
+        else
+        {
+            New-VerboseMessage -Message 'Data Quality Client feature not detected'
+        }
+
+        # Check if Data Quality Services sub component is configured
+        New-VerboseMessage -Message "Detecting Data Quality Services (HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\DQ\*)"
+        $isDQInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\DQ\*" -ErrorAction SilentlyContinue)
+        if ($isDQInstalled)
+        {
+            New-VerboseMessage -Message 'Data Quality Services feature detected'
+            $features += 'DQ,'
+        }
+        else
+        {
+            New-VerboseMessage -Message 'Data Quality Services feature not detected'
+        }
+
+        # Check if Documentation Components "BOL" is configured
+        New-VerboseMessage -Message "Detecting Documentation Components (HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState)"
+        $isBOLInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState").SQL_BOL_Components
+        if ($isBOLInstalled -eq 1)
+        {
+            New-VerboseMessage -Message 'Documentation Components feature detected'
+            $features += 'BOL,'
+        }
+        else
+        {
+            New-VerboseMessage -Message 'Documentation Components feature not detected'
+        }
+
         $clientComponentsFullRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\Tools\Setup\Client_Components_Full"
         $registryClientComponentsFullFeatureList = (Get-ItemProperty -Path $clientComponentsFullRegistryPath -ErrorAction SilentlyContinue).FeatureList
 
@@ -168,6 +207,17 @@ function Get-TargetResource
         else
         {
             New-VerboseMessage -Message 'Client Connectivity Tools Backwards Compatibility feature not detected'
+        }
+
+        Write-Debug -Message "Detecting Client Tools SDK feature ($clientComponentsFullRegistryPath)"
+        if (($registryClientComponentsFullFeatureList -like '*SDK_Full=3*') -and ($registryClientComponentsFullFeatureList -like '*SDK_FNS=3*'))
+        {
+            New-VerboseMessage -Message 'Client Tools SDK feature detected'
+            $features += 'SDK,'
+        }
+        else
+        {
+            New-VerboseMessage -Message 'Client Tools SDK feature not detected'
         }
 
         $instanceId = $fullInstanceId.Split('.')[1]

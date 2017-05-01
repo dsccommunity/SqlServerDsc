@@ -402,11 +402,30 @@ try
             )
         }
 
+        $mockGetItemProperty_DQFeature = {
+            return @(
+                (
+                    New-Object Object |
+                    Add-Member -MemberType NoteProperty -Name 'DQ_Components' -Value 1 -PassThru -Force
+                )
+            )
+        }
+
+        $mockGetItemProperty_BOLandDQCFeature = {
+            return @(
+                (
+                    New-Object Object |
+                    Add-Member -MemberType NoteProperty -Name 'SQL_BOL_Components' -Value 1 -PassThru -Force |
+                    Add-Member -MemberType NoteProperty -Name 'SQL_DQ_CLIENT_Full' -Value 1 -PassThru -Force
+                )
+            )
+        }
+
         $mockGetItemProperty_ClientComponentsFull_FeatureList = {
             return @(
                 (
                     New-Object Object |
-                        Add-Member -MemberType NoteProperty -Name 'FeatureList' -Value 'Connectivity_Full=3 SQL_SSMS_Full=3 Tools_Legacy_Full=3 Connectivity_FNS=3 SQL_Tools_Standard_FNS=3 Tools_Legacy_FNS=3' -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'FeatureList' -Value 'Connectivity_Full=3 SQL_SSMS_Full=3 Tools_Legacy_Full=3 Connectivity_FNS=3 SQL_Tools_Standard_FNS=3 Tools_Legacy_FNS=3 SDK_Full=3 SDK_FNS=3' -PassThru -Force
                 )
             )
         }
@@ -868,8 +887,10 @@ try
                 These are written with both lower-case and upper-case to make sure we support that.
                 The feature list must be written in the order it is returned by the function Get-TargerResource.
             #>
-            Features = 'SQLEngine,Replication,Conn,Bc,FullText,Rs,As,Is,Ssms,Adv_Ssms'
+            Features = 'SQLEngine,Replication,Dqc,Dq,Bol,Conn,Bc,Sdk,FullText,Rs,As,Is,Ssms,Adv_Ssms'
         }
+
+        $featuresForSqlServer2016 = ''
 
         $mockDefaultClusterParameters = @{
             SetupCredential = $mockSetupCredential
@@ -992,6 +1013,14 @@ try
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\DQ\*"
+                        } -MockWith $mockGetItemProperty_DQFeature -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
+                        } -MockWith $mockGetItemProperty_BOLandDQCFeature -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
                         } -MockWith $mockGetItemProperty_Setup -Verifiable
                     }
@@ -1107,6 +1136,14 @@ try
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\DQ\*"
+                        } -MockWith $mockGetItemProperty_DQFeature -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
+                        } -MockWith $mockGetItemProperty_BOLandDQCFeature -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
                         } -MockWith $mockGetItemProperty_Setup -Verifiable
                     }
@@ -1179,7 +1216,7 @@ try
                     }
                 }
 
-                Context "When SQL Server version is $mockSqlMajorVersion and the system is not in the desired state for features 'CONN' and 'BC'" {
+                Context "When SQL Server version is $mockSqlMajorVersion and the system is not in the desired state for features 'CONN', 'SDK' and 'BC'" {
                     BeforeEach {
                         $testParameters = $mockDefaultParameters.Clone()
                         $testParameters.Remove('Features')
@@ -1259,6 +1296,14 @@ try
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\DQ\*"
+                        } -MockWith $mockGetItemProperty_DQFeature -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
+                        } -MockWith $mockGetItemProperty_BOLandDQCFeature -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
                         } -MockWith $mockGetItemProperty_Setup -Verifiable
 
@@ -1271,11 +1316,11 @@ try
                         $result = Get-TargetResource @testParameters
                         if ($mockSqlMajorVersion -in (13,14))
                         {
-                            $result.Features | Should Be 'SQLENGINE,REPLICATION,FULLTEXT,RS,AS,IS'
+                            $result.Features | Should Be 'SQLENGINE,REPLICATION,DQC,DQ,BOL,FULLTEXT,RS,AS,IS'
                         }
                         else
                         {
-                            $result.Features | Should Be 'SQLENGINE,REPLICATION,FULLTEXT,RS,AS,IS,SSMS,ADV_SSMS'
+                            $result.Features | Should Be 'SQLENGINE,REPLICATION,DQC,DQ,BOL,FULLTEXT,RS,AS,IS,SSMS,ADV_SSMS'
                         }
                     }
                 }
@@ -1358,6 +1403,14 @@ try
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\DQ\*"
+                        } -MockWith $mockGetItemProperty_DQFeature -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
+                        } -MockWith $mockGetItemProperty_BOLandDQCFeature -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
@@ -1564,6 +1617,14 @@ try
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\DQ\*"
+                        } -MockWith $mockGetItemProperty_DQFeature -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
+                        } -MockWith $mockGetItemProperty_BOLandDQCFeature -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
                         } -MockWith $mockGetItemProperty_Setup -Verifiable
                     }
@@ -1738,6 +1799,14 @@ try
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\DQ\*"
+                        } -MockWith $mockGetItemProperty_DQFeature -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
+                        } -MockWith $mockGetItemProperty_BOLandDQCFeature -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
                         } -MockWith $mockGetItemProperty_Setup -Verifiable
                     }
@@ -1884,6 +1953,14 @@ try
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\ConfigurationState"
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\DQ\*"
+                        } -MockWith $mockGetItemProperty_DQFeature -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
+                        } -MockWith $mockGetItemProperty_BOLandDQCFeature -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
@@ -2184,6 +2261,14 @@ try
                     Mock -CommandName Get-ItemProperty -ParameterFilter {
                         $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
                     } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable
+
+                    Mock -CommandName Get-ItemProperty -ParameterFilter {
+                        $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\DQ\*"
+                    } -MockWith $mockGetItemProperty_DQFeature -Verifiable
+
+                    Mock -CommandName Get-ItemProperty -ParameterFilter {
+                        $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
+                    } -MockWith $mockGetItemProperty_BOLandDQCFeature -Verifiable
 
                     Mock -CommandName Get-ItemProperty -ParameterFilter {
                         $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
@@ -2539,6 +2624,14 @@ try
                     Mock -CommandName Get-ItemProperty -ParameterFilter {
                         $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
                     } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable
+
+                    Mock -CommandName Get-ItemProperty -ParameterFilter {
+                        $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\DQ\*"
+                    } -MockWith $mockGetItemProperty_DQFeature -Verifiable
+
+                    Mock -CommandName Get-ItemProperty -ParameterFilter {
+                        $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
+                    } -MockWith $mockGetItemProperty_BOLandDQCFeature -Verifiable
 
                     Mock -CommandName Get-ItemProperty -ParameterFilter {
                         $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
@@ -3652,6 +3745,14 @@ try
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\DQ\*"
+                        } -MockWith $mockGetItemProperty_DQFeature -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
+                        } -MockWith $mockGetItemProperty_BOLandDQCFeature -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
                         } -MockWith $mockGetItemProperty_Setup -Verifiable
 
@@ -3941,6 +4042,14 @@ try
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
                         } -MockWith $mockGetItemProperty_ConfigurationState -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\DQ\*"
+                        } -MockWith $mockGetItemProperty_DQFeature -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
+                        } -MockWith $mockGetItemProperty_BOLandDQCFeature -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'

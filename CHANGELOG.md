@@ -24,6 +24,9 @@
   - Fixed typos in markdown files; CHANGELOG, CONTRIBUTING, README and ISSUE_TEMPLATE.
 - Changes to xSQLServerAlwaysOnService
   - Get-TargetResource should no longer fail silently with error 'Index operation failed; the array index evaluated to null.' (issue #519). Now if the Server.IsHadrEnabled property return neither $true or $false the Get-TargetResource function will throw an error.
+- Changes to xSQLServerSetUp
+  - Updated xSQLServerSetup Module Get-Resource method to fix (issue #516 and #490).
+  - Added change to detect DQ, DQC, BOL, SDK features. Now Test-Resource returns true after calling set for DQ, DQC, BOL, SDK features.
 
 ## 7.0.0.0
 
