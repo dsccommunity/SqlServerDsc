@@ -240,7 +240,7 @@ function Set-TargetResource
                     }
                     catch
                     {
-                        throw New-TerminatingError -ErrorType RemoveAvailabilityGroupFailed -FormatArgs $availabilityGroup.Name,$SQLInstanceName -ErrorCategory ResourceUnavailable
+                        throw New-TerminatingError -ErrorType RemoveAvailabilityGroupFailed -FormatArgs $availabilityGroup.Name,$SQLInstanceName -ErrorCategory ResourceUnavailable -InnerException $_.Exception
                     }
                 }
                 else
@@ -361,7 +361,7 @@ function Set-TargetResource
                 }
                 catch
                 {
-                    throw New-TerminatingError -ErrorType CreateAvailabilityGroupReplicaFailed -FormatArgs $Ensure,$SQLInstanceName -ErrorCategory OperationStopped
+                    throw New-TerminatingError -ErrorType CreateAvailabilityGroupReplicaFailed -FormatArgs $newReplicaParams.Name,$SQLInstanceName -ErrorCategory OperationStopped -InnerException $_.Exception
                 }
 
                 # Set up the parameters for the new availability group
@@ -398,7 +398,7 @@ function Set-TargetResource
                 }
                 catch
                 {
-                    throw New-TerminatingError -ErrorType CreateAvailabilityGroupFailed -FormatArgs $Name,$_.Exception -ErrorCategory OperationStopped
+                    throw New-TerminatingError -ErrorType CreateAvailabilityGroupFailed -FormatArgs $Name -ErrorCategory OperationStopped -InnerException $_.Exception
                 }
             }
             # Otherwise let's check each of the parameters passed and update the Availability Group accordingly
@@ -747,7 +747,7 @@ function Update-AvailabilityGroup
     }
     catch
     {
-        throw New-TerminatingError -ErrorType AlterAvailabilityGroupFailed -FormatArgs $AvailabilityGroup.Name -ErrorCategory OperationStopped
+        throw New-TerminatingError -ErrorType AlterAvailabilityGroupFailed -FormatArgs $AvailabilityGroup.Name -ErrorCategory OperationStopped -InnerException $_.Exception
     }
     finally
     {
