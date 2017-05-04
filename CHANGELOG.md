@@ -27,6 +27,10 @@
 - Changes to xSQLServerSetUp
   - Updated xSQLServerSetup Module Get-Resource method to fix (issue #516 and #490).
   - Added change to detect DQ, DQC, BOL, SDK features. Now Test-Resource returns true after calling set for DQ, DQC, BOL, SDK features.
+- Changes to xSQLServerAlwaysOnAvailabilityGroup
+  - Updated to return the exception raised when an error is thrown.
+- Changes to xSQLServerAlwaysOnAvailabilityGroupReplica
+  - Updated to return the exception raised when an error is thrown.
 
 ## 7.0.0.0
 
