@@ -8,12 +8,12 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
 
     .PARAMETER Name
     The name of the login to retrieve.
-    
+
     .PARAMETER SQLServer
     Hostname of the SQL Server to retrieve the login from.
-    
+
     .PARAMETER SQLInstanceName
-    Name of the SQL instance to retrieve the login from. 
+    Name of the SQL instance to retrieve the login from.
 #>
 function Get-TargetResource
 {
@@ -33,7 +33,7 @@ function Get-TargetResource
         [System.String]
         $SQLInstanceName
     )
-    
+
     $serverObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
     Write-Verbose 'Getting SQL logins'
@@ -58,6 +58,7 @@ function Get-TargetResource
         LoginType = $login.LoginType
         SQLServer = $SQLServer
         SQLInstanceName = $SQLInstanceName
+        Disabled = $login.IsDisabled
     }
 
     if ( $login.LoginType -eq 'SqlLogin' )
@@ -76,16 +77,16 @@ function Get-TargetResource
 
     .PARAMETER Ensure
     Specifies if the login to exist. Default is 'Present'.
-    
+
     .PARAMETER Name
     The name of the login to retrieve.
 
     .PARAMETER LoginType
     The type of login to create. Default is 'WindowsUser'
-    
+
     .PARAMETER SQLServer
     Hostname of the SQL Server to create the login on.
-    
+
     .PARAMETER SQLInstanceName
     Name of the SQL instance to create the login on.
 
@@ -100,6 +101,9 @@ function Get-TargetResource
 
     .PARAMETER LoginPasswordPolicyEnforced
     Specifies if the login password is required to conform to the password policy specified in the system security policy. Only applies to SQL Logins. Default is $true.
+
+    .PARAMETER Disabled
+    Specifies if the login is disabled. Default is $false.
 #>
 function Set-TargetResource
 {
@@ -141,20 +145,24 @@ function Set-TargetResource
         $LoginCredential,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $LoginMustChangePassword = $true,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $LoginPasswordExpirationEnabled = $true,
 
         [Parameter()]
-        [bool]
-        $LoginPasswordPolicyEnforced = $true
+        [System.Boolean]
+        $LoginPasswordPolicyEnforced = $true,
+
+        [Parameter()]
+        [System.Boolean]
+        $Disabled
     )
-    
+
     $serverObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-    
+
     switch ( $Ensure )
     {
         'Present'
@@ -164,9 +172,7 @@ function Set-TargetResource
                 $login = $serverObject.Logins[$Name]
 
                 if ( $login.LoginType -eq 'SqlLogin' )
-                {                    
-                    
-                    
+                {
                     if ( $login.PasswordExpirationEnabled -ne $LoginPasswordExpirationEnabled )
                     {
                         New-VerboseMessage -Message "Setting PasswordExpirationEnabled to '$LoginPasswordExpirationEnabled' for the login '$Name' on the '$SQLServer\$SQLInstanceName' instance."
@@ -187,6 +193,19 @@ function Set-TargetResource
                          Set-SQLServerLoginPassword -Login $login -SecureString $LoginCredential.Password
                     }
                 }
+
+                if ( $PSBoundParameters.ContainsKey('Disabled') -and ($login.IsDisabled -ne $Disabled) )
+                {
+                    New-VerboseMessage -Message "Setting IsDisabled to '$Disabled' for the login '$Name' on the '$SQLServer\$SQLInstanceName' instance."
+                    if( $Disabled )
+                    {
+                        $login.Disable()
+                    }
+                    else
+                    {
+                        $login.Enable()
+                    }
+                }
             }
             else
             {
@@ -200,9 +219,9 @@ function Set-TargetResource
                 {
                     throw New-TerminatingError -ErrorType LoginCredentialNotFound -FormatArgs $Name -ErrorCategory ObjectNotFound
                 }
-                
+
                 New-VerboseMessage -Message "Adding the login '$Name' to the '$SQLServer\$SQLInstanceName' instance."
-                
+
                 $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $serverObject,$Name
                 $login.LoginType = $LoginType
 
@@ -215,7 +234,7 @@ function Set-TargetResource
                         {
                             throw New-TerminatingError -ErrorType IncorrectLoginMode -FormatArgs $SQLServer,$SQLInstanceName,$serverObject.LoginMode -ErrorCategory NotImplemented
                         }
-                        
+
                         $login.PasswordPolicyEnforced = $LoginPasswordPolicyEnforced
                         $login.PasswordExpirationEnabled = $LoginPasswordExpirationEnabled
                         if ( $LoginMustChangePassword )
@@ -227,13 +246,19 @@ function Set-TargetResource
                             $LoginCreateOptions = [Microsoft.SqlServer.Management.Smo.LoginCreateOptions]::None
                         }
 
-                        New-SQLServerLogin -Login $login -LoginCreateOptions $LoginCreateOptions -SecureString $LoginCredential.Password -ErrorAction Stop 
+                        New-SQLServerLogin -Login $login -LoginCreateOptions $LoginCreateOptions -SecureString $LoginCredential.Password -ErrorAction Stop
                     }
 
                     default
                     {
                         New-SQLServerLogin -Login $login
                     }
+                }
+
+                # we can only disable the login once it's been created
+                if( $Disabled )
+                {
+                    $login.Disable()
                 }
             }
         }
@@ -255,16 +280,16 @@ function Set-TargetResource
 
     .PARAMETER Ensure
     Specifies if the login is supposed to exist. Default is 'Present'.
-    
+
     .PARAMETER Name
     The name of the login.
 
     .PARAMETER LoginType
     The type of login. Default is 'WindowsUser'
-    
+
     .PARAMETER SQLServer
     Hostname of the SQL Server.
-    
+
     .PARAMETER SQLInstanceName
     Name of the SQL instance.
 
@@ -279,6 +304,9 @@ function Set-TargetResource
 
     .PARAMETER LoginPasswordPolicyEnforced
     Specifies if the login password is required to conform to the password policy specified in the system security policy. Only applies to SQL Logins. Default is $true.
+
+    .PARAMETER Disabled
+    Specifies if the login is disabled. Default is $false.
 #>
 function Test-TargetResource
 {
@@ -320,21 +348,25 @@ function Test-TargetResource
         $LoginCredential,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $LoginMustChangePassword = $true,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $LoginPasswordExpirationEnabled = $true,
 
         [Parameter()]
-        [bool]
-        $LoginPasswordPolicyEnforced = $true
+        [System.Boolean]
+        $LoginPasswordPolicyEnforced = $true,
+
+        [Parameter()]
+        [System.Boolean]
+        $Disabled
     )
 
     # Assume the test will pass
     $testPassed = $true
-    
+
     $getParams = @{
         Name = $Name
         SQLServer = $SQLServer
@@ -357,6 +389,12 @@ function Test-TargetResource
             $testPassed = $false
         }
 
+        if ( $PSBoundParameters.ContainsKey('Disabled') -and ($loginInfo.Disabled -ne $Disabled) )
+        {
+            New-VerboseMessage -Message "The login '$Name' on the instance '$SQLServer\$SQLInstanceName' has IsDisabled set to $($loginInfo.Disabled) rather than $Disabled"
+            $testPassed = $false
+        }
+
         if ( $LoginType -eq 'SqlLogin' )
         {
             if ( $LoginPasswordExpirationEnabled -ne $loginInfo.LoginPasswordExpirationEnabled )
@@ -375,10 +413,10 @@ function Test-TargetResource
             if ( $testPassed -and $LoginCredential )
             {
                 $userCred = [System.Management.Automation.PSCredential]::new($Name, $LoginCredential.Password)
-                
+
                 try
                 {
-                    $serverObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -SetupCredential $userCred    
+                    $serverObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -SetupCredential $userCred
                 }
                 catch
                 {
@@ -388,7 +426,7 @@ function Test-TargetResource
             }
         }
     }
-    
+
     return $testPassed
 }
 
@@ -415,7 +453,7 @@ function Update-SQLServerLogin
     {
         $originalErrorActionPreference = $ErrorActionPreference
         $ErrorActionPreference = 'Stop'
-        
+
         $Login.Alter()
     }
     catch
@@ -471,14 +509,14 @@ function New-SQLServerLogin
 
     switch ( $PSCmdlet.ParameterSetName )
     {
-        'SqlLogin' 
-        { 
+        'SqlLogin'
+        {
             try
             {
                 $originalErrorActionPreference = $ErrorActionPreference
                 $ErrorActionPreference = 'Stop'
-                
-                $login.Create($SecureString,$LoginCreateOptions) 
+
+                $login.Create($SecureString,$LoginCreateOptions)
             }
             catch [Microsoft.SqlServer.Management.Smo.FailedOperationException]
             {
@@ -507,7 +545,7 @@ function New-SQLServerLogin
             {
                 $originalErrorActionPreference = $ErrorActionPreference
                 $ErrorActionPreference = 'Stop'
-                
+
                 $login.Create()
             }
             catch
@@ -545,7 +583,7 @@ function Remove-SQLServerLogin
     {
         $originalErrorActionPreference = $ErrorActionPreference
         $ErrorActionPreference = 'Stop'
-        
+
         $Login.Drop()
     }
     catch
@@ -588,7 +626,7 @@ function Set-SQLServerLoginPassword
     {
         $originalErrorActionPreference = $ErrorActionPreference
         $ErrorActionPreference = 'Stop'
-        
+
         $Login.ChangePassword($SecureString)
     }
     catch [Microsoft.SqlServer.Management.Smo.FailedOperationException]
