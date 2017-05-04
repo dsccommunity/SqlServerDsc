@@ -361,7 +361,7 @@ function Set-TargetResource
                 }
                 catch
                 {
-                    throw New-TerminatingError -ErrorType CreateAvailabilityGroupReplicaFailed -FormatArgs $Ensure,$SQLInstanceName -ErrorCategory OperationStopped -InnerException $_.Exception
+                    throw New-TerminatingError -ErrorType CreateAvailabilityGroupReplicaFailed -FormatArgs $newReplicaParams.Name,$SQLInstanceName -ErrorCategory OperationStopped -InnerException $_.Exception
                 }
 
                 # Set up the parameters for the new availability group
