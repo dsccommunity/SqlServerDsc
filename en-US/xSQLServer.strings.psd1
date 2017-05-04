@@ -72,14 +72,14 @@ FailoverClusterResourceNotFound = Could not locate a SQL Server cluster resource
 AlterAvailabilityGroupReplicaFailed = Failed to alter the avilability group replica '{0}'.
 ClusterPermissionsMissing = The cluster does not have permissions to manage the Availability Group on '{0}\\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either 'NT SERVICE\\ClusSvc' or 'NT AUTHORITY\\SYSTEM'.
 CreateAvailabilityGroupReplicaFailed = Creating the Availability Group Replica failed.
-CreateAvailabilityGroupFailed = Creating the availability group '{0}' failed with the error '{1}'.
+CreateAvailabilityGroupFailed = Creating the availability group '{0}'.
 DatabaseMirroringEndpointNotFound = No database mirroring endpoint was found on '{0}\{1}'.
 InstanceNotPrimaryReplica = The instance '{0}' is not the primary replica for the availability group '{1}'.
 RemoveAvailabilityGroupFailed = Failed to remove the availabilty group '{0}' from the '{1}' instance.
 
 # AlwaysOnAvailabilityGroupReplica
 JoinAvailabilityGroupFailed = Failed to join the availability group replica '{0}'.
-RemoveAvailabilityGroupReplicaFailed = Failed to remove the availability group replica '{0}' with the error '{1}'.
+RemoveAvailabilityGroupReplicaFailed = Failed to remove the availability group replica '{0}'.
 ReplicaNotFound = Unable to find the availability group replica '{0}' on the instance '{1}'.
 
 # SQLServerHelper
