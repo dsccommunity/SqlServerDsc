@@ -79,7 +79,7 @@ function Get-TargetResource
         $alwaysOnAvailabilityGroupReplicaResource.AvailabilityGroupName = $availabilityGroup.Name
         
         # Try to find the replica
-        $availabilityGroupReplica = $availabilityGroup.AvailabilityReplicas[$Name]
+        $availabilityGroupReplica = $availabilityGroup.AvailabilityReplicas[$serverObject.Name]
 
         if ( $availabilityGroupReplica )
         {
@@ -658,7 +658,6 @@ function Test-TargetResource
         'Present'
         {
             $parametersToCheck = @(
-                'Name',
                 'AvailabilityGroupName',
                 'SQLServer',
                 'SQLInstanceName',
