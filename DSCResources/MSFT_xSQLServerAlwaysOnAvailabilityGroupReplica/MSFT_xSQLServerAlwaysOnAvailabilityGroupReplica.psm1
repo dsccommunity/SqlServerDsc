@@ -444,7 +444,7 @@ function Set-TargetResource
                     $endpointUrl = "TCP://$($EndpointHostName):$($endpointPort)"
 
                     $newAvailabilityGroupReplicaParams = @{
-                        Name = $Name
+                        Name = $serverObject.Name
                         InputObject = $primaryReplicaAvailabilityGroup
                         AvailabilityMode = $AvailabilityMode
                         EndpointUrl = $endpointUrl
