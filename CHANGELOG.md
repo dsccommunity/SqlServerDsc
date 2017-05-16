@@ -18,6 +18,7 @@
   - Updated README.md with a description for the resources and revised the parameter descriptions.
   - Removed dependency of SQLPS provider (issue #482).
   - Added ConnectSql permission. Now that permission can also be granted or revoked.
+  - Updated note in resource description to also mention ConnectSql permission.
 - Changes to xSQLServerHelper module
   - Removed helper function Get-SQLPSInstance and Get-SQLPSInstanceName because there is no resource using it any longer.
 - Changes to xSQLServer
