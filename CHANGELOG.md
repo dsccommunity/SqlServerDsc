@@ -37,7 +37,7 @@
 - Changes to xSQLServerLogin
   - Added an optional boolean parameter Disabled. It can be used to enable/disable existing logins or create disabled logins (new logins are created as enabled by default).
 - Changes to xSQLServerDatabaseRole
-  - Updated variable passed to Microsoft.SqlSErver.Management.Smo.User constructor to fix issue #530
+  - Updated variable passed to Microsoft.SqlServer.Management.Smo.User constructor to fix issue #530
 
 ## 7.0.0.0
 
