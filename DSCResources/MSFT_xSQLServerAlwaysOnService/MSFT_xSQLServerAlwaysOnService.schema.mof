@@ -1,7 +1,7 @@
 [ClassVersion("1.0.0.0"), FriendlyName("xSQLServerAlwaysOnService")]
 class MSFT_xSQLServerAlwaysOnService : OMI_BaseResource
 {
-    [Required, Description("HADR is Present (enabled) or Absent (disabled)"), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Required, Description("An enumerated value that describes if SQL server should have AlwaysOn property present or absent."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Key, Description("The hostname of the SQL Server to be configured")] String SQLServer;
     [Key, Description("Name of the SQL instance to be configured.")] String SQLInstanceName;
     [Write, Description("The length of time, in seconds, to wait for the service to restart. Default is 120 seconds.")] Sint32 RestartTimeout;
