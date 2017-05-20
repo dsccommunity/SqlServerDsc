@@ -779,7 +779,7 @@ No description.
 
 This resource sets server permissions to a user (login).
 
->Note: Currently the resource only supports AlterAnyAvailabilityGroup, AlterAnyEndPoint and ViewServerState.
+>Note: Currently the resource only supports ConnectSql, AlterAnyAvailabilityGroup, AlterAnyEndPoint and ViewServerState.
 
 #### Requirements
 
