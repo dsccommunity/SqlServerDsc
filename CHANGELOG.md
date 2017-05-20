@@ -53,6 +53,7 @@
   - Refactored some of the code, cleaned up the rest and fixed PSSA rules warnings (issue #261).
   - If both parameter TcpDynamicPort and TcpPort is set at the same time it will now throw an error (issue #535).
   - Added examples (issue #536).
+  - When TcpDynamicPorts is set to '0' the Test-TargetResource function will no longer fail each time (issue #564).
 
 ## 7.0.0.0
 

@@ -34,7 +34,7 @@ Function Get-TargetResource
 
         $managedComputerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer
 
-        Write-Verbose "Getting [$ProtocolName] network protocol for [$InstanceName] SQL instance."
+        Write-Verbose "Getting network protocol [$ProtocolName] for SQL instance [$InstanceName]."
         $tcp = $managedComputerObject.ServerInstances[$InstanceName].ServerProtocols[$ProtocolName]
 
         Write-Verbose "Reading current network properties."
@@ -141,10 +141,10 @@ Function Set-TargetResource
 
     $getTargetResourceResult = Get-TargetResource -InstanceName $InstanceName -ProtocolName $ProtocolName
 
-    $applicationDomainObject = Register-SqlWmiManagement -SQLInstanceName $InstanceName
-
     try
     {
+        $applicationDomainObject = Register-SqlWmiManagement -SQLInstanceName $InstanceName
+
         $desiredState = @{
             InstanceName = $InstanceName
             ProtocolName = $ProtocolName
@@ -161,30 +161,54 @@ Function Set-TargetResource
         $tcp = $managedComputerObject.ServerInstances[$InstanceName].ServerProtocols[$ProtocolName]
 
         Write-Verbose 'Checking [IsEnabled] property.'
-        if ($desiredState['IsEnabled'] -ine $getTargetResourceResult['IsEnabled'])
+        if ($desiredState.IsEnabled -ine $getTargetResourceResult.IsEnabled)
         {
-            Write-Verbose "Updating [IsEnabled] from $($getTargetResourceResult['IsEnabled']) to $($desiredState['IsEnabled'])."
-            $tcp.IsEnabled = $desiredState['IsEnabled']
+            Write-Verbose "Updating [IsEnabled] from $($getTargetResourceResult.IsEnabled) to $($desiredState.IsEnabled)."
+            $tcp.IsEnabled = $desiredState.IsEnabled
             $tcp.Alter()
 
             $isRestartNeeded = $true
         }
 
         Write-Verbose 'Checking [TcpDynamicPorts] property.'
-        if ($desiredState['TcpDynamicPorts'] -ine $getTargetResourceResult['TcpDynamicPorts'])
+        if ($desiredState.TcpDynamicPorts -ine $getTargetResourceResult.TcpDynamicPorts)
         {
-            Write-Verbose "Updating [TcpDynamicPorts] from $($getTargetResourceResult['TcpDynamicPorts']) to $($desiredState['TcpDynamicPorts'])."
-            $tcp.IPAddresses['IPAll'].IPAddressProperties['TcpDynamicPorts'].Value = $desiredState['TcpDynamicPorts']
+            $fromTcpDynamicPortsValue = $getTargetResourceResult.TcpDynamicPorts
+            if ($fromTcpDynamicPortsValue -eq '')
+            {
+                $fromTcpDynamicPortsValue = 'none'
+            }
+
+            $toTcpDynamicPortsValue = $desiredState.TcpDynamicPorts
+            if ($toTcpDynamicPortsValue -eq '')
+            {
+                $toTcpDynamicPortsValue = 'none'
+            }
+
+            Write-Verbose "Updating [TcpDynamicPorts] from $($fromTcpDynamicPortsValue) to $($toTcpDynamicPortsValue)."
+            $tcp.IPAddresses['IPAll'].IPAddressProperties['TcpDynamicPorts'].Value = $desiredState.TcpDynamicPorts
             $tcp.Alter()
 
             $isRestartNeeded = $true
         }
 
         Write-Verbose 'Checking [TcpPort property].'
-        if ($desiredState['TcpPort'] -ine $getTargetResourceResult['TcpPort'])
+        if ($desiredState.TcpPort -ine $getTargetResourceResult.TcpPort)
         {
-            Write-Verbose "Updating [TcpPort] from $($getTargetResourceResult['TcpPort']) to $($desiredState['TcpPort'])."
-            $tcp.IPAddresses['IPAll'].IPAddressProperties['TcpPort'].Value = $desiredState['TcpPort']
+            $fromTcpPort = $getTargetResourceResult.TcpPort
+            if ($fromTcpPort -eq '')
+            {
+                $fromTcpPort = 'none'
+            }
+
+            $toTcpPort = $desiredState.TcpPort
+            if ($toTcpPort -eq '')
+            {
+                $toTcpPort = 'none'
+            }
+
+            Write-Verbose "Updating [TcpPort] from $($fromTcpPort) to $($toTcpPort)."
+            $tcp.IPAddresses['IPAll'].IPAddressProperties['TcpPort'].Value = $desiredState.TcpPort
             $tcp.Alter()
 
             $isRestartNeeded = $true
@@ -288,41 +312,56 @@ Function Test-TargetResource
         throw New-TerminatingError -ErrorType UnableToUseBothDynamicAndStaticPort -ErrorCategory InvalidOperation
     }
 
-    $desiredState = @{
-        ProtocolName = $ProtocolName
+    $getTargetResourceResult = Get-TargetResource -InstanceName $InstanceName -ProtocolName $ProtocolName
+
+    Write-Verbose "Comparing desired state with current state."
+
+    $isInDesiredState = $true
+
+    if ($ProtocolName -ne $getTargetResourceResult.ProtocolName)
+    {
+        Write-Verbose ('Expected protocol to be ''{0}'', but was ''{1}''.' -f $ProtocolName, $getTargetResourceResult.ProtocolName)
+
+        $isInDesiredState = $false
     }
 
     if ($PSBoundParameters.ContainsKey('IsEnabled'))
     {
-        $desiredState += @{
-            IsEnabled = $IsEnabled
+        if ($IsEnabled -ne $getTargetResourceResult.IsEnabled)
+        {
+            $evaluateEnableOrDisable = @{
+                $true='enabled'
+                $false='disabled'
+            }
+
+            Write-Verbose ('Expected protocol to be {0}, but was {1}.' -f $evaluateEnableOrDisable[$IsEnabled], $evaluateEnableOrDisable[$getTargetResourceResult.IsEnabled])
+
+            $isInDesiredState = $false
         }
     }
 
     if ($PSBoundParameters.ContainsKey('TcpDynamicPorts'))
     {
-        $desiredState += @{
-            TcpDynamicPorts = $TcpDynamicPorts
+        if ($TcpDynamicPorts -eq '0' -and $getTargetResourceResult.TcpDynamicPorts -eq '')
+        {
+            Write-Verbose 'Expected tcp dynamic port to be used, but it was not.'
+
+            $isInDesiredState = $false
         }
     }
 
     if ($PSBoundParameters.ContainsKey('TcpPort'))
     {
-        $desiredState += @{
-            TcpPort = $TcpPort
-        }
-    }
-
-    $getTargetResourceResult = Get-TargetResource -InstanceName $InstanceName -ProtocolName $ProtocolName
-
-    $isInDesiredState = $true
-
-    Write-Verbose "Comparing desired state with current state."
-    foreach ($key in $desiredState.Keys)
-    {
-        if( $desiredState[$key] -ine $getTargetResourceResult[$key] )
+        if ($getTargetResourceResult.TcpPort -eq '')
         {
-            Write-Verbose "$key is different: desired = $($desiredState[$key]); current = $($getTargetResourceResult[$key])"
+            Write-Verbose 'Expected tcp static port to be used, but it was not.'
+
+            $isInDesiredState = $false
+        }
+        elseif ($TcpPort -ne $getTargetResourceResult.TcpPort)
+        {
+            Write-Verbose ('Expected tcp static port to be ''{0}'', but was ''{1}''.' -f $TcpPort, $getTargetResourceResult.TcpPort)
+
             $isInDesiredState = $false
         }
     }

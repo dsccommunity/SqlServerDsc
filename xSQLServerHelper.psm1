@@ -243,7 +243,7 @@ function Register-SqlWmiManagement
         $SQLInstanceName,
 
         [Parameter()]
-        [ValidateNotNullOrEmpty()]
+        [ValidateNotNull()]
         [System.AppDomain]
         $ApplicationDomain
     )
@@ -269,7 +269,7 @@ function Register-SqlWmiManagement
     New-VerboseMessage -Message ('Loading assembly ''{0}''.' -f $sqlSqlWmiManagementAssemblyName)
     $applicationDomainObject.Load($sqlSqlWmiManagementAssemblyName) | Out-Null
 
-    return $applicationDomainName
+    return $applicationDomainObject
 }
 
 <#
@@ -285,7 +285,7 @@ function Unregister-SqlAssemblies
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
+        [ValidateNotNull()]
         [System.AppDomain]
         $ApplicationDomain
     )
