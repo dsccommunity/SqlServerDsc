@@ -740,8 +740,8 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) - (102
 #### Parameters
 
 * **[String] SQLInstance** _(Key)_: The name of the SQL instance to be configured.
-* **[String] SQLServer** _(Write)_: The host name of the SQL Server to be configured. Default value is *$env:COMPUTERNAME*.
-* **[Boolean] DynamicAlloc** _(Write)_: If set to $true then max memory will be dynamically configured. When this is set parameter is set to $true, the parameter MaxMemory must be set to $null or not be configured. Default value is *$false*.
+* **[String] SQLServer** _(Write)_: The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+* **[Boolean] DynamicAlloc** _(Write)_: If set to $true then max memory will be dynamically configured. When this is set parameter is set to $true, the parameter MaxMemory must be set to $null or not be configured. Default value is $false.
 * **[String] Ensure** _(Write)_: When set to 'Present' then min and max memory will be set to either the value in parameter MinMemory and MaxMemory or dynamically configured when parameter DynamicAlloc is set to $true. When set to 'Absent' min and max memory will be set to default values. { *Present* | Absent }.
 * **[Sint32] MinMemory** _(Write)_: Minimum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
 * **[Sint32] MaxMemory** _(Write)_: Maximum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
@@ -755,7 +755,11 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) - (102
 
 ### xSQLServerNetwork
 
-No description.
+This resource is used to change the network settings for the instance.
+
+Read more about the network settings in the article [TCP/IP Properties (IP Addresses Tab)](https://docs.microsoft.com/en-us/sql/tools/configuration-manager/tcp-ip-properties-ip-addresses-tab).
+
+>Note: Currently only TCP is supported.
 
 #### Requirements
 
@@ -764,16 +768,19 @@ No description.
 
 #### Parameters
 
-* **[String] InstanceName** _(Key)_: name of SQL Server instance for which network will be configured.
-* **[String] ProtocolName** _(Required)_: Name of network protocol to be configured. Only tcp is currently supported. { tcp }.
-* **[Boolean] IsEnabled** _(Write)_: Enables/Disables network protocol.
-* **[String] TCPDynamicPorts** _(Write)_: 0 if Dynamic ports should be used otherwise empty. { 0 }.
-* **[String] TCPPort** _(Write)_: Custom TCP port.
-* **[Boolean] RestartService** _(Write)_: If true will restart SQL Service instance service after update. Default false.
+* **[String] InstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **[String] ProtocolName** _(Required)_: The name of network protocol to be configured. Only tcp is currently supported. { tcp }.
+* **[String] SQLServer** _(Write)_: The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+* **[Boolean] IsEnabled** _(Write)_: Enables or disables the network protocol.
+* **[String] TcpDynamicPorts** _(Write)_: Set the value to '0' if dynamic ports should be used. If static port should be used set this to a empty string value. Value can not be set to '0' if TcpPort is also set to a value. { '0','' }.
+* **[String] TcpPort** _(Write)_: The TCP port(s) that SQL Server should be listening on. If the IP address should listen on more than one port, list all ports separated with a comma ('1433,1500,1501'). To use this parameter set TcpDynamicPorts to the value '' (empty string).
+* **[Boolean] RestartService** _(Write)_: If set to $true then SQL Server and dependent services will be restarted if a change to the configuration is made. The default value is $false.
+* **[Uint16] RestartTimeout** _(Write)_: Timeout value for restarting the SQL Server services. The default value is 120 seconds.
 
 #### Examples
 
-* [Enable TCP/IP on custom static port](/Examples/Resources/xSQLServerNetwork/1-EnableTcpIpOnCustomStaticPort.ps1)
+* [Enable TCP/IP with static port and restart SQL Server](/Examples/Resources/xSQLServerNetwork/1-EnableTcpIpWithStaticPort.ps1)
+* [Enable TCP/IP with dynamic port](/Examples/Resources/xSQLServerNetwork/2-EnableTcpIpWithDynamicPort.ps1)
 
 ### xSQLServerPermission
 
