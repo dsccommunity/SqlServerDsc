@@ -188,7 +188,7 @@ function Register-SqlSmo
         $ApplicationDomain
     )
 
-    $sqlMajorVersion = Get-SqlMajorVersion -SQLInstanceName $SQLInstanceName
+    $sqlMajorVersion = Get-SqlInstanceMajorVersion -SQLInstanceName $SQLInstanceName
     New-VerboseMessage -Message ('SQL major version is {0}.' -f $sqlMajorVersion)
 
     if( -not $ApplicationDomain )
@@ -248,7 +248,7 @@ function Register-SqlWmiManagement
         $ApplicationDomain
     )
 
-    $sqlMajorVersion = Get-SqlMajorVersion -SQLInstanceName $SQLInstanceName
+    $sqlMajorVersion = Get-SqlInstanceMajorVersion -SQLInstanceName $SQLInstanceName
     New-VerboseMessage -Message ('SQL major version is {0}.' -f $sqlMajorVersion)
 
     <#
@@ -304,7 +304,7 @@ function Unregister-SqlAssemblies
     .OUTPUTS
         System.UInt16. Returns the SQL Server major version number.
 #>
-function Get-SqlMajorVersion
+function Get-SqlInstanceMajorVersion
 {
     [CmdletBinding()]
     [OutputType([System.UInt16])]

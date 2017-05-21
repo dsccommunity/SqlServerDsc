@@ -23,7 +23,7 @@ Configuration Example
             ProtocolName = 'Tcp'
             IsEnabled = $true
             TCPDynamicPorts = '0'
-            RestartService = $false
+            RestartService = $true
         }
     }
 }

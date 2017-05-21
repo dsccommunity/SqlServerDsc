@@ -909,7 +909,7 @@ InModuleScope $script:moduleName {
         $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockInstance_InstanceId\Setup"
     }
 
-    Describe 'Testing Get-SqlMajorVersion' -Tag GetSqlMajorVersion {
+    Describe 'Testing Get-SqlInstanceMajorVersion' -Tag GetSqlInstanceMajorVersion {
         BeforeEach {
             Mock -CommandName Get-ItemProperty `
                 -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_InstanceNames_SQL `
@@ -924,9 +924,9 @@ InModuleScope $script:moduleName {
 
         $mockInstance_InstanceId = "MSSQL$($mockSqlMajorVersion).$($mockInstanceName)"
 
-        Context 'When calling Get-SqlMajorVersion' {
+        Context 'When calling Get-SqlInstanceMajorVersion' {
             It 'Should return the correct major SQL version number' {
-                $result = Get-SqlMajorVersion -SQLInstanceName $mockInstanceName
+                $result = Get-SqlInstanceMajorVersion -SQLInstanceName $mockInstanceName
                 $result | Should -Be $mockSqlMajorVersion
 
                 Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It `
@@ -937,7 +937,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Context 'When calling Get-SqlMajorVersion and nothing is returned' {
+        Context 'When calling Get-SqlInstanceMajorVersion and nothing is returned' {
             It 'Should throw the correct error' {
                 Mock -CommandName Get-ItemProperty `
                     -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_FullInstanceId_Setup `
@@ -945,7 +945,7 @@ InModuleScope $script:moduleName {
                         return New-Object Object
                     } -Verifiable
 
-                 { Get-SqlMajorVersion -SQLInstanceName $mockInstanceName } | Should -Throw 'Could not get the SQL version for the instance ''TEST''.'
+                 { Get-SqlInstanceMajorVersion -SQLInstanceName $mockInstanceName } | Should -Throw 'Could not get the SQL version for the instance ''TEST''.'
 
                 Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It `
                     -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_InstanceNames_SQL
@@ -968,7 +968,7 @@ InModuleScope $script:moduleName {
     #>
     Describe 'Testing Register-SqlSmo' -Tag RegisterSqlSmo {
         BeforeEach {
-            Mock -CommandName Get-SqlMajorVersion -MockWith {
+            Mock -CommandName Get-SqlInstanceMajorVersion -MockWith {
                 return '0' # Mocking zero because that could never match a correct assembly
             } -Verifiable
         }
@@ -979,7 +979,7 @@ InModuleScope $script:moduleName {
                     Register-SqlSmo -SQLInstanceName $mockInstanceName
                 } | Should -Throw 'Exception calling "Load" with "1" argument(s): "Could not load file or assembly ''Microsoft.SqlServer.Smo, Version=0.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91'' or one of its dependencies. The system cannot find the file specified."'
 
-                Assert-MockCalled -CommandName Get-SqlMajorVersion
+                Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion
             }
         }
 
@@ -989,7 +989,7 @@ InModuleScope $script:moduleName {
                     Register-SqlSmo -SQLInstanceName $mockInstanceName -ApplicationDomain $mockApplicationDomainObject
                 } | Should -Throw 'Exception calling "Load" with "1" argument(s): "Could not load file or assembly ''Microsoft.SqlServer.Smo, Version=0.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91'' or one of its dependencies. The system cannot find the file specified."'
 
-                Assert-MockCalled -CommandName Get-SqlMajorVersion
+                Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion
             }
         }
 
@@ -1003,7 +1003,7 @@ InModuleScope $script:moduleName {
     #>
     Describe 'Testing Register-SqlWmiManagement' -Tag RegisterSqlWmiManagement {
         BeforeEach {
-            Mock -CommandName Get-SqlMajorVersion -MockWith {
+            Mock -CommandName Get-SqlInstanceMajorVersion -MockWith {
                 return '0' # Mocking zero because that could never match a correct assembly
             } -Verifiable
 
@@ -1020,7 +1020,7 @@ InModuleScope $script:moduleName {
                     Register-SqlWmiManagement -SQLInstanceName $mockInstanceName
                 } | Should -Throw 'Exception calling "Load" with "1" argument(s): "Could not load file or assembly ''Microsoft.SqlServer.SqlWmiManagement, Version=0.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91'' or one of its dependencies. The system cannot find the file specified."'
 
-                Assert-MockCalled -CommandName Get-SqlMajorVersion
+                Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion
                 Assert-MockCalled -CommandName Register-SqlSmo -Exactly -Times 1 -Scope It -ParameterFilter {
                     $SQLInstanceName -eq $mockInstanceName -and $ApplicationDomain -eq $null
                 }
@@ -1033,7 +1033,7 @@ InModuleScope $script:moduleName {
                     Register-SqlWmiManagement -SQLInstanceName $mockInstanceName -ApplicationDomain $mockApplicationDomainObject
                 } | Should -Throw 'Exception calling "Load" with "1" argument(s): "Could not load file or assembly ''Microsoft.SqlServer.SqlWmiManagement, Version=0.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91'' or one of its dependencies. The system cannot find the file specified."'
 
-                Assert-MockCalled -CommandName Get-SqlMajorVersion
+                Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion
                 Assert-MockCalled -CommandName Register-SqlSmo -Exactly -Times 0 -Scope It -ParameterFilter {
                     $SQLInstanceName -eq $mockInstanceName -and $ApplicationDomain -eq $null
                 }

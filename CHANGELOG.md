@@ -23,7 +23,7 @@
   - Removed helper function Get-SQLPSInstance and Get-SQLPSInstanceName because there is no resource using it any longer.
   - Added four new helper functions.
     - Register-SqlSmo, Register-SqlWmiManagement and Unregister-SqlAssemblies to handle the creation on the application domain and loading and unloading of the SMO and SqlWmiManagement assemblies.
-    - Get-SqlMajorVersion to get the major SQL version for a specific instance.
+    - Get-SqlInstanceMajorVersion to get the major SQL version for a specific instance.
   - Fixed typos in comment-based help
 - Changes to xSQLServer
   - Fixed typos in markdown files; CHANGELOG, CONTRIBUTING, README and ISSUE_TEMPLATE.
@@ -51,7 +51,7 @@
   - Updated example 1-EnableTcpIpOnCustomStaticPort.
   - Added unit tests (issue #294).
   - Refactored some of the code, cleaned up the rest and fixed PSSA rules warnings (issue #261).
-  - If both parameter TcpDynamicPort and TcpPort is set at the same time it will now throw an error (issue #535).
+  - If parameter TcpDynamicPort is set to '0' at the same time as TcpPort is set the resource will now throw an error (issue #535).
   - Added examples (issue #536).
   - When TcpDynamicPorts is set to '0' the Test-TargetResource function will no longer fail each time (issue #564).
 
