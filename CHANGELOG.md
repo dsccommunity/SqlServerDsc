@@ -54,6 +54,8 @@
   - If parameter TcpDynamicPort is set to '0' at the same time as TcpPort is set the resource will now throw an error (issue #535).
   - Added examples (issue #536).
   - When TcpDynamicPorts is set to '0' the Test-TargetResource function will no longer fail each time (issue #564).
+- Changes to xSQLServerRSConfig
+  - Replaced sqlcmd.exe usages with Invoke-Sqlcmd calls (issue #567).
 
 ## 7.0.0.0
 
