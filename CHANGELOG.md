@@ -68,6 +68,7 @@
   - When TcpDynamicPorts is set to '0' the Test-TargetResource function will no longer fail each time (issue #564).
 - Changes to xSQLServerRSConfig
   - Replaced sqlcmd.exe usages with Invoke-Sqlcmd calls (issue #567).
+  - $SQLAdminCredential is now optional. To use the credential, CredSSP authentication must be properly configured on the target node.
 - Changes to xSQLServerDatabasePermission
   - Fixed code style, updated README.md and removed *-SqlDatabasePermission functions from xSQLServerHelper.psm1.
   - Added the option 'GrantWithGrant' with gives the user grant rights, together with the ability to grant others the same right.

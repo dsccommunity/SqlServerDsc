@@ -22,7 +22,7 @@ function Get-TargetResource
         [System.String]
         $RSSQLInstanceName,
 
-        [parameter(Mandatory = $true)]
+        [parameter()]
         [System.Management.Automation.PSCredential]
         $SQLAdminCredential
     )
@@ -31,12 +31,22 @@ function Get-TargetResource
     {
         $InstanceKey = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS" -Name $InstanceName).$InstanceName
         $SQLVersion = ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$InstanceKey\Setup" -Name "Version").Version).Split(".")[0]
-        $RSConfig = Invoke-Command -ComputerName . -Credential $SQLAdminCredential -ScriptBlock {
+
+        $invokeParameters = @{
+            ComputerName = "localhost"
+            ArgumentList = @($SQLVersion,$InstanceName)
+        }
+        if($SQLAdminCredential -ne $null) { 
+            $invokeParameters.Add("Credential", $SQLAdminCredential)
+            $invokeParameters.Add("Authentication", "CredSSP")
+        }
+
+        $RSConfig = Invoke-Command @invokeParameters -ScriptBlock {
             $SQLVersion = $args[0]
             $InstanceName = $args[1]
             $RSConfig = Get-WmiObject -Class MSReportServer_ConfigurationSetting -Namespace "root\Microsoft\SQLServer\ReportServer\RS_$InstanceName\v$SQLVersion\Admin"
             $RSConfig
-        } -ArgumentList @($SQLVersion,$InstanceName)
+        }
         if($RSConfig.DatabaseServerName.Contains("\"))
         {
             $RSSQLServer = $RSConfig.DatabaseServerName.Split("\")[0]
@@ -82,14 +92,24 @@ function Set-TargetResource
         [System.String]
         $RSSQLInstanceName,
 
-        [parameter(Mandatory = $true)]
+        [parameter()]
         [System.Management.Automation.PSCredential]
         $SQLAdminCredential
     )
 
     if(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS" -Name $InstanceName -ErrorAction SilentlyContinue)
     {
-        Invoke-Command -ComputerName . -Credential $SQLAdminCredential -ScriptBlock {
+
+        $invokeParameters = @{
+            ComputerName = "localhost"
+            ArgumentList = @($InstanceName,$RSSQLServer,$RSSQLInstanceName)
+        }
+        if($SQLAdminCredential -ne $null) { 
+            $invokeParameters.Add("Credential", $SQLAdminCredential)
+            $invokeParameters.Add("Authentication", "CredSSP")
+        }
+
+        Invoke-Command @invokeParameters -ScriptBlock {
             # this is a separate PS session, need to load Common Code again
             Import-Module $using:currentPath\..\..\xSQLServerHelper.psm1 -Verbose -ErrorAction Stop
             # smart import of the SQL module
@@ -145,7 +165,7 @@ function Set-TargetResource
             $RSConfig.SetDatabaseConnection($RSConnection,$RSDatabase,2,"","")
             $RSConfig.InitializeReportServer($RSConfig.InstallationID)
 
-        } -ArgumentList @($InstanceName,$RSSQLServer,$RSSQLInstanceName)
+        }
     }
 
     if(!(Test-TargetResource @PSBoundParameters))
@@ -173,7 +193,7 @@ function Test-TargetResource
         [System.String]
         $RSSQLInstanceName,
 
-        [parameter(Mandatory = $true)]
+        [parameter()]
         [System.Management.Automation.PSCredential]
         $SQLAdminCredential
     )
