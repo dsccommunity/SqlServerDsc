@@ -101,7 +101,7 @@ function Set-TargetResource
     {
 
         $invokeParameters = @{
-            ArgumentList = @($InstanceName,$RSSQLServer,$RSSQLInstanceName)
+            ArgumentList = @("$currentPath\..\..\xSQLServerHelper.psm1", $InstanceName,$RSSQLServer,$RSSQLInstanceName)
         }
         if($SQLAdminCredential -ne $null) { 
             $invokeParameters.Add("ComputerName", "localhost")
@@ -111,13 +111,13 @@ function Set-TargetResource
 
         Invoke-Command @invokeParameters -ScriptBlock {
             # this is a separate PS session, need to load Common Code again
-            Import-Module $using:currentPath\..\..\xSQLServerHelper.psm1 -Verbose -ErrorAction Stop
+            Import-Module $args[0] -Verbose -ErrorAction Stop
             # smart import of the SQL module
             Import-SQLPSModule
 
-            $InstanceName = $args[0]
-            $RSSQLServer = $args[1]
-            $RSSQLInstanceName = $args[2]
+            $InstanceName = $args[1]
+            $RSSQLServer = $args[2]
+            $RSSQLInstanceName = $args[3]
             $InstanceKey = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS" -Name $InstanceName).$InstanceName
             $SQLVersion = ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$InstanceKey\Setup" -Name "Version").Version).Split(".")[0]
             if($InstanceName -eq "MSSQLSERVER")
