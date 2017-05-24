@@ -33,10 +33,10 @@ function Get-TargetResource
         $SQLVersion = ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$InstanceKey\Setup" -Name "Version").Version).Split(".")[0]
 
         $invokeParameters = @{
-            ComputerName = "localhost"
             ArgumentList = @($SQLVersion,$InstanceName)
         }
         if($SQLAdminCredential -ne $null) { 
+            $invokeParameters.Add("ComputerName", "localhost")
             $invokeParameters.Add("Credential", $SQLAdminCredential)
             $invokeParameters.Add("Authentication", "CredSSP")
         }
@@ -101,10 +101,10 @@ function Set-TargetResource
     {
 
         $invokeParameters = @{
-            ComputerName = "localhost"
             ArgumentList = @($InstanceName,$RSSQLServer,$RSSQLInstanceName)
         }
         if($SQLAdminCredential -ne $null) { 
+            $invokeParameters.Add("ComputerName", "localhost")
             $invokeParameters.Add("Credential", $SQLAdminCredential)
             $invokeParameters.Add("Authentication", "CredSSP")
         }
