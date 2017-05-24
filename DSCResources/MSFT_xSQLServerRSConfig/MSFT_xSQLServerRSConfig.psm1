@@ -113,8 +113,11 @@ function Set-TargetResource
         }
         if($RSConfig.VirtualDirectoryReportManager -ne $RMVirtualDirectory)
         {
-            $null = $RSConfig.SetVirtualDirectory("ReportManager",$RMVirtualDirectory,$Language)
-            $null = $RSConfig.ReserveURL("ReportManager","http://+:80",$Language)
+            # SSRS Web Portal application name changed in SQL Server 2016
+            # https://docs.microsoft.com/en-us/sql/reporting-services/breaking-changes-in-sql-server-reporting-services-in-sql-server-2016
+            $virtualDirectoryName = if ($SQLVersion -ge 13) { 'ReportServerWebApp' } else { 'ReportManager'}
+            $null = $RSConfig.SetVirtualDirectory($virtualDirectoryName,$RMVirtualDirectory,$Language)
+            $null = $RSConfig.ReserveURL($virtualDirectoryName,"http://+:80",$Language)
         }
         $RSCreateScript = $RSConfig.GenerateDatabaseCreationScript($RSDatabase,$Language,$false)
 
@@ -124,8 +127,8 @@ function Set-TargetResource
 
         Invoke-Sqlcmd -ServerInstance $RSConnection -Query $RSCreateScript.Script
         Invoke-Sqlcmd -ServerInstance $RSConnection -Query $RSRightsScript.Script
-        $RSConfig.SetDatabaseConnection($RSConnection,$RSDatabase,2,"","")
-        $RSConfig.InitializeReportServer($RSConfig.InstallationID)
+        $null = $RSConfig.SetDatabaseConnection($RSConnection,$RSDatabase,2,"","")
+        $null = $RSConfig.InitializeReportServer($RSConfig.InstallationID)
     }
 
     if(!(Test-TargetResource @PSBoundParameters))
