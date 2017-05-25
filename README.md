@@ -879,7 +879,6 @@ No description.
 * **[String] InstanceName** _(Key)_: Name of the SQL Server Reporting Services instance to be configured.
 * **[String] RSSQLServer** _(Required)_: Name of the SQL Server to host the Reporting Service database.
 * **[String] RSSQLInstanceName** _(Required)_: Name of the SQL Server instance to host the Reporting Service database.
-* **[PSCredential] SQLAdminCredential** _(Required)_: Credential to be used to perform the configuration.
 
 #### Read-Only Properties from Get-TargetResource
 
