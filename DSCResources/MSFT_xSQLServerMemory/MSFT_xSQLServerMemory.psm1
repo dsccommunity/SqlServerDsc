@@ -229,7 +229,7 @@ function Test-TargetResource
     Write-Verbose -Message 'Testing the values of the minimum and maximum memory server configuration option set to be used by the instance.'  
 
     $getTargetResourceParameters = @{
-        SQLInstanceName = $PSBoundParameters.SQLInstanceName
+        SQLInstanceName = $SQLInstanceName
         SQLServer       = $SQLServer
     }
 
