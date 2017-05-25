@@ -395,6 +395,19 @@ try
                 }
             }
 
+            # This is regression test for issue #576
+            Context 'When the system is in the desired state and SQLServer is not set' {
+                $testParameters = $mockDefaultParameters
+                $testParameters.Remove('SQLServer')
+                $testParameters += @{
+                    Ensure = 'Absent'
+                }
+
+                It 'Should not throw an error' {
+                    { Test-TargetResource @testParameters } | Should Not Throw
+                }
+            }
+
             Assert-VerifiableMocks
         }
         
@@ -647,7 +660,7 @@ try
                 }
 
                 It 'Should throw the correct error' {                
-                    { Set-TargetResource @testParameters } | Should Throw ("Failed to alter the server configuration memory for $mockSQLServerName" + "\" +`
+                    { Set-TargetResource @testParameters } | Should Throw ("Failed to alter the server configuration memory for $($env:COMPUTERNAME)" + "\" +`
                                                                         "$mockSQLServerInstanceName. InnerException: Exception calling ""Alter"" with ""0"" argument(s): " + `
                                                                         """Mock Alter Method was called with invalid operation.""")
                 }

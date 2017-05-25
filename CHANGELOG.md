@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Changes to xSQLServerMemory
+  - Changed the way SQLServer parameter is passed from Test-TargetResource to Get-TargetResource so that the default value isn't lost (issue #576).
+  - Added condition to unit tests for when no SQLServer parameter is set.
+- Changes to xSQLServerMaxDop
+  - Changed the way SQLServer parameter is passed from Test-TargetResource to Get-TargetResource so that the default value isn't lost (issue #576).
+  - Added condition to unit tests for when no SQLServer parameter is set.
 - Changes to xWaitForAvailabilityGroup
   - Updated README.md with a description for the resources and revised the parameter descriptions.
   - The default value for RetryIntervalSec is now 20 seconds and the default value for RetryCount is now 30 times (issue #505).

@@ -201,8 +201,8 @@ function Test-TargetResource
     Write-Verbose -Message 'Testing the max degree of parallelism server configuration option'
      
     $parameters = @{
-        SQLInstanceName = $PSBoundParameters.SQLInstanceName
-        SQLServer       = $PSBoundParameters.SQLServer
+        SQLInstanceName = $SQLInstanceName
+        SQLServer       = $SQLServer
     }
     
     $currentValues = Get-TargetResource @parameters    
