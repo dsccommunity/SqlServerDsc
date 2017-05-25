@@ -202,7 +202,7 @@ function Test-TargetResource
      
     $parameters = @{
         SQLInstanceName = $PSBoundParameters.SQLInstanceName
-        SQLServer       = $PSBoundParameters.SQLServer
+        SQLServer       = $SQLServer
     }
     
     $currentValues = Get-TargetResource @parameters    
