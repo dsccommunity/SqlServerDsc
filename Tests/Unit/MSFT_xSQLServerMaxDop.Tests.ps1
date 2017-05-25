@@ -332,7 +332,7 @@ try
                     Ensure = 'Absent'
                 }
 
-                It 'Should return the state as true when desired MaxDop is the correct value' {
+                It 'Should not throw an error' {
                     { Test-TargetResource @testParameters } | Should Not Throw
                 }
             }
