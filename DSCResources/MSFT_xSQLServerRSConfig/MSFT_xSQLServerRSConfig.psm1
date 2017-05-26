@@ -89,14 +89,17 @@ function Set-TargetResource
 
     if(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS" -Name $InstanceName -ErrorAction SilentlyContinue)
     {
-        Invoke-Command -ComputerName . -Credential $SQLAdminCredential -Authentication Credssp -ScriptBlock {
+        Invoke-Command -ComputerName . -Credential $SQLAdminCredential -ScriptBlock {
+            # this is a separate PS session, need to load Common Code again
+            Import-Module $using:currentPath\..\..\xSQLServerHelper.psm1 -Verbose -ErrorAction Stop
+            # smart import of the SQL module
+            Import-SQLPSModule
+
             $InstanceName = $args[0]
             $RSSQLServer = $args[1]
             $RSSQLInstanceName = $args[2]
             $InstanceKey = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS" -Name $InstanceName).$InstanceName
             $SQLVersion = ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$InstanceKey\Setup" -Name "Version").Version).Split(".")[0]
-            $DBCreateFile = [IO.Path]::GetTempFileName()
-            $DBRightsFile = [IO.Path]::GetTempFileName()
             if($InstanceName -eq "MSSQLSERVER")
             {
                 $RSServiceName = "ReportServer"
@@ -123,70 +126,25 @@ function Set-TargetResource
             $RSConfig = Get-WmiObject -Class MSReportServer_ConfigurationSetting -Namespace "root\Microsoft\SQLServer\ReportServer\RS_$InstanceName\v$SQLVersion\Admin"
             if($RSConfig.VirtualDirectoryReportServer -ne $RSVirtualDirectory)
             {
-                $RSConfig.SetVirtualDirectory("ReportServerWebService",$RSVirtualDirectory,$Language)
-                $RSConfig.ReserveURL("ReportServerWebService","http://+:80",$Language)
+                $null = $RSConfig.SetVirtualDirectory("ReportServerWebService",$RSVirtualDirectory,$Language)
+                $null = $RSConfig.ReserveURL("ReportServerWebService","http://+:80",$Language)
             }
             if($RSConfig.VirtualDirectoryReportManager -ne $RMVirtualDirectory)
             {
-                $RSConfig.SetVirtualDirectory("ReportManager",$RMVirtualDirectory,$Language)
-                $RSConfig.ReserveURL("ReportManager","http://+:80",$Language)
+                $null = $RSConfig.SetVirtualDirectory("ReportManager",$RMVirtualDirectory,$Language)
+                $null = $RSConfig.ReserveURL("ReportManager","http://+:80",$Language)
             }
-            $RSScript = $RSConfig.GenerateDatabaseCreationScript($RSDatabase,$Language,$false)
-            $RSScript.Script | Out-File $DBCreateFile
+            $RSCreateScript = $RSConfig.GenerateDatabaseCreationScript($RSDatabase,$Language,$false)
 
             # Determine RS service account
             $RSSvcAccountUsername = (Get-WmiObject -Class Win32_Service | Where-Object {$_.Name -eq $RSServiceName}).StartName
-            if(($RSSvcAccountUsername -eq "LocalSystem") -or (($RSSvcAccountUsername.Length -ge 10) -and ($RSSvcAccountUsername.SubString(0,10) -eq "NT Service")))
-            {
-                $RSSvcAccountUsername = $RSConfig.MachineAccountIdentity
-            }
-            $RSScript = $RSConfig.GenerateDatabaseRightsScript($RSSvcAccountUsername,$RSDatabase,$false,$true)
-            $RSScript.Script | Out-File $DBRightsFile
+            $RSRightsScript = $RSConfig.GenerateDatabaseRightsScript($RSSvcAccountUsername,$RSDatabase,$false,$true)
 
-            # Get path to sqlcmd.exe
-            $SQLCmdLocations = @(
-                @{
-                    Key = "4B5EB208A08862C4C9A0A2924D2613FF"
-                    Name = "BAF8FF4572ED7814281FBEEAA6EE68A9"
-                }
-                @{
-                    Key = "4B5EB208A08862C4C9A0A2924D2613FF"
-                    Name = "2BE7307A359F21B48B3491F5D489D81A"
-                }
-                @{
-                    Key = "4B5EB208A08862C4C9A0A2924D2613FF"
-                    Name = "17E375D97701E7C44BBDE4225A2D4BB8"
-                }
-                @{
-                    Key = "A4A2A5C7B23E40145A6AFA7667643E85"
-                    Name = "8B035CCA4B6B6D045BB9514286FC740D"
-                }
-            )
-            $SQLCmdPath = ""
-            foreach($SQLCmdLocation in $SQLCmdLocations)
-            {
-                if($SQLCmdPath -eq "")
-                {
-                    if(Get-ItemProperty -Path ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\" + $SQLCmdLocation.Key) -Name $SQLCmdLocation.Name -ErrorAction SilentlyContinue)
-                    {
-                        
-                        if(Test-Path -Path (Get-ItemProperty -Path ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\" + $SQLCmdLocation.Key) -Name $SQLCmdLocation.Name).($SQLCmdLocation.Name))
-                        {
-                            $SQLCmdPath = (Get-ItemProperty -Path ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\" + $SQLCmdLocation.Key) -Name $SQLCmdLocation.Name).($SQLCmdLocation.Name)
-                        }
-                    }
-                }
-            }
-            if($SQLCmdPath -ne "")
-            {
-                & "$SQLCmdPath" -S $RSConnection -i $DBCreateFile
-                & "$SQLCmdPath" -S $RSConnection -i $DBRightsFile
-                $RSConfig.SetDatabaseConnection($RSConnection,$RSDatabase,2,"","")
-                $RSConfig.InitializeReportServer($RSConfig.InstallationID)
-            }
+            Invoke-Sqlcmd -ServerInstance $RSConnection -Query $RSCreateScript.Script
+            Invoke-Sqlcmd -ServerInstance $RSConnection -Query $RSRightsScript.Script
+            $RSConfig.SetDatabaseConnection($RSConnection,$RSDatabase,2,"","")
+            $RSConfig.InitializeReportServer($RSConfig.InstallationID)
 
-            Remove-Item -Path $DBCreateFile
-            Remove-Item -Path $DBRightsFile
         } -ArgumentList @($InstanceName,$RSSQLServer,$RSSQLInstanceName)
     }
 
