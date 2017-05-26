@@ -13,6 +13,7 @@
     this problems for us.
 
   - Fixed virtual directory creation for SQL Server 2016.
+  - Added unit tests (issue #295).
 
 - Changes to xSQLServerDatabase
   - Changed the readme, SQLInstance should have been SQLInstanceName.
