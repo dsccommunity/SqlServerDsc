@@ -64,6 +64,9 @@
   - Replaced sqlcmd.exe usages with Invoke-Sqlcmd calls (issue #567).
 - Changes to xSQLServerDatabasePermission
   - Fixed code style, updated README.md and removed *-SqlDatabasePermission functions from xSQLServerHelper.psm1.
+  - Added the option 'GrantWithGrant' with gives the user grant rights, together with the ability to grant others the same right.
+  - Now the resource can revoke permission correctly (issue #454). When revoking 'GrantWithGrant', both the grantee and all the other users the grantee has granted the same permission to, will also get their permission revoked.
+  - Updated tests to cover Revoke().
 
 ## 7.0.0.0
 
