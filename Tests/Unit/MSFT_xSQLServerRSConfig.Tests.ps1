@@ -91,7 +91,7 @@ try
 
         $mockGetWmiObject_Language = {
             return @{
-                Language = 'en-US'
+                Language = '1033'
             }
         }
 
