@@ -613,7 +613,7 @@ function Test-SQLDscParameterState
                                 {
                                     New-VerboseMessage -Message ("String value for property $fieldName does not match. " + `
                                                                  "Current state is '$($CurrentValues.$fieldName)' " + `
-                                                                 "and Desired state is '$($DesiredValues.$fieldName)'")
+                                                                 "and desired state is '$($DesiredValues.$fieldName)'")
 
                                     $returnValue = $false
                                 }
