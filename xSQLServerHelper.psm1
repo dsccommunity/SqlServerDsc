@@ -548,7 +548,7 @@ function Test-SQLDscParameterState
         {
             if (($CurrentValues.ContainsKey($_) -eq $false) `
             -or ($CurrentValues.$_ -ne $DesiredValues.$_) `
-            -or (($DesiredValues.ContainsKey($_) -eq $true) -and ($DesiredValues.$_.GetType().IsArray)))
+            -or (($DesiredValues.ContainsKey($_) -eq $true) -and ($null -ne $DesiredValues.$_ -and $DesiredValues.$_.GetType().IsArray)))
             {
                 if ($DesiredValues.GetType().Name -eq "HashTable" -or `
                     $DesiredValues.GetType().Name -eq "PSBoundParametersDictionary")
@@ -558,7 +558,14 @@ function Test-SQLDscParameterState
                 }
                 else
                 {
-                    $checkDesiredValue = Test-SPDSCObjectHasProperty $DesiredValues $_
+                    $checkDesiredValue = $false
+                    if (([System.Boolean]($DesiredValues.PSObject.Properties.Name -contains $_)) -eq $true)
+                    {
+                        if ($null -ne $Object.$PropertyName)
+                        {
+                            $checkDesiredValue = $true
+                        }
+                    }
                 }
 
                 if ($checkDesiredValue)

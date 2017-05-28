@@ -67,6 +67,8 @@
   - Added the option 'GrantWithGrant' with gives the user grant rights, together with the ability to grant others the same right.
   - Now the resource can revoke permission correctly (issue #454). When revoking 'GrantWithGrant', both the grantee and all the other users the grantee has granted the same permission to, will also get their permission revoked.
   - Updated tests to cover Revoke().
+- Changes to xSQLServerHelper
+  - The missing helper function ('Test-SPDSCObjectHasProperty'), that was referenced in the helper function Test-SQLDscParameterState, is now incorporated into Test-SQLDscParameterState (issue #589).
 
 ## 7.0.0.0
 
