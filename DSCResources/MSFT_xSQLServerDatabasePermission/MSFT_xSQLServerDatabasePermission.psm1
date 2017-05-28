@@ -395,6 +395,13 @@ function Test-TargetResource
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
+    <#
+        There is no need to evaluate the parameter Permissions here.
+        In the Get-TargetResource function there is a test to verify if Permissions is in
+        desired state. If the permissions are correct, then Get-TargetResource will return
+        the value 'Present' for the Ensure parameter, otherwise Ensure will have the value
+        'Absent'.
+    #>
     return Test-SQLDscParameterState -CurrentValues $getTargetResourceResult `
                                      -DesiredValues $PSBoundParameters `
                                      -ValuesToCheck @('Name', 'Ensure', 'PermissionState')
