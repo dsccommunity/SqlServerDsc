@@ -1,12 +1,9 @@
-Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) -ChildPath 'xSQLServerHelper.psm1') -Force
-
+Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
+                               -ChildPath 'xSQLServerHelper.psm1') `
+                               -Force
 <#
     .SYNOPSIS
     Returns the current permissions for the user in the database
-
-    .PARAMETER Ensure
-    This is The Ensure if the permission should be granted (Present) or revoked (Absent)
-    Not used in Get-TargetResource
 
     .PARAMETER Database
     This is the SQL database
@@ -32,32 +29,33 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [ValidateSet('Present','Absent')]
-        [System.String]
-        $Ensure,
-
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Database,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
 
-        [parameter(Mandatory = $true)]
-        [ValidateSet('Grant','Deny')]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Grant','Deny','GrantWithGrant')]
         [System.String]
         $PermissionState,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String[]]
         $Permissions,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLInstanceName = 'MSSQLSERVER'
     )
@@ -66,39 +64,73 @@ function Get-TargetResource
 
     if ($sqlServerObject)
     {
-        Write-Verbose -Message "Getting permissions for user '$Name' in database '$Database'"
-        $getSqlDatabasePermissionResult = Get-SqlDatabasePermission -SqlServerObject $sqlServerObject `
-                                                                    -Name $Name `
-                                                                    -Database $Database `
-                                                                    -PermissionState $PermissionState
-        
+        Write-Verbose -Message "Getting permissions for user $Name in database $Database"
+        $currentEnsure = 'Absent'
+
+        if ($sqlDatabaseObject = $sqlServerObject.Databases[$Database])
+        {
+            if ($sqlServerObject.Logins[$Name])
+            {
+                # Initialize variable permission
+                [System.String[]] $getSqlDatabasePermissionResult = @()
+
+                try
+                {
+                    $databasePermissionInfo = $sqlDatabaseObject.EnumDatabasePermissions($Name) | Where-Object -FilterScript {
+                        $_.PermissionState -eq $PermissionState
+                    }
+
+                    foreach ($currentDatabasePermissionInfo in $databasePermissionInfo)
+                    {
+                        $permissionProperty = ($currentDatabasePermissionInfo.PermissionType | Get-Member -MemberType Property).Name
+
+                        foreach ($currentPermissionProperty in $permissionProperty)
+                        {
+                            if ($currentDatabasePermissionInfo.PermissionType."$currentPermissionProperty")
+                            {
+                                $getSqlDatabasePermissionResult += $currentPermissionProperty
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    throw New-TerminatingError -ErrorType FailedToEnumDatabasePermissions `
+                                               -FormatArgs @($Name, $Database, $SQLServer, $SQLInstanceName) `
+                                               -ErrorCategory InvalidOperation `
+                                               -InnerException $_.Exception
+                }
+
+            }
+            else
+            {
+                throw New-TerminatingError -ErrorType LoginNotFound `
+                                           -FormatArgs @($Name,$SQLServer,$SQLInstanceName) `
+                                           -ErrorCategory ObjectNotFound `
+                                           -InnerException $_.Exception
+            }
+        }
+        else
+        {
+            throw New-TerminatingError -ErrorType NoDatabase `
+                                       -FormatArgs @($Database,$SQLServer,$SQLInstanceName) `
+                                       -ErrorCategory InvalidResult `
+                                       -InnerException $_.Exception
+        }
+
         if ($getSqlDatabasePermissionResult)
         {
             $resultOfPermissionCompare = Compare-Object -ReferenceObject $Permissions `
                                                         -DifferenceObject $getSqlDatabasePermissionResult
             if ($null -eq $resultOfPermissionCompare)
             {
-                $Ensure = 'Present'
-            }
-            else
-            {
-                $Ensure = 'Absent'
+                $currentEnsure = 'Present'
             }
         }
-        else 
-        {
-            $Ensure = 'Absent'
-        }
     }
-    else
-    {
-        throw New-TerminatingError -ErrorType ConnectSQLError `
-                                   -FormatArgs @($SQLServer,$SQLInstanceName) `
-                                   -ErrorCategory InvalidOperation
-    }
-    
+
     $returnValue = @{
-        Ensure          = $Ensure
+        Ensure          = $currentEnsure
         Database        = $Database
         Name            = $Name
         PermissionState = $PermissionState
@@ -140,68 +172,147 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [ValidateSet('Present','Absent')]
         [System.String]
-        $Ensure = 'Present',
+        $Ensure,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Database,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
 
-        [parameter(Mandatory = $true)]
-        [ValidateSet('Grant','Deny')]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Grant','Deny','GrantWithGrant')]
         [System.String]
         $PermissionState,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String[]]
         $Permissions,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLInstanceName = 'MSSQLSERVER'
     )
 
     $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-    
+
     if ($sqlServerObject)
     {
-        Write-Verbose -Message "Setting permissions of database '$Database' for login '$Name'"
+        Write-Verbose -Message "Setting permissions of database $Database for login $Name"
 
-        if ($Ensure -eq 'Present')
+        if ($sqlDatabaseObject = $sqlServerObject.Databases[$Database])
         {
-            Add-SqlDatabasePermission -SqlServerObject $sqlServerObject `
-                                      -Name $Name `
-                                      -Database $Database `
-                                      -PermissionState $PermissionState `
-                                      -Permissions $Permissions
-            
-            New-VerboseMessage -Message "$PermissionState - SQL Permissions for $Name, successfullly added in $Database"
+            if ($sqlServerObject.Logins[$Name])
+            {
+                if ( -not ($sqlDatabaseObject.Users[$Name]))
+                {
+                    try
+                    {
+                        New-VerboseMessage -Message "Adding SQL login $Name as a user of database $Database"
+                        $sqlDatabaseUser = New-Object -TypeName Microsoft.SqlServer.Management.Smo.User -ArgumentList ($sqlDatabaseObject,$Name)
+                        $sqlDatabaseUser.Login = $Name
+                        $sqlDatabaseUser.Create()
+                    }
+                    catch
+                    {
+                        throw New-TerminatingError -ErrorType AddLoginDatabaseSetError `
+                                                   -FormatArgs @($SQLServer, $SQLInstanceName, $Name, $Database) `
+                                                   -ErrorCategory InvalidOperation `
+                                                   -InnerException $_.Exception
+                    }
+                }
+
+                if ($sqlDatabaseObject.Users[$Name])
+                {
+                    try
+                    {
+                        $permissionSet = New-Object -TypeName Microsoft.SqlServer.Management.Smo.DatabasePermissionSet
+
+                        foreach ($permission in $permissions)
+                        {
+                            $permissionSet."$permission" = $true
+                        }
+
+                        switch ($Ensure)
+                        {
+                            'Present'
+                            {
+                                New-VerboseMessage -Message ('{0} the permissions ''{1}'' to the database {2} on the server {3}\{4}' `
+                                                     -f $PermissionState, ($Permissions -join ','), $Database, $SQLServer, $SQLInstanceName)
+
+                                switch ($PermissionState)
+                                {
+                                    'GrantWithGrant'
+                                    {
+                                        $sqlDatabaseObject.Grant($permissionSet, $Name, $true)
+                                    }
+
+                                    'Grant'
+                                    {
+                                        $sqlDatabaseObject.Grant($permissionSet, $Name)
+                                    }
+
+                                    'Deny'
+                                    {
+                                        $sqlDatabaseObject.Deny($permissionSet, $Name)
+                                    }
+                                }
+                            }
+
+                            'Absent'
+                            {
+                                New-VerboseMessage -Message ('Revoking {0} permissions {1} to the database {2} on the server {3}\{4}' `
+                                                            -f $PermissionState, ($Permissions -join ','), $Database, $SQLServer, $SQLInstanceName)
+
+                                if ($PermissionState -eq 'GrantWithGrant')
+                                {
+                                    $sqlDatabaseObject.Revoke($permissionSet, $Name, $false, $true)
+                                }
+                                else
+                                {
+                                    $sqlDatabaseObject.Revoke($permissionSet, $Name)
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        throw New-TerminatingError -ErrorType FailedToSetPermissionDatabase `
+                                                   -FormatArgs @($Name, $Database, $SQLServer, $SQLInstanceName) `
+                                                   -ErrorCategory InvalidOperation `
+                                                   -InnerException $_.Exception
+                    }
+                }
+            }
+            else
+            {
+                throw New-TerminatingError -ErrorType LoginNotFound `
+                                           -FormatArgs @($Name,$SQLServer,$SQLInstanceName) `
+                                           -ErrorCategory ObjectNotFound `
+                                           -InnerException $_.Exception
+            }
         }
         else
         {
-            Remove-SqlDatabasePermission -SqlServerObject $sqlServerObject `
-                                         -Name $Name `
-                                         -Database $Database `
-                                         -PermissionState $PermissionState `
-                                         -Permissions $Permissions
-            
-            New-VerboseMessage -Message "$PermissionState - SQL Permissions for $Name, successfullly removed in $Database"
+            throw New-TerminatingError -ErrorType NoDatabase `
+                                       -FormatArgs @($Database,$SQLServer,$SQLInstanceName) `
+                                       -ErrorCategory InvalidResult `
+                                       -InnerException $_.Exception
         }
-    }
-    else
-    {
-        throw New-TerminatingError -ErrorType ConnectSQLError `
-                                   -FormatArgs @($SQLServer,$SQLInstanceName) `
-                                   -ErrorCategory InvalidOperation
     }
 }
 
@@ -236,43 +347,64 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
+        [Parameter()]
         [ValidateSet('Present','Absent')]
         [System.String]
-        $Ensure = 'Present',
+        $Ensure,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Database,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
 
-        [parameter(Mandatory = $true)]
-        [ValidateSet('Grant','Deny')]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Grant','Deny','GrantWithGrant')]
         [System.String]
         $PermissionState,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String[]]
         $Permissions,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLInstanceName = 'MSSQLSERVER'
     )
 
-    Write-Verbose -Message "Evaluating permissions for user '$Name' in database '$Database'."
+    Write-Verbose -Message "Testing permissions for user $Name in database $Database."
+    $getTargetResourceParameters = @{
+        SQLInstanceName = $PSBoundParameters.SQLInstanceName
+        SQLServer       = $PSBoundParameters.SQLServer
+        Database        = $PSBoundParameters.Database
+        Name            = $PSBoundParameters.Name
+        PermissionState = $PSBoundParameters.PermissionState
+        Permissions     = $PSBoundParameters.Permissions
+    }
 
-    $getTargetResourceResult = Get-TargetResource @PSBoundParameters
+    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
+    <#
+        There is no need to evaluate the parameter Permissions here.
+        In the Get-TargetResource function there is a test to verify if Permissions is in
+        desired state. If the permissions are correct, then Get-TargetResource will return
+        the value 'Present' for the Ensure parameter, otherwise Ensure will have the value
+        'Absent'.
+    #>
     return Test-SQLDscParameterState -CurrentValues $getTargetResourceResult `
                                      -DesiredValues $PSBoundParameters `
-                                     -ValuesToCheck @('Name', 'Ensure', 'PermissionState', 'Permissions')
+                                     -ValuesToCheck @('Name', 'Ensure', 'PermissionState')
 }
 
 Export-ModuleMember -Function *-TargetResource

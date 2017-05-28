@@ -381,6 +381,8 @@ For more information about database owner, please read the article [Changing the
 This resource is used to grant, deny or revoke permissions for a user in a database.
 For more information about permissions, please read the article [Permissions (Database Engine)](https://msdn.microsoft.com/en-us/library/ms191291.aspx).
 
+>Note! When revoking permission with PermissionState 'GrantWithGrant', both the grantee and _all the other users the grantee has granted the same permission to_, will also get their permission revoked.
+
 #### Requirements
 
 * Target machine must be running Windows Server 2008 R2 or later.
@@ -388,13 +390,13 @@ For more information about permissions, please read the article [Permissions (Da
 
 #### Parameters
 
-* **[String] Ensure** _(Write)_: If the permission should be granted (Present) or revoked (Absent). { Present | Absent }.
-* **[String] Database** _(Key)_: The name of the database.
-* **[String] Name** _(Key)_: The name of the user that should be granted or denied the permission.
-* **[String[]] Permissions** _(Required)_: The permissions to be granted or denied for the user in the database. Valid permissions can be found in the article [SQL Server Permissions](https://msdn.microsoft.com/en-us/library/ms191291.aspx#Anchor_3).
-* **[String] PermissionState** _(Key)_: The state of the permission. { Grant | Deny }.
 * **[String] SQLServer** _(Key)_: The host name of the SQL Server to be configured. Default values is 'env:COMPUTERNAME'.
 * **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured. Default value is 'MSSQLSERVER'.
+* **[String] Database** _(Key)_: The name of the database.
+* **[String] Name** _(Key)_: The name of the user that should be granted or denied the permission.
+* **[String] PermissionState** _(Key)_: The state of the permission. { Grant | Deny | GrantWithGrant }.
+* **[String[]] Permissions** _(Required)_: The permissions to be granted or denied for the user in the database. Valid permissions can be found in the article [SQL Server Permissions](https://msdn.microsoft.com/en-us/library/ms191291.aspx#Anchor_3).
+* **[String] Ensure** _(Write)_: If the permission should be granted (Present) or revoked (Absent). { Present | Absent }.
 
 #### Examples
 
