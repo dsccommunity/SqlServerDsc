@@ -232,7 +232,7 @@ This resource is used to create, remove, and update an Always On Availability Gr
 
 #### Parameters
 
-* **[String] Name** _(Key)_: The name of the availability group replica.
+* **[String] Name** _(Key)_: The name of the availability group replica. For named instances this must be in the following format SQLServer\InstanceName.
 * **[String] AvailabilityGroupName** _(Key)_: The name of the availability group.
 * **[String] SQLServer** _(Required)_: Hostname of the SQL Server to be configured.
 * **[String] SQLInstanceName** _(Key)_: Name of the SQL instance to be configured.

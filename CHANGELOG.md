@@ -44,6 +44,7 @@
   - Updated to return the exception raised when an error is thrown.
 - Changes to xSQLServerAlwaysOnAvailabilityGroupReplica
   - Updated to return the exception raised when an error is thrown.
+  - Updated parameter description for parameter Name, so that it says it must be in the format SQLServer\InstanceName for named instance (issue #548).
 - Changes to xSQLServerLogin
   - Added an optional boolean parameter Disabled. It can be used to enable/disable existing logins or create disabled logins (new logins are created as enabled by default).
 - Changes to xSQLServerDatabaseRole
