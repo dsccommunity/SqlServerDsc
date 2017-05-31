@@ -1,6 +1,6 @@
 @{
 # Version number of this module.
-ModuleVersion = '7.0.0.0'
+ModuleVersion = '7.1.0.0'
 
 # ID used to uniquely identify this module
 GUID = '74e9ddb5-4cbc-4fa2-a222-2bcfb533fd66'
@@ -47,125 +47,82 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '- Examples
-  - xSQLServerDatabaseRole
-    - 1-AddDatabaseRole.ps1
-    - 2-RemoveDatabaseRole.ps1
-  - xSQLServerRole
-    - 3-AddMembersToServerRole.ps1
-    - 4-MembersToIncludeInServerRole.ps1
-    - 5-MembersToExcludeInServerRole.ps1
-  - xSQLServerSetup
-    - 1-InstallDefaultInstanceSingleServer.ps1
-    - 2-InstallNamedInstanceSingleServer.ps1
-    - 3-InstallNamedInstanceSingleServerFromUncPathUsingSourceCredential.ps1
-    - 4-InstallNamedInstanceInFailoverClusterFirstNode.ps1
-    - 5-InstallNamedInstanceInFailoverClusterSecondNode.ps1
-  - xSQLServerReplication
-    - 1-ConfigureInstanceAsDistributor.ps1
-    - 2-ConfigureInstanceAsPublisher.ps1
-  - xSQLServerNetwork
-    - 1-EnableTcpIpOnCustomStaticPort.ps1
-  - xSQLServerAvailabilityGroupListener
-    - 1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1
-    - 2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1
-    - 3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1
-    - 4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1
-    - 5-AddAvailabilityGroupListenerUsingDHCPWithDefaultServerSubnet.ps1
-    - 6-AddAvailabilityGroupListenerUsingDHCPWithSpecificSubnet.ps1
-  - xSQLServerEndpointPermission
-    - 1-AddConnectPermission.ps1
-    - 2-RemoveConnectPermission.ps1
-    - 3-AddConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1
-    - 4-RemoveConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1
-  - xSQLServerPermission
-    - 1-AddServerPermissionForLogin.ps1
-    - 2-RemoveServerPermissionForLogin.ps1
-  - xSQLServerEndpointState
-    - 1-MakeSureEndpointIsStarted.ps1
-    - 2-MakeSureEndpointIsStopped.ps1
-  - xSQLServerConfiguration
-    - 1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1
-    - 2-ConfigureInstanceToEnablePriorityBoost.ps1
-  - xSQLServerEndpoint
-    - 1-CreateEndpointWithDefaultValues.ps1
-    - 2-CreateEndpointWithSpecificPortAndIPAddress.ps1
-    - 3-RemoveEndpoint.ps1
-- Changes to xSQLServerDatabaseRole
-  - Fixed code style, added updated parameter descriptions to schema.mof and README.md.
-- Changes to xSQLServer
-  - Raised the CodeCov target to 70% which is the minimum and required target for HQRM resource.
-- Changes to xSQLServerRole
-  - **BREAKING CHANGE: The resource has been reworked in it"s entirely.** Below is what has changed.
-    - The mandatory parameters now also include ServerRoleName.
-    - The ServerRole parameter was before an array of server roles, now this parameter is renamed to ServerRoleName and can only be set to one server role.
-      - ServerRoleName are no longer limited to built-in server roles. To add members to a built-in server role, set ServerRoleName to the name of the built-in server role.
-      - The ServerRoleName will be created when Ensure is set to "Present" (if it does not already exist), or removed if Ensure is set to "Absent".
-    - Three new parameters are added; Members, MembersToInclude and MembersToExclude.
-      - Members can be set to one or more logins, and those will _replace all_ the memberships in the server role.
-      - MembersToInclude and MembersToExclude can be set to one or more logins that will add or remove memberships, respectively, in the server role. MembersToInclude and MembersToExclude _can not_ be used at the same time as parameter Members. But both MembersToInclude and MembersToExclude can be used together at the same time.
-- Changes to xSQLServerSetup
-  - Added a note to the README.md saying that it is not possible to add or remove features from a SQL Server failover cluster (issue 433).
-  - Changed so that it reports false if the desired state is not correct (issue 432).
-    - Added a test to make sure we always return false if a SQL Server failover cluster is missing features.
-  - Helper function Connect-SQLAnalysis
-    - Now has correct error handling, and throw does not used the unknown named parameter "-Message" (issue 436)
-    - Added tests for Connect-SQLAnalysis
-    - Changed to localized error messages.
-    - Minor changes to error handling.
-  - This adds better support for Addnode (issue 369).
-  - Now it skips cluster validation för add node (issue 442).
-  - Now it ignores parameters that are not allowed for action Addnode (issue 441).
-  - Added support for vNext CTP 1.4 (issue 472).
-- Added new resource
-  - xSQLServerAlwaysOnAvailabilityGroupReplica
-- Changes to xSQLServerDatabaseRecoveryModel
-  - Fixed code style, removed SQLServerDatabaseRecoveryModel functions from xSQLServerHelper.
-- Changes to xSQLServerAlwaysOnAvailabilityGroup
-  - Fixed the permissions check loop so that it exits the loop after the function determines the required permissions are in place.
-- Changes to xSQLServerAvailabilityGroupListener
-  - Removed the dependency of SQLPS provider (issue 460).
-  - Cleaned up code.
-  - Added test for more coverage.
-  - Fixed PSSA rule warnings (issue 255).
-  - Parameter Ensure now defaults to "Present" (issue 450).
-- Changes to xSQLServerFirewall
-  - Now it will correctly create rules when the resource is used for two or more instances on the same server (issue 461).
-- Changes to xSQLServerEndpointPermission
-  - Added description to the README.md
-  - Cleaned up code (issue 257 and issue 231)
-  - Now the default value for Ensure is "Present".
-  - Removed dependency of SQLPS provider (issue 483).
-  - Refactored tests so they use less code.
-- Changes to README.md
-  - Adding deprecated tag to xSQLServerFailoverClusterSetup, xSQLAOGroupEnsure and xSQLAOGroupJoin in README.md so it it more clear that these resources has been replaced by xSQLServerSetup, xSQLServerAlwaysOnAvailabilityGroup and xSQLServerAlwaysOnAvailabilityGroupReplica respectively.
-- Changes to xSQLServerEndpoint
-  - BREAKING CHANGE: Now SQLInstanceName is mandatory, and is a key, so SQLInstanceName has no longer a default value (issue 279).
-  - BREAKING CHANGE: Parameter AuthorizedUser has been removed (issue 466, issue 275 and issue 80). Connect permissions can be set using the resource xSQLServerEndpointPermission.
-  - Optional parameter IpAddress has been added. Default is to listen on any valid IP-address. (issue 232)
-  - Parameter Port now has a default value of 5022.
-  - Parameter Ensure now defaults to "Present".
-  - Resource now supports changing IP address and changing port.
-  - Added unit tests (issue 289)
-  - Added examples.
-- Changes to xSQLServerEndpointState
-  - Cleaned up code, removed SupportsShouldProcess and fixed PSSA rules warnings (issue 258 and issue 230).
-  - Now the default value for the parameter State is "Started".
+        ReleaseNotes = '- Changes to xSQLServerMemory
+  - Changed the way SQLServer parameter is passed from Test-TargetResource to Get-TargetResource so that the default value isn"t lost (issue 576).
+  - Added condition to unit tests for when no SQLServer parameter is set.
+- Changes to xSQLServerMaxDop
+  - Changed the way SQLServer parameter is passed from Test-TargetResource to Get-TargetResource so that the default value isn"t lost (issue 576).
+  - Added condition to unit tests for when no SQLServer parameter is set.
+- Changes to xWaitForAvailabilityGroup
   - Updated README.md with a description for the resources and revised the parameter descriptions.
-  - Removed dependency of SQLPS provider (issue 481).
+  - The default value for RetryIntervalSec is now 20 seconds and the default value for RetryCount is now 30 times (issue 505).
+  - Cleaned up code and fixed PSSA rules warnings (issue 268).
+  - Added unit tests (issue 297).
+  - Added descriptive text to README.md that the account that runs the resource must have permission to run the cmdlet Get-ClusterGroup (issue 307).
+  - Added read-only parameter GroupExist which will return $true if the cluster role/group exist, otherwise it returns $false (issue 510).
+  - Added examples.
+- Changes to xSQLServerPermission
+  - Cleaned up code, removed SupportsShouldProcess and fixed PSSA rules warnings (issue 241 and issue 262).
+  - It is now possible to add permissions to two or more logins on the same instance (issue 526).
   - The parameter NodeName is no longer mandatory and has now the default value of $env:COMPUTERNAME.
-  - The parameter Name is now a key so it is now possible to change the state on more than one endpoint on the same instance. _Note: The resource still only supports Database Mirror endpoints at this time._
+  - The parameter Ensure now has a default value of "Present".
+  - Updated README.md with a description for the resources and revised the parameter descriptions.
+  - Removed dependency of SQLPS provider (issue 482).
+  - Added ConnectSql permission. Now that permission can also be granted or revoked.
+  - Updated note in resource description to also mention ConnectSql permission.
 - Changes to xSQLServerHelper module
-  - Removing helper function Get-SQLAlwaysOnEndpoint because there is no resource using it any longer.
-  - BREAKING CHANGE: Changed helper function Import-SQLPSModule to support SqlServer module (issue 91). The SqlServer module is the preferred module so if it is found it will be used, and if not found an attempt will be done to load SQLPS module instead.
-- Changes to xSQLServerScript
-  - Updated tests for this resource, because they failed when Import-SQLPSModule was updated.
+  - Removed helper function Get-SQLPSInstance and Get-SQLPSInstanceName because there is no resource using it any longer.
+  - Added four new helper functions.
+    - Register-SqlSmo, Register-SqlWmiManagement and Unregister-SqlAssemblies to handle the creation on the application domain and loading and unloading of the SMO and SqlWmiManagement assemblies.
+    - Get-SqlInstanceMajorVersion to get the major SQL version for a specific instance.
+  - Fixed typos in comment-based help
+- Changes to xSQLServer
+  - Fixed typos in markdown files; CHANGELOG, CONTRIBUTING, README and ISSUE_TEMPLATE.
+  - Fixed typos in schema.mof files (and README.md).
+  - Updated some parameter description in schema.mof files on those that was found was not equal to README.md.
+- Changes to xSQLServerAlwaysOnService
+  - Get-TargetResource should no longer fail silently with error "Index operation failed; the array index evaluated to null." (issue 519). Now if the Server.IsHadrEnabled property return neither $true or $false the Get-TargetResource function will throw an error.
+- Changes to xSQLServerSetUp
+  - Updated xSQLServerSetup Module Get-Resource method to fix (issue 516 and 490).
+  - Added change to detect DQ, DQC, BOL, SDK features. Now the function Test-TargetResource returns true after calling set for DQ, DQC, BOL, SDK features (issue 516 and 490).
+- Changes to xSQLServerAlwaysOnAvailabilityGroup
+  - Updated to return the exception raised when an error is thrown.
+- Changes to xSQLServerAlwaysOnAvailabilityGroupReplica
+  - Updated to return the exception raised when an error is thrown.
+  - Updated parameter description for parameter Name, so that it says it must be in the format SQLServer\InstanceName for named instance (issue 548).
+- Changes to xSQLServerLogin
+  - Added an optional boolean parameter Disabled. It can be used to enable/disable existing logins or create disabled logins (new logins are created as enabled by default).
+- Changes to xSQLServerDatabaseRole
+  - Updated variable passed to Microsoft.SqlServer.Management.Smo.User constructor to fix issue 530
+- Changes to xSQLServerNetwork
+  - Added optional parameter SQLServer with default value of $env:COMPUTERNAME (issue 528).
+  - Added optional parameter RestartTimeout with default value of 120 seconds.
+  - Now the resource supports restarting a sql server in a cluster (issue 527 and issue 455).
+  - Now the resource allows to set the parameter TcpDynamicPorts to a blank value (partly fixes issue 534). Setting a blank value for parameter TcpDynamicPorts together with a value for parameter TcpPort means that static port will be used.
+  - Now the resource will not call Alter() in the Set-TargetResource when there is no change necessary (issue 537).
+  - Updated example 1-EnableTcpIpOnCustomStaticPort.
+  - Added unit tests (issue 294).
+  - Refactored some of the code, cleaned up the rest and fixed PSSA rules warnings (issue 261).
+  - If parameter TcpDynamicPort is set to "0" at the same time as TcpPort is set the resource will now throw an error (issue 535).
+  - Added examples (issue 536).
+  - When TcpDynamicPorts is set to "0" the Test-TargetResource function will no longer fail each time (issue 564).
+- Changes to xSQLServerRSConfig
+  - Replaced sqlcmd.exe usages with Invoke-Sqlcmd calls (issue 567).
+- Changes to xSQLServerDatabasePermission
+  - Fixed code style, updated README.md and removed *-SqlDatabasePermission functions from xSQLServerHelper.psm1.
+  - Added the option "GrantWithGrant" with gives the user grant rights, together with the ability to grant others the same right.
+  - Now the resource can revoke permission correctly (issue 454). When revoking "GrantWithGrant", both the grantee and all the other users the grantee has granted the same permission to, will also get their permission revoked.
+  - Updated tests to cover Revoke().
+- Changes to xSQLServerHelper
+  - The missing helper function ("Test-SPDSCObjectHasProperty"), that was referenced in the helper function Test-SQLDscParameterState, is now incorporated into Test-SQLDscParameterState (issue 589).
+
 '
 
     } # End of PSData hashtable
 
 } # End of PrivateData hashtable
 }
+
 
 
 

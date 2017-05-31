@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 7.1.0.0
+
 - Changes to xSQLServerMemory
   - Changed the way SQLServer parameter is passed from Test-TargetResource to Get-TargetResource so that the default value isn't lost (issue #576).
   - Added condition to unit tests for when no SQLServer parameter is set.
