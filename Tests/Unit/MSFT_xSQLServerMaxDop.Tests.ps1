@@ -324,6 +324,19 @@ try
                 }
             }
 
+            # This is regression test for issue #576
+            Context 'When the system is in the desired state and SQLServer is not set' {
+                $testParameters = $mockDefaultParameters
+                $testParameters.Remove('SQLServer')
+                $testParameters += @{
+                    Ensure = 'Absent'
+                }
+
+                It 'Should not throw an error' {
+                    { Test-TargetResource @testParameters } | Should Not Throw
+                }
+            }
+
             Assert-VerifiableMocks
         }
         

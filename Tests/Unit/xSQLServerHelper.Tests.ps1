@@ -47,6 +47,7 @@ InModuleScope $script:moduleName {
         $TypeName -eq 'Microsoft.AnalysisServices.Server'
     }
 
+    $mockSqlMajorVersion = 13
     $mockInstanceName = 'TEST'
 
     $mockSetupCredentialUserName = 'TestUserName12345'
@@ -324,246 +325,6 @@ InModuleScope $script:moduleName {
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
                     -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
-            }
-        }
-
-        Assert-VerifiableMocks
-    }
-
-    Describe "Testing Get-SqlDatabasePermission" {
-        $mockSqlServerObject = [pscustomobject]@{
-            InstanceName = 'MSSQLSERVER'
-            ComputerNamePhysicalNetBIOS = 'SQL01'
-        }
-
-        $mockSqlServerObject = $mockSqlServerObject | Add-Member -MemberType ScriptProperty -Name Databases -Value {
-            return @{
-                'AdventureWorks' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') ) )
-            } | Add-Member -MemberType ScriptMethod -Name EnumDatabasePermissions -Value {
-                return @{
-                    'CONTOSO\SqlAdmin' = @( 'Connect','Update' )
-                }
-            } -PassThru -Force
-        } -PassThru -Force
-
-        $mockSqlServerObject = $mockSqlServerObject | Add-Member -MemberType ScriptProperty -Name Logins -Value {
-            return @{
-                'CONTOSO\SqlAdmin' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Login -ArgumentList @( $null, 'CONTOSO\SqlAdmin') -Property @{ LoginType = 'WindowsUser'} ) )
-            }
-        } -PassThru -Force
-
-
-        Context 'When the specified database does not exist' {
-            $testParameters = @{
-                Sql = $mockSqlServerObject
-                Name = 'CONTOSO\SqlAdmin'
-                Database = 'UnknownDatabase'
-                PermissionState = 'Grant'
-            }
-
-            It 'Should throw the correct error' {
-                { Get-SqlDatabasePermission @testParameters } | Should Throw "Database 'UnknownDatabase' does not exist on SQL server 'SQL01\MSSQLSERVER'."
-            }
-        }
-
-        Context 'When the specified login does not exist' {
-            $testParameters = @{
-                Sql = $mockSqlServerObject
-                Name = 'CONTOSO\UnknownUser'
-                Database = 'AdventureWorks'
-                PermissionState = 'Grant'
-            }
-
-            It 'Should throw the correct error' {
-                { Get-SqlDatabasePermission @testParameters } | Should Throw "Login 'CONTOSO\UnknownUser' does not exist on SQL server 'SQL01\MSSQLSERVER'."
-            }
-        }
-
-        Context 'When the specified database and login exist and the system is not in desired state' {
-            $testParameters = @{
-                Sql = $mockSqlServerObject
-                Name = 'CONTOSO\SqlAdmin'
-                Database = 'AdventureWorks'
-                PermissionState = 'Grant'
-            }
-
-            It 'Should not return any permissions' {
-                [Microsoft.SqlServer.Management.Smo.Globals]::GenerateMockData = $false
-
-                $permission = Get-SqlDatabasePermission @testParameters
-                $permission | Should BeNullOrEmpty
-            }
-
-        }
-
-        Context 'When the specified database and login exist and the system is in desired state' {
-            $testParameters = @{
-                Sql = $mockSqlServerObject
-                Name = 'CONTOSO\SqlAdmin'
-                Database = 'AdventureWorks'
-                PermissionState = 'Grant'
-            }
-
-            It 'Should return the correct permissions' {
-                [Microsoft.SqlServer.Management.Smo.Globals]::GenerateMockData = $true
-
-                $permission = Get-SqlDatabasePermission @testParameters
-                $permission -contains 'Connect' | Should Be $true
-                $permission -contains 'Update' | Should Be $true
-            }
-        }
-
-        Assert-VerifiableMocks
-    }
-
-    Describe "Testing Add-SqlDatabasePermission" {
-        $mockSqlServerObject = [PSCustomObject]@{
-            InstanceName = 'MSSQLSERVER'
-            ComputerNamePhysicalNetBIOS = 'SQL01'
-        }
-
-        $mockSqlServerObject = $mockSqlServerObject | Add-Member -MemberType ScriptProperty -Name Databases -Value {
-            return @{
-                'AdventureWorks' = @(
-                    (
-                        New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') |
-                            Add-Member -MemberType ScriptProperty -Name Users -Value {
-                                return @{
-                                    'CONTOSO\SqlAdmin' = $true
-                                    'CONTOSO\UnknownUser' = $false
-                                }
-                            } -PassThru -Force
-                    )
-                 )
-            } | Add-Member -MemberType ScriptMethod -Name EnumDatabasePermissions -Value {
-                return @{
-                    'CONTOSO\SqlAdmin' = @( 'Connect','Update' )
-                }
-            } -PassThru -Force
-        } -PassThru -Force
-
-        $mockSqlServerObject = $mockSqlServerObject | Add-Member -MemberType ScriptProperty -Name Logins -Value {
-            return @{
-                'CONTOSO\SqlAdmin' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Login -ArgumentList @( $null, 'CONTOSO\SqlAdmin') -Property @{ LoginType = 'WindowsUser'} ) )
-            }
-        } -PassThru -Force
-
-        Context 'When the specified database and login exist and the system is not in desired state' {
-            $testParameters = @{
-                Sql             = $mockSqlServerObject
-                Name            = 'CONTOSO\SqlAdmin'
-                Database        = 'AdventureWorks'
-                PermissionState = 'Grant'
-                Permissions     = @( 'Connect','Update' )
-            }
-
-            It 'Should add permissions to the specified database' {
-                Add-SqlDatabasePermission @testParameters
-            }
-        }
-
-        Context 'When the specified database does not exist' {
-            $testParameters = @{
-                Sql             = $mockSqlServerObject
-                Name            = 'CONTOSO\SqlAdmin'
-                Database        = 'UnknownDatabase'
-                PermissionState = 'Grant'
-                Permissions     = @( 'Connect','Update' )
-            }
-
-            It 'Should throw the correct error' {
-                { Add-SqlDatabasePermission @testParameters } | Should Throw "Database 'UnknownDatabase' does not exist on SQL server 'SQL01\MSSQLSERVER'."
-            }
-        }
-
-        Context 'When the specified login does not exist' {
-            $testParameters = @{
-                Sql             = $mockSqlServerObject
-                Name            = 'CONTOSO\UnknownUser'
-                Database        = 'AdventureWorks'
-                PermissionState = 'Grant'
-                Permissions     = @( 'Connect','Update' )
-            }
-
-            It 'Should throw the correct error' {
-                { Add-SqlDatabasePermission @testParameters } | Should Throw "Login 'CONTOSO\UnknownUser' does not exist on SQL server 'SQL01\MSSQLSERVER'."
-            }
-        }
-
-        Assert-VerifiableMocks
-    }
-
-    Describe "Testing Remove-SqlDatabasePermission" {
-        $mockSqlServerObject = [PSCustomObject]@{
-            InstanceName = 'MSSQLSERVER'
-            ComputerNamePhysicalNetBIOS = 'SQL01'
-        }
-
-        $mockSqlServerObject = $mockSqlServerObject | Add-Member -MemberType ScriptProperty -Name Databases -Value {
-            return @{
-                'AdventureWorks' = @(
-                    (
-                        New-Object Microsoft.SqlServer.Management.Smo.Database -ArgumentList @( $null, 'AdventureWorks') |
-                            Add-Member -MemberType ScriptProperty -Name Users -Value {
-                                return @{
-                                    'CONTOSO\SqlAdmin' = $true
-                                    'CONTOSO\UnknownUser' = $false
-                                }
-                            } -PassThru -Force
-                    )
-                 )
-            } | Add-Member -MemberType ScriptMethod -Name EnumDatabasePermissions -Value {
-                return @{
-                    'CONTOSO\SqlAdmin' = @( 'Connect','Update' )
-                }
-            } -PassThru -Force
-        } -PassThru -Force
-
-        $mockSqlServerObject = $mockSqlServerObject | Add-Member -MemberType ScriptProperty -Name Logins -Value {
-            return @{
-                'CONTOSO\SqlAdmin' = @( ( New-Object Microsoft.SqlServer.Management.Smo.Login -ArgumentList @( $null, 'CONTOSO\SqlAdmin') -Property @{ LoginType = 'WindowsUser'} ) )
-            }
-        } -PassThru -Force
-
-        Context 'When the specified database and login exist and the system is not in desired state' {
-            $testParameters = @{
-                Sql             = $mockSqlServerObject
-                Name            = 'CONTOSO\SqlAdmin'
-                Database        = 'AdventureWorks'
-                PermissionState = 'Grant'
-                Permissions     = @( 'Connect','Update' )
-            }
-
-            It 'Should remove permissions to the specified database' {
-                Remove-SqlDatabasePermission @testParameters
-            }
-        }
-
-        Context 'When the specified database does not exist' {
-            $testParameters = @{
-                Sql             = $mockSqlServerObject
-                Name            = 'CONTOSO\SqlAdmin'
-                Database        = 'UnknownDatabase'
-                PermissionState = 'Grant'
-                Permissions     = @( 'Connect','Update' )
-            }
-
-            It 'Should throw the correct error' {
-                { Remove-SqlDatabasePermission @testParameters } | Should Throw "Database 'UnknownDatabase' does not exist on SQL server 'SQL01\MSSQLSERVER'."
-            }
-        }
-
-        Context 'When the specified login does not exist' {
-            $testParameters = @{
-                Sql             = $mockSqlServerObject
-                Name            = 'CONTOSO\UnknownUser'
-                Database        = 'AdventureWorks'
-                PermissionState = 'Grant'
-                Permissions     = @( 'Connect','Update' )
-            }
-
-            It 'Should throw the correct error' {
-                { Remove-SqlDatabasePermission @testParameters } | Should Throw "Login 'CONTOSO\UnknownUser' does not exist on SQL server 'SQL01\MSSQLSERVER'."
             }
         }
 
@@ -878,6 +639,185 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Import-Module -Exactly -Times 1 -Scope It
             }
         }
+
         Assert-VerifiableMocks
+    }
+
+    $mockGetItemProperty_MicrosoftSQLServer_InstanceNames_SQL = {
+        return @(
+            (
+                New-Object Object |
+                    Add-Member -MemberType NoteProperty -Name $mockInstanceName -Value $mockInstance_InstanceId -PassThru -Force
+            )
+        )
+    }
+
+    $mockGetItemProperty_MicrosoftSQLServer_FullInstanceId_Setup = {
+        return @(
+            (
+                New-Object Object |
+                    Add-Member -MemberType NoteProperty -Name 'Version' -Value "$($mockSqlMajorVersion).0.4001.0" -PassThru -Force
+            )
+        )
+    }
+
+    $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_InstanceNames_SQL = {
+        $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL'
+    }
+
+    $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_FullInstanceId_Setup = {
+        $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockInstance_InstanceId\Setup"
+    }
+
+    Describe 'Testing Get-SqlInstanceMajorVersion' -Tag GetSqlInstanceMajorVersion {
+        BeforeEach {
+            Mock -CommandName Get-ItemProperty `
+                -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_InstanceNames_SQL `
+                -MockWith $mockGetItemProperty_MicrosoftSQLServer_InstanceNames_SQL `
+                -Verifiable
+
+            Mock -CommandName Get-ItemProperty `
+                -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_FullInstanceId_Setup `
+                -MockWith $mockGetItemProperty_MicrosoftSQLServer_FullInstanceId_Setup `
+                -Verifiable
+        }
+
+        $mockInstance_InstanceId = "MSSQL$($mockSqlMajorVersion).$($mockInstanceName)"
+
+        Context 'When calling Get-SqlInstanceMajorVersion' {
+            It 'Should return the correct major SQL version number' {
+                $result = Get-SqlInstanceMajorVersion -SQLInstanceName $mockInstanceName
+                $result | Should -Be $mockSqlMajorVersion
+
+                Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It `
+                    -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_InstanceNames_SQL
+
+                Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It `
+                    -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_FullInstanceId_Setup
+            }
+        }
+
+        Context 'When calling Get-SqlInstanceMajorVersion and nothing is returned' {
+            It 'Should throw the correct error' {
+                Mock -CommandName Get-ItemProperty `
+                    -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_FullInstanceId_Setup `
+                    -MockWith {
+                        return New-Object Object
+                    } -Verifiable
+
+                 { Get-SqlInstanceMajorVersion -SQLInstanceName $mockInstanceName } | Should -Throw 'Could not get the SQL version for the instance ''TEST''.'
+
+                Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It `
+                    -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_InstanceNames_SQL
+
+                Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It `
+                    -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_FullInstanceId_Setup
+            }
+        }
+
+        Assert-VerifiableMocks
+    }
+
+    $mockApplicationDomainName = 'xSQLServerHelperTests'
+    $mockApplicationDomainObject = [System.AppDomain]::CreateDomain($mockApplicationDomainName)
+
+    <#
+        It is not possible to fully test this helper function since we can't mock having the correct assembly
+        in the GAC. So these test will try to load the wrong assembly and will catch the error. But that means
+        it will never test the rows after if fails to load the assembly.
+    #>
+    Describe 'Testing Register-SqlSmo' -Tag RegisterSqlSmo {
+        BeforeEach {
+            Mock -CommandName Get-SqlInstanceMajorVersion -MockWith {
+                return '0' # Mocking zero because that could never match a correct assembly
+            } -Verifiable
+        }
+
+        Context 'When calling Register-SqlSmo to load the wrong assembly' {
+            It 'Should throw with the correct error' {
+                {
+                    Register-SqlSmo -SQLInstanceName $mockInstanceName
+                } | Should -Throw 'Exception calling "Load" with "1" argument(s): "Could not load file or assembly ''Microsoft.SqlServer.Smo, Version=0.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91'' or one of its dependencies. The system cannot find the file specified."'
+
+                Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion
+            }
+        }
+
+        Context 'When calling Register-SqlSmo with a application domain to load the wrong assembly' {
+            It 'Should throw with the correct error' {
+                {
+                    Register-SqlSmo -SQLInstanceName $mockInstanceName -ApplicationDomain $mockApplicationDomainObject
+                } | Should -Throw 'Exception calling "Load" with "1" argument(s): "Could not load file or assembly ''Microsoft.SqlServer.Smo, Version=0.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91'' or one of its dependencies. The system cannot find the file specified."'
+
+                Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion
+            }
+        }
+
+        Assert-VerifiableMocks
+    }
+
+    <#
+        It is not possible to fully test this helper function since we can't mock having the correct assembly
+        in the GAC. So these test will try to load the wrong assembly and will catch the error. But that means
+        it will never test the rows after if fails to load the assembly.
+    #>
+    Describe 'Testing Register-SqlWmiManagement' -Tag RegisterSqlWmiManagement {
+        BeforeEach {
+            Mock -CommandName Get-SqlInstanceMajorVersion -MockWith {
+                return '0' # Mocking zero because that could never match a correct assembly
+            } -Verifiable
+
+            Mock -CommandName Register-SqlSmo -MockWith {
+                [System.AppDomain]::CreateDomain('xSQLServerHelper')
+            } -ParameterFilter {
+                $SQLInstanceName -eq $mockInstanceName
+            } -Verifiable
+        }
+
+        Context 'When calling Register-SqlWmiManagement to load the wrong assembly' {
+            It 'Should throw with the correct error' {
+                {
+                    Register-SqlWmiManagement -SQLInstanceName $mockInstanceName
+                } | Should -Throw 'Exception calling "Load" with "1" argument(s): "Could not load file or assembly ''Microsoft.SqlServer.SqlWmiManagement, Version=0.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91'' or one of its dependencies. The system cannot find the file specified."'
+
+                Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion
+                Assert-MockCalled -CommandName Register-SqlSmo -Exactly -Times 1 -Scope It -ParameterFilter {
+                    $SQLInstanceName -eq $mockInstanceName -and $ApplicationDomain -eq $null
+                }
+            }
+        }
+
+        Context 'When calling Register-SqlWmiManagement with a application domain to load the wrong assembly' {
+            It 'Should throw with the correct error' {
+                {
+                    Register-SqlWmiManagement -SQLInstanceName $mockInstanceName -ApplicationDomain $mockApplicationDomainObject
+                } | Should -Throw 'Exception calling "Load" with "1" argument(s): "Could not load file or assembly ''Microsoft.SqlServer.SqlWmiManagement, Version=0.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91'' or one of its dependencies. The system cannot find the file specified."'
+
+                Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion
+                Assert-MockCalled -CommandName Register-SqlSmo -Exactly -Times 0 -Scope It -ParameterFilter {
+                    $SQLInstanceName -eq $mockInstanceName -and $ApplicationDomain -eq $null
+                }
+
+                Assert-MockCalled -CommandName Register-SqlSmo -Exactly -Times 1 -Scope It -ParameterFilter {
+                    $SQLInstanceName -eq $mockInstanceName -and $ApplicationDomain.FriendlyName -eq $mockApplicationDomainName
+                }
+            }
+        }
+
+        Assert-VerifiableMocks
+    }
+
+    <#
+        NOTE! This test must be after the tests for Register-SqlSmo and Register-SqlWmiManagement.
+        This test unloads the application domain that is used during those tests.
+    #>
+    Describe 'Testing Unregister-SqlAssemblies' -Tag UnregisterSqlAssemblies {
+        Context 'When calling Unregister-SqlAssemblies to unload the assemblies' {
+            It 'Should not throw an error' {
+                {
+                    Unregister-SqlAssemblies -ApplicationDomain $mockApplicationDomainObject
+                } | Should -Not -Throw
+            }
+        }
     }
 }

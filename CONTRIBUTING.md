@@ -4,7 +4,7 @@ If you are keen to make xSQLServer better, why not consider contributing your wo
 
 ## Core contribution guidelines
 
-We follow all of the standard contribution guidelines for DSC resources [outlined in DscResources repo](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md), so please review these as a baseline for contributing.
+We follow all of the standard contribution guidelines for DSC resources [outlined in DscResources repository](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md), so please review these as a baseline for contributing.
 
 ## xSQLServer specific guidelines
 
@@ -12,9 +12,9 @@ We follow all of the standard contribution guidelines for DSC resources [outline
 
 Any resource should be able to target at least all SQL Server versions that are currently supported by Microsoft (also those in extended support).
 Unless the functionality that the resource targets does not exist in a certain SQL Server version.
-There can also be other limitations that restrict the resource from tageting all supported versions.
+There can also be other limitations that restrict the resource from targeting all supported versions.
 
-Those SQL Server products that are still supported can be listed at the [Microsoft lifecycle site](https://support.microsoft.com/en-us/lifecycle/search?alpha=SQL%20Server).
+Those SQL Server products that are still supported can be listed at the [Microsoft life cycle site](https://support.microsoft.com/en-us/lifecycle/search?alpha=SQL%20Server).
 
 ### Naming convention
 

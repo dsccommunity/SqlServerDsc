@@ -217,7 +217,7 @@ function Set-TargetResource
                                                      "'$Database', on the instance $SQLServer\$SQLInstanceName")
 
                         $sqlDatabaseUser = New-Object -TypeName Microsoft.SqlServer.Management.Smo.User `
-                                                      -ArgumentList $SQLDatabase, $Name
+                                                      -ArgumentList $sqlDatabaseObject, $Name
                         $sqlDatabaseUser.Login = $Name
                         $sqlDatabaseUser.Create()
                     }

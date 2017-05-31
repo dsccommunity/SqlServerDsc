@@ -36,7 +36,7 @@ class MSFT_xSQLServerFailoverClusterSetup : OMI_BaseResource
     [Write, Description("Path for SQL TempDB files.")] String SQLTempDBDir;
     [Write, Description("Path for SQL TempDB log files.")] String SQLTempDBLogDir;
     [Write, Description("Path for SQL backup files.")] String SQLBackupDir;
-    [Write, EmbeddedInstance("MSFT_Credential"), Description("Service account for Analysus Services service.")] String ASSvcAccount;
+    [Write, EmbeddedInstance("MSFT_Credential"), Description("Service account for Analysis Services service.")] String ASSvcAccount;
     [Read, Description("Output username for the Analysis Services service.")] String ASSvcAccountUsername;
     [Write, Description("Collation for Analysis Services.")] String ASCollation;
     [Write, Description("Array of accounts to be made Analysis Services admins.")] String ASSysAdminAccounts[];

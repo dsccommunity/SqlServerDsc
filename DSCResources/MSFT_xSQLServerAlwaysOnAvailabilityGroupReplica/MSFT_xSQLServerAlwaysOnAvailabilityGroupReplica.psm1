@@ -261,7 +261,7 @@ function Set-TargetResource
                     }
                     catch
                     {
-                        throw New-TerminatingError -ErrorType RemoveAvailabilityGroupReplicaFailed -FormatArgs $Name, $_.Exception -ErrorCategory ResourceUnavailable
+                        throw New-TerminatingError -ErrorType RemoveAvailabilityGroupReplicaFailed -FormatArgs $Name -ErrorCategory ResourceUnavailable -InnerException $_.Exception
                     }
                 }
             }
@@ -484,7 +484,7 @@ function Set-TargetResource
                     }
                     catch
                     {
-                        throw New-TerminatingError -ErrorType CreateAvailabilityGroupReplicaFailed -FormatArgs $Name,$SQLInstanceName -ErrorCategory OperationStopped
+                        throw New-TerminatingError -ErrorType CreateAvailabilityGroupReplicaFailed -FormatArgs $Name,$SQLInstanceName -ErrorCategory OperationStopped -InnerException $_.Exception
                     }
 
                     # Join the Availability Group Replica to the Availability Group
@@ -494,7 +494,7 @@ function Set-TargetResource
                     }
                     catch
                     {
-                        throw New-TerminatingError -ErrorType JoinAvailabilityGroupFailed -FormatArgs $Name -ErrorCategory OperationStopped
+                        throw New-TerminatingError -ErrorType JoinAvailabilityGroupFailed -FormatArgs $Name -ErrorCategory OperationStopped -InnerException $_.Exception
                     }
                 }
                 # The Availability Group doesn't exist on the primary replica

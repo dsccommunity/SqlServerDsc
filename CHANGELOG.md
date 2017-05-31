@@ -2,6 +2,77 @@
 
 ## Unreleased
 
+## 7.1.0.0
+
+- Changes to xSQLServerMemory
+  - Changed the way SQLServer parameter is passed from Test-TargetResource to Get-TargetResource so that the default value isn't lost (issue #576).
+  - Added condition to unit tests for when no SQLServer parameter is set.
+- Changes to xSQLServerMaxDop
+  - Changed the way SQLServer parameter is passed from Test-TargetResource to Get-TargetResource so that the default value isn't lost (issue #576).
+  - Added condition to unit tests for when no SQLServer parameter is set.
+- Changes to xWaitForAvailabilityGroup
+  - Updated README.md with a description for the resources and revised the parameter descriptions.
+  - The default value for RetryIntervalSec is now 20 seconds and the default value for RetryCount is now 30 times (issue #505).
+  - Cleaned up code and fixed PSSA rules warnings (issue #268).
+  - Added unit tests (issue #297).
+  - Added descriptive text to README.md that the account that runs the resource must have permission to run the cmdlet Get-ClusterGroup (issue #307).
+  - Added read-only parameter GroupExist which will return $true if the cluster role/group exist, otherwise it returns $false (issue #510).
+  - Added examples.
+- Changes to xSQLServerPermission
+  - Cleaned up code, removed SupportsShouldProcess and fixed PSSA rules warnings (issue #241 and issue #262).
+  - It is now possible to add permissions to two or more logins on the same instance (issue #526).
+  - The parameter NodeName is no longer mandatory and has now the default value of $env:COMPUTERNAME.
+  - The parameter Ensure now has a default value of 'Present'.
+  - Updated README.md with a description for the resources and revised the parameter descriptions.
+  - Removed dependency of SQLPS provider (issue #482).
+  - Added ConnectSql permission. Now that permission can also be granted or revoked.
+  - Updated note in resource description to also mention ConnectSql permission.
+- Changes to xSQLServerHelper module
+  - Removed helper function Get-SQLPSInstance and Get-SQLPSInstanceName because there is no resource using it any longer.
+  - Added four new helper functions.
+    - Register-SqlSmo, Register-SqlWmiManagement and Unregister-SqlAssemblies to handle the creation on the application domain and loading and unloading of the SMO and SqlWmiManagement assemblies.
+    - Get-SqlInstanceMajorVersion to get the major SQL version for a specific instance.
+  - Fixed typos in comment-based help
+- Changes to xSQLServer
+  - Fixed typos in markdown files; CHANGELOG, CONTRIBUTING, README and ISSUE_TEMPLATE.
+  - Fixed typos in schema.mof files (and README.md).
+  - Updated some parameter description in schema.mof files on those that was found was not equal to README.md.
+- Changes to xSQLServerAlwaysOnService
+  - Get-TargetResource should no longer fail silently with error 'Index operation failed; the array index evaluated to null.' (issue #519). Now if the Server.IsHadrEnabled property return neither $true or $false the Get-TargetResource function will throw an error.
+- Changes to xSQLServerSetUp
+  - Updated xSQLServerSetup Module Get-Resource method to fix (issue #516 and #490).
+  - Added change to detect DQ, DQC, BOL, SDK features. Now the function Test-TargetResource returns true after calling set for DQ, DQC, BOL, SDK features (issue #516 and #490).
+- Changes to xSQLServerAlwaysOnAvailabilityGroup
+  - Updated to return the exception raised when an error is thrown.
+- Changes to xSQLServerAlwaysOnAvailabilityGroupReplica
+  - Updated to return the exception raised when an error is thrown.
+  - Updated parameter description for parameter Name, so that it says it must be in the format SQLServer\InstanceName for named instance (issue #548).
+- Changes to xSQLServerLogin
+  - Added an optional boolean parameter Disabled. It can be used to enable/disable existing logins or create disabled logins (new logins are created as enabled by default).
+- Changes to xSQLServerDatabaseRole
+  - Updated variable passed to Microsoft.SqlServer.Management.Smo.User constructor to fix issue #530
+- Changes to xSQLServerNetwork
+  - Added optional parameter SQLServer with default value of $env:COMPUTERNAME (issue #528).
+  - Added optional parameter RestartTimeout with default value of 120 seconds.
+  - Now the resource supports restarting a sql server in a cluster (issue #527 and issue #455).
+  - Now the resource allows to set the parameter TcpDynamicPorts to a blank value (partly fixes issue #534). Setting a blank value for parameter TcpDynamicPorts together with a value for parameter TcpPort means that static port will be used.
+  - Now the resource will not call Alter() in the Set-TargetResource when there is no change necessary (issue #537).
+  - Updated example 1-EnableTcpIpOnCustomStaticPort.
+  - Added unit tests (issue #294).
+  - Refactored some of the code, cleaned up the rest and fixed PSSA rules warnings (issue #261).
+  - If parameter TcpDynamicPort is set to '0' at the same time as TcpPort is set the resource will now throw an error (issue #535).
+  - Added examples (issue #536).
+  - When TcpDynamicPorts is set to '0' the Test-TargetResource function will no longer fail each time (issue #564).
+- Changes to xSQLServerRSConfig
+  - Replaced sqlcmd.exe usages with Invoke-Sqlcmd calls (issue #567).
+- Changes to xSQLServerDatabasePermission
+  - Fixed code style, updated README.md and removed *-SqlDatabasePermission functions from xSQLServerHelper.psm1.
+  - Added the option 'GrantWithGrant' with gives the user grant rights, together with the ability to grant others the same right.
+  - Now the resource can revoke permission correctly (issue #454). When revoking 'GrantWithGrant', both the grantee and all the other users the grantee has granted the same permission to, will also get their permission revoked.
+  - Updated tests to cover Revoke().
+- Changes to xSQLServerHelper
+  - The missing helper function ('Test-SPDSCObjectHasProperty'), that was referenced in the helper function Test-SQLDscParameterState, is now incorporated into Test-SQLDscParameterState (issue #589).
+
 ## 7.0.0.0
 
 - Examples
@@ -133,7 +204,7 @@
   - It now detects that feature Client Connectivity Tools (CONN) and Client Connectivity Backwards Compatibility Tools (BC) is installed.
   - Now it can correctly determine the right cluster when only parameter InstallSQLDataDir is assigned a path (issue #401).
   - Now the only mandatory path parameter is InstallSQLDataDir when installing Database Engine (issue #400).
-  - It now can handle mandatory parameters, and are not using wildcards to find the variables containing paths (issue #394).
+  - It now can handle mandatory parameters, and are not using wildcard to find the variables containing paths (issue #394).
   - Changed so that instead of connection to localhost it is using $env:COMPUTERNAME as the host name to which it connects. And for cluster installation it uses the parameter FailoverClusterNetworkName as the host name to which it connects (issue #407).
   - When called with Action = 'PrepareFailoverCluster', the SQLSysAdminAccounts and FailoverClusterGroup parameters are no longer passed to the setup process (issues #410 and 411).
   - Solved the problem that InstanceDir and InstallSQLDataDir could not be set to just a qualifier, i.e 'E:' (issue #418). All paths (except SourcePath) can now be set to just the qualifier.
@@ -178,7 +249,7 @@
   - Fixed a typo in the Requirements section.
   - Added link to Examples folder in the Examples section.
   - Change the layout of the README.md to closer match the one of PSDscResources
-  - Added more detailed text explaining what operating systemes WMF5.0 can be installed on.
+  - Added more detailed text explaining what operating systems WMF5.0 can be installed on.
   - Verified all resource schema files with the README.md and fixed some errors (descriptions was not verified).
   - Added security requirements section for resource xSQLServerEndpoint and xSQLAOGroupEnsure.
 - Changes to xSQLServerSetup
@@ -249,10 +320,10 @@
   - xSQLServerDatabasePermissions
   - xSQLServerFirewall
 - Changes to xSQLServerDatabaseRecoveryModel
-  - BREAKING CHANGE: Renamed xSQLDatabaseRecoveryModel to xSQLServerDatabaseRecoveryModel to align wíth naming convention.
+  - BREAKING CHANGE: Renamed xSQLDatabaseRecoveryModel to xSQLServerDatabaseRecoveryModel to align with naming convention.
   - BREAKING CHANGE: The mandatory parameters now include SQLServer, and SQLInstanceName.
 - Changes to xSQLServerDatabasePermission
-  - BREAKING CHANGE: Renamed xSQLServerDatabasePermissions to xSQLServerDatabasePermission to align wíth naming convention.
+  - BREAKING CHANGE: Renamed xSQLServerDatabasePermissions to xSQLServerDatabasePermission to align with naming convention.
   - BREAKING CHANGE: The mandatory parameters now include PermissionState, SQLServer, and SQLInstanceName.
 - Added support for clustered installations to xSQLServerSetup
   - Migrated relevant code from xSQLServerFailoverClusterSetup
@@ -265,7 +336,7 @@
 - xPDT helper module
   - Function GetxPDTVariable was removed since it no longer was used by any resources.
   - File xPDT.xml was removed since it was not used by any resources, and did not provide any value to the module.
-- Changes xSQLServerHelper moduled
+- Changes xSQLServerHelper module
   - Removed the globally defined `$VerbosePreference = 'Continue'` from xSQLServerHelper.
   - Fixed a typo in a variable name in the function New-ListenerADObject.
   - Now Restart-SqlService will correctly show the services it restarts. Also fixed PSSA warnings.
@@ -301,7 +372,7 @@
 - Changes and enhancements in xSQLServerDatabaseRole
   - BREAKING CHANGE: Fixed so the same user can now be added to a role in one or more databases, and/or one or more instances. Now the parameters `SQLServer` and `SQLInstanceName` are mandatory.
   - Enhanced so the same user can now be added to more than one role
-- BREAKING CHANGE: Renamed xSQLAlias to xSQLServerAlias to align wíth naming convention.
+- BREAKING CHANGE: Renamed xSQLAlias to xSQLServerAlias to align with naming convention.
 - Changes to xSQLServerAlwaysOnService
   - Added RestartTimeout parameter
   - Fixed bug where the SQL Agent service did not get restarted after the IsHadrEnabled property was set.
@@ -443,7 +514,7 @@
   - Removed default values for parameters, to avoid compatibility issues and setup errors
   - Added Replication sub feature detection
   - Added setup parameter BrowserSvcStartupType
-  - Change SourceFolder to Source to allow for multiversion Support
+  - Change SourceFolder to Source to allow for multi version Support
   - Add Source Credential for accessing source files
   - Add Parameters for SQL Server configuration
   - Add Parameters to SuppressReboot or ForceReboot
@@ -451,7 +522,7 @@
   - Removed default values for parameters, to avoid compatibility issues
   - Updated firewall rule name to not use 2012 version, since package supports 2008, 2012 and 2014 versions
   - Additional of SQLHelper Function and error handling
-  - Change SourceFolder to Source to allow for multiversion Support
+  - Change SourceFolder to Source to allow for multi version Support
 - xSQLServerNetwork
   - Added new resource that configures network settings.
   - Currently supports only tcp network protocol
@@ -462,7 +533,7 @@
 - xSqlServerRSConfig
 - xSQLServerFailoverClusterSetup
   - Additional of SQLHelper Function and error handling
-  - Change SourceFolder to Source to allow for multiversion Support
+  - Change SourceFolder to Source to allow for multi version Support
   - Add Parameters to SuppressReboot or ForceReboot
 - Examples
   - Updated example files to use correct DebugMode parameter value ForceModuleImport, this is not boolean in WMF 5.0 RTM
@@ -470,7 +541,7 @@
 
 ## 1.3.0.0
 
-- xSqlServerSetus
+- xSqlServerSetup
   - Make Features case-insensitive.
 
 ## 1.2.1.0
