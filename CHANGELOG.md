@@ -3,7 +3,7 @@
 ## Unreleased
 
 - Changes to xSQLServerDatabase
-  - Changed the readme, SQLInstance should have been SQLInstancename.
+  - Changed the readme, SQLInstance should have been SQLInstanceName.
 
 ## 7.1.0.0
 
