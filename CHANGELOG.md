@@ -95,6 +95,7 @@
   - When setup exits with an exit code other than 0 or 3010 a warning message is written to console telling that setup finished with an error (partly fixes issue #580).
   - Added a new parameter SetupProcessTimeout which defaults to 7200 seconds (2 hours). If the setup process has not finished before the timeout value in SetupProcessTimeout an error will be thrown (issue #566).
   - Updated all examples to match the removal of SetupCredential.
+  - Updated (removed) severe known issues in README.md for resource xSQLServerSetup.
 
 ## 7.0.0.0
 

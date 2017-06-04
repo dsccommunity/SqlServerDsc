@@ -914,20 +914,13 @@ If PsDscRunAsCredential is not assigned credentials then installation will be pe
 
 #### Known issues
 
-All issues are not listed here, see [here for all issues](https://github.com/PowerShell/xSQLServer/issues).
-This is known issues that severely impact the use of the resource.
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/xSQLServer/issues?q=is%3Aissue%20is%3Aopen%20xSQLServerSetup).
 
-##### Failover Cluster Setup
+##### Severe known issues
 
-Setup cannot be run using PsDscRunAsCredential at this time (see issue #405 and issue #444). That
-also means that at this time PsDscRunAsCredential can not be used to access media on the UNC share.
+This is a list of known issues that severely impact the use of the resource.
 
-There is currently a bug that prevents the resource to logon to the instance if the current node is not the
-active node. This is because the resource tries to logon using the SYSTEM account instead of the credentials
-in SetupCredential, and the resource does not currently support the built-in PsDscRunAsCredential either (see
-issue #444).
-
-These issues are also documented in the example files [Install a named instance as the first node in SQL Server Failover Cluster](/Examples/Resources/xSQLServerSetup/4-InstallNamedInstanceInFailoverClusterFirstNode.ps1) and [Install a named instance as the second node in SQL Server Failover Cluster](/Examples/Resources/xSQLServerSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1).
+There are currently no known severe issues.
 
 ### xWaitForAvailabilityGroup
 
