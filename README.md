@@ -346,7 +346,7 @@ This resource is used to create or delete a database. For more information about
 #### Parameters
 
 * **[String] SQLServer** _(Key)_: The host name of the SQL Server to be configured.
-* **[String] SQLInstance** _(Key)_: The name of the SQL instance to be configured.
+* **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
 * **[String] Name** _(Key)_: The name of database to be created or dropped.
 * **[String] Ensure** _(Write)_: When set to 'Present', the database will be created. When set to 'Absent', the database will be dropped. { *Present* | Absent }.
 
