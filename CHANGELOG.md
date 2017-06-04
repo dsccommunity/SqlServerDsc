@@ -4,6 +4,8 @@
 
 - Changes to xSQLServerDatabase
   - Changed the readme, SQLInstance should have been SQLInstanceName.
+- Changes to xSQLServerSetup
+  - Updated Get-TargetResource to correctly detect BOL, Conn, BC and other tools when they are installed withouth SQLENGINE (issue #591).
 
 ## 7.1.0.0
 
@@ -45,7 +47,6 @@
 - Changes to xSQLServerSetUp
   - Updated xSQLServerSetup Module Get-Resource method to fix (issue #516 and #490).
   - Added change to detect DQ, DQC, BOL, SDK features. Now the function Test-TargetResource returns true after calling set for DQ, DQC, BOL, SDK features (issue #516 and #490).
-  - Updated Get-TargetResource to correctly detect BOL, Conn, BC and other tools when they are installed withouth SQLENGINE (issue #591).
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
   - Updated to return the exception raised when an error is thrown.
 - Changes to xSQLServerAlwaysOnAvailabilityGroupReplica
