@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Changes to xSQLServerDatabase
+  - Changed the readme, SQLInstance should have been SQLInstancename.
+
 ## 7.1.0.0
 
 - Changes to xSQLServerMemory
@@ -63,7 +66,6 @@
   - If parameter TcpDynamicPort is set to '0' at the same time as TcpPort is set the resource will now throw an error (issue #535).
   - Added examples (issue #536).
   - When TcpDynamicPorts is set to '0' the Test-TargetResource function will no longer fail each time (issue #564).
-<<<<<<< HEAD
 - Changes to xSQLServerRSConfig
   - Replaced sqlcmd.exe usages with Invoke-Sqlcmd calls (issue #567).
 - Changes to xSQLServerDatabasePermission
@@ -73,10 +75,6 @@
   - Updated tests to cover Revoke().
 - Changes to xSQLServerHelper
   - The missing helper function ('Test-SPDSCObjectHasProperty'), that was referenced in the helper function Test-SQLDscParameterState, is now incorporated into Test-SQLDscParameterState (issue #589).
-=======
-- Changes to xSQLServerDatabase
-  - Changed the readme, SQLInstance should have been SQLInstancename.
->>>>>>> added information to the changelog
 
 ## 7.0.0.0
 
