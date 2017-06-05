@@ -8,15 +8,6 @@
 - Changes to xSQLServerSetup
   - Updated Get-TargetResource to correctly detect BOL, Conn, BC and other tools when they are installed withouth SQLENGINE (issue #591).
 
-=======
-- Changes to xSQLServerSetup
-  - Updated Get-TargetResource to correctly detect BOL, Conn, BC and other tools when they are installed withouth SQLENGINE (issue #591).
-<<<<<<< HEAD
-  
->>>>>>> Fixed missing blank lines
-=======
-
->>>>>>> Remove random space
 ## 7.1.0.0
 
 - Changes to xSQLServerMemory
