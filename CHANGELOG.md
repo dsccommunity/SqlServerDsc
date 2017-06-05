@@ -2,7 +2,6 @@
 
 ## Unreleased
 
-<<<<<<< HEAD
 - Changes to xSQLServerDatabase
   - Changed the readme, SQLInstance should have been SQLInstanceName.
 - Changes to xSQLServerSetup
