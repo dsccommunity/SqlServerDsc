@@ -924,7 +924,6 @@ try
 
         # Default parameters that are used for the It-blocks
         $mockDefaultParameters = @{
-            SetupCredential = $mockSetupCredential
             Features = $defaultFeatures
         }
 
