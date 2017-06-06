@@ -265,7 +265,7 @@ function Get-TargetResource
 
     # Check if Documentation Components "BOL" is configured
     New-VerboseMessage -Message "Detecting Documentation Components (HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState)"
-    $isBOLInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState").SQL_BOL_Components
+    $isBOLInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState" -ErrorAction SilentlyContinue).SQL_BOL_Components
     if ($isBOLInstalled -eq 1)
     {
         New-VerboseMessage -Message 'Documentation Components feature detected'
