@@ -52,6 +52,7 @@ function New-InvalidOperationException
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Message,
@@ -61,11 +62,7 @@ function New-InvalidOperationException
         $ErrorRecord
     )
 
-    if ($null -eq $Message)
-    {
-        $invalidOperationException = New-Object -TypeName 'InvalidOperationException'
-    }
-    elseif ($null -eq $ErrorRecord)
+    if ($null -eq $ErrorRecord)
     {
         $invalidOperationException = New-Object -TypeName 'InvalidOperationException' `
                                                 -ArgumentList @($Message)
@@ -106,6 +103,7 @@ function New-ObjectNotFoundException
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Message,
@@ -115,11 +113,7 @@ function New-ObjectNotFoundException
         $ErrorRecord
     )
 
-    if ($null -eq $Message)
-    {
-        $exception = New-Object -TypeName 'System.Exception'
-    }
-    elseif ($null -eq $ErrorRecord)
+    if ($null -eq $ErrorRecord)
     {
         $exception = New-Object -TypeName 'System.Exception' `
                                 -ArgumentList @($Message)
@@ -160,6 +154,7 @@ function New-InvalidResultException
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Message,
@@ -169,11 +164,7 @@ function New-InvalidResultException
         $ErrorRecord
     )
 
-    if ($null -eq $Message)
-    {
-        $exception = New-Object -TypeName 'System.Exception'
-    }
-    elseif ($null -eq $ErrorRecord)
+    if ($null -eq $ErrorRecord)
     {
         $exception = New-Object -TypeName 'System.Exception' `
                                 -ArgumentList @($Message)

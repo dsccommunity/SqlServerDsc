@@ -9,15 +9,15 @@
     }
 
     InModuleScope 'CommonResourceHelper' {
-        $mockTestPath = {
-            return $mockTestPathReturnValue
-        }
-
-        $mockImportLocalizedData = {
-            $BaseDirectory | Should Be $mockExpectedLanguagePath
-        }
-
         Describe 'Get-LocalizedData' {
+            $mockTestPath = {
+                return $mockTestPathReturnValue
+            }
+
+            $mockImportLocalizedData = {
+                $BaseDirectory | Should Be $mockExpectedLanguagePath
+            }
+
             BeforeEach {
                 Mock -CommandName Test-Path -MockWith $mockTestPath -Verifiable
                 Mock -CommandName Import-LocalizedData -MockWith $mockImportLocalizedData -Verifiable
@@ -65,6 +65,91 @@
 
                 It 'Should call Import-LocalizedData with en-US language' {
                     { Get-LocalizedData 'DummyResource' } | Should Not Throw
+                }
+            }
+
+            Assert-VerifiableMocks
+        }
+
+        Describe 'New-InvalidResultException' {
+            Context 'When calling with Message parameter only' {
+                It 'Should throw the correct error' {
+                    $mockErrorMessage = 'Mocked error'
+
+                    { New-InvalidResultException -Message $mockErrorMessage } | Should Throw $mockErrorMessage
+                }
+            }
+
+            Context 'When calling with both the Message and ErrorRecord parameter' {
+                It 'Should throw the correct error' {
+                    $mockErrorMessage = 'Mocked error'
+                    $mockExceptionErrorMessage = 'Mocked exception error message'
+
+                    $mockException = New-Object System.Exception $mockExceptionErrorMessage
+                    $mockErrorRecord = New-Object System.Management.Automation.ErrorRecord $mockException, $null, 'InvalidResult', $null
+
+                    { New-InvalidResultException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should Throw 'System.Exception: Mocked error ---> System.Exception: Mocked exception error message'
+                }
+            }
+
+            Assert-VerifiableMocks
+        }
+
+        Describe 'New-ObjectNotFoundException' {
+            Context 'When calling with Message parameter only' {
+                It 'Should throw the correct error' {
+                    $mockErrorMessage = 'Mocked error'
+
+                    { New-ObjectNotFoundException -Message $mockErrorMessage } | Should Throw $mockErrorMessage
+                }
+            }
+
+            Context 'When calling with both the Message and ErrorRecord parameter' {
+                It 'Should throw the correct error' {
+                    $mockErrorMessage = 'Mocked error'
+                    $mockExceptionErrorMessage = 'Mocked exception error message'
+
+                    $mockException = New-Object System.Exception $mockExceptionErrorMessage
+                    $mockErrorRecord = New-Object System.Management.Automation.ErrorRecord $mockException, $null, 'InvalidResult', $null
+
+                    { New-ObjectNotFoundException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should Throw 'System.Exception: Mocked error ---> System.Exception: Mocked exception error message'
+                }
+            }
+
+            Assert-VerifiableMocks
+        }
+
+        Describe 'New-InvalidOperationException' {
+            Context 'When calling with Message parameter only' {
+                It 'Should throw the correct error' {
+                    $mockErrorMessage = 'Mocked error'
+
+                    { New-InvalidOperationException -Message $mockErrorMessage } | Should Throw $mockErrorMessage
+                }
+            }
+
+            Context 'When calling with both the Message and ErrorRecord parameter' {
+                It 'Should throw the correct error' {
+                    $mockErrorMessage = 'Mocked error'
+                    $mockExceptionErrorMessage = 'Mocked exception error message'
+
+                    $mockException = New-Object System.Exception $mockExceptionErrorMessage
+                    $mockErrorRecord = New-Object System.Management.Automation.ErrorRecord $mockException, $null, 'InvalidResult', $null
+
+                    { New-InvalidOperationException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should Throw 'System.InvalidOperationException: Mocked error ---> System.Exception: Mocked exception error message'
+                }
+            }
+
+            Assert-VerifiableMocks
+        }
+
+        Describe 'New-InvalidArgumentException' {
+            Context 'When calling with both the Message and ArgumentName parameter' {
+                It 'Should throw the correct error' {
+                    $mockErrorMessage = 'Mocked error'
+                    $mockArgumentName = 'MockArgument'
+
+                    { New-InvalidArgumentException -Message $mockErrorMessage -ArgumentName $mockArgumentName } | Should Throw 'Parameter name: MockArgument'
                 }
             }
 

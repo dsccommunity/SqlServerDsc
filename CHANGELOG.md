@@ -25,7 +25,7 @@
   - BREAKING CHANGE: Removed deprecated resource xSQLAOGroupEnsure (issue #456).
   - BREAKING CHANGE: Removed deprecated resource xSQLServerFailoverClusterSetup (issue #336).
   - Updated PULL\_REQUEST\_TEMPLATE adding comment block around text. Also rearranged and updated texts (issue #572).
-  - Added common helper functions for HQRM localization.
+  - Added common helper functions for HQRM localization, and added tests for the helper functions.
     - Get-LocalizedData
     - New-InvalidResultException
     - New-ObjectNotFoundException
@@ -33,7 +33,6 @@
     - New-InvalidArgumentException
   - Updated CONTRIBUTING.md describing the new localization helper functions.
   - Fixed typos in xSQLServer.strings.psd1
-  - Added tests to test new helper function Get-LocalizedData
 - Changes to xSQLServerHelper
   - Removed helper function Grant-ServerPerms because the deprecated resource that was using it was removed.
   - Removed helper function Grant-CNOPerms because the deprecated resource that was using it was removed.
