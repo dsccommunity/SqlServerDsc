@@ -242,4 +242,6 @@ function Get-LocalizedData
 Export-ModuleMember -Function @(
     'New-InvalidArgumentException',
     'New-InvalidOperationException',
+    'New-ObjectNotFoundException',
+    'New-InvalidResultException',
     'Get-LocalizedData' )
