@@ -2202,6 +2202,19 @@ try
                         Mock -CommandName Get-Service -MockWith $mockGetService_DefaultInstance -Verifiable
                     }
 
+                    It 'Should throw the correct error message when failover cluster resource cannot be found' {
+                        Mock -CommandName Get-CimInstance -MockWith {
+                            return $null
+                        } -Verifiable -ParameterFilter {
+                            $Filter -eq "Type = 'SQL Server'"
+                        }
+
+                        { Get-TargetResource @testParameters } | Should Throw 'Could not locate a SQL Server cluster resource for instance MSSQLSERVER.'
+
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 1 -Scope It -ParameterFilter { $Filter -eq "Type = 'SQL Server'" }
+                    }
+
                     It 'Should collect information for a clustered instance' {
                         $currentState = Get-TargetResource @testParameters
 
