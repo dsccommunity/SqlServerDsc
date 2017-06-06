@@ -59,8 +59,7 @@ Get-DscResource -Module xSQLServer
 
 ## Requirements
 
-The minimum Windows Management Framework (PowerShell) version required is 4.0, which ships in Windows 8.1 or Windows Server 2012 R2 (or higher versions). But Windows Management Framework (PowerShell) 4.0 can also be installed on Windows Server 2008 R2.
-The preferred Windows Management Framework (PowerShell) version is 5.0 or higher, which ships with Windows 10 or Windows Server 2016, but can also be installed on Windows 7 SP1, Windows 8.1, Windows Server 2008 R2 SP1, Windows Server 2012 and Windows Server 2012 R2.
+The minimum Windows Management Framework (PowerShell) version required is 5.0 or higher, which ships with Windows 10 or Windows Server 2016, but can also be installed on Windows 7 SP1, Windows 8.1, Windows Server 2008 R2 SP1, Windows Server 2012 and Windows Server 2012 R2.
 
 ## Examples
 
@@ -72,8 +71,6 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 
 ## Resources
 
-* **[Deprecated]** ~~[**xSQLAOGroupEnsure**](#xsqlaogroupensure) resource to ensure availability group is present or absent.~~ Please use [xSQLServerAlwaysOnAvailabilityGroup](https://github.com/PowerShell/xSQLServer#xsqlserveralwaysonavailabilitygroup) and [xSQLServerAlwaysOnAvailabilityGroupReplica](https://github.com/PowerShell/xSQLServer#xsqlserveralwaysonavailabilitygroupreplica) instead.
-* **[Deprecated]** ~~[**xSQLAOGroupJoin**](#xsqlaogroupjoin) resource to join a replica to an existing availability group.~~  Please use [xSQLServerAlwaysOnAvailabilityGroup](https://github.com/PowerShell/xSQLServer#xsqlserveralwaysonavailabilitygroup) and [xSQLServerAlwaysOnAvailabilityGroupReplica](https://github.com/PowerShell/xSQLServer#xsqlserveralwaysonavailabilitygroupreplica) instead.
 * [**xSQLServerAlias**](#xsqlserveralias) resource to manage SQL Server client Aliases.
 * [**xSQLServerAlwaysOnAvailabilityGroup**](#xsqlserveralwaysonavailabilitygroup) resource to ensure an availability group is present or absent.
 * [**xSQLServerAlwaysOnAvailabilityGroupReplica**](#xsqlserveralwaysonavailabilitygroupreplica) resource to ensure an availability group replica is present or absent.
@@ -88,7 +85,6 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * [**xSQLServerEndpoint**](#xsqlserverendpoint) resource to ensure database endpoint is present or absent.
 * [**xSQLServerEndpointPermission**](#xsqlserverendpointpermission) Grant or revoke permission on the endpoint.
 * [**xSQLServerEndpointState**](#xsqlserverendpointstate) Change state of the endpoint.
-* **[Deprecated]** ~~[**xSQLServerFailoverClusterSetup**](#xsqlserverfailoverclustersetup) installs SQL Server failover cluster instances.~~ Please use [xSQLServerSetup](https://github.com/PowerShell/xSQLServer#xsqlserversetup) instead.
 * [**xSQLServerFirewall**](#xsqlserverfirewall) configures firewall settings to allow remote access to a SQL Server instance.
 * [**xSQLServerLogin**](#xsqlserverlogin) resource to manage SQL logins.
 * [**xSQLServerMaxDop**](#xsqlservermaxdop) resource to manage MaxDegree of Parallelism for SQL Server.
@@ -102,65 +98,6 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * [**xSQLServerScript**](#xsqlserverscript) resource to extend DSC Get/Set/Test functionality to T-SQL.
 * [**xSQLServerSetup**](#xsqlserversetup) installs a standalone SQL Server instance.
 * [**xWaitForAvailabilityGroup**](#xwaitforavailabilitygroup) resource to wait till availability group is created on primary server.
-
-### xSQLAOGroupEnsure **[Deprecated]**
-
-No description.
-
-**This resource is deprecated.** The functionality of this resource has been replaced with [**xSQLServerAlwaysOnAvailabilityGroup**](#xsqlserveralwaysonavailabilitygroup). Please do not use this resource for new deployment or development efforts.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2012 or later.
-* Target machine must have access to the Active Directory module.
-
-#### Security Requirements
-
-* The credentials provided in the parameter `SetupCredential` must have the right **Create Computer Object** in the organizational unit (OU) in which the Cluster Name Object (CNO) resides.
-
-#### Parameters
-
-* **[String] Ensure** _(Key)_: Determines whether the availability group should be added or removed. { Present | Absent }.
-* **[String] AvailabilityGroupName**_(Key)_: Name for availability group.
-* **[String] AvailabilityGroupNameListener** _(Write)_: Listener name for availability group.
-* **[String[]] AvailabilityGroupNameIP** _(Write)_: List of IP addresses associated with listener.
-* **[String[]] AvailabilityGroupSubMask** _(Write)_: Network subnet mask for listener.
-* **[Uint32] AvailabilityGroupPort** _(Write)_: Port availability group should listen on.
-* **[String] ReadableSecondary** _(Write)_: Mode secondaries should operate under (None, ReadOnly, ReadIntent). { None | *ReadOnly* | ReadIntent }.
-* **[String] AutoBackupPreference** _(Write)_: Where backups should be backed up from (Primary, Secondary). { *Primary* | Secondary }.
-* **[Uint32] BackupPriority** _(Write)_: The percentage weight for backup priority (default 50).
-* **[Uint32] EndPointPort** _(Write)_: The TCP port for the SQL AG Endpoint (default 5022).
-* **[String] SQLServer** _(Write)_: The SQL Server for the database.
-* **[String] SQLInstance** _(Write)_: The SQL instance for the database.
-* **[PSCredential] SetupCredential** _(Required)_: Credential to be used to Grant Permissions on SQL Server, set this to $null to use Windows Authentication.
-
-#### Examples
-
-None.
-
-### xSQLAOGroupJoin **[Deprecated]**
-
-No description.
-
-**This resource is deprecated.** The functionality of this resource has been replaced with [**xSQLServerAlwaysOnAvailabilityGroupReplica**](#xsqlserveralwaysonavailabilitygroupreplica). Please do not use this resource for new deployment or development efforts.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine2012 or later.
-
-#### Parameters
-
-* **[String] Ensure** _(Key)_: If the replica should be joined ('Present') to the Availability Group or not joined ('Absent') to the Availability Group. { Present | Absent }.
-* **[String] AvailabilityGroupName** _(Key)_: The name Availability Group to join.
-* **[String] SQLServer** _(Write)_: Name of the SQL server to be configured.
-* **[String] SQLInstanceName** _(Write)_: Name of the SQL instance to be configured.
-* **[PSCredential] SetupCredential** _(Required)_: Credential to be used to Grant Permissions in SQL.
-
-#### Examples
-
-None.
 
 ### xSQLServerAlias
 
@@ -528,72 +465,6 @@ This resource is used to set the state of an endpoint.
 
 * [Make sure that an endpoint is started](/Examples/Resources/xSQLServerEndpointState/1-MakeSureEndpointIsStarted.ps1)
 * [Make sure that an endpoint is stopped](/Examples/Resources/xSQLServerEndpointState/2-MakeSureEndpointIsStopped.ps1)
-
-### xSQLServerFailoverClusterSetup **[Deprecated]**
-
-**This resource is deprecated.** The functionality of this resource has been merged with [xSQLServerSetup](#xsqlserversetup). Please do not use this resource for new development efforts.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 R2 or later.
-
-#### Parameters
-
-* **[String] Action** _(Key)_: Prepare or Complete. { Prepare | Complete }.
-* **[String] InstanceName** _(Key)_: SQL instance to be installed.
-* **[String] Features** _(Required)_: SQL features to be installed.
-* **[PSCredential] SetupCredential** _(Required)_: Credential to be used to perform the installation.
-* **[String] FailoverClusterNetworkName** _(Required)_: Network name for the SQL Server failover cluster.
-* **[PSCredential] SQLSvcAccount** _(Required)_: Service account for the SQL service.
-* **[String] SourcePath** _(Write)_: UNC path to the root of the source files for installation.
-* **[String] SourceFolder** _(Write)_: Folder within the source path containing the source files for installation.
-* **[PSCredential] SourceCredential** _(Write)_: Credential to be used to access SourcePath
-* **[Boolean] SuppressReboot** _(Write)_: Suppresses reboot
-* **[Boolean] ForceReboot** _(Write)_: Forces Reboot
-* **[String] InstanceID** _(Write)_: SQL instance ID, if different from InstanceName.
-* **[String] PID** _(Write)_: Product key for licensed installations.
-* **[String] UpdateEnabled** _(Write)_: Enabled updates during installation.
-* **[String] UpdateSource** _(Write)_: Source of updates to be applied during installation.
-* **[String] SQMReporting** _(Write)_: Enable customer experience reporting.
-* **[String] ErrorReporting** _(Write)_: Enable error reporting.
-* **[String] FailoverClusterGroup** _(Write)_: Name of the resource group to be used for the SQL Server failover cluster.
-* **[String] FailoverClusterIPAddress** _(Write)_: IPv4 address for the SQL Server failover cluster.
-* **[String] InstallSharedDir** _(Write)_: Installation path for shared SQL files.
-* **[String] InstallSharedWOWDir** _(Write)_: Installation path for x86 shared SQL files.
-* **[String] InstanceDir** _(Write)_: Installation path for SQL instance files.
-* **[PSCredential] AgtSvcAccount** _(Write)_: Service account for the SQL Agent service.
-* **[String] SQLCollation** _(Write)_: Collation for SQL.
-* **[String[]] SQLSysAdminAccounts** _(Write)_: Array of accounts to be made SQL administrators.
-* **[String] SecurityMode** _(Write)_: SQL security mode.
-* **[PSCredential] SAPwd** _(Write)_: SA password, if SecurityMode=SQL.
-* **[String] InstallSQLDataDir** _(Write)_: Root path for SQL database files.
-* **[String] SQLUserDBDir** _(Write)_: Path for SQL database files.
-* **[String] SQLUserDBLogDir** _(Write)_: Path for SQL log files.
-* **[String] SQLTempDBDir** _(Write)_: Path for SQL TempDB files.
-* **[String] SQLTempDBLogDir** _(Write)_: Path for SQL TempDB log files.
-* **[String] SQLBackupDir** _(Write)_: Path for SQL backup files.
-* **[PSCredential] ASSvcAccount** _(Write)_: Service account for Analysis Services service.
-* **[String] ASCollation** _(Write)_: Collation for Analysis Services.
-* **[String[]] ASSysAdminAccounts** _(Write)_: Array of accounts to be made Analysis Services admins.
-* **[String] ASDataDir** _(Write)_: Path for Analysis Services data files.
-* **[String] ASLogDir** _(Write)_: Path for Analysis Services log files.
-* **[String] ASBackupDir** _(Write)_: Path for Analysis Services backup files.
-* **[String] ASTempDir** _(Write)_: Path for Analysis Services temp files.
-* **[String] ASConfigDir** _(Write)_: Path for Analysis Services config.
-* **[PSCredential] ISSvcAccount** _(Write)_: Service account for Integration Services service.
-* **[String] ISFileSystemFolder** _(Write)_: File system folder for Integration Services.
-
-#### Read-Only Properties from Get-TargetResource
-
-* **[String] SQLSvcAccountUsername** _(Read)_: Output user name for the SQL service.
-* **[String] AgtSvcAccountUsername** _(Read)_: Output user name for the SQL Agent service.
-* **[String] ASSvcAccountUsername** _(Read)_: Output user name for the Analysis Services service.
-* **[String] ISSvcAccountUsername** _(Read)_: Output user name for the Integration Services service.
-
-#### Examples
-
-None.
 
 ### xSQLServerFirewall
 
@@ -967,11 +838,20 @@ Installs SQL Server on the target node.
 > **Note:** It is not possible to add or remove features to a SQL Server failover cluster. This is a limitation of SQL Server.
 > See article [You cannot add or remove features to a SQL Server 2008, SQL Server 2008 R2, or SQL Server 2012 failover cluster](https://support.microsoft.com/en-us/help/2547273/you-cannot-add-or-remove-features-to-a-sql-server-2008,-sql-server-2008-r2,-or-sql-server-2012-failover-cluster).
 
+#### Credentials
+
+##### PsDscRunAsCredential
+
+If PsDscRunAsCredential is set, the installation will be performed with those credentials, and the user name will be used as the first system administrator.
+
+##### SYSTEM
+
+If PsDscRunAsCredential is not assigned credentials then installation will be performed by the SYSTEM account. When installing as the SYSTEM account, then parameter SQLSysAdminAccounts and ASSysAdminAccounts must be specified when installing feature Database Engine and Analysis Services respectively.
+
 #### Parameters
 
 * **[String] Action** _(Write)_: The action to be performed. Defaults to 'Install'. *Note: AddNode is not currently functional.* { _Install_ | InstallFailoverCluster | AddNode | PrepareFailoverCluster | CompleteFailoverCluster }
 * **[String] InstanceName** _(Key)_: SQL instance to be installed.
-* **[PSCredential] SetupCredential** _(Required)_: Credential to be used to perform the installation.
 * **[String] SourcePath** _(Write)_: The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.
 * **[PSCredential] SourceCredential** _(Write)_: Credentials used to access the path set in the parameter `SourcePath`. Using this parameter will trigger a copy of the installation media to a temp folder on the target node. Setup will then be started from the temp folder on the target node. For any subsequent calls to the resource, the parameter `SourceCredential` is used to evaluate what major version the file 'setup.exe' has in the path set, again, by the parameter `SourcePath`. To know how the temp folder is evaluated please read the online documentation for [System.IO.Path.GetTempPath()](https://msdn.microsoft.com/en-us/library/system.io.path.gettemppath(v=vs.110).aspx). If the path, that is assigned to parameter `SourcePath`, contains a leaf folder, for example '\\server\share\folder', then that leaf folder will be used as the name of the temporary folder. If the path, that is assigned to parameter `SourcePath`, does not have a leaf folder, for example '\\server\share', then a unique GUID will be used as the name of the temporary folder.
 * **[Boolean] SuppressReboot** _(Write)_: Suppresses reboot.
@@ -1013,6 +893,7 @@ Installs SQL Server on the target node.
 * **[String] FailoverClusterGroupName** _(Write)_: The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (_InstanceName_)'.
 * **[String[]]FailoverClusterIPAddress** _(Write)_: Array of IP Addresses to be assigned to the clustered SQL Server instance. IP addresses must be in [dotted-decimal notation](https://en.wikipedia.org/wiki/Dot-decimal_notation), for example ````10.0.0.100````. If no IP address is specified, uses 'DEFAULT' for this setup parameter.
 * **[String] FailoverClusterNetworkName** _(Write)_: Host name to be assigned to the clustered SQL Server instance.
+* **[UInt32] SetupProcessTimeout** _(Write)_: The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.
 
 #### Read-Only Properties from Get-TargetResource
 
@@ -1033,20 +914,13 @@ Installs SQL Server on the target node.
 
 #### Known issues
 
-All issues are not listed here, see [here for all issues](https://github.com/PowerShell/xSQLServer/issues).
-This is known issues that severely impact the use of the resource.
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/xSQLServer/issues?q=is%3Aissue%20is%3Aopen%20xSQLServerSetup).
 
-##### Failover Cluster Setup
+##### Severe known issues
 
-Setup cannot be run using PsDscRunAsCredential at this time (see issue #405 and issue #444). That
-also means that at this time PsDscRunAsCredential can not be used to access media on the UNC share.
+This is a list of known issues that severely impact the use of the resource.
 
-There is currently a bug that prevents the resource to logon to the instance if the current node is not the
-active node. This is because the resource tries to logon using the SYSTEM account instead of the credentials
-in SetupCredential, and the resource does not currently support the built-in PsDscRunAsCredential either (see
-issue #444).
-
-These issues are also documented in the example files [Install a named instance as the first node in SQL Server Failover Cluster](/Examples/Resources/xSQLServerSetup/4-InstallNamedInstanceInFailoverClusterFirstNode.ps1) and [Install a named instance as the second node in SQL Server Failover Cluster](/Examples/Resources/xSQLServerSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1).
+There are currently no known severe issues.
 
 ### xWaitForAvailabilityGroup
 
