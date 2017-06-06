@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Changes to xSQLServerRSConfig
+  - BREAKING CHANGE: Removed `$SQLAdminCredential` parameter. Use common parameter `PsDscRunAsCredential` (WMF 5.0+) to run
+    the resource under different credentials. `PsDscRunAsCredential` Windows account must be a sysadmin on SQL Server
+    (issue #568).
+
+    In addition, the resource no longer uses `Invoke-Command` cmdlet that was used to impersonate the Windows user
+    specified by `$SQLAdminCredential`. The call also needed CredSSP authentication to be enabled and configured on
+    the target node, which complicated deployments in non-domain scenarios. Using `PsDscRunAsCredential` solves
+    this problems for us.
+
 - Changes to xSQLServerDatabase
   - Changed the readme, SQLInstance should have been SQLInstanceName.
 - Changes to xSQLServerSetup
