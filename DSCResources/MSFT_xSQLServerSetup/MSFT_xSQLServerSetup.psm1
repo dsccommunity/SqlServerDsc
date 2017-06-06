@@ -120,8 +120,13 @@ function Get-TargetResource
     $clusteredSqlIPAddress = ''
 
     $services = Get-Service
+
+    Write-Verbose -Message $script:localizedData.EvaluateDatabaseEngineFeature
+
     if ($services | Where-Object {$_.Name -eq $databaseServiceName})
     {
+        Write-Verbose -Message $script:localizedData.DatabaseEngineFeatureFound
+
         $features += 'SQLENGINE,'
 
         $sqlServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$databaseServiceName'").StartName
@@ -240,6 +245,10 @@ function Get-TargetResource
         {
             Write-Verbose -Message $script:localizedData.ClusterInstanceNotFound
         }
+    }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.DatabaseEngineFeatureNotFound
     }
 
     Write-Verbose -Message $script:localizedData.EvaluateFullTextFeature

@@ -18,6 +18,9 @@ ConvertFrom-StringData @'
     EvaluateDocumentationComponentsFeature = Detecting Documentation Components feature ({0}).
     DocumentationComponentsFeatureFound = Documentation Components feature detected.
     DocumentationComponentsFeatureNotFound = Documentation Components feature not detected.
+    EvaluateDatabaseEngineFeature = Detecting Database Engine feature.
+    DatabaseEngineFeatureFound = Database Engine feature detected.
+    DatabaseEngineFeatureNotFound = Database Engine feature not detected.
     EvaluateFullTextFeature = Detecting Full-text feature.
     FullTextFeatureFound = Full-text feature detected.
     FullTextFeatureNotFound = Full-text feature not detected.
