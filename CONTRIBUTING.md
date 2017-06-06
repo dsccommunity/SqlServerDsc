@@ -77,7 +77,6 @@ ConvertFrom-StringData @'
 '@
 ```
 
-
 This is an example of how to write localized verbose messages.
 
 ```powershell
@@ -89,7 +88,6 @@ This is an example of how to write localized warning messages.
 ```powershell
 Write-Warning -Message ($script:localizedData.InstallationReportedProblemMessage -f $path)
 ```
-
 
 This is an example of how to throw localized error messages. The helper functions
 `New-InvalidArgumentException` and `New-InvalidOperationException` (see below) should
