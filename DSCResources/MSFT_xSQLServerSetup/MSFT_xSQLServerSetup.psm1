@@ -313,7 +313,7 @@ function Get-TargetResource
     # Check if Documentation Components "BOL" is configured
     $documentationComponentsRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
 
-    Write-Verbose -Message ($script:localizedData.EvaluateDataQualityClientFeature -f $dataQualityClientRegistryPath)
+    Write-Verbose -Message ($script:localizedData.EvaluateDocumentationComponentsFeature -f $dataQualityClientRegistryPath)
 
     $isBOLInstalled = (Get-ItemProperty -Path $documentationComponentsRegistryPath -ErrorAction SilentlyContinue).SQL_BOL_Components
     if ($isBOLInstalled -eq 1)
