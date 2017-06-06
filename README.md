@@ -873,6 +873,8 @@ No description.
 
 * Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Reporting Services 2008 or later.
+* If `PsDscRunAsCredential` common parameter is used to run the resource, the specified credential must have
+  permissions to connect to the SQL Server specified in `RSSQLServer` and create Reporting Services databases.
 
 #### Parameters
 
