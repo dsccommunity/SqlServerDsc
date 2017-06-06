@@ -51,6 +51,8 @@
   - Now setup arguments that contain no value will be ignored, for example when InstallSharedDir and
     InstallSharedWOWDir path is already present on the target node, because of a previous installation (issue #639).
   - Added localization support for all strings.
+- Changes to xSQLServerAlwaysOnService
+  - Fixed typos in localization strings and in tests.
 
 ## 7.1.0.0
 
