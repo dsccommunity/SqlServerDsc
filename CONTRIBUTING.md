@@ -32,6 +32,7 @@ This is to make those folders more user friendly, to resemble the name the user 
 ```Text
 DSCResources/MSFT_xSQLServerConfiguration/MSFT_xSQLServerConfiguration.psm1
 DSCResources/MSFT_xSQLServerConfiguration/MSFT_xSQLServerConfiguration.schema.mof
+DSCResources/MSFT_xSQLServerConfiguration/en-US/MSFT_xSQLServerConfiguration.strings.psd1
 
 Tests/Unit/MSFT_xSQLServerConfiguration.Tests.ps1
 
@@ -56,6 +57,192 @@ class MSFT_xSQLServerConfiguration : OMI_BaseResource
 Any composite (with a Configuration) or class-based resources should be prefixed with just 'xSQLServer'
 
 ### Localization
+
+#### HQRM localization
+
+These should replace the old localization helper function whenever possible.
+
+In each resource folder there should be, at least, a localization folder for english language 'en-US'.
+In the 'en-US' (and any other language folder) there should be a file named 'MSFT_ResourceName.strings.psd1', i.e.
+'MSFT_xSQLServerSetup.strings.psd1'.
+At the top of each resource the localized strings should be loaded, see the helper function `Get-LocalizedData` for more information on how this is done.
+
+The localized string file should contain the following (beside the localization strings)
+
+```powershell
+# Localized resources for xSQLServerSetup
+
+ConvertFrom-StringData @'
+    InstallingUsingPathMessage = Installing using path '{0}'.
+'@
+```
+
+
+This is an example of how to write localized verbose messages.
+
+```powershell
+Write-Verbose -Message ($script:localizedData.InstallingUsingPathMessage -f $path)
+```
+
+This is an example of how to write localized warning messages.
+
+```powershell
+Write-Warning -Message ($script:localizedData.InstallationReportedProblemMessage -f $path)
+```
+
+
+This is an example of how to throw localized error messages. The helper functions
+`New-InvalidArgumentException` and `New-InvalidOperationException` (see below) should
+preferably be used whenever possible.
+
+```powershell
+throw ($script:localizedData.InstallationFailedMessage -f $Path, $processId)
+```
+
+There are also three helper functions to simplify localization.
+
+##### New-InvalidArgumentException
+
+```powershell
+<#
+    .SYNOPSIS
+        Creates and throws an invalid argument exception
+
+    .PARAMETER Message
+        The message explaining why this error is being thrown
+
+    .PARAMETER ArgumentName
+        The name of the invalid argument that is causing this error to be thrown
+#>
+```
+
+This can be used in code like this.
+
+```powershell
+    if ( -not $resultOfEvaluation )
+    {
+        $errorMessage = $script:localizedData.ActionCannotBeUsedInThisContextMessage -f $Action, $Parameter2
+        New-InvalidArgumentException -ArgumentName 'Action' -Message $errorMessage
+    }
+```
+
+##### New-InvalidOperationException
+
+```powershell
+<#
+    .SYNOPSIS
+        Creates and throws an invalid operation exception
+
+    .PARAMETER Message
+        The message explaining why this error is being thrown
+
+    .PARAMETER ErrorRecord
+        The error record containing the exception that is causing this terminating error
+#>
+```
+
+This can be used in code like this.
+
+```powershell
+try
+{
+    Start-Process @startProcessArguments
+}
+catch
+{
+    $errorMessage = $script:localizedData.InstallationFailedMessage -f $Path, $processId
+    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+}
+
+```
+
+##### New-ObjectNotFoundException
+
+```powershell
+<#
+    .SYNOPSIS
+        Creates and throws an object not found exception
+
+    .PARAMETER Message
+        The message explaining why this error is being thrown
+
+    .PARAMETER ErrorRecord
+        The error record containing the exception that is causing this terminating error
+#>
+```
+
+This can be used in code like this.
+
+```powershell
+try
+{
+    Get-ChildItem -Path $path
+}
+catch
+{
+    $errorMessage = $script:localizedData.PathNotFoundMessage -f $path
+    New-ObjectNotFoundException -Message $errorMessage -ErrorRecord $_
+}
+
+```
+
+##### New-InvalidResultException
+
+```powershell
+<#
+    .SYNOPSIS
+        Creates and throws an invalid result exception
+
+    .PARAMETER Message
+        The message explaining why this error is being thrown
+
+    .PARAMETER ErrorRecord
+        The error record containing the exception that is causing this terminating error
+#>
+```
+
+This can be used in code like this.
+
+```powershell
+try
+{
+    $numberOfObjects = Get-ChildItem -Path $path
+    if ($numberOfObjects -eq 0)
+    {
+        throw 'To few files.'
+    }
+}
+catch
+{
+    $errorMessage = $script:localizedData.TooFewFilesMessage -f $path
+    New-InvalidResultException -Message $errorMessage -ErrorRecord $_
+}
+
+```
+
+##### Get-LocalizedData
+
+```powershell
+<#
+    .SYNOPSIS
+        Retrieves the localized string data based on the machine's culture.
+        Falls back to en-US strings if the machine's culture is not supported.
+
+    .PARAMETER ResourceName
+        The name of the resource as it appears before '.strings.psd1' of the localized string file.
+#>
+```
+
+This should be used at the top of each resource like this.
+
+```powershell
+Import-Module -Name (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent) `
+                               -ChildPath 'CommonResourceHelper.psm1')
+
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xSQLServerSetup'
+```
+
+#### Old localization helper function
 
 To be able to support localization we have added wrappers for the cmdlets `Write-Verbose` and `Write-Warning`, and also for the keyword `Throw`.
 The localized strings are placed in a file named 'xSQLServer.strings.psd1' which are located in each language folder in the root of the module. For English language strings the folder is ['en-US'](https://github.com/PowerShell/xSQLServer/blob/dev/en-US).
