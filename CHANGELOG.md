@@ -49,6 +49,7 @@
   - Now all major version uses the same identifier to evaluate InstallSharedDir and InstallSharedWOWDir (issue #420).
   - Now setup arguments that contain no value will be ignored, for example when InstallSharedDir and
     InstallSharedWOWDir path is already present on the target node, because of a previous installation (issue #639).
+  - Added localization support for all strings.
 
 ## 7.1.0.0
 

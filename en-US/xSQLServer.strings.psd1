@@ -21,7 +21,6 @@ SSRSNotFound = SQL Reporting Services instance '{0}' does not exist!
 RoleNotFound = Role '{0}' does not exist on database '{1}' on SQL server '{2}\\{3}'."
 LoginNotFound = Login '{0}' does not exist on SQL server '{1}\\{2}'."
 FailedLogin = Creating a login of type 'SqlLogin' requires LoginCredential
-FeatureNotSupported = '{0}' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information.
 
 # Database Role
 AddLoginDatabaseSetError = Failed adding the login {2} as a user of the database {3}, on the instance {0}\\{1}.
@@ -49,7 +48,7 @@ ConfigurationRestartRequired = Configuration option '{0}' has been updated, but 
 
 # AlwaysOnService
 AlterAlwaysOnServiceFailed = Failed to ensure Always On is {0} on the instance '{1}'.
-UnexpectedAlwaysOnStatus = The status of property Server.IsHadrEnabled was netiher $true or $false. Status is '{0}'.
+UnexpectedAlwaysOnStatus = The status of property Server.IsHadrEnabled was neither $true or $false. Status is '{0}'.
 
 # Login
 PasswordValidationFailed = Creation of the login '{0}' failed due to the following error: {1}
@@ -64,19 +63,14 @@ AlterLoginFailed = Altering the login '{0}' failed.
 CreateLoginFailed = Creating the login '{0}' failed.
 DropLoginFailed = Dropping the login '{0}' failed.
 
-# Clustered Setup
-FailoverClusterDiskMappingError = Unable to map the specified paths to valid cluster storage. Drives mapped: {0}
-FailoverClusterIPAddressNotValid = Unable to map the specified IP Address(es) to valid cluster networks.
-FailoverClusterResourceNotFound = Could not locate a SQL Server cluster resource for instance {0}.
-
 # AlwaysOnAvailabilityGroup
-AlterAvailabilityGroupReplicaFailed = Failed to alter the avilability group replica '{0}'.
+AlterAvailabilityGroupReplicaFailed = Failed to alter the availability group replica '{0}'.
 ClusterPermissionsMissing = The cluster does not have permissions to manage the Availability Group on '{0}\\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either 'NT SERVICE\\ClusSvc' or 'NT AUTHORITY\\SYSTEM'.
 CreateAvailabilityGroupReplicaFailed = Creating the Availability Group Replica '{0}' failed on the instance '{1}'.
 CreateAvailabilityGroupFailed = Creating the availability group '{0}'.
 DatabaseMirroringEndpointNotFound = No database mirroring endpoint was found on '{0}\{1}'.
 InstanceNotPrimaryReplica = The instance '{0}' is not the primary replica for the availability group '{1}'.
-RemoveAvailabilityGroupFailed = Failed to remove the availabilty group '{0}' from the '{1}' instance.
+RemoveAvailabilityGroupFailed = Failed to remove the availability group '{0}' from the '{1}' instance.
 
 # AlwaysOnAvailabilityGroupReplica
 JoinAvailabilityGroupFailed = Failed to join the availability group replica '{0}'.
