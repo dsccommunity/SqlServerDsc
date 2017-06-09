@@ -105,7 +105,7 @@ function Set-TargetResource
 
     $instanceNamesRegistryKey = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS'
 
-    if ( Get-ItemProperty -Path  -Name $InstanceName -ErrorAction SilentlyContinue )
+    if ( Get-ItemProperty -Path $instanceNamesRegistryKey -Name $InstanceName -ErrorAction SilentlyContinue )
     {
         # smart import of the SQL module
         Import-SQLPSModule
