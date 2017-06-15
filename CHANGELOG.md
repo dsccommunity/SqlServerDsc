@@ -12,6 +12,9 @@
     the target node, which complicated deployments in non-domain scenarios. Using `PsDscRunAsCredential` solves
     this problems for us.
 
+  - Fixed virtual directory creation for SQL Server 2016 (issue #569).
+  - Added unit tests (issue #295).
+
 - Changes to xSQLServerDatabase
   - Changed the readme, SQLInstance should have been SQLInstanceName.
 - Changes to xSQLServerSetup
