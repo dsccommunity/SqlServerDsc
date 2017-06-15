@@ -21,7 +21,6 @@ $TestEnvironment = Initialize-TestEnvironment `
 #endregion HEADER
 
 function Invoke-TestSetup {
-    #Add-Type -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests') -ChildPath 'Unit') -ChildPath 'Stubs') -ChildPath 'SqlPowerShellSqlExecutionException.cs')
     Import-Module -Name (Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests') -ChildPath 'Unit') -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Global -Force
 }
 
@@ -55,25 +54,37 @@ try
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru |
                         Add-Member -MemberType ScriptMethod -Name SetVirtualDirectory {
+                            $script:mockIsMethodCalled_SetVirtualDirectory = $true
+
                             return $null
                         } -PassThru |
                         Add-Member -MemberType ScriptMethod -Name ReserveURL {
+                            $script:mockIsMethodCalled_ReserveURL = $true
+
                             return $null
                         } -PassThru |
                         Add-Member -MemberType ScriptMethod -Name GenerateDatabaseCreationScript {
+                            $script:mockIsMethodCalled_GenerateDatabaseCreationScript = $true
+
                             return @{
                                 Script = 'select * from something'
                             }
                         } -PassThru |
                         Add-Member -MemberType ScriptMethod -Name GenerateDatabaseRightsScript {
+                            $script:mockIsMethodCalled_GenerateDatabaseRightsScript = $true
+
                             return @{
                                 Script = 'select * from something'
                             }
                         } -PassThru |
                         Add-Member -MemberType ScriptMethod -Name SetDatabaseConnection {
+                            $script:mockIsMethodCalled_SetDatabaseConnection = $true
+
                             return $null
                         } -PassThru |
                         Add-Member -MemberType ScriptMethod -Name InitializeReportServer {
+                            $script:mockIsMethodCalled_InitializeReportServer = $true
+
                             return $null
                         } -PassThru -Force
         }
@@ -160,17 +171,19 @@ try
                         Mock -CommandName Get-ItemProperty
                     }
 
-                    It 'Should return the the state as initialized' {
+                    It 'Should throw the correct error message' {
                         { Get-TargetResource @testParameters } | Should Throw 'SQL Reporting Services instance ''INSTANCE'' does not exist!'
                     }
                 }
             }
+
+            Assert-VerifiableMocks
         }
 
         Describe "xSQLServerRSConfig\Set-TargetResource" -Tag 'Set' {
             BeforeAll {
-                Mock -CommandName Import-SQLPSModule
-                Mock -CommandName Invoke-Sqlcmd
+                Mock -CommandName Import-SQLPSModule -Verifiable
+                Mock -CommandName Invoke-Sqlcmd -Verifiable
                 Mock -CommandName Get-ItemProperty -MockWith $mockGetItemProperty -Verifiable
             }
 
@@ -200,19 +213,38 @@ try
                             -MockWith $mockGetWmiObject_Language `
                             -ParameterFilter $mockGetWmiObject_OperatingSystem_ParameterFilter `
                             -Verifiable
+
+                        # Start each test with each method in correct state.
+                        $script:mockIsMethodCalled_GenerateDatabaseCreationScript = $false
+                        $script:mockIsMethodCalled_GenerateDatabaseRightsScript = $false
+                        $script:mockIsMethodCalled_SetVirtualDirectory = $false
+                        $script:mockIsMethodCalled_ReserveURL = $false
+                        $script:mockIsMethodCalled_SetDatabaseConnection = $false
+                        $script:mockIsMethodCalled_InitializeReportServer = $false
                     }
 
                     It 'Should configure Reporting Service without throwing an error' {
                         { Set-TargetResource @testParameters } | Should Not Throw
+
+                        # Test so each mock of methods was called.
+                        $script:mockIsMethodCalled_GenerateDatabaseRightsScript | Should Be $true
+                        $script:mockIsMethodCalled_GenerateDatabaseCreationScript | Should Be $true
+                        $script:mockIsMethodCalled_SetVirtualDirectory | Should Be $true
+                        $script:mockIsMethodCalled_ReserveURL | Should Be $true
+                        $script:mockIsMethodCalled_SetDatabaseConnection | Should Be $true
+                        $script:mockIsMethodCalled_InitializeReportServer | Should Be $true
+
+                        Assert-MockCalled -CommandName Get-WmiObject -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                     }
 
-                    Context 'When there is no Reporting Services instance' {
+                    Context 'When there is no Reporting Services instance after Set-TargetResource has been called' {
                         BeforeEach {
-                            Mock -CommandName Get-ItemProperty
-                            Mock -CommandName Test-TargetResource
+                            Mock -CommandName Get-ItemProperty -Verifiable
+                            Mock -CommandName Test-TargetResource -Verifiable
                         }
 
-                        It 'Should return the the state as initialized' {
+                        It 'Should throw the correct error message' {
                             { Set-TargetResource @testParameters } | Should Throw 'Test-TargetResource returned false after calling set.'
                         }
                     }
@@ -224,7 +256,7 @@ try
 
                         Mock -CommandName Test-TargetResource -MockWith {
                             return $true
-                        }
+                        } -Verifiable
 
                         $testParameters = @{
                             InstanceName = $mockDefaultInstanceName
@@ -247,9 +279,22 @@ try
 
                     It 'Should configure Reporting Service without throwing an error' {
                         { Set-TargetResource @testParameters } | Should Not Throw
+
+                        # Test so each mock of methods was called.
+                        $script:mockIsMethodCalled_GenerateDatabaseRightsScript | Should Be $true
+                        $script:mockIsMethodCalled_GenerateDatabaseCreationScript | Should Be $true
+                        $script:mockIsMethodCalled_SetVirtualDirectory | Should Be $true
+                        $script:mockIsMethodCalled_ReserveURL | Should Be $true
+                        $script:mockIsMethodCalled_SetDatabaseConnection | Should Be $true
+                        $script:mockIsMethodCalled_InitializeReportServer | Should Be $true
+
+                        Assert-MockCalled -CommandName Get-WmiObject -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                     }
                 }
             }
+
+            Assert-VerifiableMocks
         }
 
         Describe "xSQLServerRSConfig\Test-TargetResource" -Tag 'Test' {
@@ -259,7 +304,7 @@ try
                         return @{
                             IsInitialized = $false
                         }
-                    }
+                    } -Verifiable
 
                     $testParameters = @{
                         InstanceName = $mockNamedInstanceName
@@ -280,7 +325,7 @@ try
                         return @{
                             IsInitialized = $true
                         }
-                    }
+                    } -Verifiable
 
                     $testParameters = @{
                         InstanceName = $mockNamedInstanceName
@@ -294,6 +339,8 @@ try
                     $resultTestTargetResource | Should Be $true
                 }
             }
+
+            Assert-VerifiableMocks
         }
     }
 }
