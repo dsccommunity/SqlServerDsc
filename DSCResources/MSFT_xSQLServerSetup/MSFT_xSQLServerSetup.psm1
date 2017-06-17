@@ -1,5 +1,10 @@
-$script:currentPath = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
-Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script:currentPath -Parent) -Parent) -ChildPath 'xSQLServerHelper.psm1')
+Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) `
+                               -ChildPath 'xSQLServerHelper.psm1')
+
+Import-Module -Name (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent) `
+                               -ChildPath 'CommonResourceHelper.psm1')
+
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xSQLServerSetup'
 
 <#
     .SYNOPSIS
@@ -81,7 +86,7 @@ function Get-TargetResource
 
     $pathToSetupExecutable = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
 
-    New-VerboseMessage -Message "Using path: $pathToSetupExecutable"
+    Write-Verbose -Message ($script:localizedData.UsingPath -f $pathToSetupExecutable)
 
     $sqlVersion = Get-SqlMajorVersion -Path $pathToSetupExecutable
 
@@ -115,8 +120,13 @@ function Get-TargetResource
     $clusteredSqlIPAddress = ''
 
     $services = Get-Service
+
+    Write-Verbose -Message $script:localizedData.EvaluateDatabaseEngineFeature
+
     if ($services | Where-Object {$_.Name -eq $databaseServiceName})
     {
+        Write-Verbose -Message $script:localizedData.DatabaseEngineFeatureFound
+
         $features += 'SQLENGINE,'
 
         $sqlServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$databaseServiceName'").StartName
@@ -125,42 +135,51 @@ function Get-TargetResource
         $fullInstanceId = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' -Name $InstanceName).$InstanceName
 
         # Check if Replication sub component is configured for this instance
-        New-VerboseMessage -Message "Detecting replication feature (HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$fullInstanceId\ConfigurationState)"
-        $isReplicationInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$fullInstanceId\ConfigurationState").SQL_Replication_Core_Inst
+        $replicationRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$fullInstanceId\ConfigurationState"
+
+        Write-Verbose -Message ($script:localizedData.EvaluateReplicationFeature -f $replicationRegistryPath)
+
+        $isReplicationInstalled = (Get-ItemProperty -Path $replicationRegistryPath).SQL_Replication_Core_Inst
         if ($isReplicationInstalled -eq 1)
         {
-            New-VerboseMessage -Message 'Replication feature detected'
+            Write-Verbose -Message $script:localizedData.ReplicationFeatureFound
             $features += 'REPLICATION,'
         }
         else
         {
-            New-VerboseMessage -Message 'Replication feature not detected'
+            Write-Verbose -Message $script:localizedData.ReplicationFeatureNotFound
         }
 
         # Check if Data Quality Client sub component is configured
-        New-VerboseMessage -Message "Detecting Data Quality Client (HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState)"
-        $isDQCInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState").SQL_DQ_CLIENT_Full
+        $dataQualityClientRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
+
+        Write-Verbose -Message ($script:localizedData.EvaluateDataQualityClientFeature -f $dataQualityClientRegistryPath)
+
+        $isDQCInstalled = (Get-ItemProperty -Path $dataQualityClientRegistryPath).SQL_DQ_CLIENT_Full
         if ($isDQCInstalled -eq 1)
         {
-            New-VerboseMessage -Message 'Data Quality Client feature detected'
+            Write-Verbose -Message $script:localizedData.DataQualityClientFeatureFound
             $features += 'DQC,'
         }
         else
         {
-            New-VerboseMessage -Message 'Data Quality Client feature not detected'
+            Write-Verbose -Message $script:localizedData.DataQualityClientFeatureNotFound
         }
 
         # Check if Data Quality Services sub component is configured
-        New-VerboseMessage -Message "Detecting Data Quality Services (HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\DQ\*)"
-        $isDQInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\DQ\*" -ErrorAction SilentlyContinue)
+        $dataQualityServicesRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\DQ\*"
+
+        Write-Verbose -Message ($script:localizedData.EvaluateDataQualityServicesFeature -f $dataQualityServicesRegistryPath)
+
+        $isDQInstalled = (Get-ItemProperty -Path $dataQualityServicesRegistryPath -ErrorAction SilentlyContinue)
         if ($isDQInstalled)
         {
-            New-VerboseMessage -Message 'Data Quality Services feature detected'
+            Write-Verbose -Message $script:localizedData.DataQualityServicesFeatureFound
             $features += 'DQ,'
         }
         else
         {
-            New-VerboseMessage -Message 'Data Quality Services feature not detected'
+            Write-Verbose -Message $script:localizedData.DataQualityServicesFeatureNotFound
         }
 
         $instanceId = $fullInstanceId.Split('.')[1]
@@ -198,17 +217,18 @@ function Get-TargetResource
 
         if ($databaseServer.IsClustered)
         {
-            New-VerboseMessage -Message 'Clustered instance detected'
+            Write-Verbose -Message $script:localizedData.ClusterInstanceFound
 
             $clusteredSqlInstance = Get-CimInstance -Namespace root/MSCluster -ClassName MSCluster_Resource -Filter "Type = 'SQL Server'" |
                 Where-Object { $_.PrivateProperties.InstanceName -eq $InstanceName }
 
             if (!$clusteredSqlInstance)
             {
-                throw New-TerminatingError -ErrorType FailoverClusterResourceNotFound -FormatArgs $InstanceName -ErrorCategory 'ObjectNotFound'
+                $errorMessage = $script:localizedData.FailoverClusterResourceNotFound -f $InstanceName
+                New-ObjectNotFoundException -Message $errorMessage
             }
 
-            New-VerboseMessage -Message 'Clustered SQL Server resource located'
+            Write-Verbose -Message $script:localizedData.FailoverClusterResourceFound
 
             $clusteredSqlGroup = $clusteredSqlInstance | Get-CimAssociatedInstance -ResultClassName MSCluster_ResourceGroup
             $clusteredSqlNetworkName = $clusteredSqlGroup | Get-CimAssociatedInstance -ResultClassName MSCluster_Resource |
@@ -223,24 +243,48 @@ function Get-TargetResource
         }
         else
         {
-            New-VerboseMessage -Message 'Clustered instance not detected'
+            Write-Verbose -Message $script:localizedData.ClusterInstanceNotFound
         }
     }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.DatabaseEngineFeatureNotFound
+    }
+
+    Write-Verbose -Message $script:localizedData.EvaluateFullTextFeature
 
     if ($services | Where-Object {$_.Name -eq $fullTextServiceName})
     {
+        Write-Verbose -Message $script:localizedData.FullTextFeatureFound
+
         $features += 'FULLTEXT,'
         $fulltextServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$fullTextServiceName'").StartName
     }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.FullTextFeatureNotFound
+    }
+
+    Write-Verbose -Message $script:localizedData.EvaluateReportingServicesFeature
 
     if ($services | Where-Object {$_.Name -eq $reportServiceName})
     {
+        Write-Verbose -Message $script:localizedData.ReportingServicesFeatureFound
+
         $features += 'RS,'
         $reportingServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$reportServiceName'").StartName
     }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.ReportingServicesFeatureNotFound
+    }
+
+    Write-Verbose -Message $script:localizedData.EvaluateAnalysisServicesFeature
 
     if ($services | Where-Object {$_.Name -eq $analysisServiceName})
     {
+        Write-Verbose -Message $script:localizedData.AnalysisServicesFeatureFound
+
         $features += 'AS,'
         $analysisServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$analysisServiceName'").StartName
 
@@ -256,60 +300,76 @@ function Get-TargetResource
 
         $analysisConfigDirectory = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$analysisServiceName" -Name 'ImagePath').ImagePath.Replace(' -s ',',').Split(',')[1].Trim('"')
     }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.AnalysisServicesFeatureNotFound
+    }
+
+    Write-Verbose -Message $script:localizedData.EvaluateIntegrationServicesFeature
 
     if ($services | Where-Object {$_.Name -eq $integrationServiceName})
     {
+        Write-Verbose -Message $script:localizedData.IntegrationServicesFeatureFound
+
         $features += 'IS,'
         $integrationServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$integrationServiceName'").StartName
     }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.IntegrationServicesFeatureNotFound
+    }
 
     # Check if Documentation Components "BOL" is configured
-    New-VerboseMessage -Message "Detecting Documentation Components (HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState)"
-    $isBOLInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState" -ErrorAction SilentlyContinue).SQL_BOL_Components
+    $documentationComponentsRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
+
+    Write-Verbose -Message ($script:localizedData.EvaluateDocumentationComponentsFeature -f $documentationComponentsRegistryPath)
+
+    $isBOLInstalled = (Get-ItemProperty -Path $documentationComponentsRegistryPath -ErrorAction SilentlyContinue).SQL_BOL_Components
     if ($isBOLInstalled -eq 1)
     {
-        New-VerboseMessage -Message 'Documentation Components feature detected'
+        Write-Verbose -Message $script:localizedData.DocumentationComponentsFeatureFound
         $features += 'BOL,'
     }
     else
     {
-        New-VerboseMessage -Message 'Documentation Components feature not detected'
+        Write-Verbose -Message $script:localizedData.DocumentationComponentsFeatureNotFound
     }
 
     $clientComponentsFullRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\Tools\Setup\Client_Components_Full"
     $registryClientComponentsFullFeatureList = (Get-ItemProperty -Path $clientComponentsFullRegistryPath -ErrorAction SilentlyContinue).FeatureList
 
-    Write-Debug -Message "Detecting Client Connectivity Tools feature ($clientComponentsFullRegistryPath)"
+    Write-Verbose -Message ($script:localizedData.EvaluateClientConnectivityToolsFeature -f $clientComponentsFullRegistryPath)
+
     if ($registryClientComponentsFullFeatureList -like '*Connectivity_FNS=3*')
     {
-        New-VerboseMessage -Message 'Client Connectivity Tools feature detected'
+        Write-Verbose -Message $script:localizedData.ClientConnectivityToolsFeatureFound
         $features += 'CONN,'
     }
     else
     {
-        New-VerboseMessage -Message 'Client Connectivity Tools feature not detected'
+        Write-Verbose -Message $script:localizedData.ClientConnectivityToolsFeatureNotFound
     }
 
-    Write-Debug -Message "Detecting Client Connectivity Backwards Compatibility Tools feature ($clientComponentsFullRegistryPath)"
+    Write-Verbose -Message ($script:localizedData.EvaluateClientConnectivityBackwardsCompatibilityToolsFeature -f $clientComponentsFullRegistryPath)
     if ($registryClientComponentsFullFeatureList -like '*Tools_Legacy_FNS=3*')
     {
-        New-VerboseMessage -Message 'Client Connectivity Tools Backwards Compatibility feature detected'
+        Write-Verbose -Message $script:localizedData.ClientConnectivityBackwardsCompatibilityToolsFeatureFound
         $features += 'BC,'
     }
     else
     {
-        New-VerboseMessage -Message 'Client Connectivity Tools Backwards Compatibility feature not detected'
+        Write-Verbose -Message $script:localizedData.ClientConnectivityBackwardsCompatibilityToolsFeatureNotFound
     }
 
-    Write-Debug -Message "Detecting Client Tools SDK feature ($clientComponentsFullRegistryPath)"
+    Write-Verbose -Message ($script:localizedData.EvaluateClientToolsSdkFeature -f $clientComponentsFullRegistryPath)
     if (($registryClientComponentsFullFeatureList -like '*SDK_Full=3*') -and ($registryClientComponentsFullFeatureList -like '*SDK_FNS=3*'))
     {
-        New-VerboseMessage -Message 'Client Tools SDK feature detected'
+        Write-Verbose -Message $script:localizedData.ClientToolsSdkFeatureFound
         $features += 'SDK,'
     }
     else
     {
-        New-VerboseMessage -Message 'Client Tools SDK feature not detected'
+        Write-Verbose -Message $script:localizedData.ClientToolsSdkFeatureNotFound
     }
 
     $registryUninstallPath = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall'
@@ -823,7 +883,7 @@ function Set-TargetResource
 
         $mediaDestinationPath = Join-Path -Path (Get-TemporaryFolder) -ChildPath $mediaDestinationFolder
 
-        New-VerboseMessage -Message "Robocopy is copying media from source '$SourcePath' to destination '$mediaDestinationPath'"
+        Write-Verbose -Message ($script:localizedData.RobocopyIsCopying -f $SourcePath, $mediaDestinationPath)
         Copy-ItemWithRobocopy -Path $SourcePath -DestinationPath $mediaDestinationPath
 
         Remove-SmbMapping -RemotePath $SourcePath -Force
@@ -833,7 +893,7 @@ function Set-TargetResource
 
     $pathToSetupExecutable = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
 
-    New-VerboseMessage -Message "Using path: $pathToSetupExecutable"
+    Write-Verbose -Message ($script:localizedData.UsingPath -f $pathToSetupExecutable)
 
     $sqlVersion = Get-SqlMajorVersion -Path $pathToSetupExecutable
 
@@ -846,7 +906,8 @@ function Set-TargetResource
 
         if (($sqlVersion -in ('13','14')) -and ($feature -in ('ADV_SSMS','SSMS')))
         {
-            Throw New-TerminatingError -ErrorType FeatureNotSupported -FormatArgs @($feature) -ErrorCategory InvalidData
+            $errorMessage = $script:localizedData.FeatureNotSupported -f $feature
+            New-InvalidOperationException -Message $errorMessage
         }
 
         if (-not ($getTargetResourceResult.Features.Contains($feature)))
@@ -924,7 +985,7 @@ function Set-TargetResource
                 $parameterValue = Get-Variable -Name $parameterName -ValueOnly
                 if ($parameterValue)
                 {
-                    New-VerboseMessage -Message ("Found assigned parameter '{0}'. Adding path '{1}' to list of paths that required cluster drive." -f $parameterName, $parameterValue)
+                    Write-Verbose -Message ($script:localizedData.PathRequireClusterDriveFound -f $parameterName, $parameterValue)
                     $requiredDrive += $parameterValue
                 }
             }
@@ -1005,7 +1066,8 @@ function Set-TargetResource
         $unMappedRequiredDrives = $requiredDrive | Where-Object {$_.IsMapped -eq $false} | Measure-Object
         if ($unMappedRequiredDrives.Count -gt 0)
         {
-            throw New-TerminatingError -ErrorType FailoverClusterDiskMappingError -FormatArgs ($failoverClusterDisks -join '; ') -ErrorCategory InvalidResult
+            $errorMessage = $script:localizedData.FailoverClusterDiskMappingError -f ($failoverClusterDisks -join '; ')
+            New-InvalidResultException -Message $errorMessage
         }
 
         # Add the cluster disks as a setup argument
@@ -1049,7 +1111,8 @@ function Set-TargetResource
         # Determine whether we have mapping issues for the IP Address(es)
         if ($mappedNetworkCount -lt $suppliedNetworkCount)
         {
-            throw New-TerminatingError -ErrorType FailoverClusterIPAddressNotValid -ErrorCategory InvalidArgument
+            $errorMessage = $script:localizedData.FailoverClusterIPAddressNotValid
+            New-InvalidResultException -Message $errorMessage
         }
 
         # Add the networks to the installation arguments
@@ -1115,7 +1178,7 @@ function Set-TargetResource
                     Add the credentials from the parameter PsDscRunAsCredential, as the first
                     system administrator. The username is stored in $PsDscContext.RunAsUser.
                 #>
-                New-VerboseMessage -Message "Adding user '$($PsDscContext.RunAsUser)' from the parameter 'PsDscRunAsCredential' as the first system administrator account for SQL Server."
+                Write-Verbose -Message ($script:localizedData.AddingFirstSystemAdministratorSqlServer -f $($PsDscContext.RunAsUser))
                 $setupArguments += @{ SQLSysAdminAccounts =  @($PsDscContext.RunAsUser) }
             }
 
@@ -1182,7 +1245,7 @@ function Set-TargetResource
                     Add the credentials from the parameter PsDscRunAsCredential, as the first
                     system administrator. The username is stored in $PsDscContext.RunAsUser.
                 #>
-                New-VerboseMessage -Message "Adding user '$($PsDscContext.RunAsUser)' from the parameter 'PsDscRunAsCredential' as the first system administrator account for Analysis Services."
+                Write-Verbose -Message ($script:localizedData.AddingFirstSystemAdministratorAnalysisServices -f $($PsDscContext.RunAsUser))
                 $setupArguments += @{ ASSysAdminAccounts =  @($PsDscContext.RunAsUser) }
             }
 
@@ -1278,11 +1341,11 @@ function Set-TargetResource
 
     try
     {
-        New-VerboseMessage -Message "Starting setup using arguments: $log"
+        Write-Verbose -Message ($script:localizedData.SetupArguments -f $log)
 
         <#
             This handles when PsDscRunAsCredential is set, or running as the SYSTEM account (when
-            PsDscRunAsCredential is set).
+            PsDscRunAsCredential is not set).
         #>
 
         $startProcessParameters = @{
@@ -1293,40 +1356,45 @@ function Set-TargetResource
 
         $processExitCode = Start-SqlSetupProcess @startProcessParameters
 
-        $setupExitMessage = "Setup exited with code '$processExitCode'."
+        $setupExitMessage = ($script:localizedData.SetupExitMessage -f $processExitCode)
 
         if ($processExitCode -eq 3010 -and -not $SuppressReboot)
         {
-            $setupExitMessage = ('{0} {1}' -f $setupExitMessage, 'Setup was installed successfully, but a reboot is required.')
+            $setupExitMessageRebootRequired = ('{0} {1}' -f $setupExitMessage, ($script:localizedData.SetupSuccessfulRebootRequired))
 
-            Write-Warning -Message $setupExitMessage
+            Write-Warning -Message $setupExitMessageRebootRequired
         }
         elseif ($processExitCode -ne 0)
         {
-            $setupExitMessage = ('{0} {1}' -f $setupExitMessage, 'Please see the ''Summary.txt'' log file in the ''Setup Bootstrap\Log'' folder.')
+            $setupExitMessageError = ('{0} {1}' -f $setupExitMessage, ($script:localizedData.SetupFailed))
 
-            Write-Warning $setupExitMessage
+            Write-Warning $setupExitMessageError
         }
         else
         {
-            New-VerboseMessage -Message $setupExitMessage
+            $setupExitMessageSuccessful = ('{0} {1}' -f $setupExitMessage, ($script:localizedData.SetupSuccessful))
+
+            Write-Verbose -Message $setupExitMessageSuccessful
         }
 
         if ($ForceReboot -or ($null -ne (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue)))
         {
             if (-not ($SuppressReboot))
             {
+                Write-Verbose -Message $script:localizedData.Reboot
+
                 $global:DSCMachineStatus = 1
             }
             else
             {
-                New-VerboseMessage -Message 'Suppressing reboot'
+                Write-Verbose -Message $script:localizedData.SuppressReboot
             }
         }
 
         if (-not (Test-TargetResource @PSBoundParameters))
         {
-            throw New-TerminatingError -ErrorType TestFailedAfterSet -ErrorCategory InvalidResult
+            $errorMessage = $script:localizedData.TestFailedAfterSet
+            New-InvalidResultException -Message $errorMessage
         }
     }
     catch
@@ -1674,7 +1742,7 @@ function Test-TargetResource
     $boundParameters = $PSBoundParameters
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-    New-VerboseMessage -Message "Features found: '$($getTargetResourceResult.Features)'"
+    Write-Verbose -Message ($script:localizedData.FeaturesFound -f $($getTargetResourceResult.Features))
 
     $result = $true
 
@@ -1687,7 +1755,7 @@ function Test-TargetResource
 
             if(!($getTargetResourceResult.Features.Contains($feature)))
             {
-                New-VerboseMessage -Message "Unable to find feature '$feature' among the installed features: '$($getTargetResourceResult.Features)'"
+                Write-Verbose -Message ($script:localizedData.UnableToFindFeature -f $feature, $($getTargetResourceResult.Features))
                 $result = $false
             }
         }
@@ -1699,13 +1767,13 @@ function Test-TargetResource
 
     if ($PSCmdlet.ParameterSetName -eq 'ClusterInstall')
     {
-        New-VerboseMessage -Message "Clustered install, checking parameters."
+        Write-Verbose -Message $script:localizedData.EvaluatingClusterParameters
 
         $boundParameters.Keys | Where-Object {$_ -imatch "^FailoverCluster"} | ForEach-Object {
             $variableName = $_
 
             if ($getTargetResourceResult.$variableName -ne $boundParameters[$variableName]) {
-                New-VerboseMessage -Message "$variableName '$($boundParameters[$variableName])' is not in the desired state for this cluster."
+                Write-Verbose -Message ($script:localizedData.ClusterParameterIsNotInDesiredState -f $variableName, $($boundParameters[$variableName]))
                 $result = $false
             }
         }
@@ -1798,12 +1866,13 @@ function Copy-ItemWithRobocopy
 
     if ([System.Version]$robocopyExecutable.FileVersionInfo.ProductVersion -ge [System.Version]'6.3.9600.16384')
     {
-        Write-Verbose "Robocopy is using unbuffered I/O."
+        Write-Verbose -Message $script:localizedData.RobocopyUsingUnbufferedIo
+
         $robocopyArgumentUseUnbufferedIO = '/J'
     }
     else
     {
-        Write-Verbose 'Unbuffered I/O cannot be used due to incompatible version of Robocopy.'
+        Write-Verbose -Message $script:localizedData.RobocopyNotUsingUnbufferedIo
     }
 
     $robocopyArgumentList = '{0} {1} {2} {3} {4} {5}' -f $Path,
@@ -1818,39 +1887,41 @@ function Copy-ItemWithRobocopy
         ArgumentList = $robocopyArgumentList
     }
 
-    Write-Verbose ('Robocopy is started with the following arguments: {0}' -f $robocopyArgumentList )
+    Write-Verbose -Message  ($script:localizedData.RobocopyArguments -f $robocopyArgumentList )
     $robocopyProcess = Start-Process @robocopyStartProcessParameters -Wait -NoNewWindow -PassThru
 
     switch ($($robocopyProcess.ExitCode))
     {
         {$_ -in 8, 16}
         {
-            throw "Robocopy reported errors when copying files. Error code: $_."
+            $errorMessage = $script:localizedData.RobocopyErrorCopying -f $_
+            New-InvalidOperationException -Message $errorMessage
         }
 
         {$_ -gt 7 }
         {
-            throw "Robocopy reported that failures occurred when copying files. Error code: $_."
+            $errorMessage = $script:localizedData.RobocopyFailuresCopying -f $_
+            New-InvalidResultException -Message $errorMessage
         }
 
         1
         {
-            Write-Verbose 'Robocopy copied files successfully'
+            Write-Verbose -Message  $script:localizedData.RobocopySuccessful
         }
 
         2
         {
-            Write-Verbose 'Robocopy found files at the destination path that is not present at the source path, these extra files was remove at the destination path.'
+            Write-Verbose -Message  $script:localizedData.RobocopyRemovedExtraFilesAtDestination
         }
 
         3
         {
-            Write-Verbose 'Robocopy copied files to destination successfully. Robocopy also found files at the destination path that is not present at the source path, these extra files was remove at the destination path.'
+            Write-Verbose -Message  $script:localizedData.RobocopySuccessfulAndRemovedExtraFilesAtDestination
         }
 
         {$_ -eq 0 -or $null -eq $_ }
         {
-            Write-Verbose 'Robocopy reported that all files already present.'
+            Write-Verbose -Message  $script:localizedData.RobocopyAllFilesPresent
         }
     }
 }
@@ -2035,7 +2106,7 @@ function Start-SqlSetupProcess
 
     $sqlSetupProcess = Start-Process @startProcessParameters -PassThru -NoNewWindow -ErrorAction Stop
 
-    New-VerboseMessage -Message ('Started the process with id {0} using the path ''{1}'', and with a timeout value of {2} seconds.' -f $sqlSetupProcess.Id, $startProcessParameters.FilePath, $Timeout)
+    Write-Verbose -Message ($script:localizedData.StartSetupProcess -f $sqlSetupProcess.Id, $startProcessParameters.FilePath, $Timeout)
 
     Wait-Process -InputObject $sqlSetupProcess -Timeout $Timeout -ErrorAction Stop
 

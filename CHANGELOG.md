@@ -25,6 +25,14 @@
   - BREAKING CHANGE: Removed deprecated resource xSQLAOGroupEnsure (issue #456).
   - BREAKING CHANGE: Removed deprecated resource xSQLServerFailoverClusterSetup (issue #336).
   - Updated PULL\_REQUEST\_TEMPLATE adding comment block around text. Also rearranged and updated texts (issue #572).
+  - Added common helper functions for HQRM localization, and added tests for the helper functions.
+    - Get-LocalizedData
+    - New-InvalidResultException
+    - New-ObjectNotFoundException
+    - New-InvalidOperationException
+    - New-InvalidArgumentException
+  - Updated CONTRIBUTING.md describing the new localization helper functions.
+  - Fixed typos in xSQLServer.strings.psd1
 - Changes to xSQLServerHelper
   - Removed helper function Grant-ServerPerms because the deprecated resource that was using it was removed.
   - Removed helper function Grant-CNOPerms because the deprecated resource that was using it was removed.
@@ -42,6 +50,10 @@
   - Now all major version uses the same identifier to evaluate InstallSharedDir and InstallSharedWOWDir (issue #420).
   - Now setup arguments that contain no value will be ignored, for example when InstallSharedDir and
     InstallSharedWOWDir path is already present on the target node, because of a previous installation (issue #639).
+  - Added localization support for all strings.
+  - Added a test to test some error handling for cluster installations.
+- Changes to xSQLServerAlwaysOnService
+  - Fixed typos in localization strings and in tests.
 
 ## 7.1.0.0
 
