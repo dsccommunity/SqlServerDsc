@@ -55,7 +55,7 @@ function Connect-SQL
         $sql.ConnectionContext.ConnectAsUserPassword = $SetupCredential.GetNetworkCredential().Password
         $sql.ConnectionContext.ConnectAsUserName = $SetupCredential.GetNetworkCredential().UserName
         $sql.ConnectionContext.ServerInstance = $databaseEngineInstance
-        $sql.ConnectionContext.connect()
+        $sql.ConnectionContext.Connect()
     }
     else
     {
