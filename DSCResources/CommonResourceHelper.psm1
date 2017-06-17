@@ -201,6 +201,11 @@ function New-InvalidResultException
             For WindowsOptionalFeature: MSFT_WindowsOptionalFeature
             For Service: MSFT_ServiceResource
             For Registry: MSFT_RegistryResource
+            For Helper: xSQLServerHelper
+
+    .PARAMETER ScriptRoot
+        Optional. The root path where to expect finding the culture folder. This is only needed
+        for localization in helper modules that is not .
 #>
 function Get-LocalizedData
 {
@@ -210,16 +215,35 @@ function Get-LocalizedData
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ResourceName
+        $ResourceName,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $ScriptRoot
     )
 
-    $resourceDirectory = Join-Path -Path $PSScriptRoot -ChildPath $ResourceName
-    $localizedStringFileLocation = Join-Path -Path $resourceDirectory -ChildPath $PSUICulture
+    if ( -not $ScriptRoot )
+    {
+        $resourceDirectory = Join-Path -Path $PSScriptRoot -ChildPath $ResourceName
+        $localizedStringFileLocation = Join-Path -Path $resourceDirectory -ChildPath $PSUICulture
+    }
+    else
+    {
+        $localizedStringFileLocation = Join-Path -Path $ScriptRoot -ChildPath $PSUICulture
+    }
 
     if (-not (Test-Path -Path $localizedStringFileLocation))
     {
         # Fallback to en-US
-        $localizedStringFileLocation = Join-Path -Path $resourceDirectory -ChildPath 'en-US'
+        if ( -not $ScriptRoot )
+        {
+            $localizedStringFileLocation = Join-Path -Path $resourceDirectory -ChildPath 'en-US'
+        }
+        else
+        {
+            $localizedStringFileLocation = Join-Path -Path $ScriptRoot -ChildPath 'en-US'
+        }
     }
 
     Import-LocalizedData `
