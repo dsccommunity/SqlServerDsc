@@ -98,6 +98,7 @@ throw ($script:localizedData.InstallationFailedMessage -f $Path, $processId)
 ```
 
 ##### Helper functions
+
 There are also five helper functions to simplify localization.
 
 ###### New-InvalidArgumentException
