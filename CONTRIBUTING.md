@@ -97,9 +97,10 @@ preferably be used whenever possible.
 throw ($script:localizedData.InstallationFailedMessage -f $Path, $processId)
 ```
 
-There are also three helper functions to simplify localization.
+##### Helper functions
+There are also five helper functions to simplify localization.
 
-##### New-InvalidArgumentException
+###### New-InvalidArgumentException
 
 ```powershell
 <#
@@ -124,7 +125,7 @@ This can be used in code like this.
     }
 ```
 
-##### New-InvalidOperationException
+###### New-InvalidOperationException
 
 ```powershell
 <#
@@ -154,7 +155,7 @@ catch
 
 ```
 
-##### New-ObjectNotFoundException
+###### New-ObjectNotFoundException
 
 ```powershell
 <#
@@ -184,7 +185,7 @@ catch
 
 ```
 
-##### New-InvalidResultException
+###### New-InvalidResultException
 
 ```powershell
 <#
@@ -218,7 +219,7 @@ catch
 
 ```
 
-##### Get-LocalizedData
+###### Get-LocalizedData
 
 ```powershell
 <#
@@ -242,7 +243,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xSQLServerSetup'
 
 #### Old localization helper function
 
-To be able to support localization we have added wrappers for the cmdlets `Write-Verbose` and `Write-Warning`, and also for the keyword `Throw`.
+To be able to support localization we have added wrappers for the cmdlets `Write-Verbose` and `Write-Warning`, and also for creating a terminating error message.
 The localized strings are placed in a file named 'xSQLServer.strings.psd1' which are located in each language folder in the root of the module. For English language strings the folder is ['en-US'](https://github.com/PowerShell/xSQLServer/blob/dev/en-US).
 
 |Function|Short description|
