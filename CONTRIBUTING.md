@@ -8,7 +8,7 @@ We follow all of the standard contribution guidelines for DSC resources [outline
 
 ## xSQLServer specific guidelines
 
-### Automatic formatting with VS Code.
+### Automatic formatting with VS Code
 
 There is a VS Code workspace settings file within this project with formatting
 settings matching the style guideline. That will make it possible inside VS Code
