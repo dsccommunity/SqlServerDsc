@@ -33,6 +33,7 @@
     - New-InvalidArgumentException
   - Updated CONTRIBUTING.md describing the new localization helper functions.
   - Fixed typos in xSQLServer.strings.psd1
+  - Fixed CodeCov badge links in README.md so that they point to the correct branch.
 - Changes to xSQLServerHelper
   - Removed helper function Grant-ServerPerms because the deprecated resource that was using it was removed.
   - Removed helper function Grant-CNOPerms because the deprecated resource that was using it was removed.
