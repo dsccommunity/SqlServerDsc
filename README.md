@@ -10,7 +10,7 @@ For more information see the [Code of Conduct FAQ](https://opensource.microsoft.
 ### master
 
 [![Build status](https://ci.appveyor.com/api/projects/status/mxn453y284eab8li/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xsqlserver/branch/master)
-[![codecov](https://codecov.io/gh/PowerShell/xSQLServer/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/xSQLServer/branch/master>)
+[![codecov](https://codecov.io/gh/PowerShell/xSQLServer/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/xSQLServer/branch/master)
 
 This is the branch containing the latest release - no contributions should be made directly to this branch.
 
