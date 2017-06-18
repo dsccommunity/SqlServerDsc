@@ -68,7 +68,7 @@ function Connect-SQL
         New-InvalidOperationException -Message $errorMessage
     }
 
-    Write-Verbose -Message ($script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance)
+    Write-Verbose -Message ($script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance) -Verbose
 
     return $sql
 }
@@ -145,7 +145,7 @@ function Connect-SQLAnalysis
             New-InvalidOperationException -Message $errorMessage
         }
 
-        Write-Verbose -Message ($script:localizedData.ConnectedToAnalysisServicesInstance -f $analysisServiceInstance)
+        Write-Verbose -Message ($script:localizedData.ConnectedToAnalysisServicesInstance -f $analysisServiceInstance) -Verbose
     }
     catch
     {
@@ -196,22 +196,22 @@ function Register-SqlSmo
 
     $sqlMajorVersion = Get-SqlInstanceMajorVersion -SQLInstanceName $SQLInstanceName
 
-    Write-Verbose -Message ($script:localizedData.SqlMajorVersion -f $sqlMajorVersion)
+    Write-Verbose -Message ($script:localizedData.SqlMajorVersion -f $sqlMajorVersion) -Verbose
 
     if ( -not $ApplicationDomain )
     {
         $applicationDomainName = $MyInvocation.MyCommand.ModuleName
-        Write-Verbose -Message ($script:localizedData.CreatingApplicationDomain -f $applicationDomainName)
+        Write-Verbose -Message ($script:localizedData.CreatingApplicationDomain -f $applicationDomainName) -Verbose
         $applicationDomainObject = [System.AppDomain]::CreateDomain($applicationDomainName)
     }
     else
     {
-        Write-Verbose -Message ($script:localizedData.ReusingApplicationDomain -f $ApplicationDomain.FriendlyName)
+        Write-Verbose -Message ($script:localizedData.ReusingApplicationDomain -f $ApplicationDomain.FriendlyName) -Verbose
         $applicationDomainObject = $ApplicationDomain
     }
 
     $sqlSmoAssemblyName = "Microsoft.SqlServer.Smo, Version=$sqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"
-    Write-Verbose -Message ($script:localizedData.LoadingAssembly -f $sqlSmoAssemblyName)
+    Write-Verbose -Message ($script:localizedData.LoadingAssembly -f $sqlSmoAssemblyName) -Verbose
     $applicationDomainObject.Load($sqlSmoAssemblyName) | Out-Null
 
     return $applicationDomainObject
@@ -256,7 +256,7 @@ function Register-SqlWmiManagement
     )
 
     $sqlMajorVersion = Get-SqlInstanceMajorVersion -SQLInstanceName $SQLInstanceName
-    Write-Verbose -Message ($script:localizedData.SqlMajorVersion -f $sqlMajorVersion)
+    Write-Verbose -Message ($script:localizedData.SqlMajorVersion -f $sqlMajorVersion) -Verbose
 
     <#
         Must register Microsoft.SqlServer.Smo first because that is a
@@ -273,7 +273,7 @@ function Register-SqlWmiManagement
     }
 
     $sqlSqlWmiManagementAssemblyName = "Microsoft.SqlServer.SqlWmiManagement, Version=$sqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"
-    Write-Verbose -Message ($script:localizedData.LoadingAssembly -f $sqlSqlWmiManagementAssemblyName)
+    Write-Verbose -Message ($script:localizedData.LoadingAssembly -f $sqlSqlWmiManagementAssemblyName) -Verbose
     $applicationDomainObject.Load($sqlSqlWmiManagementAssemblyName) | Out-Null
 
     return $applicationDomainObject
@@ -297,7 +297,7 @@ function Unregister-SqlAssemblies
         $ApplicationDomain
     )
 
-    Write-Verbose -Message ($script:localizedData.UnloadingApplicationDomain -f $ApplicationDomain.FriendlyName)
+    Write-Verbose -Message ($script:localizedData.UnloadingApplicationDomain -f $ApplicationDomain.FriendlyName) -Verbose
     [System.AppDomain]::Unload($ApplicationDomain)
 }
 
@@ -607,7 +607,7 @@ function Test-SQLDscParameterState
                         if (($CurrentValues.ContainsKey($fieldName) -eq $false) `
                         -or ($null -eq $CurrentValues.$fieldName))
                         {
-                            Write-Verbose -Message ($script:localizedData.PropertyValidationError -f $fieldName)
+                            Write-Verbose -Message ($script:localizedData.PropertyValidationError -f $fieldName) -Verbose
 
                             $returnValue = $false
                         }
@@ -617,10 +617,10 @@ function Test-SQLDscParameterState
                                                            -DifferenceObject $DesiredValues.$fieldName
                             if ($null -ne $arrayCompare)
                             {
-                                Write-Verbose -Message ($script:localizedData.PropertiesDoesNotMatch -f $fieldName)
+                                Write-Verbose -Message ($script:localizedData.PropertiesDoesNotMatch -f $fieldName) -Verbose
 
                                 $arrayCompare | ForEach-Object -Process {
-                                    Write-Verbose -Message ($script:localizedData.PropertyThatDoesNotMatch -f $_.InputObject, $_.SideIndicator)
+                                    Write-Verbose -Message ($script:localizedData.PropertyThatDoesNotMatch -f $_.InputObject, $_.SideIndicator) -Verbose
                                 }
 
                                 $returnValue = $false
@@ -636,7 +636,7 @@ function Test-SQLDscParameterState
                                     -not [System.String]::IsNullOrEmpty($DesiredValues.$fieldName))
                                 {
                                     Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName))
+                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
 
                                     $returnValue = $false
                                 }
@@ -647,7 +647,7 @@ function Test-SQLDscParameterState
                                     -not ($null -eq $CurrentValues.$fieldName))
                                 {
                                     Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName))
+                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
 
                                     $returnValue = $false
                                 }
@@ -658,7 +658,7 @@ function Test-SQLDscParameterState
                                     -not ($null -eq $CurrentValues.$fieldName))
                                 {
                                     Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName))
+                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
 
                                     $returnValue = $false
                                 }
@@ -666,7 +666,7 @@ function Test-SQLDscParameterState
 
                             default {
                                 Write-Warning -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                    -f $fieldName, $desiredType.Name)
+                                    -f $fieldName, $desiredType.Name) -Verbose
 
                                 $returnValue = $false
                             }
@@ -692,11 +692,11 @@ function Import-SQLPSModule
     $module = (Get-Module -FullyQualifiedName 'SqlServer' -ListAvailable).Name
     if ($module)
     {
-        Write-Verbose -Message ($script:localizedData.PreferredModuleFound)
+        Write-Verbose -Message ($script:localizedData.PreferredModuleFound) -Verbose
     }
     else
     {
-        Write-Verbose -Message ($script:localizedData.PreferredModuleNotFound)
+        Write-Verbose -Message ($script:localizedData.PreferredModuleNotFound) -Verbose
         $module = (Get-Module -FullyQualifiedName 'SQLPS' -ListAvailable).Name
     }
 
@@ -707,7 +707,7 @@ function Import-SQLPSModule
             Write-Debug -Message ($script:localizedData.DebugMessagePushingLocation)
             Push-Location
 
-            Write-Verbose -Message ($script:localizedData.ImportingPowerShellModule -f $module)
+            Write-Verbose -Message ($script:localizedData.ImportingPowerShellModule -f $module) -Verbose
 
             <#
                 SQLPS has unapproved verbs, disable checking to ignore Warnings.
@@ -781,11 +781,11 @@ function Restart-SqlService
     if ($serverObject.IsClustered)
     {
         # Get the cluster resources
-        Write-Verbose -Message ($script:localizedData.GetSqlServerClusterResources)
+        Write-Verbose -Message ($script:localizedData.GetSqlServerClusterResources) -Verbose
         $sqlService = Get-CimInstance -Namespace root/MSCluster -ClassName MSCluster_Resource -Filter "Type = 'SQL Server'" |
                         Where-Object -FilterScript { $_.PrivateProperties.InstanceName -eq $serverObject.ServiceName }
 
-        Write-Verbose -Message ($script:localizedData.GetSqlAgentClusterResource)
+        Write-Verbose -Message ($script:localizedData.GetSqlAgentClusterResource) -Verbose
         $agentService = $sqlService | Get-CimAssociatedInstance -ResultClassName MSCluster_Resource |
                             Where-Object -FilterScript { ($_.Type -eq 'SQL Server Agent') -and ($_.State -eq 2) }
 
@@ -793,23 +793,23 @@ function Restart-SqlService
         $resourceNames = @($sqlService.Name, ($agentService | Select-Object -ExpandProperty Name)) -join ","
 
         # Stop the SQL Server and dependent resources
-        Write-Verbose -Message ($script:localizedData.BringClusterResourcesOffline -f $resourceNames)
+        Write-Verbose -Message ($script:localizedData.BringClusterResourcesOffline -f $resourceNames) -Verbose
         $sqlService | Invoke-CimMethod -MethodName TakeOffline -Arguments @{ Timeout = $Timeout }
 
         # Start the SQL server resource
-        Write-Verbose -Message ($script:localizedData.BringSqlServerClusterResourcesOnline)
+        Write-Verbose -Message ($script:localizedData.BringSqlServerClusterResourcesOnline) -Verbose
         $sqlService | Invoke-CimMethod -MethodName BringOnline -Arguments @{ Timeout = $Timeout }
 
         # Start the SQL Agent resource
         if ($agentService)
         {
-            Write-Verbose -Message ($script:localizedData.BringSqlServerAgentClusterResourcesOnline)
+            Write-Verbose -Message ($script:localizedData.BringSqlServerAgentClusterResourcesOnline) -Verbose
             $agentService | Invoke-CimMethod -MethodName BringOnline -Arguments @{ Timeout = $Timeout }
         }
     }
     else
     {
-        Write-Verbose -Message ($script:localizedData.GetSqlServerService)
+        Write-Verbose -Message ($script:localizedData.GetSqlServerService) -Verbose
         $sqlService = Get-Service -DisplayName "SQL Server ($($serverObject.ServiceName))"
 
         <#
@@ -819,12 +819,12 @@ function Restart-SqlService
         $agentService = $sqlService.DependentServices | Where-Object -FilterScript { $_.Status -eq 'Running' }
 
         # Restart the SQL Server service
-        Write-Verbose -Message ($script:localizedData.RestartSqlServerService)
+        Write-Verbose -Message ($script:localizedData.RestartSqlServerService) -Verbose
         $sqlService | Restart-Service -Force
 
         # Start dependent services
         $agentService | ForEach-Object {
-            Write-Verbose -Message ($script:localizedData.StartingDependentService -f $_.DisplayName)
+            Write-Verbose -Message ($script:localizedData.StartingDependentService -f $_.DisplayName) -Verbose
             $_ | Start-Service
         }
     }
@@ -985,7 +985,7 @@ function Test-LoginEffectivePermissions
         REVERT
     "
 
-    Write-Verbose -Message ($script:localizedData.GetEffectivePermissionForLogin -f $LoginName, $sqlInstanceName)
+    Write-Verbose -Message ($script:localizedData.GetEffectivePermissionForLogin -f $LoginName, $sqlInstanceName) -Verbose
 
     $loginEffectivePermissionsResult = Invoke-Query @invokeQueryParameters -Query $queryToGetEffectivePermissionsForLogin
     $loginEffectivePermissions = $loginEffectivePermissionsResult.Tables.Rows.permission_name
