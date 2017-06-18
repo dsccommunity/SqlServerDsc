@@ -253,7 +253,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xSQLServerSetup'
 #### Old localization helper function
 
 To be able to support localization we have added wrappers for the cmdlets `Write-Verbose` and `Write-Warning`, and also for creating a terminating error message.
-The localized strings are placed in a file named 'xSQLServer.strings.psd1' which are located in each language folder in the root of the module. For English language strings the folder is ['en-US'](https://github.com/PowerShell/xSQLServer/blob/dev/en-US).
+The localized strings are placed in a file named 'xSQLServerHelper.strings.psd1' which are located in each language folder in the root of the module. For English language strings the folder is ['en-US'](https://github.com/PowerShell/xSQLServer/blob/dev/en-US).
 
 | Function | Short description |
 | --- | --- |
