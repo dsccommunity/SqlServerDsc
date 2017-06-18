@@ -8,6 +8,14 @@ We follow all of the standard contribution guidelines for DSC resources [outline
 
 ## xSQLServer specific guidelines
 
+### Automatic formatting with VS Code.
+
+There is a VS Code workspace settings file within this project with formatting
+settings matching the style guideline. That will make it possible inside VS Code
+to press SHIFT+ALT+F, or press F1 and choose 'Format document' in the list. The
+PowerShell code will then be formatted according to the Style Guideline
+(although maybe not complete, but would help a long way).
+
 ### SQL Server products supported by resources
 
 Any resource should be able to target at least all SQL Server versions that are currently supported by Microsoft (also those in extended support).
