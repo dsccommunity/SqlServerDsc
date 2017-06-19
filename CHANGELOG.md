@@ -43,6 +43,10 @@
   - Removed helper function Grant-ServerPerms because the deprecated resource that was using it was removed.
   - Removed helper function Grant-CNOPerms because the deprecated resource that was using it was removed.
   - Removed helper function New-ListenerADObject because the deprecated resource that was using it was removed.
+  - Added tests for those helper functions that did not have tests.
+  - Test-SQLDscParameterState helper function can now correctly pass a CimInstance as DesiredValue.
+  - Test-SQLDscParameterState helper function will now output a warning message
+    if the value type of a desired value is not supported.
 - Changes to xSQLServerSetup
   - BREAKING CHANGE: Replaced StartWin32Process helper function with the cmdlet Start-Process (issue #41, #93 and #126).
   - BREAKING CHANGE: The parameter SetupCredential has been removed since it is no longer needed. This is because the resource now support the built-in PsDscRunAsCredential.

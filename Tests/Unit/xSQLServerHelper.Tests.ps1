@@ -23,7 +23,7 @@ Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stub
 InModuleScope $script:moduleName {
     $mockNewObject_MicrosoftAnalysisServicesServer = {
         return New-Object Object |
-                    Add-Member ScriptMethod Connect {
+                    Add-Member -MemberType ScriptMethod -Name Connect {
                         param(
                             [Parameter(Mandatory = $true)]
                             [ValidateNotNullOrEmpty()]
@@ -47,13 +47,58 @@ InModuleScope $script:moduleName {
         $TypeName -eq 'Microsoft.AnalysisServices.Server'
     }
 
+    $mockNewObject_MicrosoftDatabaseEngine = {
+        <#
+            $ArgumentList[0] will contain the ServiceInstance when calling mock New-Object.
+            But since the mock New-Object will also be called without arguments, we first
+            have to evaluate if $ArgumentList contains values.
+        #>
+        if( $ArgumentList.Count -gt 0)
+        {
+            $serverInstance = $ArgumentList[0]
+        }
+
+        return New-Object Object |
+                    Add-Member -MemberType NoteProperty -Name ConnectionContext -Value (
+                        New-Object Object |
+                            Add-Member -MemberType NoteProperty -Name ServerInstance -Value $serverInstance -PassThru |
+                            Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
+                            Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
+                            Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
+                            Add-Member -MemberType ScriptMethod -Name Connect {
+                                if ($mockExpectedDatabaseEngineInstance -eq 'MSSQLSERVER')
+                                {
+                                    $mockExpectedServiceInstance = $mockExpectedDatabaseEngineServer
+                                }
+                                else
+                                {
+                                    $mockExpectedServiceInstance = "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+                                }
+
+                                if ($this.serverInstance -ne $mockExpectedServiceInstance)
+                                {
+                                    throw ("Mock method Connect() was expecting ServerInstance to be '{0}', but was '{1}'." -f $mockExpectedServiceInstance, $this.serverInstance )
+                                }
+
+                                if ($mockThrowInvalidOperation)
+                                {
+                                    throw 'Unable to connect.'
+                                }
+                            } -PassThru -Force
+                    ) -PassThru -Force
+    }
+
+    $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter = {
+        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Server'
+    }
+
     $mockSqlMajorVersion = 13
     $mockInstanceName = 'TEST'
 
     $mockSetupCredentialUserName = 'TestUserName12345'
     $mockSetupCredentialPassword = 'StrongOne7.'
     $mockSetupCredentialSecurePassword = ConvertTo-SecureString -String $mockSetupCredentialPassword -AsPlainText -Force
-    $mockSetupCredential = New-Object PSCredential ($mockSetupCredentialUserName, $mockSetupCredentialSecurePassword)
+    $mockSetupCredential = New-Object -TypeName PSCredential -ArgumentList ($mockSetupCredentialUserName, $mockSetupCredentialSecurePassword)
 
     Describe 'Testing Restart-SqlService' {
         Context 'Restart-SqlService standalone instance' {
@@ -819,5 +864,414 @@ InModuleScope $script:moduleName {
                 } | Should -Not -Throw
             }
         }
+    }
+
+    Describe 'Testing Connect-SQL' -Tag ConnectSql {
+        BeforeEach {
+            Mock -CommandName New-Object `
+                -MockWith $mockNewObject_MicrosoftDatabaseEngine `
+                -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter `
+                -Verifiable
+        }
+
+        Context 'When connecting to the default instance using Windows Authentication' {
+            It 'Should return the correct service instance' {
+                $mockExpectedDatabaseEngineServer = $env:COMPUTERNAME
+
+                $databaseEngineServerObject = Connect-SQL
+                $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly $mockExpectedDatabaseEngineServer
+
+                Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                    -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+            }
+        }
+
+        Context 'When connecting to the named instance using Windows Authentication' {
+            It 'Should return the correct service instance' {
+                $mockExpectedDatabaseEngineServer = $env:COMPUTERNAME
+                $mockExpectedDatabaseEngineInstance = $mockInstanceName
+
+                $databaseEngineServerObject = Connect-SQL -SQLInstanceName $mockExpectedDatabaseEngineInstance
+                $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+
+                Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                    -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+            }
+        }
+
+        Context 'When connecting to the named instance using Windows Authentication and different server name' {
+            It 'Should return the correct service instance' {
+                $mockExpectedDatabaseEngineServer = 'SERVER'
+                $mockExpectedDatabaseEngineInstance = $mockInstanceName
+
+                $databaseEngineServerObject = Connect-SQL -SQLServer $mockExpectedDatabaseEngineServer -SQLInstanceName $mockExpectedDatabaseEngineInstance
+                $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+
+                Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                    -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+            }
+        }
+
+        Context 'When connecting to the named instance using Windows Authentication impersonation' {
+            It 'Should return the correct service instance' {
+                $mockExpectedDatabaseEngineServer = $env:COMPUTERNAME
+                $mockExpectedDatabaseEngineInstance = $mockInstanceName
+
+                $testParameters = @{
+                    SQLServer = $mockExpectedDatabaseEngineServer
+                    SQLInstanceName = $mockExpectedDatabaseEngineInstance
+                    SetupCredential = $mockSetupCredential
+                }
+
+                $databaseEngineServerObject = Connect-SQL @testParameters
+                $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+                $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
+                $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should -BeExactly $mockSetupCredential.GetNetworkCredential().Password
+                $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should -BeExactly $mockSetupCredential.GetNetworkCredential().UserName
+                $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
+
+                Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                    -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+            }
+        }
+
+        Context 'When connecting to the default instance using the correct service instance but does not return a correct Database Engine object' {
+            It 'Should throw the correct error' {
+                $mockExpectedDatabaseEngineServer = $env:COMPUTERNAME
+                $mockExpectedDatabaseEngineInstance = $mockInstanceName
+
+                Mock -CommandName New-Object `
+                    -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter `
+                    -Verifiable
+
+                $mockCorrectErrorMessage = ('Failed connecting to SQL {0}' -f $mockExpectedDatabaseEngineServer)
+                { Connect-SQL } | Should -Throw $mockCorrectErrorMessage
+
+                Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                    -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+            }
+        }
+
+        Assert-VerifiableMocks
+    }
+
+    Describe 'Testing Test-SQLDscParameterState' -Tag TestSQLDscParameterState {
+        Context -Name 'When passing values' -Fixture {
+            It 'Should return true for two identical tables' {
+                $mockDesiredValues = @{ Example = 'test' }
+
+                $testParameters = @{
+                    CurrentValues = $mockDesiredValues
+                    DesiredValues = $mockDesiredValues
+                }
+
+                Test-SQLDscParameterState @testParameters | Should Be $true
+            }
+
+            It 'Should return false when a value is different for [String]' {
+                $mockCurrentValues = @{ Example = [System.String]'something' }
+                $mockDesiredValues = @{ Example = [System.String]'test' }
+
+                $testParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                }
+
+                Test-SQLDscParameterState @testParameters | Should Be $false
+            }
+
+            It 'Should return false when a value is different for [Int32]' {
+                $mockCurrentValues = @{ Example = [System.Int32]1 }
+                $mockDesiredValues = @{ Example = [System.Int32]2 }
+
+                $testParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                }
+
+                Test-SQLDscParameterState @testParameters | Should Be $false
+            }
+
+            It 'Should return false when a value is different for [Int16]' {
+                $mockCurrentValues = @{ Example = [System.Int16]1 }
+                $mockDesiredValues = @{ Example = [System.Int16]2 }
+
+                $testParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                }
+
+                Test-SQLDscParameterState @testParameters | Should Be $false
+            }
+
+            It 'Should return false when a value is missing' {
+                $mockCurrentValues = @{ }
+                $mockDesiredValues = @{ Example = 'test' }
+
+                $testParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                }
+
+                Test-SQLDscParameterState @testParameters | Should Be $false
+            }
+
+            It 'Should return true when only a specified value matches, but other non-listed values do not' {
+                $mockCurrentValues = @{ Example = 'test'; SecondExample = 'true' }
+                $mockDesiredValues = @{ Example = 'test'; SecondExample = 'false'  }
+
+                $testParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                    ValuesToCheck = @('Example')
+                }
+
+                Test-SQLDscParameterState @testParameters | Should Be $true
+            }
+
+            It 'Should return false when only specified values do not match, but other non-listed values do ' {
+                $mockCurrentValues = @{ Example = 'test'; SecondExample = 'true' }
+                $mockDesiredValues = @{ Example = 'test'; SecondExample = 'false'  }
+
+                $testParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                    ValuesToCheck = @('SecondExample')
+                }
+
+                Test-SQLDscParameterState @testParameters | Should Be $false
+            }
+
+            It 'Should return false when an empty hash table is used in the current values' {
+                $mockCurrentValues = @{ }
+                $mockDesiredValues = @{ Example = 'test'; SecondExample = 'false'  }
+
+                $testParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                }
+
+                Test-SQLDscParameterState @testParameters | Should Be $false
+            }
+
+            It 'Should return true when evaluating a table against a CimInstance' {
+                $mockCurrentValues = @{ Handle = '0'; ProcessId = '1000'  }
+
+                $mockWin32ProcessProperties = @{
+                    Handle = 0
+                    ProcessId = 1000
+                }
+
+                $mockNewCimInstanceParameters = @{
+                    ClassName = 'Win32_Process'
+                    Property = $mockWin32ProcessProperties
+                    Key = 'Handle'
+                    ClientOnly = $true
+                }
+
+                $mockDesiredValues = New-CimInstance @mockNewCimInstanceParameters
+
+                $testParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                    ValuesToCheck = @('Handle','ProcessId')
+                }
+
+                Test-SQLDscParameterState @testParameters | Should Be $true
+            }
+
+            It 'Should return false when evaluating a table against a CimInstance and a value is wrong' {
+                $mockCurrentValues = @{ Handle = '1'; ProcessId = '1000'  }
+
+                $mockWin32ProcessProperties = @{
+                    Handle = 0
+                    ProcessId = 1000
+                }
+
+                $mockNewCimInstanceParameters = @{
+                    ClassName = 'Win32_Process'
+                    Property = $mockWin32ProcessProperties
+                    Key = 'Handle'
+                    ClientOnly = $true
+                }
+
+                $mockDesiredValues = New-CimInstance @mockNewCimInstanceParameters
+
+                $testParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                    ValuesToCheck = @('Handle','ProcessId')
+                }
+
+                Test-SQLDscParameterState @testParameters | Should Be $false
+            }
+
+            It 'Should return true when evaluating a hash table containing an array' {
+                $mockCurrentValues = @{ Example = 'test'; SecondExample = @('1','2') }
+                $mockDesiredValues = @{ Example = 'test'; SecondExample = @('1','2')  }
+
+                $testParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                }
+
+                Test-SQLDscParameterState @testParameters | Should Be $true
+            }
+
+            It 'Should return false when evaluating a hash table containing an array with wrong values' {
+                $mockCurrentValues = @{ Example = 'test'; SecondExample = @('A','B') }
+                $mockDesiredValues = @{ Example = 'test'; SecondExample = @('1','2')  }
+
+                $testParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                }
+
+                Test-SQLDscParameterState @testParameters | Should Be $false
+            }
+
+            It 'Should return false when evaluating a hash table containing an array, but the CurrentValues are missing an array' {
+                $mockCurrentValues = @{ Example = 'test' }
+                $mockDesiredValues = @{ Example = 'test'; SecondExample = @('1','2')  }
+
+                $testParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                }
+
+                Test-SQLDscParameterState @testParameters | Should Be $false
+            }
+
+            It 'Should return false when evaluating a hash table containing an array, but the property i CurrentValues is $null' {
+                $mockCurrentValues = @{ Example = 'test'; SecondExample = $null }
+                $mockDesiredValues = @{ Example = 'test'; SecondExample = @('1','2')  }
+
+                $testParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                }
+
+                Test-SQLDscParameterState @testParameters | Should Be $false
+            }
+        }
+
+        Context -Name 'When passing invalid types for DesiredValues' -Fixture {
+            It 'Should throw the correct error when DesiredValues is of wrong type' {
+                $mockCurrentValues = @{ Example = 'something' }
+                $mockDesiredValues = 'NotHashTable'
+
+                $testParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                }
+
+                { Test-SQLDscParameterState @testParameters } | Should Throw 'Property ''DesiredValues'' in Test-SQLDscParameterState must be either a Hash table, CimInstance or PSBoundParametersDictionary. Type detected was String'
+            }
+
+            It 'Should return the correct error when DesiredValues contain an unsupported type' {
+                Mock -CommandName Write-Warning -Verifiable
+
+                # This is a dummy type to test with a type that could never be a correct one.
+                class MockUnknownType
+                {
+                    [ValidateNotNullOrEmpty()]
+                    [System.String]
+                    $Property1
+
+                    [ValidateNotNullOrEmpty()]
+                    [System.String]
+                    $Property2
+
+                    MockUnknownType()
+                    {
+                    }
+                }
+
+                $mockCurrentValues = @{ Example = New-Object -TypeName MockUnknownType }
+                $mockDesiredValues = @{ Example = New-Object -TypeName MockUnknownType }
+
+                $testParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                }
+
+                Test-SQLDscParameterState @testParameters | Should Be $false
+
+                Assert-MockCalled -CommandName Write-Warning -Exactly -Times 1
+            }
+        }
+
+        Context -Name 'When passing an CimInstance as DesiredValue and ValuesToCheck is $null' -Fixture {
+            It 'Should throw the correct error' {
+                $mockCurrentValues = @{ Example = 'something' }
+
+                $mockWin32ProcessProperties = @{
+                    Handle = 0
+                    ProcessId = 1000
+                }
+
+                $mockNewCimInstanceParameters = @{
+                    ClassName = 'Win32_Process'
+                    Property = $mockWin32ProcessProperties
+                    Key = 'Handle'
+                    ClientOnly = $true
+                }
+
+                $mockDesiredValues = New-CimInstance @mockNewCimInstanceParameters
+
+                $testParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                    ValuesToCheck = $null
+                }
+
+                { Test-SQLDscParameterState @testParameters } | Should Throw 'If ''DesiredValues'' is a CimInstance then property ''ValuesToCheck'' must contain a value'
+            }
+        }
+
+        Assert-VerifiableMocks
+    }
+
+    Describe 'Testing New-WarningMessage' -Tag NewWarningMessage {
+        Context -Name 'When writing a localized warning message' -Fixture {
+            It 'Should write the error message without throwing' {
+                Mock -CommandName Write-Warning -Verifiable
+
+                { New-WarningMessage -WarningType 'NoKeyFound' } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Write-Warning -Exactly -Times 1
+            }
+        }
+
+        Context -Name 'When trying to write a localized warning message that does not exists' -Fixture {
+            It 'Should throw the correct error message' {
+                Mock -CommandName Write-Warning -Verifiable
+
+                { New-WarningMessage -WarningType 'UnknownDummyMessage' } | Should -Throw 'No Localization key found for ErrorType: ''UnknownDummyMessage''.'
+
+                Assert-MockCalled -CommandName Write-Warning -Exactly -Times 0
+            }
+        }
+
+        Assert-VerifiableMocks
+    }
+
+    Describe 'Testing New-TerminatingError' -Tag NewWarningMessage {
+        Context -Name 'When building a localized error message' -Fixture {
+            It 'Should return the correct error record with the correct error message' {
+
+                $errorRecord = New-TerminatingError -ErrorType 'NoKeyFound' -FormatArgs 'Dummy error'
+                $errorRecord.Exception.Message | Should Be 'No Localization key found for ErrorType: ''Dummy error''.'
+            }
+        }
+
+        Context -Name 'When building a localized error message that does not exists' -Fixture {
+            It 'Should return the correct error record with the correct error message' {
+                $errorRecord = New-TerminatingError -ErrorType 'UnknownDummyMessage' -FormatArgs 'Dummy error'
+                $errorRecord.Exception.Message | Should Be 'No Localization key found for ErrorType: ''UnknownDummyMessage''.'
+            }
+        }
+
+        Assert-VerifiableMocks
     }
 }

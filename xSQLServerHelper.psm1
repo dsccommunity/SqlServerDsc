@@ -61,7 +61,7 @@ function Connect-SQL
 
     if (!$sql)
     {
-        Throw -Message "Failed connecting to SQL $connectSql"
+        throw "Failed connecting to SQL $connectSql"
     }
 
     New-VerboseMessage -Message "Connected to SQL $connectSql"
@@ -526,7 +526,7 @@ function Test-SQLDscParameterState
         -and ($DesiredValues.GetType().Name -ne "PSBoundParametersDictionary"))
     {
         throw "Property 'DesiredValues' in Test-SQLDscParameterState must be either a " + `
-              "Hash table or CimInstance. Type detected was $($DesiredValues.GetType().Name)"
+              "Hash table, CimInstance or PSBoundParametersDictionary. Type detected was $($DesiredValues.GetType().Name)"
     }
 
     if (($DesiredValues.GetType().Name -eq "CimInstance") -and ($null -eq $ValuesToCheck))
@@ -548,20 +548,20 @@ function Test-SQLDscParameterState
         {
             if (($CurrentValues.ContainsKey($_) -eq $false) `
             -or ($CurrentValues.$_ -ne $DesiredValues.$_) `
-            -or (($DesiredValues.ContainsKey($_) -eq $true) -and ($null -ne $DesiredValues.$_ -and $DesiredValues.$_.GetType().IsArray)))
+            -or (($DesiredValues.GetType().Name -ne 'CimInstance' -and $DesiredValues.ContainsKey($_) -eq $true) -and ($null -ne $DesiredValues.$_ -and $DesiredValues.$_.GetType().IsArray)))
             {
                 if ($DesiredValues.GetType().Name -eq "HashTable" -or `
                     $DesiredValues.GetType().Name -eq "PSBoundParametersDictionary")
                 {
-
                     $checkDesiredValue = $DesiredValues.ContainsKey($_)
                 }
                 else
                 {
+                    # If DesiredValue is a CimInstance.
                     $checkDesiredValue = $false
                     if (([System.Boolean]($DesiredValues.PSObject.Properties.Name -contains $_)) -eq $true)
                     {
-                        if ($null -ne $Object.$PropertyName)
+                        if ($null -ne $DesiredValues.$_)
                         {
                             $checkDesiredValue = $true
                         }
@@ -641,7 +641,7 @@ function Test-SQLDscParameterState
                                 }
                             }
                             default {
-                                New-VerboseMessage -Message ("Unable to compare property $fieldName " + `
+                                Write-Warning -Message ("Unable to compare property $fieldName " + `
                                                              "as the type ($($desiredType.Name)) is " + `
                                                              "not handled by the Test-SQLDscParameterState cmdlet")
 
