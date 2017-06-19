@@ -39,6 +39,7 @@
     SHIFT+ALT+F, or press F1 and choose 'Format document' in the list. The
     PowerShell code will then be formatted according to the Style Guideline
     (although maybe not complete, but would help a long way).
+      - Removed alignPropertyValuePairs setting since it does not align with the style guideline.
 - Changes to xSQLServerHelper
   - Removed helper function Grant-ServerPerms because the deprecated resource that was using it was removed.
   - Removed helper function Grant-CNOPerms because the deprecated resource that was using it was removed.
