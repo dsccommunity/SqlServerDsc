@@ -34,6 +34,11 @@
   - Updated CONTRIBUTING.md describing the new localization helper functions.
   - Fixed typos in xSQLServer.strings.psd1
   - Fixed CodeCov badge links in README.md so that they point to the correct branch.
+  - Added VS Code workspace settings file with formatting settings matching the
+    Style Guideline (issue #645). That will make it possible inside VS Code to press
+    SHIFT+ALT+F, or press F1 and choose 'Format document' in the list. The
+    PowerShell code will then be formatted according to the Style Guideline
+    (although maybe not complete, but would help a long way).
 - Changes to xSQLServerHelper
   - Removed helper function Grant-ServerPerms because the deprecated resource that was using it was removed.
   - Removed helper function Grant-CNOPerms because the deprecated resource that was using it was removed.
