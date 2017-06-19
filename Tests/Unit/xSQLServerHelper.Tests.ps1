@@ -925,13 +925,17 @@ InModuleScope $script:moduleName {
 
                 $databaseEngineServerObject = Connect-SQL @testParameters
                 $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+                $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
+                $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should -BeExactly $mockSetupCredential.GetNetworkCredential().Password
+                $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should -BeExactly $mockSetupCredential.GetNetworkCredential().UserName
+                $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
                     -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
             }
         }
 
-        Context 'When connecting to the default instance using the correct service instance but does not return a correct Analysis Service object' {
+        Context 'When connecting to the default instance using the correct service instance but does not return a correct Database Engine object' {
             It 'Should throw the correct error' {
                 $mockExpectedDatabaseEngineServer = $env:COMPUTERNAME
                 $mockExpectedDatabaseEngineInstance = $mockInstanceName
@@ -1152,7 +1156,7 @@ InModuleScope $script:moduleName {
         }
 
         Context -Name 'When passing invalid types for DesiredValues' -Fixture {
-            It 'Should return the correct error when DesiredValues is of wrong type' {
+            It 'Should throw the correct error when DesiredValues is of wrong type' {
                 $mockCurrentValues = @{ Example = 'something' }
                 $mockDesiredValues = 'NotHashTable'
 
@@ -1167,15 +1171,19 @@ InModuleScope $script:moduleName {
             It 'Should return the correct error when DesiredValues contain an unsupported type' {
                 Mock -CommandName Write-Warning -Verifiable
 
+                # This is a dummy type to test with a type that could never be a correct one.
                 class MockUnknownType
                 {
-                    [ValidateNotNullOrEmpty()][string]$Property1
-                    [ValidateNotNullOrEmpty()][string]$Property2
+                    [ValidateNotNullOrEmpty()]
+                    [System.String]
+                    $Property1
 
-                    Contact()
+                    [ValidateNotNullOrEmpty()]
+                    [System.String]
+                    $Property2
+
+                    MockUnknownType()
                     {
-                        $this.Property1 = '1'
-                        $this.Property2 = '2'
                     }
                 }
 
@@ -1194,7 +1202,7 @@ InModuleScope $script:moduleName {
         }
 
         Context -Name 'When passing an CimInstance as DesiredValue and ValuesToCheck is $null' -Fixture {
-            It 'Should return the correct error' {
+            It 'Should throw the correct error' {
                 $mockCurrentValues = @{ Example = 'something' }
 
                 $mockWin32ProcessProperties = @{
