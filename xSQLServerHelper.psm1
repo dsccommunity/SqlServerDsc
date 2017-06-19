@@ -550,15 +550,15 @@ function Test-SQLDscParameterState
 
     $returnValue = $true
 
-    if (($DesiredValues.GetType().Name -ne "HashTable") `
-        -and ($DesiredValues.GetType().Name -ne "CimInstance") `
-        -and ($DesiredValues.GetType().Name -ne "PSBoundParametersDictionary"))
+    if (($DesiredValues.GetType().Name -ne 'HashTable') `
+        -and ($DesiredValues.GetType().Name -ne 'CimInstance') `
+        -and ($DesiredValues.GetType().Name -ne 'PSBoundParametersDictionary'))
     {
         $errorMessage = $script:localizedData.PropertyTypeInvalidForDesiredValues -f $($DesiredValues.GetType().Name)
         New-InvalidArgumentException -ArgumentName 'DesiredValues' -Message $errorMessage
     }
 
-    if (($DesiredValues.GetType().Name -eq "CimInstance") -and ($null -eq $ValuesToCheck))
+    if (($DesiredValues.GetType().Name -eq 'CimInstance') -and ($null -eq $ValuesToCheck))
     {
         $errorMessage = $script:localizedData.PropertyTypeInvalidForValuesToCheck
         New-InvalidArgumentException -ArgumentName 'ValuesToCheck' -Message $errorMessage
@@ -665,8 +665,8 @@ function Test-SQLDscParameterState
                             }
 
                             default {
-                                Write-Warning -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                    -f $fieldName, $desiredType.Name) -Verbose
+                                Write-Warning -Message ($script:localizedData.UnableToCompareProperty `
+                                    -f $fieldName, $desiredType.Name)
 
                                 $returnValue = $false
                             }

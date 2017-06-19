@@ -753,7 +753,8 @@ InModuleScope $script:moduleName {
                         return New-Object Object
                     } -Verifiable
 
-                 { Get-SqlInstanceMajorVersion -SQLInstanceName $mockInstanceName } | Should -Throw 'Could not get the SQL version for the instance ''TEST''.'
+                $mockCorrectErrorMessage = ($script:localizedData.SqlServerVersionIsInvalid -f $mockInstanceName)
+                { Get-SqlInstanceMajorVersion -SQLInstanceName $mockInstanceName } | Should -Throw $mockCorrectErrorMessage
 
                 Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It `
                     -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_InstanceNames_SQL
@@ -1069,6 +1070,7 @@ InModuleScope $script:moduleName {
 
     Describe 'Testing Connect-SQL' -Tag ConnectSql {
         BeforeEach {
+            Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter `
@@ -1145,7 +1147,7 @@ InModuleScope $script:moduleName {
                     -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter `
                     -Verifiable
 
-                $mockCorrectErrorMessage = ('Failed connecting to SQL {0}' -f $mockExpectedDatabaseEngineServer)
+                $mockCorrectErrorMessage = ($script:localizedData.FailedToConnectToDatabaseEngineInstance -f $mockExpectedDatabaseEngineServer)
                 { Connect-SQL } | Should -Throw $mockCorrectErrorMessage
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
@@ -1366,10 +1368,11 @@ InModuleScope $script:moduleName {
                     DesiredValues = $mockDesiredValues
                 }
 
-                { Test-SQLDscParameterState @testParameters } | Should Throw 'Property ''DesiredValues'' in Test-SQLDscParameterState must be either a Hash table, CimInstance or PSBoundParametersDictionary. Type detected was String'
+                $mockCorrectErrorMessage = ($script:localizedData.PropertyTypeInvalidForDesiredValues -f $testParameters.DesiredValues.GetType().Name)
+                { Test-SQLDscParameterState @testParameters } | Should Throw $mockCorrectErrorMessage
             }
 
-            It 'Should return the correct error when DesiredValues contain an unsupported type' {
+            It 'Should write a warning when DesiredValues contain an unsupported type' {
                 Mock -CommandName Write-Warning -Verifiable
 
                 # This is a dummy type to test with a type that could never be a correct one.
@@ -1426,7 +1429,8 @@ InModuleScope $script:moduleName {
                     ValuesToCheck = $null
                 }
 
-                { Test-SQLDscParameterState @testParameters } | Should Throw 'If ''DesiredValues'' is a CimInstance then property ''ValuesToCheck'' must contain a value'
+                $mockCorrectErrorMessage = $script:localizedData.PropertyTypeInvalidForValuesToCheck
+                { Test-SQLDscParameterState @testParameters } | Should Throw $mockCorrectErrorMessage
             }
         }
 
