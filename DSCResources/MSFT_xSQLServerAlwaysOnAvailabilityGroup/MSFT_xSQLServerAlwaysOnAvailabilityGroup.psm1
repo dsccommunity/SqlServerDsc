@@ -1,4 +1,4 @@
-Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
+﻿Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
                                -ChildPath 'xSQLServerHelper.psm1') `
                                -Force
 
@@ -482,7 +482,7 @@ function Set-TargetResource
 
                 if ( $FailoverMode -ne $availabilityGroup.AvailabilityReplicas[$serverObject.Name].FailoverMode )
                 {
-                    $availabilityGroup.AvailabilityReplicas[$serverObject.Name].AvailabilityMode = $FailoverMode
+                    $availabilityGroup.AvailabilityReplicas[$serverObject.Name].FailoverMode = $FailoverMode
                     Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.Name]
                 }
                 
