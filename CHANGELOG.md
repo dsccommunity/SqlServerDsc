@@ -65,6 +65,8 @@
   - Added a test to test some error handling for cluster installations.
 - Changes to xSQLServerAlwaysOnService
   - Fixed typos in localization strings and in tests.
+- Changes to xSQLServerAlwaysOnAvailabilityGroup
+  - Fix: Utilize the value of 'FailoverMode' to set the 'FailoverMode' property of the AG instead of the 'AvailabilityMode' of the AG
 
 ## 7.1.0.0
 

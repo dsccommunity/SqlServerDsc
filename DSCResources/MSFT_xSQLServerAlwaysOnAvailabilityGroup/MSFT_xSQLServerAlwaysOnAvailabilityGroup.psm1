@@ -1,4 +1,4 @@
-﻿Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
+Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
                                -ChildPath 'xSQLServerHelper.psm1') `
                                -Force
 
