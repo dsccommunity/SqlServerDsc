@@ -63,6 +63,7 @@
     InstallSharedWOWDir path is already present on the target node, because of a previous installation (issue #639).
   - Added localization support for all strings.
   - Added a test to test some error handling for cluster installations.
+  - Added support for MDS feature install (issue #486)
 - Changes to xSQLServerAlwaysOnService
   - Fixed typos in localization strings and in tests.
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
@@ -211,7 +212,6 @@
   - Now it skips cluster validation för add node (issue #442).
   - Now it ignores parameters that are not allowed for action Addnode (issue #441).
   - Added support for vNext CTP 1.4 (issue #472).
-  - Added support for MDS feature install (issue #486)
 - Added new resource
   - xSQLServerAlwaysOnAvailabilityGroupReplica
 - Changes to xSQLServerDatabaseRecoveryModel
