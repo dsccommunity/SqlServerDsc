@@ -92,6 +92,10 @@ InModuleScope $script:moduleName {
         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Server'
     }
 
+    $mockThrowLocalizedMessage = {
+        throw $Message
+    }
+
     $mockSqlMajorVersion = 13
     $mockInstanceName = 'TEST'
 
@@ -287,6 +291,7 @@ InModuleScope $script:moduleName {
 
     Describe 'Testing Connect-SQLAnalysis' {
         BeforeEach {
+            Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftAnalysisServicesServer `
                 -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter `
@@ -334,7 +339,7 @@ InModuleScope $script:moduleName {
                     -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter `
                     -Verifiable
 
-                $mockCorrectErrorMessage = ('Failed to connect to Analysis Services ''{0}''. InnerException: Did not get the expected Analysis Services server object.' -f $env:COMPUTERNAME)
+                $mockCorrectErrorMessage = ($script:localizedData.FailedToConnectToAnalysisServicesInstance -f $env:COMPUTERNAME)
                 { Connect-SQLAnalysis } | Should -Throw $mockCorrectErrorMessage
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
@@ -349,7 +354,7 @@ InModuleScope $script:moduleName {
                 # Force the mock of Connect() method to throw 'Unable to connect.'
                 $mockThrowInvalidOperation = $true
 
-                $mockCorrectErrorMessage = ('Failed to connect to Analysis Services ''{0}''. InnerException: Exception calling "Connect" with "1" argument(s): "Unable to connect."'  -f $env:COMPUTERNAME)
+                $mockCorrectErrorMessage = ($script:localizedData.FailedToConnectToAnalysisServicesInstance -f $env:COMPUTERNAME)
                 { Connect-SQLAnalysis } | Should -Throw $mockCorrectErrorMessage
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
@@ -365,8 +370,13 @@ InModuleScope $script:moduleName {
             It 'Should throw the correct error' {
                 $mockExpectedDataSource = "Force wrong datasource"
 
-                $mockCorrectErrorMessage = 'Failed to connect to Analysis Services ''DummyHost\TEST''. InnerException: Exception calling "Connect" with "1" argument(s): "Datasource was expected to be ''Force wrong datasource'', but was ''Data Source=DummyHost\TEST''."'
-                { Connect-SQLAnalysis -SQLServer 'DummyHost' -SQLInstanceName $mockInstanceName } | Should -Throw $mockCorrectErrorMessage
+                $testParameters = @{
+                    SQLServer = 'DummyHost'
+                    SQLInstanceName = $mockInstanceName
+                }
+
+                $mockCorrectErrorMessage = ($script:localizedData.FailedToConnectToAnalysisServicesInstance -f "$($testParameters.SQLServer)\$($testParameters.SQLInstanceName)")
+                { Connect-SQLAnalysis @testParameters } | Should -Throw $mockCorrectErrorMessage
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
                     -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
@@ -423,8 +433,8 @@ InModuleScope $script:moduleName {
 
         BeforeEach {
             Mock -CommandName Connect-SQL -MockWith $mockConnectSql -ModuleName $script:DSCResourceName -Verifiable
+            Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
         }
-        Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:DSCResourceName
 
         $queryParams = @{
             SQLServer = 'Server1'
@@ -441,16 +451,14 @@ InModuleScope $script:moduleName {
                 { Invoke-Query @queryParams } | Should Not Throw
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
             }
 
             It 'Should throw the correct error, ExecuteNonQueryFailed, when executing the query fails' {
                 $queryParams.Query = 'BadQuery'
 
-                { Invoke-Query @queryParams } | Should Throw 'ExecuteNonQueryFailed'
+                { Invoke-Query @queryParams } | Should Throw ($script:localizedData.ExecuteNonQueryFailed -f $queryParams.Database)
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 1 -Exactly
             }
         }
 
@@ -462,39 +470,32 @@ InModuleScope $script:moduleName {
                 Invoke-Query @queryParams -WithResults | Should Not BeNullOrEmpty
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
             }
 
             It 'Should throw the correct error, ExecuteQueryWithResultsFailed, when executing the query fails' {
                 $queryParams.Query = 'BadQuery'
 
-                { Invoke-Query @queryParams -WithResults } | Should Throw 'ExecuteQueryWithResultsFailed'
+                { Invoke-Query @queryParams -WithResults } | Should Throw ($script:localizedData.ExecuteQueryWithResultsFailed -f $queryParams.Database)
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 1 -Exactly
             }
         }
     }
 
     Describe "Testing Update-AvailabilityGroupReplica" {
-        Mock -CommandName New-TerminatingError { $ErrorType } -Verifiable
-
         Context 'When the Availability Group Replica is altered' {
             It 'Should silently alter the Availability Group Replica' {
                 $availabilityReplica = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityReplica
 
                 { Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityReplica } | Should Not Throw
 
-                Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
             }
 
-            It 'Should throw the correct error, AlterAvailabilityGroupReplicaFailed, when altering the Availaiblity Group Replica fails' {
+            It 'Should throw the correct error, AlterAvailabilityGroupReplicaFailed, when altering the Availability Group Replica fails' {
                 $availabilityReplica = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityReplica
                 $availabilityReplica.Name = 'AlterFailed'
 
-                { Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityReplica } | Should Throw 'AlterAvailabilityGroupReplicaFailed'
-
-                Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 1 -Exactly
+                { Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityReplica } | Should Throw ($script:localizedData.AlterAvailabilityGroupReplicaFailed -f $availabilityReplica.Name)
             }
         }
     }
@@ -595,6 +596,7 @@ InModuleScope $script:moduleName {
             Mock -CommandName Push-Location -Verifiable
             Mock -CommandName Pop-Location -Verifiable
             Mock -CommandName Import-Module -MockWith $mockImportModule -Verifiable
+            Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
         }
 
         Context 'When module SqlServer exists' {
@@ -640,7 +642,7 @@ InModuleScope $script:moduleName {
             It 'Should throw the correct error message' {
                 Mock -CommandName Get-Module
 
-                { Import-SQLPSModule } | Should -Throw 'Neither SqlServer module or SQLPS module was found.'
+                { Import-SQLPSModule } | Should -Throw $script:localizedData.PowerShellSqlModuleNotFound
 
                 Assert-MockCalled -CommandName Get-Module -Exactly -Times 2 -Scope It
                 Assert-MockCalled -CommandName Push-Location -Exactly -Times 0 -Scope It
@@ -654,12 +656,13 @@ InModuleScope $script:moduleName {
             $mockExpectedModuleNameToImport = 'SqlServer'
 
             It 'Should throw the correct error message' {
+                $errorMessage = 'Mock Import-Module throwing a mocked error.'
                 Mock -CommandName Get-Module -MockWith $mockGetModule -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
                 Mock -CommandName Import-Module -MockWith {
-                    throw 'Mock Import-Module throwing a mocked error.'
+                    throw $errorMessage
                 }
 
-                { Import-SQLPSModule } | Should -Throw 'Failed to import SqlServer module. InnerException: Mock Import-Module throwing a mocked error.'
+                { Import-SQLPSModule } | Should -Throw ($script:localizedData.FailedToImportPowerShellSqlModule -f $mockExpectedModuleNameToImport)
 
                 Assert-MockCalled -CommandName Get-Module -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Push-Location -Exactly -Times 1 -Scope It
@@ -676,7 +679,7 @@ InModuleScope $script:moduleName {
             It 'Should throw the correct error message' {
                 Mock -CommandName Get-Module -MockWith $mockGetModule -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
 
-                { Import-SQLPSModule } | Should -Throw 'Failed to import SqlServer module. InnerException: Wrong module was loaded. Expected UnknownModule, but was SqlServer.'
+                { Import-SQLPSModule } | Should -Throw ($script:localizedData.FailedToImportPowerShellSqlModule -f $mockModuleNameToImport)
 
                 Assert-MockCalled -CommandName Get-Module -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Push-Location -Exactly -Times 1 -Scope It
@@ -750,7 +753,8 @@ InModuleScope $script:moduleName {
                         return New-Object Object
                     } -Verifiable
 
-                 { Get-SqlInstanceMajorVersion -SQLInstanceName $mockInstanceName } | Should -Throw 'Could not get the SQL version for the instance ''TEST''.'
+                $mockCorrectErrorMessage = ($script:localizedData.SqlServerVersionIsInvalid -f $mockInstanceName)
+                { Get-SqlInstanceMajorVersion -SQLInstanceName $mockInstanceName } | Should -Throw $mockCorrectErrorMessage
 
                 Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It `
                     -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_InstanceNames_SQL
@@ -1066,6 +1070,7 @@ InModuleScope $script:moduleName {
 
     Describe 'Testing Connect-SQL' -Tag ConnectSql {
         BeforeEach {
+            Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter `
@@ -1142,7 +1147,7 @@ InModuleScope $script:moduleName {
                     -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter `
                     -Verifiable
 
-                $mockCorrectErrorMessage = ('Failed connecting to SQL {0}' -f $mockExpectedDatabaseEngineServer)
+                $mockCorrectErrorMessage = ($script:localizedData.FailedToConnectToDatabaseEngineInstance -f $mockExpectedDatabaseEngineServer)
                 { Connect-SQL } | Should -Throw $mockCorrectErrorMessage
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
@@ -1363,10 +1368,11 @@ InModuleScope $script:moduleName {
                     DesiredValues = $mockDesiredValues
                 }
 
-                { Test-SQLDscParameterState @testParameters } | Should Throw 'Property ''DesiredValues'' in Test-SQLDscParameterState must be either a Hash table, CimInstance or PSBoundParametersDictionary. Type detected was String'
+                $mockCorrectErrorMessage = ($script:localizedData.PropertyTypeInvalidForDesiredValues -f $testParameters.DesiredValues.GetType().Name)
+                { Test-SQLDscParameterState @testParameters } | Should Throw $mockCorrectErrorMessage
             }
 
-            It 'Should return the correct error when DesiredValues contain an unsupported type' {
+            It 'Should write a warning when DesiredValues contain an unsupported type' {
                 Mock -CommandName Write-Warning -Verifiable
 
                 # This is a dummy type to test with a type that could never be a correct one.
@@ -1423,7 +1429,8 @@ InModuleScope $script:moduleName {
                     ValuesToCheck = $null
                 }
 
-                { Test-SQLDscParameterState @testParameters } | Should Throw 'If ''DesiredValues'' is a CimInstance then property ''ValuesToCheck'' must contain a value'
+                $mockCorrectErrorMessage = $script:localizedData.PropertyTypeInvalidForValuesToCheck
+                { Test-SQLDscParameterState @testParameters } | Should Throw $mockCorrectErrorMessage
             }
         }
 

@@ -1,12 +1,12 @@
 ﻿<#
     .SYNOPSIS
-        Creates and throws an invalid argument exception
+        Creates and throws an invalid argument exception.
 
     .PARAMETER Message
-        The message explaining why this error is being thrown
+        The message explaining why this error is being thrown.
 
     .PARAMETER ArgumentName
-        The name of the invalid argument that is causing this error to be thrown
+        The name of the invalid argument that is causing this error to be thrown.
 #>
 function New-InvalidArgumentException
 {
@@ -39,13 +39,13 @@ function New-InvalidArgumentException
 
 <#
     .SYNOPSIS
-        Creates and throws an invalid operation exception
+        Creates and throws an invalid operation exception.
 
     .PARAMETER Message
-        The message explaining why this error is being thrown
+        The message explaining why this error is being thrown.
 
     .PARAMETER ErrorRecord
-        The error record containing the exception that is causing this terminating error
+        The error record containing the exception that is causing this terminating error.
 #>
 function New-InvalidOperationException
 {
@@ -90,13 +90,13 @@ function New-InvalidOperationException
 
 <#
     .SYNOPSIS
-        Creates and throws an object not found exception
+        Creates and throws an object not found exception.
 
     .PARAMETER Message
-        The message explaining why this error is being thrown
+        The message explaining why this error is being thrown.
 
     .PARAMETER ErrorRecord
-        The error record containing the exception that is causing this terminating error
+        The error record containing the exception that is causing this terminating error.
 #>
 function New-ObjectNotFoundException
 {
@@ -141,13 +141,13 @@ function New-ObjectNotFoundException
 
 <#
     .SYNOPSIS
-        Creates and throws an invalid result exception
+        Creates and throws an invalid result exception.
 
     .PARAMETER Message
-        The message explaining why this error is being thrown
+        The message explaining why this error is being thrown.
 
     .PARAMETER ErrorRecord
-        The error record containing the exception that is causing this terminating error
+        The error record containing the exception that is causing this terminating error.
 #>
 function New-InvalidResultException
 {
@@ -201,6 +201,11 @@ function New-InvalidResultException
             For WindowsOptionalFeature: MSFT_WindowsOptionalFeature
             For Service: MSFT_ServiceResource
             For Registry: MSFT_RegistryResource
+            For Helper: xSQLServerHelper
+
+    .PARAMETER ScriptRoot
+        Optional. The root path where to expect to find the culture folder. This is only needed
+        for localization in helper modules. This should not normally be used for resources.
 #>
 function Get-LocalizedData
 {
@@ -210,16 +215,35 @@ function Get-LocalizedData
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ResourceName
+        $ResourceName,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $ScriptRoot
     )
 
-    $resourceDirectory = Join-Path -Path $PSScriptRoot -ChildPath $ResourceName
-    $localizedStringFileLocation = Join-Path -Path $resourceDirectory -ChildPath $PSUICulture
+    if ( -not $ScriptRoot )
+    {
+        $resourceDirectory = Join-Path -Path $PSScriptRoot -ChildPath $ResourceName
+        $localizedStringFileLocation = Join-Path -Path $resourceDirectory -ChildPath $PSUICulture
+    }
+    else
+    {
+        $localizedStringFileLocation = Join-Path -Path $ScriptRoot -ChildPath $PSUICulture
+    }
 
     if (-not (Test-Path -Path $localizedStringFileLocation))
     {
         # Fallback to en-US
-        $localizedStringFileLocation = Join-Path -Path $resourceDirectory -ChildPath 'en-US'
+        if ( -not $ScriptRoot )
+        {
+            $localizedStringFileLocation = Join-Path -Path $resourceDirectory -ChildPath 'en-US'
+        }
+        else
+        {
+            $localizedStringFileLocation = Join-Path -Path $ScriptRoot -ChildPath 'en-US'
+        }
     }
 
     Import-LocalizedData `
