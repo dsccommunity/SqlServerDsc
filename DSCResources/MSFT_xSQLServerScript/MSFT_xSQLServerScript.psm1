@@ -74,7 +74,7 @@ function Get-TargetResource
         SetFilePath = [System.String] $SetFilePath
         GetFilePath = [System.String] $GetFilePath
         TestFilePath = [System.String] $TestFilePath
-        Username = [System.Object] $Credential
+        Credential = [System.Object] $Credential
         Variable = [System.String[]] $Variable
         GetResult = [System.String[]] $getresult
     }
