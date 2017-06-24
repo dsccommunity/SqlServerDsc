@@ -22,6 +22,9 @@
 - Changes to xSQLServerSetup
   - Updated Get-TargetResource to correctly detect BOL, Conn, BC and other tools when they are installed without SQLENGINE (issue #591).
   - Now it can detect Documentation Components correctly after the change in issue #591 (issue #628)
+  - Fixed bug that would prevent a successful return of Get-DscConfiguration if a cluster install is not used. (issue #393)
+- Changes to xSQLServerScript
+  - Fixed bug with schema and variable mismatch (issue #661)
 - Changes to xSQLServer
   - BREAKING CHANGE: xSQLServer does no longer try to support WMF 4.0 (PowerShell 4.0) (issue #574). Minimum supported version of WMF is now 5.0 (PowerShell 5.0).
   - BREAKING CHANGE: Removed deprecated resource xSQLAOGroupJoin (issue #457).
