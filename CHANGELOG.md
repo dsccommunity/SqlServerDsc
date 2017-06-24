@@ -149,6 +149,14 @@
       parameter Verbose.
     - Moved localization strings from xSQLServer.strings.psd1 to
       xSQLServerHelper.strings.psd1.
+  - Changes to Connect-SQL and Import-SQLPSModule
+    - Now it correctly loads the correct assemblies when SqlServer module is
+      present (issue #649).
+    - Now SQLPS module will be correctly loaded (discovered) after installation
+      of SQL Server. Previously resources depending on SQLPS module could fail
+      because SQLPS was not found after installation because the PSModulePath
+      environment variable in the (LCM) PowerShell session did not contain the new
+      module path.
 - Changes to xSQLServerSetup
   - BREAKING CHANGE: Replaced StartWin32Process helper function with the cmdlet
     Start-Process (issue #41, #93 and #126).

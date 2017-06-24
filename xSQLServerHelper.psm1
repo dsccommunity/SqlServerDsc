@@ -37,7 +37,7 @@ function Connect-SQL
         $SetupCredential
     )
 
-    $null = [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.Smo')
+    Import-SQLPSModule
 
     if ($SQLInstanceName -eq 'MSSQLSERVER')
     {
@@ -697,6 +697,15 @@ function Import-SQLPSModule
     else
     {
         Write-Verbose -Message ($script:localizedData.PreferredModuleNotFound) -Verbose
+
+        <#
+            After installing SQL Server the current PowerShell session doesn't know about the new path
+            that was added for the SQLPS module.
+            This reloads PowerShell session environment variable PSModulePath to make sure it contains
+            all paths.
+        #>
+        $env:PSModulePath = [System.Environment]::GetEnvironmentVariable('PSModulePath', 'Machine')
+
         $module = (Get-Module -FullyQualifiedName 'SQLPS' -ListAvailable).Name
     }
 
