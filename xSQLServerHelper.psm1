@@ -356,7 +356,7 @@ function New-TerminatingError
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String]
+        [System.String]
         $ErrorType,
 
         [Parameter(Mandatory = $false)]
@@ -436,7 +436,7 @@ function New-WarningMessage
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String]
+        [System.String]
         $WarningType,
 
         [String[]]
@@ -478,7 +478,7 @@ function New-VerboseMessage
 {
     [CmdletBinding()]
     [Alias()]
-    [OutputType([String])]
+    [OutputType([System.String])]
     Param
     (
         [Parameter(Mandatory=$true)]
@@ -608,8 +608,8 @@ function Test-SQLDscParameterState
                         switch ($desiredType.Name)
                         {
                             "String" {
-                                if (-not [String]::IsNullOrEmpty($CurrentValues.$fieldName) -or `
-                                    -not [String]::IsNullOrEmpty($DesiredValues.$fieldName))
+                                if (-not [System.String]::IsNullOrEmpty($CurrentValues.$fieldName) -or `
+                                    -not [System.String]::IsNullOrEmpty($DesiredValues.$fieldName))
                                 {
                                     New-VerboseMessage -Message ("String value for property $fieldName does not match. " + `
                                                                  "Current state is '$($CurrentValues.$fieldName)' " + `
@@ -738,11 +738,11 @@ function Restart-SqlService
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $SQLServer,
 
         [Parameter()]
-        [String]
+        [System.String]
         $SQLInstanceName = 'MSSQLSERVER',
 
         [Parameter()]
@@ -835,19 +835,19 @@ function Invoke-Query
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String]
+        [System.String]
         $SQLServer,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $SQLInstanceName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Database,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Query,
 
         [Parameter()]
@@ -921,16 +921,16 @@ function Test-LoginEffectivePermissions
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String]
+        [System.String]
         $SQLServer,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $SQLInstanceName,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [string]
+        [System.String]
         $LoginName,
 
         [Parameter(Mandatory = $true)]
@@ -973,4 +973,178 @@ function Test-LoginEffectivePermissions
     }
 
     return $permissionsPresent
+}
+
+<#
+    .SYNOPSIS
+        Determine if the seeding mode of the specified availability group is automatic.
+
+    .PARAMETER SQLServer
+        The hostname of the server that hosts the SQL instance.
+    
+    .PARAMETER SQLInstanceName
+        The name of the SQL instance that hosts the availability group.
+
+    .PARAMETER AvailabilityGroupName
+        The name of the availability group to check.
+
+    .PARAMETER AvailabilityReplicaName
+        The name of the availabilitiy replica to check.
+#>
+function Test-AvailabilityReplicaSeedingModeAutomatic
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $SQLServer,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $SQLInstanceName,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $AvailabilityGroupName,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $AvailabilityReplicaName
+    )
+
+    # Assume automatic seeding is disabled by default
+    $availabilityReplicaSeedingModeAutomatic = $false
+
+    $serverObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+    
+    # Only check the seeding mode if this is SQL 2016 or newer
+    if ( $serverObject.Version -ge 13 )
+    {
+        $invokeQueryParams = @{
+            SQLServer = $SQLServer
+            SQLInstanceName = $SQLInstanceName
+            Database = 'master'
+            WithResults = $true
+        }
+        
+        $queryToGetSeedingMode = "
+            SELECT seeding_mode_desc
+            FROM sys.availability_replicas ar
+            INNER JOIN sys.availability_groups ag ON ar.group_id = ag.group_id
+            WHERE ag.name = '$AvailabilityGroupName'
+                AND ar.replica_server_name = '$AvailabilityReplicaName'
+        "
+        $seedingModeResults = Invoke-Query @invokeQueryParams -Query $queryToGetSeedingMode
+        $seedingMode = $seedingModeResults.Tables.Rows.seeding_mode_desc
+
+        if ( $seedingMode -eq 'Automatic' )
+        {
+            $availabilityReplicaSeedingModeAutomatic = $true
+        }
+    }
+
+    return $availabilityReplicaSeedingModeAutomatic
+}
+
+<#
+    .SYNOPSIS
+        Get the server object of the primary replica of the specified availability group.
+
+    .PARAMETER ServerObject
+        The current server object connection.
+    
+    .PARAMETER AvailabilityGroup
+        The availability group object used to find the primary replica server name.
+#>
+function Get-PrimaryReplicaServerObject
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [Microsoft.SqlServer.Management.Smo.Server]
+        $ServerObject,
+        
+        [Parameter(Mandatory = $true)]
+        [Microsoft.SqlServer.Management.Smo.AvailabilityGroup]
+        $AvailabilityGroup
+    )
+
+    $primaryReplicaServerObject = $serverObject
+    
+    # Determine if we're connected to the primary replica
+    if ( ( $AvailabilityGroup.PrimaryReplicaServerName -ne $serverObject.DomainInstanceName ) -and ( -not [System.String]::IsNullOrEmpty($AvailabilityGroup.PrimaryReplicaServerName) ) )
+    {
+        $primaryReplicaServerObject = Connect-SQL -SQLServer $AvailabilityGroup.PrimaryReplicaServerName
+    }
+
+    return $primaryReplicaServerObject
+}
+
+<#
+    .SYNOPSIS
+        Determine if the current login has impersonate permissions
+
+    .PARAMETER ServerObject
+        The server object on which to perform the test.
+#>
+function Test-ImpersonatePermissions
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [Microsoft.SqlServer.Management.Smo.Server]
+        $ServerObject
+    )
+
+    $testLoginEffectivePermissionsParams = @{
+        SQLServer = $ServerObject.ComputerNamePhysicalNetBIOS
+        SQLInstanceName = $ServerObject.ServiceName
+        LoginName = $ServerObject.ConnectionContext.TrueLogin
+        Permissions = @('IMPERSONATE ANY LOGIN')
+    }
+    
+    $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+
+    if ( -not $impersonatePermissionsPresent )
+    {
+        New-VerboseMessage -Message ( 'The login "{0}" does not have impersonate permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
+    }
+
+    return $impersonatePermissionsPresent
+}
+
+<#
+    .SYNOPSIS
+        Takes a SQL Instance name in the format of 'Server\Instance' and splits it into a hash table prepared to be passed into Connect-SQL.
+
+    .PARAMETER FullSQLInstanceName
+        The full SQL instance name string to be split.
+    
+    .OUTPUTS
+        Hashtable with the properties SQLServer and SQLInstanceName.
+#>
+function Split-FullSQLInstanceName
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $FullSQLInstanceName
+    )
+
+    $sqlServer,$sqlInstanceName = $FullSQLInstanceName.Split('\')
+
+    if ( [System.String]::IsNullOrEmpty($sqlInstanceName) )
+    {
+        $sqlInstanceName = 'MSSQLSERVER'
+    }
+
+    return @{
+        SQLServer = $sqlServer
+        SQLInstanceName = $sqlInstanceName
+    }
 }

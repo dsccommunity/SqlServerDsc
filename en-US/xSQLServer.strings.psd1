@@ -14,6 +14,8 @@ AlterAvailabilityGroupFailed = Failed to alter the availability group '{0}'.
 HadrNotEnabled = HADR is not enabled.
 AvailabilityGroupNotFound = Unable to locate the availability group '{0}' on the instance '{1}'.
 SqlServerVersionIsInvalid = 'Could not get the SQL version for the instance '{0}'.
+ParameterNotOfType = The parameter '{0}' is not of the type '{1}'.
+ParameterNullOrEmpty = The parameter '{0}' is NULL or empty.
 
 # SQLServer
 NoDatabase = Database '{0}' does not exist on SQL server '{1}\\{2}'.
@@ -76,6 +78,10 @@ RemoveAvailabilityGroupFailed = Failed to remove the availability group '{0}' fr
 JoinAvailabilityGroupFailed = Failed to join the availability group replica '{0}'.
 RemoveAvailabilityGroupReplicaFailed = Failed to remove the availability group replica '{0}'.
 ReplicaNotFound = Unable to find the availability group replica '{0}' on the instance '{1}'.
+
+# AlwaysOnAvailabilityGroupDatabaseMembership
+AlterAvailabilityGroupDatabaseMembershipFailure = {0}
+ImpersonatePermissionsMissing = The login '{0}' is missing impersonate permissions in the instances '{1}'.
 
 # SQLServerHelper
 ExecuteQueryWithResultsFailed = Executing query with results failed on database '{0}'.

@@ -73,6 +73,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 
 * [**xSQLServerAlias**](#xsqlserveralias) resource to manage SQL Server client Aliases.
 * [**xSQLServerAlwaysOnAvailabilityGroup**](#xsqlserveralwaysonavailabilitygroup) resource to ensure an availability group is present or absent.
+* [**xSQLServerAlwayOnAvailabilityGroupDatabaseMembership**](#xsqlserveralwaysonavailabilitygroupdatabasemembership) to manage the database membership in Availability Groups.
 * [**xSQLServerAlwaysOnAvailabilityGroupReplica**](#xsqlserveralwaysonavailabilitygroupreplica) resource to ensure an availability group replica is present or absent.
 * [**xSQLServerAlwaysOnService**](#xsqlserveralwaysonservice) resource to enable always on on a SQL Server.
 * [**xSQLServerAvailabilityGroupListener**](#xsqlserveravailabilitygrouplistener) Create or remove an availability group listener.
@@ -156,6 +157,33 @@ This resource is used to create, remove, and update an Always On Availability Gr
 
 * [Add a SQL Server Always On Availability Group](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroup/1-CreateAvailabilityGroup.ps1)
 * [Remove a SQL Server Always On Availability Group](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroup/2-RemoveAvailabilityGroup.ps1)
+
+### xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
+
+This resource is used to add and/or remove databases to a specified availability group.
+
+### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
+* Target machine must be running Windows Management Framework (WMF) 5 or later.
+
+### Parameters
+
+* **[String] DatabaseName** _(Required)_: The name of the database(s) to add to the availability group. This accepts wildcards.
+* **[String] SQLServer** _(Key)_: Hostname of the SQL Server where the primary replica of the availability group lives. If the availability group is not currently on this server, the resource will attempt to connect to the server where the primary replica lives.
+* **[String] SQLInstanceName** _(Key)_: Name of the SQL instance where the primary replica of the availability group lives. If the availability group is not currently on this instance, the resource will attempt to connect to the instance where the primary replica lives.
+* **[String] AvailabilityGroupName** _(Key)_: The name of the availability group in which to manage the database membership(s).
+* **[String] BackupPath** _(Required)_: The path used to seed the availability group replicas. This should be a path that is accessible by all of the replicas.
+* **[String] Ensure** _(Write)_: Specifies the membership of the database(s) in the availability group. The options are:
+
+  * **Present**:  The defined database(s) are added to the availability group. All other databases that may be a member of the availability group are ignored.
+  * **Absent**:   The defined database(s) are removed from the availability group. All other databases that may be a member of the availability group are ignored.
+
+  The default is 'Present'. { *Present* | Absent  }
+
+* **[Boolean] Force** _(Write)_: When used with "Ensure = 'Present'" it ensures the specified database(s) are the only databases that are a member of the specified Availability Group. This parameter is ignored when 'Ensure' is 'Absent'.
+* **[Boolean] MatchDatabaseOwner** _(Write)_: If set to $true, this ensures the database owner of the database on the primary replica is the owner of the database on all secondary replicas. This requires the database owner is available as a login on all replicas and that the PSDscRunAsAccount has impersonate permissions. If set to $false, the owner of the database will be the PSDscRunAsAccount. The default is '$true'.
 
 ### xSQLServerAlwaysOnAvailabilityGroupReplica
 
