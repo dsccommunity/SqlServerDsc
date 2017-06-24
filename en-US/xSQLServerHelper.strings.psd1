@@ -56,6 +56,8 @@ ConvertFrom-StringData @'
     AlterAvailabilityGroupFailed = Failed to alter the availability group '{0}'.
     HadrNotEnabled = HADR is not enabled.
     AvailabilityGroupNotFound = Unable to locate the availability group '{0}' on the instance '{1}'.
+    ParameterNotOfType = The parameter '{0}' is not of the type '{1}'.
+    ParameterNullOrEmpty = The parameter '{0}' is NULL or empty.
 
     # SQLServer
     NoDatabase = Database '{0}' does not exist on SQL server '{1}\\{2}'.
@@ -117,6 +119,10 @@ ConvertFrom-StringData @'
     JoinAvailabilityGroupFailed = Failed to join the availability group replica '{0}'.
     RemoveAvailabilityGroupReplicaFailed = Failed to remove the availability group replica '{0}'.
     ReplicaNotFound = Unable to find the availability group replica '{0}' on the instance '{1}'.
+
+    # AlwaysOnAvailabilityGroupDatabaseMembership
+    AlterAvailabilityGroupDatabaseMembershipFailure = {0}
+    ImpersonatePermissionsMissing = The login '{0}' is missing impersonate permissions in the instances '{1}'.
 
     # Max degree of parallelism
     MaxDopSetError = Unexpected result when trying to configure the max degree of parallelism server configuration option.
