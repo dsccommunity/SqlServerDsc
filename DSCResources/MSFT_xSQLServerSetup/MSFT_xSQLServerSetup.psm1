@@ -115,9 +115,6 @@ function Get-TargetResource
     $integrationServiceName = "MsDtsServer$($sqlVersion)0"
 
     $features = ''
-    $clusteredSqlGroupName = ''
-    $clusteredSqlHostname = ''
-    $clusteredSqlIPAddress = ''
 
     $services = Get-Service
 
