@@ -1186,12 +1186,12 @@ Installs SQL Server on the target node.
     instance).
   * FailoverClusterNetworkName
   * FailoverClusterIPAddress
-  * _When installing Database Engine._
+  * Additional parameters need when installing Database Engine.
     * InstallSQLDataDir
     * AgtSvcAccount
     * SQLSvcAccount
     * SQLSysAdminAccounts
-  * _When installing Analysis Services._
+  * Additional parameters need when installing Analysis Services.
     * ASSysAdminAccounts
     * AsSvcAccount
 
