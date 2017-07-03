@@ -405,10 +405,14 @@ No description.
 
 #### Examples
 
-* [Adds an Availability Group listener with the same name as the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1)
-* [Adds an Availability Group listener with a different name than the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
-* [Removes an Availability Group listener with the same name as the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1)
-* [Removes an Availability Group listener with a different name than the Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
+* [Adds an Availability Group listener with the same name as the
+  Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1)
+* [Adds an Availability Group listener with a different name than the
+  Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
+* [Removes an Availability Group listener with the same name as the
+  Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1)
+* [Removes an Availability Group listener with a different name than the
+  Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
 * [Adds an Availability Group listener using DHCP on the default server subnet](/Examples/Resources/xSQLServerAvailabilityGroupListener/5-AddAvailabilityGroupListenerUsingDHCPWithDefaultServerSubnet.ps1)
 * [Adds an Availability Group listener using DHCP with a specific subnet](/Examples/Resources/xSQLServerAvailabilityGroupListener/6-AddAvailabilityGroupListenerUsingDHCPWithSpecificSubnet.ps1)
 
@@ -643,8 +647,11 @@ This resource is used to give connect permission to an endpoint for a user (logi
 
 * [Add connect permission to an Endpoint](/Examples/Resources/xSQLServerEndpointPermission/1-AddConnectPermission.ps1)
 * [Remove the connect permission for an Endpoint](/Examples/Resources/xSQLServerEndpointPermission/2-RemoveConnectPermission.ps1)
-* [Add connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/Examples/Resources/xSQLServerEndpointPermission/3-AddConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1)
-* [Remove connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/Examples/Resources/xSQLServerEndpointPermission/4-RemoveConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1)
+* [Add connect permission to both an Always On primary replica and an Always On
+  secondary replica, and where each replica has a different SQL service account](/Examples/Resources/xSQLServerEndpointPermission/3-AddConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1)
+* [Remove connect permission to both an Always On primary replica and an
+  Always On secondary replica, and where each replica has a different SQL service
+  account](/Examples/Resources/xSQLServerEndpointPermission/4-RemoveConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1)
 
 ### xSQLServerEndpointState
 
