@@ -163,22 +163,23 @@ No description.
 
 #### Parameters
 
-* **[String] Name** _(Key)_: The name of Alias (e.g. svr01\inst01).
-* **[String] ServerName** _(Key)_: The SQL Server you are aliasing (the NetBIOS
+* **`[String]` Name** _(Key)_: The name of Alias (e.g. svr01\inst01).
+* **`[String]` ServerName** _(Key)_: The SQL Server you are aliasing (the NetBIOS
   name or FQDN).
-* **[String] Ensure** _(Write)_: Determines whether the alias should be added or
+* **`[String]` Ensure** _(Write)_: Determines whether the alias should be added or
   removed. Default value is 'Present'. { *Present* | Absent }.
-* **[String] Protocol** _(Write)_: Protocol to use when connecting. Valid values
+* **`[String]` Protocol** _(Write)_: Protocol to use when connecting. Valid values
   are 'TCP' or 'NP' (Named Pipes). Default value is 'TCP'. { *TCP* | NP }.
-* **[Uint16] TCPPort** _(Write)_: The TCP port SQL is listening on. Only used when
+* **`[Uint16]` TCPPort** _(Write)_: The TCP port SQL is listening on. Only used when
   protocol is set to 'TCP'. Default value is port 1433.
-* **[Boolean] UseDynamicTcpPort** _(Write)_: The UseDynamicTcpPort specify that
+* **`[Boolean]` UseDynamicTcpPort** _(Write)_: The UseDynamicTcpPort specify that
   the Net-Library will determine the port dynamically. The port specified in Port
   number will not be used. Default value is '$false'.
 
 #### Read-Only Properties from Get-TargetResource
 
-* **[String] PipeName** _(Read)_: Named Pipes path from the Get-TargetResource method.
+* **`[String]` PipeName** _(Read)_: Named Pipes path from the Get-TargetResource
+  method.
 
 #### Examples
 
@@ -199,38 +200,38 @@ It will also manage the Availability Group replica on the specified node.
 
 #### Parameters
 
-* **[String] Name** _(Key)_: The name of the availability group.
-* **[String] SQLServer** _(Required)_: Hostname of the SQL Server to be configured.
-* **[String] SQLInstanceName** _(Key)_: Name of the SQL instance to be configured.
-* **[String] Ensure** _(Write)_: Specifies if the availability group should be
+* **`[String]` Name** _(Key)_: The name of the availability group.
+* **`[String]` SQLServer** _(Required)_: Hostname of the SQL Server to be configured.
+* **`[String]` SQLInstanceName** _(Key)_: Name of the SQL instance to be configured.
+* **`[String]` Ensure** _(Write)_: Specifies if the availability group should be
   present or absent. Default is Present. { *Present* | Absent }
-* **[String] AutomatedBackupPreference** _(Write)_: Specifies the automated backup
+* **`[String]` AutomatedBackupPreference** _(Write)_: Specifies the automated backup
   preference for the availability group. Default is None.
   { Primary | SecondaryOnly | Secondary | *None* }
-* **[String] AvailabilityMode** _(Write)_: Specifies the replica availability mode.
+* **`[String]` AvailabilityMode** _(Write)_: Specifies the replica availability mode.
   Default is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
-* **[Uint32] BackupPriority** _(Write)_: Specifies the desired priority of the replicas
-  in performing backups. The acceptable values for this parameter are: integers
-  from 0 through 100. Of the set of replicas which are online and available, the
-  replica that has the highest priority performs the backup. Default is 50.
-* **[Boolean] BasicAvailabilityGroup** _(Write)_: Specifies the type of
+* **`[Uint32]` BackupPriority** _(Write)_: Specifies the desired priority of the
+  replicas in performing backups. The acceptable values for this parameter are:
+  integers from 0 through 100. Of the set of replicas which are online and available,
+  the replica that has the highest priority performs the backup. Default is 50.
+* **`[Boolean]` BasicAvailabilityGroup** _(Write)_: Specifies the type of
   availability group is Basic. This is only available is SQL Server 2016 and later
   and is ignored when applied to previous versions.
-* **[String] ConnectionModeInPrimaryRole** _(Write)_: Specifies how the availability
+* **`[String]` ConnectionModeInPrimaryRole** _(Write)_: Specifies how the availability
   replica handles connections when in the primary role.
   { AllowAllConnections | AllowReadWriteConnections }
-* **[String] ConnectionModeInSecondaryRole** _(Write)_: Specifies how the availability
+* **`[String]` ConnectionModeInSecondaryRole** _(Write)_: Specifies how the availability
   replica handles connections when in the secondary role.
   { AllowNoConnections | AllowReadIntentConnectionsOnly | AllowAllConnections }
-* **[String] EndpointHostName** _(Write)_: Specifies the hostname or IP address
+* **`[String]` EndpointHostName** _(Write)_: Specifies the hostname or IP address
   of the availability group replica endpoint. Default is the instance network name.
-* **[String] FailureConditionLevel** _(Write)_: Specifies the automatic failover
+* **`[String]` FailureConditionLevel** _(Write)_: Specifies the automatic failover
   behavior of the availability group. { OnServerDown | OnServerUnresponsive |
   OnCriticalServerErrors | OnModerateServerErrors |
   OnAnyQualifiedFailureCondition }
-* **[String] FailoverMode** _(Write)_: Specifies the failover mode.
+* **`[String]` FailoverMode** _(Write)_: Specifies the failover mode.
   Default is 'Manual'. { Automatic | *Manual* }
-* **[Uint32] HealthCheckTimeout** _(Write)_: Specifies the length of time, in
+* **`[Uint32]` HealthCheckTimeout** _(Write)_: Specifies the length of time, in
   milliseconds, after which AlwaysOn availability groups declare an unresponsive
   server to be unhealthy. Default is 30000.
 
@@ -252,21 +253,21 @@ group.
 
 ### Parameters
 
-* **[String] DatabaseName** _(Required)_: The name of the database(s) to add to
+* **`[String]` DatabaseName** _(Required)_: The name of the database(s) to add to
   the availability group. This accepts wildcards.
-* **[String] SQLServer** _(Key)_: Hostname of the SQL Server where the primary
+* **`[String]` SQLServer** _(Key)_: Hostname of the SQL Server where the primary
   replica of the availability group lives. If the availability group is not
   currently on this server, the resource will attempt to connect to the server
   where the primary replica lives.
-* **[String] SQLInstanceName** _(Key)_: Name of the SQL instance where the primary
+* **`[String]` SQLInstanceName** _(Key)_: Name of the SQL instance where the primary
   replica of the availability group lives. If the availability group is not currently
   on this instance, the resource will attempt to connect to the instance where the
   primary replica lives.
-* **[String] AvailabilityGroupName** _(Key)_: The name of the availability group
+* **`[String]` AvailabilityGroupName** _(Key)_: The name of the availability group
   in which to manage the database membership(s).
-* **[String] BackupPath** _(Required)_: The path used to seed the availability group
-  replicas. This should be a path that is accessible by all of the replicas.
-* **[String] Ensure** _(Write)_: Specifies the membership of the database(s) in
+* **`[String]` BackupPath** _(Required)_: The path used to seed the availability
+  group replicas. This should be a path that is accessible by all of the replicas.
+* **`[String]` Ensure** _(Write)_: Specifies the membership of the database(s) in
   the availability group. The options are:
 
   * **Present**:  The defined database(s) are added to the availability group.
@@ -276,10 +277,10 @@ group.
 
   The default is 'Present'. { *Present* | Absent  }
 
-* **[Boolean] Force** _(Write)_: When used with "Ensure = 'Present'" it ensures
+* **`[Boolean]` Force** _(Write)_: When used with "Ensure = 'Present'" it ensures
   the specified database(s) are the only databases that are a member of the specified
   Availability Group. This parameter is ignored when 'Ensure' is 'Absent'.
-* **[Boolean] MatchDatabaseOwner** _(Write)_: If set to $true, this ensures the
+* **`[Boolean]` MatchDatabaseOwner** _(Write)_: If set to $true, this ensures the
   database owner of the database on the primary replica is the owner of the database
   on all secondary replicas. This requires the database owner is available as a
   login on all replicas and that the PSDscRunAsAccount has impersonate permissions.
@@ -300,39 +301,39 @@ Always On Availability Group Replica.
 
 #### Parameters
 
-* **[String] Name** _(Key)_: The name of the availability group replica. For named
+* **`[String]` Name** _(Key)_: The name of the availability group replica. For named
   instances this must be in the following format SQLServer\InstanceName.
-* **[String] AvailabilityGroupName** _(Key)_: The name of the availability group.
-* **[String] SQLServer** _(Required)_: Hostname of the SQL Server to be configured.
-* **[String] SQLInstanceName** _(Key)_: Name of the SQL instance to be configured.
-* **[String] PrimaryReplicaSQLServer** _(Write)_: Hostname of the SQL Server where
+* **`[String]` AvailabilityGroupName** _(Key)_: The name of the availability group.
+* **`[String]` SQLServer** _(Required)_: Hostname of the SQL Server to be configured.
+* **`[String]` SQLInstanceName** _(Key)_: Name of the SQL instance to be configured.
+* **`[String]` PrimaryReplicaSQLServer** _(Write)_: Hostname of the SQL Server where
   the primary replica is expected to be active. If the primary replica is not found
   here, the resource will attempt to find the host that holds the primary replica
   and connect to it.
-* **[String] PrimaryReplicaSQLInstanceName** _(Write)_: Name of the SQL instance
+* **`[String]` PrimaryReplicaSQLInstanceName** _(Write)_: Name of the SQL instance
   where the primary replica lives.
-* **[String] Ensure** _(Write)_: Specifies if the availability group replica should
+* **`[String]` Ensure** _(Write)_: Specifies if the availability group replica should
   be present or absent. Default is Present. { *Present* | Absent }
-* **[String] AvailabilityMode** _(Write)_: Specifies the replica availability mode.
+* **`[String]` AvailabilityMode** _(Write)_: Specifies the replica availability mode.
   Default is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
-* **[Uint32] BackupPriority** _(Write)_: Specifies the desired priority of the replicas
-  in performing backups. The acceptable values for this parameter are: integers
-  from 0 through 100. Of the set of replicas which are online and available, the
-  replica that has the highest priority performs the backup. Default is 50.
-* **[String] ConnectionModeInPrimaryRole** _(Write)_: Specifies how the availability
+* **`[Uint32]` BackupPriority** _(Write)_: Specifies the desired priority of the
+  replicas in performing backups. The acceptable values for this parameter are:
+  integers from 0 through 100. Of the set of replicas which are online and available,
+  the replica that has the highest priority performs the backup. Default is 50.
+* **`[String]` ConnectionModeInPrimaryRole** _(Write)_: Specifies how the availability
   replica handles connections when in the primary role.
   { AllowAllConnections | AllowReadWriteConnections }
-* **[String] ConnectionModeInSecondaryRole** _(Write)_: Specifies how the availability
+* **`[String]` ConnectionModeInSecondaryRole** _(Write)_: Specifies how the availability
   replica handles connections when in the secondary role.
   { AllowNoConnections | AllowReadIntentConnectionsOnly | AllowAllConnections }
-* **[String] EndpointHostName** _(Write)_: Specifies the hostname or IP address
+* **`[String]` EndpointHostName** _(Write)_: Specifies the hostname or IP address
   of the availability group replica endpoint. Default is the instance network name.
-* **[String] FailoverMode** _(Write)_: Specifies the failover mode. Default is
+* **`[String]` FailoverMode** _(Write)_: Specifies the failover mode. Default is
   'Manual'. { Automatic | *Manual* }
-* **[String] ReadOnlyRoutingConnectionUrl** _(Write)_: Specifies the fully-qualified
+* **`[String]` ReadOnlyRoutingConnectionUrl** _(Write)_: Specifies the fully-qualified
   domain name (FQDN) and port to use when routing to the replica for read only
   connections.
-* **[String[]] ReadOnlyRoutingList** _(Write)_: Specifies an ordered list of replica
+* **`[String[]]` ReadOnlyRoutingList** _(Write)_: Specifies an ordered list of replica
   server names that represent the probe sequence for connection director to use
   when redirecting read-only connections through this availability replica. This
   parameter applies if the availability replica is the current primary replica of
@@ -340,7 +341,7 @@ Always On Availability Group Replica.
 
 #### Read-Only Properties from Get-TargetResource
 
-* **[String] SQLServerNetName** _(Read)_: Output the NetName property from the
+* **`[String]` SQLServerNetName** _(Read)_: Output the NetName property from the
   SQL Server object.
 
 #### Examples
@@ -359,11 +360,11 @@ No description.
 
 #### Parameters
 
-* **[String] SQLServer** _(Key)_: The hostname of the SQL Server to be configured.
-* **[String] SQLInstance** _(Key)_: Name of the SQL instance to be configured.
-* **[String] Ensure** _(Required)_: An enumerated value that describes if SQL server
+* **`[String]` SQLServer** _(Key)_: The hostname of the SQL Server to be configured.
+* **`[String]` SQLInstance** _(Key)_: Name of the SQL instance to be configured.
+* **`[String]` Ensure** _(Required)_: An enumerated value that describes if SQL server
   should have AlwaysOn property present or absent. { Present | Absent }.
-* **[Sint32] RestartTimeout** _(Write)_: The length of time, in seconds, to wait
+* **`[Sint32]` RestartTimeout** _(Write)_: The length of time, in seconds, to wait
   for the service to restart. Default is 120 seconds.
 
 #### Examples
@@ -386,21 +387,21 @@ No description.
 
 #### Parameters
 
-* **[String] InstanceName** _(Key)_: The SQL Server instance name of the primary
+* **`[String]` InstanceName** _(Key)_: The SQL Server instance name of the primary
   replica.
-* **[String] AvailabilityGroup** _(Key)_: The name of the availability group to
+* **`[String]` AvailabilityGroup** _(Key)_: The name of the availability group to
   which the availability group listener is or will be connected.
-* **[String] NodeName** _(Write)_: The host name or FQDN of the primary replica.
-* **[String] Ensure** _(Write)_: If the availability group listener should be present
+* **`[String]` NodeName** _(Write)_: The host name or FQDN of the primary replica.
+* **`[String]` Ensure** _(Write)_: If the availability group listener should be present
   or absent. Default value is 'Present'. { *Present* | Absent }.
-* **[String] Name** _(Write)_: The name of the availability group listener, max
+* **`[String]` Name** _(Write)_: The name of the availability group listener, max
   15 characters. This name will be used as the Virtual Computer Object (VCO).
-* **[String[]] IpAddress** _(Write)_: The IP address used for the availability group
-  listener, in the format 192.168.10.45/255.255.252.0. If using DHCP, set to the
-  first IP-address of the DHCP subnet, in the format 192.168.8.1/255.255.252.0.
+* **`[String[]]` IpAddress** _(Write)_: The IP address used for the availability
+  group listener, in the format 192.168.10.45/255.255.252.0. If using DHCP, set
+  to the first IP-address of the DHCP subnet, in the format 192.168.8.1/255.255.252.0.
   Must be valid in the cluster-allowed IP range.
-* **[Uint16] Port** _(Write)_: The port used for the availability group listener.
-* **[Boolean] DHCP** _(Write)_: If DHCP should be used for the availability group
+* **`[Uint16]` Port** _(Write)_: The port used for the availability group listener.
+* **`[Boolean]` DHCP** _(Write)_: If DHCP should be used for the availability group
   listener instead of static IP address.
 
 #### Examples
@@ -427,16 +428,16 @@ No description.
 
 #### Parameters
 
-* **[String] SQLServer** _(Key)_: The hostname of the SQL Server to be configured.
-* **[String] SQLInstanceName** _(Key)_: Name of the SQL instance to be configured.
-* **[String] OptionName** _(Key)_: The name of the SQL configuration option to be
-  checked. For all possible values reference [MSDN](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
+* **`[String]` SQLServer** _(Key)_: The hostname of the SQL Server to be configured.
+* **`[String]` SQLInstanceName** _(Key)_: Name of the SQL instance to be configured.
+* **`[String]` OptionName** _(Key)_: The name of the SQL configuration option to
+  be checked. For all possible values reference [MSDN](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
   or run sp_configure.
-* **[Sint32] OptionValue** _(Required)_: The desired value of the SQL configuration
+* **`[Sint32]` OptionValue** _(Required)_: The desired value of the SQL configuration
   option.
-* **[Boolean] RestartService** _(Write)_: Determines whether the instance should
+* **`[Boolean]` RestartService** _(Write)_: Determines whether the instance should
   be restarted after updating the configuration option.
-* **[Sint32] RestartTimeout** _(Write)_: The length of time, in seconds, to wait
+* **`[Sint32]` RestartTimeout** _(Write)_: The length of time, in seconds, to wait
   for the service to restart. Default is 120 seconds.
 
 #### Examples
@@ -459,10 +460,10 @@ database, please read:
 
 #### Parameters
 
-* **[String] SQLServer** _(Key)_: The host name of the SQL Server to be configured.
-* **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **[String] Name** _(Key)_: The name of database to be created or dropped.
-* **[String] Ensure** _(Write)_: When set to 'Present', the database will be created.
+* **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
+* **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` Name** _(Key)_: The name of database to be created or dropped.
+* **`[String]` Ensure** _(Write)_: When set to 'Present', the database will be created.
   When set to 'Absent', the database will be dropped. { *Present* | Absent }.
 
 #### Examples
@@ -483,11 +484,11 @@ For more information about database owner, please read the article
 
 #### Parameters
 
-* **[String] Database** _(Key)_: The name of database to be configured.
-* **[String] Name** _(Required)_: The name of the login that will become a owner
+* **`[String]` Database** _(Key)_: The name of database to be configured.
+* **`[String]` Name** _(Required)_: The name of the login that will become a owner
   of the desired sql database.
-* **[String] SQLServer** _(Write)_: The host name of the SQL Server to be configured.
-* **[String] SQLInstance** _(Write)_: The name of the SQL instance to be configured.
+* **`[String]` SQLServer** _(Write)_: The host name of the SQL Server to be configured.
+* **`[String]` SQLInstance** _(Write)_: The name of the SQL instance to be configured.
 
 #### Examples
 
@@ -510,20 +511,20 @@ will also get their permission revoked.
 
 #### Parameters
 
-* **[String] SQLServer** _(Key)_: The host name of the SQL Server to be configured.
-  Default values is 'env:COMPUTERNAME'.
-* **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
+  Default values is '$env:COMPUTERNAME'.
+* **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
   Default value is 'MSSQLSERVER'.
-* **[String] Database** _(Key)_: The name of the database.
-* **[String] Name** _(Key)_: The name of the user that should be granted or denied
+* **`[String]` Database** _(Key)_: The name of the database.
+* **`[String]` Name** _(Key)_: The name of the user that should be granted or denied
   the permission.
-* **[String] PermissionState** _(Key)_: The state of the permission.
+* **`[String]` PermissionState** _(Key)_: The state of the permission.
   { Grant | Deny | GrantWithGrant }.
-* **[String[]] Permissions** _(Required)_: The permissions to be granted or denied
+* **`[String[]]` Permissions** _(Required)_: The permissions to be granted or denied
   for the user in the database. Valid permissions can be found in the article
   [SQL Server Permissions](https://msdn.microsoft.com/en-us/library/ms191291.aspx#Anchor_3).
-* **[String] Ensure** _(Write)_: If the permission should be granted (Present) or
-  revoked (Absent). { Present | Absent }.
+* **`[String]` Ensure** _(Write)_: If the permission should be granted (Present)
+  or revoked (Absent). { Present | Absent }.
 
 #### Examples
 
@@ -547,10 +548,10 @@ Read more about recovery model in this article
 
 #### Parameters
 
-* **[String] Name** _(Key)_: The SQL database name.
-* **[String] SQLServer** _(Key)_: The host name of the SQL Server to be configured.
-* **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **[String] RecoveryModel** _(Required)_: The recovery model to use for the database.
+* **`[String]` Name** _(Key)_: The SQL database name.
+* **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
+* **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` RecoveryModel** _(Required)_: The recovery model to use for the database.
   { Full | Simple | BulkLogged }.
 
 #### Examples
@@ -569,16 +570,16 @@ Read more about database role in this article [CREATE ROLE (Transact-SQL)](https
 
 #### Parameters
 
-* **[String] Name** _(Key)_: The name of the login that will become a member, or
+* **`[String]` Name** _(Key)_: The name of the login that will become a member, or
   removed as a member, of the role(s).
-* **[String] SQLServer** _(Key)_: The host name of the SQL Server to be configured.
-* **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **[String] Database** _(Key)_: The database in which the login (user) and role(s)
+* **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
+* **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` Database** _(Key)_: The database in which the login (user) and role(s)
   exist.
-* **[String] Ensure** _(Write)_: If 'Present' (the default value) then the login
+* **`[String]` Ensure** _(Write)_: If 'Present' (the default value) then the login
   (user) will be added to the role(s). If 'Absent' then the login (user) will be
   removed from the role(s). { *Present* | Absent }.
-* **[String[]] Role**_(Required): One or more roles to which the login (user) will
+* **`[String[]]` Role**_(Required): One or more roles to which the login (user) will
   be added or removed.
 
 #### Examples
@@ -608,15 +609,15 @@ the resource [**xSQLServerEndpointPermission**](#xsqlserverendpointpermission).
 
 #### Parameters
 
-* **[String] EndpointName** _(Key)_: The name of the endpoint.
-* **[String] Ensure** _(Write)_: If the endpoint should be present or absent.
+* **`[String]` EndpointName** _(Key)_: The name of the endpoint.
+* **`[String]` Ensure** _(Write)_: If the endpoint should be present or absent.
   Default values is 'Present'. { *Present* | Absent }.
-* **[Uint16] Port** _(Write)_: The network port the endpoint is listening on.
+* **`[Uint16]` Port** _(Write)_: The network port the endpoint is listening on.
   Default value is 5022.
-* **[String] SQLServer** _(Write)_: The host name of the SQL Server to be configured.
+* **`[String]` SQLServer** _(Write)_: The host name of the SQL Server to be configured.
   Default value is $env:COMPUTERNAME.
-* **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **[String] IpAddress** _(Write)_: The network IP address the endpoint is listening
+* **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` IpAddress** _(Write)_: The network IP address the endpoint is listening
   on. Defaults to '0.0.0.0' which means listen on any valid IP address.
 
 #### Examples
@@ -634,13 +635,13 @@ This resource is used to give connect permission to an endpoint for a user (logi
 
 #### Parameters
 
-* **[String] InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **[String] NodeName** _(Required)_: The host name of the SQL Server to be configured.
-* **[String] Ensure** _(Write)_: If the permission should be present or absent.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` NodeName** _(Required)_: The host name of the SQL Server to be configured.
+* **`[String]` Ensure** _(Write)_: If the permission should be present or absent.
   Default value is 'Present'. { *Present* | Absent }.
-* **[String] Name** _(Required)_: The name of the endpoint.
-* **[String] Principal** _(Key)_: The login to which permission will be set.
-* **[String] Permission** _(Write)_: The permission to set for the login. Valid
+* **`[String]` Name** _(Required)_: The name of the endpoint.
+* **`[String]` Principal** _(Key)_: The login to which permission will be set.
+* **`[String]` Permission** _(Write)_: The permission to set for the login. Valid
   value for permission are only CONNECT. { Connect }.
 
 #### Examples
@@ -668,11 +669,11 @@ This resource is used to set the state of an endpoint.
 
 #### Parameters
 
-* **[String] InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **[String] NodeName** _(Write)_: The host name of the SQL Server to be configured.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` NodeName** _(Write)_: The host name of the SQL Server to be configured.
   Default value is $env:COMPUTERNAME.
-* **[String] Name** _(Key)_: The name of the endpoint.
-* **[String] State** _(Write)_: The state of the endpoint. Valid states are Started,
+* **`[String]` Name** _(Key)_: The name of the endpoint.
+* **`[String]` State** _(Write)_: The state of the endpoint. Valid states are Started,
   Stopped or Disabled. Default value is 'Started'.
   { *Started* | Stopped | Disabled }.
 
@@ -737,28 +738,28 @@ Port: tcp/135 | SQL Server Integration Services Port
 
 #### Parameters
 
-* **[String] Features** _(Key)_: SQL features to enable firewall rules for.
-* **[String] InstanceName** _(Key)_: SQL instance to enable firewall rules for.
-* **[String] Ensure** _(Write)_: Ensures that SQL firewall rules are **Present**
+* **`[String]` Features** _(Key)_: SQL features to enable firewall rules for.
+* **`[String]` InstanceName** _(Key)_: SQL instance to enable firewall rules for.
+* **`[String]` Ensure** _(Write)_: Ensures that SQL firewall rules are **Present**
   or **Absent** on the machine. { *Present* | Absent }.
-* **[String] SourcePath** _(Write)_: UNC path to the root of the source files for
+* **`[String]` SourcePath** _(Write)_: UNC path to the root of the source files for
   installation.
-* **[String] SourceCredential** _(Write)_: Credentials used to access the path set
-  in the parameter 'SourcePath'. This parameter is optional either if built-in
+* **`[String]` SourceCredential** _(Write)_: Credentials used to access the path
+  set in the parameter 'SourcePath'. This parameter is optional either if built-in
   parameter 'PsDscRunAsCredential' is used, or if the source path can be access
   using the SYSTEM account.
 
 #### Read-Only Properties from Get-TargetResource
 
-* **[Boolean] DatabaseEngineFirewall** _(Read)_: Is the firewall rule for the
+* **`[Boolean]` DatabaseEngineFirewall** _(Read)_: Is the firewall rule for the
   Database Engine enabled?
-* **[Boolean] BrowserFirewall** _(Read)_: Is the firewall rule for the Browser
+* **`[Boolean]` BrowserFirewall** _(Read)_: Is the firewall rule for the Browser
   enabled?
-* **[Boolean] ReportingServicesFirewall** _(Read)_: Is the firewall rule for
+* **`[Boolean]` ReportingServicesFirewall** _(Read)_: Is the firewall rule for
   Reporting Services enabled?
-* **[Boolean] AnalysisServicesFirewall** _(Read)_: Is the firewall rule for
+* **`[Boolean]` AnalysisServicesFirewall** _(Read)_: Is the firewall rule for
   Analysis Services enabled?
-* **[Boolean] IntegrationServicesFirewall** _(Read)_: Is the firewall rule for
+* **`[Boolean]` IntegrationServicesFirewall** _(Read)_: Is the firewall rule for
   the Integration Services enabled?
 
 #### Examples
@@ -777,27 +778,27 @@ No description.
 
 #### Parameters
 
-* **[String] SQLServer** _(Key)_:The hostname of the SQL Server to be configured.
-* **[String] SQLInstanceName** _(Key)_: Name of the SQL instance to be configured.
-* **[String] Name** _(Key)_: The name of the login.
-* **[String] Ensure** _(Write)_: The specified login is Present or Absent.
+* **`[String]` SQLServer** _(Key)_:The hostname of the SQL Server to be configured.
+* **`[String]` SQLInstanceName** _(Key)_: Name of the SQL instance to be configured.
+* **`[String]` Name** _(Key)_: The name of the login.
+* **`[String]` Ensure** _(Write)_: The specified login is Present or Absent.
   { *Present* | Absent }.
-* **[PSCredential] LoginCredential** _(Write)_: If LoginType is 'SqlLogin' then
+* **`[PSCredential]` LoginCredential** _(Write)_: If LoginType is 'SqlLogin' then
   a PSCredential is needed for the password to the login.
-* **[String] LoginType** _(Write)_: The type of login to be created. If LoginType
+* **`[String]` LoginType** _(Write)_: The type of login to be created. If LoginType
   is 'WindowsUser' or 'WindowsGroup' then provide the name in the format DOMAIN\name.
   Default is WindowsUser. Unsupported login types are Certificate, AsymmetricKey,
   ExternalUser, and ExternalGroup. {SqlLogin | WindowsUser | WindowsGroup }
-* **[Boolean] LoginMustChangePassword** _(Write)_: Specifies if the login is required
+* **`[Boolean]` LoginMustChangePassword** _(Write)_: Specifies if the login is required
   to have its password change on the next login. Only applies to SQL Logins.
   Default is $true.
-* **[Boolean] LoginPasswordExpirationEnabled** _(Write)_: Specifies if the login
+* **`[Boolean]` LoginPasswordExpirationEnabled** _(Write)_: Specifies if the login
   password is required to expire in accordance to the operating system security
   policy. Only applies to SQL Logins. Default is $true.
-* **[Boolean] LoginPasswordPolicyEnforced** _(Write)_: Specifies if the login password
+* **`[Boolean]` LoginPasswordPolicyEnforced** _(Write)_: Specifies if the login password
   is required to conform to the password policy specified in the system security
   policy. Only applies to SQL Logins. Default is $true.
-* **[Boolean] Disabled** _(Write)_: Specifies if the login is disabled. Default
+* **`[Boolean]` Disabled** _(Write)_: Specifies if the login is disabled. Default
   is $false.
 
 #### Examples
@@ -830,18 +831,18 @@ Read more about max degree of parallelism in this article
 
 #### Parameters
 
-* **[String] SQLInstance** (Key): The name of the SQL instance to be configured.
-* **[String] SQLServer** _(Write)_: The host name of the SQL Server to be configured.
+* **`[String]` SQLInstance** (Key): The name of the SQL instance to be configured.
+* **`[String]` SQLServer** _(Write)_: The host name of the SQL Server to be configured.
   Default value is $env:COMPUTERNAME.
-* **[String] Ensure** _(Write)_: When set to 'Present' then max degree of parallelism
+* **`[String]` Ensure** _(Write)_: When set to 'Present' then max degree of parallelism
   will be set to either the value in parameter MaxDop or dynamically configured
   when parameter DynamicAlloc is set to $true. When set to 'Absent' max degree of
   parallelism will be set to 0 which means no limit in number of processors used
   in parallel plan execution. { *Present* | Absent }.
-* **[Boolean] DynamicAlloc** _(Write)_: If set to $true then max degree of parallelism
+* **`[Boolean]` DynamicAlloc** _(Write)_: If set to $true then max degree of parallelism
   will be dynamically configured. When this is set parameter is set to $true, the
   parameter MaxDop must be set to $null or not be configured.
-* **[Sint32] MaxDop** _(Write)_: A numeric value to limit the number of processors
+* **`[Sint32]` MaxDop** _(Write)_: A numeric value to limit the number of processors
   used in parallel plan execution.
 
 #### Examples
@@ -896,19 +897,19 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
 
 #### Parameters
 
-* **[String] SQLInstance** _(Key)_: The name of the SQL instance to be configured.
-* **[String] SQLServer** _(Write)_: The host name of the SQL Server to be configured.
+* **`[String]` SQLInstance** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` SQLServer** _(Write)_: The host name of the SQL Server to be configured.
   Default value is $env:COMPUTERNAME.
-* **[Boolean] DynamicAlloc** _(Write)_: If set to $true then max memory will be
+* **`[Boolean]` DynamicAlloc** _(Write)_: If set to $true then max memory will be
   dynamically configured. When this is set parameter is set to $true, the parameter
   MaxMemory must be set to $null or not be configured. Default value is $false.
-* **[String] Ensure** _(Write)_: When set to 'Present' then min and max memory will
-  be set to either the value in parameter MinMemory and MaxMemory or dynamically
+* **`[String]` Ensure** _(Write)_: When set to 'Present' then min and max memory
+  will be set to either the value in parameter MinMemory and MaxMemory or dynamically
   configured when parameter DynamicAlloc is set to $true. When set to 'Absent' min
   and max memory will be set to default values. { *Present* | Absent }.
-* **[Sint32] MinMemory** _(Write)_: Minimum amount of memory, in MB, in the buffer
+* **`[Sint32]` MinMemory** _(Write)_: Minimum amount of memory, in MB, in the buffer
   pool used by the instance of SQL Server.
-* **[Sint32] MaxMemory** _(Write)_: Maximum amount of memory, in MB, in the buffer
+* **`[Sint32]` MaxMemory** _(Write)_: Maximum amount of memory, in MB, in the buffer
   pool used by the instance of SQL Server.
 
 #### Examples
@@ -934,23 +935,23 @@ Read more about the network settings in the article
 
 #### Parameters
 
-* **[String] InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **[String] ProtocolName** _(Required)_: The name of network protocol to be configured.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` ProtocolName** _(Required)_: The name of network protocol to be configured.
   Only tcp is currently supported. { tcp }.
-* **[String] SQLServer** _(Write)_: The host name of the SQL Server to be configured.
+* **`[String]` SQLServer** _(Write)_: The host name of the SQL Server to be configured.
   Default value is $env:COMPUTERNAME.
-* **[Boolean] IsEnabled** _(Write)_: Enables or disables the network protocol.
-* **[String] TcpDynamicPorts** _(Write)_: Set the value to '0' if dynamic ports
+* **`[Boolean]` IsEnabled** _(Write)_: Enables or disables the network protocol.
+* **`[String]` TcpDynamicPorts** _(Write)_: Set the value to '0' if dynamic ports
   should be used. If static port should be used set this to a empty string value.
   Value can not be set to '0' if TcpPort is also set to a value. { '0','' }.
-* **[String] TcpPort** _(Write)_: The TCP port(s) that SQL Server should be listening
+* **`[String]` TcpPort** _(Write)_: The TCP port(s) that SQL Server should be listening
   on. If the IP address should listen on more than one port, list all ports separated
   with a comma ('1433,1500,1501'). To use this parameter set TcpDynamicPorts to
   the value '' (empty string).
-* **[Boolean] RestartService** _(Write)_: If set to $true then SQL Server and
+* **`[Boolean]` RestartService** _(Write)_: If set to $true then SQL Server and
   dependent services will be restarted if a change to the configuration is made.
   The default value is $false.
-* **[Uint16] RestartTimeout** _(Write)_: Timeout value for restarting the SQL Server
+* **`[Uint16]` RestartTimeout** _(Write)_: Timeout value for restarting the SQL Server
   services. The default value is 120 seconds.
 
 #### Examples
@@ -974,13 +975,13 @@ AlterAnyEndPoint and ViewServerState.
 
 #### Parameters
 
-* **[String] InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **[String] Principal** _(Key)_: The login to which permission will be set.
-* **[String] Ensure** _(Write)_: If the permission should be present or absent.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` Principal** _(Key)_: The login to which permission will be set.
+* **`[String]` Ensure** _(Write)_: If the permission should be present or absent.
   Default value is 'Present'. { Present | Absent }.
-* **[String] NodeName** _(Write)_: The host name of the SQL Server to be configured.
+* **`[String]` NodeName** _(Write)_: The host name of the SQL Server to be configured.
   Default value is $env:COMPUTERNAME.
-* **[String[]] Permission** _(Write)_: The permission to set for the login. Valid
+* **`[String[]]` Permission** _(Write)_: The permission to set for the login. Valid
   values are ConnectSql, AlterAnyAvailabilityGroup, ViewServerState or AlterAnyEndPoint.
   { ConnectSql, AlterAnyAvailabilityGroup | AlterAnyEndPoint | ViewServerState }.
 
@@ -1000,24 +1001,24 @@ No description.
 
 #### Parameters
 
-* **[String] InstanceName** _(Key)_: SQL Server instance name where replication
+* **`[String]` InstanceName** _(Key)_: SQL Server instance name where replication
   distribution will be configured.
-* **[String] Ensure** _(Write)_: (Default = 'Present') 'Present' will configure
+* **`[String]` Ensure** _(Write)_: (Default = 'Present') 'Present' will configure
   replication, 'Absent' will disable replication.
-* **[String] DistributorMode** _(Required)_: 'Local' - Instance will be configured
+* **`[String]` DistributorMode** _(Required)_: 'Local' - Instance will be configured
   as it's own distributor, 'Remote' - Instance will be configure with remote distributor
   (remote distributor needs to be already configured for distribution).
-* **[PSCredentials] AdminLinkCredentials** _(Required)_: - AdminLink password to
+* **`[PSCredential]` AdminLinkCredentials** _(Required)_: - AdminLink password to
   be used when setting up publisher distributor relationship.
-* **[String] DistributionDBName** _(Write)_: (Default = 'distribution') distribution
+* **`[String]` DistributionDBName** _(Write)_: (Default = 'distribution') distribution
   database name. If DistributionMode='Local' this will be created, if 'Remote' needs
   to match distribution database on remote distributor.
-* **[String] RemoteDistributor** _(Write)_: (Required if DistributionMode='Remote')
+* **`[String]` RemoteDistributor** _(Write)_: (Required if DistributionMode='Remote')
   SQL Server network name that will be used as distributor for local instance.
-* **[String] WorkingDirectory** _(Required)_: Publisher working directory.
-* **[Boolean] UseTrustedConnection** _(Write)_: (Default = $true) Publisher security
+* **`[String]` WorkingDirectory** _(Required)_: Publisher working directory.
+* **`[Boolean]` UseTrustedConnection** _(Write)_: (Default = $true) Publisher security
   mode.
-* **[Boolean] UninstallWithForce** _(Write)_: (Default = $true) Force flag for
+* **`[Boolean]` UninstallWithForce** _(Write)_: (Default = $true) Force flag for
   uninstall procedure
 
 #### Examples
@@ -1042,19 +1043,19 @@ server roles, please read the below articles.
 
 #### Parameters
 
-* **[String] ServerRoleName** _(Key)_: The name of of SQL role to add or remove.
-* **[String] SQLServer** _(Key)_: The host name of the SQL Server to be configured.
-* **[String] SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **[String] Ensure** _(Write)_: An enumerated value that describes if the server
+* **`[String]` ServerRoleName** _(Key)_: The name of of SQL role to add or remove.
+* **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
+* **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` Ensure** _(Write)_: An enumerated value that describes if the server
   role is added (Present) or dropped (Absent). Default value is 'Present'.
   { *Present* | Absent }.
-* **[String[]] Members** _(Write)_: The members the server role should have. This
+* **`[String[]]` Members** _(Write)_: The members the server role should have. This
   parameter will replace all the current server role members with the specified
   members.
-* **[String[]] MembersToInclude** _(Write)_: The members the server role should
+* **`[String[]]` MembersToInclude** _(Write)_: The members the server role should
   include. This parameter will only add members to a server role. Can not be used
   at the same time as parameter Members.
-* **[String[]] MembersToExclude** _(Write)_: The members the server role should
+* **`[String[]]` MembersToExclude** _(Write)_: The members the server role should
   exclude. This parameter will only remove members from a server role. Can only
   be used when parameter Ensure is set to 'Present'. Can not be used at the same
   time as parameter Members.
@@ -1081,16 +1082,17 @@ No description.
 
 #### Parameters
 
-* **[String] InstanceName** _(Key)_: Name of the SQL Server Reporting Services
+* **`[String]` InstanceName** _(Key)_: Name of the SQL Server Reporting Services
   instance to be configured.
-* **[String] RSSQLServer** _(Required)_: Name of the SQL Server to host the
+* **`[String]` RSSQLServer** _(Required)_: Name of the SQL Server to host the
   Reporting Service database.
-* **[String] RSSQLInstanceName** _(Required)_: Name of the SQL Server instance
+* **`[String]` RSSQLInstanceName** _(Required)_: Name of the SQL Server instance
   to host the Reporting Service database.
 
 #### Read-Only Properties from Get-TargetResource
 
-* **[Read] IsInitialized** _(Read)_: Output is the Reporting Services instance initialized.
+* **`[Boolean]` IsInitialized** _(Read)_: Output is the Reporting Services instance
+  initialized.
 
 #### Examples
 
@@ -1107,11 +1109,11 @@ No description.
 
 #### Parameters
 
-* **[String] InstanceName** _(Key)_: SQL instance to set secure connection level
+* **`[String]` InstanceName** _(Key)_: SQL instance to set secure connection level
   for.
-* **[Uint16] SecureConnectionLevel** _(Key)_: SQL Server Reporting Service secure
+* **`[Uint16]` SecureConnectionLevel** _(Key)_: SQL Server Reporting Service secure
   connection level.
-* **[PSCredential] SQLAdminCredential** _(Required)_: Credential with administrative
+* **`[PSCredential]` SQLAdminCredential** _(Required)_: Credential with administrative
   permissions to the SQL instance.
 
 #### Examples
@@ -1153,32 +1155,33 @@ See [issue #273](https://github.com/PowerShell/xSQLServer/issues/273) for more i
 
 #### Parameters
 
-* **[String] ServerInstance** _(Key)_: The name of an instance of the Database Engine.
-  For a default instance, only specify the computer name. For a named instances,
-  use the format ComputerName\\InstanceName.
-* **[String] SetFilePath** _(Key)_: Path to the T-SQL file that will perform Set
+* **`[String]` ServerInstance** _(Key)_: The name of an instance of the Database
+  Engine. For a default instance, only specify the computer name. For a named
+  instances, use the format ComputerName\\InstanceName.
+* **`[String]` SetFilePath** _(Key)_: Path to the T-SQL file that will perform Set
   action.
-* **[String] GetFilePath** _(Key)_: Path to the T-SQL file that will perform Get
+* **`[String]` GetFilePath** _(Key)_: Path to the T-SQL file that will perform Get
   action. Any values returned by the T-SQL queries will also be returned by the
   cmdlet Get-DscConfiguration through the `GetResult` property.
-* **[String] TestFilePath** _(Key)_: Path to the T-SQL file that will perform Test
+* **`[String]` TestFilePath** _(Key)_: Path to the T-SQL file that will perform Test
   action. Any script that does not throw an error or returns null is evaluated to
   true. The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text,
   and will not cause the test to return false.
-* **[PSCredential] Credential** _(Write)_: The credentials to authenticate with,
+* **`[PSCredential]` Credential** _(Write)_: The credentials to authenticate with,
   using SQL Authentication. To authenticate using Windows Authentication, assign
   the credentials to the built-in parameter `PsDscRunAsCredential`. If both parameters
   `Credential` and `PsDscRunAsCredential` are not assigned, then SYSTEM account will
   be used to authenticate using Windows Authentication.
-* **[String[]] Variable** _(Write)_: Specifies, as a string array, a scripting variable
-  for use in the sql script, and sets a value for the variable. Use a Windows PowerShell
-  array to specify multiple variables and their values. For more information how
-  to use this, please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx).
+* **`[String[]]` Variable** _(Write)_: Specifies, as a string array, a scripting
+  variable for use in the sql script, and sets a value for the variable. Use a
+  Windows PowerShell array to specify multiple variables and their values. For more
+  information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx).
 
 #### Read-Only Properties from Get-TargetResource
 
-* **GetResult** _(Read)_: Contains the values returned from the T-SQL script provided
-  in the parameter `GetFilePath` when cmdlet Get-DscConfiguration is run.
+* **`[String]` GetResult** _(Read)_: Contains the values returned from the T-SQL
+  script provided in the parameter `GetFilePath` when cmdlet Get-DscConfiguration
+  is run.
 
 #### Examples
 
@@ -1231,15 +1234,15 @@ installing feature Database Engine and Analysis Services respectively.
 
 #### Parameters
 
-* **[String] Action** _(Write)_: The action to be performed. Defaults to 'Install'.
+* **`[String]` Action** _(Write)_: The action to be performed. Defaults to 'Install'.
   *Note: AddNode is not currently functional.*
   { _Install_ | InstallFailoverCluster | AddNode | PrepareFailoverCluster |
    CompleteFailoverCluster }
-* **[String] InstanceName** _(Key)_: SQL instance to be installed.
-* **[String] SourcePath** _(Write)_: The path to the root of the source files for
+* **`[String]` InstanceName** _(Key)_: SQL instance to be installed.
+* **`[String]` SourcePath** _(Write)_: The path to the root of the source files for
   installation. I.e and UNC path to a shared resource. Environment variables can
   be used in the path.
-* **[PSCredential] SourceCredential** _(Write)_: Credentials used to access the
+* **`[PSCredential]` SourceCredential** _(Write)_: Credentials used to access the
   path set in the parameter `SourcePath`. Using this parameter will trigger a
   copy of the installation media to a temp folder on the target node. Setup will
   then be started from the temp folder on the target node. For any subsequent
@@ -1252,76 +1255,80 @@ installing feature Database Engine and Analysis Services respectively.
   name of the temporary folder. If the path, that is assigned to parameter
   `SourcePath`, does not have a leaf folder, for example '\\server\share', then
   a unique GUID will be used as the name of the temporary folder.
-* **[Boolean] SuppressReboot** _(Write)_: Suppresses reboot.
-* **[Boolean] ForceReboot** _(Write)_: Forces reboot.
-* **[String] Features** _(Write)_: SQL features to be installed.
-* **[String] InstanceID** _(Write)_: SQL instance ID, if different from InstanceName.
-* **[String] ProductKey** _(Write)_: Product key for licensed installations.
-* **[String] UpdateEnabled** _(Write)_: Enabled updates during installation.
-* **[String] UpdateSource** _(Write)_: Path to the source of updates to be applied
+* **`[Boolean]` SuppressReboot** _(Write)_: Suppresses reboot.
+* **`[Boolean]` ForceReboot** _(Write)_: Forces reboot.
+* **`[String]` Features** _(Write)_: SQL features to be installed.
+* **`[String]` InstanceID** _(Write)_: SQL instance ID, if different from InstanceName.
+* **`[String]` ProductKey** _(Write)_: Product key for licensed installations.
+* **`[String]` UpdateEnabled** _(Write)_: Enabled updates during installation.
+* **`[String]` UpdateSource** _(Write)_: Path to the source of updates to be applied
   during installation.
-* **[String] SQMReporting** _(Write)_: Enable customer experience reporting.
-* **[String] ErrorReporting** _(Write)_: Enable error reporting.
-* **[String] InstallSharedDir** _(Write)_: Installation path for shared SQL files.
-* **[String] InstallSharedWOWDir** _(Write)_: Installation path for x86 shared SQL
-  files.
-* **[String] InstanceDir** _(Write)_: Installation path for SQL instance files.
-* **[PSCredential] SQLSvcAccount** _(Write)_: Service account for the SQL service.
-* **[PSCredential] AgtSvcAccount** _(Write)_: Service account for the SQL Agent
+* **`[String]` SQMReporting** _(Write)_: Enable customer experience reporting.
+* **`[String]` ErrorReporting** _(Write)_: Enable error reporting.
+* **`[String]` InstallSharedDir** _(Write)_: Installation path for shared SQL files.
+* **`[String]` InstallSharedWOWDir** _(Write)_: Installation path for x86 shared
+  SQL files.
+* **`[String]` InstanceDir** _(Write)_: Installation path for SQL instance files.
+* **`[PSCredential]` SQLSvcAccount** _(Write)_: Service account for the SQL service.
+* **`[PSCredential]` AgtSvcAccount** _(Write)_: Service account for the SQL Agent
   service.
-* **[String] SQLCollation** _(Write)_: Collation for SQL.
-* **[String[]] SQLSysAdminAccounts** _(Write)_: Array of accounts to be made SQL
+* **`[String]` SQLCollation** _(Write)_: Collation for SQL.
+* **`[String[]]` SQLSysAdminAccounts** _(Write)_: Array of accounts to be made SQL
   administrators.
-* **[String] SecurityMode** _(Write)_: Security mode to apply to the SQL Server
+* **`[String]` SecurityMode** _(Write)_: Security mode to apply to the SQL Server
    instance.
-* **[PSCredential] SAPwd** _(Write)_: SA password, if SecurityMode is set to 'SQL'.
-* **[String] InstallSQLDataDir** _(Write)_: Root path for SQL database files.
-* **[String] SQLUserDBDir** _(Write)_: Path for SQL database files.
-* **[String] SQLUserDBLogDir** _(Write)_: Path for SQL log files.
-* **[String] SQLTempDBDir** _(Write)_: Path for SQL TempDB files.
-* **[String] SQLTempDBLogDir** _(Write)_: Path for SQL TempDB log files.
-* **[String] SQLBackupDir** _(Write)_: Path for SQL backup files.
-* **[PSCredential] FTSvcAccount** _(Write)_: Service account for the Full Text
+* **`[PSCredential]` SAPwd** _(Write)_: SA password, if SecurityMode is set to 'SQL'.
+* **`[String]` InstallSQLDataDir** _(Write)_: Root path for SQL database files.
+* **`[String]` SQLUserDBDir** _(Write)_: Path for SQL database files.
+* **`[String]` SQLUserDBLogDir** _(Write)_: Path for SQL log files.
+* **`[String]` SQLTempDBDir** _(Write)_: Path for SQL TempDB files.
+* **`[String]` SQLTempDBLogDir** _(Write)_: Path for SQL TempDB log files.
+* **`[String]` SQLBackupDir** _(Write)_: Path for SQL backup files.
+* **`[PSCredential]` FTSvcAccount** _(Write)_: Service account for the Full Text
   service.
-* **[PSCredential] RSSvcAccount** _(Write)_: Service account for Reporting Services
+* **`[PSCredential]` RSSvcAccount** _(Write)_: Service account for Reporting Services
   service.
-* **[PSCredential] ASSvcAccount** _(Write)_: Service account for Analysis Services
+* **`[PSCredential]` ASSvcAccount** _(Write)_: Service account for Analysis Services
   service.
-* **[String] ASCollation** _(Write)_: Collation for Analysis Services.
-* **[String[]] ASSysAdminAccounts** _(Write)_: Array of accounts to be made Analysis
+* **`[String]` ASCollation** _(Write)_: Collation for Analysis Services.
+* **`[String[]]` ASSysAdminAccounts** _(Write)_: Array of accounts to be made Analysis
   Services admins.
-* **[String] ASDataDir** _(Write)_: Path for Analysis Services data files.
-* **[String] ASLogDir** _(Write)_: Path for Analysis Services log files.
-* **[String] ASBackupDir** _(Write)_: Path for Analysis Services backup files.
-* **[String] ASTempDir** _(Write)_: Path for Analysis Services temp files.
-* **[String] ASConfigDir** _(Write)_: Path for Analysis Services config.
-* **[PSCredential] ISSvcAccount** _(Write)_: Service account for Integration
+* **`[String]` ASDataDir** _(Write)_: Path for Analysis Services data files.
+* **`[String]` ASLogDir** _(Write)_: Path for Analysis Services log files.
+* **`[String]` ASBackupDir** _(Write)_: Path for Analysis Services backup files.
+* **`[String]` ASTempDir** _(Write)_: Path for Analysis Services temp files.
+* **`[String]` ASConfigDir** _(Write)_: Path for Analysis Services config.
+* **`[PSCredential]` ISSvcAccount** _(Write)_: Service account for Integration
   Services service.
-* **[String] BrowserSvcStartupType** _(Write)_: Specifies the startup mode for
+* **`[String]` BrowserSvcStartupType** _(Write)_: Specifies the startup mode for
   SQL Server Browser service. { Automatic | Disabled | 'Manual' }
-* **[String] FailoverClusterGroupName** _(Write)_: The name of the resource group
+* **`[String]` FailoverClusterGroupName** _(Write)_: The name of the resource group
   to create for the clustered SQL Server instance.
   Default is 'SQL Server (_InstanceName_)'.
-* **[String[]]FailoverClusterIPAddress** _(Write)_: Array of IP Addresses to be
+* **`[String[]]` FailoverClusterIPAddress** _(Write)_: Array of IP Addresses to be
   assigned to the clustered SQL Server instance. IP addresses must be in
   [dotted-decimal notation](https://en.wikipedia.org/wiki/Dot-decimal_notation),
   for example ````10.0.0.100````. If no IP address is specified, uses 'DEFAULT' for
   this setup parameter.
-* **[String] FailoverClusterNetworkName** _(Write)_: Host name to be assigned to
+* **`[String]` FailoverClusterNetworkName** _(Write)_: Host name to be assigned to
   the clustered SQL Server instance.
-* **[UInt32] SetupProcessTimeout** _(Write)_: The timeout, in seconds, to wait for
-  the setup process to finish. Default value is 7200 seconds (2 hours). If the setup
-  process does not finish before this time, and error will be thrown.
+* **`[Uint32]` SetupProcessTimeout** _(Write)_: The timeout, in seconds, to wait
+  for the setup process to finish. Default value is 7200 seconds (2 hours). If
+  the setup process does not finish before this time, and error will be thrown.
 
 #### Read-Only Properties from Get-TargetResource
 
-* **SQLSvcAccountUsername** _(Read)_: Output user name for the SQL service.
-* **AgtSvcAccountUsername** _(Read)_: Output user name for the SQL Agent service.
-* **FTSvcAccountUsername** _(Read)_: Output username for the Full Text service.
-* **RSSvcAccountUsername** _(Read)_: Output username for the Reporting Services service.
-* **ASSvcAccountUsername** _(Read)_: Output username for the Analysis Services service.
-* **ISSvcAccountUsername** _(Read)_: Output user name for the Integration Services
+* **`[String]` SQLSvcAccountUsername** _(Read)_: Output user name for the SQL service.
+* **`[String]` AgtSvcAccountUsername** _(Read)_: Output user name for the SQL Agent
   service.
+* **`[String]` FTSvcAccountUsername** _(Read)_: Output username for the Full Text
+  service.
+* **`[String]` RSSvcAccountUsername** _(Read)_: Output username for the Reporting
+  Services service.
+* **`[String]` ASSvcAccountUsername** _(Read)_: Output username for the Analysis
+  Services service.
+* **`[String]` ISSvcAccountUsername** _(Read)_: Output user name for the Integration
+  Services service.
 
 #### Examples
 
@@ -1364,18 +1371,18 @@ or that it has finished creating the Availability Group.
 
 #### Parameters
 
-* **[String] Name** _(Key)_: Name of the cluster role/group to look for (normally
+* **`[String]` Name** _(Key)_: Name of the cluster role/group to look for (normally
   the same as the Availability Group name).
-* **[Uint64] RetryIntervalSec** _(Write)_: The interval, in seconds, to check for
+* **`[Uint64]` RetryIntervalSec** _(Write)_: The interval, in seconds, to check for
   the presence of the cluster role/group. Default value is 20 seconds. When the
   cluster role/group has been found the resource will wait for this amount of time
   once more before returning.
-* **[Uint32] RetryCount** _(Write)_: Maximum number of retries until the resource
+* **`[Uint32]` RetryCount** _(Write)_: Maximum number of retries until the resource
   will timeout and throw an error. Default value is 30 times.
 
 #### Read-Only Properties from Get-TargetResource
 
-* **[Boolean] GroupExist** _(Read)_: Returns $true if the cluster role/group exist,
+* **`[Boolean]` GroupExist** _(Read)_: Returns $true if the cluster role/group exist,
   otherwise it returns $false. Used by Get-TargetResource.
 
 #### Examples
