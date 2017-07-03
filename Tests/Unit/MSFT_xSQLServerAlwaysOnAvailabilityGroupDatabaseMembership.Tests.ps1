@@ -1342,7 +1342,7 @@ WITH NORECOVERY'
                 }
 
                 It 'Should throw the correct error when an invalid object is passed to the AvailabilityGroup property of the method' {
-                    { $databaseMembershipClass.GetDatabasesToAddToAvailabilityGroup($mockServerObject,$mockBadAvailabilityGroupObject) } | Should Throw 'The parameter ''ServerObject'' is not of the type ''Microsoft.SqlServer.Management.Smo.AvailabilityGroup''.'
+                    { $databaseMembershipClass.GetDatabasesToAddToAvailabilityGroup($mockServerObject,$mockBadAvailabilityGroupObject) } | Should Throw 'The parameter ''AvailabilityGroup'' is not of the type ''Microsoft.SqlServer.Management.Smo.AvailabilityGroup''.'
 
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
@@ -1439,7 +1439,7 @@ WITH NORECOVERY'
                 }
 
                 It 'Should throw the correct error when an invalid object is passed to the AvailabilityGroup property of the method' {
-                    { $databaseMembershipClass.GetDatabasesToRemoveFromAvailabilityGroup($mockServerObject,$mockBadAvailabilityGroupObject) } | Should Throw 'The parameter ''ServerObject'' is not of the type ''Microsoft.SqlServer.Management.Smo.AvailabilityGroup''.'
+                    { $databaseMembershipClass.GetDatabasesToRemoveFromAvailabilityGroup($mockServerObject,$mockBadAvailabilityGroupObject) } | Should Throw 'The parameter ''AvailabilityGroup'' is not of the type ''Microsoft.SqlServer.Management.Smo.AvailabilityGroup''.'
 
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
@@ -1527,7 +1527,7 @@ WITH NORECOVERY'
 
             Context 'When the GetMatchingDatabaseNames method is called' {
                 It 'Should throw the correct error when and invalid object type is passed to the method' {
-                    { $databaseMembershipClass.GetMatchingDatabaseNames($mockBadServerObject) } | Should Throw 'ParameterNotOfType'
+                    { $databaseMembershipClass.GetMatchingDatabaseNames($mockBadServerObject) } | Should Throw 'ServerObject'
 
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly

@@ -76,7 +76,7 @@ class xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
         }
         else
         {
-            Write-Verbose -Message ($script:localizedData.AvailabilityGroupDoesNotExist -f $this.AvailabilityGroupName) -Verbose
+            Write-Verbose -Message ($script:localizedData.AvailabilityGroupDoesNotExist -f $this.AvailabilityGroupName)
 
             $currentConfiguration.MatchDatabaseOwner = $false
         }
@@ -107,7 +107,7 @@ class xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
 
         if ( $databasesToAddToAvailabilityGroup.Count -gt 0 )
         {
-            Write-Verbose -Message ($script:localizedData.AddingDatabasesToAvailabilityGroup -f $this.AvailabilityGroupName,( $databasesToAddToAvailabilityGroup -join ', ' )) -Verbose
+            Write-Verbose -Message ($script:localizedData.AddingDatabasesToAvailabilityGroup -f $this.AvailabilityGroupName,( $databasesToAddToAvailabilityGroup -join ', ' ))
 
             # Get only the secondary replicas. Some tests do not need to be performed on the primary replica
             $secondaryReplicas = $availabilityGroup.AvailabilityReplicas | Where-Object -FilterScript { $_.Role -ne 'Primary' }
@@ -411,7 +411,7 @@ class xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
 
         if ( $databasesToRemoveFromAvailabilityGroup.Count -gt 0 )
         {
-            Write-Verbose -Message ($script:localizedData.RemovingDatabasesToAvailabilityGroup -f $this.AvailabilityGroupName,( $databasesToRemoveFromAvailabilityGroup -join ', ' )) -Verbose
+            Write-Verbose -Message ($script:localizedData.RemovingDatabasesToAvailabilityGroup -f $this.AvailabilityGroupName,( $databasesToRemoveFromAvailabilityGroup -join ', ' ))
 
             foreach ( $databaseName in $databasesToRemoveFromAvailabilityGroup )
             {
@@ -461,7 +461,7 @@ class xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
         if ( ( $this.Ensure -eq [Ensure]::Present ) -and $matchingDatabaseNames.Count -eq 0 )
         {
             $configurationInDesiredState = $false
-            Write-Verbose -Message ($script:localizedData.DatabasesNotFound -f ($this.DatabaseName -join ', ')) -Verbose
+            Write-Verbose -Message ($script:localizedData.DatabasesNotFound -f ($this.DatabaseName -join ', '))
         }
         else
         {
@@ -471,7 +471,7 @@ class xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
             if ( ( $databasesNotFoundOnTheInstance.Count -gt 0 ) -and ( $this.Ensure -ne [Ensure]::Absent ) )
             {
                 $configurationInDesiredState = $false
-                Write-Verbose -Message ($script:localizedData.DatabasesNotFound -f ( $databasesNotFoundOnTheInstance -join ', ' )) -Verbose
+                Write-Verbose -Message ($script:localizedData.DatabasesNotFound -f ( $databasesNotFoundOnTheInstance -join ', ' ))
             }
 
             $databasesToAddToAvailabilityGroup = $this.GetDatabasesToAddToAvailabilityGroup($primaryServerObject,$availabilityGroup)
@@ -479,7 +479,7 @@ class xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
             if ( $databasesToAddToAvailabilityGroup.Count -gt 0 )
             {
                 $configurationInDesiredState = $false
-                Write-Verbose -Message ($script:localizedData.DatabaseShouldBeMember -f $this.AvailabilityGroupName,( $databasesToAddToAvailabilityGroup -join ', ' )) -Verbose
+                Write-Verbose -Message ($script:localizedData.DatabaseShouldBeMember -f $this.AvailabilityGroupName,( $databasesToAddToAvailabilityGroup -join ', ' ))
             }
 
             $databasesToRemoveFromAvailabilityGroup = $this.GetDatabasesToRemoveFromAvailabilityGroup($primaryServerObject,$availabilityGroup)
@@ -487,7 +487,7 @@ class xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
             if ( $databasesToRemoveFromAvailabilityGroup.Count -gt 0 )
             {
                 $configurationInDesiredState = $false
-                Write-Verbose -Message ($script:localizedData.DatabaseShouldNotBeMember -f $this.AvailabilityGroupName,( $databasesToRemoveFromAvailabilityGroup -join ', ' )) -Verbose
+                Write-Verbose -Message ($script:localizedData.DatabaseShouldNotBeMember -f $this.AvailabilityGroupName,( $databasesToRemoveFromAvailabilityGroup -join ', ' ))
             }
         }
 
@@ -517,25 +517,25 @@ class xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
         if ( ( $ServerObject -eq $null ) -or ( [System.String]::IsNullOrEmpty($ServerObject) ) )
         {
             $errorMessage = $script:localizedData.ParameterNullOrEmpty -f 'ServerObject'
-            New-InvalidArgumentException -ArgumentName ParameterValidation -Message $errorMessage
+            New-InvalidArgumentException -ArgumentName ServerObject -Message $errorMessage
         }
 
         if ( ( $AvailabilityGroup -eq $null ) -or ( [System.String]::IsNullOrEmpty($AvailabilityGroup) ) )
         {
             $errorMessage = $script:localizedData.ParameterNullOrEmpty -f 'AvailabilityGroup'
-            New-InvalidArgumentException -ArgumentName ParameterValidation -Message $errorMessage
+            New-InvalidArgumentException -ArgumentName AvailabilityGroup -Message $errorMessage
         }
 
         if ( $ServerObject.PSTypeNames -notcontains 'Microsoft.SqlServer.Management.Smo.Server' )
         {
             $errorMessage = $script:localizedData.ParameterNotOfType -f 'ServerObject','Microsoft.SqlServer.Management.Smo.Server'
-            New-InvalidArgumentException -ArgumentName ParameterValidation -Message $errorMessage
+            New-InvalidArgumentException -ArgumentName ServerObject -Message $errorMessage
         }
 
         if ( $AvailabilityGroup.PSTypeNames -notcontains 'Microsoft.SqlServer.Management.Smo.AvailabilityGroup' )
         {
-            $errorMessage = $script:localizedData.ParameterNotOfType -f 'ServerObject','Microsoft.SqlServer.Management.Smo.AvailabilityGroup'
-            New-InvalidArgumentException -ArgumentName ParameterValidation -Message $errorMessage
+            $errorMessage = $script:localizedData.ParameterNotOfType -f 'AvailabilityGroup','Microsoft.SqlServer.Management.Smo.AvailabilityGroup'
+            New-InvalidArgumentException -ArgumentName AvailabilityGroup -Message $errorMessage
         }
 
         $matchingDatabaseNames = $this.GetMatchingDatabaseNames($ServerObject)
@@ -575,25 +575,25 @@ class xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
         if ( ( $ServerObject -eq $null ) -or ( [System.String]::IsNullOrEmpty($ServerObject) ) )
         {
             $errorMessage = $script:localizedData.ParameterNullOrEmpty -f 'ServerObject'
-            New-InvalidArgumentException -ArgumentName ParameterValidation -Message $errorMessage
+            New-InvalidArgumentException -ArgumentName ServerObject -Message $errorMessage
         }
 
         if ( ( $AvailabilityGroup -eq $null ) -or ( [System.String]::IsNullOrEmpty($AvailabilityGroup) ) )
         {
             $errorMessage = $script:localizedData.ParameterNullOrEmpty -f 'AvailabilityGroup'
-            New-InvalidArgumentException -ArgumentName ParameterValidation -Message $errorMessage
+            New-InvalidArgumentException -ArgumentName AvailabilityGroup -Message $errorMessage
         }
 
         if ( $ServerObject.PSTypeNames -notcontains 'Microsoft.SqlServer.Management.Smo.Server' )
         {
             $errorMessage = $script:localizedData.ParameterNotOfType -f 'ServerObject','Microsoft.SqlServer.Management.Smo.Server'
-            New-InvalidArgumentException -ArgumentName ParameterValidation -Message $errorMessage
+            New-InvalidArgumentException -ArgumentName ServerObject -Message $errorMessage
         }
 
         if ( $AvailabilityGroup.PSTypeNames -notcontains 'Microsoft.SqlServer.Management.Smo.AvailabilityGroup' )
         {
-            $errorMessage = $script:localizedData.ParameterNotOfType -f 'ServerObject','Microsoft.SqlServer.Management.Smo.AvailabilityGroup'
-            New-InvalidArgumentException -ArgumentName ParameterValidation -Message $errorMessage
+            $errorMessage = $script:localizedData.ParameterNotOfType -f 'AvailabilityGroup','Microsoft.SqlServer.Management.Smo.AvailabilityGroup'
+            New-InvalidArgumentException -ArgumentName AvailabilityGroup -Message $errorMessage
         }
 
         $matchingDatabaseNames = $this.GetMatchingDatabaseNames($ServerObject)
@@ -630,7 +630,7 @@ class xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
         if ( $ServerObject.PSTypeNames -notcontains 'Microsoft.SqlServer.Management.Smo.Server' )
         {
             $errorMessage = $script:localizedData.ParameterNotOfType -f 'ServerObject','Microsoft.SqlServer.Management.Smo.Server'
-            New-InvalidArgumentException -ArgumentName ParameterNotOfType -Message $errorMessage
+            New-InvalidArgumentException -ArgumentName ServerObject -Message $errorMessage
         }
 
         $matchingDatabaseNames = @()
