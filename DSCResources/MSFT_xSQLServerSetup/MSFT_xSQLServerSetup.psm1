@@ -370,17 +370,17 @@ function Get-TargetResource
     }
 
     # Check if MDS sub component is configured for this server
-    New-VerboseMessage -Message "Detecting MDS feature (HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState)"
-    $isMDSInstalled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState" -ErrorAction SilentlyContinue).MDSCoreFeature
-    New-VerboseMessage -Message "MDS Value: $isMDSInstalled"
+    $masterDataServicesFullRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
+    Write-Verbose -Message ($script:localizedData.EvaluateMasterDataServicesFeature -f $masterDataServicesFullRegistryPath)
+    $isMDSInstalled = (Get-ItemProperty -Path $masterDataServicesFullRegistryPath -ErrorAction SilentlyContinue).MDSCoreFeature
     if ($isMDSInstalled -eq 1)
     {
-        New-VerboseMessage -Message 'MDS feature detected'
+        Write-Verbose -Message $script:localizedData.MasterDataServicesFeatureFound
         $features += 'MDS,'
     }
     else
     {
-        New-VerboseMessage -Message 'MDS feature not detected'
+        Write-Verbose -Message $script:localizedData.MasterDataServicesFeatureNotFound
     }
 
     $registryUninstallPath = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall'
