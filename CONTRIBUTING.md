@@ -111,7 +111,8 @@ Write-Verbose -Message ($script:localizedData.InstallingUsingPathMessage -f $pat
 This is an example of how to write localized warning messages.
 
 ```powershell
-Write-Warning -Message ($script:localizedData.InstallationReportedProblemMessage -f $path)
+Write-Warning -Message `
+    ($script:localizedData.InstallationReportedProblemMessage -f $path)
 ```
 
 This is an example of how to throw localized error messages. The helper functions
@@ -144,11 +145,14 @@ There are also five helper functions to simplify localization.
 This can be used in code like this.
 
 ```powershell
-    if ( -not $resultOfEvaluation )
-    {
-        $errorMessage = $script:localizedData.ActionCannotBeUsedInThisContextMessage -f $Action, $Parameter2
-        New-InvalidArgumentException -ArgumentName 'Action' -Message $errorMessage
-    }
+if ( -not $resultOfEvaluation )
+{
+    $errorMessage = `
+        $script:localizedData.ActionCannotBeUsedInThisContextMessage `
+            -f $Action, $Parameter
+
+    New-InvalidArgumentException -ArgumentName 'Action' -Message $errorMessage
+}
 ```
 
 ###### New-InvalidOperationException

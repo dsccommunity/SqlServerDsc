@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- **BREAKING CHANGE: The module now requires WMF 5.**
+- BREAKING CHANGE: The module now requires WMF 5.
   - This is required for class-based resources
 - Added new resource
   - xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
