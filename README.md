@@ -861,20 +861,25 @@ The dynamic maximum memory (in MB) is calculate with this formula:
 SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
 (1024\*CEILING(NumOfCores/4)) - OSReservedMemory.
 
-* **NumOfSQLThreads**
-  * If the number of cores is less than or equal to 4, the number of SQL threads
-    is set to: 256 + (NumberOfCores - 4) \* 8.
-  * If the number of cores is greater than 4, the number of SQL threads is set
-    to: 0 (zero).
-* **ThreadStackSize**
-  * If the architecture of windows server is x86, the size of thread stack is 1MB.
-  * If the architecture of windows server is x64, the size of thread stack is 2MB.
-  * If the architecture of windows server is IA64, the size of thread stack is 4MB.
-* **OSReservedMemory**
-  * If the total physical memory is less than or equal to 20GB, the percentage of
-    reserved memory for OS is 20% of total physical memory.
-  * If the total physical memory is greater than 20GB, the percentage of reserved
-    memory for OS is 12.5% of total physical memory.
+##### NumOfSQLThreads
+
+* If the number of cores is less than or equal to 4, the number of SQL threads
+  is set to: 256 + (NumberOfCores - 4) \* 8.
+* If the number of cores is greater than 4, the number of SQL threads is set
+  to: 0 (zero).
+
+##### ThreadStackSize
+
+* If the architecture of windows server is x86, the size of thread stack is 1MB.
+* If the architecture of windows server is x64, the size of thread stack is 2MB.
+* If the architecture of windows server is IA64, the size of thread stack is 4MB.
+
+##### OSReservedMemory
+
+* If the total physical memory is less than or equal to 20GB, the percentage of
+  reserved memory for OS is 20% of total physical memory.
+* If the total physical memory is greater than 20GB, the percentage of reserved
+  memory for OS is 12.5% of total physical memory.
 
 #### Requirements
 
