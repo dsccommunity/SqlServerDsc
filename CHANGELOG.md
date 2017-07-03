@@ -57,8 +57,10 @@
     SHIFT+ALT+F, or press F1 and choose 'Format document' in the list. The
     PowerShell code will then be formatted according to the Style Guideline
     (although maybe not complete, but would help a long way).
-      - Removed alignPropertyValuePairs setting since it does not align with the
-        style guideline.
+      - Removed powershell.codeFormatting.alignPropertyValuePairs setting since
+        it does not align with the style guideline.
+      - Added powershell.codeFormatting.preset with a value of 'Custom' so that
+        workspace formatting settings are honored (issue #665).
   - Fixed lint error MD013 and MD036 in README.md.
   - Updated .markdownlint.json to enable rule MD013 and MD036 to enforce those
     lint markdown rules in the common tests.
