@@ -8,16 +8,6 @@
   - xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
   - Added localization support for all strings.
 - Changes to xSQLServerRSConfig
-<<<<<<< HEAD
-  - BREAKING CHANGE: Removed `$SQLAdminCredential` parameter. Use common parameter `PsDscRunAsCredential` (WMF 5.0+) to run
-    the resource under different credentials. `PsDscRunAsCredential` Windows account must be a sysadmin on SQL Server
-    (issue #568).
-
-    In addition, the resource no longer uses `Invoke-Command` cmdlet that was used to impersonate the Windows user
-    specified by `$SQLAdminCredential`. The call also needed CredSSP authentication to be enabled and configured on
-    the target node, which complicated deployments in non-domain scenarios. Using `PsDscRunAsCredential` solves
-    this problems for us.
-=======
   - BREAKING CHANGE: Removed `$SQLAdminCredential` parameter. Use common parameter
     `PsDscRunAsCredential` (WMF 5.0+) to run the resource under different credentials.
     `PsDscRunAsCredential` Windows account must be a sysadmin on SQL Server (issue
@@ -27,33 +17,33 @@
     also needed CredSSP authentication to be enabled and configured on the target
     node, which complicated deployments in non-domain scenarios. Using
     `PsDscRunAsCredential` solves this problems for us.
->>>>>>> Changes to xSQLServer
   - Fixed virtual directory creation for SQL Server 2016 (issue #569).
   - Added unit tests (issue #295).
 - Changes to xSQLServerDatabase
   - Changed the readme, SQLInstance should have been SQLInstanceName.
 - Changes to xSQLServerSetup
-<<<<<<< HEAD
-  - Updated Get-TargetResource to correctly detect BOL, Conn, BC and other tools when they are installed without SQLENGINE (issue #591).
-  - Now it can detect Documentation Components correctly after the change in issue #591 (issue #628)
-  - Fixed bug that prevented Get-DscConfiguration from running without error. The return hash table fails if the $clusteredSqlIpAddress variable is not used. The schema expects a string array but it is initialized as just a null string, causing it to fail on Get-DscConfiguration (issue #393).
-- Changes to xSQLServerScript
-  - Fixed bug with schema and variable mismatch for the Credential/Username parameter in the return statement (issue #661).
-=======
   - Updated Get-TargetResource to correctly detect BOL, Conn, BC and other tools
     when they are installed without SQLENGINE (issue #591).
-  - Now it can detect Documentation Components correctly after the change in issue
-    #591 (issue #628)
->>>>>>> Changes to xSQLServer
+  - Now it can detect Documentation Components correctly after the change in
+    issue #591 (issue #628)
+  - Fixed bug that prevented Get-DscConfiguration from running without error. The
+    return hash table fails if the $clusteredSqlIpAddress variable is not used.
+    The schema expects a string array but it is initialized as just a null string,
+    causing it to fail on Get-DscConfiguration (issue #393).
+- Changes to xSQLServerScript
+  - Fixed bug with schema and variable mismatch for the Credential/Username parameter
+    in the return statement (issue #661).
 - Changes to xSQLServer
   - BREAKING CHANGE: xSQLServer does no longer try to support WMF 4.0 (PowerShell
     4.0) (issue #574). Minimum supported version of WMF is now 5.0 (PowerShell 5.0).
   - BREAKING CHANGE: Removed deprecated resource xSQLAOGroupJoin (issue #457).
   - BREAKING CHANGE: Removed deprecated resource xSQLAOGroupEnsure (issue #456).
-<<<<<<< HEAD
-  - BREAKING CHANGE: Removed deprecated resource xSQLServerFailoverClusterSetup (issue #336).
-  - Updated PULL\_REQUEST\_TEMPLATE adding comment block around text. Also rearranged and updated texts (issue #572).
-  - Added common helper functions for HQRM localization, and added tests for the helper functions.
+  - BREAKING CHANGE: Removed deprecated resource xSQLServerFailoverClusterSetup
+    (issue #336).
+  - Updated PULL\_REQUEST\_TEMPLATE adding comment block around text. Also
+    rearranged and updated texts (issue #572).
+  - Added common helper functions for HQRM localization, and added tests for the
+    helper functions.
     - Get-LocalizedData
     - New-InvalidResultException
     - New-ObjectNotFoundException
@@ -67,38 +57,31 @@
     SHIFT+ALT+F, or press F1 and choose 'Format document' in the list. The
     PowerShell code will then be formatted according to the Style Guideline
     (although maybe not complete, but would help a long way).
-      - Removed alignPropertyValuePairs setting since it does not align with the style guideline.
-=======
-  - BREAKING CHANGE: Removed deprecated resource xSQLServerFailoverClusterSetup
-    (issue #336).
-  - Updated PULL\_REQUEST\_TEMPLATE adding comment block around text. Also rearranged
-    and updated texts (issue #572).
->>>>>>> Changes to xSQLServer
+      - Removed alignPropertyValuePairs setting since it does not align with the
+        style guideline.
   - Opt-in for common markdown tests.
   - Fixed lint error MD013 in README.md.
   - Updated .markdownlint.json to enable rule MD013.
   - Fixed lint error MD013 in CHANGELOG.md.
   - Fixed lint error MD013 in CONTRIBUTING.md.
 - Changes to xSQLServerHelper
-<<<<<<< HEAD
-  - Removed helper function Grant-ServerPerms because the deprecated resource that was using it was removed.
-  - Removed helper function Grant-CNOPerms because the deprecated resource that was using it was removed.
-  - Removed helper function New-ListenerADObject because the deprecated resource that was using it was removed.
-  - Added tests for those helper functions that did not have tests.
-  - Test-SQLDscParameterState helper function can now correctly pass a CimInstance as DesiredValue.
-  - Test-SQLDscParameterState helper function will now output a warning message
-    if the value type of a desired value is not supported.
-  - Added localization to helper functions (issue #641).
-    - Resolved the issue when using Write-Verbose in helper functions discussed in #641 where Write-Verbose wouldn't write out verbose messages unless using parameter Verbose.
-    - Moved localization strings from xSQLServer.strings.psd1 to xSQLServerHelper.strings.psd1.
-=======
   - Removed helper function Grant-ServerPerms because the deprecated resource that
     was using it was removed.
   - Removed helper function Grant-CNOPerms because the deprecated resource that
     was using it was removed.
   - Removed helper function New-ListenerADObject because the deprecated resource
     that was using it was removed.
->>>>>>> Changes to xSQLServer
+  - Added tests for those helper functions that did not have tests.
+  - Test-SQLDscParameterState helper function can now correctly pass a CimInstance
+    as DesiredValue.
+  - Test-SQLDscParameterState helper function will now output a warning message
+    if the value type of a desired value is not supported.
+  - Added localization to helper functions (issue #641).
+    - Resolved the issue when using Write-Verbose in helper functions discussed
+      in #641 where Write-Verbose wouldn't write out verbose messages unless using
+      parameter Verbose.
+    - Moved localization strings from xSQLServer.strings.psd1 to
+      xSQLServerHelper.strings.psd1.
 - Changes to xSQLServerSetup
   - BREAKING CHANGE: Replaced StartWin32Process helper function with the cmdlet
     Start-Process (issue #41, #93 and #126).
@@ -124,16 +107,21 @@
     SetupProcessTimeout an error will be thrown (issue #566).
   - Updated all examples to match the removal of SetupCredential.
   - Updated (removed) severe known issues in README.md for resource xSQLServerSetup.
-  - Now all major version uses the same identifier to evaluate InstallSharedDir and InstallSharedWOWDir (issue #420).
-  - Now setup arguments that contain no value will be ignored, for example when InstallSharedDir and
-    InstallSharedWOWDir path is already present on the target node, because of a previous installation (issue #639).
+  - Now all major version uses the same identifier to evaluate InstallSharedDir
+    and InstallSharedWOWDir (issue #420).
+  - Now setup arguments that contain no value will be ignored, for example when
+    InstallSharedDir and
+    InstallSharedWOWDir path is already present on the target node, because of a
+    previous installation (issue #639).
   - Added localization support for all strings.
   - Added a test to test some error handling for cluster installations.
   - Added support for MDS feature install (issue #486)
 - Changes to xSQLServerAlwaysOnService
   - Fixed typos in localization strings and in tests.
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
-  - Fix: Utilize the value of 'FailoverMode' to set the 'FailoverMode' property of the AG instead of the 'AvailabilityMode' of the AG
+  - Now it utilize the value of 'FailoverMode' to set the 'FailoverMode' property
+    of the Availability Group instead of wrongly using the 'AvailabilityMode'
+    property of the Availability Group.
 
 ## 7.1.0.0
 
