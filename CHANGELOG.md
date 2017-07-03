@@ -59,7 +59,6 @@
     (although maybe not complete, but would help a long way).
       - Removed alignPropertyValuePairs setting since it does not align with the
         style guideline.
-  - Opt-in for common markdown tests.
   - Fixed lint error MD013 and MD036 in README.md.
   - Updated .markdownlint.json to enable rule MD013.
   - Fixed lint error MD013 in CHANGELOG.md.
