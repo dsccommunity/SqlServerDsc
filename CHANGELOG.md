@@ -78,6 +78,7 @@
   - Fixed lint error MD013 in README.md.
   - Updated .markdownlint.json to enable rule MD013.
   - Fixed lint error MD013 in CHANGELOG.md.
+  - Fixed lint error MD013 in CONTRIBUTING.md.
 - Changes to xSQLServerHelper
 <<<<<<< HEAD
   - Removed helper function Grant-ServerPerms because the deprecated resource that was using it was removed.
