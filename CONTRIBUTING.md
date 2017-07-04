@@ -284,17 +284,20 @@ The localized strings are placed in a file named 'xSQLServerHelper.strings.psd1'
 which are located in each language folder in the root of the module. For English
 language strings the folder is ['en-US'](https://github.com/PowerShell/xSQLServer/blob/dev/en-US).
 
-| Function | Short description |
-| --- | --- |
-| New-TerminatingError | Throws a localized error message using Throw. The parameter
-ErrorType takes the message type for which it will get the localized message
-string. |
-| New-VerboseMessage | Writes a localized verbose message using Write-Verbose.
-The parameter ErrorType takes the message type for which it will get the localized
-message string. |
-| New-WarningMessage | Writes a localized warning message using Write-Warning. The
-parameter ErrorType takes the message type for which it will get the localized
-message string. |
+##### New-TerminatingError
+
+Throws a localized error message using Throw. The parameter ErrorType takes the
+message type for which it will get the localized message string.
+
+##### New-VerboseMessage
+
+Writes a localized verbose message using Write-Verbose. The parameter ErrorType
+takes the message type for which it will get the localized message string.
+
+##### New-WarningMessage
+
+Writes a localized warning message using Write-Warning. The parameter ErrorType
+takes the message type for which it will get the localized message string.
 
 ### Helper functions
 

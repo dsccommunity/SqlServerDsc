@@ -689,39 +689,47 @@ SQL Reporting Services and Integration Services.
 
 #### Firewall rules
 
-##### Default rules for default instance
+##### Database Engine (SQLENGINE) - Default instance
 
-| Feature | Component | Enable Firewall Rule | Firewall Name |
-| --- | --- | --- | --- |
-| SQLENGINE | Database Engine | Application: sqlservr.exe | SQL Server Database
-Engine instance MSSQLSERVER |
-| SQLENGINE | Database Engine | Service: SQLBrowser | SQL Server Browser |
-| AS | Analysis Services | Service: MSSQLServerOLAPService | SQL Server Analysis
-Services instance MSSQLSERVER |
-| AS | Analysis Services | Service: SQLBrowser | SQL Server Browser |
-| RS | Reporting Services | Port: tcp/80 | SQL Server Reporting Services 80 |
-| RS | Reporting Services | Port: tcp/443 | SQL Server Reporting Services 443 |
-| IS | Integration Services | Application: MsDtsSrvr.exe | SQL Server Integration
-Services Application |
-| IS | Integration Services | Port: tcp/135 | SQL Server Integration Services
-Port |
+Firewall Rule | Firewall Display Name
+--- | ---
+Application: sqlservr.exe | SQL Server Database Engine instance MSSQLSERVER
+Service: SQLBrowser | SQL Server Browser
 
-##### Default rules for named instance
+##### Database Engine (SQLENGINE) - Named instance
 
-| Feature | Component | Enable Firewall Rule | Firewall Name |
-| --- | --- | --- | --- |
-| SQLENGINE | Database Engine | Application: sqlservr.exe | SQL Server Database
-Engine instance \<NAMED_INSTANCE\> |
-| SQLENGINE | Database Engine | Service: SQLBrowser | SQL Server Browser |
-| AS | Analysis Services | Service: MSOLAP$INSTANCE | SQL Server Analysis
-Services instance \<NAMED_INSTANCE\> |
-| AS | Analysis Services | Service: SQLBrowser | SQL Server Browser |
-| RS | Reporting Services | Port: tcp/80 | SQL Server Reporting Services 80 |
-| RS | Reporting Services | Port: tcp/443 | SQL Server Reporting Services 443 |
-| IS | Integration Services | Application: MsDtsSrvr.exe | SQL Server Integration
-Services Application |
-| IS | Integration Services | Port: tcp/135 | SQL Server Integration Services
-Port |
+Firewall Rule | Firewall Display Name
+--- | ---
+Application: sqlservr.exe | SQL Server Database Engine instance \<INSTANCE\>
+Service: SQLBrowser | SQL Server Browser
+
+##### Analysis Services (AS) - Default instance
+
+Firewall Rule | Firewall Display Name
+--- | ---
+Service: MSSQLServerOLAPService | SQL Server Analysis Services instance MSSQLSERVER
+Service: SQLBrowser | SQL Server Browser
+
+##### Analysis Services (AS) - Named instance
+
+Firewall Rule | Firewall Display Name
+--- | ---
+Service: MSOLAP$\<INSTANCE\> | SQL Server Analysis Services instance \<INSTANCE\>
+Service: SQLBrowser | SQL Server Browser
+
+##### Reporting Services (RS)
+
+Firewall Rule | Firewall Display Name
+--- | ---
+Port: tcp/80 | SQL Server Reporting Services 80
+Port: tcp/443 | SQL Server Reporting Services 443
+
+##### Integration Services (IS)
+
+Firewall Rule | Firewall Display Name
+--- | ---
+Application: MsDtsSrvr.exe | SQL Server Integration Services Application
+Port: tcp/135 | SQL Server Integration Services Port
 
 #### Requirements
 
@@ -1116,15 +1124,22 @@ Provides the means to run a user generated T-SQL script on the SQL Server instan
 Three scripts are required; Get T-SQL script, Set T-SQL script and the Test T-SQL
 script.
 
-| T-SQL Script | Description |
-| ---  | --- |
-| Get  | The Get T-SQL script is used to query the status when running the cmdlet
-Get-DscConfiguration, and the result can be found in the property `GetResult`. |
-| Test | The Test T-SQL script is used to test if the desired state is met. If Test
+#### Scripts
+
+##### Get T-SQL Script (GetFilePath)
+
+The Get T-SQL script is used to query the status when running the cmdlet
+Get-DscConfiguration, and the result can be found in the property `GetResult`.
+
+##### Test T-SQL Script (TestFilePath)
+
+The Test T-SQL script is used to test if the desired state is met. If Test
 T-SQL raises an error or returns any value other than 'null' the test fails, thus
-the Set T-SQL script is run. |
-| Set  | The Set T-SQL script performs the actual change when Test T-SQL script
-fails. |
+the Set T-SQL script is run.
+
+##### Set T-SQL Script (SetFilePath)
+
+The Set T-SQL script performs the actual change when Test T-SQL script fails.
 
 #### Requirements
 

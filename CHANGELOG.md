@@ -60,7 +60,8 @@
       - Removed alignPropertyValuePairs setting since it does not align with the
         style guideline.
   - Fixed lint error MD013 and MD036 in README.md.
-  - Updated .markdownlint.json to enable rule MD013.
+  - Updated .markdownlint.json to enable rule MD013 and MD036 to enforce those
+    lint markdown rules in the common tests.
   - Fixed lint error MD013 in CHANGELOG.md.
   - Fixed lint error MD013 in CONTRIBUTING.md.
 - Changes to xSQLServerHelper
