@@ -31,6 +31,11 @@ Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script
         Use a Windows PowerShell array to specify multiple variables and their values. For more information how to use this,
         please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx).
 
+	 .PARAMETER QueryTimeout
+        Specifies, as a integer the number of seconds after which the T-SQL script exeuction will time out.
+        This should default to 0 (no time out), but there are bugs in invoke-sqlcmd in some versions of SQL server where this is not respected
+        and the default is incorrecly set to 30 seconds.
+
     .OUTPUTS
         Hash table containing key 'GetResult' which holds the value of the result from the SQL script that was ran from the parameter 'GetFilePath'.
 #>
@@ -60,12 +65,16 @@ function Get-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
+		[Parameter(Mandatory = $false)]
+        [System.Int32]
+        $QueryTimeout,
+		
         [System.String[]]
         $Variable
     )
 
     $result = Invoke-SqlScript -ServerInstance $ServerInstance -SqlScriptPath $GetFilePath `
-                -Credential $Credential -Variable $Variable -ErrorAction Stop
+                -Credential $Credential -Variable $Variable -QueryTimeout $QueryTimeout -ErrorAction Stop
 
     $getResult = Out-String -InputObject $result
 
@@ -75,6 +84,7 @@ function Get-TargetResource
         GetFilePath = [System.String] $GetFilePath
         TestFilePath = [System.String] $TestFilePath
         Credential = [System.Object] $Credential
+        QueryTimeout = [System.Int32] $QueryTimeout
         Variable = [System.String[]] $Variable
         GetResult = [System.String[]] $getresult
     }
@@ -137,12 +147,16 @@ function Set-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
+		[Parameter(Mandatory = $false)]
+        [System.Int32]
+        $QueryTimeout,
+		
         [System.String[]]
         $Variable
     )
 
     Invoke-SqlScript -ServerInstance $ServerInstance -SqlScriptPath $SetFilePath `
-                -Credential $Credential -Variable $Variable -ErrorAction Stop
+                -Credential $Credential -Variable $Variable -QueryTimeout $QueryTimeout -ErrorAction Stop
 }
 
 <#
@@ -202,6 +216,10 @@ function Test-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
+		[Parameter(Mandatory = $false)]
+        [System.Int32]
+        $QueryTimeout,
+		
         [System.String[]]
         $Variable
     )
@@ -209,7 +227,7 @@ function Test-TargetResource
     try
     {
         $result = Invoke-SqlScript -ServerInstance $ServerInstance -SqlScriptPath $TestFilePath `
-                -Credential $Credential -Variable $Variable -ErrorAction Stop
+                -Credential $Credential -Variable $Variable -QueryTimeout $QueryTimeout -ErrorAction Stop
 
         if($null -eq $result)
         {
@@ -262,6 +280,10 @@ function Invoke-SqlScript
         [System.Management.Automation.Credential()]
         $Credential,
 
+		[Parameter(Mandatory = $false)]
+        [System.Int32]
+        $QueryTimeout, 
+		
         [System.String[]]
         $Variable
     )
