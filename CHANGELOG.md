@@ -119,6 +119,7 @@
   - Added localization support for all strings.
   - Added a test to test some error handling for cluster installations.
   - Added support for MDS feature install (issue #486)
+    - Fixed localization support for MDS feature (issue #671).
 - Changes to xSQLServerAlwaysOnService
   - Fixed typos in localization strings and in tests.
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
