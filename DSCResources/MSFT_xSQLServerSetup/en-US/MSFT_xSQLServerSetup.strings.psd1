@@ -71,4 +71,7 @@ ConvertFrom-StringData @'
     RobocopySuccessfulAndRemovedExtraFilesAtDestination = Robocopy copied files to destination successfully. Robocopy also found files at the destination path that is not present at the source path, these extra files was remove at the destination path.
     RobocopyAllFilesPresent = Robocopy reported that all files already present.
     StartSetupProcess = Started the process with id {0} using the path '{1}', and with a timeout value of {2} seconds.
+    EvaluateMasterDataServicesFeature = Detecting Master Data Services (MDS) feature ({0}).
+    MasterDataServicesFeatureFound = 'Master Data Services (MDS) feature detected.'
+    MasterDataServicesFeatureNotFound = 'Master Data Services (MDS) feature not detected.'
 '@
