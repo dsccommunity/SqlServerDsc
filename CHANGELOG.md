@@ -78,9 +78,8 @@
   - Fixed typos in localization strings and in tests.
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
   - Fix: Utilize the value of 'FailoverMode' to set the 'FailoverMode' property of the AG instead of the 'AvailabilityMode' of the AG
--Change to xSQLServerScript
+- Change to xSQLServerScript
   - Optional QueryTimeout parameter to specify sql script query execution timeout. Fixes issue #597
-
 
 ## 7.1.0.0
 
