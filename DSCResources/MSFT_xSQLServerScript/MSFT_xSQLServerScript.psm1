@@ -82,7 +82,7 @@ function Get-TargetResource
         SetFilePath = [System.String] $SetFilePath
         GetFilePath = [System.String] $GetFilePath
         TestFilePath = [System.String] $TestFilePath
-        Username = [System.Object] $Credential
+        Credential = [System.Object] $Credential
         QueryTimeout = [System.UInt32] $QueryTimeout
         Variable = [System.String[]] $Variable
         GetResult = [System.String[]] $getresult
@@ -226,7 +226,7 @@ function Test-TargetResource
         [Parameter(Mandatory = $false)]
         [System.UInt32]
         $QueryTimeout,
-  
+
         [System.String[]]
         $Variable
     )
