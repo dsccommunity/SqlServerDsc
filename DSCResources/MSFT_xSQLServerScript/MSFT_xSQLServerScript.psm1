@@ -31,7 +31,7 @@ Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script
         Use a Windows PowerShell array to specify multiple variables and their values. For more information how to use this,
         please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx).
 
-	 .PARAMETER QueryTimeout
+    .PARAMETER QueryTimeout
         Specifies, as a integer the number of seconds after which the T-SQL script exeuction will time out.
         This should default to 0 (no time out), but there are bugs in invoke-sqlcmd in some versions of SQL server where this is not respected
         and the default is incorrecly set to 30 seconds.
@@ -65,10 +65,10 @@ function Get-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
-		[Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $false)]
         [System.Int32]
         $QueryTimeout,
-		
+  
         [System.String[]]
         $Variable
     )
@@ -147,10 +147,10 @@ function Set-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
-		[Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $false)]
         [System.Int32]
         $QueryTimeout,
-		
+  
         [System.String[]]
         $Variable
     )
@@ -216,10 +216,10 @@ function Test-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
-		[Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $false)]
         [System.Int32]
         $QueryTimeout,
-		
+  
         [System.String[]]
         $Variable
     )
@@ -280,10 +280,10 @@ function Invoke-SqlScript
         [System.Management.Automation.Credential()]
         $Credential,
 
-		[Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $false)]
         [System.Int32]
         $QueryTimeout, 
-		
+  
         [System.String[]]
         $Variable
     )
