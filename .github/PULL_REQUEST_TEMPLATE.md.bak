@@ -12,10 +12,10 @@ with 'BREAKING CHANGE:',
 i.e. 'BREAKING CHANGE: xSQLServerSetup: My short description'
 -->
 **Pull Request (PR) description**
-xSQLServerScript Adding optional query timeout parameter
+<!-- Replace this with a description of your pull request -->
 
 **This Pull Request (PR) fixes the following issues:**
-Fixes #597
+<!-- Replace this with the list of issues or n/a. Use format: Fixes #123 -->
 
 **Task list:**
 <!--
@@ -23,8 +23,8 @@ To aid community reviewers in reviewing and merging your pull request (PR), plea
 the time to run through the below checklist.
 Change to [x] for each task in the task list that applies to your pull request (PR).
 -->
-- [X] Change details added to Unreleased section of CHANGELOG.md?
-- [X] Added/updated documentation, comment-based help and descriptions in .schema.mof files where appropriate?
-- [X] Examples appropriately updated?
-- [X] New/changed code adheres to [Style Guidelines](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md)?
-- [X] [Unit and (optional) Integration tests](https://github.com/PowerShell/DscResources/blob/master/TestsGuidelines.md) created/updated where possible?
+- [ ] Change details added to Unreleased section of CHANGELOG.md?
+- [ ] Added/updated documentation, comment-based help and descriptions in .schema.mof files where appropriate?
+- [ ] Examples appropriately updated?
+- [ ] New/changed code adheres to [Style Guidelines](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md)?
+- [ ] [Unit and (optional) Integration tests](https://github.com/PowerShell/DscResources/blob/master/TestsGuidelines.md) created/updated where possible?
