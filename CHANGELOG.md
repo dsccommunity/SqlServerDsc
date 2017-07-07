@@ -123,13 +123,9 @@
 - Changes to xSQLServerAlwaysOnService
   - Fixed typos in localization strings and in tests.
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
-<<<<<<< HEAD
-  - Fix: Utilize the value of 'FailoverMode' to set the 'FailoverMode' property of the AG instead of the 'AvailabilityMode' of the AG
-=======
   - Now it utilize the value of 'FailoverMode' to set the 'FailoverMode' property
     of the Availability Group instead of wrongly using the 'AvailabilityMode'
     property of the Availability Group.
->>>>>>> dev
 - Change to xSQLServerScript
   - Optional QueryTimeout parameter to specify sql script query execution timeout. Fixes issue #597
 
