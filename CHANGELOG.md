@@ -7,32 +7,6 @@
 - Added new resource
   - xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
   - Added localization support for all strings.
-- Changes to xSQLServerRSConfig
-  - BREAKING CHANGE: Removed `$SQLAdminCredential` parameter. Use common parameter
-    `PsDscRunAsCredential` (WMF 5.0+) to run the resource under different credentials.
-    `PsDscRunAsCredential` Windows account must be a sysadmin on SQL Server (issue
-    #568).
-  - In addition, the resource no longer uses `Invoke-Command` cmdlet that was used
-    to impersonate the Windows user specified by `$SQLAdminCredential`. The call
-    also needed CredSSP authentication to be enabled and configured on the target
-    node, which complicated deployments in non-domain scenarios. Using
-    `PsDscRunAsCredential` solves this problems for us.
-  - Fixed virtual directory creation for SQL Server 2016 (issue #569).
-  - Added unit tests (issue #295).
-- Changes to xSQLServerDatabase
-  - Changed the readme, SQLInstance should have been SQLInstanceName.
-- Changes to xSQLServerSetup
-  - Updated Get-TargetResource to correctly detect BOL, Conn, BC and other tools
-    when they are installed without SQLENGINE (issue #591).
-  - Now it can detect Documentation Components correctly after the change in
-    issue #591 (issue #628)
-  - Fixed bug that prevented Get-DscConfiguration from running without error. The
-    return hash table fails if the $clusteredSqlIpAddress variable is not used.
-    The schema expects a string array but it is initialized as just a null string,
-    causing it to fail on Get-DscConfiguration (issue #393).
-- Changes to xSQLServerScript
-  - Fixed bug with schema and variable mismatch for the Credential/Username parameter
-    in the return statement (issue #661).
 - Changes to xSQLServer
   - BREAKING CHANGE: xSQLServer does no longer try to support WMF 4.0 (PowerShell
     4.0) (issue #574). Minimum supported version of WMF is now 5.0 (PowerShell 5.0).
@@ -117,10 +91,35 @@
     InstallSharedDir and
     InstallSharedWOWDir path is already present on the target node, because of a
     previous installation (issue #639).
+  - Updated Get-TargetResource to correctly detect BOL, Conn, BC and other tools
+    when they are installed without SQLENGINE (issue #591).
+  - Now it can detect Documentation Components correctly after the change in
+    issue #591 (issue #628)
+  - Fixed bug that prevented Get-DscConfiguration from running without error. The
+    return hash table fails if the $clusteredSqlIpAddress variable is not used.
+    The schema expects a string array but it is initialized as just a null string,
+    causing it to fail on Get-DscConfiguration (issue #393).
   - Added localization support for all strings.
   - Added a test to test some error handling for cluster installations.
   - Added support for MDS feature install (issue #486)
     - Fixed localization support for MDS feature (issue #671).
+- Changes to xSQLServerRSConfig
+  - BREAKING CHANGE: Removed `$SQLAdminCredential` parameter. Use common parameter
+    `PsDscRunAsCredential` (WMF 5.0+) to run the resource under different credentials.
+    `PsDscRunAsCredential` Windows account must be a sysadmin on SQL Server (issue
+    #568).
+  - In addition, the resource no longer uses `Invoke-Command` cmdlet that was used
+    to impersonate the Windows user specified by `$SQLAdminCredential`. The call
+    also needed CredSSP authentication to be enabled and configured on the target
+    node, which complicated deployments in non-domain scenarios. Using
+    `PsDscRunAsCredential` solves this problems for us.
+  - Fixed virtual directory creation for SQL Server 2016 (issue #569).
+  - Added unit tests (issue #295).
+- Changes to xSQLServerDatabase
+  - Changed the readme, SQLInstance should have been SQLInstanceName.
+- Changes to xSQLServerScript
+  - Fixed bug with schema and variable mismatch for the Credential/Username parameter
+    in the return statement (issue #661).
 - Changes to xSQLServerAlwaysOnService
   - Fixed typos in localization strings and in tests.
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
