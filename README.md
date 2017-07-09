@@ -10,6 +10,16 @@ questions or comments.
 
 ## Branches
 
+1. Entry 1
+2. Entry 2
+3. Entry 3
+4. Entry 4
+
+1. Entry 1
+1. Entry 2
+1. Entry 3
+1. Entry 4
+
 ### master
 
 [![Build status](https://ci.appveyor.com/api/projects/status/mxn453y284eab8li/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xsqlserver/branch/master)
