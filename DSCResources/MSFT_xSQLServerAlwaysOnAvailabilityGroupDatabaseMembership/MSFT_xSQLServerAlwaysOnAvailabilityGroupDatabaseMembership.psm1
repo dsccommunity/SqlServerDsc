@@ -48,14 +48,11 @@ class xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
     [Bool]
     $MatchDatabaseOwner = $true
 
-    # Load the SQLPS module when the class is initialized
-    xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership()
-    {
-        Import-SQLPSModule
-    }
-
     [xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership] Get()
     {
+
+        Import-SQLPSModule
+
         # Create an object that reflects the current configuration
         $currentConfiguration = New-Object xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
         $currentConfiguration.SQLServer = $this.SQLServer
@@ -86,6 +83,8 @@ class xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
 
     [Void] Set()
     {
+        Import-SQLPSModule
+
         # Connect to the defined instance
         $serverObject = Connect-SQL -SQLServer $this.SQLServer -SQLInstanceName $this.SQLInstanceName
 
@@ -443,6 +442,8 @@ class xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
 
     [Bool] Test()
     {
+        Import-SQLPSModule
+
         $configurationInDesiredState = $true
         $currentConfiguration = $this.Get()
 
