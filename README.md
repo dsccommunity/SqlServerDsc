@@ -1155,28 +1155,28 @@ See [issue #273](https://github.com/PowerShell/xSQLServer/issues/273) for more i
 
 #### Parameters
 
-* **[String] ServerInstance** _(Key)_: The name of an instance of the Database
+* **`[String]` ServerInstance** _(Key)_: The name of an instance of the Database
   Engine. For a default instance, only specify the computer name. For a named
   instances, use the format ComputerName\\InstanceName.
-* **[String] SetFilePath** _(Key)_: Path to the T-SQL file that will perform Set
+* **`[String]` SetFilePath** _(Key)_: Path to the T-SQL file that will perform Set
   action.
-* **[String] GetFilePath** _(Key)_: Path to the T-SQL file that will perform Get
+* **`[String]` GetFilePath** _(Key)_: Path to the T-SQL file that will perform Get
   action. Any values returned by the T-SQL queries will also be returned by the
   cmdlet Get-DscConfiguration through the `GetResult` property.
-* **[String] TestFilePath** _(Key)_: Path to the T-SQL file that will perform Test
+* **`[String]` TestFilePath** _(Key)_: Path to the T-SQL file that will perform Test
   action. Any script that does not throw an error or returns null is evaluated to
   true. The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text,
   and will not cause the test to return false.
-* **[PSCredential] Credential** _(Write)_: The credentials to authenticate with,
+* **`[PSCredential]` Credential** _(Write)_: The credentials to authenticate with,
   using SQL Authentication. To authenticate using Windows Authentication, assign
   the credentials to the built-in parameter `PsDscRunAsCredential`. If both parameters
   `Credential` and `PsDscRunAsCredential` are not assigned, then SYSTEM account will
   be used to authenticate using Windows Authentication.
-* **[PSCredential] QueryTimeout** _(Write)_: Specifies, as an integer, the number of seconds
-  after which the T-SQL script execution will time out.  In some SQL Server versions there is
-  a bug in Invoke-Sqlcmd where the normal default value 0 (no timeout) is not respected and
-  the default value is incorrectly set to 30 seconds.
-* **[String[]] Variable** _(Write)_: Specifies, as a string array, a scripting
+* **`[UInt32]` QueryTimeout** _(Write)_: Specifies, as an integer, the number of 
+  seconds after which the T-SQL script execution will time out.  In some SQL Server
+  versions there is a bug in Invoke-Sqlcmd where the normal default value 0 (no 
+  timeout) is not respected and the default value is incorrectly set to 30 seconds.
+* **`[String[]]` Variable** _(Write)_: Specifies, as a string array, a scripting
   variable for use in the sql script, and sets a value for the variable. Use a
   Windows PowerShell array to specify multiple variables and their values. For more
   information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx).
