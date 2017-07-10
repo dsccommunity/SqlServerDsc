@@ -29,10 +29,18 @@ FunctionsToExport = '*'
 # Cmdlets to export from this module
 CmdletsToExport = '*'
 
-DSCResourcesToExport = @('xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership')
+DSCResourcesToExport = @(
+  'xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership'
+)
+
+# Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
+
+NestedModules = @(
+  'DSCResources\MSFT_xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership\MSFT_xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership.psm1'
+)
 
 # Script module or binary module file associated with this manifest.
-RootModule = '.\DSCResources\MSFT_xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership\MSFT_xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership.psm1'
+#RootModule = '.\DSCResources\MSFT_xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership\MSFT_xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership.psm1'
 
 RequiredAssemblies = @()
 
