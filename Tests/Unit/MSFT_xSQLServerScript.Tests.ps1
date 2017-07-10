@@ -54,9 +54,9 @@ try
 
         $testParametersTimeout = @{
             ServerInstance = $env:COMPUTERNAME
-            SetFilePath    = "set.sql"
-            GetFilePath    = "get.sql"
-            TestFilePath   = "test.sql"
+            SetFilePath    = "set-timeout.sql"
+            GetFilePath    = "get-timeout.sql"
+            TestFilePath   = "test-timeout.sql"
             QueryTimeout   = 30
         }
 
