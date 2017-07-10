@@ -1172,9 +1172,9 @@ See [issue #273](https://github.com/PowerShell/xSQLServer/issues/273) for more i
   the credentials to the built-in parameter `PsDscRunAsCredential`. If both parameters
   `Credential` and `PsDscRunAsCredential` are not assigned, then SYSTEM account will
   be used to authenticate using Windows Authentication.
-* **`[UInt32]` QueryTimeout** _(Write)_: Specifies, as an integer, the number of 
+* **`[UInt32]` QueryTimeout** _(Write)_: Specifies, as an integer, the number of
   seconds after which the T-SQL script execution will time out.  In some SQL Server
-  versions there is a bug in Invoke-Sqlcmd where the normal default value 0 (no 
+  versions there is a bug in Invoke-Sqlcmd where the normal default value 0 (no
   timeout) is not respected and the default value is incorrectly set to 30 seconds.
 * **`[String[]]` Variable** _(Write)_: Specifies, as a string array, a scripting
   variable for use in the sql script, and sets a value for the variable. Use a
