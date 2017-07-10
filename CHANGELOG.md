@@ -127,7 +127,8 @@
     of the Availability Group instead of wrongly using the 'AvailabilityMode'
     property of the Availability Group.
 - Change to xSQLServerScript
-  - Optional QueryTimeout parameter to specify sql script query execution timeout. Fixes issue #597
+  - Optional QueryTimeout parameter to specify sql script query execution timeout. 
+    Fixes issue #597
 
 ## 7.1.0.0
 
