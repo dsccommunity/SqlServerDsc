@@ -120,15 +120,14 @@
 - Changes to xSQLServerScript
   - Fixed bug with schema and variable mismatch for the Credential/Username parameter
     in the return statement (issue #661).
+  - Optional QueryTimeout parameter to specify sql script query execution timeout.
+    Fixes issue #597
 - Changes to xSQLServerAlwaysOnService
   - Fixed typos in localization strings and in tests.
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
   - Now it utilize the value of 'FailoverMode' to set the 'FailoverMode' property
     of the Availability Group instead of wrongly using the 'AvailabilityMode'
     property of the Availability Group.
-- Change to xSQLServerScript
-  - Optional QueryTimeout parameter to specify sql script query execution timeout.
-    Fixes issue #597
 
 ## 7.1.0.0
 
