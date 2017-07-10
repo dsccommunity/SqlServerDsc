@@ -18,7 +18,8 @@ Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stub
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName 'xSQLServer' `
     -DSCResourceName 'MSFT_xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership' `
-    -TestType Unit
+    -TestType Unit `
+    -ResourceType 'Class'
 
 #endregion HEADER
 
