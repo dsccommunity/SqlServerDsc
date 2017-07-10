@@ -382,7 +382,7 @@ WITH NORECOVERY'
                     $result.MatchDatabaseOwner | Should Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 2 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should not return any databases if there are no databases in the availability group' {
@@ -399,7 +399,7 @@ WITH NORECOVERY'
                     $result.MatchDatabaseOwner | Should Be $true
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 2 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should return databases when there are databases in the availability group' {
@@ -423,7 +423,7 @@ WITH NORECOVERY'
                     }
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 2 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
             }
         }
@@ -1164,7 +1164,7 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 2 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should return $false when no matching databases are found' {
@@ -1175,7 +1175,7 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 2 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should return $false when databases are found to add to the availability group' {
@@ -1184,7 +1184,7 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 2 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should return $true when the configuration is in the desired state and the primary replica is on another server' {
@@ -1196,7 +1196,7 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 2 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
             }
 
@@ -1213,7 +1213,7 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 2 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should return $true when no matching databases are found' {
@@ -1224,7 +1224,7 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 2 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should return $false when databases are found to remove from the availability group' {
@@ -1233,7 +1233,7 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 2 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should return $true when the configuration is in the desired state and the primary replica is on another server' {
@@ -1245,7 +1245,7 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 2 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
             }
 
@@ -1263,7 +1263,7 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 2 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should return $false when no matching databases are found' {
@@ -1274,7 +1274,7 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 2 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should return $false when databases are found to add to the availability group' {
@@ -1283,7 +1283,7 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 2 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should return $false when databases are found to remove from the availability group' {
@@ -1292,7 +1292,7 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 2 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should return $true when the configuration is in the desired state and the primary replica is on another server' {
@@ -1304,7 +1304,7 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 2 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
             }
         }
@@ -1324,28 +1324,28 @@ WITH NORECOVERY'
                 It 'Should throw the correct error when an empty object is passed to the ServerObject property of the method' {
                     { $databaseMembershipClass.GetDatabasesToAddToAvailabilityGroup($null,$mockAvailabilityGroupObject) } | Should Throw 'The parameter ''ServerObject'' is NULL or empty.'
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should throw the correct error when empty invalid object is passed to the AvailabilityGroup property of the method' {
                     { $databaseMembershipClass.GetDatabasesToAddToAvailabilityGroup($mockServerObject,$null) } | Should Throw 'The parameter ''AvailabilityGroup'' is NULL or empty.'
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should throw the correct error when an invalid object is passed to the ServerObject property of the method' {
                     { $databaseMembershipClass.GetDatabasesToAddToAvailabilityGroup($mockBadServerObject,$mockAvailabilityGroupObject) } | Should Throw 'The parameter ''ServerObject'' is not of the type ''Microsoft.SqlServer.Management.Smo.Server''.'
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should throw the correct error when an invalid object is passed to the AvailabilityGroup property of the method' {
                     { $databaseMembershipClass.GetDatabasesToAddToAvailabilityGroup($mockServerObject,$mockBadAvailabilityGroupObject) } | Should Throw 'The parameter ''AvailabilityGroup'' is not of the type ''Microsoft.SqlServer.Management.Smo.AvailabilityGroup''.'
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
             }
@@ -1363,7 +1363,7 @@ WITH NORECOVERY'
                         $mockAvailabilityDatabasePresentResults -contains $result | Should Be $true
                     }
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
 
@@ -1372,7 +1372,7 @@ WITH NORECOVERY'
 
                     $databaseMembershipClass.GetDatabasesToAddToAvailabilityGroup($mockServerObject,$mockAvailabilityGroupObject) | Should BeNullOrEmpty
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
             }
@@ -1391,7 +1391,7 @@ WITH NORECOVERY'
                         $mockAvailabilityDatabaseExactlyAddResults -contains $result | Should Be $true
                     }
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
 
@@ -1400,7 +1400,7 @@ WITH NORECOVERY'
 
                     $databaseMembershipClass.GetDatabasesToAddToAvailabilityGroup($mockServerObject,$mockAvailabilityGroupObject) | Should BeNullOrEmpty
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
             }
@@ -1421,28 +1421,28 @@ WITH NORECOVERY'
                 It 'Should throw the correct error when an empty object is passed to the ServerObject property of the method' {
                     { $databaseMembershipClass.GetDatabasesToRemoveFromAvailabilityGroup($null,$mockAvailabilityGroupObject) } | Should Throw 'The parameter ''ServerObject'' is NULL or empty.'
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should throw the correct error when empty invalid object is passed to the AvailabilityGroup property of the method' {
                     { $databaseMembershipClass.GetDatabasesToRemoveFromAvailabilityGroup($mockServerObject,$null) } | Should Throw 'The parameter ''AvailabilityGroup'' is NULL or empty.'
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should throw the correct error when an invalid object is passed to the ServerObject property of the method' {
                     { $databaseMembershipClass.GetDatabasesToRemoveFromAvailabilityGroup($mockBadServerObject,$mockAvailabilityGroupObject) } | Should Throw 'The parameter ''ServerObject'' is not of the type ''Microsoft.SqlServer.Management.Smo.Server''.'
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should throw the correct error when an invalid object is passed to the AvailabilityGroup property of the method' {
                     { $databaseMembershipClass.GetDatabasesToRemoveFromAvailabilityGroup($mockServerObject,$mockBadAvailabilityGroupObject) } | Should Throw 'The parameter ''AvailabilityGroup'' is not of the type ''Microsoft.SqlServer.Management.Smo.AvailabilityGroup''.'
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
             }
@@ -1460,7 +1460,7 @@ WITH NORECOVERY'
                         $mockAvailabilityDatabaseAbsentResults -contains $result | Should Be $true
                     }
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
 
@@ -1469,7 +1469,7 @@ WITH NORECOVERY'
 
                     $databaseMembershipClass.GetDatabasesToRemoveFromAvailabilityGroup($mockServerObject,$mockAvailabilityGroupObject) | Should BeNullOrEmpty
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
             }
@@ -1488,7 +1488,7 @@ WITH NORECOVERY'
                         $mockAvailabilityDatabaseExactlyRemoveResults -contains $result | Should Be $true
                     }
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
 
@@ -1509,7 +1509,7 @@ WITH NORECOVERY'
                         $results -contains $mockAvailabilityDatabaseName | Should Be $true
                     }
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
             }
@@ -1530,7 +1530,7 @@ WITH NORECOVERY'
                 It 'Should throw the correct error when and invalid object type is passed to the method' {
                     { $databaseMembershipClass.GetMatchingDatabaseNames($mockBadServerObject) } | Should Throw 'ServerObject'
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
 
@@ -1539,7 +1539,7 @@ WITH NORECOVERY'
 
                      $databaseMembershipClass.GetMatchingDatabaseNames($mockServerObject) | Should BeNullOrEmpty
 
-                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                      Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
 
@@ -1553,7 +1553,7 @@ WITH NORECOVERY'
                          $mockPresentDatabaseNames -contains $result | Should Be $true
                      }
 
-                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                      Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
             }
@@ -1579,7 +1579,7 @@ WITH NORECOVERY'
                 It 'Should return an empty object when no missing databases were identified' {
                     $databaseMembershipClass.GetDatabaseNamesNotFoundOnTheInstance($mockDatabaseNameParameter) | Should BeNullOrEmpty
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should return a string array of database names when missing databases are identified' {
@@ -1590,7 +1590,7 @@ WITH NORECOVERY'
                         $mockMissingDatabases -contains $result | Should Be $true
                     }
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should return an empty object when an empty object is supplied and no databases are defined' {
@@ -1598,7 +1598,7 @@ WITH NORECOVERY'
 
                     $databaseMembershipClass.GetDatabaseNamesNotFoundOnTheInstance('') | Should BeNullOrEmpty
 
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 0 -Exactly
                 }
             }
         }
