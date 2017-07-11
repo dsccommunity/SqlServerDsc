@@ -364,6 +364,7 @@ WITH NORECOVERY'
                     SqlServer = 'Server1'
                     SQLInstanceName = 'MSSQLSERVER'
                     AvailabilityGroupName = 'AvailabilityGroup1'
+                    BackupPath = $($mockBackupPath)
                 }
             }
 

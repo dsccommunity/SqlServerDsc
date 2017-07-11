@@ -7,12 +7,6 @@ Import-Module -Name (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent) `
 
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership'
 
-enum Ensure
-{
-    Absent
-    Present
-}
-
 <#
     .SYNOPSIS
         Gets the database membership of the specified availability group.
@@ -32,6 +26,10 @@ enum Ensure
 
     .PARAMETER AvailabilityGroupName
         The name of the availability group in which to manage the database membership(s).
+
+    .PARAMETER BackupPath
+        The path used to seed the availability group replicas. This should be a path that is accessible
+        by all of the replicas.
 #>
 function Get-TargetResource
 {
@@ -53,7 +51,11 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $AvailabilityGroupName
+        $AvailabilityGroupName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $BackupPath
     )
 
     # Create an object that reflects the current configuration
@@ -164,8 +166,8 @@ function Set-TargetResource
         $BackupPath,
 
         [Parameter(Mandatory = $false)]
-        [Ensure]
-        $Ensure = [Ensure]::Present,
+        [System.String]
+        $Ensure = 'Present',
 
         [Parameter(Mandatory = $false)]
         [Boolean]
@@ -621,8 +623,8 @@ function Test-TargetResource
         $BackupPath,
 
         [Parameter(Mandatory = $false)]
-        [Ensure]
-        $Ensure = [Ensure]::Present,
+        [System.String]
+        $Ensure = 'Present',
 
         [Parameter(Mandatory = $false)]
         [Boolean]
@@ -640,6 +642,7 @@ function Test-TargetResource
         SQLServer = $SQLServer
         SQLInstanceName = $SQLInstanceName
         AvailabilityGroupName = $AvailabilityGroupName
+        BackupPath = $BackupPath
     }
     $currentConfiguration = Get-TargetResource @getTargetResourceParameters
 
@@ -655,7 +658,7 @@ function Test-TargetResource
     $matchingDatabaseNames = Get-MatchingDatabaseNames -DatabaseName $DatabaseName -ServerObject $primaryServerObject
     $databasesNotFoundOnTheInstance = @()
 
-    if ( ( $Ensure -eq [Ensure]::Present ) -and $matchingDatabaseNames.Count -eq 0 )
+    if ( ( $Ensure -eq 'Present' ) -and $matchingDatabaseNames.Count -eq 0 )
     {
         $configurationInDesiredState = $false
         Write-Verbose -Message ($script:localizedData.DatabasesNotFound -f ($DatabaseName -join ', '))
@@ -665,7 +668,7 @@ function Test-TargetResource
         $databasesNotFoundOnTheInstance = Get-DatabaseNamesNotFoundOnTheInstance -DatabaseName $DatabaseName -MatchingDatabaseNames $matchingDatabaseNames
 
         # If the databases specified are not present on the instance and the desired state is not Absent
-        if ( ( $databasesNotFoundOnTheInstance.Count -gt 0 ) -and ( $Ensure -ne [Ensure]::Absent ) )
+        if ( ( $databasesNotFoundOnTheInstance.Count -gt 0 ) -and ( $Ensure -ne 'Absent' ) )
         {
             $configurationInDesiredState = $false
             Write-Verbose -Message ($script:localizedData.DatabasesNotFound -f ( $databasesNotFoundOnTheInstance -join ', ' ))
@@ -735,7 +738,7 @@ function Get-DatabasesToAddToAvailabilityGroup
         $DatabaseName,
 
         [Parameter(Mandatory = $true)]
-        [Ensure]
+        [System.String]
         $Ensure,
 
         [Parameter(Mandatory = $true)]
@@ -760,7 +763,7 @@ function Get-DatabasesToAddToAvailabilityGroup
     $comparisonResult = Compare-Object -ReferenceObject $matchingDatabaseNames -DifferenceObject $databasesInAvailabilityGroup
     $databasesToAddToAvailabilityGroup = @()
 
-    if ( $Ensure -eq [Ensure]::Present )
+    if ( $Ensure -eq 'Present' )
     {
         $databasesToAddToAvailabilityGroup = $comparisonResult | Where-Object -FilterScript { $_.SideIndicator -eq '<=' } | Select-Object -ExpandProperty InputObject
     }
@@ -805,7 +808,7 @@ function Get-DatabasesToRemoveFromAvailabilityGroup
         $DatabaseName,
 
         [Parameter(Mandatory = $true)]
-        [Ensure]
+        [System.String]
         $Ensure,
 
         [Parameter(Mandatory = $false)]
@@ -835,11 +838,11 @@ function Get-DatabasesToRemoveFromAvailabilityGroup
 
     $databasesToRemoveFromAvailabilityGroup = @()
 
-    if ( [Ensure]::Absent -eq $Ensure )
+    if ( 'Absent' -eq $Ensure )
     {
         $databasesToRemoveFromAvailabilityGroup = $comparisonResult | Where-Object -FilterScript { '==' -eq $_.SideIndicator } | Select-Object -ExpandProperty InputObject
     }
-    elseif ( ( [Ensure]::Present -eq $Ensure ) -and ( $Force ) )
+    elseif ( ( 'Present' -eq $Ensure ) -and ( $Force ) )
     {
         $databasesToRemoveFromAvailabilityGroup = $comparisonResult | Where-Object -FilterScript { '=>' -eq $_.SideIndicator } | Select-Object -ExpandProperty InputObject
     }
