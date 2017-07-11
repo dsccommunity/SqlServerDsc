@@ -36,6 +36,7 @@ enum Ensure
 function Get-TargetResource
 {
     [CmdletBinding()]
+    [OutputType([Hashtable])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -61,6 +62,10 @@ function Get-TargetResource
         SQLServer = $SQLServer
         SQLInstanceName = $SQLInstanceName
         AvailabilityGroupName = ''
+        BackupPath = ''
+        Ensure = ''
+        Force = $false
+        MatchDatabaseOwner = $false
     }
 
     # Connect to the instance
@@ -163,11 +168,11 @@ function Set-TargetResource
         $Ensure = [Ensure]::Present,
 
         [Parameter(Mandatory = $false)]
-        [Switch]
+        [Boolean]
         $Force,
 
         [Parameter(Mandatory = $false)]
-        [Switch]
+        [Boolean]
         $MatchDatabaseOwner
     )
 
@@ -620,11 +625,11 @@ function Test-TargetResource
         $Ensure = [Ensure]::Present,
 
         [Parameter(Mandatory = $false)]
-        [Switch]
+        [Boolean]
         $Force,
 
         [Parameter(Mandatory = $false)]
-        [Switch]
+        [Boolean]
         $MatchDatabaseOwner
     )
 
@@ -804,7 +809,7 @@ function Get-DatabasesToRemoveFromAvailabilityGroup
         $Ensure,
 
         [Parameter(Mandatory = $false)]
-        [Switch]
+        [Boolean]
         $Force,
 
         [Parameter(Mandatory = $true)]
