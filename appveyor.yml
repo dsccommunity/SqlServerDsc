@@ -3,11 +3,7 @@
 #---------------------------------#
 version: 6.0.{build}.0
 install:
-    - git clone https://github.com/johlju/DscResource.Tests
-    - ps: Push-Location
-    - ps: cd "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests"
-    - git checkout fix-lint-rule-md029-to-style-one
-    - ps: Pop-Location
+    - git clone https://github.com/PowerShell/DscResource.Tests
     - ps: Import-Module -Name .\Tests\TestHelpers\WMF5Dot1Installation.psm1 -Force
     - ps: Install-Wmf5Dot1
     - ps: Start-Sleep 5
