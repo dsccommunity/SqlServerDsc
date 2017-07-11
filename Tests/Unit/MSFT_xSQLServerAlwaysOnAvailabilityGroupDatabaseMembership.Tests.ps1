@@ -9,28 +9,25 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 }
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
-Import-Module -Name (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent | Split-Path -Parent) -ChildPath 'xSQLServerHelper.psm1') -Scope Global -Force
-Import-Module -Name ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SQLPSStub.psm1 ) -Force -Global
-
-# Loading mocked classes
-Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SMO.cs )
 
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName 'xSQLServer' `
-    -DSCResourceName 'MSFT_xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership' `
+    -DSCResourceName 'xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership' `
     -TestType Unit `
     -ResourceType 'Class'
 
 #endregion HEADER
 
 function Invoke-TestSetup {
+    Import-Module -Name (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent | Split-Path -Parent) -ChildPath 'xSQLServerHelper.psm1') -Scope Global -Force
+    Import-Module -Name ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SQLPSStub.psm1 ) -Force -Global
 
+    # Loading mocked classes
+    Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SMO.cs )
 }
 
 function Invoke-TestCleanup {
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
-
-    # TODO: Other Optional Cleanup Code Goes Here...
 }
 
 # Begin Testing
@@ -38,7 +35,7 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope 'MSFT_xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership' {
+    InModuleScope 'xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership' {
 
         #region Parameter Mocks
 
@@ -1607,5 +1604,4 @@ WITH NORECOVERY'
 finally
 {
     Invoke-TestCleanup
-
 }
