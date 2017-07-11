@@ -166,6 +166,7 @@ function Set-TargetResource
         $BackupPath,
 
         [Parameter(Mandatory = $false)]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -623,6 +624,7 @@ function Test-TargetResource
         $BackupPath,
 
         [Parameter(Mandatory = $false)]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
