@@ -44,6 +44,8 @@
   - Fixed lint error MD013 in CONTRIBUTING.md.
   - Added code block around types in README.md.
   - Updated copyright information in xSQLServer.psd1.
+  - Opt-in for markdown common tests (issue #668).
+    - The old markdown tests has been removed.
 - Changes to xSQLServerHelper
   - Removed helper function Grant-ServerPerms because the deprecated resource that
     was using it was removed.
