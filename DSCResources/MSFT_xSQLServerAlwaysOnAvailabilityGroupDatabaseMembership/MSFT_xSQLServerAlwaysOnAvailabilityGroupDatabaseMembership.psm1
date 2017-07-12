@@ -769,12 +769,13 @@ function Get-DatabasesToAddToAvailabilityGroup
         $MatchingDatabaseNames = @('')
     }
 
+    $databasesInAvailabilityGroup = $AvailabilityGroup.AvailabilityDatabases | Select-Object -ExpandProperty Name
+
+    # This is a hack to allow Compare-Object to work on an empty object
     if ( $null -eq $databasesInAvailabilityGroup )
     {
         $databasesInAvailabilityGroup = @('')
     }
-
-    $databasesInAvailabilityGroup = $AvailabilityGroup.AvailabilityDatabases | Select-Object -ExpandProperty Name
 
     $comparisonResult = Compare-Object -ReferenceObject $matchingDatabaseNames -DifferenceObject $databasesInAvailabilityGroup
     $databasesToAddToAvailabilityGroup = @()
@@ -842,18 +843,19 @@ function Get-DatabasesToRemoveFromAvailabilityGroup
 
     $matchingDatabaseNames = Get-MatchingDatabaseNames -DatabaseName $DatabaseName -ServerObject $ServerObject
 
-    # This is a hack to allow Compare-Object to work on an empty object
+
     if ( $null -eq $matchingDatabaseNames )
     {
         $MatchingDatabaseNames = @('')
     }
 
+    $databasesInAvailabilityGroup = $AvailabilityGroup.AvailabilityDatabases | Select-Object -ExpandProperty Name
+
+    # This is a hack to allow Compare-Object to work on an empty object
     if ( $null -eq $databasesInAvailabilityGroup )
     {
         $databasesInAvailabilityGroup = @('')
     }
-
-    $databasesInAvailabilityGroup = $AvailabilityGroup.AvailabilityDatabases | Select-Object -ExpandProperty Name
 
     $comparisonResult = Compare-Object -ReferenceObject $matchingDatabaseNames -DifferenceObject $databasesInAvailabilityGroup -IncludeEqual
 

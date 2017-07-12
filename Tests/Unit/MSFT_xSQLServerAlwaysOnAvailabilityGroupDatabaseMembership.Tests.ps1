@@ -1326,6 +1326,17 @@ WITH NORECOVERY'
                     }
                 }
 
+                It 'Should return an array of database names no databases are in the availability group' {
+                    $getDatabasesToAddToAvailabilityGroup.AvailabilityGroup = $mockAvailabilityGroupWithoutDatabasesObject
+
+                    $results = Get-DatabasesToAddToAvailabilityGroup @getDatabasesToAddToAvailabilityGroup
+
+                    foreach ( $result in $results )
+                    {
+                        $mockPresentDatabaseNames -contains $result | Should Be $true
+                    }
+                }
+
                 It 'Should return an empty object when no matches are found' {
                     $getDatabasesToAddToAvailabilityGroup.DatabaseName = @()
 
@@ -1351,6 +1362,17 @@ WITH NORECOVERY'
                 }
 
                 It 'Should return an array of database names to remove when matches are found' {
+                    $results = Get-DatabasesToRemoveFromAvailabilityGroup @getDatabasesToRemoveFromAvailabilityGroupParameters
+
+                    foreach ( $result in $results )
+                    {
+                        $mockAvailabilityDatabaseAbsentResults -contains $result | Should Be $true
+                    }
+                }
+
+                It 'Should return an array of database names to remove when no databases are in the availability group' {
+                    $getDatabasesToRemoveFromAvailabilityGroupParameters.AvailabilityGroup = $mockAvailabilityGroupWithoutDatabasesObject
+
                     $results = Get-DatabasesToRemoveFromAvailabilityGroup @getDatabasesToRemoveFromAvailabilityGroupParameters
 
                     foreach ( $result in $results )
