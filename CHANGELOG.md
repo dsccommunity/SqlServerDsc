@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-## 7.2.0.0
+## 8.0.0.0
 
 - BREAKING CHANGE: The module now requires WMF 5.
   - This is required for class-based resources
