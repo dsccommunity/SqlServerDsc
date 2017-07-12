@@ -601,6 +601,7 @@ function Set-TargetResource
 function Test-TargetResource
 {
     [CmdletBinding()]
+    [OutputType(Boolean)]
     param
     (
         [Parameter(Mandatory = $true)]
