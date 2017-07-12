@@ -73,7 +73,7 @@ function Get-TargetResource
     # Connect to the instance
     $serverObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
-    # Get the availabilty group object
+    # Get the Availability group object
     $availabilityGroup = $serverObject.AvailabilityGroups[$AvailabilityGroupName]
 
     if ( $availabilityGroup )
@@ -184,7 +184,7 @@ function Set-TargetResource
     # Connect to the defined instance
     $serverObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
-    # Get the Availabilty Group
+    # Get the Availability Group
     $availabilityGroup = $serverObject.AvailabilityGroups[$AvailabilityGroupName]
 
     # Make sure we're communicating with the primary replica in order to make changes to the replica
@@ -601,7 +601,7 @@ function Set-TargetResource
 function Test-TargetResource
 {
     [CmdletBinding()]
-    [OutputType(Boolean)]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -652,59 +652,67 @@ function Test-TargetResource
     # Connect to the defined instance
     $serverObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
-    # Get the Availabilty Group if it exists
-    $availabilityGroup = $serverObject.AvailabilityGroups[$AvailabilityGroupName]
-
-    # Make sure we're communicating with the primary replica in order to make changes to the replica
-    $primaryServerObject = Get-PrimaryReplicaServerObject -ServerObject $serverObject -AvailabilityGroup $availabilityGroup
-
-    $matchingDatabaseNames = Get-MatchingDatabaseNames -DatabaseName $DatabaseName -ServerObject $primaryServerObject
-    $databasesNotFoundOnTheInstance = @()
-
-    if ( ( $Ensure -eq 'Present' ) -and $matchingDatabaseNames.Count -eq 0 )
+    # Get the Availability Group if it exists
+    if ( -not [string]::IsNullOrEmpty($currentConfiguration.AvailabilityGroupName) )
     {
-        $configurationInDesiredState = $false
-        Write-Verbose -Message ($script:localizedData.DatabasesNotFound -f ($DatabaseName -join ', '))
+        $availabilityGroup = $serverObject.AvailabilityGroups[$AvailabilityGroupName]
+
+        # Make sure we're communicating with the primary replica in order to make changes to the replica
+        $primaryServerObject = Get-PrimaryReplicaServerObject -ServerObject $serverObject -AvailabilityGroup $availabilityGroup
+
+        $matchingDatabaseNames = Get-MatchingDatabaseNames -DatabaseName $DatabaseName -ServerObject $primaryServerObject
+        $databasesNotFoundOnTheInstance = @()
+
+        if ( ( $Ensure -eq 'Present' ) -and $matchingDatabaseNames.Count -eq 0 )
+        {
+            $configurationInDesiredState = $false
+            Write-Verbose -Message ($script:localizedData.DatabasesNotFound -f ($DatabaseName -join ', '))
+        }
+        else
+        {
+            $databasesNotFoundOnTheInstance = Get-DatabaseNamesNotFoundOnTheInstance -DatabaseName $DatabaseName -MatchingDatabaseNames $matchingDatabaseNames
+
+            # If the databases specified are not present on the instance and the desired state is not Absent
+            if ( ( $databasesNotFoundOnTheInstance.Count -gt 0 ) -and ( $Ensure -ne 'Absent' ) )
+            {
+                $configurationInDesiredState = $false
+                Write-Verbose -Message ($script:localizedData.DatabasesNotFound -f ( $databasesNotFoundOnTheInstance -join ', ' ))
+            }
+
+            $getDatabasesToAddToAvailabilityGroupParameters = @{
+                DatabaseName = $DatabaseName
+                Ensure = $Ensure
+                ServerObject = $primaryServerObject
+                AvailabilityGroup = $availabilityGroup
+            }
+            $databasesToAddToAvailabilityGroup = Get-DatabasesToAddToAvailabilityGroup @getDatabasesToAddToAvailabilityGroupParameters
+
+            if ( $databasesToAddToAvailabilityGroup.Count -gt 0 )
+            {
+                $configurationInDesiredState = $false
+                Write-Verbose -Message ($script:localizedData.DatabaseShouldBeMember -f $AvailabilityGroupName,( $databasesToAddToAvailabilityGroup -join ', ' ))
+            }
+
+            $getDatabasesToRemoveFromAvailabilityGroupParameters = @{
+                DatabaseName = $DatabaseName
+                Ensure = $Ensure
+                Force = $Force
+                ServerObject = $primaryServerObject
+                AvailabilityGroup = $availabilityGroup
+            }
+            $databasesToRemoveFromAvailabilityGroup = Get-DatabasesToRemoveFromAvailabilityGroup @getDatabasesToRemoveFromAvailabilityGroupParameters
+
+            if ( $databasesToRemoveFromAvailabilityGroup.Count -gt 0 )
+            {
+                $configurationInDesiredState = $false
+                Write-Verbose -Message ($script:localizedData.DatabaseShouldNotBeMember -f $AvailabilityGroupName,( $databasesToRemoveFromAvailabilityGroup -join ', ' ))
+            }
+        }
     }
     else
     {
-        $databasesNotFoundOnTheInstance = Get-DatabaseNamesNotFoundOnTheInstance -DatabaseName $DatabaseName -MatchingDatabaseNames $matchingDatabaseNames
-
-        # If the databases specified are not present on the instance and the desired state is not Absent
-        if ( ( $databasesNotFoundOnTheInstance.Count -gt 0 ) -and ( $Ensure -ne 'Absent' ) )
-        {
-            $configurationInDesiredState = $false
-            Write-Verbose -Message ($script:localizedData.DatabasesNotFound -f ( $databasesNotFoundOnTheInstance -join ', ' ))
-        }
-
-        $getDatabasesToAddToAvailabilityGroupParameters = @{
-            DatabaseName = $DatabaseName
-            Ensure = $Ensure
-            ServerObject = $primaryServerObject
-            AvailabilityGroup = $availabilityGroup
-        }
-        $databasesToAddToAvailabilityGroup = Get-DatabasesToAddToAvailabilityGroup @getDatabasesToAddToAvailabilityGroupParameters
-
-        if ( $databasesToAddToAvailabilityGroup.Count -gt 0 )
-        {
-            $configurationInDesiredState = $false
-            Write-Verbose -Message ($script:localizedData.DatabaseShouldBeMember -f $AvailabilityGroupName,( $databasesToAddToAvailabilityGroup -join ', ' ))
-        }
-
-        $getDatabasesToRemoveFromAvailabilityGroupParameters = @{
-            DatabaseName = $DatabaseName
-            Ensure = $Ensure
-            Force = $Force
-            ServerObject = $primaryServerObject
-            AvailabilityGroup = $availabilityGroup
-        }
-        $databasesToRemoveFromAvailabilityGroup = Get-DatabasesToRemoveFromAvailabilityGroup @getDatabasesToRemoveFromAvailabilityGroupParameters
-
-        if ( $databasesToRemoveFromAvailabilityGroup.Count -gt 0 )
-        {
-            $configurationInDesiredState = $false
-            Write-Verbose -Message ($script:localizedData.DatabaseShouldNotBeMember -f $AvailabilityGroupName,( $databasesToRemoveFromAvailabilityGroup -join ', ' ))
-        }
+        $configurationInDesiredState = $false
+        Write-Verbose -Message ($script:localizedData.AvailabilityGroupDoesNotExist -f ($DatabaseName -join ', '))
     }
 
     return $configurationInDesiredState
@@ -933,5 +941,3 @@ function Get-DatabaseNamesNotFoundOnTheInstance
 
     return $result
 }
-
-Export-ModuleMember -Function *-TargetResource

@@ -1166,6 +1166,16 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
                 }
 
+                It 'Should return $false when the specified availability group is not found' {
+                    $mockTestTargetResourceParameters.AvailabilityGroupName = 'NonExistentAvailabilityGroup'
+
+                    Test-TargetResource @mockTestTargetResourceParameters | Should Be $false
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                }
+
                 It 'Should return $false when no matching databases are found' {
                     $mockTestTargetResourceParameters.DatabaseName = $mockDatabaseNameParameterWithNonExistingDatabases.Clone()
 
