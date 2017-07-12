@@ -769,6 +769,11 @@ function Get-DatabasesToAddToAvailabilityGroup
         $MatchingDatabaseNames = @('')
     }
 
+    if ( $null -eq $databasesInAvailabilityGroup )
+    {
+        $databasesInAvailabilityGroup = @('')
+    }
+
     $databasesInAvailabilityGroup = $AvailabilityGroup.AvailabilityDatabases | Select-Object -ExpandProperty Name
 
     $comparisonResult = Compare-Object -ReferenceObject $matchingDatabaseNames -DifferenceObject $databasesInAvailabilityGroup
@@ -841,6 +846,11 @@ function Get-DatabasesToRemoveFromAvailabilityGroup
     if ( $null -eq $matchingDatabaseNames )
     {
         $MatchingDatabaseNames = @('')
+    }
+
+    if ( $null -eq $databasesInAvailabilityGroup )
+    {
+        $databasesInAvailabilityGroup = @('')
     }
 
     $databasesInAvailabilityGroup = $AvailabilityGroup.AvailabilityDatabases | Select-Object -ExpandProperty Name

@@ -97,15 +97,18 @@ Configuration Example
             }
         }
 
-        xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership 'TestAGDatabaseMemberships'
+        if ( $Node.Role -eq 'PrimaryReplica' )
         {
-            AvailabilityGroupName = $Node.AvailabilityGroupName
-            BackupPath = '\\SQL1\AgInitialize'
-            DatabaseName = 'DB*','AdventureWorks'
-            SQLInstanceName = $Node.SQLInstanceName
-            SQLServer = $Node.NodeName
-            Ensure = 'Present'
-            PsDscRunAsCredential = $SysAdminAccount
+            xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership 'TestAGDatabaseMemberships'
+            {
+                AvailabilityGroupName = $Node.AvailabilityGroupName
+                BackupPath = '\\SQL1\AgInitialize'
+                DatabaseName = 'DB*','AdventureWorks'
+                SQLInstanceName = $Node.SQLInstanceName
+                SQLServer = $Node.NodeName
+                Ensure = 'Present'
+                PsDscRunAsCredential = $SysAdminAccount
+            }
         }
     }
 }
