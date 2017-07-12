@@ -7,6 +7,8 @@
 - Added new resource
   - xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
   - Added localization support for all strings.
+  - Refactored as a MOF based resource due to challenges with Pester and testing
+    in Powershell 5.
 - Changes to xSQLServer
   - BREAKING CHANGE: xSQLServer does no longer try to support WMF 4.0 (PowerShell
     4.0) (issue #574). Minimum supported version of WMF is now 5.0 (PowerShell 5.0).
