@@ -37,5 +37,18 @@ Configuration Example
 
             PsDscRunAsCredential = $WindowsCredential
         }
+
+        xSQLServerScript 'RunSQLScript-With30SecondTimeout'
+        {
+            ServerInstance = 'localhost\SQL2016'
+
+            SetFilePath = 'C:\DSCTemp\SQLScripts\Set-RunSQLScript-WithQueryTimeout.sql'
+            TestFilePath = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript-WithQueryTimeout.sql'
+            GetFilePath = 'C:\DSCTemp\SQLScripts\Get-RunSQLScript-WithQueryTimeout.sql'
+            QueryTimeout = 30
+            Variable = @("FilePath=C:\temp\log\AuditFiles")
+
+            PsDscRunAsCredential = $WindowsCredential
+        }
     }
 }

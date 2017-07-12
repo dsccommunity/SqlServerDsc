@@ -52,6 +52,14 @@ try
             TestFilePath = "test.sql"
         }
 
+        $testParametersTimeout = @{
+            ServerInstance = $env:COMPUTERNAME
+            SetFilePath    = "set-timeout.sql"
+            GetFilePath    = "get-timeout.sql"
+            TestFilePath   = "test-timeout.sql"
+            QueryTimeout   = 30
+        }
+
         Describe "$resourceName\Get-TargetResource" {
 
             Context 'Get-TargetResource fails to import SQLPS module' {
@@ -78,6 +86,22 @@ try
                     $result.SetFilePath | Should Be $testParameters.SetFilePath
                     $result.GetFilePath | Should Be $testParameters.GetFilePath
                     $result.TestFilePath | Should Be $testParameters.TestFilePath
+                    $result | Should BeOfType Hashtable
+                }
+            }
+
+            Context 'Get-TargetResource returns script results successfully with query timeout' {
+                Mock -CommandName Import-SQLPSModule
+                Mock -CommandName Invoke-Sqlcmd -MockWith {
+                    return ''
+                }
+
+                It 'Should return the expected results' {
+                    $result = Get-TargetResource @testParametersTimeout
+                    $result.ServerInstance | Should Be $testParametersTimeout.ServerInstance
+                    $result.SetFilePath | Should Be $testParametersTimeout.SetFilePath
+                    $result.GetFilePath | Should Be $testParametersTimeout.GetFilePath
+                    $result.TestFilePath | Should Be $testParametersTimeout.TestFilePath
                     $result | Should BeOfType Hashtable
                 }
             }
@@ -120,6 +144,18 @@ try
                 }
             }
 
+            Context 'Set-TargetResource runs script without issue using timeout' {
+                Mock -CommandName Import-SQLPSModule -MockWith {}
+                Mock -CommandName Invoke-Sqlcmd -MockWith {
+                    return ''
+                }
+
+                It 'Should return the expected results' {
+                    $result = Set-TargetResource @testParametersTimeout
+                    $result | Should Be ''
+                }
+            }
+
             Context 'Set-TargetResource throws an error when running the script in the SetFilePath parameter' {
                 $errorMessage = "Failed to run SQL Script"
 
@@ -153,6 +189,16 @@ try
 
                 It 'Should return true' {
                     $result = Test-TargetResource @testParameters
+                    $result | Should Be $true
+                }
+            }
+
+            Context 'Test-TargetResource runs script without issue with timeout' {
+                Mock -CommandName Import-SQLPSModule -MockWith {}
+                Mock -CommandName Invoke-Sqlcmd -MockWith {}
+
+                It 'Should return true' {
+                    $result = Test-TargetResource @testParametersTimeout
                     $result | Should Be $true
                 }
             }

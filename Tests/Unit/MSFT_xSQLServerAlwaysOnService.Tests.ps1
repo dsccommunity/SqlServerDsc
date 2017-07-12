@@ -112,7 +112,7 @@ try
 
             It 'Should fail with the correct error message' {
                 { Get-TargetResource @enableHadr } | Should Not Throw 'Index operation failed; the array index evaluated to null'
-                { Get-TargetResource @enableHadr } | Should Throw 'The status of property Server.IsHadrEnabled was netiher $true or $false. Status is ''''. InnerException: Server.IsHadrEnabled was set to $null.'
+                { Get-TargetResource @enableHadr } | Should Throw 'The status of property Server.IsHadrEnabled was neither $true or $false. Status is ''''. InnerException: Server.IsHadrEnabled was set to $null.'
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 2 -Exactly
             }
         }
@@ -125,7 +125,7 @@ try
             } -ModuleName $script:DSCResourceName -Verifiable
 
             It 'Should fail with the correct error message' {
-                { Get-TargetResource @enableHadr } | Should Throw 'The status of property Server.IsHadrEnabled was netiher $true or $false. Status is ''UnknownStatus''. InnerException: Server.IsHadrEnabled was set to unexpected value.'
+                { Get-TargetResource @enableHadr } | Should Throw 'The status of property Server.IsHadrEnabled was neither $true or $false. Status is ''UnknownStatus''. InnerException: Server.IsHadrEnabled was set to unexpected value.'
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
         }

@@ -1,6 +1,6 @@
 @{
 # Version number of this module.
-ModuleVersion = '7.1.0.0'
+ModuleVersion = '8.0.0.0'
 
 # ID used to uniquely identify this module
 GUID = '74e9ddb5-4cbc-4fa2-a222-2bcfb533fd66'
@@ -12,13 +12,13 @@ Author = 'Microsoft Corporation'
 CompanyName = 'Microsoft Corporation'
 
 # Copyright statement for this module
-Copyright = '(c) 2014 Microsoft Corporation. All rights reserved.'
+Copyright = '(c) 2017 Microsoft Corporation. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'Module with DSC Resources for deployment and configuration of Microsoft SQL Server.'
 
 # Minimum version of the Windows PowerShell engine required by this module
-PowerShellVersion = '4.0'
+PowerShellVersion = '5.0'
 
 # Minimum version of the common language runtime (CLR) required by this module
 CLRVersion = '4.0'
@@ -28,6 +28,8 @@ FunctionsToExport = '*'
 
 # Cmdlets to export from this module
 CmdletsToExport = '*'
+
+RequiredAssemblies = @()
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
 PrivateData = @{
@@ -47,74 +49,136 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '- Changes to xSQLServerMemory
-  - Changed the way SQLServer parameter is passed from Test-TargetResource to Get-TargetResource so that the default value isn"t lost (issue 576).
-  - Added condition to unit tests for when no SQLServer parameter is set.
-- Changes to xSQLServerMaxDop
-  - Changed the way SQLServer parameter is passed from Test-TargetResource to Get-TargetResource so that the default value isn"t lost (issue 576).
-  - Added condition to unit tests for when no SQLServer parameter is set.
-- Changes to xWaitForAvailabilityGroup
-  - Updated README.md with a description for the resources and revised the parameter descriptions.
-  - The default value for RetryIntervalSec is now 20 seconds and the default value for RetryCount is now 30 times (issue 505).
-  - Cleaned up code and fixed PSSA rules warnings (issue 268).
-  - Added unit tests (issue 297).
-  - Added descriptive text to README.md that the account that runs the resource must have permission to run the cmdlet Get-ClusterGroup (issue 307).
-  - Added read-only parameter GroupExist which will return $true if the cluster role/group exist, otherwise it returns $false (issue 510).
-  - Added examples.
-- Changes to xSQLServerPermission
-  - Cleaned up code, removed SupportsShouldProcess and fixed PSSA rules warnings (issue 241 and issue 262).
-  - It is now possible to add permissions to two or more logins on the same instance (issue 526).
-  - The parameter NodeName is no longer mandatory and has now the default value of $env:COMPUTERNAME.
-  - The parameter Ensure now has a default value of "Present".
-  - Updated README.md with a description for the resources and revised the parameter descriptions.
-  - Removed dependency of SQLPS provider (issue 482).
-  - Added ConnectSql permission. Now that permission can also be granted or revoked.
-  - Updated note in resource description to also mention ConnectSql permission.
-- Changes to xSQLServerHelper module
-  - Removed helper function Get-SQLPSInstance and Get-SQLPSInstanceName because there is no resource using it any longer.
-  - Added four new helper functions.
-    - Register-SqlSmo, Register-SqlWmiManagement and Unregister-SqlAssemblies to handle the creation on the application domain and loading and unloading of the SMO and SqlWmiManagement assemblies.
-    - Get-SqlInstanceMajorVersion to get the major SQL version for a specific instance.
-  - Fixed typos in comment-based help
+        ReleaseNotes = '- BREAKING CHANGE: The module now requires WMF 5.
+  - This is required for class-based resources
+- Added new resource
+  - xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
+  - Added localization support for all strings.
+  - Refactored as a MOF based resource due to challenges with Pester and testing
+    in Powershell 5.
 - Changes to xSQLServer
-  - Fixed typos in markdown files; CHANGELOG, CONTRIBUTING, README and ISSUE_TEMPLATE.
-  - Fixed typos in schema.mof files (and README.md).
-  - Updated some parameter description in schema.mof files on those that was found was not equal to README.md.
-- Changes to xSQLServerAlwaysOnService
-  - Get-TargetResource should no longer fail silently with error "Index operation failed; the array index evaluated to null." (issue 519). Now if the Server.IsHadrEnabled property return neither $true or $false the Get-TargetResource function will throw an error.
-- Changes to xSQLServerSetUp
-  - Updated xSQLServerSetup Module Get-Resource method to fix (issue 516 and 490).
-  - Added change to detect DQ, DQC, BOL, SDK features. Now the function Test-TargetResource returns true after calling set for DQ, DQC, BOL, SDK features (issue 516 and 490).
-- Changes to xSQLServerAlwaysOnAvailabilityGroup
-  - Updated to return the exception raised when an error is thrown.
-- Changes to xSQLServerAlwaysOnAvailabilityGroupReplica
-  - Updated to return the exception raised when an error is thrown.
-  - Updated parameter description for parameter Name, so that it says it must be in the format SQLServer\InstanceName for named instance (issue 548).
-- Changes to xSQLServerLogin
-  - Added an optional boolean parameter Disabled. It can be used to enable/disable existing logins or create disabled logins (new logins are created as enabled by default).
-- Changes to xSQLServerDatabaseRole
-  - Updated variable passed to Microsoft.SqlServer.Management.Smo.User constructor to fix issue 530
-- Changes to xSQLServerNetwork
-  - Added optional parameter SQLServer with default value of $env:COMPUTERNAME (issue 528).
-  - Added optional parameter RestartTimeout with default value of 120 seconds.
-  - Now the resource supports restarting a sql server in a cluster (issue 527 and issue 455).
-  - Now the resource allows to set the parameter TcpDynamicPorts to a blank value (partly fixes issue 534). Setting a blank value for parameter TcpDynamicPorts together with a value for parameter TcpPort means that static port will be used.
-  - Now the resource will not call Alter() in the Set-TargetResource when there is no change necessary (issue 537).
-  - Updated example 1-EnableTcpIpOnCustomStaticPort.
-  - Added unit tests (issue 294).
-  - Refactored some of the code, cleaned up the rest and fixed PSSA rules warnings (issue 261).
-  - If parameter TcpDynamicPort is set to "0" at the same time as TcpPort is set the resource will now throw an error (issue 535).
-  - Added examples (issue 536).
-  - When TcpDynamicPorts is set to "0" the Test-TargetResource function will no longer fail each time (issue 564).
-- Changes to xSQLServerRSConfig
-  - Replaced sqlcmd.exe usages with Invoke-Sqlcmd calls (issue 567).
-- Changes to xSQLServerDatabasePermission
-  - Fixed code style, updated README.md and removed *-SqlDatabasePermission functions from xSQLServerHelper.psm1.
-  - Added the option "GrantWithGrant" with gives the user grant rights, together with the ability to grant others the same right.
-  - Now the resource can revoke permission correctly (issue 454). When revoking "GrantWithGrant", both the grantee and all the other users the grantee has granted the same permission to, will also get their permission revoked.
-  - Updated tests to cover Revoke().
+  - BREAKING CHANGE: xSQLServer does no longer try to support WMF 4.0 (PowerShell
+    4.0) (issue 574). Minimum supported version of WMF is now 5.0 (PowerShell 5.0).
+  - BREAKING CHANGE: Removed deprecated resource xSQLAOGroupJoin (issue 457).
+  - BREAKING CHANGE: Removed deprecated resource xSQLAOGroupEnsure (issue 456).
+  - BREAKING CHANGE: Removed deprecated resource xSQLServerFailoverClusterSetup
+    (issue 336).
+  - Updated PULL\_REQUEST\_TEMPLATE adding comment block around text. Also
+    rearranged and updated texts (issue 572).
+  - Added common helper functions for HQRM localization, and added tests for the
+    helper functions.
+    - Get-LocalizedData
+    - New-InvalidResultException
+    - New-ObjectNotFoundException
+    - New-InvalidOperationException
+    - New-InvalidArgumentException
+  - Updated CONTRIBUTING.md describing the new localization helper functions.
+  - Fixed typos in xSQLServer.strings.psd1
+  - Fixed CodeCov badge links in README.md so that they point to the correct branch.
+  - Added VS Code workspace settings file with formatting settings matching the
+    Style Guideline (issue 645). That will make it possible inside VS Code to press
+    SHIFT+ALT+F, or press F1 and choose "Format document" in the list. The
+    PowerShell code will then be formatted according to the Style Guideline
+    (although maybe not complete, but would help a long way).
+      - Removed powershell.codeFormatting.alignPropertyValuePairs setting since
+        it does not align with the style guideline.
+      - Added powershell.codeFormatting.preset with a value of "Custom" so that
+        workspace formatting settings are honored (issue 665).
+  - Fixed lint error MD013 and MD036 in README.md.
+  - Updated .markdownlint.json to enable rule MD013 and MD036 to enforce those
+    lint markdown rules in the common tests.
+  - Fixed lint error MD013 in CHANGELOG.md.
+  - Fixed lint error MD013 in CONTRIBUTING.md.
+  - Added code block around types in README.md.
+  - Updated copyright information in xSQLServer.psd1.
+  - Opt-in for markdown common tests (issue 668).
+    - The old markdown tests has been removed.
 - Changes to xSQLServerHelper
-  - The missing helper function ("Test-SPDSCObjectHasProperty"), that was referenced in the helper function Test-SQLDscParameterState, is now incorporated into Test-SQLDscParameterState (issue 589).
+  - Removed helper function Grant-ServerPerms because the deprecated resource that
+    was using it was removed.
+  - Removed helper function Grant-CNOPerms because the deprecated resource that
+    was using it was removed.
+  - Removed helper function New-ListenerADObject because the deprecated resource
+    that was using it was removed.
+  - Added tests for those helper functions that did not have tests.
+  - Test-SQLDscParameterState helper function can now correctly pass a CimInstance
+    as DesiredValue.
+  - Test-SQLDscParameterState helper function will now output a warning message
+    if the value type of a desired value is not supported.
+  - Added localization to helper functions (issue 641).
+    - Resolved the issue when using Write-Verbose in helper functions discussed
+      in 641 where Write-Verbose wouldn"t write out verbose messages unless using
+      parameter Verbose.
+    - Moved localization strings from xSQLServer.strings.psd1 to
+      xSQLServerHelper.strings.psd1.
+- Changes to xSQLServerSetup
+  - BREAKING CHANGE: Replaced StartWin32Process helper function with the cmdlet
+    Start-Process (issue 41, 93 and 126).
+  - BREAKING CHANGE: The parameter SetupCredential has been removed since it is
+    no longer needed. This is because the resource now support the built-in
+    PsDscRunAsCredential.
+  - BREAKING CHANGE: Now the resource supports using built-in PsDscRunAsCredential.
+    If PsDscRunAsCredential is set, that username will be used as the first system
+    administrator.
+  - BREAKING CHANGE: If the parameter PsDscRunAsCredential are not assigned any
+    credentials then the resource will start the setup process as the SYSTEM account.
+    When installing as the SYSTEM account, then parameter SQLSysAdminAccounts and
+    ASSysAdminAccounts must be specified when installing feature Database Engine
+    and Analysis Services respectively.
+  - When setup exits with the exit code 3010 a warning message is written to console
+    telling that setup finished successfully, but a reboot is required (partly fixes
+    issue 565).
+  - When setup exits with an exit code other than 0 or 3010 a warning message is
+    written to console telling that setup finished with an error (partly fixes
+    issue 580).
+  - Added a new parameter SetupProcessTimeout which defaults to 7200 seconds (2
+    hours). If the setup process has not finished before the timeout value in
+    SetupProcessTimeout an error will be thrown (issue 566).
+  - Updated all examples to match the removal of SetupCredential.
+  - Updated (removed) severe known issues in README.md for resource xSQLServerSetup.
+  - Now all major version uses the same identifier to evaluate InstallSharedDir
+    and InstallSharedWOWDir (issue 420).
+  - Now setup arguments that contain no value will be ignored, for example when
+    InstallSharedDir and
+    InstallSharedWOWDir path is already present on the target node, because of a
+    previous installation (issue 639).
+  - Updated Get-TargetResource to correctly detect BOL, Conn, BC and other tools
+    when they are installed without SQLENGINE (issue 591).
+  - Now it can detect Documentation Components correctly after the change in
+    issue 591 (issue 628)
+  - Fixed bug that prevented Get-DscConfiguration from running without error. The
+    return hash table fails if the $clusteredSqlIpAddress variable is not used.
+    The schema expects a string array but it is initialized as just a null string,
+    causing it to fail on Get-DscConfiguration (issue 393).
+  - Added localization support for all strings.
+  - Added a test to test some error handling for cluster installations.
+  - Added support for MDS feature install (issue 486)
+    - Fixed localization support for MDS feature (issue 671).
+- Changes to xSQLServerRSConfig
+  - BREAKING CHANGE: Removed `$SQLAdminCredential` parameter. Use common parameter
+    `PsDscRunAsCredential` (WMF 5.0+) to run the resource under different credentials.
+    `PsDscRunAsCredential` Windows account must be a sysadmin on SQL Server (issue
+    568).
+  - In addition, the resource no longer uses `Invoke-Command` cmdlet that was used
+    to impersonate the Windows user specified by `$SQLAdminCredential`. The call
+    also needed CredSSP authentication to be enabled and configured on the target
+    node, which complicated deployments in non-domain scenarios. Using
+    `PsDscRunAsCredential` solves this problems for us.
+  - Fixed virtual directory creation for SQL Server 2016 (issue 569).
+  - Added unit tests (issue 295).
+- Changes to xSQLServerDatabase
+  - Changed the readme, SQLInstance should have been SQLInstanceName.
+- Changes to xSQLServerScript
+  - Fixed bug with schema and variable mismatch for the Credential/Username parameter
+    in the return statement (issue 661).
+  - Optional QueryTimeout parameter to specify sql script query execution timeout.
+    Fixes issue 597
+- Changes to xSQLServerAlwaysOnService
+  - Fixed typos in localization strings and in tests.
+- Changes to xSQLServerAlwaysOnAvailabilityGroup
+  - Now it utilize the value of "FailoverMode" to set the "FailoverMode" property
+    of the Availability Group instead of wrongly using the "AvailabilityMode"
+    property of the Availability Group.
 
 '
 
@@ -122,6 +186,7 @@ PrivateData = @{
 
 } # End of PrivateData hashtable
 }
+
 
 
 
