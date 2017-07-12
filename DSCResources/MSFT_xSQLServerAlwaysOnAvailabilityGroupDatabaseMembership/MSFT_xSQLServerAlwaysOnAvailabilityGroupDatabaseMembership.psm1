@@ -764,7 +764,7 @@ function Get-DatabasesToAddToAvailabilityGroup
     $matchingDatabaseNames = Get-MatchingDatabaseNames -DatabaseName $DatabaseName -ServerObject $ServerObject
 
     # This is a hack to allow Compare-Object to work on an empty object
-    if ( $matchingDatabaseNames -eq $null )
+    if ( $null -eq $matchingDatabaseNames )
     {
         $MatchingDatabaseNames = @('')
     }
@@ -838,7 +838,7 @@ function Get-DatabasesToRemoveFromAvailabilityGroup
     $matchingDatabaseNames = Get-MatchingDatabaseNames -DatabaseName $DatabaseName -ServerObject $ServerObject
 
     # This is a hack to allow Compare-Object to work on an empty object
-    if ( $matchingDatabaseNames -eq $null )
+    if ( $null -eq $matchingDatabaseNames )
     {
         $MatchingDatabaseNames = @('')
     }
