@@ -375,7 +375,8 @@ Enables or disabled SQL Server Always On high availability and disaster recovery
 
 #### Examples
 
-None.
+* [Enable SQL Server Always On](/Examples/Resources/xSQLServerAlwaysOnService/1-EnableAlwaysOn.ps1)
+* [Disable SQL Server Always On](/Examples/Resources/xSQLServerAlwaysOnService/1-DisableAlwaysOn.ps1)
 
 ### xSQLServerAvailabilityGroupListener
 

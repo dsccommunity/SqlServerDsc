@@ -15,6 +15,9 @@
   - Added read-only property IsHadrEnabled to schema.mof and the README.md
     (issue #687).
   - Minor cleanup of code.
+  - Added examples (issue #633)
+    - 1-EnableAlwaysOn.ps1
+    - 2-DisableAlwaysOn.ps1
 
 ## 8.0.0.0
 
