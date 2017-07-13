@@ -6,6 +6,15 @@
   - Added back .markdownlint.json so that lint rule MD013 is enforced.
   - Change the module to use the image 'Visual Studio 2017' as the build worker
     image for AppVeyor (issue #685).
+- Changes to xSQLServerAlwaysOnService
+  - Added resource description in README.md.
+  - Updated parameters descriptions in comment-based help, schema.mof and README.md.
+  - Changed the datatype of the parameter to Uint32 so the same datatype is used
+    in both the Get-/Test-/Set-TargetResource functions as in the schema.mof
+    (issue #688).
+  - Added read-only property IsHadrEnabled to schema.mof and the README.md
+    (issue #687).
+  - Minor cleanup of code.
 
 ## 8.0.0.0
 

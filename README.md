@@ -351,7 +351,7 @@ Always On Availability Group Replica.
 
 ### xSQLServerAlwaysOnService
 
-No description.
+Enables or disabled SQL Server Always On high availability and disaster recovery (Always On HADR).
 
 #### Requirements
 
@@ -361,11 +361,17 @@ No description.
 #### Parameters
 
 * **`[String]` SQLServer** _(Key)_: The hostname of the SQL Server to be configured.
-* **`[String]` SQLInstance** _(Key)_: Name of the SQL instance to be configured.
-* **`[String]` Ensure** _(Required)_: An enumerated value that describes if SQL server
-  should have AlwaysOn property present or absent. { Present | Absent }.
+* **`[String]` SQLInstance** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` Ensure** _(Required)_: An enumerated value that describes if the SQL
+  Server should have Always On high availability and disaster recovery (HADR)
+  property enabled ('Present') or disabled ('Absent'). { Present | Absent }.
 * **`[Sint32]` RestartTimeout** _(Write)_: The length of time, in seconds, to wait
   for the service to restart. Default is 120 seconds.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[Boolean]` IsHadrEnabled** _(Read)_: Returns the status of AlwaysOn high
+  availability and disaster recovery (HADR).
 
 #### Examples
 
