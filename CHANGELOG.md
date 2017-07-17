@@ -8,6 +8,7 @@
     image for AppVeyor (issue #685).
   - Minor style change in CommonResourceHelper. Added missing [Parameter()] on
     three parameters.
+  - Minor style changes to the unit tests for CommonResourceHelper.
 - Changes to xSQLServerAlwaysOnService
   - Added resource description in README.md.
   - Updated parameters descriptions in comment-based help, schema.mof and README.md.
