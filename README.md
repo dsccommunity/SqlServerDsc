@@ -351,7 +351,8 @@ Always On Availability Group Replica.
 
 ### xSQLServerAlwaysOnService
 
-Enables or disabled SQL Server Always On high availability and disaster recovery (Always On HADR).
+Enables or disabled SQL Server Always On high availability and disaster recovery
+(Always On HADR).
 
 #### Requirements
 
