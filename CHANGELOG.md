@@ -9,6 +9,8 @@
   - Minor style change in CommonResourceHelper. Added missing [Parameter()] on
     three parameters.
   - Minor style changes to the unit tests for CommonResourceHelper.
+  - Changes to xSQLServerHelper
+    - Added Swedish localization ([issue #695](https://github.com/PowerShell/xSQLServer/issues/695)).
 - Changes to xSQLServerAlwaysOnService
   - Added resource description in README.md.
   - Updated parameters descriptions in comment-based help, schema.mof and README.md.
@@ -21,6 +23,8 @@
   - Added examples (issue #633)
     - 1-EnableAlwaysOn.ps1
     - 2-DisableAlwaysOn.ps1
+- Changes to xSQLServerSetup
+  - Added Swedish localization ([issue #695](https://github.com/PowerShell/xSQLServer/issues/695)).
 
 ## 8.0.0.0
 
