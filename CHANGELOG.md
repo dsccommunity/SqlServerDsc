@@ -4,6 +4,8 @@
 
 - Changes to xSQLServer
   - Added back .markdownlint.json so that lint rule MD013 is enforced.
+  - Change the module to use the image 'Visual Studio 2017' as the build worker
+    image for AppVeyor (issue #685).
 
 ## 8.0.0.0
 
