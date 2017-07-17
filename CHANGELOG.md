@@ -6,6 +6,8 @@
   - Added back .markdownlint.json so that lint rule MD013 is enforced.
   - Change the module to use the image 'Visual Studio 2017' as the build worker
     image for AppVeyor (issue #685).
+  - Minor style change in CommonResourceHelper. Added missing [Parameter()] on
+    three parameters.
 - Changes to xSQLServerAlwaysOnService
   - Added resource description in README.md.
   - Updated parameters descriptions in comment-based help, schema.mof and README.md.
