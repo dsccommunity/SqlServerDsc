@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Changes to xSQLServer
+  - Added back .markdownlint.json so that lint rule MD013 is enforced.
+
 ## 8.0.0.0
 
 - BREAKING CHANGE: The module now requires WMF 5.
