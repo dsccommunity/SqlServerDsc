@@ -57,6 +57,7 @@ function New-InvalidOperationException
         [System.String]
         $Message,
 
+        [Parameter()]
         [ValidateNotNull()]
         [System.Management.Automation.ErrorRecord]
         $ErrorRecord
@@ -108,6 +109,7 @@ function New-ObjectNotFoundException
         [System.String]
         $Message,
 
+        [Parameter()]
         [ValidateNotNull()]
         [System.Management.Automation.ErrorRecord]
         $ErrorRecord
@@ -159,6 +161,7 @@ function New-InvalidResultException
         [System.String]
         $Message,
 
+        [Parameter()]
         [ValidateNotNull()]
         [System.Management.Automation.ErrorRecord]
         $ErrorRecord
