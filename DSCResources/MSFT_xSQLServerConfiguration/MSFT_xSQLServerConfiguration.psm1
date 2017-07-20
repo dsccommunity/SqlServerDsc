@@ -1,4 +1,4 @@
-﻿# Load Common Code
+# Load Common Code
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
                                -ChildPath 'xSQLServerHelper.psm1') `
                                -Force
@@ -8,13 +8,13 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
 
     .PARAMETER SQLServer
     Hostname of the SQL Server to be configured
-    
+
     .PARAMETER SQLInstanceName
     Name of the SQL instance to be configued. Default is 'MSSQLSERVER'
 
     .PARAMETER OptionName
     The name of the SQL configuration option to be checked
-    
+
     .PARAMETER OptionValue
     The desired value of the SQL configuration option
 
@@ -58,7 +58,7 @@ function Get-TargetResource
 
     ## get the configuration option
     $option = $sql.Configuration.Properties | Where-Object { $_.DisplayName -eq $OptionName }
-    
+
     if(!$option)
     {
         throw New-TerminatingError -ErrorType "ConfigurationOptionNotFound" -FormatArgs $OptionName -ErrorCategory InvalidArgument
@@ -80,13 +80,13 @@ function Get-TargetResource
 
     .PARAMETER SQLServer
     Hostname of the SQL Server to be configured
-    
+
     .PARAMETER SQLInstanceName
     Name of the SQL instance to be configued. Default is 'MSSQLSERVER'
 
     .PARAMETER OptionName
     The name of the SQL configuration option to be set
-    
+
     .PARAMETER OptionValue
     The desired value of the SQL configuration option
 
@@ -135,9 +135,9 @@ function Set-TargetResource
 
     $option.ConfigValue = $OptionValue
     $sql.Configuration.Alter()
-    
+
     if ($option.IsDynamic -eq $true)
-    {  
+    {
         New-VerboseMessage -Message 'Configuration option has been updated.'
     }
     elseif (($option.IsDynamic -eq $false) -and ($RestartService -eq $true))
@@ -157,13 +157,13 @@ function Set-TargetResource
 
     .PARAMETER SQLServer
     Hostname of the SQL Server to be configured
-    
+
     .PARAMETER SQLInstanceName
     Name of the SQL instance to be configued. Default is 'MSSQLSERVER'
 
     .PARAMETER OptionName
     The name of the SQL configuration option to be tested
-    
+
     .PARAMETER OptionValue
     The desired value of the SQL configuration option
 
