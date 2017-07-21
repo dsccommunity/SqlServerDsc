@@ -1,4 +1,4 @@
-﻿$dom = [AppDomain]::CreateDomain('xSQLServerReplication')
+$dom = [AppDomain]::CreateDomain('xSQLServerReplication')
 
 function Get-TargetResource
 {
@@ -64,7 +64,7 @@ function Get-TargetResource
         $RemoteDistributor = $localReplicationServer.DistributionServer
         $WorkingDirectory = $localReplicationServer.WorkingDirectory
     }
-               
+
     $returnValue = @{
         InstanceName = $InstanceName
         Ensure = $Ensure
@@ -73,7 +73,7 @@ function Get-TargetResource
         RemoteDistributor = $RemoteDistributor
         WorkingDirectory = $WorkingDirectory
     }
-    
+
     return $returnValue
 }
 
@@ -150,7 +150,7 @@ function Set-TargetResource
                 -WorkingDirectory $WorkingDirectory `
                 -UseTrustedConnection $UseTrustedConnection
         }
-            
+
         if($DistributorMode -eq 'Remote' -and $localReplicationServer.IsPublisher -eq $false)
         {
             Write-Verbose "Remote distribution will be configured ..."
@@ -235,7 +235,7 @@ function Test-TargetResource
     {
         $result = $true
     }
-          
+
     return $result
 }
 
@@ -322,7 +322,7 @@ function New-DistributionPublisher
         [System.Object]
         $ServerConnection
     )
-    
+
     $rmo = Get-RmoAssembly -SqlMajorVersion $SqlMajorVersion
     $distributorPublisher = New-object $rmo.GetType('Microsoft.SqlServer.Replication.DistributionPublisher') $PublisherName, $ServerConnection
 
@@ -422,7 +422,7 @@ function Register-DistributorPublisher
         -SqlMajorVersion $SqlMajorVersion `
         -PublisherName $PublisherName `
         -ServerConnection $ServerConnection
-    
+
     $distributorPublisher.DistributionDatabase = $DistributionDBName
     $distributorPublisher.WorkingDirectory = $WorkingDirectory
     $distributorPublisher.PublisherSecurity.WindowsAuthentication = $UseTrustedConnection

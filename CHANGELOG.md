@@ -11,6 +11,13 @@
   - Minor style changes to the unit tests for CommonResourceHelper.
   - Changes to xSQLServerHelper
     - Added Swedish localization ([issue #695](https://github.com/PowerShell/xSQLServer/issues/695)).
+  - Opt-in for module files common tests ([issue #702](https://github.com/PowerShell/xFailOverCluster/issues/702)).
+    - Removed Byte Order Mark (BOM) from the files; CommonResourceHelper.psm1,
+      MSFT\_xSQLServerAvailabilityGroupListener.psm1, MSFT\_xSQLServerConfiguration.psm1,
+      MSFT\_xSQLServerEndpointPermission.psm1, MSFT\_xSQLServerEndpointState.psm1,
+      MSFT\_xSQLServerNetwork.psm1, MSFT\_xSQLServerPermission.psm1,
+      MSFT\_xSQLServerReplication.psm1, MSFT\_xSQLServerScript.psm1,
+      SQLPSStub.psm1, SQLServerStub.psm1.
 - Changes to xSQLServerAlwaysOnService
   - Added resource description in README.md.
   - Updated parameters descriptions in comment-based help, schema.mof and README.md.

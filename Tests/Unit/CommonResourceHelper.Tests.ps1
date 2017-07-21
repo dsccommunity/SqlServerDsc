@@ -1,4 +1,4 @@
-﻿Describe 'CommonResourceHelper Unit Tests' {
+Describe 'CommonResourceHelper Unit Tests' {
     BeforeAll {
         # Import the CommonResourceHelper module to test
         $dscResourcesFolderFilePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) `

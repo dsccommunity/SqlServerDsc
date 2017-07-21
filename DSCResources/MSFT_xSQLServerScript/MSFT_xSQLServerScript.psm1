@@ -1,4 +1,4 @@
-﻿$script:currentPath = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
+$script:currentPath = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
 Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script:currentPath -Parent) -Parent) -ChildPath 'xSQLServerHelper.psm1')
 
 <#
@@ -67,7 +67,7 @@ function Get-TargetResource
         [Parameter(Mandatory = $false)]
         [System.UInt32]
         $QueryTimeout,
-  
+
         [System.String[]]
         $Variable
     )
@@ -153,7 +153,7 @@ function Set-TargetResource
         [Parameter(Mandatory = $false)]
         [System.UInt32]
         $QueryTimeout,
-  
+
         [System.String[]]
         $Variable
     )
@@ -293,8 +293,8 @@ function Invoke-SqlScript
 
         [Parameter(Mandatory = $false)]
         [System.UInt32]
-        $QueryTimeout, 
-  
+        $QueryTimeout,
+
         [System.String[]]
         $Variable
     )
