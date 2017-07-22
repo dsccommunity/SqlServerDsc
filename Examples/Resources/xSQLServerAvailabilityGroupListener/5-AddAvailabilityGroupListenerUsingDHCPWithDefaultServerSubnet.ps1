@@ -1,4 +1,4 @@
-﻿<#
+<#
 .EXAMPLE
     This example will add an Availability Group listener using DHCP on the default server subnet.
 #>

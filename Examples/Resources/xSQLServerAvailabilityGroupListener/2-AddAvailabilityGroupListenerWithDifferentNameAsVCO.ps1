@@ -1,4 +1,4 @@
-﻿<#
+<#
 .EXAMPLE
     This example will add an Availability Group listener with a different than the cluster role VCO.
 #>

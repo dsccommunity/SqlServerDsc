@@ -1,4 +1,4 @@
-﻿<#
+<#
     .EXAMPLE
         This example will remove the server permissions AlterAnyAvailabilityGroup and ViewServerState
         from the login 'NT AUTHORITY\SYSTEM'.

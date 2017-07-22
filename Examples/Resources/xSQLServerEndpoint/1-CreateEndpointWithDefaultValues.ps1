@@ -1,4 +1,4 @@
-﻿<#
+<#
     .EXAMPLE
         This example will add a Database Mirror endpoint, to two instances, using the default values.
 

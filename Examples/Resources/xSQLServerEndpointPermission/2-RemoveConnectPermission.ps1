@@ -1,4 +1,4 @@
-﻿<#
+<#
     .EXAMPLE
         This example will add connect permission to the credentials provided in $SqlServiceCredential
         to the endpoint named 'DefaultMirrorEndpoint'.

@@ -1,4 +1,4 @@
-﻿<#
+<#
     .EXAMPLE
         This example will remove connect permission to both an Always On primary replica and an
         Always On secondary replica, and where each replica has a different SQL service account.

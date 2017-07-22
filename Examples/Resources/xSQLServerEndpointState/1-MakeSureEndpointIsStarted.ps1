@@ -1,4 +1,4 @@
-﻿<#
+<#
     .EXAMPLE
         This example will make sure that the endpoint DefaultMirrorEndpoint is in started state in the default instance, if not it will start the endpoint.
 
