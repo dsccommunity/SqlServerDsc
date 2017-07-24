@@ -1,4 +1,4 @@
-﻿<#
+<#
     .EXAMPLE
         This example will wait for both the cluster roles/groups 'AGTest1' and 'AGTest2'.
 #>

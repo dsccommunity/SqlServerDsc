@@ -1,4 +1,4 @@
-﻿<#
+<#
     .EXAMPLE
         This example will remove an Database Mirror endpoint from two instances.
 

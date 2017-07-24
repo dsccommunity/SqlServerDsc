@@ -1,4 +1,4 @@
-﻿<#
+<#
 .EXAMPLE
     This example shows how to configure a SQL Server instance as the distributor.
 #>

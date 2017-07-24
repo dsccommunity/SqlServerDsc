@@ -1,4 +1,4 @@
-﻿<#
+<#
 .EXAMPLE
     This example shows how to configure two SQL Server instances on the same server to have the setting 'priority boost' enabled.
 .NOTES

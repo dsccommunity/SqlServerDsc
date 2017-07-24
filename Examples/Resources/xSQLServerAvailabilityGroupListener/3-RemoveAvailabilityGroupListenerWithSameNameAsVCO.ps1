@@ -1,4 +1,4 @@
-﻿<#
+<#
 .EXAMPLE
     This example will remove an Availability Group listener with a different name than cluster role VCO.
 #>

@@ -1,4 +1,4 @@
-﻿<#
+<#
     .EXAMPLE
         This example will wait for the cluster role/group 'AGTest1'.
 #>

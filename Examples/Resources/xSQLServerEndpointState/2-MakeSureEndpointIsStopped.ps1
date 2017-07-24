@@ -1,4 +1,4 @@
-﻿<#
+<#
     .EXAMPLE
         This example will make sure that the endpoint DefaultMirrorEndpoint is in stopped state, if not it will stop the endpoint.
 #>

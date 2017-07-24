@@ -1,4 +1,5 @@
 [
      "Common Tests - Validate Markdown Files",
-     "Common Tests - Validate Module Files"
-]
+     "Common Tests - Validate Module Files",
+     "Common Tests - Validate Script Files"
+    ]

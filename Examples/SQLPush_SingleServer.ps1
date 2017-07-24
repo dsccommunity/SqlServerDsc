@@ -1,4 +1,4 @@
-﻿#requires -Version 5
+#requires -Version 5
 $computers = 'OHSQL1016'
 $OutputPath = 'D:\DSCLocal'
 $cim = New-CimSession -ComputerName $computers
@@ -7,7 +7,7 @@ $cim = New-CimSession -ComputerName $computers
 
 [DSCLocalConfigurationManager()]
 Configuration LCM_Push
-{    
+{
     Param(
         [string[]]$ComputerName
     )
@@ -18,7 +18,7 @@ Configuration LCM_Push
             AllowModuleOverwrite = $True
             ConfigurationMode = 'ApplyAndAutoCorrect'
             RefreshMode = 'Push'
-            RebootNodeIfNeeded = $True    
+            RebootNodeIfNeeded = $True
         }
     }
 }
@@ -26,8 +26,8 @@ Configuration LCM_Push
 foreach ($computer in $computers)
 {
     $GUID = (New-Guid).Guid
-    LCM_Push -ComputerName $Computer -OutputPath $OutputPath 
-    Set-DSCLocalConfigurationManager -Path $OutputPath  -CimSession $computer 
+    LCM_Push -ComputerName $Computer -OutputPath $OutputPath
+    Set-DSCLocalConfigurationManager -Path $OutputPath  -CimSession $computer
 }
 
 Configuration SQLSA
@@ -47,7 +47,7 @@ Configuration SQLSA
         {
             Ensure = "Present"
             Name = "NET-Framework-Core"
-            Source = $Node.NETPath 
+            Source = $Node.NETPath
         }
 
         if($Node.Features)
@@ -70,7 +70,7 @@ Configuration SQLSA
                SQLTempDBLogDir = "L:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER\MSSQL\Data"
                SQLBackupDir = "G:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER\MSSQL\Data"
            }
-         
+
            xSqlServerFirewall ($Node.NodeName)
            {
                DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
@@ -121,7 +121,7 @@ Configuration SQLSA
            {
                 DatabaseName = "TestDB"
                 RecoveryModel = "Full"
-                SqlServerInstance ="$($Node.NodeName)\$($Node.SQLInstanceName)"  
+                SqlServerInstance ="$($Node.NodeName)\$($Node.SQLInstanceName)"
            }
            xSQLServerDatabaseOwner($Node.Nodename)
            {
@@ -152,7 +152,7 @@ $ConfigurationData = @{
             NETPath = "\\ohhv003\SQLBuilds\SQLAutoInstall\WIN2012R2\sxs"
             SourcePath = "\\ohhv003\SQLBuilds\SQLAutoInstall\SQL2012"
             InstallerServiceAccount = Get-Credential -UserName Contoso\SQLAutoSvc -Message "Credentials to Install SQL Server"
-            AdminAccount = "Contoso\sqladmin"  
+            AdminAccount = "Contoso\sqladmin"
         }
     )
 }
@@ -161,7 +161,7 @@ ForEach ($computer in $computers) {
     $ConfigurationData.AllNodes += @{
             NodeName        = $computer
             InstanceName    = "MSSQLSERVER"
-            Features        = "SQLENGINE,IS,SSMS,ADV_SSMS"       
+            Features        = "SQLENGINE,IS,SSMS,ADV_SSMS"
 
     }
    $Destination = "\\"+$computer+"\\c$\Program Files\WindowsPowerShell\Modules"
@@ -171,14 +171,14 @@ ForEach ($computer in $computers) {
 SQLSA -ConfigurationData $ConfigurationData -OutputPath $OutputPath
 
 #Push################################
-foreach($Computer in $Computers) 
+foreach($Computer in $Computers)
 {
 
     Start-DscConfiguration -ComputerName $Computer -Path $OutputPath -Verbose -Wait -Force
 }
 
 #Ttest
-foreach($Computer in $Computers) 
+foreach($Computer in $Computers)
 {
     test-dscconfiguration -ComputerName $Computer
 }

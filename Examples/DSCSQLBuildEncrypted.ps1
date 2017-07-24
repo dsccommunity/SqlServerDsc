@@ -1,4 +1,4 @@
-﻿#requires -Version 5
+#requires -Version 5
 $StartTime = [System.Diagnostics.Stopwatch]::StartNew()
 
 $computers = 'OHSQL9012'
@@ -10,24 +10,24 @@ $cim = New-CimSession -ComputerName $computers
 Function check-even($num){[bool]!($num%2)}
 
 
-Function Get-Cert 
-{ 
-    Param 
-    ( 
-        [System.String]$RemoteMachine, 
-        [System.String]$SaveLocation = "F:\publicKeys" 
-    ) 
+Function Get-Cert
+{
+    Param
+    (
+        [System.String]$RemoteMachine,
+        [System.String]$SaveLocation = "F:\publicKeys"
+    )
     if (!(test-path $SaveLocation))
     {
         new-item -path $SaveLocation -type Directory
     }
-    $CertStore = New-Object System.Security.Cryptography.X509Certificates.X509Store -ArgumentList  "\\$($RemoteMachine)\My", "LocalMachine" 
-    $CertStore.Open('ReadOnly') 
-    $certificate  = $CertStore.Certificates | Where-Object {$_.EnhancedKeyUsageList.friendlyName -eq "Document Encryption"} 
-    [byte[]]$Bytes  = $certificate.Export('Cert') 
-    [string]$SaveLiteralPath = "$SaveLocation\$RemoteMachine.$env:UserDNSDomain.cer" 
-    Remove-Item -Path $SaveLiteralPath -Force -ErrorAction Ignore 
-    Set-Content -Path $SaveLiteralPath -Value $Bytes -Encoding Byte -Force | out-null 
+    $CertStore = New-Object System.Security.Cryptography.X509Certificates.X509Store -ArgumentList  "\\$($RemoteMachine)\My", "LocalMachine"
+    $CertStore.Open('ReadOnly')
+    $certificate  = $CertStore.Certificates | Where-Object {$_.EnhancedKeyUsageList.friendlyName -eq "Document Encryption"}
+    [byte[]]$Bytes  = $certificate.Export('Cert')
+    [string]$SaveLiteralPath = "$SaveLocation\$RemoteMachine.$env:UserDNSDomain.cer"
+    Remove-Item -Path $SaveLiteralPath -Force -ErrorAction Ignore
+    Set-Content -Path $SaveLiteralPath -Value $Bytes -Encoding Byte -Force | out-null
 }
 
 foreach ($computer in $computers)
@@ -38,8 +38,8 @@ foreach ($computer in $computers)
 Get-cert -RemoteMachine $env:COMPUTERNAME -SaveLocation $KeyPath
 
 [DSCLocalConfigurationManager()]
-Configuration LCM_Reboot_CentralConfig 
-{    
+Configuration LCM_Reboot_CentralConfig
+{
     Param(
         [string[]]$ComputerName
     )
@@ -52,10 +52,10 @@ Configuration LCM_Reboot_CentralConfig
             RefreshFrequencyMins           = 30
             ConfigurationModeFrequencyMins = 15
             RefreshMode                    = "Push"
-            AllowModuleOverwrite           = $true 
-            RebootNodeIfNeeded = $True    
+            AllowModuleOverwrite           = $true
+            RebootNodeIfNeeded = $True
             ConfigurationMode = 'ApplyAndAutoCorrect'
-        }  
+        }
     }
 }
 #LCM_Reboot_CentralConfig -OutputPath $OutputPath
@@ -63,7 +63,7 @@ Configuration LCM_Reboot_CentralConfig
 foreach ($computer in $computers)
 {
     $GUID = (New-Guid).Guid
-    LCM_Reboot_CentralConfig -ComputerName $Computer -OutputPath $OutputPath 
+    LCM_Reboot_CentralConfig -ComputerName $Computer -OutputPath $OutputPath
     Set-DSCLocalConfigurationManager -Path $OutputPath  -CimSession $cim –Verbose
 }
 
@@ -71,7 +71,7 @@ Configuration SQLBuild
 {
     Import-DscResource –Module PSDesiredStateConfiguration
     Import-DscResource -Module xSQLServer
-   
+
     Node $AllNodes.NodeName
     {
         LocalConfigurationManager
@@ -83,7 +83,7 @@ Configuration SQLBuild
         {
             Ensure = "Present"
             Name = "NET-Framework-Core"
-            Source = $Node.NETPath 
+            Source = $Node.NETPath
         }
 
         if($Features -ne "")
@@ -111,7 +111,7 @@ Configuration SQLBuild
               SourcePath = $Node.SourcePath
               InstanceName = $Node.InstanceName
               Features = $Node.Features
-           
+
               DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
            }
 
@@ -119,15 +119,15 @@ Configuration SQLBuild
            {
                Ensure = "Present"
                DynamicAlloc = $True
-           
+
                DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
            }
            xSQLServerMaxDop($Node.Nodename)
            {
                Ensure = "Present"
                DynamicAlloc = $true
-           
-               DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)     
+
+               DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
            }
         }
     }
@@ -142,9 +142,9 @@ $ConfigurationData = @{
             NETPath = "\\ohdc9000\SQLBuilds\SQLAutoInstall\WIN2012R2\sxs"
             SourcePath = "\\ohdc9000\SQLAutoBuilds\SQL2014"
             InstallerServiceAccount = Get-Credential -UserName CORP\AutoSvc -Message "Credentials to Install SQL Server"
-            AdminAccount = "CORP\user1"  
+            AdminAccount = "CORP\user1"
             # For build server encryption
-            CertificateFile =(Get-PfxCertificate -FilePath "$KeyPath\$env:COMPUTERNAME.$env:USERDNSDOMAIN.cer").Thumbprint 
+            CertificateFile =(Get-PfxCertificate -FilePath "$KeyPath\$env:COMPUTERNAME.$env:USERDNSDOMAIN.cer").Thumbprint
         }
 
     )
@@ -154,12 +154,12 @@ ForEach ($computer in $computers) {
             $ConfigurationData.AllNodes += @{
             NodeName        = $computer
             InstanceName    = "MSSQLSERVER"
-            Features        = "SQLENGINE,IS,SSMS,ADV_SSMS"     
+            Features        = "SQLENGINE,IS,SSMS,ADV_SSMS"
             CertificateFile = "$KeyPath\$computer.$env:USERDNSDOMAIN.cer"
-            Thumbprint = (Get-PfxCertificate -FilePath "$KeyPath\$computer.$env:USERDNSDOMAIN.cer").Thumbprint    
+            Thumbprint = (Get-PfxCertificate -FilePath "$KeyPath\$computer.$env:USERDNSDOMAIN.cer").Thumbprint
             }
-    
-    
+
+
    $Destination = "\\"+$computer+"\\c$\Program Files\WindowsPowerShell\Modules"
    if (Test-Path "$Destination\xSqlServer"){Remove-Item -Path "$Destination\xSqlServer"-Recurse -Force}
    Copy-Item 'C:\Program Files\WindowsPowerShell\Modules\xSqlServer' -Destination $Destination -Recurse -Force
@@ -168,13 +168,13 @@ ForEach ($computer in $computers) {
 
 SQLBuild -ConfigurationData $ConfigurationData -OutputPath $OutputPath
 
-Workflow StartConfigs 
-{ 
+Workflow StartConfigs
+{
     param([string[]]$computers,
         [System.string] $Path)
- 
-    foreach –parallel ($Computer in $Computers) 
-    {   
+
+    foreach –parallel ($Computer in $Computers)
+    {
         Start-DscConfiguration -ComputerName $Computer -Path $Path -Verbose -Wait -Force
     }
 }
@@ -183,10 +183,10 @@ StartConfigs -Computers $computers -Path $OutputPath
 
 #Ttest
 <#
-Workflow TestConfigs 
-{ 
+Workflow TestConfigs
+{
     param([string[]]$computers)
-    foreach -parallel ($Computer in $Computers) 
+    foreach -parallel ($Computer in $Computers)
     {
         Write-verbose "$Computer :"
         test-dscconfiguration -ComputerName $Computer

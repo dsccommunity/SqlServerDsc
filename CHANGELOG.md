@@ -18,6 +18,25 @@
       MSFT\_xSQLServerNetwork.psm1, MSFT\_xSQLServerPermission.psm1,
       MSFT\_xSQLServerReplication.psm1, MSFT\_xSQLServerScript.psm1,
       SQLPSStub.psm1, SQLServerStub.psm1.
+  - Opt-in for script files common tests ([issue #707](https://github.com/PowerShell/xFailOverCluster/issues/707)).
+    - Removed Byte Order Mark (BOM) from the files; DSCClusterSqlBuild.ps1,
+      DSCFCISqlBuild.ps1, DSCSqlBuild.ps1, DSCSQLBuildEncrypted.ps1,
+      SQLPush_SingleServer.ps1, 1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1,
+      2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1,
+      3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1,
+      4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1,
+      5-AddAvailabilityGroupListenerUsingDHCPWithDefaultServerSubnet.ps1,
+      6-AddAvailabilityGroupListenerUsingDHCPWithSpecificSubnet.ps1,
+      2-ConfigureInstanceToEnablePriorityBoost.ps1, 1-CreateEndpointWithDefaultValues.ps1,
+      2-CreateEndpointWithSpecificPortAndIPAddress.ps1, 3-RemoveEndpoint.ps1,
+      1-AddConnectPermission.ps1, 2-RemoveConnectPermission.ps1,
+      3-AddConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1,
+      4-RemoveConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1,
+      1-MakeSureEndpointIsStarted.ps1, 2-MakeSureEndpointIsStopped.ps1,
+      1-EnableTcpIpWithStaticPort.ps1, 2-EnableTcpIpWithDynamicPort.ps1,
+      1-AddServerPermissionForLogin.ps1, 2-RemoveServerPermissionForLogin.ps1,
+      1-ConfigureInstanceAsDistributor.ps1, 2-ConfigureInstanceAsPublisher.ps1,
+      1-WaitForASingleClusterGroup.ps1, 2-WaitForMultipleClusterGroups.ps1.
 - Changes to xSQLServerAlwaysOnService
   - Added resource description in README.md.
   - Updated parameters descriptions in comment-based help, schema.mof and README.md.
