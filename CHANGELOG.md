@@ -56,6 +56,7 @@
   - Now Get-TargetResource correctly returns an array for property ASSysAdminAccounts,
     and no longer throws an error when there is just one Analysis Services
     administrator (issue #691).
+  - Added a simple integration test ([issue #709](https://github.com/PowerShell/xSQLServer/issues/709)).
 
 ## 8.0.0.0
 
