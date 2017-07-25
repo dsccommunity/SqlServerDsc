@@ -30,7 +30,7 @@ $mockSqlCollation = 'Finnish_Swedish_CI_AS'
 $mockInstallSharedDir = 'C:\Program Files\Microsoft SQL Server'
 $mockInstallSharedWOWDir = 'C:\Program Files (x86)\Microsoft SQL Server'
 $mockUpdateEnable = 'False'
-$mockSuppressReboot = $true
+$mockSuppressReboot = $true # Make sure we don't reboot during testing.
 $mockForceReboot = $false
 
 $mockSourceMediaUrl = 'http://care.dlservice.microsoft.com/dl/download/F/E/9/FE9397FA-BFAB-4ADD-8B97-91234BC774B2/SQLServer2016-x64-ENU.iso'

@@ -89,7 +89,7 @@ configuration MSFT_xSQLServerSetup_InstallSqlEngineAsSystem_Config
             InstallSharedDir      = $Node.InstallSharedDir
             InstallSharedWOWDir   = $Node.InstallSharedWOWDir
             UpdateEnabled         = $Node.UpdateEnabled
-            SuppressReboot        = $Node.SuppressReboot  # Make sure we don't reboot during testing.
+            SuppressReboot        = $Node.SuppressReboot
             ForceReboot           = $Node.ForceReboot
 
             # This must be set if using SYSTEM account to install.
