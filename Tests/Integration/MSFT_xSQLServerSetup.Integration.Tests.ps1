@@ -76,11 +76,6 @@ if (-not (Test-Path -Path $mockIsoMediaFilePath))
     else
     {
         Write-Verbose "Finished downloading the SQL Server media iso at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
-
-        # $mountResult = Mount-DiskImage -ImagePath $mockIsoMediaFilePath -Verbose -PassThru
-        # $driveLetter = ($mountResult | Get-Volume).DriveLetter
-        # Get-ChildItem "$($driveLetter):\" | ForEach-Object -Process { Write-Verbose $_.FullName -Verbose; }
-        # Write-Verbose "SQL Server iso media mounted to $($driveLetter):\" -Verbose
     }
 }
 else
@@ -88,7 +83,6 @@ else
     Write-Verbose 'SQL Server media is already downloaded' -Verbose
 }
 
-# Using try/finally to always cleanup.
 try
 {
     $ConfigurationData = @{
@@ -111,12 +105,10 @@ try
         )
     }
 
-    #region Integration Tests
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
     . $configFile
 
     Describe "$($script:DSCResourceName)_Integration" {
-        #region DEFAULT TESTS
         It 'Should compile and apply the MOF without throwing' {
             {
                 & "$($script:DSCResourceName)_InstallSqlEngineAsSystem_Config" `
@@ -139,7 +131,7 @@ try
                 Below code will output the Summary.txt log file, this is to be
                 able to debug any problems that potentially occurred during setup.
                 This will pick up the newest Summary.txt log file, so any
-                existing log files will be ignored (AppVeyor build worker has
+                other log files will be ignored (AppVeyor build worker has
                 SQL Server instances installed by default).
                 This code is meant to work regardless what SQL Server
                 major version is used for the integration test.
@@ -162,7 +154,6 @@ try
         It 'Should be able to call Get-DscConfiguration without throwing' {
             { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not Throw
         }
-        #endregion
 
         It 'Should have set the resource and all the parameters should match' {
             $currentConfiguration = Get-DscConfiguration
@@ -233,8 +224,6 @@ try
 
         }
     }
-    #endregion
-
 }
 finally
 {
@@ -243,6 +232,4 @@ finally
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
 
     #endregion
-
-    # TODO: Other Optional Cleanup Code Goes Here...
 }
