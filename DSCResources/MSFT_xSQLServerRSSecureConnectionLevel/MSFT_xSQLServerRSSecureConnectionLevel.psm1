@@ -13,7 +13,7 @@ function Get-TargetResource
         [parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
-        
+
         [parameter(Mandatory = $true)]
         [System.UInt16]
         $SecureConnectionLevel,
@@ -23,7 +23,7 @@ function Get-TargetResource
         $SQLAdminCredential
     )
 
-    if(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS" -Name $InstanceName -ErrorAction SilentlyContinue)
+    if (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS" -Name $InstanceName -ErrorAction SilentlyContinue)
     {
         $InstanceKey = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS" -Name $InstanceName).$InstanceName
         $SQLVersion = ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$InstanceKey\Setup" -Name "Version").Version).Split(".")[0]
@@ -32,7 +32,7 @@ function Get-TargetResource
             $InstanceName = $args[1]
             $RSConfig = Get-WmiObject -Class MSReportServer_ConfigurationSetting -Namespace "root\Microsoft\SQLServer\ReportServer\RS_$InstanceName\v$SQLVersion\Admin"
             $RSConfig.SecureConnectionLevel
-        } -ArgumentList @($SQLVersion,$InstanceName)
+        } -ArgumentList @($SQLVersion, $InstanceName)
     }
     else
     {
@@ -40,7 +40,7 @@ function Get-TargetResource
     }
 
     $returnValue = @{
-        InstanceName = $InstanceName
+        InstanceName          = $InstanceName
         SecureConnectionLevel = $SecureConnectionLevel
     }
 
@@ -56,7 +56,7 @@ function Set-TargetResource
         [parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
-        
+
         [parameter(Mandatory = $true)]
         [System.UInt16]
         $SecureConnectionLevel,
@@ -66,7 +66,7 @@ function Set-TargetResource
         $SQLAdminCredential
     )
 
-    if(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS" -Name $InstanceName -ErrorAction SilentlyContinue)
+    if (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS" -Name $InstanceName -ErrorAction SilentlyContinue)
     {
         $InstanceKey = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS" -Name $InstanceName).$InstanceName
         $SQLVersion = ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$InstanceKey\Setup" -Name "Version").Version).Split(".")[0]
@@ -76,10 +76,10 @@ function Set-TargetResource
             $SecureConnectionLevel = $args[2]
             $RSConfig = Get-WmiObject -Class MSReportServer_ConfigurationSetting -Namespace "root\Microsoft\SQLServer\ReportServer\RS_$InstanceName\v$SQLVersion\Admin"
             $RSConfig.SetSecureConnectionLevel($SecureConnectionLevel)
-        } -ArgumentList @($SQLVersion,$InstanceName,$SecureConnectionLevel)
+        } -ArgumentList @($SQLVersion, $InstanceName, $SecureConnectionLevel)
     }
 
-    if(!(Test-TargetResource @PSBoundParameters))
+    if (!(Test-TargetResource @PSBoundParameters))
     {
         throw New-TerminatingError -ErrorType TestFailedAfterSet -ErrorCategory InvalidResult
     }
@@ -95,7 +95,7 @@ function Test-TargetResource
         [parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
-        
+
         [parameter(Mandatory = $true)]
         [System.UInt16]
         $SecureConnectionLevel,

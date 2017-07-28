@@ -19,20 +19,20 @@ Configuration Example
     {
         xSQLServerLogin Add_SqlServerLogin_SQLAdmin
         {
-            Ensure = 'Present'
-            Name = 'CONTOSO\SQLAdmin'
-            LoginType = 'WindowsUser'
-            SQLServer = 'SQLServer'
-            SQLInstanceName = 'DSC'
+            Ensure               = 'Present'
+            Name                 = 'CONTOSO\SQLAdmin'
+            LoginType            = 'WindowsUser'
+            SQLServer            = 'SQLServer'
+            SQLInstanceName      = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount
         }
 
         xSQLServerDatabaseOwner Set_SqlDatabaseOwner_SQLAdmin
         {
-            Name = 'CONTOSO\SQLAdmin'
-            Database = 'AdventureWorks'
-            SQLServer = 'SQLServer'
-            SQLInstanceName = 'DSC'
+            Name                 = 'CONTOSO\SQLAdmin'
+            Database             = 'AdventureWorks'
+            SQLServer            = 'SQLServer'
+            SQLInstanceName      = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount
         }
     }

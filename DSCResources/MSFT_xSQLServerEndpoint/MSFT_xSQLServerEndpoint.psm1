@@ -1,6 +1,6 @@
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'xSQLServerHelper.psm1') `
-                               -Force
+        -ChildPath 'xSQLServerHelper.psm1') `
+    -Force
 <#
     .SYNOPSIS
         Returns the current state of the endpoint.
@@ -34,12 +34,12 @@ function Get-TargetResource
     )
 
     $getTargetResourceReturnValues = @{
-        SQLServer = $SQLServer
+        SQLServer       = $SQLServer
         SQLInstanceName = $SQLInstanceName
-        Ensure = 'Absent'
-        EndpointName = ''
-        Port = ''
-        IpAddress = ''
+        Ensure          = 'Absent'
+        EndpointName    = ''
+        Port            = ''
+        IpAddress       = ''
     }
 
     $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
@@ -53,8 +53,8 @@ function Get-TargetResource
             if ($sqlServerObject.Endpoints[$EndPointName].EndpointType -ne 'DatabaseMirroring')
             {
                 throw New-TerminatingError -ErrorType EndpointFoundButWrongType `
-                                            -FormatArgs @($EndpointName) `
-                                            -ErrorCategory InvalidOperation
+                    -FormatArgs @($EndpointName) `
+                    -ErrorCategory InvalidOperation
             }
 
             $getTargetResourceReturnValues.Ensure = 'Present'
@@ -73,8 +73,8 @@ function Get-TargetResource
     else
     {
         throw New-TerminatingError -ErrorType NotConnectedToInstance `
-                                    -FormatArgs @($SQLServer,$SQLInstanceName) `
-                                    -ErrorCategory InvalidOperation
+            -FormatArgs @($SQLServer, $SQLInstanceName) `
+            -ErrorCategory InvalidOperation
     }
 
     return $getTargetResourceReturnValues
@@ -112,7 +112,7 @@ function Set-TargetResource
         $EndpointName,
 
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -196,8 +196,8 @@ function Set-TargetResource
     else
     {
         throw New-TerminatingError -ErrorType NotConnectedToInstance `
-                                    -FormatArgs @($SQLServer,$SQLInstanceName) `
-                                    -ErrorCategory InvalidOperation
+            -FormatArgs @($SQLServer, $SQLInstanceName) `
+            -ErrorCategory InvalidOperation
     }
 }
 
@@ -234,7 +234,7 @@ function Test-TargetResource
         $EndpointName,
 
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -261,11 +261,11 @@ function Test-TargetResource
         $result = $true
 
         if ($getTargetResourceResult.Ensure -eq 'Present' `
-            -and (
+                -and (
                 $getTargetResourceResult.Port -ne $Port `
-                -or $getTargetResourceResult.IpAddress -ne $IpAddress
-                )
+                    -or $getTargetResourceResult.IpAddress -ne $IpAddress
             )
+        )
         {
             $result = $false
         }

@@ -1,6 +1,6 @@
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'xSQLServerHelper.psm1') `
-                               -Force
+        -ChildPath 'xSQLServerHelper.psm1') `
+    -Force
 <#
     .SYNOPSIS
     Returns the current state of the SQL Server network properties.
@@ -39,11 +39,11 @@ Function Get-TargetResource
 
         Write-Verbose "Reading current network properties."
         $returnValue = @{
-            InstanceName = $InstanceName
-            ProtocolName = $ProtocolName
-            IsEnabled = $tcp.IsEnabled
+            InstanceName    = $InstanceName
+            ProtocolName    = $ProtocolName
+            IsEnabled       = $tcp.IsEnabled
             TcpDynamicPorts = $tcp.IPAddresses['IPAll'].IPAddressProperties['TcpDynamicPorts'].Value
-            TcpPort = $tcp.IPAddresses['IPAll'].IPAddressProperties['TcpPort'].Value
+            TcpPort         = $tcp.IPAddresses['IPAll'].IPAddressProperties['TcpPort'].Value
         }
 
         $returnValue.Keys | ForEach-Object {
@@ -117,7 +117,7 @@ Function Set-TargetResource
         $IsEnabled,
 
         [Parameter()]
-        [ValidateSet('0','')]
+        [ValidateSet('0', '')]
         [System.String]
         $TcpDynamicPorts,
 
@@ -146,11 +146,11 @@ Function Set-TargetResource
         $applicationDomainObject = Register-SqlWmiManagement -SQLInstanceName $InstanceName
 
         $desiredState = @{
-            InstanceName = $InstanceName
-            ProtocolName = $ProtocolName
-            IsEnabled = $IsEnabled
+            InstanceName    = $InstanceName
+            ProtocolName    = $ProtocolName
+            IsEnabled       = $IsEnabled
             TcpDynamicPorts = $TcpDynamicPorts
-            TcpPort = $TcpPort
+            TcpPort         = $TcpPort
         }
 
         $isRestartNeeded = $false
@@ -290,7 +290,7 @@ Function Test-TargetResource
         $IsEnabled,
 
         [Parameter()]
-        [ValidateSet('0','')]
+        [ValidateSet('0', '')]
         [System.String]
         $TcpDynamicPorts,
 
@@ -330,8 +330,8 @@ Function Test-TargetResource
         if ($IsEnabled -ne $getTargetResourceResult.IsEnabled)
         {
             $evaluateEnableOrDisable = @{
-                $true='enabled'
-                $false='disabled'
+                $true  = 'enabled'
+                $false = 'disabled'
             }
 
             Write-Verbose ('Expected protocol to be {0}, but was {1}.' -f $evaluateEnableOrDisable[$IsEnabled], $evaluateEnableOrDisable[$getTargetResourceResult.IsEnabled])

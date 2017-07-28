@@ -60,39 +60,41 @@ Configuration Example
     node localhost
     {
         #region Install prerequisites for SQL Server
-        WindowsFeature 'NetFramework35' {
-           Name = 'NET-Framework-Core'
-           Source = '\\fileserver.company.local\images$\Win2k12R2\Sources\Sxs' # Assumes built-in Everyone has read permission to the share and path.
-           Ensure = 'Present'
+        WindowsFeature 'NetFramework35'
+        {
+            Name   = 'NET-Framework-Core'
+            Source = '\\fileserver.company.local\images$\Win2k12R2\Sources\Sxs' # Assumes built-in Everyone has read permission to the share and path.
+            Ensure = 'Present'
         }
 
-        WindowsFeature 'NetFramework45' {
-           Name = 'NET-Framework-45-Core'
-           Ensure = 'Present'
+        WindowsFeature 'NetFramework45'
+        {
+            Name   = 'NET-Framework-45-Core'
+            Ensure = 'Present'
         }
         #endregion Install prerequisites for SQL Server
 
         #region Install SQL Server Failover Cluster
         xSQLServerSetup 'InstallNamedInstanceNode2-INST2016'
         {
-            Action = 'AddNode'
-            ForceReboot = $false
-            UpdateEnabled = 'False'
-            SourcePath = '\\fileserver.compant.local\images$\SQL2016RTM'
-            SourceCredential = $SqlInstallCredential
+            Action                     = 'AddNode'
+            ForceReboot                = $false
+            UpdateEnabled              = 'False'
+            SourcePath                 = '\\fileserver.compant.local\images$\SQL2016RTM'
+            SourceCredential           = $SqlInstallCredential
 
-            InstanceName = 'INST2016'
-            Features = 'SQLENGINE,AS'
+            InstanceName               = 'INST2016'
+            Features                   = 'SQLENGINE,AS'
 
-            SQLSvcAccount = $SqlServiceCredential
-            AgtSvcAccount = $SqlAgentServiceCredential
-            ASSvcAccount = $SqlServiceCredential
+            SQLSvcAccount              = $SqlServiceCredential
+            AgtSvcAccount              = $SqlAgentServiceCredential
+            ASSvcAccount               = $SqlServiceCredential
 
             FailoverClusterNetworkName = 'TESTCLU01A'
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential       = $SqlInstallCredential
 
-            DependsOn = '[WindowsFeature]NetFramework35','[WindowsFeature]NetFramework45'
+            DependsOn                  = '[WindowsFeature]NetFramework35', '[WindowsFeature]NetFramework45'
         }
         #region Install SQL Server Failover Cluster
     }

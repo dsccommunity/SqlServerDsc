@@ -2030,7 +2030,7 @@ function Test-IPAddress
 function Get-ServiceAccountParameters
 {
     [CmdletBinding()]
-    [OutputType([Hashtable])]
+    [OutputType([System.Collections.Hashtable])]
     param
     (
         [Parameter(Mandatory = $true)]

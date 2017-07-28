@@ -16,12 +16,12 @@ Configuration Example
 
     node localhost
     {
-       xSQLServerEndpointState StopEndpoint
+        xSQLServerEndpointState StopEndpoint
         {
-            NodeName = 'SQLNODE01.company.local'
-            InstanceName = 'MSSQLSERVER'
-            Name = 'DefaultMirrorEndpoint'
-            State = 'Stopped'
+            NodeName             = 'SQLNODE01.company.local'
+            InstanceName         = 'MSSQLSERVER'
+            Name                 = 'DefaultMirrorEndpoint'
+            State                = 'Stopped'
 
             PsDscRunAsCredential = $SysAdminAccount
 

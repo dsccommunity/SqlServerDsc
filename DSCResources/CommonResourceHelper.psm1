@@ -25,10 +25,10 @@ function New-InvalidArgumentException
     )
 
     $argumentException = New-Object -TypeName 'ArgumentException' `
-                                    -ArgumentList @($Message, $ArgumentName)
+        -ArgumentList @($Message, $ArgumentName)
 
     $newObjectParameters = @{
-        TypeName = 'System.Management.Automation.ErrorRecord'
+        TypeName     = 'System.Management.Automation.ErrorRecord'
         ArgumentList = @($argumentException, $ArgumentName, 'InvalidArgument', $null)
     }
 
@@ -66,22 +66,22 @@ function New-InvalidOperationException
     if ($null -eq $ErrorRecord)
     {
         $invalidOperationException = New-Object -TypeName 'InvalidOperationException' `
-                                                -ArgumentList @($Message)
+            -ArgumentList @($Message)
     }
     else
     {
         $invalidOperationException = New-Object -TypeName 'InvalidOperationException' `
-                                                -ArgumentList @($Message, $ErrorRecord.Exception)
+            -ArgumentList @($Message, $ErrorRecord.Exception)
     }
 
     $newObjectParameters = @{
-        TypeName = 'System.Management.Automation.ErrorRecord'
+        TypeName     = 'System.Management.Automation.ErrorRecord'
         ArgumentList = @(
             $invalidOperationException.ToString(),
             'MachineStateIncorrect',
             'InvalidOperation',
             $null
-            )
+        )
     }
 
     $errorRecordToThrow = New-Object @newObjectParameters
@@ -118,22 +118,22 @@ function New-ObjectNotFoundException
     if ($null -eq $ErrorRecord)
     {
         $exception = New-Object -TypeName 'System.Exception' `
-                                -ArgumentList @($Message)
+            -ArgumentList @($Message)
     }
     else
     {
         $exception = New-Object -TypeName 'System.Exception' `
-                                -ArgumentList @($Message, $ErrorRecord.Exception)
+            -ArgumentList @($Message, $ErrorRecord.Exception)
     }
 
     $newObjectParameters = @{
-        TypeName = 'System.Management.Automation.ErrorRecord'
+        TypeName     = 'System.Management.Automation.ErrorRecord'
         ArgumentList = @(
             $exception.ToString(),
             'MachineStateIncorrect',
             'ObjectNotFound',
             $null
-            )
+        )
     }
 
     $errorRecordToThrow = New-Object @newObjectParameters
@@ -170,22 +170,22 @@ function New-InvalidResultException
     if ($null -eq $ErrorRecord)
     {
         $exception = New-Object -TypeName 'System.Exception' `
-                                -ArgumentList @($Message)
+            -ArgumentList @($Message)
     }
     else
     {
         $exception = New-Object -TypeName 'System.Exception' `
-                                -ArgumentList @($Message, $ErrorRecord.Exception)
+            -ArgumentList @($Message, $ErrorRecord.Exception)
     }
 
     $newObjectParameters = @{
-        TypeName = 'System.Management.Automation.ErrorRecord'
+        TypeName     = 'System.Management.Automation.ErrorRecord'
         ArgumentList = @(
             $exception.ToString(),
             'MachineStateIncorrect',
             'InvalidResult',
             $null
-            )
+        )
     }
 
     $errorRecordToThrow = New-Object @newObjectParameters

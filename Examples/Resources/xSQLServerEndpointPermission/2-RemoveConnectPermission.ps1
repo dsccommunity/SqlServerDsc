@@ -24,14 +24,14 @@ Configuration Example
     {
         xSQLServerEndpointPermission SQLConfigureEndpointPermission
         {
-            Ensure = 'Absent'
-            NodeName = $Node.NodeName
-            InstanceName = $Node.SqlInstanceName
-            Name = 'DefaultMirrorEndpoint'
-            Principal = $SqlServiceCredential.UserName
-            Permission = 'CONNECT'
+            Ensure               = 'Absent'
+            NodeName             = $Node.NodeName
+            InstanceName         = $Node.SqlInstanceName
+            Name                 = 'DefaultMirrorEndpoint'
+            Principal            = $SqlServiceCredential.UserName
+            Permission           = 'CONNECT'
 
             PsDscRunAsCredential = $SysAdminAccount
         }
-   }
+    }
 }

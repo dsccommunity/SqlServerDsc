@@ -19,11 +19,11 @@ Configuration Example
     {
         xSQLServerMaxDop Set_SQLServerMaxDop_ToOne
         {
-            Ensure = 'Present'
-            DynamicAlloc = $false
-            MaxDop = 1
-            SQLServer = 'SQLServer'
-            SQLInstanceName = 'DSC'
+            Ensure               = 'Present'
+            DynamicAlloc         = $false
+            MaxDop               = 1
+            SQLServer            = 'SQLServer'
+            SQLInstanceName      = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount
         }
     }

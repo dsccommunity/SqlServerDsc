@@ -1,6 +1,6 @@
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'xSQLServerHelper.psm1') `
-                               -Force
+        -ChildPath 'xSQLServerHelper.psm1') `
+    -Force
 
 <#
     .SYNOPSIS
@@ -61,10 +61,10 @@ function Get-TargetResource
     }
 
     $returnValue = @{
-        InstanceName = $InstanceName
-        RSSQLServer = $RSSQLServer
+        InstanceName      = $InstanceName
+        RSSQLServer       = $RSSQLServer
         RSSQLInstanceName = $RSSQLInstanceName
-        IsInitialized = $isInitialized
+        IsInitialized     = $isInitialized
     }
 
     $returnValue
@@ -106,8 +106,8 @@ function Set-TargetResource
     if ( Get-ItemProperty -Path $instanceNamesRegistryKey -Name $InstanceName -ErrorAction SilentlyContinue )
     {
         <#
-            Import-SQLPSModule cmdlet will import SQLPS (SQL 2012/14) or SqlServer module (SQL 2016), 
-            and if importing SQLPS, change directory back to the original one, since SQLPS changes the 
+            Import-SQLPSModule cmdlet will import SQLPS (SQL 2012/14) or SqlServer module (SQL 2016),
+            and if importing SQLPS, change directory back to the original one, since SQLPS changes the
             current directory to SQLSERVER:\ on import.
         #>
         Import-SQLPSModule
@@ -144,8 +144,8 @@ function Set-TargetResource
 
         if ( $reportingServicesConfiguration.VirtualDirectoryReportServer -ne $reportServerVirtualDirectoryName )
         {
-            $null = $reportingServicesConfiguration.SetVirtualDirectory('ReportServerWebService',$reportServerVirtualDirectoryName,$language)
-            $null = $reportingServicesConfiguration.ReserveURL('ReportServerWebService','http://+:80',$language)
+            $null = $reportingServicesConfiguration.SetVirtualDirectory('ReportServerWebService', $reportServerVirtualDirectoryName, $language)
+            $null = $reportingServicesConfiguration.ReserveURL('ReportServerWebService', 'http://+:80', $language)
         }
 
         if ( $reportingServicesConfiguration.VirtualDirectoryReportManager -ne $reportsVirtualDirectoryName )
@@ -163,19 +163,19 @@ function Set-TargetResource
                 $virtualDirectoryName = 'ReportManager'
             }
 
-            $null = $reportingServicesConfiguration.SetVirtualDirectory($virtualDirectoryName,$reportsVirtualDirectoryName,$language)
-            $null = $reportingServicesConfiguration.ReserveURL($virtualDirectoryName,'http://+:80',$language)
+            $null = $reportingServicesConfiguration.SetVirtualDirectory($virtualDirectoryName, $reportsVirtualDirectoryName, $language)
+            $null = $reportingServicesConfiguration.ReserveURL($virtualDirectoryName, 'http://+:80', $language)
         }
 
-        $reportingServicesDatabaseScript = $reportingServicesConfiguration.GenerateDatabaseCreationScript($reportingServicesDatabaseName,$language,$false)
+        $reportingServicesDatabaseScript = $reportingServicesConfiguration.GenerateDatabaseCreationScript($reportingServicesDatabaseName, $language, $false)
 
         # Determine RS service account
         $reportingServicesServiceAccountUserName = (Get-WmiObject -Class Win32_Service | Where-Object {$_.Name -eq $reportingServicesServiceName}).StartName
-        $reportingServicesDatabaseRightsScript = $reportingServicesConfiguration.GenerateDatabaseRightsScript($reportingServicesServiceAccountUserName,$reportingServicesDatabaseName,$false,$true)
+        $reportingServicesDatabaseRightsScript = $reportingServicesConfiguration.GenerateDatabaseRightsScript($reportingServicesServiceAccountUserName, $reportingServicesDatabaseName, $false, $true)
 
         Invoke-Sqlcmd -ServerInstance $reportingServicesConnnection -Query $reportingServicesDatabaseScript.Script
         Invoke-Sqlcmd -ServerInstance $reportingServicesConnnection -Query $reportingServicesDatabaseRightsScript.Script
-        $null = $reportingServicesConfiguration.SetDatabaseConnection($reportingServicesConnnection,$reportingServicesDatabaseName,2,'','')
+        $null = $reportingServicesConfiguration.SetDatabaseConnection($reportingServicesConnnection, $reportingServicesDatabaseName, 2, '', '')
         $null = $reportingServicesConfiguration.InitializeReportServer($reportingServicesConfiguration.InstallationID)
     }
 

@@ -18,13 +18,13 @@ Configuration Example
     {
         xSQLServerAvailabilityGroupListener AvailabilityGroupListenerWithSameNameAsVCO
         {
-            Ensure = 'Present'
-            NodeName = 'SQLNODE01.company.local'
-            InstanceName = 'MSSQLSERVER'
-            AvailabilityGroup = 'AG-01'
-            Name = 'AG-01'
-            IpAddress = '192.168.0.73/255.255.255.0'
-            Port = 5301
+            Ensure               = 'Present'
+            NodeName             = 'SQLNODE01.company.local'
+            InstanceName         = 'MSSQLSERVER'
+            AvailabilityGroup    = 'AG-01'
+            Name                 = 'AG-01'
+            IpAddress            = '192.168.0.73/255.255.255.0'
+            Port                 = 5301
 
             PsDscRunAsCredential = $SysAdminAccount
         }

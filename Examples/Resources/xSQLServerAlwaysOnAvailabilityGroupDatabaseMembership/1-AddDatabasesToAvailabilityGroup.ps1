@@ -6,19 +6,19 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName= '*'
-            SQLInstanceName = 'MSSQLSERVER'
+            NodeName              = '*'
+            SQLInstanceName       = 'MSSQLSERVER'
             AvailabilityGroupName = 'TestAG'
         },
 
         @{
             NodeName = 'SQL1'
-            Role = 'PrimaryReplica'
+            Role     = 'PrimaryReplica'
         },
 
         @{
             NodeName = 'SQL2'
-            Role = 'SecondaryReplica'
+            Role     = 'SecondaryReplica'
         }
     )
 }
@@ -37,34 +37,34 @@ Configuration Example
         # Adding the required service account to allow the cluster to log into SQL
         xSQLServerLogin AddNTServiceClusSvc
         {
-            Ensure = 'Present'
-            Name = 'NT SERVICE\ClusSvc'
-            LoginType = 'WindowsUser'
-            SQLServer = $Node.NodeName
-            SQLInstanceName = $Node.SQLInstanceName
+            Ensure               = 'Present'
+            Name                 = 'NT SERVICE\ClusSvc'
+            LoginType            = 'WindowsUser'
+            SQLServer            = $Node.NodeName
+            SQLInstanceName      = $Node.SQLInstanceName
             PsDscRunAsCredential = $SysAdminAccount
         }
 
         # Add the required permissions to the cluster service login
         xSQLServerPermission AddNTServiceClusSvcPermissions
         {
-            DependsOn = '[xSQLServerLogin]AddNTServiceClusSvc'
-            Ensure = 'Present'
-            NodeName = $Node.NodeName
-            InstanceName = $Node.SqlInstanceName
-            Principal = 'NT SERVICE\ClusSvc'
-            Permission = 'AlterAnyAvailabilityGroup','ViewServerState'
+            DependsOn            = '[xSQLServerLogin]AddNTServiceClusSvc'
+            Ensure               = 'Present'
+            NodeName             = $Node.NodeName
+            InstanceName         = $Node.SqlInstanceName
+            Principal            = 'NT SERVICE\ClusSvc'
+            Permission           = 'AlterAnyAvailabilityGroup', 'ViewServerState'
             PsDscRunAsCredential = $SysAdminAccount
         }
 
         # Create a DatabaseMirroring endpoint
         xSQLServerEndpoint HADREndpoint
         {
-            EndPointName = 'HADR'
-            Ensure = 'Present'
-            Port = 5022
-            SQLServer = $Node.NodeName
-            SQLInstanceName = $Node.SQLInstanceName
+            EndPointName         = 'HADR'
+            Ensure               = 'Present'
+            Port                 = 5022
+            SQLServer            = $Node.NodeName
+            SQLInstanceName      = $Node.SQLInstanceName
             PsDscRunAsCredential = $SysAdminAccount
         }
 
@@ -73,11 +73,11 @@ Configuration Example
             # Create the availability group on the instance tagged as the primary replica
             xSQLServerAlwaysOnAvailabilityGroup AddTestAG
             {
-                Ensure = 'Present'
-                Name = $Node.AvailabilityGroupName
-                SQLInstanceName = $Node.SQLInstanceName
-                SQLServer = $Node.NodeName
-                DependsOn = '[xSQLServerEndpoint]HADREndpoint','[xSQLServerPermission]AddNTServiceClusSvcPermissions'
+                Ensure               = 'Present'
+                Name                 = $Node.AvailabilityGroupName
+                SQLInstanceName      = $Node.SQLInstanceName
+                SQLServer            = $Node.NodeName
+                DependsOn            = '[xSQLServerEndpoint]HADREndpoint', '[xSQLServerPermission]AddNTServiceClusSvcPermissions'
                 PsDscRunAsCredential = $SysAdminAccount
             }
         }
@@ -87,12 +87,12 @@ Configuration Example
             # Add the availability group replica to the availability group
             xSQLServerAlwaysOnAvailabilityGroupReplica AddReplica
             {
-                Ensure = 'Present'
-                Name = $Node.NodeName
-                AvailabilityGroupName = $Node.AvailabilityGroupName
-                SQLServer = $Node.NodeName
-                SQLInstanceName = $Node.SQLInstanceName
-                PrimaryReplicaSQLServer = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).NodeName
+                Ensure                        = 'Present'
+                Name                          = $Node.NodeName
+                AvailabilityGroupName         = $Node.AvailabilityGroupName
+                SQLServer                     = $Node.NodeName
+                SQLInstanceName               = $Node.SQLInstanceName
+                PrimaryReplicaSQLServer       = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).NodeName
                 PrimaryReplicaSQLInstanceName = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).SQLInstanceName
             }
         }
@@ -102,12 +102,12 @@ Configuration Example
             xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership 'TestAGDatabaseMemberships'
             {
                 AvailabilityGroupName = $Node.AvailabilityGroupName
-                BackupPath = '\\SQL1\AgInitialize'
-                DatabaseName = 'DB*','AdventureWorks'
-                SQLInstanceName = $Node.SQLInstanceName
-                SQLServer = $Node.NodeName
-                Ensure = 'Present'
-                PsDscRunAsCredential = $SysAdminAccount
+                BackupPath            = '\\SQL1\AgInitialize'
+                DatabaseName          = 'DB*', 'AdventureWorks'
+                SQLInstanceName       = $Node.SQLInstanceName
+                SQLServer             = $Node.NodeName
+                Ensure                = 'Present'
+                PsDscRunAsCredential  = $SysAdminAccount
             }
         }
     }

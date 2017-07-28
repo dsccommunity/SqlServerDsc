@@ -20,22 +20,22 @@ Configuration Example
         # Add permission
         xSQLServerPermission 'SQLConfigureServerPermission-SYSTEM'
         {
-            Ensure = 'Present'
-            NodeName = 'SQLNODE01.company.local'
-            InstanceName = 'MSSQLSERVER'
-            Principal = 'NT AUTHORITY\SYSTEM'
-            Permission = 'AlterAnyAvailabilityGroup','ViewServerState'
+            Ensure               = 'Present'
+            NodeName             = 'SQLNODE01.company.local'
+            InstanceName         = 'MSSQLSERVER'
+            Principal            = 'NT AUTHORITY\SYSTEM'
+            Permission           = 'AlterAnyAvailabilityGroup', 'ViewServerState'
 
             PsDscRunAsCredential = $SysAdminAccount
         }
 
         xSQLServerPermission 'SQLConfigureServerPermission-ClusSvc'
         {
-            Ensure = 'Present'
-            NodeName = 'SQLNODE01.company.local'
-            InstanceName = 'MSSQLSERVER'
-            Principal = 'NT SERVICE\ClusSvc'
-            Permission = 'AlterAnyAvailabilityGroup','ViewServerState'
+            Ensure               = 'Present'
+            NodeName             = 'SQLNODE01.company.local'
+            InstanceName         = 'MSSQLSERVER'
+            Principal            = 'NT SERVICE\ClusSvc'
+            Permission           = 'AlterAnyAvailabilityGroup', 'ViewServerState'
 
             PsDscRunAsCredential = $SysAdminAccount
         }

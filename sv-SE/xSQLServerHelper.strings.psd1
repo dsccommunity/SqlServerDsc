@@ -11,7 +11,7 @@ ConvertFrom-StringData @'
     LoadingAssembly = Laddar samling '{0}'.
     UnloadingApplicationDomain = Återställer applikationsdomän '{0}'.
     SqlServerVersionIsInvalid = Kunde inte hämta SQL version för instansen '{0}'.
-    PropertyTypeInvalidForDesiredValues = Egenskapen 'DesiredValues' måste vara endera en [Hashtable], [CimInstance] eller [PSBoundParametersDictionary]. Den typ som hittades var {0}.
+    PropertyTypeInvalidForDesiredValues = Egenskapen 'DesiredValues' måste vara endera en [System.Collections.Hashtable], [CimInstance] eller [PSBoundParametersDictionary]. Den typ som hittades var {0}.
     PropertyTypeInvalidForValuesToCheck = Om 'DesiredValues' är av typ CimInstance, då måste egenskapen 'ValuesToCheck' sättas till ett värde.
     PropertyValidationError = Förväntades hitta ett värde av typen matris för egenskapen {0} för nuvarande värden, men den var endera inte tillgänglig eller så var den satt till Null. Detta har medfört att test metoden har retunerat falskt.
     PropertiesDoesNotMatch = Hittade en matris för egenskapen {0} för nuvarande värden, men denna matris matchar inte önskat läge. Detaljer för ändringarna finns nedan.

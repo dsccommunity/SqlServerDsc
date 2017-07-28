@@ -1,7 +1,7 @@
 # Load Common Code
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'xSQLServerHelper.psm1') `
-                               -Force
+        -ChildPath 'xSQLServerHelper.psm1') `
+    -Force
 <#
     .SYNOPSIS
     Gets the current value of a SQL configuration option
@@ -29,7 +29,7 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
 function Get-TargetResource
 {
     [CmdletBinding()]
-    [OutputType([Hashtable])]
+    [OutputType([System.Collections.Hashtable])]
     param(
         [Parameter(Mandatory = $true)]
         [String]
@@ -59,18 +59,18 @@ function Get-TargetResource
     ## get the configuration option
     $option = $sql.Configuration.Properties | Where-Object { $_.DisplayName -eq $OptionName }
 
-    if(!$option)
+    if (!$option)
     {
         throw New-TerminatingError -ErrorType "ConfigurationOptionNotFound" -FormatArgs $OptionName -ErrorCategory InvalidArgument
     }
 
-     return @{
-        SqlServer = $SQLServer
+    return @{
+        SqlServer       = $SQLServer
         SQLInstanceName = $SQLInstanceName
-        OptionName = $option.DisplayName
-        OptionValue = $option.ConfigValue
-        RestartService = $RestartService
-        RestartTimeout = $RestartTimeout
+        OptionName      = $option.DisplayName
+        OptionValue     = $option.ConfigValue
+        RestartService  = $RestartService
+        RestartTimeout  = $RestartTimeout
     }
 }
 
@@ -128,7 +128,7 @@ function Set-TargetResource
     ## get the configuration option
     $option = $sql.Configuration.Properties | Where-Object { $_.DisplayName -eq $OptionName }
 
-    if(!$option)
+    if (!$option)
     {
         throw New-TerminatingError -ErrorType "ConfigurationOptionNotFound" -FormatArgs $OptionName -ErrorCategory InvalidArgument
     }

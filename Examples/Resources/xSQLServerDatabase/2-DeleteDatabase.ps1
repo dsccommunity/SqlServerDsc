@@ -1,6 +1,6 @@
 <#
 .EXAMPLE
-    This example shows how to remove a database with 
+    This example shows how to remove a database with
     the database name equal to 'AdventureWorks'.
 #>
 Configuration Example
@@ -19,10 +19,10 @@ Configuration Example
     {
         xSQLServerDatabase Delete_Database
         {
-            Ensure = 'Absent'
-            SQLServer = 'SQLServer'
+            Ensure          = 'Absent'
+            SQLServer       = 'SQLServer'
             SQLInstanceName = 'DSC'
-            Name = 'AdventureWorks'
+            Name            = 'AdventureWorks'
         }
     }
 }

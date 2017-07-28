@@ -6,13 +6,13 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName= '*'
+            NodeName        = '*'
             SQLInstanceName = 'MSSQLSERVER'
         },
 
         @{
             NodeName = 'SP23-VM-SQL1'
-            Role = 'PrimaryReplica'
+            Role     = 'PrimaryReplica'
         }
     )
 }
@@ -31,34 +31,34 @@ Configuration Example
         # Adding the required service account to allow the cluster to log into SQL
         xSQLServerLogin AddNTServiceClusSvc
         {
-            Ensure = 'Present'
-            Name = 'NT SERVICE\ClusSvc'
-            LoginType = 'WindowsUser'
-            SQLServer = $Node.NodeName
-            SQLInstanceName = $Node.SQLInstanceName
+            Ensure               = 'Present'
+            Name                 = 'NT SERVICE\ClusSvc'
+            LoginType            = 'WindowsUser'
+            SQLServer            = $Node.NodeName
+            SQLInstanceName      = $Node.SQLInstanceName
             PsDscRunAsCredential = $SysAdminAccount
         }
 
         # Add the required permissions to the cluster service login
         xSQLServerPermission AddNTServiceClusSvcPermissions
         {
-            DependsOn = '[xSQLServerLogin]AddNTServiceClusSvc'
-            Ensure = 'Present'
-            NodeName = $Node.NodeName
-            InstanceName = $Node.SqlInstanceName
-            Principal = 'NT SERVICE\ClusSvc'
-            Permission = 'AlterAnyAvailabilityGroup','ViewServerState'
+            DependsOn            = '[xSQLServerLogin]AddNTServiceClusSvc'
+            Ensure               = 'Present'
+            NodeName             = $Node.NodeName
+            InstanceName         = $Node.SqlInstanceName
+            Principal            = 'NT SERVICE\ClusSvc'
+            Permission           = 'AlterAnyAvailabilityGroup', 'ViewServerState'
             PsDscRunAsCredential = $SysAdminAccount
         }
 
         # Create a DatabaseMirroring endpoint
         xSQLServerEndpoint HADREndpoint
         {
-            EndPointName = 'HADR'
-            Ensure = 'Present'
-            Port = 5022
-            SQLServer = $Node.NodeName
-            SQLInstanceName = $Node.SQLInstanceName
+            EndPointName         = 'HADR'
+            Ensure               = 'Present'
+            Port                 = 5022
+            SQLServer            = $Node.NodeName
+            SQLInstanceName      = $Node.SQLInstanceName
             PsDscRunAsCredential = $SysAdminAccount
         }
 
@@ -67,11 +67,11 @@ Configuration Example
             # Create the availability group on the instance tagged as the primary replica
             xSQLServerAlwaysOnAvailabilityGroup AddTestAG
             {
-                Ensure = 'Present'
-                Name = 'TestAG'
-                SQLInstanceName = $Node.SQLInstanceName
-                SQLServer = $Node.NodeName
-                DependsOn = '[xSQLServerEndpoint]HADREndpoint','[xSQLServerPermission]AddNTServiceClusSvcPermissions'
+                Ensure               = 'Present'
+                Name                 = 'TestAG'
+                SQLInstanceName      = $Node.SQLInstanceName
+                SQLServer            = $Node.NodeName
+                DependsOn            = '[xSQLServerEndpoint]HADREndpoint', '[xSQLServerPermission]AddNTServiceClusSvcPermissions'
                 PsDscRunAsCredential = $SysAdminAccount
             }
         }

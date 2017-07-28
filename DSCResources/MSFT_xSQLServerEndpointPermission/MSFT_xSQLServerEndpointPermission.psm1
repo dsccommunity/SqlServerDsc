@@ -1,6 +1,6 @@
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'xSQLServerHelper.psm1') `
-                               -Force
+        -ChildPath 'xSQLServerHelper.psm1') `
+    -Force
 <#
     .SYNOPSIS
         Returns the current state of the permissions for the principal (login).
@@ -45,7 +45,7 @@ function Get-TargetResource
         $sqlServerObject = Connect-SQL -SQLServer $NodeName -SQLInstanceName $InstanceName
 
         $endpointObject = $sqlServerObject.Endpoints[$Name]
-        if( $null -ne $endpointObject )
+        if ( $null -ne $endpointObject )
         {
             New-VerboseMessage -Message "Enumerating permissions for endpoint $Name"
 
@@ -75,11 +75,11 @@ function Get-TargetResource
 
     return @{
         InstanceName = [System.String] $InstanceName
-        NodeName = [System.String] $NodeName
-        Ensure = [System.String] $Ensure
-        Name = [System.String] $Name
-        Principal = [System.String] $Principal
-        Permission = [System.String] $Permission
+        NodeName     = [System.String] $NodeName
+        Ensure       = [System.String] $Ensure
+        Name         = [System.String] $Name
+        Principal    = [System.String] $Principal
+        Permission   = [System.String] $Permission
     }
 }
 
@@ -119,7 +119,7 @@ function Set-TargetResource
         $NodeName,
 
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -139,9 +139,9 @@ function Set-TargetResource
 
     $parameters = @{
         InstanceName = [System.String] $InstanceName
-        NodeName = [System.String] $NodeName
-        Name = [System.String] $Name
-        Principal = [System.String] $Principal
+        NodeName     = [System.String] $NodeName
+        Name         = [System.String] $Name
+        Principal    = [System.String] $Principal
     }
 
     $getTargetResourceResult = Get-TargetResource @parameters
@@ -214,7 +214,7 @@ function Test-TargetResource
         $NodeName,
 
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -234,9 +234,9 @@ function Test-TargetResource
 
     $parameters = @{
         InstanceName = [System.String] $InstanceName
-        NodeName = [System.String] $NodeName
-        Name = [System.String] $Name
-        Principal = [System.String] $Principal
+        NodeName     = [System.String] $NodeName
+        Name         = [System.String] $Name
+        Principal    = [System.String] $Principal
     }
 
     New-VerboseMessage -Message "Testing state of endpoint permission for $Principal"

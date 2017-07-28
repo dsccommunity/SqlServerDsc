@@ -20,11 +20,11 @@ Configuration Example
         # Add permission
         xSQLServerPermission SQLConfigureServerPermission
         {
-            Ensure = 'Absent'
-            NodeName = 'SQLNODE01.company.local'
-            InstanceName = 'MSSQLSERVER'
-            Principal = 'NT AUTHORITY\SYSTEM'
-            Permission = 'AlterAnyAvailabilityGroup','ViewServerState'
+            Ensure               = 'Absent'
+            NodeName             = 'SQLNODE01.company.local'
+            InstanceName         = 'MSSQLSERVER'
+            Principal            = 'NT AUTHORITY\SYSTEM'
+            Permission           = 'AlterAnyAvailabilityGroup', 'ViewServerState'
 
             PsDscRunAsCredential = $SysAdminAccount
         }

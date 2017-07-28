@@ -10,7 +10,7 @@ function Get-TargetResource
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
-  
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
@@ -34,17 +34,17 @@ function Get-TargetResource
     $itemValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' `
                                   -Name $Name `
                                   -ErrorAction SilentlyContinue
-    
+
     if (((Get-CimInstance -ClassName win32_OperatingSystem).OSArchitecture) -eq '64-bit')
     {
         Write-Verbose -Message "64-bit Operating System. Also get the client alias $Name from Wow6432Node"
-        
+
         $isWow6432Node = $true
         $itemValueWow6432Node = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' `
                                                  -Name $Name `
                                                  -ErrorAction SilentlyContinue
     }
-    
+
     if ((-not $isWow6432Node -and $null -ne $itemValue ) -or `
        (($null -ne $itemValue -and $null -ne $itemValueWow6432Node) -and `
        ($isWow6432Node -and $itemValueWow6432Node."$Name" -eq $itemValue."$Name")))
@@ -75,7 +75,7 @@ function Get-TargetResource
                 $returnValue.PipeName = $itemConfig.ServerName
             }
         }
-        else 
+        else
         {
             $returnValue.Ensure = 'Absent'
         }
@@ -121,9 +121,9 @@ function Set-TargetResource
         [System.String]
         $Ensure = 'Present'
     )
-    
+
     Write-Verbose -Message "Setting the SQL Server Client Alias $Name"
-    
+
     if ($Protocol -eq 'NP')
     {
         $itemValue = "DBNMPNTW,\\$ServerName\PIPE\sql\query"
@@ -139,7 +139,7 @@ function Set-TargetResource
     }
 
     $registryPath = 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo'
-    $registryPathWow6432Node = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' 
+    $registryPathWow6432Node = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo'
 
     if ($Ensure -eq 'Present')
     {
@@ -173,7 +173,7 @@ function Set-TargetResource
     if ($Ensure -eq 'Absent')
     {
         Write-Verbose -Message "Removing the SQL Server Client Alias $Name"
-        
+
         if ($PSCmdlet.ShouldProcess($Name, 'Remove the client alias'))
         {
             if (Test-Path -Path $registryPath)
@@ -181,7 +181,7 @@ function Set-TargetResource
                 Remove-ItemProperty -Path $registryPath -Name $Name
             }
         }
-            
+
         # If this is a 64-bit OS then also remove from Wow6432Node
         if (((Get-CimInstance -ClassName win32_OperatingSystem).OSArchitecture) -eq '64-bit' `
               -and (Test-Path -Path $registryPathWow6432Node))
@@ -230,7 +230,7 @@ function Test-TargetResource
     )
 
     Write-Verbose -Message "Testing the SQL Server Client Alias $Name"
-     
+
     $result = $false
 
     $parameters = @{
@@ -252,7 +252,7 @@ function Test-TargetResource
 
             if ($Protocol -eq $currentValues.Protocol)
             {
-                if ($Protocol -eq 'NP' -and 
+                if ($Protocol -eq 'NP' -and
                     $currentValues.PipeName -eq "\\$ServerName\PIPE\sql\query")
                 {
                     $result = $true
@@ -273,8 +273,8 @@ function Test-TargetResource
             }
         }
     }
-    
-    if ($result) 
+
+    if ($result)
     {
         Write-Verbose -Message 'In the desired state'
     }

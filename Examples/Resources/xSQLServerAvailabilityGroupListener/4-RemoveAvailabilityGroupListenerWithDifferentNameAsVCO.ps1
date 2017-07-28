@@ -18,11 +18,11 @@ Configuration Example
     {
         xSQLServerAvailabilityGroupListener RemoveAvailabilityGroupListenerWithSameNameAsVCO
         {
-            Ensure = 'Absent'
-            NodeName = 'SQLNODE01.company.local'
-            InstanceName = 'MSSQLSERVER'
-            AvailabilityGroup = 'AG-01'
-            Name = "AG-01"
+            Ensure               = 'Absent'
+            NodeName             = 'SQLNODE01.company.local'
+            InstanceName         = 'MSSQLSERVER'
+            AvailabilityGroup    = 'AG-01'
+            Name                 = "AG-01"
 
             PsDscRunAsCredential = $SysAdminAccount
         }

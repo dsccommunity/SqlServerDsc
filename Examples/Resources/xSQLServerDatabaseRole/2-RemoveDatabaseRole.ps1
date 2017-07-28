@@ -19,12 +19,12 @@ Configuration Example
     {
         xSQLServerDatabaseRole Remove_Database_Role
         {
-            Ensure = 'Absent'
-            SQLServer = 'SQLServer'
-            SQLInstanceName = 'DSC'
-            Name = 'CONTOSO\SQLAdmin'
-            Role = 'DeleteRole'
-            Database = 'AdventureWorks'
+            Ensure               = 'Absent'
+            SQLServer            = 'SQLServer'
+            SQLInstanceName      = 'DSC'
+            Name                 = 'CONTOSO\SQLAdmin'
+            Role                 = 'DeleteRole'
+            Database             = 'AdventureWorks'
             PsDscRunAsCredential = $SysAdminAccount
         }
     }
