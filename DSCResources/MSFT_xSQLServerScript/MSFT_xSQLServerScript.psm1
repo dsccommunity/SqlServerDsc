@@ -60,6 +60,7 @@ function Get-TargetResource
         [System.String]
         $TestFilePath,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
@@ -68,6 +69,7 @@ function Get-TargetResource
         [System.UInt32]
         $QueryTimeout,
 
+        [Parameter()]
         [System.String[]]
         $Variable
     )
@@ -146,6 +148,7 @@ function Set-TargetResource
         [System.String]
         $TestFilePath,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
@@ -154,6 +157,7 @@ function Set-TargetResource
         [System.UInt32]
         $QueryTimeout,
 
+        [Parameter()]
         [System.String[]]
         $Variable
     )
@@ -219,6 +223,7 @@ function Test-TargetResource
         [System.String]
         $TestFilePath,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
@@ -227,6 +232,7 @@ function Test-TargetResource
         [System.UInt32]
         $QueryTimeout,
 
+        [Parameter()]
         [System.String[]]
         $Variable
     )
@@ -287,6 +293,7 @@ function Invoke-SqlScript
         [System.String]
         $SqlScriptPath,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
@@ -295,6 +302,7 @@ function Invoke-SqlScript
         [System.UInt32]
         $QueryTimeout,
 
+        [Parameter()]
         [System.String[]]
         $Variable
     )

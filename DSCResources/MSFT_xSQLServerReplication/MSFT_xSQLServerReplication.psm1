@@ -5,36 +5,41 @@ function Get-TargetResource
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
 
+        [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('Local', 'Remote')]
         [System.String]
         $DistributorMode,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $AdminLinkCredentials,
 
+        [Parameter()]
         [System.String]
         $DistributionDBName = 'distribution',
 
+        [Parameter()]
         [System.String]
         $RemoteDistributor,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $WorkingDirectory,
 
+        [Parameter()]
         [System.Boolean]
         $UseTrustedConnection = $true,
 
+        [Parameter()]
         [System.Boolean]
         $UninstallWithForce = $true
     )
@@ -81,36 +86,41 @@ function Set-TargetResource
 {
     [CmdletBinding()]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
 
+        [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('Local', 'Remote')]
         [System.String]
         $DistributorMode,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $AdminLinkCredentials,
 
+        [Parameter()]
         [System.String]
         $DistributionDBName = 'distribution',
 
+        [Parameter()]
         [System.String]
         $RemoteDistributor,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $WorkingDirectory,
 
+        [Parameter()]
         [System.Boolean]
         $UseTrustedConnection = $true,
 
+        [Parameter()]
         [System.Boolean]
         $UninstallWithForce = $true
     )
@@ -190,36 +200,41 @@ function Test-TargetResource
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
 
+        [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('Local', 'Remote')]
         [System.String]
         $DistributorMode,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $AdminLinkCredentials,
 
+        [Parameter()]
         [System.String]
         $DistributionDBName = 'distribution',
 
+        [Parameter()]
         [System.String]
         $RemoteDistributor,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $WorkingDirectory,
 
+        [Parameter()]
         [System.Boolean]
         $UseTrustedConnection = $true,
 
+        [Parameter()]
         [System.Boolean]
         $UninstallWithForce = $true
     )
@@ -245,11 +260,11 @@ function New-ServerConnection
     [CmdletBinding()]
     [OutputType([System.Object])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlServerName
     )
@@ -265,11 +280,11 @@ function New-ReplicationServer
     [CmdletBinding()]
     [OutputType([System.Object])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ServerConnection
     )
@@ -285,15 +300,15 @@ function New-DistributionDatabase
     [CmdletBinding()]
     [OutputType([System.Object])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $DistributionDBName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ServerConnection
     )
@@ -310,15 +325,15 @@ function New-DistributionPublisher
     [CmdletBinding()]
     [OutputType([System.Object])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $PublisherName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ServerConnection
     )
@@ -333,15 +348,15 @@ function Install-RemoteDistributor
 {
     [CmdletBinding()]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ReplicationServer,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $RemoteDistributor,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $AdminLinkCredentials
     )
@@ -354,15 +369,15 @@ function Install-LocalDistributor
 {
     [CmdletBinding()]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ReplicationServer,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $AdminLinkCredentials,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $DistributionDB
     )
@@ -375,11 +390,11 @@ function Uninstall-Distributor
 {
     [CmdletBinding()]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ReplicationServer,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Boolean]
         $UninstallWithForce
     )
@@ -391,27 +406,27 @@ function Register-DistributorPublisher
 {
     [CmdletBinding()]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $PublisherName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ServerConnection,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $DistributionDBName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $WorkingDirectory,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Boolean]
         $UseTrustedConnection
     )
@@ -434,7 +449,7 @@ function Get-ConnectionInfoAssembly
     [CmdletBinding()]
     [OutputType([System.Object])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion
     )
@@ -450,7 +465,7 @@ function Get-RmoAssembly
     [CmdletBinding()]
     [OutputType([System.Object])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion
     )
@@ -466,7 +481,7 @@ function Get-SqlServerMajorVersion
     [CmdletBinding()]
     [OutputType([System.String])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName
     )
@@ -486,7 +501,7 @@ function Get-SqlLocalServerName
     [CmdletBinding()]
     [OutputType([System.String])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName
     )

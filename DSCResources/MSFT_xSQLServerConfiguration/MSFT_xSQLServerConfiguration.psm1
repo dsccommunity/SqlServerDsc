@@ -47,9 +47,11 @@ function Get-TargetResource
         [Int32]
         $OptionValue,
 
+        [Parameter()]
         [Boolean]
         $RestartService = $false,
 
+        [Parameter()]
         [Int32]
         $RestartTimeout = 120
     )
@@ -116,9 +118,11 @@ function Set-TargetResource
         [Int32]
         $OptionValue,
 
+        [Parameter()]
         [Boolean]
         $RestartService = $false,
 
+        [Parameter()]
         [Int32]
         $RestartTimeout = 120
     )
@@ -196,9 +200,11 @@ function Test-TargetResource
         [Int32]
         $OptionValue,
 
+        [Parameter()]
         [Boolean]
         $RestartService = $false,
 
+        [Parameter()]
         [Int32]
         $RestartTimeout = 120
     )
