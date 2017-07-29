@@ -48,8 +48,8 @@ function Get-TargetResource
     {
         $newSmbMappingParameters = @{
             RemotePath = $SourcePath
-            UserName = "$($SourceCredential.GetNetworkCredential().Domain)\$($SourceCredential.GetNetworkCredential().UserName)"
-            Password = $($SourceCredential.GetNetworkCredential().Password)
+            UserName   = "$($SourceCredential.GetNetworkCredential().Domain)\$($SourceCredential.GetNetworkCredential().UserName)"
+            Password   = $($SourceCredential.GetNetworkCredential().Password)
         }
 
         $null = New-SmbMapping @newSmbMappingParameters
@@ -66,7 +66,7 @@ function Get-TargetResource
         Remove-SmbMapping -RemotePath $SourcePath -Force
     }
 
-    if($InstanceName -eq 'MSSQLSERVER')
+    if ($InstanceName -eq 'MSSQLSERVER')
     {
         $databaseServiceName = 'MSSQLSERVER'
         $reportServiceName = 'ReportServer'
@@ -102,10 +102,10 @@ function Get-TargetResource
 
                     $databaseEngineFirewallRuleParameters = @{
                         DisplayName = $databaseEngineFirewallRuleDisplayName
-                        Program = $pathToDatabaseEngineExecutable
-                        Enabled = 'True'
-                        Profile = 'Any'
-                        Direction = 'Inbound'
+                        Program     = $pathToDatabaseEngineExecutable
+                        Enabled     = 'True'
+                        Profile     = 'Any'
+                        Direction   = 'Inbound'
                     }
 
                     if (Test-IsFirewallRuleInDesiredState @databaseEngineFirewallRuleParameters)
@@ -121,10 +121,10 @@ function Get-TargetResource
 
                     $browserFirewallRuleParameters = @{
                         DisplayName = $browserFirewallRuleDisplayName
-                        Service = $browserServiceName
-                        Enabled = 'True'
-                        Profile = 'Any'
-                        Direction = 'Inbound'
+                        Service     = $browserServiceName
+                        Enabled     = 'True'
+                        Profile     = 'Any'
+                        Direction   = 'Inbound'
                     }
 
                     if (Test-IsFirewallRuleInDesiredState @browserFirewallRuleParameters)
@@ -150,11 +150,11 @@ function Get-TargetResource
 
                     $reportingServicesNoSslFirewallRuleParameters = @{
                         DisplayName = $reportingServicesNoSslFirewallRuleDisplayName
-                        Protocol = $reportingServicesNoSslProtocol
-                        LocalPort = $reportingServicesNoSslLocalPort
-                        Enabled = 'True'
-                        Profile = 'Any'
-                        Direction = 'Inbound'
+                        Protocol    = $reportingServicesNoSslProtocol
+                        LocalPort   = $reportingServicesNoSslLocalPort
+                        Enabled     = 'True'
+                        Profile     = 'Any'
+                        Direction   = 'Inbound'
                     }
 
                     $reportingServicesSslProtocol = 'TCP'
@@ -163,15 +163,15 @@ function Get-TargetResource
 
                     $reportingServicesSslFirewallRuleParameters = @{
                         DisplayName = $reportingServicesSslFirewallRuleDisplayName
-                        Protocol = $reportingServicesSslProtocol
-                        LocalPort = $reportingServicesSslLocalPort
-                        Enabled = 'True'
-                        Profile = 'Any'
-                        Direction = 'Inbound'
+                        Protocol    = $reportingServicesSslProtocol
+                        LocalPort   = $reportingServicesSslLocalPort
+                        Enabled     = 'True'
+                        Profile     = 'Any'
+                        Direction   = 'Inbound'
                     }
 
                     if ((Test-IsFirewallRuleInDesiredState @reportingServicesNoSslFirewallRuleParameters) `
-                        -and (Test-IsFirewallRuleInDesiredState @reportingServicesSslFirewallRuleParameters))
+                            -and (Test-IsFirewallRuleInDesiredState @reportingServicesSslFirewallRuleParameters))
                     {
                         $reportingServicesFirewall = $true
                     }
@@ -192,10 +192,10 @@ function Get-TargetResource
 
                     $analysisServicesFirewallRuleParameters = @{
                         DisplayName = $analysisServicesFirewallRuleDisplayName
-                        Service = $analysisServiceName
-                        Enabled = 'True'
-                        Profile = 'Any'
-                        Direction = 'Inbound'
+                        Service     = $analysisServiceName
+                        Enabled     = 'True'
+                        Profile     = 'Any'
+                        Direction   = 'Inbound'
                     }
 
                     if (Test-IsFirewallRuleInDesiredState @analysisServicesFirewallRuleParameters)
@@ -211,10 +211,10 @@ function Get-TargetResource
 
                     $browserFirewallRuleParameters = @{
                         DisplayName = $browserFirewallRuleDisplayName
-                        Service = $browserServiceName
-                        Enabled = 'True'
-                        Profile = 'Any'
-                        Direction = 'Inbound'
+                        Service     = $browserServiceName
+                        Enabled     = 'True'
+                        Profile     = 'Any'
+                        Direction   = 'Inbound'
                     }
 
                     if (Test-IsFirewallRuleInDesiredState @browserFirewallRuleParameters)
@@ -239,10 +239,10 @@ function Get-TargetResource
 
                     $integrationServicesFirewallRuleApplicationParameters = @{
                         DisplayName = $integrationServicesRuleApplicationDisplayName
-                        Program = $pathToIntegrationServicesExecutable
-                        Enabled = 'True'
-                        Profile = 'Any'
-                        Direction = 'Inbound'
+                        Program     = $pathToIntegrationServicesExecutable
+                        Enabled     = 'True'
+                        Profile     = 'Any'
+                        Direction   = 'Inbound'
                     }
 
                     $integrationServicesProtocol = 'TCP'
@@ -251,15 +251,15 @@ function Get-TargetResource
 
                     $integrationServicesFirewallRulePortParameters = @{
                         DisplayName = $integrationServicesFirewallRuleDisplayName
-                        Protocol = $integrationServicesProtocol
-                        LocalPort = $integrationServicesLocalPort
-                        Enabled = 'True'
-                        Profile = 'Any'
-                        Direction = 'Inbound'
+                        Protocol    = $integrationServicesProtocol
+                        LocalPort   = $integrationServicesLocalPort
+                        Enabled     = 'True'
+                        Profile     = 'Any'
+                        Direction   = 'Inbound'
                     }
 
                     if ((Test-IsFirewallRuleInDesiredState @integrationServicesFirewallRuleApplicationParameters) `
-                        -and (Test-IsFirewallRuleInDesiredState @integrationServicesFirewallRulePortParameters))
+                            -and (Test-IsFirewallRuleInDesiredState @integrationServicesFirewallRulePortParameters))
                     {
                         $integrationServicesFirewall = $true
                     }
@@ -274,9 +274,9 @@ function Get-TargetResource
 
     if (
         ($Features -match 'SQLENGINE' -and -not ($databaseEngineFirewall -and $browserFirewall)) `
-        -or ($Features -match 'RS' -and -not $reportingServicesFirewall) `
-        -or ($Features -match 'AS' -and -not ($analysisServicesFirewall -and $browserFirewall)) `
-        -or ($Features -match 'IS' -and -not $integrationServicesFirewall)
+            -or ($Features -match 'RS' -and -not $reportingServicesFirewall) `
+            -or ($Features -match 'AS' -and -not ($analysisServicesFirewall -and $browserFirewall)) `
+            -or ($Features -match 'IS' -and -not $integrationServicesFirewall)
     )
     {
         $ensure = 'Absent'
@@ -286,14 +286,14 @@ function Get-TargetResource
     $featuresInstalled = $featuresInstalled.Trim(',')
 
     return @{
-        Ensure = $ensure
-        SourcePath = $SourcePath
-        Features = $featuresInstalled
-        InstanceName = $InstanceName
-        DatabaseEngineFirewall = $databaseEngineFirewall
-        BrowserFirewall = $browserFirewall
-        ReportingServicesFirewall = $reportingServicesFirewall
-        AnalysisServicesFirewall = $analysisServicesFirewall
+        Ensure                      = $ensure
+        SourcePath                  = $SourcePath
+        Features                    = $featuresInstalled
+        InstanceName                = $InstanceName
+        DatabaseEngineFirewall      = $databaseEngineFirewall
+        BrowserFirewall             = $browserFirewall
+        ReportingServicesFirewall   = $reportingServicesFirewall
+        AnalysisServicesFirewall    = $analysisServicesFirewall
         IntegrationServicesFirewall = $integrationServicesFirewall
     }
 }
@@ -323,7 +323,7 @@ function Set-TargetResource
     param
     (
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -352,8 +352,8 @@ function Set-TargetResource
     {
         $newSmbMappingParameters = @{
             RemotePath = $SourcePath
-            UserName = "$($SourceCredential.GetNetworkCredential().Domain)\$($SourceCredential.GetNetworkCredential().UserName)"
-            Password = $($SourceCredential.GetNetworkCredential().Password)
+            UserName   = "$($SourceCredential.GetNetworkCredential().Domain)\$($SourceCredential.GetNetworkCredential().UserName)"
+            Password   = $($SourceCredential.GetNetworkCredential().Password)
         }
 
         $null = New-SmbMapping @newSmbMappingParameters
@@ -396,10 +396,10 @@ function Set-TargetResource
 
                     $databaseEngineFirewallRuleParameters = @{
                         DisplayName = $databaseEngineFirewallRuleDisplayName
-                        Program = $pathToDatabaseEngineExecutable
-                        Enabled = 'True'
-                        Profile = 'Any'
-                        Direction = 'Inbound'
+                        Program     = $pathToDatabaseEngineExecutable
+                        Enabled     = 'True'
+                        Profile     = 'Any'
+                        Direction   = 'Inbound'
                     }
 
                     if (-not (Test-IsFirewallRuleInDesiredState @databaseEngineFirewallRuleParameters))
@@ -414,10 +414,10 @@ function Set-TargetResource
 
                     $browserFirewallRuleParameters = @{
                         DisplayName = $browserFirewallRuleDisplayName
-                        Service = $browserServiceName
-                        Enabled = 'True'
-                        Profile = 'Any'
-                        Direction = 'Inbound'
+                        Service     = $browserServiceName
+                        Enabled     = 'True'
+                        Profile     = 'Any'
+                        Direction   = 'Inbound'
                     }
 
                     if (-not (Test-IsFirewallRuleInDesiredState @browserFirewallRuleParameters))
@@ -437,11 +437,11 @@ function Set-TargetResource
 
                     $reportingServicesNoSslFirewallRuleParameters = @{
                         DisplayName = $reportingServicesNoSslFirewallRuleDisplayName
-                        Protocol = $reportingServicesNoSslProtocol
-                        LocalPort = $reportingServicesNoSslLocalPort
-                        Enabled = 'True'
-                        Profile = 'Any'
-                        Direction = 'Inbound'
+                        Protocol    = $reportingServicesNoSslProtocol
+                        LocalPort   = $reportingServicesNoSslLocalPort
+                        Enabled     = 'True'
+                        Profile     = 'Any'
+                        Direction   = 'Inbound'
                     }
 
                     if (-not (Test-IsFirewallRuleInDesiredState @reportingServicesNoSslFirewallRuleParameters))
@@ -455,11 +455,11 @@ function Set-TargetResource
 
                     $reportingServicesSslFirewallRuleParameters = @{
                         DisplayName = $reportingServicesSslFirewallRuleDisplayName
-                        Protocol = $reportingServicesSslProtocol
-                        LocalPort = $reportingServicesSslLocalPort
-                        Enabled = 'True'
-                        Profile = 'Any'
-                        Direction = 'Inbound'
+                        Protocol    = $reportingServicesSslProtocol
+                        LocalPort   = $reportingServicesSslLocalPort
+                        Enabled     = 'True'
+                        Profile     = 'Any'
+                        Direction   = 'Inbound'
                     }
 
                     if (-not (Test-IsFirewallRuleInDesiredState @reportingServicesSslFirewallRuleParameters))
@@ -477,13 +477,13 @@ function Set-TargetResource
 
                     $analysisServicesFirewallRuleParameters = @{
                         DisplayName = $analysisServicesFirewallRuleDisplayName
-                        Service = $analysisServiceName
-                        Enabled = 'True'
-                        Profile = 'Any'
-                        Direction = 'Inbound'
+                        Service     = $analysisServiceName
+                        Enabled     = 'True'
+                        Profile     = 'Any'
+                        Direction   = 'Inbound'
                     }
 
-                    if(-not (Test-IsFirewallRuleInDesiredState @analysisServicesFirewallRuleParameters))
+                    if (-not (Test-IsFirewallRuleInDesiredState @analysisServicesFirewallRuleParameters))
                     {
                         New-NetFirewallRule @analysisServicesFirewallRuleParameters
                     }
@@ -495,10 +495,10 @@ function Set-TargetResource
 
                     $browserFirewallRuleParameters = @{
                         DisplayName = $browserFirewallRuleDisplayName
-                        Service = $browserServiceName
-                        Enabled = 'True'
-                        Profile = 'Any'
-                        Direction = 'Inbound'
+                        Service     = $browserServiceName
+                        Enabled     = 'True'
+                        Profile     = 'Any'
+                        Direction   = 'Inbound'
                     }
 
                     if (-not (Test-IsFirewallRuleInDesiredState @browserFirewallRuleParameters))
@@ -517,10 +517,10 @@ function Set-TargetResource
 
                     $integrationServicesFirewallRuleApplicationParameters = @{
                         DisplayName = $integrationServicesRuleApplicationDisplayName
-                        Program = $pathToIntegrationServicesExecutable
-                        Enabled = 'True'
-                        Profile = 'Any'
-                        Direction = 'Inbound'
+                        Program     = $pathToIntegrationServicesExecutable
+                        Enabled     = 'True'
+                        Profile     = 'Any'
+                        Direction   = 'Inbound'
                     }
 
                     if (-not (Test-IsFirewallRuleInDesiredState @integrationServicesFirewallRuleApplicationParameters))
@@ -534,11 +534,11 @@ function Set-TargetResource
 
                     $integrationServicesFirewallRulePortParameters = @{
                         DisplayName = $integrationServicesFirewallRuleDisplayName
-                        Protocol = $integrationServicesProtocol
-                        LocalPort = $integrationServicesLocalPort
-                        Enabled = 'True'
-                        Profile = 'Any'
-                        Direction = 'Inbound'
+                        Protocol    = $integrationServicesProtocol
+                        LocalPort   = $integrationServicesLocalPort
+                        Enabled     = 'True'
+                        Profile     = 'Any'
+                        Direction   = 'Inbound'
                     }
 
                     if (-not (Test-IsFirewallRuleInDesiredState @integrationServicesFirewallRulePortParameters))
@@ -582,7 +582,7 @@ function Test-TargetResource
     param
     (
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -627,7 +627,7 @@ function Get-SQLPath
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [String]
         $Feature,
 
@@ -702,22 +702,22 @@ function Test-IsFirewallRuleInDesiredState
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [String]
         $DisplayName,
 
-        [Parameter(Mandatory=$true)]
-        [ValidateSet('True','False')]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('True', 'False')]
         [String]
         $Enabled,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [String[]]
-        [ValidateSet('Any','Domain','Private','Public','NotApplicable')]
+        [ValidateSet('Any', 'Domain', 'Private', 'Public', 'NotApplicable')]
         $Profile,
 
-        [Parameter(Mandatory=$true)]
-        [ValidateSet('Inbound','Outbound')]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Inbound', 'Outbound')]
         [String]
         $Direction,
 
@@ -730,7 +730,7 @@ function Test-IsFirewallRuleInDesiredState
         $Service,
 
         [Parameter()]
-        [ValidateSet('TCP','UDP','ICMPv4','ICMPv6')]
+        [ValidateSet('TCP', 'UDP', 'ICMPv4', 'ICMPv6')]
         [String]
         $Protocol,
 
@@ -795,7 +795,7 @@ function Get-SqlMajorVersion
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [String]
         $path
     )

@@ -1,6 +1,6 @@
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'xSQLServerHelper.psm1') `
-                               -Force
+        -ChildPath 'xSQLServerHelper.psm1') `
+    -Force
 <#
     .SYNOPSIS
         Returns the current state of the permissions for the principal (login).
@@ -36,7 +36,7 @@ function Get-TargetResource
         $Principal,
 
         [Parameter()]
-        [ValidateSet('ConnectSql','AlterAnyAvailabilityGroup','ViewServerState','AlterAnyEndPoint')]
+        [ValidateSet('ConnectSql', 'AlterAnyAvailabilityGroup', 'ViewServerState', 'AlterAnyEndPoint')]
         [System.String[]]
         $Permission
     )
@@ -50,7 +50,7 @@ function Get-TargetResource
         # Gets a set of permissions granted based on the desired permissions in $Permission
         $desiredPermissionSet = Get-SQLServerPermissionSet -Permission $Permission
         $grantedPermissionSet = $sqlServerObject.EnumServerPermissions( $Principal, $desiredPermissionSet ) |
-                                    Where-Object { $_.PermissionState -eq 'Grant' }
+            Where-Object { $_.PermissionState -eq 'Grant' }
 
         if ($null -ne $grantedPermissionSet)
         {
@@ -82,10 +82,10 @@ function Get-TargetResource
 
     return @{
         InstanceName = [System.String] $InstanceName
-        NodeName = [System.String] $NodeName
-        Ensure = [System.String] $ensure
-        Principal = [System.String] $Principal
-        Permission = [System.String[]] $grantedPermission
+        NodeName     = [System.String] $NodeName
+        Ensure       = [System.String] $ensure
+        Principal    = [System.String] $Principal
+        Permission   = [System.String[]] $grantedPermission
     }
 }
 
@@ -122,7 +122,7 @@ function Set-TargetResource
         $NodeName = $env:COMPUTERNAME,
 
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -131,16 +131,16 @@ function Set-TargetResource
         $Principal,
 
         [Parameter()]
-        [ValidateSet('ConnectSql','AlterAnyAvailabilityGroup','ViewServerState','AlterAnyEndPoint')]
+        [ValidateSet('ConnectSql', 'AlterAnyAvailabilityGroup', 'ViewServerState', 'AlterAnyEndPoint')]
         [System.String[]]
         $Permission
     )
 
     $getTargetResourceParameters = @{
         InstanceName = [System.String] $InstanceName
-        NodeName = [System.String] $NodeName
-        Principal = [System.String] $Principal
-        Permission = [System.String[]] $Permission
+        NodeName     = [System.String] $NodeName
+        Principal    = [System.String] $Principal
+        Permission   = [System.String[]] $Permission
     }
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
@@ -211,7 +211,7 @@ function Test-TargetResource
         $NodeName = $env:COMPUTERNAME,
 
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -220,16 +220,16 @@ function Test-TargetResource
         $Principal,
 
         [Parameter()]
-        [ValidateSet('ConnectSql','AlterAnyAvailabilityGroup','ViewServerState','AlterAnyEndPoint')]
+        [ValidateSet('ConnectSql', 'AlterAnyAvailabilityGroup', 'ViewServerState', 'AlterAnyEndPoint')]
         [System.String[]]
         $Permission
     )
 
     $getTargetResourceParameters = @{
         InstanceName = $InstanceName
-        NodeName = $NodeName
-        Principal = $Principal
-        Permission = $Permission
+        NodeName     = $NodeName
+        Principal    = $Principal
+        Permission   = $Permission
     }
 
     New-VerboseMessage -Message "Verifying permissions for $Principal"
@@ -290,12 +290,12 @@ function Get-SQLServerPermissionSet
     [OutputType([Object])]
     param
     (
-        [Parameter(Mandatory = $true,ParameterSetName='Permission')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Permission')]
         [System.String[]]
         [ValidateNotNullOrEmpty()]
         $Permission,
 
-        [Parameter(Mandatory = $true,ParameterSetName='ServerPermissionSet')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ServerPermissionSet')]
         [Microsoft.SqlServer.Management.Smo.ServerPermissionSet[]]
         [ValidateNotNullOrEmpty()]
         $PermissionSet

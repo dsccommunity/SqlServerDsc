@@ -19,18 +19,18 @@ Configuration Example
     {
         xSQLServerEndpoint SQLConfigureEndpoint-Instance1
         {
-            EndpointName = 'HADR'
-            SQLInstanceName = 'INST1'
+            EndpointName         = 'HADR'
+            SQLInstanceName      = 'INST1'
 
             PsDscRunAsCredential = $SysAdminAccount
         }
 
         xSQLServerEndpoint SQLConfigureEndpoint-Instances2
         {
-            EndpointName = 'HADR'
-            SQLInstanceName = 'INST2'
+            EndpointName         = 'HADR'
+            SQLInstanceName      = 'INST2'
 
             PsDscRunAsCredential = $SysAdminAccount
         }
-   }
+    }
 }

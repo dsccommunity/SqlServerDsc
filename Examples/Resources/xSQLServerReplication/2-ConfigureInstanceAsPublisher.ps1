@@ -18,12 +18,12 @@ Configuration Example
     {
         xSQLServerReplication publisher
         {
-            Ensure = 'Present'
-            InstanceName = 'PUBLISHER'
+            Ensure               = 'Present'
+            InstanceName         = 'PUBLISHER'
             AdminLinkCredentials = $SysAdminAccount
-            DistributorMode = 'Remote'
-            RemoteDistributor = 'distsqlsrv.company.local'
-            WorkingDirectory = 'C:\Temp'
+            DistributorMode      = 'Remote'
+            RemoteDistributor    = 'distsqlsrv.company.local'
+            WorkingDirectory     = 'C:\Temp'
 
             PsDscRunAsCredential = $SysAdminAccount
         }

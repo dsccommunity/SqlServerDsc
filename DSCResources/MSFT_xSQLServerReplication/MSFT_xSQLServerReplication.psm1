@@ -5,36 +5,41 @@ function Get-TargetResource
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
 
+        [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('Local', 'Remote')]
         [System.String]
         $DistributorMode,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $AdminLinkCredentials,
 
+        [Parameter()]
         [System.String]
         $DistributionDBName = 'distribution',
 
+        [Parameter()]
         [System.String]
         $RemoteDistributor,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $WorkingDirectory,
 
+        [Parameter()]
         [System.Boolean]
         $UseTrustedConnection = $true,
 
+        [Parameter()]
         [System.Boolean]
         $UninstallWithForce = $true
     )
@@ -47,18 +52,18 @@ function Get-TargetResource
     $localServerConnection = New-ServerConnection -SqlMajorVersion $sqlMajorVersion -SqlServerName $localSqlName
     $localReplicationServer = New-ReplicationServer -SqlMajorVersion $sqlMajorVersion -ServerConnection $localServerConnection
 
-    if($localReplicationServer.IsDistributor -eq $true)
+    if ($localReplicationServer.IsDistributor -eq $true)
     {
         $Ensure = 'Present'
         $DistributorMode = 'Local'
     }
-    elseif($localReplicationServer.IsPublisher -eq $true)
+    elseif ($localReplicationServer.IsPublisher -eq $true)
     {
         $Ensure = 'Present'
         $DistributorMode = 'Remote'
     }
 
-    if($Ensure -eq 'Present')
+    if ($Ensure -eq 'Present')
     {
         $DistributionDBName = $localReplicationServer.DistributionDatabase
         $RemoteDistributor = $localReplicationServer.DistributionServer
@@ -66,12 +71,12 @@ function Get-TargetResource
     }
 
     $returnValue = @{
-        InstanceName = $InstanceName
-        Ensure = $Ensure
-        DistributorMode = $DistributorMode
+        InstanceName       = $InstanceName
+        Ensure             = $Ensure
+        DistributorMode    = $DistributorMode
         DistributionDBName = $DistributionDBName
-        RemoteDistributor = $RemoteDistributor
-        WorkingDirectory = $WorkingDirectory
+        RemoteDistributor  = $RemoteDistributor
+        WorkingDirectory   = $WorkingDirectory
     }
 
     return $returnValue
@@ -81,41 +86,46 @@ function Set-TargetResource
 {
     [CmdletBinding()]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
 
+        [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('Local', 'Remote')]
         [System.String]
         $DistributorMode,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $AdminLinkCredentials,
 
+        [Parameter()]
         [System.String]
         $DistributionDBName = 'distribution',
 
+        [Parameter()]
         [System.String]
         $RemoteDistributor,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $WorkingDirectory,
 
+        [Parameter()]
         [System.Boolean]
         $UseTrustedConnection = $true,
 
+        [Parameter()]
         [System.Boolean]
         $UninstallWithForce = $true
     )
 
-    if(($DistributorMode -eq 'Remote') -and (-not $RemoteDistributor))
+    if (($DistributorMode -eq 'Remote') -and (-not $RemoteDistributor))
     {
         throw "RemoteDistributor parameter cannot be empty when DistributorMode = 'Remote'!"
     }
@@ -126,9 +136,9 @@ function Set-TargetResource
     $localServerConnection = New-ServerConnection -SqlMajorVersion $sqlMajorVersion -SqlServerName $localSqlName
     $localReplicationServer = New-ReplicationServer -SqlMajorVersion $sqlMajorVersion -ServerConnection $localServerConnection
 
-    if($Ensure -eq 'Present')
+    if ($Ensure -eq 'Present')
     {
-        if($DistributorMode -eq 'Local' -and $localReplicationServer.IsDistributor -eq $false)
+        if ($DistributorMode -eq 'Local' -and $localReplicationServer.IsDistributor -eq $false)
         {
             Write-Verbose "Local distribution will be configured ..."
 
@@ -151,7 +161,7 @@ function Set-TargetResource
                 -UseTrustedConnection $UseTrustedConnection
         }
 
-        if($DistributorMode -eq 'Remote' -and $localReplicationServer.IsPublisher -eq $false)
+        if ($DistributorMode -eq 'Remote' -and $localReplicationServer.IsPublisher -eq $false)
         {
             Write-Verbose "Remote distribution will be configured ..."
 
@@ -173,7 +183,7 @@ function Set-TargetResource
     }
     else #'Absent'
     {
-        if($localReplicationServer.IsDistributor -eq $true -or $localReplicationServer.IsPublisher -eq $true)
+        if ($localReplicationServer.IsDistributor -eq $true -or $localReplicationServer.IsPublisher -eq $true)
         {
             Write-Verbose "Distribution will be removed ..."
             Uninstall-Distributor -ReplicationServer $localReplicationServer -UninstallWithForce $UninstallWithForce
@@ -190,36 +200,41 @@ function Test-TargetResource
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
 
+        [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('Local', 'Remote')]
         [System.String]
         $DistributorMode,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $AdminLinkCredentials,
 
+        [Parameter()]
         [System.String]
         $DistributionDBName = 'distribution',
 
+        [Parameter()]
         [System.String]
         $RemoteDistributor,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $WorkingDirectory,
 
+        [Parameter()]
         [System.Boolean]
         $UseTrustedConnection = $true,
 
+        [Parameter()]
         [System.Boolean]
         $UninstallWithForce = $true
     )
@@ -227,11 +242,11 @@ function Test-TargetResource
     $result = $false
     $state = Get-TargetResource @PSBoundParameters
 
-    if($Ensure -eq 'Absent' -and $state.Ensure -eq 'Absent')
+    if ($Ensure -eq 'Absent' -and $state.Ensure -eq 'Absent')
     {
         $result = $true
     }
-    elseif($Ensure -eq 'Present' -and $state.Ensure -eq 'Present' -and $state.DistributorMode -eq $DistributorMode)
+    elseif ($Ensure -eq 'Present' -and $state.Ensure -eq 'Present' -and $state.DistributorMode -eq $DistributorMode)
     {
         $result = $true
     }
@@ -245,11 +260,11 @@ function New-ServerConnection
     [CmdletBinding()]
     [OutputType([System.Object])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlServerName
     )
@@ -265,11 +280,11 @@ function New-ReplicationServer
     [CmdletBinding()]
     [OutputType([System.Object])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ServerConnection
     )
@@ -285,15 +300,15 @@ function New-DistributionDatabase
     [CmdletBinding()]
     [OutputType([System.Object])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $DistributionDBName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ServerConnection
     )
@@ -310,15 +325,15 @@ function New-DistributionPublisher
     [CmdletBinding()]
     [OutputType([System.Object])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $PublisherName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ServerConnection
     )
@@ -333,15 +348,15 @@ function Install-RemoteDistributor
 {
     [CmdletBinding()]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ReplicationServer,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $RemoteDistributor,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $AdminLinkCredentials
     )
@@ -354,15 +369,15 @@ function Install-LocalDistributor
 {
     [CmdletBinding()]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ReplicationServer,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $AdminLinkCredentials,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $DistributionDB
     )
@@ -375,11 +390,11 @@ function Uninstall-Distributor
 {
     [CmdletBinding()]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ReplicationServer,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Boolean]
         $UninstallWithForce
     )
@@ -391,27 +406,27 @@ function Register-DistributorPublisher
 {
     [CmdletBinding()]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $PublisherName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ServerConnection,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $DistributionDBName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $WorkingDirectory,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Boolean]
         $UseTrustedConnection
     )
@@ -434,7 +449,7 @@ function Get-ConnectionInfoAssembly
     [CmdletBinding()]
     [OutputType([System.Object])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion
     )
@@ -450,7 +465,7 @@ function Get-RmoAssembly
     [CmdletBinding()]
     [OutputType([System.Object])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion
     )
@@ -466,7 +481,7 @@ function Get-SqlServerMajorVersion
     [CmdletBinding()]
     [OutputType([System.String])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName
     )
@@ -486,12 +501,12 @@ function Get-SqlLocalServerName
     [CmdletBinding()]
     [OutputType([System.String])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName
     )
 
-    if($InstanceName -eq "MSSQLSERVER")
+    if ($InstanceName -eq "MSSQLSERVER")
     {
         return $env:COMPUTERNAME
     }

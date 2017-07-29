@@ -1,6 +1,6 @@
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'xSQLServerHelper.psm1') `
-                               -Force
+        -ChildPath 'xSQLServerHelper.psm1') `
+    -Force
 <#
     .SYNOPSIS
     This function gets the sql database.
@@ -26,7 +26,7 @@ function Get-TargetResource
     param
     (
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Ensure = 'Present',
@@ -54,7 +54,7 @@ function Get-TargetResource
         Write-Verbose -Message 'Getting SQL Databases'
         # Check database exists
         $sqlDatabaseObject = $sqlServerObject.Databases[$Name]
-        
+
         if ($sqlDatabaseObject)
         {
             Write-Verbose -Message "SQL Database name $Name is present"
@@ -66,7 +66,7 @@ function Get-TargetResource
             $Ensure = 'Absent'
         }
     }
-    
+
     $returnValue = @{
         Name            = $Name
         Ensure          = $Ensure
@@ -87,7 +87,7 @@ function Get-TargetResource
 
     .PARAMETER Name
     The name of database to be created or dropped.
-    
+
     .PARAMETER SQLServer
     The host name of the SQL Server to be configured.
 
@@ -100,7 +100,7 @@ function Set-TargetResource
     param
     (
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Ensure = 'Present',
@@ -129,7 +129,7 @@ function Set-TargetResource
         {
             try
             {
-                $sqlDatabaseObjectToCreate = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $sqlServerObject,$Name
+                $sqlDatabaseObjectToCreate = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $sqlServerObject, $Name
                 if ($sqlDatabaseObjectToCreate)
                 {
                     Write-Verbose -Message "Adding to SQL the database $Name"
@@ -140,14 +140,14 @@ function Set-TargetResource
             catch
             {
                 throw New-TerminatingError -ErrorType CreateDatabaseSetError `
-                                           -FormatArgs @($SQLServer,$SQLInstanceName,$Name) `
-                                           -ErrorCategory InvalidOperation `
-                                           -InnerException $_.Exception
+                    -FormatArgs @($SQLServer, $SQLInstanceName, $Name) `
+                    -ErrorCategory InvalidOperation `
+                    -InnerException $_.Exception
             }
         }
         else
         {
-            try 
+            try
             {
                 $sqlDatabaseObjectToDrop = $sqlServerObject.Databases[$Name]
                 if ($sqlDatabaseObjectToDrop)
@@ -160,9 +160,9 @@ function Set-TargetResource
             catch
             {
                 throw New-TerminatingError -ErrorType DropDatabaseSetError `
-                                           -FormatArgs @($SQLServer,$SQLInstanceName,$Name) `
-                                           -ErrorCategory InvalidOperation `
-                                           -InnerException $_.Exception
+                    -FormatArgs @($SQLServer, $SQLInstanceName, $Name) `
+                    -ErrorCategory InvalidOperation `
+                    -InnerException $_.Exception
             }
         }
     }
@@ -178,7 +178,7 @@ function Set-TargetResource
 
     .PARAMETER Name
     The name of database to be created or dropped.
-    
+
     .PARAMETER SQLServer
     The host name of the SQL Server to be configured.
 
@@ -192,7 +192,7 @@ function Test-TargetResource
     param
     (
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Ensure = 'Present',
@@ -211,13 +211,13 @@ function Test-TargetResource
         [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLInstanceName
-    )   
+    )
 
     Write-Verbose -Message "Checking if database named $Name is present or absent"
 
     $getTargetResourceResult = Get-TargetResource @PSBoundParameters
     $isDatabaseInDesiredState = $true
-    
+
     switch ($Ensure)
     {
         'Absent'
@@ -228,7 +228,7 @@ function Test-TargetResource
                 $isDatabaseInDesiredState = $false
             }
         }
-        
+
         'Present'
         {
             if ($getTargetResourceResult.Ensure -ne 'Present')
@@ -239,7 +239,7 @@ function Test-TargetResource
         }
     }
 
-    $isDatabaseInDesiredState 
+    $isDatabaseInDesiredState
 }
 
 Export-ModuleMember -Function *-TargetResource

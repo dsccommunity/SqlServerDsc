@@ -1,6 +1,6 @@
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'xSQLServerHelper.psm1') `
-                               -Force
+        -ChildPath 'xSQLServerHelper.psm1') `
+    -Force
 
 <#
     .SYNOPSIS
@@ -53,19 +53,19 @@ function Get-TargetResource
     New-VerboseMessage -Message "The login '$Name' is $ensure from the '$SQLServer\$SQLInstanceName' instance."
 
     $returnValue = @{
-        Ensure = $Ensure
-        Name = $Name
-        LoginType = $login.LoginType
-        SQLServer = $SQLServer
+        Ensure          = $Ensure
+        Name            = $Name
+        LoginType       = $login.LoginType
+        SQLServer       = $SQLServer
         SQLInstanceName = $SQLInstanceName
-        Disabled = $login.IsDisabled
+        Disabled        = $login.IsDisabled
     }
 
     if ( $login.LoginType -eq 'SqlLogin' )
     {
-        $returnValue.Add('LoginMustChangePassword',$login.MustChangePassword)
-        $returnValue.Add('LoginPasswordExpirationEnabled',$login.PasswordExpirationEnabled)
-        $returnValue.Add('LoginPasswordPolicyEnforced',$login.PasswordPolicyEnforced)
+        $returnValue.Add('LoginMustChangePassword', $login.MustChangePassword)
+        $returnValue.Add('LoginPasswordExpirationEnabled', $login.PasswordExpirationEnabled)
+        $returnValue.Add('LoginPasswordPolicyEnforced', $login.PasswordPolicyEnforced)
     }
 
     return $returnValue
@@ -190,14 +190,14 @@ function Set-TargetResource
                     # Set the password if it is specified
                     if ( $LoginCredential )
                     {
-                         Set-SQLServerLoginPassword -Login $login -SecureString $LoginCredential.Password
+                        Set-SQLServerLoginPassword -Login $login -SecureString $LoginCredential.Password
                     }
                 }
 
                 if ( $PSBoundParameters.ContainsKey('Disabled') -and ($login.IsDisabled -ne $Disabled) )
                 {
                     New-VerboseMessage -Message "Setting IsDisabled to '$Disabled' for the login '$Name' on the '$SQLServer\$SQLInstanceName' instance."
-                    if( $Disabled )
+                    if ( $Disabled )
                     {
                         $login.Disable()
                     }
@@ -210,7 +210,7 @@ function Set-TargetResource
             else
             {
                 # Some login types need additional work. These will need to be fleshed out more in the future
-                if ( @('Certificate','AsymmetricKey','ExternalUser','ExternalGroup') -contains $LoginType )
+                if ( @('Certificate', 'AsymmetricKey', 'ExternalUser', 'ExternalGroup') -contains $LoginType )
                 {
                     throw New-TerminatingError -ErrorType LoginTypeNotImplemented -FormatArgs $LoginType -ErrorCategory NotImplemented
                 }
@@ -222,7 +222,7 @@ function Set-TargetResource
 
                 New-VerboseMessage -Message "Adding the login '$Name' to the '$SQLServer\$SQLInstanceName' instance."
 
-                $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $serverObject,$Name
+                $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $serverObject, $Name
                 $login.LoginType = $LoginType
 
                 switch ($LoginType)
@@ -232,7 +232,7 @@ function Set-TargetResource
                         # Verify the instance is in Mixed authentication mode
                         if ( $serverObject.LoginMode -notmatch 'Mixed|Integrated' )
                         {
-                            throw New-TerminatingError -ErrorType IncorrectLoginMode -FormatArgs $SQLServer,$SQLInstanceName,$serverObject.LoginMode -ErrorCategory NotImplemented
+                            throw New-TerminatingError -ErrorType IncorrectLoginMode -FormatArgs $SQLServer, $SQLInstanceName, $serverObject.LoginMode -ErrorCategory NotImplemented
                         }
 
                         $login.PasswordPolicyEnforced = $LoginPasswordPolicyEnforced
@@ -256,7 +256,7 @@ function Set-TargetResource
                 }
 
                 # we can only disable the login once it's been created
-                if( $Disabled )
+                if ( $Disabled )
                 {
                     $login.Disable()
                 }
@@ -368,8 +368,8 @@ function Test-TargetResource
     $testPassed = $true
 
     $getParams = @{
-        Name = $Name
-        SQLServer = $SQLServer
+        Name            = $Name
+        SQLServer       = $SQLServer
         SQLInstanceName = $SQLInstanceName
     }
 
@@ -516,13 +516,13 @@ function New-SQLServerLogin
                 $originalErrorActionPreference = $ErrorActionPreference
                 $ErrorActionPreference = 'Stop'
 
-                $login.Create($SecureString,$LoginCreateOptions)
+                $login.Create($SecureString, $LoginCreateOptions)
             }
             catch [Microsoft.SqlServer.Management.Smo.FailedOperationException]
             {
                 if ( $_.Exception.InnerException.InnerException.InnerException -match 'Password validation failed' )
                 {
-                    throw New-TerminatingError -ErrorType PasswordValidationFailed -FormatArgs $Name,$_.Exception.InnerException.InnerException.InnerException -ErrorCategory SecurityError
+                    throw New-TerminatingError -ErrorType PasswordValidationFailed -FormatArgs $Name, $_.Exception.InnerException.InnerException.InnerException -ErrorCategory SecurityError
                 }
                 else
                 {
@@ -633,7 +633,7 @@ function Set-SQLServerLoginPassword
     {
         if ( $_.Exception.InnerException.InnerException.InnerException -match 'Password validation failed' )
         {
-            throw New-TerminatingError -ErrorType PasswordValidationFailed -FormatArgs $Name,$_.Exception.InnerException.InnerException.InnerException -ErrorCategory SecurityError
+            throw New-TerminatingError -ErrorType PasswordValidationFailed -FormatArgs $Name, $_.Exception.InnerException.InnerException.InnerException -ErrorCategory SecurityError
         }
         else
         {

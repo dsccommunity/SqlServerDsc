@@ -19,10 +19,10 @@ Configuration Example
     {
         xSQLServerMemory Set_SQLServerMaxMemory_ToAuto
         {
-            Ensure = 'Present'
-            DynamicAlloc = $true
-            SQLServer = 'SQLServer'
-            SQLInstanceName = 'DSC'
+            Ensure               = 'Present'
+            DynamicAlloc         = $true
+            SQLServer            = 'SQLServer'
+            SQLInstanceName      = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount
         }
     }

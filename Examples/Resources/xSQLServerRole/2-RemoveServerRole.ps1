@@ -1,6 +1,6 @@
 <#
 .EXAMPLE
-    This example shows how to ensure that the server role named 
+    This example shows how to ensure that the server role named
     serverRoleToDelete is not present on instance SQLServer\DSC.
 #>
 
@@ -17,11 +17,11 @@ Configuration Example
     node localhost {
         xSQLServerRole Remove_ServerRole
         {
-            Ensure                  = 'Absent'
-            ServerRoleName          = "serverRoleToDelete"
-            SQLServer               = 'SQLServer'
-            SQLInstanceName         = 'DSC'
-            PsDscRunAsCredential    = $SysAdminAccount
+            Ensure               = 'Absent'
+            ServerRoleName       = "serverRoleToDelete"
+            SQLServer            = 'SQLServer'
+            SQLInstanceName      = 'DSC'
+            PsDscRunAsCredential = $SysAdminAccount
         }
     }
 }

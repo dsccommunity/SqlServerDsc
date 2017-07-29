@@ -18,9 +18,9 @@ Configuration Example
     {
         xWaitForAvailabilityGroup SQLConfigureAG-WaitAGTest1
         {
-            Name = 'AGTest1'
-            RetryIntervalSec = 20
-            RetryCount = 30
+            Name                 = 'AGTest1'
+            RetryIntervalSec     = 20
+            RetryCount           = 30
 
             PsDscRunAsCredential = $SysAdminAccount
         }

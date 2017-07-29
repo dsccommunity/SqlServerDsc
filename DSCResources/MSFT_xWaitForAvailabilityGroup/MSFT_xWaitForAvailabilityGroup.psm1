@@ -1,6 +1,6 @@
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'xSQLServerHelper.psm1') `
-                               -Force
+        -ChildPath 'xSQLServerHelper.psm1') `
+    -Force
 
 <#
     .SYNOPSIS
@@ -47,10 +47,10 @@ function Get-TargetResource
     }
 
     return @{
-        Name = $Name
+        Name             = $Name
         RetryIntervalSec = $RetryIntervalSec
-        RetryCount = $RetryCount
-        GroupExist = $clusterGroupFound
+        RetryCount       = $RetryCount
+        GroupExist       = $clusterGroupFound
     }
 }
 
@@ -91,9 +91,9 @@ function Set-TargetResource
     New-VerboseMessage -Message "Checking for cluster group $Name. Will try for a total of $($RetryIntervalSec*$RetryCount) seconds."
 
     $getTargetResourceParameters = @{
-        Name = $Name
+        Name             = $Name
         RetryIntervalSec = $RetryIntervalSec
-        RetryCount = $RetryCount
+        RetryCount       = $RetryCount
     }
 
     for ($forLoopCount = 0; $forLoopCount -lt $RetryCount; $forLoopCount++)
@@ -154,9 +154,9 @@ function Test-TargetResource
     New-VerboseMessage -Message "Testing for cluster group $Name."
 
     $getTargetResourceParameters = @{
-        Name = $Name
+        Name             = $Name
         RetryIntervalSec = $RetryIntervalSec
-        RetryCount = $RetryCount
+        RetryCount       = $RetryCount
     }
 
     $clusterGroupFound = (Get-TargetResource @getTargetResourceParameters).GroupExist

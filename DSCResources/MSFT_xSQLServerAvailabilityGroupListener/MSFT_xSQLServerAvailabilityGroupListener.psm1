@@ -3,7 +3,7 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
                                -Force
 <#
     .SYNOPSIS
-        Returns the current state of the Availabilty Group listener.
+        Returns the current state of the Availability Group listener.
 
     .PARAMETER InstanceName
         The SQL Server instance name of the primary replica. Default value is 'MSSQLSERVER'.
@@ -134,6 +134,7 @@ function Set-TargetResource
         [System.String]
         $Name,
 
+        [Parameter()]
         [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
@@ -142,12 +143,15 @@ function Set-TargetResource
         [System.String]
         $AvailabilityGroup,
 
+        [Parameter()]
         [System.String[]]
         $IpAddress,
 
+        [Parameter()]
         [System.UInt16]
         $Port,
 
+        [Parameter()]
         [System.Boolean]
         $DHCP
     )
@@ -385,6 +389,7 @@ function Test-TargetResource
         [System.String]
         $Name,
 
+        [Parameter()]
         [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
@@ -393,12 +398,15 @@ function Test-TargetResource
         [System.String]
         $AvailabilityGroup,
 
+        [Parameter()]
         [System.String[]]
         $IpAddress,
 
+        [Parameter()]
         [System.UInt16]
         $Port,
 
+        [Parameter()]
         [System.Boolean]
         $DHCP
     )
