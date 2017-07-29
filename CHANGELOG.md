@@ -52,6 +52,9 @@
     - 2-DisableAlwaysOn.ps1
 - Changes to xSQLServerSetup
   - Added Swedish localization ([issue #695](https://github.com/PowerShell/xSQLServer/issues/695)).
+  - Now Get-TargetResource correctly returns an array for property ASSysAdminAccounts,
+    and no longer throws an error when there is just one Analysis Services
+    administrator (issue #691).
 
 ## 8.0.0.0
 

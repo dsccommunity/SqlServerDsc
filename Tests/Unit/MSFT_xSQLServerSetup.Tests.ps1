@@ -641,7 +641,7 @@ try
                                     Add-Member ScriptProperty Members {
                                         return New-Object Object |
                                             Add-Member ScriptProperty Name {
-                                                return $mockSqlAnalysisAdmins
+                                                return $mockDynamicSqlAnalysisAdmins
                                             } -PassThru -Force
                                     } -PassThru -Force
                                 ) }
@@ -951,7 +951,6 @@ try
                 # General mocks
                 Mock -CommandName Get-SqlMajorVersion -MockWith $mockGetSqlMajorVersion -Verifiable
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
-                Mock -CommandName Connect-SQLAnalysis -MockWith $mockConnectSQLAnalysis -Verifiable
                 Mock -CommandName Get-ItemProperty -ParameterFilter {
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' -and
                     ($Name -eq $mockDefaultInstance_InstanceName -or $Name -eq $mockNamedInstance_InstanceName)
@@ -989,6 +988,8 @@ try
             }
 
             BeforeEach {
+                Mock -CommandName Connect-SQLAnalysis -MockWith $mockConnectSQLAnalysis -Verifiable
+
                 $testParameters = $mockDefaultParameters.Clone()
             }
 
@@ -1003,6 +1004,9 @@ try
                 $mockDynamicSqlTempDatabaseLogPath = ''
                 $mockSqlDefaultDatabaseFilePath = "C:\Program Files\Microsoft SQL Server\$($mockDefaultInstance_InstanceId)\MSSQL\DATA\"
                 $mockSqlDefaultDatabaseLogPath = "C:\Program Files\Microsoft SQL Server\$($mockDefaultInstance_InstanceId)\MSSQL\DATA\"
+
+                # This sets administrators dynamically in the mock Connect-SQLAnalysis.
+                $mockDynamicSqlAnalysisAdmins = $mockSqlAnalysisAdmins
 
                 Context "When SQL Server version is $mockSqlMajorVersion and the system is not in the desired state for default instance" {
                     BeforeEach {
@@ -1582,6 +1586,24 @@ try
                         $result.ASConfigDir | Should Be $mockSqlAnalysisConfigDirectory
                         $result.ISSvcAccountUsername | Should Be $mockSqlServiceAccount
                     }
+
+                    <#
+                        This is a regression test for issue #691.
+                        This sets administrators to only one for mock Connect-SQLAnalysis.
+                    #>
+
+                    $mockSqlAnalysisSingleAdministrator = 'COMPANY\AnalysisAdmin'
+                    $mockDynamicSqlAnalysisAdmins = $mockSqlAnalysisSingleAdministrator
+
+                    It 'Should return the correct type and value for property ASSysAdminAccounts' {
+                        $result = Get-TargetResource @testParameters
+                        Write-Output -NoEnumerate $result.ASSysAdminAccounts | Should BeOfType [System.String[]]
+                        $result.ASSysAdminAccounts | Should Be $mockSqlAnalysisSingleAdministrator
+                    }
+
+                    # Setting back the default administrators for mock Connect-SQLAnalysis.
+                    $mockDynamicSqlAnalysisAdmins = $mockSqlAnalysisAdmins
+
                 }
 
                 Context "When using SourceCredential parameter and SQL Server version is $mockSqlMajorVersion and the system is in the desired state for default instance" {
@@ -2256,7 +2278,6 @@ try
                 # General mocks
                 Mock -CommandName Get-SqlMajorVersion -MockWith $mockGetSqlMajorVersion -Verifiable
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
-                Mock -CommandName Connect-SQLAnalysis -MockWith $mockConnectSQLAnalysis -Verifiable
                 Mock -CommandName Get-ItemProperty -ParameterFilter {
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' -and
                     ($Name -eq $mockDefaultInstance_InstanceName -or $Name -eq $mockNamedInstance_InstanceName)
@@ -2289,6 +2310,10 @@ try
                 } -MockWith $mockGetItem_SharedWowDirectory -Verifiable
             }
 
+            BeforeEach {
+                Mock -CommandName Connect-SQLAnalysis -MockWith $mockConnectSQLAnalysis -Verifiable
+            }
+
             # For this test we only need to test one SQL Server version. Mocking SQL Server 2016 for the 'not in the desired state' test.
             $mockSqlMajorVersion = 13
 
@@ -2300,6 +2325,9 @@ try
             $mockDynamicSqlTempDatabaseLogPath = ''
             $mockSqlDefaultDatabaseFilePath = "C:\Program Files\Microsoft SQL Server\$($mockDefaultInstance_InstanceId)\MSSQL\DATA\"
             $mockSqlDefaultDatabaseLogPath = "C:\Program Files\Microsoft SQL Server\$($mockDefaultInstance_InstanceId)\MSSQL\DATA\"
+
+            # This sets administrators dynamically in the mock Connect-SQLAnalysis.
+            $mockDynamicSqlAnalysisAdmins = $mockSqlAnalysisAdmins
 
             Context 'When the system is not in the desired state' {
                 BeforeEach {
@@ -2918,7 +2946,6 @@ try
                     call them in Assert-MockCalled.
                 #>
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
-                Mock -CommandName Connect-SQLAnalysis -MockWith $mockConnectSQLAnalysis
 
                 # Mock PsDscRunAsCredential context.
                 $PsDscContext = @{
@@ -2927,6 +2954,8 @@ try
             }
 
             BeforeEach {
+                Mock -CommandName Connect-SQLAnalysis -MockWith $mockConnectSQLAnalysis
+
                 $testParameters = $mockDefaultParameters.Clone()
                 $testParameters += @{
                     SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
@@ -2945,6 +2974,9 @@ try
                 $mockDynamicSqlTempDatabaseLogPath = ''
                 $mockSqlDefaultDatabaseFilePath = "C:\Program Files\Microsoft SQL Server\$($mockDefaultInstance_InstanceId)\MSSQL\DATA\"
                 $mockSqlDefaultDatabaseLogPath = "C:\Program Files\Microsoft SQL Server\$($mockDefaultInstance_InstanceId)\MSSQL\DATA\"
+
+                # This sets administrators dynamically in the mock Connect-SQLAnalysis.
+                $mockDynamicSqlAnalysisAdmins = $mockSqlAnalysisAdmins
 
                 Context "When setup process fails with exit code " {
                     BeforeEach {
