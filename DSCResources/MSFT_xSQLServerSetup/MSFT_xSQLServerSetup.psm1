@@ -255,7 +255,7 @@ function Get-TargetResource
         Write-Verbose -Message $script:localizedData.FullTextFeatureFound
 
         $features += 'FULLTEXT,'
-        $fulltextServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$fullTextServiceName'").StartName
+        $fullTextServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$fullTextServiceName'").StartName
     }
     else
     {
@@ -293,7 +293,7 @@ function Get-TargetResource
         $analysisLogDirectory = $analysisServer.ServerProperties['LogDir'].Value
         $analysisBackupDirectory = $analysisServer.ServerProperties['BackupDir'].Value
 
-        $analysisSystemAdminAccounts = $analysisServer.Roles['Administrators'].Members.Name
+        $analysisSystemAdminAccounts = [System.String[]] $analysisServer.Roles['Administrators'].Members.Name
 
         $analysisConfigDirectory = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$analysisServiceName" -Name 'ImagePath').ImagePath.Replace(' -s ',',').Split(',')[1].Trim('"')
     }
@@ -477,7 +477,7 @@ function Get-TargetResource
         SQLTempDBDir = $null
         SQLTempDBLogDir = $null
         SQLBackupDir = $sqlBackupDirectory
-        FTSvcAccountUsername = $fulltextServiceAccountUsername
+        FTSvcAccountUsername = $fullTextServiceAccountUsername
         RSSvcAccountUsername = $reportingServiceAccountUsername
         ASSvcAccountUsername = $analysisServiceAccountUsername
         ASCollation = $analysisCollation
