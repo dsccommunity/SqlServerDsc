@@ -36,8 +36,8 @@ function Get-TargetResource
 
     # Connect to the instance
     $serverObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-	
-	# Define current version and edition for check compatibility
+
+    # Define current version and edition for check compatibility
     $version = $serverObject.Version.Major
     $edition = $serverObject.EngineEdition
 
@@ -241,8 +241,8 @@ function Set-TargetResource
     {
         throw New-TerminatingError -ErrorType HadrNotEnabled -FormatArgs $Ensure, $SQLInstanceName -ErrorCategory NotImplemented
     }
-	
-	# Define current version and edition for check compatibility
+    
+    # Define current version and edition for check compatibility
     $version = $serverObject.Version.Major
     $edition = $serverObject.EngineEdition
 
@@ -408,8 +408,8 @@ function Set-TargetResource
 
                 if ( $version -ge 13 )
                 {
-					$newAvailabilityGroupParams.Add('DatabaseHealthTrigger', $DatabaseHealthTrigger)
-					$newAvailabilityGroupParams.Add('DtcSupportEnabled', $DtcSupportEnabled)
+                    $newAvailabilityGroupParams.Add('DatabaseHealthTrigger', $DatabaseHealthTrigger)
+                    $newAvailabilityGroupParams.Add('DtcSupportEnabled', $DtcSupportEnabled)
                 }
 
                 if ( $FailureConditionLevel )
@@ -671,8 +671,8 @@ function Test-TargetResource
     $result = $true
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-	
-	# Define current version and edition for check compatibility
+    
+    # Define current version and edition for check compatibility
     $version = $getTargetResourceResult.Version.Major
     $edition = $getTargetResourceResult.EngineEdition
 
@@ -708,15 +708,15 @@ function Test-TargetResource
                 'HealthCheckTimeout'
             )
 
-			# Add properties compatible with SQL Server 2016 or later versions
-			if ( ( $version -ge 13 ) -and ( $edition -eq 'Standard' ) )
-			{
-				$parametersToCheck += 'BasicAvailabilityGroup'
-			}
-			if ( $version -ge 13 )
-			{
-				$parametersToCheck += 'DatabaseHealthTrigger'
-			}
+            # Add properties compatible with SQL Server 2016 or later versions
+            if ( ( $version -ge 13 ) -and ( $edition -eq 'Standard' ) )
+            {
+                $parametersToCheck += 'BasicAvailabilityGroup'
+            }
+            if ( $version -ge 13 )
+            {
+                $parametersToCheck += 'DatabaseHealthTrigger'
+            }
 
             if ( $getTargetResourceResult.Ensure -eq 'Present' )
             {
