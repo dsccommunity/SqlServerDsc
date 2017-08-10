@@ -6,25 +6,25 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName        			= '*'
-            SQLInstanceName 			= 'MSSQLSERVER'
+            NodeName                    = '*'
+            SQLInstanceName             = 'MSSQLSERVER'
 
-			AutomatedBackupPreference 	= 'Primary'
-            AvailabilityMode 			= 'SynchronousCommit'
-            BackupPriority 				= 50
+            AutomatedBackupPreference   = 'Primary'
+            AvailabilityMode            = 'SynchronousCommit'
+            BackupPriority              = 50
             ConnectionModeInPrimaryRole = 'AllowAllConnections'
             ConnectionModeInSecondaryRole = 'AllowNoConnections'
-            FailoverMode 				= 'Automatic'
-            HealthCheckTimeout 			= 15000
-			
-			BasicAvailabilityGroup 		= $False
-            DatabaseHealthTrigger 		= $True
-            DtcSupportEnabled 			= $True
+            FailoverMode                = 'Automatic'
+            HealthCheckTimeout          = 15000
+            
+            BasicAvailabilityGroup      = $False
+            DatabaseHealthTrigger       = $True
+            DtcSupportEnabled           = $True
         },
 
         @{
-            NodeName 					= 'SP23-VM-SQL1'
-            Role     					= 'PrimaryReplica'
+            NodeName                    = 'SP23-VM-SQL1'
+            Role                        = 'PrimaryReplica'
         }
     )
 }
@@ -79,27 +79,27 @@ Configuration Example
             # Create the availability group on the instance tagged as the primary replica
             xSQLServerAlwaysOnAvailabilityGroup AddTestAG
             {
-                Ensure						= 'Present'
-                Name						= 'TestAG'
-                SQLInstanceName				= $Node.SQLInstanceName
-                SQLServer					= $Node.NodeName
-				
-                AutomatedBackupPreference 	= $Node.AutomatedBackupPreference
-                AvailabilityMode			= $Node.AvailabilityMode
-                BackupPriority				= $Node.BackupPriority
+                Ensure                      = 'Present'
+                Name                        = 'TestAG'
+                SQLInstanceName             = $Node.SQLInstanceName
+                SQLServer                   = $Node.NodeName
+                
+                AutomatedBackupPreference   = $Node.AutomatedBackupPreference
+                AvailabilityMode            = $Node.AvailabilityMode
+                BackupPriority              = $Node.BackupPriority
                 ConnectionModeInPrimaryRole = $Node.ConnectionModeInPrimaryRole
                 ConnectionModeInSecondaryRole = $Node.ConnectionModeInSecondaryRole
-                FailoverMode 				= $Node.FailoverMode
-                HealthCheckTimeout 			= $Node.HealthCheckTimeout
+                FailoverMode                = $Node.FailoverMode
+                HealthCheckTimeout          = $Node.HealthCheckTimeout
                 
-				# sql server 2016 or later only
-                BasicAvailabilityGroup 		= $Node.BasicAvailabilityGroup
-                DatabaseHealthTrigger 		= $Node.DatabaseHealthTrigger
-                DtcSupportEnabled 			= $Node.DtcSupportEnabled
-				##
+                # sql server 2016 or later only
+                BasicAvailabilityGroup      = $Node.BasicAvailabilityGroup
+                DatabaseHealthTrigger       = $Node.DatabaseHealthTrigger
+                DtcSupportEnabled           = $Node.DtcSupportEnabled
+                ##
 
-                DependsOn            		= '[xSQLServerEndpoint]HADREndpoint', '[xSQLServerPermission]AddNTServiceClusSvcPermissions'
-                PsDscRunAsCredential 		= $SysAdminAccount
+                DependsOn                   = '[xSQLServerEndpoint]HADREndpoint', '[xSQLServerPermission]AddNTServiceClusSvcPermissions'
+                PsDscRunAsCredential        = $SysAdminAccount
             }
         }
     }
