@@ -33,7 +33,9 @@ try
             AutomatedBackupPreference = 'Secondary'
             AvailabilityMode = 'AsynchronousCommit'
             BackupPriority = 50
-            BasicAvailabilityGroup = $false
+            BasicAvailabilityGroup = $true
+            DatabaseHealthTrigger = $true
+            DtcSupportEnabled = $true
             ConnectionModeInPrimaryRole = 'AllowAllConnections'
             ConnectionModeInSecondaryRole = 'AllowNoConnections'
             FailureConditionLevel = 'OnServerDown'
@@ -50,7 +52,9 @@ try
             AutomatedBackupPreference = 'Secondary'
             AvailabilityMode = 'AsynchronousCommit'
             BackupPriority = 50
-            BasicAvailabilityGroup = $false
+            BasicAvailabilityGroup = $true
+            DatabaseHealthTrigger = $true
+            DtcSupportEnabled = $true
             ConnectionModeInPrimaryRole = 'AllowAllConnections'
             ConnectionModeInSecondaryRole = 'AllowNoConnections'
             FailureConditionLevel = 'OnServerDown'

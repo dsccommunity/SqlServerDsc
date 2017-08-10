@@ -124,13 +124,13 @@ function Get-TargetResource
         Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. Default is 50.
 
     .PARAMETER BasicAvailabilityGroup
-        Specifies the type of availability group is Basic. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions.
+        Specifies the type of availability group is Basic. This is only available is SQL Server 2016 and later Standard Edition and is ignored when these requirements are not met.
 
     .PARAMETER DatabaseHealthTrigger
         Specifies if the option Database Level Health Detection is enabled. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions.
 
     .PARAMETER DtcSupportEnabled
-        Specifies if the option Database DTC Support is enabled. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions.
+        Specifies if the option Database DTC Support is enabled. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions. This can't be altered once the AG is created and is ignored if it is the case.
 
     .PARAMETER ConnectionModeInPrimaryRole
         Specifies how the availability replica handles connections when in the primary role.
