@@ -57,10 +57,16 @@
     and no longer throws an error when there is just one Analysis Services
     administrator (issue #691).
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
-  - change compatibility check for the feature BasicAvailabilityGroup which only applies on Standard Edition.
-  - change the check of the values entered as paramater for BasicAvailabilityGroup. It is a boolean, hence it was not possible to disable the feature.
-  - add possibility to enable/disable the feature DatabaseHealthTrigger (SQL Server 2016 or later only).
-  - add possibility to enable the feature DtcSupportEnabled (SQL Server 2016 or later only). The feature currently can't be altered once the Availability Group is created.
+  - change compatibility check for the feature BasicAvailabilityGroup which only
+	applies on Standard Edition.
+  - change the check of the values entered as paramater for
+	BasicAvailabilityGroup. It is a boolean, hence it was not possible to
+	disable the feature.
+  - add possibility to enable/disable the feature DatabaseHealthTrigger
+	(SQL Server 2016 or later only).
+  - add possibility to enable the feature DtcSupportEnabled (SQL Server 2016 or
+	later only). The feature currently can't be altered once the Availability
+	Group is created.
 
 ## 8.0.0.0
 
