@@ -245,6 +245,7 @@ It will also manage the Availability Group replica on the specified node.
 #### Examples
 
 * [Add a SQL Server Always On Availability Group](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroup/1-CreateAvailabilityGroup.ps1)
+* [Add a SQL Server Always On Availability Group using detailed configuration](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroup/3-CreateAvailabilityGroup - detailed configuration.ps1)
 * [Remove a SQL Server Always On Availability Group](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroup/2-RemoveAvailabilityGroup.ps1)
 
 ### xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
