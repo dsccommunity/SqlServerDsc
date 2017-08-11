@@ -56,10 +56,6 @@ $mockSqlAgentServiceAccountPassword = ConvertTo-SecureString 'yig-C^Equ3' -AsPla
 $mockSqlAgentServiceAccountUserName = "$env:COMPUTERNAME\svc-SqlAgent"
 $mockSqlAgentServiceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAgentServiceAccountUserName, $mockSqlAgentServiceAccountPassword
 
-# Install dependent DSC modules
-Install-Module -Name PSDscResources -Scope CurrentUser -Force
-Install-Module -Name xStorage -Scope CurrentUser -Force
-
 # Download SQL Server media
 if (-not (Test-Path -Path $mockIsoMediaFilePath))
 {
