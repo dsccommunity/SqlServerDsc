@@ -19,8 +19,6 @@ $TestEnvironment = Initialize-TestEnvironment `
 Import-Module -Name ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SQLPSStub.psm1 ) -Force -Global
 Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SMO.cs )
 
-
-
 # Begin Testing
 try
 {
@@ -33,7 +31,7 @@ try
             AutomatedBackupPreference = 'Secondary'
             AvailabilityMode = 'AsynchronousCommit'
             BackupPriority = 50
-            BasicAvailabilityGroup = $true
+            BasicAvailabilityGroup = $false
             DatabaseHealthTrigger = $true
             DtcSupportEnabled = $true
             ConnectionModeInPrimaryRole = 'AllowAllConnections'
@@ -52,7 +50,7 @@ try
             AutomatedBackupPreference = 'Secondary'
             AvailabilityMode = 'AsynchronousCommit'
             BackupPriority = 50
-            BasicAvailabilityGroup = $true
+            BasicAvailabilityGroup = $false
             DatabaseHealthTrigger = $true
             DtcSupportEnabled = $true
             ConnectionModeInPrimaryRole = 'AllowAllConnections'

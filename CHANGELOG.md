@@ -57,8 +57,6 @@
     and no longer throws an error when there is just one Analysis Services
     administrator (issue #691).
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
-  - change compatibility check for the feature BasicAvailabilityGroup which only
-	applies on Standard Edition.
   - change the check of the values entered as paramater for
 	BasicAvailabilityGroup. It is a boolean, hence it was not possible to
 	disable the feature.

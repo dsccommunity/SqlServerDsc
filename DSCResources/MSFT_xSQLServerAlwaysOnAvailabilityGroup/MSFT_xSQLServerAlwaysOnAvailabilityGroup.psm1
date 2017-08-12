@@ -39,7 +39,6 @@ function Get-TargetResource
 
     # Define current version and edition for check compatibility
     $version = $serverObject.Version.Major
-    $edition = $serverObject.EngineEdition
 
     # Get the endpoint properties
     $endpoint = $serverObject.Endpoints | Where-Object { $_.EndpointType -eq 'DatabaseMirroring' }
@@ -74,12 +73,9 @@ function Get-TargetResource
         }
 
         # Add properties that are only present in SQL 2016 or newer
-        if ( ( $version -ge 13 ) -and ( $edition -eq 'Standard' ) )
-        {
-            $alwaysOnAvailabilityGroupResource.Add('BasicAvailabilityGroup', $availabilityGroup.BasicAvailabilityGroup)
-        }
         if ( $version -ge 13 )
         {
+            $alwaysOnAvailabilityGroupResource.Add('BasicAvailabilityGroup', $availabilityGroup.BasicAvailabilityGroup)
             $alwaysOnAvailabilityGroupResource.Add('DatabaseHealthTrigger', $availabilityGroup.DatabaseHealthTrigger)
             $alwaysOnAvailabilityGroupResource.Add('DtcSupportEnabled', $availabilityGroup.DtcSupportEnabled)
         }
@@ -124,7 +120,7 @@ function Get-TargetResource
         Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. Default is 50.
 
     .PARAMETER BasicAvailabilityGroup
-        Specifies the type of availability group is Basic. This is only available is SQL Server 2016 and later Standard Edition and is ignored when these requirements are not met.
+        Specifies the type of availability group is Basic. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions.
 
     .PARAMETER DatabaseHealthTrigger
         Specifies if the option Database Level Health Detection is enabled. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions.
@@ -244,7 +240,6 @@ function Set-TargetResource
     
     # Define current version and edition for check compatibility
     $version = $serverObject.Version.Major
-    $edition = $serverObject.EngineEdition
 
     # Get the Availability Group if it exists
     $availabilityGroup = $serverObject.AvailabilityGroups[$Name]
@@ -401,13 +396,9 @@ function Set-TargetResource
                     $newAvailabilityGroupParams.Add('AutomatedBackupPreference', $AutomatedBackupPreference)
                 }
 
-                if ( ( $edition -eq 'Standard' ) -and ( $version -ge 13 ) )
-                {
-                    $newAvailabilityGroupParams.Add('BasicAvailabilityGroup', $BasicAvailabilityGroup)
-                }
-
                 if ( $version -ge 13 )
                 {
+                    $newAvailabilityGroupParams.Add('BasicAvailabilityGroup', $BasicAvailabilityGroup)
                     $newAvailabilityGroupParams.Add('DatabaseHealthTrigger', $DatabaseHealthTrigger)
                     $newAvailabilityGroupParams.Add('DtcSupportEnabled', $DtcSupportEnabled)
                 }
@@ -459,8 +450,8 @@ function Set-TargetResource
                     $availabilityGroup.AvailabilityReplicas[$serverObject.Name].BackupPriority = $BackupPriority
                     Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.Name]
                 }
-
-                if ( ( $edition -eq 'Standard' ) -and ( $version -ge 13 ) -and ( $BasicAvailabilityGroup -ne $availabilityGroup.BasicAvailabilityGroup ) )
+				
+                if ( ( $version -ge 13 ) -and ( $DatabaseHealthTrigger -ne $availabilityGroup.BasicAvailabilityGroup ) )
                 {
                     $availabilityGroup.BasicAvailabilityGroup = $BasicAvailabilityGroup
                     Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
@@ -674,7 +665,6 @@ function Test-TargetResource
     
     # Define current version and edition for check compatibility
     $version = $getTargetResourceResult.Version.Major
-    $edition = $getTargetResourceResult.EngineEdition
 
     switch ($Ensure)
     {
@@ -700,7 +690,6 @@ function Test-TargetResource
                 'AutomatedBackupPreference',
                 'AvailabilityMode',
                 'BackupPriority',
-                'BasicAvailabilityGroup',
                 'ConnectionModeInPrimaryRole',
                 'ConnectionModeInSecondaryRole',
                 'FailureConditionLevel',
@@ -709,13 +698,11 @@ function Test-TargetResource
             )
 
             # Add properties compatible with SQL Server 2016 or later versions
-            if ( ( $version -ge 13 ) -and ( $edition -eq 'Standard' ) )
-            {
-                $parametersToCheck += 'BasicAvailabilityGroup'
-            }
             if ( $version -ge 13 )
             {
+                $parametersToCheck += 'BasicAvailabilityGroup'
                 $parametersToCheck += 'DatabaseHealthTrigger'
+                $parametersToCheck += 'DtcSupportEnabled'
             }
 
             if ( $getTargetResourceResult.Ensure -eq 'Present' )
