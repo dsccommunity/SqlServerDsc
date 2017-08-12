@@ -159,7 +159,6 @@ try
             $mockServerObject.Name = 'Server1'
             $mockServerObject.NetName = 'Server1'
             $mockServerObject.Roles = @{}
-            $mockServerObject.EngineEdition = 'EnterpriseOrDeveloper'
             $mockServerObject.Version = @{
                 Major = $sqlVersion
             }
