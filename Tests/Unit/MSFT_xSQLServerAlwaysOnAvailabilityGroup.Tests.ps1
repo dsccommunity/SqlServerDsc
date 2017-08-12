@@ -113,6 +113,17 @@ try
             $mockAvailabilityGroup.LocalReplicaRole = 'Primary'
             $mockAvailabilityGroup.AvailabilityReplicas = $mockAvailabilityReplicaCollection
 
+			If ( $sqlVersion -eq 13 )
+			{
+	            ForEach ( $member in ( 'BasicAvailabilityGroup','DatabaseHealthTrigger','DtcSupportEnabled' ) )
+				{
+				    If ( -not ( $mockAvailabilityGroup | get-member -Name $member ) )
+					{
+					    $mockAvailabilityGroup | Add-Member -NotePropertyName $member -NotePropertyValue $False
+					}
+				}
+			}
+
             # Create the availability group collectionto store the availability groups in
             $mockAvailabilityGroupCollection = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityGroupCollection
             $mockAvailabilityGroupCollection.Add($mockAvailabilityGroup)
@@ -150,6 +161,7 @@ try
             $mockServerObject.Name = 'Server1'
             $mockServerObject.NetName = 'Server1'
             $mockServerObject.Roles = @{}
+			$mockServerObject.EngineEdition = 'EnterpriseOrDeveloper'
             $mockServerObject.Version = @{
                 Major = $sqlVersion
             }
@@ -430,6 +442,8 @@ try
                     $result.FailoverMode | Should Be 'Manual'
                     $result.HealthCheckTimeout | Should Be 30000
                     $result.BasicAvailabilityGroup | Should BeNullOrEmpty
+                    $result.DatabaseHealthTrigger | Should BeNullOrEmpty
+                    $result.DtcSupportEnabled | Should BeNullOrEmpty
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }
@@ -460,6 +474,8 @@ try
                     $result.FailoverMode | Should Be 'Manual'
                     $result.HealthCheckTimeout | Should Be 30000
                     $result.BasicAvailabilityGroup | Should BeNullOrEmpty
+                    $result.DatabaseHealthTrigger | Should BeNullOrEmpty
+                    $result.DtcSupportEnabled | Should BeNullOrEmpty
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }
@@ -490,6 +506,8 @@ try
                     $result.FailoverMode | Should Be 'Manual'
                     $result.HealthCheckTimeout | Should Be 30000
                     $result.BasicAvailabilityGroup | Should Be $false
+                    $result.DatabaseHealthTrigger | Should Be $false
+                    $result.DtcSupportEnabled | Should Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }
@@ -520,6 +538,8 @@ try
                     $result.FailoverMode | Should Be 'Manual'
                     $result.HealthCheckTimeout | Should Be 30000
                     $result.BasicAvailabilityGroup | Should Be $false
+                    $result.DatabaseHealthTrigger | Should Be $false
+                    $result.DtcSupportEnabled | Should Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }
