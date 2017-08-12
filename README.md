@@ -215,8 +215,16 @@ It will also manage the Availability Group replica on the specified node.
   integers from 0 through 100. Of the set of replicas which are online and available,
   the replica that has the highest priority performs the backup. Default is 50.
 * **`[Boolean]` BasicAvailabilityGroup** _(Write)_: Specifies the type of
-  availability group is Basic. This is only available is SQL Server 2016 and later
-  and is ignored when applied to previous versions.
+  availability group is Basic. This is only available is SQL Server 2016
+  and later Standard Edition
+  and is ignored when these requirements are not met.
+* **`[Boolean]` DatabaseHealthTrigger** _(Write)_: Specifies if the option
+  Database Level Health Detection is enabled. This is only available is SQL
+  Server 2016 and later and is ignored when applied to previous versions.
+* **`[Boolean]` DtcSupportEnabled** _(Write)_: Specifies if the option Database
+  DTC Support is enabled. This is only available is SQL Server 2016 and later
+  and is ignored when applied to previous versions. This can't be altered once
+  the AG is created and is ignored if it is the case.
 * **`[String]` ConnectionModeInPrimaryRole** _(Write)_: Specifies how the availability
   replica handles connections when in the primary role.
   { AllowAllConnections | AllowReadWriteConnections }
@@ -238,6 +246,7 @@ It will also manage the Availability Group replica on the specified node.
 #### Examples
 
 * [Add a SQL Server Always On Availability Group](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroup/1-CreateAvailabilityGroup.ps1)
+* [Add a SQL Server Always On Availability Group using detailed configuration](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroup/3-CreateAvailabilityGroup-detailedconfiguration.ps1)
 * [Remove a SQL Server Always On Availability Group](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroup/2-RemoveAvailabilityGroup.ps1)
 
 ### xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
