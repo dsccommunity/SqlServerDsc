@@ -45,28 +45,28 @@ configuration MSFT_xSQLServerSetup_InstallSqlEngineAsSystem_Config
         User 'CreateSqlServiceAccount'
         {
             Ensure   = 'Present'
-            UserName = Split-Path $mockSqlServiceCredential.UserName -Leaf
+            UserName = Split-Path -Path $mockSqlServiceCredential.UserName -Leaf
             Password = $mockSqlServiceCredential
         }
 
         User 'CreateSqlAgentServiceAccount'
         {
             Ensure   = 'Present'
-            UserName = Split-Path $SqlAgentServiceCredential.UserName -Leaf
+            UserName = Split-Path -Path $SqlAgentServiceCredential.UserName -Leaf
             Password = $SqlAgentServiceCredential
         }
 
         User 'CreateSqlInstallAccount'
         {
             Ensure   = 'Present'
-            UserName = Split-Path $SqlInstallCredential.UserName -Leaf
+            UserName = Split-Path -Path $SqlInstallCredential.UserName -Leaf
             Password = $SqlInstallCredential
         }
 
         User 'CreateSqlAdminAccount'
         {
             Ensure   = 'Present'
-            UserName = Split-Path $SqlAdministratorCredential.UserName -Leaf
+            UserName = Split-Path -Path $SqlAdministratorCredential.UserName -Leaf
             Password = $SqlAdministratorCredential
         }
 

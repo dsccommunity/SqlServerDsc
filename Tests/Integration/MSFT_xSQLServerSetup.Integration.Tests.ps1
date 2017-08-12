@@ -40,28 +40,28 @@ $mockIsoMediaFilePath = "$env:TEMP\SQL2016.iso"
 $mockLastDrive = ((Get-Volume).DriveLetter | Sort-Object | Select-Object -Last 1)
 $mockIsoMediaDriveLetter = [char](([int][char]$mockLastDrive) + 1)
 
-$mockSqlInstallAccountPassword = ConvertTo-SecureString 'P@ssw0rd1' -AsPlainText -Force
+$mockSqlInstallAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 $mockSqlInstallAccountUserName = "$env:COMPUTERNAME\SqlInstall"
 $mockSqlInstallCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlInstallAccountUserName, $mockSqlInstallAccountPassword
 
-$mockSqlAdminAccountPassword = ConvertTo-SecureString 'P@ssw0rd1' -AsPlainText -Force
+$mockSqlAdminAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 $mockSqlAdminAccountUserName = "$env:COMPUTERNAME\SqlAdmin"
 $mockSqlAdminCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAdminAccountUserName, $mockSqlAdminAccountPassword
 
-$mockSqlServiceAccountPassword = ConvertTo-SecureString 'yig-C^Equ3' -AsPlainText -Force
+$mockSqlServiceAccountPassword = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
 $mockSqlServiceAccountUserName = "$env:COMPUTERNAME\svc-Sql"
 $mockSqlServiceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlServiceAccountUserName, $mockSqlServiceAccountPassword
 
-$mockSqlAgentServiceAccountPassword = ConvertTo-SecureString 'yig-C^Equ3' -AsPlainText -Force
+$mockSqlAgentServiceAccountPassword = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
 $mockSqlAgentServiceAccountUserName = "$env:COMPUTERNAME\svc-SqlAgent"
 $mockSqlAgentServiceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAgentServiceAccountUserName, $mockSqlAgentServiceAccountPassword
 
 # Download SQL Server media
 if (-not (Test-Path -Path $mockIsoMediaFilePath))
 {
-    Write-Verbose "Start downloading the SQL Server media iso at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
+    Write-Verbose -Message "Start downloading the SQL Server media iso at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
 
-    Invoke-WebRequest $mockSourceMediaUrl -OutFile $mockIsoMediaFilePath
+    Invoke-WebRequest -Uri $mockSourceMediaUrl -OutFile $mockIsoMediaFilePath
 
     # Double check that the SQL media was downloaded.
     if (-not (Test-Path -Path $mockIsoMediaFilePath))
@@ -71,12 +71,12 @@ if (-not (Test-Path -Path $mockIsoMediaFilePath))
     }
     else
     {
-        Write-Verbose "Finished downloading the SQL Server media iso at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
+        Write-Verbose -Message "Finished downloading the SQL Server media iso at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
     }
 }
 else
 {
-    Write-Verbose 'SQL Server media is already downloaded' -Verbose
+    Write-Verbose -Message 'SQL Server media is already downloaded' -Verbose
 }
 
 try
