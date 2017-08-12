@@ -111,16 +111,16 @@ try
             $mockAvailabilityGroup.LocalReplicaRole = 'Primary'
             $mockAvailabilityGroup.AvailabilityReplicas = $mockAvailabilityReplicaCollection
 
-			If ( $sqlVersion -eq 13 )
-			{
-	            ForEach ( $member in ( 'BasicAvailabilityGroup','DatabaseHealthTrigger','DtcSupportEnabled' ) )
-				{
-				    If ( -not ( $mockAvailabilityGroup | get-member -Name $member ) )
-					{
-					    $mockAvailabilityGroup | Add-Member -NotePropertyName $member -NotePropertyValue $False
-					}
-				}
-			}
+            If ( $sqlVersion -eq 13 )
+            {
+                ForEach ( $member in ( 'BasicAvailabilityGroup','DatabaseHealthTrigger','DtcSupportEnabled' ) )
+                {
+                    If ( -not ( $mockAvailabilityGroup | get-member -Name $member ) )
+                    {
+                        $mockAvailabilityGroup | Add-Member -NotePropertyName $member -NotePropertyValue $False
+                    }
+                }
+            }
 
             # Create the availability group collectionto store the availability groups in
             $mockAvailabilityGroupCollection = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityGroupCollection
@@ -159,7 +159,7 @@ try
             $mockServerObject.Name = 'Server1'
             $mockServerObject.NetName = 'Server1'
             $mockServerObject.Roles = @{}
-			$mockServerObject.EngineEdition = 'EnterpriseOrDeveloper'
+            $mockServerObject.EngineEdition = 'EnterpriseOrDeveloper'
             $mockServerObject.Version = @{
                 Major = $sqlVersion
             }
