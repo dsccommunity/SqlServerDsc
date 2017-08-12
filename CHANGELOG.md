@@ -56,11 +56,12 @@
   - Now Get-TargetResource correctly returns an array for property ASSysAdminAccounts,
     and no longer throws an error when there is just one Analysis Services
     administrator (issue #691).
+  - Added a simple integration test ([issue #709](https://github.com/PowerShell/xSQLServer/issues/709)).
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
   - change the check of the values entered as paramater for
 	BasicAvailabilityGroup. It is a boolean, hence it was not possible to
 	disable the feature.
-  - add possibility to enable/disable the feature DatabaseHealthTrigger
+  - add possibility to nable/disable the feature DatabaseHealthTrigger
 	(SQL Server 2016 or later only).
   - add possibility to enable the feature DtcSupportEnabled (SQL Server 2016 or
 	later only). The feature currently can't be altered once the Availability
