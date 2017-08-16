@@ -51,7 +51,7 @@
   - Added examples (issue #633)
     - 1-EnableAlwaysOn.ps1
     - 2-DisableAlwaysOn.ps1
-  - Fixed PS Script Analyser errors ([Issue #724](https://github.com/PowerShell/xSQLServer/issues/724))
+  - Fixed PS Script Analyzer errors ([Issue #724](https://github.com/PowerShell/xSQLServer/issues/724))
 - Changes to xSQLServerDatabasePermission
   - Fixed PS Script Analyzer errors ([issue #725](https://github.com/PowerShell/xSQLServer/issues/725))
 - Changes to xSQLServerScript
