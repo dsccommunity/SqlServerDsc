@@ -39,6 +39,8 @@
       1-WaitForASingleClusterGroup.ps1, 2-WaitForMultipleClusterGroups.ps1.
   - Updated year to 2017 in license file ([issue #711](https://github.com/PowerShell/xFailOverCluster/issues/711)).
   - Code style clean-up throughout the module to align against the Style Guideline.
+  - Fixed typos and the use of wrong parameters in unit tests which was found
+    after release of new version of Pester ([issue #773](https://github.com/PowerShell/xFailOverCluster/issues/773)).
 - Changes to xSQLServerAlwaysOnService
   - Added resource description in README.md.
   - Updated parameters descriptions in comment-based help, schema.mof and README.md.
