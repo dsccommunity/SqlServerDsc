@@ -2,6 +2,12 @@
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param ()
 
+if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
+{
+    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:DSCResourceName) -Verbose
+    return
+}
+
 # Unit Test Template Version: 1.1.0
 
 $script:moduleName = 'xSQLServerHelper'
@@ -1071,6 +1077,7 @@ InModuleScope $script:moduleName {
     Describe 'Testing Connect-SQL' -Tag ConnectSql {
         BeforeEach {
             Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
+            Mock -CommandName Import-SQLPSModule
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter `

@@ -1,5 +1,12 @@
 # Suppressing this rule because PlainText is required for one of the functions used in this test
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
+param()
+
+if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
+{
+    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:DSCResourceName) -Verbose
+    return
+}
 
 $script:DSCModuleName      = 'xSQLServer'
 $script:DSCResourceName    = 'MSFT_xSQLServerLogin'
@@ -206,7 +213,7 @@ try
         #endregion Pester Test Initialization
 
         Describe 'MSFT_xSQLServerLogin\Get-TargetResource' {
-            Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable -Scope Describe
+            Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
             Context 'When the login is Absent' {
 

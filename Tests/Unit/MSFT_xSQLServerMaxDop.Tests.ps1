@@ -1,3 +1,9 @@
+if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
+{
+    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:DSCResourceName) -Verbose
+    return
+}
+
 $script:DSCModuleName      = 'xSQLServer'
 $script:DSCResourceName    = 'MSFT_xSQLServerMaxDop'
 
@@ -46,13 +52,13 @@ try
             SQLInstanceName = $mockSQLServerInstanceName
             SQLServer       = $mockSQLServerName
         }
-        
+
         #region Function mocks
 
         $mockConnectSQL = {
             return @(
                 (
-                    New-Object Object | 
+                    New-Object Object |
                         Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSQLServerInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSQLServerName -PassThru |
                         Add-Member -MemberType ScriptProperty -Name Configuration -Value {
@@ -64,7 +70,7 @@ try
                                         Add-Member -MemberType NoteProperty -Name RunValue -Value $mockMaxDegreeOfParallelism -PassThru |
                                         Add-Member -MemberType NoteProperty -Name ConfigValue -Value $mockMaxDegreeOfParallelism -PassThru -Force
                                     ) )
-                                } -PassThru -Force 
+                                } -PassThru -Force
                             ) )
                         } -PassThru |
                         Add-Member -MemberType ScriptMethod -Name Alter -Value {
@@ -96,12 +102,12 @@ try
 
         Describe "MSFT_xSQLServerMaxDop\Get-TargetResource" -Tag 'Get'{
             Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
-        
+
             Context 'When the system is either in the desired state or not in the desired state' {
                 $testParameters = $mockDefaultParameters
 
                 $result = Get-TargetResource @testParameters
-                
+
                 It 'Should return the current value for MaxDop' {
                     $result.MaxDop | Should Be $mockMaxDegreeOfParallelism
                 }
@@ -115,22 +121,22 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
-        
+
             Assert-VerifiableMocks
         }
-        
+
         Describe "MSFT_xSQLServerMaxDop\Test-TargetResource" -Tag 'Test'{
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
-                Mock -CommandName Get-CimInstance -MockWith $mockCimInstance_Win32Processor -ParameterFilter { 
+                Mock -CommandName Get-CimInstance -MockWith $mockCimInstance_Win32Processor -ParameterFilter {
                     $ClassName -eq 'Win32_Processor'
                 } -Verifiable
 
                 Mock -CommandName Get-CimInstance -MockWith {
                     throw 'Mocked function Get-CimInstance was called with the wrong set of parameter filters.'
                 }
-            }            
+            }
 
             Context 'When the system is not in the desired state and DynamicAlloc is set to false' {
                 $testParameters = $mockDefaultParameters
@@ -138,7 +144,7 @@ try
                     MaxDop          = 1
                     DynamicAlloc    = $false
                     Ensure = 'Present'
-                }      
+                }
 
                 It 'Should return the state as false when desired MaxDop is the wrong value' {
                     $result = Test-TargetResource @testParameters
@@ -161,7 +167,7 @@ try
                 $testParameters += @{
                     MaxDop          = 6
                     DynamicAlloc    = $false
-                }      
+                }
 
                 It 'Should return the state as true when desired MaxDop is the correct value' {
                     $result = Test-TargetResource @testParameters
@@ -183,7 +189,7 @@ try
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     DynamicAlloc = $true
-                }      
+                }
 
                 It 'Should return the state as true when desired MaxDop is present' {
                     $result = Test-TargetResource @testParameters
@@ -195,7 +201,7 @@ try
                 }
 
                 It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_Processor' {
-                    Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter { 
+                    Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
                         $ClassName -eq 'Win32_Processor'
                     } -Scope Context
                 }
@@ -207,7 +213,7 @@ try
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     DynamicAlloc = $true
-                }      
+                }
 
                 It 'Should return the state as false when desired MaxDop is the wrong value' {
                     $result = Test-TargetResource @testParameters
@@ -219,7 +225,7 @@ try
                 }
 
                 It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_Processor' {
-                    Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter { 
+                    Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
                         $ClassName -eq 'Win32_Processor'
                     } -Scope Context
                 }
@@ -231,7 +237,7 @@ try
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     DynamicAlloc = $true
-                }      
+                }
 
                 It 'Should return the state as false when desired MaxDop is the wrong value' {
                     $result = Test-TargetResource @testParameters
@@ -243,7 +249,7 @@ try
                 }
 
                 It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_Processor' {
-                    Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter { 
+                    Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
                         $ClassName -eq 'Win32_Processor'
                     } -Scope Context
                 }
@@ -256,7 +262,7 @@ try
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     DynamicAlloc = $true
-                }      
+                }
 
                 It 'Should return the state as false when desired MaxDop is the wrong value' {
                     $result = Test-TargetResource @testParameters
@@ -268,7 +274,7 @@ try
                 }
 
                 It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_Processor' {
-                    Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter { 
+                    Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
                         $ClassName -eq 'Win32_Processor'
                     } -Scope Context
                 }
@@ -278,7 +284,7 @@ try
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     Ensure = 'Absent'
-                }      
+                }
 
                 It 'Should return the state as false when desired MaxDop is the wrong value' {
                     $result = Test-TargetResource @testParameters
@@ -296,7 +302,7 @@ try
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     Ensure = 'Absent'
-                }      
+                }
 
                 It 'Should return the state as true when desired MaxDop is the correct value' {
                     $result = Test-TargetResource @testParameters
@@ -339,12 +345,12 @@ try
 
             Assert-VerifiableMocks
         }
-        
+
         Describe "MSFT_xSQLServerMaxDop\Set-TargetResource" -Tag 'Set'{
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
-                Mock -CommandName Get-CimInstance -MockWith $mockCimInstance_Win32Processor -ParameterFilter { 
+                Mock -CommandName Get-CimInstance -MockWith $mockCimInstance_Win32Processor -ParameterFilter {
                     $ClassName -eq 'Win32_Processor'
                 } -Verifiable
 
@@ -418,7 +424,7 @@ try
                 $testParameters += @{
                     DynamicAlloc    = $true
                     Ensure          = 'Present'
-                }      
+                }
 
                 It 'Should Not Throw when MaxDop parameter is not null and DynamicAlloc set to false' {
                     { Set-TargetResource @testParameters } | Should Not Throw
@@ -429,7 +435,7 @@ try
                 }
 
                 It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_Processor' {
-                    Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter { 
+                    Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
                         $ClassName -eq 'Win32_Processor'
                     } -Scope Context
                 }
@@ -449,8 +455,8 @@ try
                     $throwInvalidOperation = ('Unexpected result when trying to configure the max degree of parallelism ' + `
                                               'server configuration option. InnerException: Exception calling "Alter" ' + `
                                               'with "0" argument(s): "Mock Alter Method was called with invalid operation."')
-                    
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation 
+
+                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {

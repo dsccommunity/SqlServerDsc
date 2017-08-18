@@ -1,3 +1,9 @@
+if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
+{
+    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:DSCResourceName) -Verbose
+    return
+}
+
 $script:DSCModuleName      = 'xSQLServer'
 $script:DSCResourceName    = 'MSFT_xSQLServerAvailabilityGroupListener'
 
@@ -543,7 +549,7 @@ try
             BeforeEach {
                 $testParameters = $defaultParameters
 
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable -Scope It
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
                 Mock -CommandName New-SqlAvailabilityGroupListener -MockWith {} -Verifiable
                 Mock -CommandName Set-SqlAvailabilityGroupListener -MockWith {} -Verifiable
                 Mock -CommandName Add-SqlAvailabilityGroupListenerStaticIp -MockWith {} -Verifiable

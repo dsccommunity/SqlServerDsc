@@ -1,3 +1,9 @@
+if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
+{
+    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:DSCResourceName) -Verbose
+    return
+}
+
 $script:DSCModuleName      = 'xSQLServer'
 $script:DSCResourceName    = 'MSFT_xSQLServerDatabaseOwner'
 
@@ -47,8 +53,8 @@ try
             SQLInstanceName = $mockSqlServerInstanceName
             SQLServer       = $mockSqlServerName
         }
-        
-        #region Function mocks        
+
+        #region Function mocks
         $mockConnectSQL = {
             return @(
                 (
@@ -57,8 +63,8 @@ try
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSqlServerName -PassThru |
                         Add-Member -MemberType ScriptProperty -Name Databases -Value {
                             return @{
-                                $mockSqlDatabaseName = @(( 
-                                    New-Object Object | 
+                                $mockSqlDatabaseName = @((
+                                    New-Object Object |
                                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
                                         Add-Member -MemberType NoteProperty -Name Owner -Value $mockDatabaseOwner -PassThru |
                                         Add-Member -MemberType ScriptMethod -Name SetOwner -Value {
@@ -66,7 +72,7 @@ try
                                             {
                                                 throw 'Mock of method SetOwner() was called with invalid operation.'
                                             }
-                                        
+
                                             if ( $this.Owner -ne $mockExpectedDatabaseOwner )
                                             {
                                                 throw "Called mocked SetOwner() method without setting the right login. Expected '{0}'. But was '{1}'." `
@@ -79,11 +85,11 @@ try
                         Add-Member -MemberType ScriptProperty -Name Logins -Value {
                             return @{
                                 $mockSqlServerLogin = @((
-                                    New-Object Object | 
-                                        Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru 
+                                    New-Object Object |
+                                        Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru
                                 ))
                             }
-                        } -PassThru -Force                                       
+                        } -PassThru -Force
                 )
             )
         }
@@ -158,7 +164,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should Be $false
                 }
-                
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
@@ -255,8 +261,12 @@ try
                         Database    = $mockSqlDatabaseName
                         Name        = $mockSqlServerLogin
                     }
-                    
-                    $throwInvalidOperation = ('Failed to set owner named Zebes\SamusAran of the database ' + `                                              'named AdventureWorks on localhost\MSSQLSERVER. InnerException: ' + `                                              'Exception calling "SetOwner" with "1" argument(s): "Called mocked ' + `                                              'SetOwner() method without setting the right login. ' + `                                              "Expected 'Zebes\SamusAran'. But was 'Elysia\Chozo'.")
+
+                    $throwInvalidOperation = ('Failed to set owner named Zebes\SamusAran of the database ' + `
+                                              'named AdventureWorks on localhost\MSSQLSERVER. InnerException: ' + `
+                                              'Exception calling "SetOwner" with "1" argument(s): "Called mocked ' + `
+                                              'SetOwner() method without setting the right login. ' + `
+                                              "Expected 'Zebes\SamusAran'. But was 'Elysia\Chozo'.")
 
                     { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
                 }
@@ -265,7 +275,7 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
-            
+
             Context 'When the system is not in the desired state' {
                 It 'Should throw the correct error when the method SetOwner() was called' {
                     $mockInvalidOperationForSetOwnerMethod  = $true

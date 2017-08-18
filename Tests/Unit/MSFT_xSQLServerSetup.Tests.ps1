@@ -2,6 +2,12 @@
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param()
 
+if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
+{
+    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:DSCResourceName) -Verbose
+    return
+}
+
 $script:DSCModuleName      = 'xSQLServer'
 $script:DSCResourceName    = 'MSFT_xSQLServerSetup'
 
@@ -3866,7 +3872,7 @@ try
 
                         Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceGroupToResource -ParameterFilter {
                             ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
-                        } -Verfiable
+                        } -Verifiable
 
                         Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceToPossibleOwner -ParameterFilter {
                             $Association -eq 'MSCluster_ResourceToPossibleOwner'
@@ -4206,7 +4212,7 @@ try
 
                         Mock -CommandName Get-CimAssociatedInstance -MockWith {} -ParameterFilter {
                             ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
-                        } -Verfiable
+                        } -Verifiable
 
                         Mock -CommandName Get-CimAssociatedInstance -MockWith {} -ParameterFilter {
                             $Association -eq 'MSCluster_ResourceToPossibleOwner'
@@ -4311,7 +4317,7 @@ try
 
                         Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceGroupToResource -ParameterFilter {
                             ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
-                        } -Verfiable
+                        } -Verifiable
 
                         Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceToPossibleOwner -ParameterFilter {
                             $Association -eq 'MSCluster_ResourceToPossibleOwner'

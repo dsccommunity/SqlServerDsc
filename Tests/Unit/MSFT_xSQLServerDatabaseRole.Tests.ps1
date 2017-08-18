@@ -1,3 +1,9 @@
+if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
+{
+    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:DSCResourceName) -Verbose
+    return
+}
+
 $script:DSCModuleName      = 'xSQLServer'
 $script:DSCResourceName    = 'MSFT_xSQLServerDatabaseRole'
 
@@ -51,13 +57,13 @@ try
         $mockExpectedForAddMemberMethod             = 'MySecondRole'
         $mockExpectedForDropMemberMethod            = 'MyRole'
         $mockExpectedForCreateMethod                = 'John'
-        
+
         # Default parameters that are used for the It-blocks
         $mockDefaultParameters = @{
             SQLInstanceName = $mockSqlServerInstanceName
             SQLServer       = $mockSqlServerName
         }
-        
+
         #region Function mocks
         $mockConnectSQL = {
             return @(
@@ -67,33 +73,33 @@ try
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSqlServerName -PassThru |
                         Add-Member -MemberType ScriptProperty -Name Databases -Value {
                             return @{
-                                $mockSqlDatabaseName = @(( 
-                                    New-Object Object | 
+                                $mockSqlDatabaseName = @((
+                                    New-Object Object |
                                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
                                         Add-Member -MemberType ScriptProperty -Name Users -Value {
                                             return @{
-                                                $mockSqlServerLoginOne = @(( 
+                                                $mockSqlServerLoginOne = @((
                                                     New-Object Object |
                                                         Add-Member -MemberType ScriptMethod -Name IsMember -Value {
-                                                            param( 
+                                                            param(
                                                                 [String]
-                                                                $mockSqlDatabaseRole 
+                                                                $mockSqlDatabaseRole
                                                             )
-                                                            if ( $mockSqlDatabaseRole -eq $mockExpectedSqlDatabaseRole ) 
+                                                            if ( $mockSqlDatabaseRole -eq $mockExpectedSqlDatabaseRole )
                                                             {
                                                                 return $true
-                                                            } 
+                                                            }
                                                             else
                                                             {
                                                                 return $false
                                                             }
-                                                        } -PassThru 
+                                                        } -PassThru
                                                 ))
-                                                $mockSqlServerLoginTwo = @(( 
+                                                $mockSqlServerLoginTwo = @((
                                                     New-Object Object |
                                                         Add-Member -MemberType ScriptMethod -Name IsMember -Value {
                                                                 return $true
-                                                        } -PassThru 
+                                                        } -PassThru
                                                 ))
                                             }
                                         } -PassThru |
@@ -175,20 +181,20 @@ try
                         Add-Member -MemberType ScriptProperty -Name Logins -Value {
                             return @{
                                 $mockSqlServerLoginOne = @((
-                                    New-Object Object | 
-                                        Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru 
+                                    New-Object Object |
+                                        Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru
                                 ))
                                 $mockSqlServerLoginTwo = @((
-                                    New-Object Object | 
-                                        Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru 
+                                    New-Object Object |
+                                        Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru
                                 ))
                                 $mockSqlServerLogin = @((
-                                    New-Object Object | 
-                                        Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru 
+                                    New-Object Object |
+                                        Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru
                                 ))
                             }
-                        } -PassThru -Force 
-                                       
+                        } -PassThru -Force
+
                 )
             )
         }
@@ -269,7 +275,7 @@ try
                         Role        = @($mockSqlDatabaseRole,$mockSqlDatabaseRoleSecond)
                     }
 
-                    { Get-TargetResource @testParameters } | Should Not Throw 
+                    { Get-TargetResource @testParameters } | Should Not Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -304,9 +310,9 @@ try
                     Database    = $mockSqlDatabaseName
                     Role        = $mockSqlDatabaseRoleSecond
                 }
-                
+
                 It 'Should return the state as absent' {
-                    $result = Get-TargetResource @testParameters                
+                    $result = Get-TargetResource @testParameters
                     $result.Ensure | Should Be 'Absent'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
@@ -339,7 +345,7 @@ try
                 }
 
                 It 'Should return the state as absent' {
-                    $result = Get-TargetResource @testParameters                
+                    $result = Get-TargetResource @testParameters
                     $result.Ensure | Should Be 'Absent'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
@@ -362,7 +368,7 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
-        
+
             Context 'When the system is not in the desired state, and login is not a member of the database' {
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
@@ -372,7 +378,7 @@ try
                 }
 
                 It 'Should return the state as absent' {
-                    $result = Get-TargetResource @testParameters                
+                    $result = Get-TargetResource @testParameters
                     $result.Ensure | Should Be 'Absent'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
@@ -398,7 +404,7 @@ try
                 }
 
                 It 'Should return the state as absent' {
-                    $result = Get-TargetResource @testParameters               
+                    $result = Get-TargetResource @testParameters
                     $result.Ensure | Should Be 'Present'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
@@ -413,7 +419,7 @@ try
                     $result.Role | Should Be $testParameters.Role
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
-                }       
+                }
             }
 
             Assert-VerifiableMocks
@@ -437,7 +443,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should Be $false
                 }
-                
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
@@ -456,7 +462,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should Be $false
                 }
-                
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
@@ -475,7 +481,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should Be $false
                 }
-                
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
@@ -494,7 +500,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should Be $true
                 }
-                
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
@@ -513,7 +519,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should Be $true
                 }
-                
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
@@ -532,7 +538,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should Be $true
                 }
-                
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
@@ -562,13 +568,13 @@ try
 
                     { Set-TargetResource @testParameters } | Should Not Throw
                 }
-                
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.User' {
-                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter { 
+                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.User'
                     } -Scope Context
                 }
@@ -591,13 +597,13 @@ try
 
                     { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
                 }
-                
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.User' {
-                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter { 
+                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.User'
                     } -Scope Context
                 }
@@ -617,13 +623,13 @@ try
 
                     { Set-TargetResource @testParameters } | Should Not Throw
                 }
-                
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should not call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.User' {
-                    Assert-MockCalled New-Object -Exactly -Times 0 -ParameterFilter { 
+                    Assert-MockCalled New-Object -Exactly -Times 0 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.User'
                     } -Scope Context
                 }
@@ -647,13 +653,13 @@ try
 
                     { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
                 }
-                
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should not call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.User' {
-                    Assert-MockCalled New-Object -Exactly -Times 0 -ParameterFilter { 
+                    Assert-MockCalled New-Object -Exactly -Times 0 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.User'
                     } -Scope Context
                 }
@@ -671,13 +677,13 @@ try
 
                     { Set-TargetResource @testParameters } | Should Not Throw
                 }
-                
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should not call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.User' {
-                    Assert-MockCalled New-Object -Exactly -Times 0 -ParameterFilter { 
+                    Assert-MockCalled New-Object -Exactly -Times 0 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.User'
                     } -Scope Context
                 }
@@ -702,19 +708,19 @@ try
 
                     { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
                 }
-                
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should not call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.User' {
-                    Assert-MockCalled New-Object -Exactly -Times 0 -ParameterFilter { 
+                    Assert-MockCalled New-Object -Exactly -Times 0 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.User'
                     } -Scope Context
                 }
             }
 
-            Assert-VerifiableMocks            
+            Assert-VerifiableMocks
         }
     }
 }
