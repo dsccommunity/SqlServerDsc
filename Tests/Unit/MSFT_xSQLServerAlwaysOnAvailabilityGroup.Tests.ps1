@@ -387,7 +387,7 @@ try
 
                 It 'Should not return an Availability Group when Ensure is set to Present and the version is 13' {
 
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -Scope It
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable
 
                     $getParams = @{
                         Name = $defaultAbsentParameters.Name
@@ -468,7 +468,7 @@ try
 
                 It 'Should return the correct Availability Group properties when Ensure is set to Present and the SQL version is 13' {
 
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -Scope It
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable
 
                     $getParams = @{
                         Name = $defaultPresentParameters.Name
@@ -498,7 +498,7 @@ try
 
                 It 'Should return the correct Availability Group properties when Ensure is set to Absent and the SQL version is 13' {
 
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -Scope It
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable
 
                     $getParams = @{
                         Name = $defaultPresentParameters.Name
@@ -572,7 +572,7 @@ try
 
                 It 'Should create the Availability Group when Ensure is set to Present and the SQL version is 13' {
 
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -Scope It
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable
                     Mock -CommandName New-SqlAvailabilityGroup {} -Verifiable -Scope It
                     Mock -CommandName New-SqlAvailabilityReplica -MockWith $mockNewSqlAvailabilityReplica -Verifiable -Scope It
                     Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -Scope It -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
@@ -745,7 +745,7 @@ try
 
                 It 'Should throw the correct error, CreateAvailabilityGroupReplicaFailed, when Ensure is set to Present, but the Availability Group Replica failed to create and the SQL version is 13' {
 
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -Scope It
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable
                     Mock -CommandName New-SqlAvailabilityGroup {} -Verifiable -Scope It
                     Mock -CommandName New-SqlAvailabilityReplica -MockWith { throw 'CreateAvailabilityGroupReplicaFailed' } -Verifiable -Scope It
                     Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -Scope It -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
@@ -790,7 +790,7 @@ try
 
                 It 'Should throw the correct error "CreateAvailabilityGroupFailed" when Ensure is set to Present, but the Availability Group failed to create and the SQL version is 13' {
 
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -Scope It
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable
                     Mock -CommandName New-SqlAvailabilityReplica -MockWith $mockNewSqlAvailabilityReplica -Verifiable -Scope It
                     Mock -CommandName New-SqlAvailabilityGroup { throw 'CreateAvailabilityGroupFailed' } -Verifiable -Scope It
                     Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -Scope It -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
@@ -843,7 +843,7 @@ try
 
                 It 'Should remove the Availability Group when Ensure is set to Absent and the SQL version is 13' {
 
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -Scope It
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable
                     Mock -CommandName Remove-SqlAvailabilityGroup -MockWith {} -Verifiable -Scope It
                     Mock -CommandName Test-LoginEffectivePermissions -MockWith {} -Verifiable -Scope It
 
@@ -932,7 +932,7 @@ try
 
                 It 'Should throw the correct error message when Ensure is set to Absent but the Availability Group remove fails, and the SQL version is 13' {
 
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -Scope It
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable
                     Mock -CommandName Remove-SqlAvailabilityGroup -MockWith { throw 'RemoveAvailabilityGroupFailed' } -Verifiable -Scope It
                     Mock -CommandName Test-LoginEffectivePermissions -MockWith {} -Verifiable -Scope It
 
@@ -1186,7 +1186,7 @@ try
 
                 It 'Should set the BasicAvailabilityGroup to the desired state' {
 
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -Scope It -ParameterFilter { $SQLServer -eq 'Server1' }
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -ParameterFilter { $SQLServer -eq 'Server1' }
                     Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -Scope It -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
 
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
@@ -1668,7 +1668,7 @@ try
                 It 'Should be $false when the desired state is Present and the SQL version is 13' {
 
                     $defaultAbsentParameters.Ensure = 'Present'
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -Scope It
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable
 
                     Test-TargetResource @defaultAbsentParameters | Should Be $false
 
@@ -1678,7 +1678,7 @@ try
                 It 'Should be $true when the desired state is Absent and the SQL version is 13' {
 
                     $defaultAbsentParameters.Ensure = 'Absent'
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -Scope It
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable
 
                     Test-TargetResource @defaultAbsentParameters | Should Be $true
 
@@ -1724,7 +1724,7 @@ try
                 It 'Should be $false when the desired state is Absent and the SQL version is 13' {
 
                     $defaultPresentParameters.Ensure = 'Absent'
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -Scope It
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable
 
                     Test-TargetResource @defaultPresentParameters | Should Be $false
 
@@ -1734,7 +1734,7 @@ try
                 It 'Should be $true when the desired state is Present and the SQL version is 13' {
 
                     $defaultPresentParameters.Ensure = 'Present'
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -Scope It
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable
 
                     Test-TargetResource @defaultPresentParameters | Should Be $true
 
@@ -1743,7 +1743,7 @@ try
 
                 It 'Should be $false when the desired state is Present, there is a parameter not correctly set, and the SQL version is 13' {
 
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -Scope It
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable
 
                     $defaultPresentParametersIncorrectParameter = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectParameter.Ensure = 'Present'
