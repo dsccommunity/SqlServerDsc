@@ -600,7 +600,7 @@ try
                         return New-Object PSObject -Property @{
                             IsHadrEnabled = $false
                         }
-                    } -Verifiable -Scope It
+                    } -Verifiable
                     Mock -CommandName Invoke-Query -MockWith {} -Verifiable
                     Mock -CommandName New-SqlAvailabilityGroup {} -Verifiable
                     Mock -CommandName New-SqlAvailabilityReplica -MockWith $mockNewSqlAvailabilityReplica -Verifiable
@@ -652,7 +652,7 @@ try
                     Mock -CommandName New-SqlAvailabilityGroup {} -Verifiable
                     Mock -CommandName New-SqlAvailabilityReplica -MockWith $mockNewSqlAvailabilityReplica -Verifiable
                     Mock -CommandName Test-LoginEffectivePermissions -MockWith { $false } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -Scope It -ParameterFilter { $LoginName -eq 'NT AUTHORITY\SYSTEM' }
+                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT AUTHORITY\SYSTEM' }
 
                     $defaultAbsentParameters.Ensure = 'Present'
 
@@ -771,7 +771,7 @@ try
                     Mock -CommandName New-SqlAvailabilityReplica -MockWith $mockNewSqlAvailabilityReplica -Verifiable
                     Mock -CommandName New-SqlAvailabilityGroup -MockWith { throw 'CreateAvailabilityGroupFailed' } -Verifiable
                     Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
-                    Mock -CommandName Test-TargetResource -MockWith {$false} -Verifiable -Scope It
+                    Mock -CommandName Test-TargetResource -MockWith { $false } -Verifiable
 
                     $defaultAbsentParameters.Ensure = 'Present'
 
@@ -889,7 +889,7 @@ try
                             IsHadrEnabled = $true
                             NetName = 'Server2'
                         }
-                    } -Verifiable -Scope It
+                    } -Verifiable
 
                     Mock -CommandName Remove-SqlAvailabilityGroup -MockWith {} -Verifiable
                     Mock -CommandName Test-LoginEffectivePermissions -MockWith {} -Verifiable
