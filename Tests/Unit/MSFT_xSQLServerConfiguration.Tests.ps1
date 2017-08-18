@@ -1,3 +1,9 @@
+if ($env:APPVEYOR -eq $true -and (-not $env:CONFIGURATION -eq 'Unit'))
+{
+    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:DSCResourceName)
+    return
+}
+
 $script:DSCModuleName      = 'xSQLServer'
 $script:DSCResourceName    = 'MSFT_xSQLServerConfiguration'
 
@@ -13,7 +19,7 @@ Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:DSCModuleName `
     -DSCResourceName $script:DSCResourceName `
-    -TestType Unit 
+    -TestType Unit
 
 $defaultState = @{
     SQLServer = 'CLU01'
@@ -74,7 +80,7 @@ try
         Context 'The system is not in the desired state' {
 
             Mock -CommandName Connect-SQL -MockWith {
-                $mock = New-Object PSObject -Property @{ 
+                $mock = New-Object PSObject -Property @{
                     Configuration = @{
                         Properties = @(
                             @{
@@ -93,7 +99,7 @@ try
 
             ## Get the current state
             $result = Get-TargetResource @desiredState
-            
+
             It 'Should return the same values as passed' {
                 $result.SQLServer | Should Be $desiredState.SQLServer
                 $result.SQLInstanceName | Should Be $desiredState.SQLInstanceName
@@ -111,7 +117,7 @@ try
         Context 'The system is in the desired state' {
 
             Mock -CommandName Connect-SQL -MockWith {
-                $mock = New-Object PSObject -Property @{ 
+                $mock = New-Object PSObject -Property @{
                     Configuration = @{
                         Properties = @(
                             @{
@@ -148,7 +154,7 @@ try
         Context 'Invalid data is supplied' {
 
             Mock -CommandName Connect-SQL -MockWith {
-                $mock = New-Object PSObject -Property @{ 
+                $mock = New-Object PSObject -Property @{
                     Configuration = @{
                         Properties = @(
                             @{
@@ -174,11 +180,11 @@ try
     }
 
     Describe "$($script:DSCResourceName)\Test-TargetResource" {
-        
+
         Mock -CommandName New-VerboseMessage -MockWith {} -ModuleName $script:DSCResourceName
 
         Mock -CommandName Connect-SQL -MockWith {
-            $mock = New-Object PSObject -Property @{ 
+            $mock = New-Object PSObject -Property @{
                 Configuration = @{
                     Properties = @(
                         @{
@@ -210,7 +216,7 @@ try
         Mock -CommandName New-TerminatingError -MockWith {} -ModuleName $script:DSCResourceName
 
         Mock -CommandName Connect-SQL -MockWith {
-            $mock = New-Object PSObject -Property @{ 
+            $mock = New-Object PSObject -Property @{
                 Configuration = @{
                     Properties = @(
                         @{
@@ -229,7 +235,7 @@ try
         } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { $SQLServer -eq 'CLU01' }
 
         Mock -CommandName Connect-SQL -MockWith {
-            $mock = New-Object PSObject -Property @{ 
+            $mock = New-Object PSObject -Property @{
                 Configuration = @{
                     Properties = @(
                         @{
@@ -261,7 +267,7 @@ try
                 Set-TargetResource @desiredStateRestart
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Restart-SqlService -Scope It -Times 1 -Exactly
             }
-            
+
             It 'Should warn about restart when required, but not requested' {
                 Set-TargetResource @desiredState
 

@@ -2,6 +2,9 @@
 #      environment configuration  #
 #---------------------------------#
 version: 6.0.{build}.0
+configuration:
+  - Unit
+  - Integration
 image: Visual Studio 2017
 install:
     - git clone https://github.com/PowerShell/DscResource.Tests
@@ -21,6 +24,7 @@ build: false
 
 test_script:
     - ps: |
+        Write-Verbose -Message ('Running AppVeyor build matrix configuration: {0}' -f $env:CONFIGURATION) -Verbose
         Write-Verbose -Message 'Removing all SQL related PowerShell modules so they can not be used by the common tests.' -Verbose
         Write-Verbose -Message 'This is a workaround because the AppVeyor build worker image contains SQL Server. More information in issue #239.' -Verbose
         Write-Verbose -Message 'Modules that are being removed:' -Verbose
