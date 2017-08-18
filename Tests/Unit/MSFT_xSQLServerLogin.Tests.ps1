@@ -213,7 +213,7 @@ try
         #endregion Pester Test Initialization
 
         Describe 'MSFT_xSQLServerLogin\Get-TargetResource' {
-            Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable -Scope Describe
+            Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
             Context 'When the login is Absent' {
 
