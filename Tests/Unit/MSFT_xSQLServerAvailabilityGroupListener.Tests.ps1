@@ -549,7 +549,7 @@ try
             BeforeEach {
                 $testParameters = $defaultParameters
 
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable -Scope It
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
                 Mock -CommandName New-SqlAvailabilityGroupListener -MockWith {} -Verifiable
                 Mock -CommandName Set-SqlAvailabilityGroupListener -MockWith {} -Verifiable
                 Mock -CommandName Add-SqlAvailabilityGroupListenerStaticIp -MockWith {} -Verifiable

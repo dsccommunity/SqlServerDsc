@@ -7,7 +7,9 @@ if (-not $env:APPVEYOR -eq $true)
     return
 }
 
-if (-not $env:CONFIGURATION -eq 'Integration')
+Write-Verbose -Message ('Running AppVeyor build matrix configuration: ''{0}''' -f $env:CONFIGURATION) -Verbose
+
+if ($env:APPVEYOR -eq $true -and (-not $env:CONFIGURATION -eq 'Integration'))
 {
     Write-Verbose -Message ('Integration test for {0} will be skipped unless $env:CONFIGURATION is set to ''Integration''.' -f $script:DSCResourceName)
     return

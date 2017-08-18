@@ -1,5 +1,6 @@
 # Suppressing this rule because PlainText is required for one of the functions used in this test
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
+param()
 
 if ($env:APPVEYOR -eq $true -and (-not $env:CONFIGURATION -eq 'Unit'))
 {
