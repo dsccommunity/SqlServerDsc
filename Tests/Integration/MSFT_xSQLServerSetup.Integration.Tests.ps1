@@ -24,6 +24,22 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 #endregion
 
+<#
+    Copies back the SQLPS module that was removed by AppVeyor.yml
+    (see issue #774).
+    SQLPS is removed because otherwise the common test will load
+    the SMO assembly and fail the unit tests (see issue #239)
+#>
+$rootTempPath = Join-Path -Path $env:TEMP -ChildPath 'SqlModuleTemp'
+$copyItemParameters = @{
+    Path = Join-Path -Path $rootTempPath -ChildPath '*'
+    Destination = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules'
+    Recurse = $true
+    Force = $true
+}
+
+Copy-Item @copyItemParameters
+
 $mockInstanceName = 'DSCSQL2016'
 $mockFeatures = 'SQLENGINE,CONN,BC,SDK'
 $mockSqlCollation = 'Finnish_Swedish_CI_AS'

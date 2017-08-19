@@ -58,6 +58,7 @@
   - Code style clean-up throughout the module to align against the Style Guideline.
   - Fixed typos and the use of wrong parameters in unit tests which was found
     after release of new version of Pester ([issue #773](https://github.com/PowerShell/xFailOverCluster/issues/773)).
+  - Updated appveyor.yml so that integration tests can run in AppVeyor ([issue #774](https://github.com/PowerShell/xFailOverCluster/issues/774)).
 - Changes to xSQLServerAlwaysOnService
   - Added resource description in README.md.
   - Updated parameters descriptions in comment-based help, schema.mof and README.md.
@@ -83,6 +84,8 @@
     and no longer throws an error when there is just one Analysis Services
     administrator (issue #691).
   - Added a simple integration test ([issue #709](https://github.com/PowerShell/xSQLServer/issues/709)).
+    - Fixed so that the integration test copies back the SQLPS module
+      ([issue #774](https://github.com/PowerShell/xFailOverCluster/issues/774)).
   - Fixed PS Script Analyzer errors ([issue #729](https://github.com/PowerShell/xSQLServer/issues/729))
 
 ## 8.0.0.0
