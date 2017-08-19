@@ -25,16 +25,16 @@ build: false
 
 test_script:
     - ps: |
+        # Workaround for issue #774
         $rootTempPath = Join-Path -Path $env:TEMP -ChildPath 'SqlModuleTemp'
-        Write-Verbose -Message ('Copying the SQLPS module to a temporary location (''{0}'') for later use by integration tests.' -f $rootTempPath) -Verbose
-        Write-Verbose -Message 'This is a workaround because the integration tests need SQLPS module. More information in issue #774.' -Verbose
+        Write-Verbose -Message ('WORKAROUND FOR ISSUE #774: Copying the SQLPS module to a temporary location (''{0}'') for later use by integration tests.' -f $rootTempPath) -Verbose
         New-Item -Path $rootTempPath -Type Directory | Out-Null
         Copy-Item -Path 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\*' -Destination $rootTempPath -Recurse -Force
 
-        Write-Verbose -Message 'Removing all SQL related PowerShell modules so they can not be used by the common tests.' -Verbose
-        Write-Verbose -Message 'This is a workaround because the AppVeyor build worker image contains SQL Server. More information in issue #239.' -Verbose
+        # Workaround for issue #239
+        Write-Verbose -Message 'WORKAROUND FOR ISSUE #239: Removing all SQL related PowerShell modules so they can not be used by the common tests.' -Verbose
         Write-Verbose -Message 'Modules that are being removed:' -Verbose
-        Get-Module -ListAvailable -Name 'sql*' | ForEach-Object -Process { Write-Verbose $_.Path -Verbose; Remove-Item $_.Path -Force -Verbose; }
+        Get-Module -ListAvailable -Name 'sql*' | ForEach-Object -Process { Write-Verbose $_.Path -Verbose; Remove-Item $_.Path -Force; }
 
         Invoke-AppveyorTestScriptTask -CodeCoverage -CodeCovIo -ExcludeTag @() -RunTestInOrder
 
