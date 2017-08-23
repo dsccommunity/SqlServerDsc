@@ -19,12 +19,12 @@ Configuration Example
     {
         xSQLServerDatabaseRole Add_Database_Role
         {
-            Ensure = 'Present'
-            SQLServer = 'SQLServer'
-            SQLInstanceName = 'DSC'
-            Name = 'CONTOSO\SQLAdmin'
-            Role = 'MyRole','MySecondRole'
-            Database = 'AdventureWorks'
+            Ensure               = 'Present'
+            SQLServer            = 'SQLServer'
+            SQLInstanceName      = 'DSC'
+            Name                 = 'CONTOSO\SQLAdmin'
+            Role                 = 'MyRole', 'MySecondRole'
+            Database             = 'AdventureWorks'
             PsDscRunAsCredential = $SysAdminAccount
         }
     }

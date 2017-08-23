@@ -19,12 +19,12 @@ Configuration Example
     {
         xSQLServerMemory Set_SQLServerMaxMemory_To12GB
         {
-            Ensure = 'Present'
-            DynamicAlloc = $false
-            MinMemory = 1024
-            MaxMemory = 12288
-            SQLServer = 'SQLServer'
-            SQLInstanceName = 'DSC'
+            Ensure               = 'Present'
+            DynamicAlloc         = $false
+            MinMemory            = 1024
+            MaxMemory            = 12288
+            SQLServer            = 'SQLServer'
+            SQLInstanceName      = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount
         }
     }

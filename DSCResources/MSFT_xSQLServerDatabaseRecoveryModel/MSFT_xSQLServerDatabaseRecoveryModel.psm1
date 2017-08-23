@@ -1,6 +1,6 @@
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'xSQLServerHelper.psm1') `
-                               -Force
+        -ChildPath 'xSQLServerHelper.psm1') `
+    -Force
 <#
     .SYNOPSIS
     This function gets all Key properties defined in the resource schema file
@@ -24,7 +24,7 @@ function Get-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Full','Simple','BulkLogged')]
+        [ValidateSet('Full', 'Simple', 'BulkLogged')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $RecoveryModel,
@@ -51,7 +51,7 @@ function Get-TargetResource
     {
         Write-Verbose -Message "Getting RecoveryModel of SQL database '$Name'"
         $sqlDatabaseObject = $sqlServerObject.Databases[$Name]
-        
+
         if ($sqlDatabaseObject)
         {
             $sqlDatabaseRecoveryModel = $sqlDatabaseObject.RecoveryModel
@@ -60,11 +60,11 @@ function Get-TargetResource
         else
         {
             throw New-TerminatingError -ErrorType NoDatabase `
-                                       -FormatArgs @($Name,$sqlServer,$sqlInstanceName) `
-                                       -ErrorCategory InvalidResult
+                -FormatArgs @($Name, $sqlServer, $sqlInstanceName) `
+                -ErrorCategory InvalidResult
         }
     }
-    
+
     $returnValue = @{
         Name            = $Name
         RecoveryModel   = $sqlDatabaseRecoveryModel
@@ -97,7 +97,7 @@ function Set-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Full','Simple','BulkLogged')]
+        [ValidateSet('Full', 'Simple', 'BulkLogged')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $RecoveryModel,
@@ -117,9 +117,9 @@ function Set-TargetResource
         [System.String]
         $Name
     )
- 
-     $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-    
+
+    $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+
     if ($sqlServerObject)
     {
         Write-Verbose -Message "Setting RecoveryModel of SQL database '$Name'"
@@ -127,7 +127,7 @@ function Set-TargetResource
 
         if ($sqlDatabaseObject)
         {
-            if($sqlDatabaseObject.RecoveryModel -ne $RecoveryModel)
+            if ($sqlDatabaseObject.RecoveryModel -ne $RecoveryModel)
             {
                 $sqlDatabaseObject.RecoveryModel = $RecoveryModel
                 $sqlDatabaseObject.Alter()
@@ -137,8 +137,8 @@ function Set-TargetResource
         else
         {
             throw New-TerminatingError -ErrorType NoDatabase `
-                                       -FormatArgs @($Name,$sqlServer,$sqlInstanceName) `
-                                       -ErrorCategory InvalidResult
+                -FormatArgs @($Name, $sqlServer, $sqlInstanceName) `
+                -ErrorCategory InvalidResult
         }
     }
 }
@@ -166,7 +166,7 @@ function Test-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Full','Simple','BulkLogged')]
+        [ValidateSet('Full', 'Simple', 'BulkLogged')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $RecoveryModel,
@@ -192,8 +192,8 @@ function Test-TargetResource
     $currentValues = Get-TargetResource @PSBoundParameters
 
     return Test-SQLDscParameterState -CurrentValues $currentValues `
-                                     -DesiredValues $PSBoundParameters `
-                                     -ValuesToCheck @('Name','RecoveryModel')
+        -DesiredValues $PSBoundParameters `
+        -ValuesToCheck @('Name', 'RecoveryModel')
 }
 
 Export-ModuleMember -Function *-TargetResource

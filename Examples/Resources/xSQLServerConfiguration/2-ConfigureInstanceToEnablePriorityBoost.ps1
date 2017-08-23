@@ -1,4 +1,4 @@
-﻿<#
+<#
 .EXAMPLE
     This example shows how to configure two SQL Server instances on the same server to have the setting 'priority boost' enabled.
 .NOTES
@@ -14,11 +14,11 @@ Configuration Example
         xSQLServerConfiguration 'SQLConfigPriorityBoost'
         {
 
-            SQLServer = 'localhost'
+            SQLServer       = 'localhost'
             SQLInstanceName = 'MSSQLSERVER'
-            OptionName = 'priority boost'
-            OptionValue = 1
-            RestartService = $false
+            OptionName      = 'priority boost'
+            OptionValue     = 1
+            RestartService  = $false
         }
     }
 }

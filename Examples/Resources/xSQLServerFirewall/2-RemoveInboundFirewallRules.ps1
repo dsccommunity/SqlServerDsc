@@ -18,20 +18,20 @@ Configuration Example
     {
         xSQLServerFirewall Remove_FirewallRules_For_SQL2012
         {
-            Ensure = 'Absent'
-            Features = 'SQLENGINE,AS,RS,IS'
-            InstanceName = 'SQL2012'
-            SourcePath = '\\files.company.local\images\SQL2012'
+            Ensure               = 'Absent'
+            Features             = 'SQLENGINE,AS,RS,IS'
+            InstanceName         = 'SQL2012'
+            SourcePath           = '\\files.company.local\images\SQL2012'
 
             PsDscRunAsCredential = $SysAdminAccount
         }
 
         xSQLServerFirewall Remove_FirewallRules_For_SQL2016
         {
-            Ensure = 'Absent'
-            Features = 'SQLENGINE'
-            InstanceName = 'SQL2016'
-            SourcePath = '\\files.company.local\images\SQL2016'
+            Ensure           = 'Absent'
+            Features         = 'SQLENGINE'
+            InstanceName     = 'SQL2016'
+            SourcePath       = '\\files.company.local\images\SQL2016'
 
             SourceCredential = $SysAdminAccount
         }

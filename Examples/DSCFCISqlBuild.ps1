@@ -1,16 +1,16 @@
-﻿#requires -Version 5
+#requires -Version 5
 $computers = 'OHSQL9034N1','OHSQL9034N2','OHSQL9034N3'
 $OutputPath = 'F:\DSCConfig'
 
 Configuration FCISQL
 {
     Import-DscResource –Module PSDesiredStateConfiguration
-    Import-DscResource -Module xSQLServer 
+    Import-DscResource -Module xSQLServer
     Import-DscResource -Module xFailoverCluster
-   
+
     Node $AllNodes.NodeName
     {
-    
+
         # Set LCM to reboot if needed
         LocalConfigurationManager
         {
@@ -40,7 +40,7 @@ Configuration FCISQL
        WindowsFeature RSATClusteringPowerShell
        {
            Ensure = "Present"
-           Name   = "RSAT-Clustering-PowerShell"   
+           Name   = "RSAT-Clustering-PowerShell"
        }
 
        WindowsFeature RSATClusteringCmdInterface
@@ -92,31 +92,31 @@ Configuration FCISQL
 
                 DependsOn = "[xCluster]CLDBx"
             }
-           
+
         }
         If ($node.Role -eq "ReplicaServerNode" )
         {
-            xWaitForCluster waitForCluster 
-            { 
-                Name = $Node.ClusterName 
-                RetryIntervalSec = 10 
+            xWaitForCluster waitForCluster
+            {
+                Name = $Node.ClusterName
+                RetryIntervalSec = 10
                 RetryCount = 20
-            } 
-       
-            xCluster joinCluster 
-            { 
-                Name = $Node.ClusterName 
-                StaticIPAddress = $Node.ClusterIPAddress 
+            }
+
+            xCluster joinCluster
+            {
+                Name = $Node.ClusterName
+                StaticIPAddress = $Node.ClusterIPAddress
                 DomainAdministratorCredential = $Node.InstallerServiceAccount
-            
-                DependsOn = "[xWaitForCluster]waitForCluster" 
+
+                DependsOn = "[xWaitForCluster]waitForCluster"
             }
         }
         If ($node.Role -eq "PrimaryServerNode")
         {
-           
+
             WaitForAll "SqlPrep"
-            {                
+            {
                 NodeName = @($computers)
                 ResourceName = "[xSQLServerFailoverClusterSetup]PrepareMSSQLSERVER"
                 PsDscRunAsCredential = $Node.InstallerServiceAccount
@@ -137,13 +137,13 @@ Configuration FCISQL
                 SQLSysAdminAccounts = $Node.AdminAccount
 
                 PsDscRunAsCredential = $Node.InstallerServiceAccount
-                
+
                 DependsOn = @(
                     "[WaitForAll]SqlPrep",
                     "[xClusterDisk]iSCSI"
                 )
             }
-        } 
+        }
     }
 }
 
@@ -161,30 +161,30 @@ $ConfigurationData = @{
             InstallerServiceAccount = $InstallerServiceAccount
             SQLServiceAccount = $InstallerServiceAccount
             AdminAccount = "CORP\Administrator"
-            ClusterName = "CLDBx6" 
+            ClusterName = "CLDBx6"
             ClusterIPAddress = "10.0.75.55"
             FailoverClusterNetworkName = "CLSCDB6"
         }
         )}
 
         ForEach ($computer in $computers) {
-        
+
             if($firstComputer -eq $computer)
             {
                     $ConfigurationData.AllNodes += @{
                     NodeName        = $computer
                     InstanceName    = "MSSQLSERVER"
                     Features        = "SQLENGINE"
-                    Role = "PrimaryServerNode"        
+                    Role = "PrimaryServerNode"
                     }
             }
-            else 
+            else
             {
                     $ConfigurationData.AllNodes += @{
                     NodeName        = $computer
                     InstanceName    = "MSSQLSERVER"
                     Features        = "SQLENGINE"
-                    Role = "ReplicaServerNode"    
+                    Role = "ReplicaServerNode"
                     }
             }
            $Destination = "\\"+$computer+"\\c$\Program Files\WindowsPowerShell\Modules"
@@ -193,20 +193,20 @@ $ConfigurationData = @{
            Copy-Item 'C:\Program Files\WindowsPowerShell\Modules\xFailoverCluster' -Destination $Destination -Recurse -Force
            Copy-Item 'C:\Program Files\WindowsPowerShell\Modules\xSqlServer' -Destination $Destination -Recurse -Force
  }
-        
+
 
 
 FCISQL -ConfigurationData $ConfigurationData -OutputPath $OutputPath
 
 
-Workflow StartConfigs 
-{ 
+Workflow StartConfigs
+{
     param([string[]]$computers,
         [System.string] $Path)
- 
-    foreach –parallel ($Computer in $Computers) 
+
+    foreach –parallel ($Computer in $Computers)
     {
-    
+
         Start-DscConfiguration -ComputerName $Computer -Path $Path -Verbose -Wait -Force
     }
 }

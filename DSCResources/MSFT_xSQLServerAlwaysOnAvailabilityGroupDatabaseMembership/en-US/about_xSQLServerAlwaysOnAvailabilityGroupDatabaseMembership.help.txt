@@ -34,7 +34,7 @@ PARAMETER Ensure
 PARAMETER Force
     When used with "Ensure = 'Present'" it ensures the specified database(s) are the only databases
     that are a member of the specified Availability Group.
-    
+
     This parameter is ignored when 'Ensure' is 'Absent'.
 
 PARAMETER MatchDatabaseOwner

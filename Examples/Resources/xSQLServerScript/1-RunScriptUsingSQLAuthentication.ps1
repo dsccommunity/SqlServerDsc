@@ -18,12 +18,12 @@ Configuration Example
         xSQLServerScript 'RunSQLScript'
         {
             ServerInstance = 'localhost\SQL2016'
-            Credential = $SqlCredential
+            Credential     = $SqlCredential
 
-            SetFilePath = 'C:\DSCTemp\SQLScripts\Set-RunSQLScript.sql'
-            TestFilePath = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript.sql'
-            GetFilePath = 'C:\DSCTemp\SQLScripts\Get-RunSQLScript.sql'
-            Variable = @("FilePath=C:\temp\log\AuditFiles")
+            SetFilePath    = 'C:\DSCTemp\SQLScripts\Set-RunSQLScript.sql'
+            TestFilePath   = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript.sql'
+            GetFilePath    = 'C:\DSCTemp\SQLScripts\Get-RunSQLScript.sql'
+            Variable       = @("FilePath=C:\temp\log\AuditFiles")
         }
     }
 }

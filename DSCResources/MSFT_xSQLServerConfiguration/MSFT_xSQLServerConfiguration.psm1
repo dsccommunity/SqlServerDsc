@@ -1,20 +1,20 @@
-﻿# Load Common Code
+# Load Common Code
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'xSQLServerHelper.psm1') `
-                               -Force
+        -ChildPath 'xSQLServerHelper.psm1') `
+    -Force
 <#
     .SYNOPSIS
     Gets the current value of a SQL configuration option
 
     .PARAMETER SQLServer
     Hostname of the SQL Server to be configured
-    
+
     .PARAMETER SQLInstanceName
     Name of the SQL instance to be configued. Default is 'MSSQLSERVER'
 
     .PARAMETER OptionName
     The name of the SQL configuration option to be checked
-    
+
     .PARAMETER OptionValue
     The desired value of the SQL configuration option
 
@@ -29,7 +29,7 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
 function Get-TargetResource
 {
     [CmdletBinding()]
-    [OutputType([Hashtable])]
+    [OutputType([System.Collections.Hashtable])]
     param(
         [Parameter(Mandatory = $true)]
         [String]
@@ -47,9 +47,11 @@ function Get-TargetResource
         [Int32]
         $OptionValue,
 
+        [Parameter()]
         [Boolean]
         $RestartService = $false,
 
+        [Parameter()]
         [Int32]
         $RestartTimeout = 120
     )
@@ -58,19 +60,19 @@ function Get-TargetResource
 
     ## get the configuration option
     $option = $sql.Configuration.Properties | Where-Object { $_.DisplayName -eq $OptionName }
-    
-    if(!$option)
+
+    if (!$option)
     {
         throw New-TerminatingError -ErrorType "ConfigurationOptionNotFound" -FormatArgs $OptionName -ErrorCategory InvalidArgument
     }
 
-     return @{
-        SqlServer = $SQLServer
+    return @{
+        SqlServer       = $SQLServer
         SQLInstanceName = $SQLInstanceName
-        OptionName = $option.DisplayName
-        OptionValue = $option.ConfigValue
-        RestartService = $RestartService
-        RestartTimeout = $RestartTimeout
+        OptionName      = $option.DisplayName
+        OptionValue     = $option.ConfigValue
+        RestartService  = $RestartService
+        RestartTimeout  = $RestartTimeout
     }
 }
 
@@ -80,13 +82,13 @@ function Get-TargetResource
 
     .PARAMETER SQLServer
     Hostname of the SQL Server to be configured
-    
+
     .PARAMETER SQLInstanceName
     Name of the SQL instance to be configued. Default is 'MSSQLSERVER'
 
     .PARAMETER OptionName
     The name of the SQL configuration option to be set
-    
+
     .PARAMETER OptionValue
     The desired value of the SQL configuration option
 
@@ -116,9 +118,11 @@ function Set-TargetResource
         [Int32]
         $OptionValue,
 
+        [Parameter()]
         [Boolean]
         $RestartService = $false,
 
+        [Parameter()]
         [Int32]
         $RestartTimeout = 120
     )
@@ -128,16 +132,16 @@ function Set-TargetResource
     ## get the configuration option
     $option = $sql.Configuration.Properties | Where-Object { $_.DisplayName -eq $OptionName }
 
-    if(!$option)
+    if (!$option)
     {
         throw New-TerminatingError -ErrorType "ConfigurationOptionNotFound" -FormatArgs $OptionName -ErrorCategory InvalidArgument
     }
 
     $option.ConfigValue = $OptionValue
     $sql.Configuration.Alter()
-    
+
     if ($option.IsDynamic -eq $true)
-    {  
+    {
         New-VerboseMessage -Message 'Configuration option has been updated.'
     }
     elseif (($option.IsDynamic -eq $false) -and ($RestartService -eq $true))
@@ -157,13 +161,13 @@ function Set-TargetResource
 
     .PARAMETER SQLServer
     Hostname of the SQL Server to be configured
-    
+
     .PARAMETER SQLInstanceName
     Name of the SQL instance to be configued. Default is 'MSSQLSERVER'
 
     .PARAMETER OptionName
     The name of the SQL configuration option to be tested
-    
+
     .PARAMETER OptionValue
     The desired value of the SQL configuration option
 
@@ -196,9 +200,11 @@ function Test-TargetResource
         [Int32]
         $OptionValue,
 
+        [Parameter()]
         [Boolean]
         $RestartService = $false,
 
+        [Parameter()]
         [Int32]
         $RestartTimeout = 120
     )

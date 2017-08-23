@@ -1,6 +1,6 @@
 <#
 .EXAMPLE
-    This example shows how to create a database with 
+    This example shows how to create a database with
     the database name equal to 'Contoso'.
 #>
 Configuration Example
@@ -19,10 +19,10 @@ Configuration Example
     {
         xSQLServerDatabase Create_Database
         {
-            Ensure = 'Present'
-            SQLServer = 'SQLServer'
+            Ensure          = 'Present'
+            SQLServer       = 'SQLServer'
             SQLInstanceName = 'DSC'
-            Name = 'Contoso'
+            Name            = 'Contoso'
         }
     }
 }

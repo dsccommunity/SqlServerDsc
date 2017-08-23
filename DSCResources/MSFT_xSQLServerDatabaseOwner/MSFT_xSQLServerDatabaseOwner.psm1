@@ -1,6 +1,6 @@
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'xSQLServerHelper.psm1') `
-                               -Force
+        -ChildPath 'xSQLServerHelper.psm1') `
+    -Force
 <#
     .SYNOPSIS
     This function gets the owner of the desired sql database.
@@ -53,8 +53,8 @@ function Get-TargetResource
         if ( -not ($sqlDatabaseObject = $sqlServerObject.Databases[$Database]) )
         {
             throw New-TerminatingError -ErrorType NoDatabase `
-                                       -FormatArgs @($Database, $SQLServer, $SQLInstanceName) `
-                                       -ErrorCategory ObjectNotFound
+                -FormatArgs @($Database, $SQLServer, $SQLInstanceName) `
+                -ErrorCategory ObjectNotFound
         }
 
         try
@@ -65,8 +65,8 @@ function Get-TargetResource
         catch
         {
             throw New-TerminatingError -ErrorType FailedToGetOwnerDatabase `
-                                       -FormatArgs @($Database, $SQLServer, $SQLInstanceName) `
-                                       -ErrorCategory InvalidOperation
+                -FormatArgs @($Database, $SQLServer, $SQLInstanceName) `
+                -ErrorCategory InvalidOperation
         }
     }
 
@@ -125,7 +125,7 @@ function Set-TargetResource
     Write-Verbose -Message "Setting owner $Name of database $Database"
     $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
-    if($sqlServerObject)
+    if ($sqlServerObject)
     {
         # Check database exists
         if ( -not ($sqlDatabaseObject = $sqlServerObject.Databases[$Database]) )
@@ -138,7 +138,7 @@ function Set-TargetResource
         {
             throw New-TerminatingError -ErrorType LoginNotFound -FormatArgs @($Name, $SQLServer, $SQLInstanceName) -ErrorCategory ObjectNotFound
         }
-        
+
         try
         {
             $sqlDatabaseObject.SetOwner($Name)
@@ -147,9 +147,9 @@ function Set-TargetResource
         catch
         {
             throw New-TerminatingError -ErrorType FailedToSetOwnerDatabase `
-                                       -FormatArgs @($Name, $Database, $SQLServer, $SQLInstanceName) `
-                                       -ErrorCategory InvalidOperation `
-                                       -InnerException $_.Exception
+                -FormatArgs @($Name, $Database, $SQLServer, $SQLInstanceName) `
+                -ErrorCategory InvalidOperation `
+                -InnerException $_.Exception
         }
     }
 }
@@ -198,11 +198,11 @@ function Test-TargetResource
     )
 
     Write-Verbose -Message "Testing owner $Name of database $Database"
-     
+
     $currentValues = Get-TargetResource @PSBoundParameters
     return Test-SQLDscParameterState -CurrentValues $CurrentValues `
-                                     -DesiredValues $PSBoundParameters `
-                                     -ValuesToCheck @('Name', 'Database')
+        -DesiredValues $PSBoundParameters `
+        -ValuesToCheck @('Name', 'Database')
 }
 
 Export-ModuleMember -Function *-TargetResource

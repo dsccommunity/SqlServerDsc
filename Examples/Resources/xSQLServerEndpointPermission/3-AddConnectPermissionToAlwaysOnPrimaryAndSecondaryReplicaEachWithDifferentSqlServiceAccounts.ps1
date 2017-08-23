@@ -1,4 +1,4 @@
-﻿<#
+<#
     .EXAMPLE
         This example will add connect permission to both an Always On primary replica and an
         Always On secondary replica, and where each replica has a different SQL service account.
@@ -7,18 +7,18 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName= '*'
+            NodeName        = '*'
             SqlInstanceName = 'MSSQLSERVER'
         },
 
         @{
             NodeName = 'SQLNODE01.company.local'
-            Role = 'PrimaryReplica'
+            Role     = 'PrimaryReplica'
         },
 
         @{
             NodeName = 'SQLNODE02.company.local'
-            Role = 'SecondaryReplica'
+            Role     = 'SecondaryReplica'
         }
     )
 }
@@ -32,12 +32,12 @@ Configuration Example
         [System.Management.Automation.Credential()]
         $SysAdminAccount,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $SqlServiceNode1Credential,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $SqlServiceNode2Credential
@@ -49,51 +49,51 @@ Configuration Example
     {
         xSQLServerEndpointPermission SQLConfigureEndpointPermissionPrimary
         {
-            Ensure = 'Present'
-            NodeName = $Node.NodeName
-            InstanceName = $Node.SqlInstanceName
-            Name = 'DefaultMirrorEndpoint'
-            Principal = $SqlServiceNode1Credential.UserName
-            Permission = 'CONNECT'
+            Ensure               = 'Present'
+            NodeName             = $Node.NodeName
+            InstanceName         = $Node.SqlInstanceName
+            Name                 = 'DefaultMirrorEndpoint'
+            Principal            = $SqlServiceNode1Credential.UserName
+            Permission           = 'CONNECT'
 
             PsDscRunAsCredential = $SysAdminAccount
         }
 
         xSQLServerEndpointPermission SQLConfigureEndpointPermissionSecondary
         {
-           Ensure = 'Present'
-           NodeName = $Node.NodeName
-           InstanceName = $Node.SqlInstanceName
-           Name = 'DefaultMirrorEndpoint'
-           Principal = $SqlServiceNode2Credential.UserName
-           Permission = 'CONNECT'
+            Ensure               = 'Present'
+            NodeName             = $Node.NodeName
+            InstanceName         = $Node.SqlInstanceName
+            Name                 = 'DefaultMirrorEndpoint'
+            Principal            = $SqlServiceNode2Credential.UserName
+            Permission           = 'CONNECT'
 
-           PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SysAdminAccount
         }
-   }
+    }
 
     Node $AllNodes.Where{ $_.Role -eq 'SecondaryReplica' }.NodeName
     {
         xSQLServerEndpointPermission SQLConfigureEndpointPermissionPrimary
         {
-            Ensure = 'Present'
-            NodeName = $Node.NodeName
-            InstanceName = $Node.SqlInstanceName
-            Name = 'DefaultMirrorEndpoint'
-            Principal = $SqlServiceNode1Credential.UserName
-            Permission = 'CONNECT'
+            Ensure               = 'Present'
+            NodeName             = $Node.NodeName
+            InstanceName         = $Node.SqlInstanceName
+            Name                 = 'DefaultMirrorEndpoint'
+            Principal            = $SqlServiceNode1Credential.UserName
+            Permission           = 'CONNECT'
 
             PsDscRunAsCredential = $SysAdminAccount
         }
 
         xSQLServerEndpointPermission SQLConfigureEndpointPermissionSecondary
         {
-            Ensure = 'Present'
-            NodeName = $Node.NodeName
-            InstanceName = $Node.SqlInstanceName
-            Name = 'DefaultMirrorEndpoint'
-            Principal = $SqlServiceNode2Credential.UserName
-            Permission = 'CONNECT'
+            Ensure               = 'Present'
+            NodeName             = $Node.NodeName
+            InstanceName         = $Node.SqlInstanceName
+            Name                 = 'DefaultMirrorEndpoint'
+            Principal            = $SqlServiceNode2Credential.UserName
+            Permission           = 'CONNECT'
 
             PsDscRunAsCredential = $SysAdminAccount
         }

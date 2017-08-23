@@ -1,4 +1,4 @@
-﻿$script:currentPath = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
+$script:currentPath = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
 Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script:currentPath -Parent) -Parent) -ChildPath 'xSQLServerHelper.psm1')
 
 <#
@@ -60,32 +60,34 @@ function Get-TargetResource
         [System.String]
         $TestFilePath,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [System.UInt32]
         $QueryTimeout,
-  
+
+        [Parameter()]
         [System.String[]]
         $Variable
     )
 
     $result = Invoke-SqlScript -ServerInstance $ServerInstance -SqlScriptPath $GetFilePath `
-                -Credential $Credential -Variable $Variable -QueryTimeout $QueryTimeout -ErrorAction Stop
+        -Credential $Credential -Variable $Variable -QueryTimeout $QueryTimeout -ErrorAction Stop
 
     $getResult = Out-String -InputObject $result
 
     $returnValue = @{
         ServerInstance = [System.String] $ServerInstance
-        SetFilePath = [System.String] $SetFilePath
-        GetFilePath = [System.String] $GetFilePath
-        TestFilePath = [System.String] $TestFilePath
-        Credential = [System.Object] $Credential
-        QueryTimeout = [System.UInt32] $QueryTimeout
-        Variable = [System.String[]] $Variable
-        GetResult = [System.String[]] $getresult
+        SetFilePath    = [System.String] $SetFilePath
+        GetFilePath    = [System.String] $GetFilePath
+        TestFilePath   = [System.String] $TestFilePath
+        Credential     = [System.Object] $Credential
+        QueryTimeout   = [System.UInt32] $QueryTimeout
+        Variable       = [System.String[]] $Variable
+        GetResult      = [System.String[]] $getResult
     }
 
     $returnValue
@@ -146,20 +148,22 @@ function Set-TargetResource
         [System.String]
         $TestFilePath,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [System.UInt32]
         $QueryTimeout,
-  
+
+        [Parameter()]
         [System.String[]]
         $Variable
     )
 
     Invoke-SqlScript -ServerInstance $ServerInstance -SqlScriptPath $SetFilePath `
-                -Credential $Credential -Variable $Variable -QueryTimeout $QueryTimeout -ErrorAction Stop
+        -Credential $Credential -Variable $Variable -QueryTimeout $QueryTimeout -ErrorAction Stop
 }
 
 <#
@@ -219,14 +223,16 @@ function Test-TargetResource
         [System.String]
         $TestFilePath,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [System.UInt32]
         $QueryTimeout,
 
+        [Parameter()]
         [System.String[]]
         $Variable
     )
@@ -234,9 +240,9 @@ function Test-TargetResource
     try
     {
         $result = Invoke-SqlScript -ServerInstance $ServerInstance -SqlScriptPath $TestFilePath `
-                -Credential $Credential -Variable $Variable -QueryTimeout $QueryTimeout -ErrorAction Stop
+            -Credential $Credential -Variable $Variable -QueryTimeout $QueryTimeout -ErrorAction Stop
 
-        if($null -eq $result)
+        if ($null -eq $result)
         {
             return $true
         }
@@ -287,21 +293,23 @@ function Invoke-SqlScript
         [System.String]
         $SqlScriptPath,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [System.UInt32]
-        $QueryTimeout, 
-  
+        $QueryTimeout,
+
+        [Parameter()]
         [System.String[]]
         $Variable
     )
 
     Import-SQLPSModule
 
-    if($null -ne $Credential)
+    if ($null -ne $Credential)
     {
         $null = $PSBoundParameters.Add("Username", $Credential.UserName)
         $null = $PSBoundParameters.Add("Password", $Credential.GetNetworkCredential().password)

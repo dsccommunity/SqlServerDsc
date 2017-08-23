@@ -1,4 +1,4 @@
-﻿#requires -Version 5
+#requires -Version 5
 $StartTime = [System.Diagnostics.Stopwatch]::StartNew()
 Function check-even($num){[bool]!($num%2)}
 
@@ -10,7 +10,7 @@ $cim = New-CimSession -ComputerName $computers
 
 [DSCLocalConfigurationManager()]
 Configuration LCM_Push
-{    
+{
     Param(
         [string[]]$ComputerName
     )
@@ -21,7 +21,7 @@ Configuration LCM_Push
             AllowModuleOverwrite = $True
             ConfigurationMode = 'ApplyAndAutoCorrect'
             RefreshMode = 'Push'
-            RebootNodeIfNeeded = $True    
+            RebootNodeIfNeeded = $True
         }
     }
 }
@@ -29,7 +29,7 @@ Configuration LCM_Push
 foreach ($computer in $computers)
 {
     $GUID = (New-Guid).Guid
-    LCM_Push -ComputerName $Computer -OutputPath $OutputPath 
+    LCM_Push -ComputerName $Computer -OutputPath $OutputPath
     Set-DSCLocalConfigurationManager -Path $OutputPath  -CimSession $computer -Verbose
 }
 
@@ -50,12 +50,12 @@ Configuration AlwaysOnCluster
             RebootNodeIfNeeded = $true
             DebugMode = "All"
         }
-        
+
         WindowsFeature "NET"
         {
             Ensure = "Present"
             Name = "NET-Framework-Core"
-            Source = $Node.NETPath 
+            Source = $Node.NETPath
         }
 
         WindowsFeature "ADTools"
@@ -64,7 +64,7 @@ Configuration AlwaysOnCluster
             Name = "RSAT-AD-PowerShell"
             Source = $Node.NETPath
         }
-       
+
       if($Node.Features)
       {
          xSqlServerSetup ($Node.NodeName)
@@ -84,16 +84,16 @@ Configuration AlwaysOnCluster
              SQLTempDBDir = "T:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER\MSSQL\Data"
              SQLTempDBLogDir = "L:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER\MSSQL\Data"
              SQLBackupDir = "G:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER\MSSQL\Data"
-         
+
              DependsOn = '[WindowsFeature]NET'
          }
-         
+
          xSqlServerFirewall ($Node.NodeName)
           {
              SourcePath = $Node.SourcePath
              InstanceName = $Node.InstanceName
              Features = $Node.Features
-         
+
              DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
          }
 
@@ -101,7 +101,7 @@ Configuration AlwaysOnCluster
          {
              Ensure = "Present"
              DynamicAlloc = $True
-         
+
              DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
          }
 
@@ -109,8 +109,8 @@ Configuration AlwaysOnCluster
          {
              Ensure = "Present"
              DynamicAlloc = $true
-         
-             DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)            
+
+             DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
          }
        }
 
@@ -133,7 +133,7 @@ Configuration AlwaysOnCluster
        WindowsFeature RSATClusteringPowerShell
        {
            Ensure = "Present"
-           Name   = "RSAT-Clustering-PowerShell"   
+           Name   = "RSAT-Clustering-PowerShell"
 
            DependsOn = "[WindowsFeature]FailoverFeature"
        }
@@ -151,16 +151,16 @@ Configuration AlwaysOnCluster
            Name = $Node.ClusterName
            StaticIPAddress = $Node.ClusterIPAddress
            DomainAdministratorCredential = $Node.InstallerServiceAccount
-       
+
            DependsOn = “[WindowsFeature]RSATClusteringCmdInterface”
        }
        xSQLServerAlwaysOnService($Node.Nodename)
        {
             Ensure = "Present"
-       
+
             DependsOn = ("[xCluster]ensureCreated"),("[xSqlServerSetup]" + $Node.NodeName)
-       } 
-       
+       }
+
        xSQLServerEndpoint($Node.Nodename)
        {
            Ensure = "Present"
@@ -169,7 +169,7 @@ Configuration AlwaysOnCluster
            EndPointName = "Hadr_endpoint"
            DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
        }
-       
+
        xSQLAOGroupEnsure($Node.Nodename)
        {
           Ensure = "Present"
@@ -181,7 +181,7 @@ Configuration AlwaysOnCluster
           PsDscRunAsCredential = $Node.InstallerServiceAccount
           DependsOn = ("[xSQLServerEndpoint]" + $Node.NodeName),("[xSQLServerAlwaysOnService]" + $Node.NodeName),("[WindowsFeature]ADTools")
        }
-    } 
+    }
     Node $AllNodes.Where{$_.Role -eq "ReplicaServerNode" }.NodeName
     {
             # Set LCM to reboot if needed
@@ -193,14 +193,14 @@ Configuration AlwaysOnCluster
             RebootNodeIfNeeded = $true
             DebugMode = "All"
         }
-        
+
         WindowsFeature "NET"
         {
             Ensure = "Present"
             Name = "NET-Framework-Core"
-            Source = $Node.NETPath 
+            Source = $Node.NETPath
         }
-       
+
       if($Node.Features)
       {
          xSqlServerSetup ($Node.NodeName)
@@ -220,16 +220,16 @@ Configuration AlwaysOnCluster
              SQLTempDBDir = "T:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER\MSSQL\Data"
              SQLTempDBLogDir = "L:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER\MSSQL\Data"
              SQLBackupDir = "G:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER\MSSQL\Data"
-         
+
              DependsOn = '[WindowsFeature]NET'
          }
-         
+
          xSqlServerFirewall ($Node.NodeName)
          {
              SourcePath = $Node.SourcePath
              InstanceName = $Node.InstanceName
              Features = $Node.Features
-         
+
              DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
          }
 
@@ -237,74 +237,74 @@ Configuration AlwaysOnCluster
          {
              Ensure = "Present"
              DynamicAlloc = $True
-         
+
              DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
          }
          xSQLServerMaxDop($Node.Nodename)
          {
              Ensure = "Present"
              DynamicAlloc = $true
-         
-             DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)           
+
+             DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
          }
-    
+
        }
-    
+
        WindowsFeature FailoverFeature
        {
            Ensure = "Present"
            Name      = "Failover-clustering"
-       
+
            DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
        }
-       
+
        WindowsFeature RSATClusteringPowerShell
        {
            Ensure = "Present"
-           Name   = "RSAT-Clustering-PowerShell"   
-       
+           Name   = "RSAT-Clustering-PowerShell"
+
            DependsOn = "[WindowsFeature]FailoverFeature"
        }
-      
+
        WindowsFeature RSATClusteringMgmt
        {
            Ensure = "Present"
            Name = "RSAT-Clustering-Mgmt"
-      
+
            DependsOn = "[WindowsFeature]FailoverFeature"
        }
-       
+
        WindowsFeature RSATClusteringCmdInterface
        {
            Ensure = "Present"
            Name   = "RSAT-Clustering-CmdInterface"
-       
+
            DependsOn = "[WindowsFeature]RSATClusteringPowerShell"
        }
-        
-       xWaitForCluster waitForCluster 
-       { 
-           Name = $Node.ClusterName 
-           RetryIntervalSec = 10 
+
+       xWaitForCluster waitForCluster
+       {
+           Name = $Node.ClusterName
+           RetryIntervalSec = 10
            RetryCount = 6
-       
+
            DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
-       } 
-       
-       xCluster joinCluster 
-       { 
-           Name = $Node.ClusterName 
-           StaticIPAddress = $Node.ClusterIPAddress 
+       }
+
+       xCluster joinCluster
+       {
+           Name = $Node.ClusterName
+           StaticIPAddress = $Node.ClusterIPAddress
            DomainAdministratorCredential = $Node.InstallerServiceAccount
-       
-           DependsOn = "[xWaitForCluster]waitForCluster" 
+
+           DependsOn = "[xWaitForCluster]waitForCluster"
        }
        xSQLServerAlwaysOnService($Node.Nodename)
        {
             Ensure = "Present"
-       
+
             DependsOn = ("[xCluster]joinCluster"),("[xSqlServerSetup]" + $Node.NodeName)
-       } 
+       }
        xSQLServerEndpoint($Node.Nodename)
        {
            Ensure = "Present"
@@ -313,16 +313,16 @@ Configuration AlwaysOnCluster
            EndPointName = "Hadr_endpoint"
            DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
        }
-       
+
        xWaitForAvailabilityGroup waitforAG
-       { 
-           Name = "MyAG" 
-           RetryIntervalSec = 20 
+       {
+           Name = "MyAG"
+           RetryIntervalSec = 20
            RetryCount = 6
-       
+
            DependsOn = (“[xSQLServerEndpoint]" +$Node.Nodename),(“[xSQLServerAlwaysOnService]" +$Node.Nodename)
-       } 
-       
+       }
+
        xSQLAOGroupJoin ($Node.Nodename)
        {
           Ensure = "Present"
@@ -332,7 +332,7 @@ Configuration AlwaysOnCluster
 
           DependsOn = ("[xWaitForAvailabilityGroup]waitforAG")
        }
-     
+
     }
 }
 $ConfigurationData = @{
@@ -344,8 +344,8 @@ $ConfigurationData = @{
             NETPath = "\\ohdc9000\SQLAutoBuilds\SQL2014\WindowsServer2012R2\sources\sxs"
             SourcePath = "\\ohdc9000\SQLAutoBuilds\SQL2014\"
             InstallerServiceAccount = Get-Credential -UserName CORP\AutoSvc -Message "Credentials to Install SQL Server"
-            AdminAccount = "Corp\user1"  
-            ClusterName = "DevCluster" 
+            AdminAccount = "Corp\user1"
+            ClusterName = "DevCluster"
             ClusterIPAddress = "10.0.75.199/24"
         }
     )
@@ -359,16 +359,16 @@ ForEach ($computer in $computers) {
             NodeName        = $computer
             InstanceName    = "MSSQLSERVER"
             Features        = "SQLENGINE,IS,SSMS,ADV_SSMS"
-            Role = "PrimaryClusterNode"        
+            Role = "PrimaryClusterNode"
             }
     }
-    else 
+    else
     {
             $ConfigurationData.AllNodes += @{
             NodeName        = $computer
             InstanceName    = "MSSQLSERVER"
             Features        = "SQLENGINE,IS,SSMS,ADV_SSMS"
-            Role = "ReplicaServerNode"    
+            Role = "ReplicaServerNode"
             }
     }
    $Destination = "\\"+$computer+"\\c$\Program Files\WindowsPowerShell\Modules"
@@ -382,14 +382,14 @@ AlwaysOnCluster -ConfigurationData $ConfigurationData -OutputPath $OutputPath
 
 #Push################################
 
-Workflow StartConfigs 
-{ 
+Workflow StartConfigs
+{
     param([string[]]$computers,
         [System.string] $Path)
- 
-    foreach –parallel ($Computer in $Computers) 
+
+    foreach –parallel ($Computer in $Computers)
     {
-    
+
         Start-DscConfiguration -ComputerName $Computer -Path $Path -Verbose -Wait -Force
     }
 }
@@ -400,10 +400,10 @@ $StartTime.Elapsed
 
 ############Validate##############
 <#
-Workflow TestConfigs 
-{ 
+Workflow TestConfigs
+{
     param([string[]]$computers)
-    foreach -parallel ($Computer in $Computers) 
+    foreach -parallel ($Computer in $Computers)
     {
         Write-verbose "$Computer :"
         test-dscconfiguration -ComputerName $Computer

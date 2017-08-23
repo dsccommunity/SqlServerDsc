@@ -1,13 +1,13 @@
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'xSQLServerHelper.psm1') `
-                               -Force
+        -ChildPath 'xSQLServerHelper.psm1') `
+    -Force
 <#
     .SYNOPSIS
     This function gets the sql server role properties.
-    
+
     .PARAMETER Members
     The members the server role should have.
-    
+
     .PARAMETER MembersToInclude
     The members the server role should include.
 
@@ -34,7 +34,7 @@ function Get-TargetResource
         $Members,
 
         [Parameter()]
-        [System.String[]] 
+        [System.String[]]
         $MembersToInclude,
 
         [Parameter()]
@@ -72,9 +72,9 @@ function Get-TargetResource
             catch
             {
                 throw New-TerminatingError -ErrorType EnumMemberNamesServerRoleGetError `
-                                           -FormatArgs @($SQLServer,$SQLInstanceName,$ServerRoleName) `
-                                           -ErrorCategory InvalidOperation `
-                                           -InnerException $_.Exception
+                    -FormatArgs @($SQLServer, $SQLInstanceName, $ServerRoleName) `
+                    -ErrorCategory InvalidOperation `
+                    -InnerException $_.Exception
             }
 
             if ($Members)
@@ -82,8 +82,8 @@ function Get-TargetResource
                 if ($MembersToInclude -or $MembersToExclude)
                 {
                     throw New-TerminatingError -ErrorType MembersToIncludeAndExcludeParamMustBeNull `
-                                                -FormatArgs @($SQLServer,$SQLInstanceName) `
-                                                -ErrorCategory InvalidArgument  
+                        -FormatArgs @($SQLServer, $SQLInstanceName) `
+                        -ErrorCategory InvalidArgument
                 }
 
                 if ( $null -ne (Compare-Object -ReferenceObject $membersInRole -DifferenceObject $Members))
@@ -126,13 +126,13 @@ function Get-TargetResource
     }
 
     $returnValue = @{
-        Ensure              = $ensure
-        Members             = $membersInRole
-        MembersToInclude    = $MembersToInclude
-        MembersToExclude    = $MembersToExclude
-        ServerRoleName      = $ServerRoleName
-        SQLServer           = $SQLServer
-        SQLInstanceName     = $SQLInstanceName
+        Ensure           = $ensure
+        Members          = $membersInRole
+        MembersToInclude = $MembersToInclude
+        MembersToExclude = $MembersToExclude
+        ServerRoleName   = $ServerRoleName
+        SQLServer        = $SQLServer
+        SQLInstanceName  = $SQLInstanceName
     }
     $returnValue
 }
@@ -147,7 +147,7 @@ function Get-TargetResource
 
     .PARAMETER Members
     The members the server role should have.
-    
+
     .PARAMETER MembersToInclude
     The members the server role should include.
 
@@ -169,7 +169,7 @@ function Set-TargetResource
     param
     (
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -178,7 +178,7 @@ function Set-TargetResource
         $Members,
 
         [Parameter()]
-        [System.String[]] 
+        [System.String[]]
         $MembersToInclude,
 
         [Parameter()]
@@ -206,12 +206,12 @@ function Set-TargetResource
     if ($sqlServerObject)
     {
         Write-Verbose -Message "Setting properties of SQL Server role '$ServerRoleName'."
-        
+
         switch ($Ensure)
         {
             'Absent'
             {
-                try 
+                try
                 {
                     $sqlServerRoleObjectToDrop = $sqlServerObject.Roles[$ServerRoleName]
                     if ($sqlServerRoleObjectToDrop)
@@ -224,20 +224,20 @@ function Set-TargetResource
                 catch
                 {
                     throw New-TerminatingError -ErrorType DropServerRoleSetError `
-                                               -FormatArgs @($SQLServer,$SQLInstanceName,$ServerRoleName) `
-                                               -ErrorCategory InvalidOperation `
-                                               -InnerException $_.Exception
+                        -FormatArgs @($SQLServer, $SQLInstanceName, $ServerRoleName) `
+                        -ErrorCategory InvalidOperation `
+                        -InnerException $_.Exception
                 }
             }
-            
+
             'Present'
-            {              
+            {
                 if ($null -eq $sqlServerObject.Roles[$ServerRoleName])
                 {
                     try
                     {
                         $sqlServerRoleObjectToCreate = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerRole `
-                                                                  -ArgumentList $sqlServerObject,$ServerRoleName
+                            -ArgumentList $sqlServerObject, $ServerRoleName
                         if ($sqlServerRoleObjectToCreate)
                         {
                             Write-Verbose -Message "Creating the SQL Server role '$ServerRoleName'."
@@ -248,9 +248,9 @@ function Set-TargetResource
                     catch
                     {
                         throw New-TerminatingError -ErrorType CreateServerRoleSetError `
-                                                   -FormatArgs @($SQLServer,$SQLInstanceName,$ServerRoleName) `
-                                                   -ErrorCategory InvalidOperation `
-                                                   -InnerException $_.Exception
+                            -FormatArgs @($SQLServer, $SQLInstanceName, $ServerRoleName) `
+                            -ErrorCategory InvalidOperation `
+                            -InnerException $_.Exception
                     }
                 }
 
@@ -259,8 +259,8 @@ function Set-TargetResource
                     if ($MembersToInclude -or $MembersToExclude)
                     {
                         throw New-TerminatingError -ErrorType MembersToIncludeAndExcludeParamMustBeNull `
-                                                   -FormatArgs @($SQLServer,$SQLInstanceName) `
-                                                   -ErrorCategory InvalidArgument  
+                            -FormatArgs @($SQLServer, $SQLInstanceName) `
+                            -ErrorCategory InvalidArgument
                     }
 
                     $memberNamesInRoleObject = $sqlServerObject.Roles[$ServerRoleName].EnumMemberNames()
@@ -270,8 +270,8 @@ function Set-TargetResource
                         if ( -not ($Members.Contains($memberName)))
                         {
                             Remove-SqlDscServerRoleMember -SqlServerObject $sqlServerObject `
-                                                          -LoginName $memberName `
-                                                          -ServerRoleName $ServerRoleName
+                                -LoginName $memberName `
+                                -ServerRoleName $ServerRoleName
                         }
                     }
 
@@ -280,24 +280,24 @@ function Set-TargetResource
                         if ( -not ($memberNamesInRoleObject.Contains($memberToAdd)))
                         {
                             Add-SqlDscServerRoleMember -SqlServerObject $sqlServerObject `
-                                                       -LoginName $memberToAdd `
-                                                       -ServerRoleName $ServerRoleName
+                                -LoginName $memberToAdd `
+                                -ServerRoleName $ServerRoleName
                         }
                     }
                 }
                 else
-                {                    
+                {
                     if ($MembersToInclude)
                     {
                         $memberNamesInRoleObject = $sqlServerObject.Roles[$ServerRoleName].EnumMemberNames()
 
                         foreach ($memberToInclude in $MembersToInclude)
                         {
-                            if ( -not ($memberNamesInRoleObject.Contains($memberToInclude))) 
+                            if ( -not ($memberNamesInRoleObject.Contains($memberToInclude)))
                             {
                                 Add-SqlDscServerRoleMember -SqlServerObject $sqlServerObject `
-                                                           -LoginName $memberToInclude `
-                                                           -ServerRoleName $ServerRoleName
+                                    -LoginName $memberToInclude `
+                                    -ServerRoleName $ServerRoleName
                             }
                         }
                     }
@@ -311,8 +311,8 @@ function Set-TargetResource
                             if ($memberNamesInRoleObject.Contains($memberToExclude))
                             {
                                 Remove-SqlDscServerRoleMember -SqlServerObject $sqlServerObject `
-                                                              -LoginName $memberToExclude `
-                                                              -ServerRoleName $ServerRoleName
+                                    -LoginName $memberToExclude `
+                                    -ServerRoleName $ServerRoleName
                             }
                         }
                     }
@@ -332,7 +332,7 @@ function Set-TargetResource
 
     .PARAMETER Members
     The members the server role should have.
-    
+
     .PARAMETER MembersToInclude
     The members the server role should include.
 
@@ -355,7 +355,7 @@ function Test-TargetResource
     param
     (
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -364,7 +364,7 @@ function Test-TargetResource
         $Members,
 
         [Parameter()]
-        [System.String[]] 
+        [System.String[]]
         $MembersToInclude,
 
         [Parameter()]
@@ -388,19 +388,19 @@ function Test-TargetResource
     )
 
     Write-Verbose -Message "Testing SQL Server role $ServerRoleName properties."
-    
+
     $getTargetResourceParameters = @{
-        SQLInstanceName     = $PSBoundParameters.SQLInstanceName
-        SQLServer           = $PSBoundParameters.SQLServer
-        ServerRoleName      = $PSBoundParameters.ServerRoleName
-        Members             = $PSBoundParameters.Members
-        MembersToInclude    = $PSBoundParameters.MembersToInclude
-        MembersToExclude    = $PSBoundParameters.MembersToExclude
+        SQLInstanceName  = $PSBoundParameters.SQLInstanceName
+        SQLServer        = $PSBoundParameters.SQLServer
+        ServerRoleName   = $PSBoundParameters.ServerRoleName
+        Members          = $PSBoundParameters.Members
+        MembersToInclude = $PSBoundParameters.MembersToInclude
+        MembersToExclude = $PSBoundParameters.MembersToExclude
     }
 
-    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters    
+    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
     $isServerRoleInDesiredState = $true
-    
+
     switch ($Ensure)
     {
         'Absent'
@@ -411,13 +411,13 @@ function Test-TargetResource
                 $isServerRoleInDesiredState = $false
             }
         }
-        
+
         'Present'
         {
             if ($getTargetResourceResult.Ensure -ne 'Present')
             {
                 New-VerboseMessage -Message ("Ensure is set to Present. The missing role $ServerRoleName " + `
-                                             "should be added or members are not correctly configured")
+                        "should be added or members are not correctly configured")
                 $isServerRoleInDesiredState = $false
             }
         }
@@ -463,8 +463,8 @@ function Add-SqlDscServerRoleMember
     if ( -not ($SqlServerObject.Logins[$LoginName]) )
     {
         throw New-TerminatingError -ErrorType LoginNotFound `
-                                   -FormatArgs @($LoginName, $SQLServer, $SQLInstanceName) `
-                                   -ErrorCategory ObjectNotFound
+            -FormatArgs @($LoginName, $SQLServer, $SQLInstanceName) `
+            -ErrorCategory ObjectNotFound
     }
 
     try
@@ -476,9 +476,9 @@ function Add-SqlDscServerRoleMember
     catch
     {
         throw New-TerminatingError -ErrorType AddMemberServerRoleSetError `
-                                   -FormatArgs @($SQLServer,$SQLInstanceName,$ServerRoleName,$LoginName) `
-                                   -ErrorCategory InvalidOperation `
-                                   -InnerException $_.Exception
+            -FormatArgs @($SQLServer, $SQLInstanceName, $ServerRoleName, $LoginName) `
+            -ErrorCategory InvalidOperation `
+            -InnerException $_.Exception
     }
 }
 
@@ -519,8 +519,8 @@ function Remove-SqlDscServerRoleMember
     if ( -not ($SqlServerObject.Logins[$LoginName]) )
     {
         throw New-TerminatingError -ErrorType LoginNotFound `
-                                    -FormatArgs @($LoginName, $SQLServer, $SQLInstanceName) `
-                                    -ErrorCategory ObjectNotFound
+            -FormatArgs @($LoginName, $SQLServer, $SQLInstanceName) `
+            -ErrorCategory ObjectNotFound
     }
 
     try
@@ -532,9 +532,9 @@ function Remove-SqlDscServerRoleMember
     catch
     {
         throw New-TerminatingError -ErrorType DropMemberServerRoleSetError `
-                                   -FormatArgs @($SQLServer,$SQLInstanceName,$ServerRoleName,$LoginName) `
-                                   -ErrorCategory InvalidOperation `
-                                   -InnerException $_.Exception
+            -FormatArgs @($SQLServer, $SQLInstanceName, $ServerRoleName, $LoginName) `
+            -ErrorCategory InvalidOperation `
+            -InnerException $_.Exception
     }
 }
 

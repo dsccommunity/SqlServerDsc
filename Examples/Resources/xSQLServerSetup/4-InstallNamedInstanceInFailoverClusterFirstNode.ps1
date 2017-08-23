@@ -64,61 +64,63 @@ Configuration Example
     node localhost
     {
         #region Install prerequisites for SQL Server
-        WindowsFeature 'NetFramework35' {
-           Name = 'NET-Framework-Core'
-           Source = '\\fileserver.company.local\images$\Win2k12R2\Sources\Sxs' # Assumes built-in Everyone has read permission to the share and path.
-           Ensure = 'Present'
+        WindowsFeature 'NetFramework35'
+        {
+            Name   = 'NET-Framework-Core'
+            Source = '\\fileserver.company.local\images$\Win2k12R2\Sources\Sxs' # Assumes built-in Everyone has read permission to the share and path.
+            Ensure = 'Present'
         }
 
-        WindowsFeature 'NetFramework45' {
-           Name = 'NET-Framework-45-Core'
-           Ensure = 'Present'
+        WindowsFeature 'NetFramework45'
+        {
+            Name   = 'NET-Framework-45-Core'
+            Ensure = 'Present'
         }
         #endregion Install prerequisites for SQL Server
 
         #region Install SQL Server Failover Cluster
         xSQLServerSetup 'InstallNamedInstanceNode1-INST2016'
         {
-            Action = 'InstallFailoverCluster'
-            ForceReboot = $false
-            UpdateEnabled = 'False'
-            SourcePath = '\\fileserver.compant.local\images$\SQL2016RTM'
-            SourceCredential = $SqlInstallCredential
+            Action                     = 'InstallFailoverCluster'
+            ForceReboot                = $false
+            UpdateEnabled              = 'False'
+            SourcePath                 = '\\fileserver.compant.local\images$\SQL2016RTM'
+            SourceCredential           = $SqlInstallCredential
 
-            InstanceName = 'INST2016'
-            Features = 'SQLENGINE,AS'
+            InstanceName               = 'INST2016'
+            Features                   = 'SQLENGINE,AS'
 
-            InstallSharedDir = 'C:\Program Files\Microsoft SQL Server'
-            InstallSharedWOWDir = 'C:\Program Files (x86)\Microsoft SQL Server'
-            InstanceDir = 'C:\Program Files\Microsoft SQL Server'
+            InstallSharedDir           = 'C:\Program Files\Microsoft SQL Server'
+            InstallSharedWOWDir        = 'C:\Program Files (x86)\Microsoft SQL Server'
+            InstanceDir                = 'C:\Program Files\Microsoft SQL Server'
 
-            SQLCollation = 'Finnish_Swedish_CI_AS'
-            SQLSvcAccount = $SqlServiceCredential
-            AgtSvcAccount = $SqlAgentServiceCredential
-            SQLSysAdminAccounts = 'COMPANY\SQL Administrators', $SqlAdministratorCredential.UserName
-            ASSvcAccount = $SqlServiceCredential
-            ASSysAdminAccounts = 'COMPANY\SQL Administrators', $SqlAdministratorCredential.UserName
+            SQLCollation               = 'Finnish_Swedish_CI_AS'
+            SQLSvcAccount              = $SqlServiceCredential
+            AgtSvcAccount              = $SqlAgentServiceCredential
+            SQLSysAdminAccounts        = 'COMPANY\SQL Administrators', $SqlAdministratorCredential.UserName
+            ASSvcAccount               = $SqlServiceCredential
+            ASSysAdminAccounts         = 'COMPANY\SQL Administrators', $SqlAdministratorCredential.UserName
 
             # Drive D: must be a shared disk.
-            InstallSQLDataDir = 'D:\MSSQL\Data'
-            SQLUserDBDir = 'D:\MSSQL\Data'
-            SQLUserDBLogDir = 'D:\MSSQL\Log'
-            SQLTempDBDir = 'D:\MSSQL\Temp'
-            SQLTempDBLogDir = 'D:\MSSQL\Temp'
-            SQLBackupDir = 'D:\MSSQL\Backup'
-            ASConfigDir = 'D:\AS\Config'
-            ASDataDir = 'D:\AS\Data'
-            ASLogDir = 'D:\AS\Log'
-            ASBackupDir = 'D:\AS\Backup'
-            ASTempDir = 'D:\AS\Temp'
+            InstallSQLDataDir          = 'D:\MSSQL\Data'
+            SQLUserDBDir               = 'D:\MSSQL\Data'
+            SQLUserDBLogDir            = 'D:\MSSQL\Log'
+            SQLTempDBDir               = 'D:\MSSQL\Temp'
+            SQLTempDBLogDir            = 'D:\MSSQL\Temp'
+            SQLBackupDir               = 'D:\MSSQL\Backup'
+            ASConfigDir                = 'D:\AS\Config'
+            ASDataDir                  = 'D:\AS\Data'
+            ASLogDir                   = 'D:\AS\Log'
+            ASBackupDir                = 'D:\AS\Backup'
+            ASTempDir                  = 'D:\AS\Temp'
 
             FailoverClusterNetworkName = 'TESTCLU01A'
-            FailoverClusterIPAddress = '192.168.0.46'
-            FailoverClusterGroupName = 'TESTCLU01A'
+            FailoverClusterIPAddress   = '192.168.0.46'
+            FailoverClusterGroupName   = 'TESTCLU01A'
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential       = $SqlInstallCredential
 
-            DependsOn = '[WindowsFeature]NetFramework35','[WindowsFeature]NetFramework45'
+            DependsOn                  = '[WindowsFeature]NetFramework35', '[WindowsFeature]NetFramework45'
         }
         #region Install SQL Server Failover Cluster
     }

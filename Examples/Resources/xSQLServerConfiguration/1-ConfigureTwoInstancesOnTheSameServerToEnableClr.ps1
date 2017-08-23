@@ -8,9 +8,9 @@
 $configurationData = @{
     AllNodes = @(
         @{
-            NodeName = 'localhost'
+            NodeName     = 'localhost'
             SQLInstances = @('CONTENT', 'DIST')
-            OptionName = 'clr enabled'
+            OptionName   = 'clr enabled'
         }
     )
 }
@@ -25,10 +25,10 @@ Configuration Example
         {
             xSQLServerConfiguration ('SQLConfigCLR_{0}' -f $SQLInstance)
             {
-                SQLServer = $node.NodeName
+                SQLServer       = $node.NodeName
                 SQLInstanceName = $SQLInstance
-                OptionName = $node.OptionName
-                OptionValue = 1
+                OptionName      = $node.OptionName
+                OptionValue     = 1
             }
         }
     }

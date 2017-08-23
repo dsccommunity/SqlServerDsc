@@ -1,6 +1,6 @@
 <#
 .EXAMPLE
-    This example shows how to set max degree of parallelism server 
+    This example shows how to set max degree of parallelism server
     configuration option with the default configuration.
 #>
 Configuration Example
@@ -19,9 +19,9 @@ Configuration Example
     {
         xSQLServerMaxDop Set_SQLServerMaxDop_ToDefault
         {
-            Ensure = 'Absent'
-            SQLServer = 'SQLServer'
-            SQLInstanceName = 'DSC'
+            Ensure               = 'Absent'
+            SQLServer            = 'SQLServer'
+            SQLInstanceName      = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount
         }
     }

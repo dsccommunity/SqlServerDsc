@@ -1,4 +1,4 @@
-﻿<#
+<#
     .EXAMPLE
         This example will remove an Database Mirror endpoint from two instances.
 
@@ -19,20 +19,20 @@ Configuration Example
     {
         xSQLServerEndpoint SQLConfigureEndpoint-Instance1
         {
-            Ensure = 'Absent'
+            Ensure               = 'Absent'
 
-            EndpointName = 'HADR'
-            SQLInstanceName = 'INST1'
+            EndpointName         = 'HADR'
+            SQLInstanceName      = 'INST1'
 
             PsDscRunAsCredential = $SysAdminAccount
         }
 
         xSQLServerEndpoint SQLConfigureEndpoint-Instance2
         {
-            Ensure = 'Absent'
+            Ensure               = 'Absent'
 
-            EndpointName = 'HADR'
-            SQLInstanceName = 'INST2'
+            EndpointName         = 'HADR'
+            SQLInstanceName      = 'INST2'
 
             PsDscRunAsCredential = $SysAdminAccount
         }

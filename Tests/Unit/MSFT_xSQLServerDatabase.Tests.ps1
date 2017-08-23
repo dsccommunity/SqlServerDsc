@@ -47,9 +47,9 @@ try
             SQLInstanceName = $mockSqlServerInstanceName
             SQLServer       = $mockSqlServerName
         }
-        
+
         #region Function mocks
-        
+
         $mockConnectSQL = {
             return @(
                 (
@@ -58,14 +58,14 @@ try
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSqlServerName -PassThru |
                         Add-Member -MemberType ScriptProperty -Name Databases -Value {
                             return @{
-                                $mockSqlDatabaseName = ( New-Object Object | 
+                                $mockSqlDatabaseName = ( New-Object Object |
                                     Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
                                     Add-Member -MemberType ScriptMethod -Name Drop -Value {
                                         if ($mockInvalidOperationForDropMethod)
                                         {
                                             throw 'Mock Drop Method was called with invalid operation.'
                                         }
-                                        
+
                                         if ( $this.Name -ne $mockExpectedDatabaseNameToDrop )
                                         {
                                             throw "Called mocked Drop() method without dropping the right database. Expected '{0}'. But was '{1}'." `
@@ -74,7 +74,7 @@ try
                                     } -PassThru
                                     )
                                 }
-                            } -PassThru -Force                                        
+                            } -PassThru -Force
                 )
             )
         }
@@ -89,7 +89,7 @@ try
                             {
                                 throw 'Mock Create Method was called with invalid operation.'
                             }
-                            
+
                             if ( $this.Name -ne $mockExpectedDatabaseNameToCreate )
                             {
                                 throw "Called mocked Create() method without adding the right database. Expected '{0}'. But was '{1}'." `
@@ -127,7 +127,7 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
-        
+
             Context 'When the system is in the desired state for a database' {
                 It 'Should return the state as present' {
                     $testParameters = $mockDefaultParameters
@@ -152,7 +152,7 @@ try
 
             Assert-VerifiableMocks
         }
-        
+
         Describe "MSFT_xSQLServerDatabase\Test-TargetResource" -Tag 'Test'{
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
@@ -169,7 +169,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should Be $false
                 }
-                
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
@@ -228,7 +228,7 @@ try
 
             Assert-VerifiableMocks
         }
-        
+
         Describe "MSFT_xSQLServerDatabase\Set-TargetResource" -Tag 'Set'{
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
@@ -250,13 +250,13 @@ try
 
                     { Set-TargetResource @testParameters } | Should Not Throw
                 }
-                
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Database' {
-                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter { 
+                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database'
                     } -Scope Context
                 }
@@ -275,7 +275,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should Not Throw
                 }
-                
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
@@ -290,11 +290,11 @@ try
                         Name    = 'NewDatabase'
                         Ensure  = 'Present'
                     }
-                    
+
                     $throwInvalidOperation = ('InnerException: Exception calling "Create" ' + `
                                               'with "0" argument(s): "Mock Create Method was called with invalid operation."')
-                    
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation 
+
+                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -302,7 +302,7 @@ try
                 }
 
                 It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Database' {
-                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter { 
+                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database'
                     } -Scope Context
                 }
@@ -317,12 +317,12 @@ try
                     Name    = 'AdventureWorks'
                     Ensure  = 'Absent'
                 }
-                
+
                 It 'Should throw the correct error when Drop() method was called with invalid operation' {
                     $throwInvalidOperation = ('InnerException: Exception calling "Drop" ' + `
                                               'with "0" argument(s): "Mock Drop Method was called with invalid operation."')
-                    
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation 
+
+                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {

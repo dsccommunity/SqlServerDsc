@@ -1,4 +1,4 @@
-﻿<#
+<#
 .EXAMPLE
     This example will enable TCP/IP protocol and set the custom static port to 4509.
     When RestartService is set to $true the resource will also restart the SQL service.
@@ -19,12 +19,12 @@ Configuration Example
     {
         xSQLServerNetwork 'ChangeTcpIpOnDefaultInstance'
         {
-            InstanceName = 'MSSQLSERVER'
-            ProtocolName = 'Tcp'
-            IsEnabled = $true
+            InstanceName    = 'MSSQLSERVER'
+            ProtocolName    = 'Tcp'
+            IsEnabled       = $true
             TCPDynamicPorts = ''
-            TCPPort = 4509
-            RestartService = $true
+            TCPPort         = 4509
+            RestartService  = $true
         }
     }
 }

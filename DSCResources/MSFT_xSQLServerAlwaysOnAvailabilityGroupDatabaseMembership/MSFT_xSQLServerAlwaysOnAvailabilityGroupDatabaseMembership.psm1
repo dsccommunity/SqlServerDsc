@@ -1,9 +1,9 @@
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'xSQLServerHelper.psm1') `
-                               -Force
+        -ChildPath 'xSQLServerHelper.psm1') `
+    -Force
 
 Import-Module -Name (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent) `
-                               -ChildPath 'CommonResourceHelper.psm1')
+        -ChildPath 'CommonResourceHelper.psm1')
 
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership'
 
@@ -34,7 +34,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xSQLServerAlwaysOn
 function Get-TargetResource
 {
     [CmdletBinding()]
-    [OutputType([Hashtable])]
+    [OutputType([System.Collections.Hashtable])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -60,14 +60,14 @@ function Get-TargetResource
 
     # Create an object that reflects the current configuration
     $currentConfiguration = @{
-        DatabaseName = @()
-        SQLServer = $SQLServer
-        SQLInstanceName = $SQLInstanceName
+        DatabaseName          = @()
+        SQLServer             = $SQLServer
+        SQLInstanceName       = $SQLInstanceName
         AvailabilityGroupName = ''
-        BackupPath = ''
-        Ensure = ''
-        Force = $false
-        MatchDatabaseOwner = $false
+        BackupPath            = ''
+        Ensure                = ''
+        Force                 = $false
+        MatchDatabaseOwner    = $false
     }
 
     # Connect to the instance
@@ -165,16 +165,16 @@ function Set-TargetResource
         [System.String]
         $BackupPath,
 
-        [Parameter(Mandatory = $false)]
-        [ValidateSet('Present','Absent')]
+        [Parameter()]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [Boolean]
         $Force,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [Boolean]
         $MatchDatabaseOwner
     )
@@ -191,18 +191,18 @@ function Set-TargetResource
     $primaryServerObject = Get-PrimaryReplicaServerObject -ServerObject $serverObject -AvailabilityGroup $availabilityGroup
 
     $getDatabasesToAddToAvailabilityGroupParameters = @{
-        DatabaseName = $DatabaseName
-        Ensure = $Ensure
-        ServerObject = $primaryServerObject
+        DatabaseName      = $DatabaseName
+        Ensure            = $Ensure
+        ServerObject      = $primaryServerObject
         AvailabilityGroup = $availabilityGroup
     }
     $databasesToAddToAvailabilityGroup = Get-DatabasesToAddToAvailabilityGroup @getDatabasesToAddToAvailabilityGroupParameters
 
     $getDatabasesToRemoveFromAvailabilityGroupParameters = @{
-        DatabaseName = $DatabaseName
-        Ensure = $Ensure
-        Force = $Force
-        ServerObject = $primaryServerObject
+        DatabaseName      = $DatabaseName
+        Ensure            = $Ensure
+        Force             = $Force
+        ServerObject      = $primaryServerObject
         AvailabilityGroup = $availabilityGroup
     }
     $databasesToRemoveFromAvailabilityGroup = Get-DatabasesToRemoveFromAvailabilityGroup @getDatabasesToRemoveFromAvailabilityGroupParameters
@@ -215,7 +215,7 @@ function Set-TargetResource
 
     if ( $databasesToAddToAvailabilityGroup.Count -gt 0 )
     {
-        Write-Verbose -Message ($script:localizedData.AddingDatabasesToAvailabilityGroup -f $AvailabilityGroupName,( $databasesToAddToAvailabilityGroup -join ', ' ))
+        Write-Verbose -Message ($script:localizedData.AddingDatabasesToAvailabilityGroup -f $AvailabilityGroupName, ( $databasesToAddToAvailabilityGroup -join ', ' ))
 
         # Get only the secondary replicas. Some tests do not need to be performed on the primary replica
         $secondaryReplicas = $availabilityGroup.AvailabilityReplicas | Where-Object -FilterScript { $_.Role -ne 'Primary' }
@@ -257,12 +257,12 @@ function Set-TargetResource
             $prerequisiteCheckFailures = @()
 
             $prerequisiteChecks = @{
-                RecoveryModel = 'Full'
-                ReadOnly = $false
-                UserAccess = 'Multiple'
-                AutoClose = $false
+                RecoveryModel         = 'Full'
+                ReadOnly              = $false
+                UserAccess            = 'Multiple'
+                AutoClose             = $false
                 AvailabilityGroupName = ''
-                IsMirroringEnabled = $false
+                IsMirroringEnabled    = $false
             }
 
             foreach ( $prerequisiteCheck in $prerequisiteChecks.GetEnumerator() )
@@ -282,8 +282,8 @@ function Set-TargetResource
             # If FILESTREAM is enabled, ensure FILESTREAM is enabled on all replica instances
             if (
                 ( -not [System.String]::IsNullOrEmpty($databaseObject.DefaultFileStreamFileGroup) ) `
-                -or ( -not [System.String]::IsNullOrEmpty($databaseObject.FilestreamDirectoryName) ) `
-                -or ( $databaseObject.FilestreamNonTransactedAccess -ne 'Off' )
+                    -or ( -not [System.String]::IsNullOrEmpty($databaseObject.FilestreamDirectoryName) ) `
+                    -or ( $databaseObject.FilestreamNonTransactedAccess -ne 'Off' )
             )
             {
                 $availabilityReplicaFilestreamLevel = @{}
@@ -337,7 +337,7 @@ function Set-TargetResource
                     $fileExistsQuery = "EXEC master.dbo.xp_fileexist '$databaseFileDirectory'"
                     $fileExistsResult = Invoke-Query -SQLServer $currentAvailabilityGroupReplicaServerObject.NetName -SQLInstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $fileExistsQuery -WithResults
 
-                    if  ( $fileExistsResult.Tables.Rows.'File is a Directory' -ne 1 )
+                    if ( $fileExistsResult.Tables.Rows.'File is a Directory' -ne 1 )
                     {
                         $missingDirectories += $databaseFileDirectory
                     }
@@ -393,9 +393,9 @@ function Set-TargetResource
                 # Build the backup parameters. If no backup was previously taken, a standard full will be taken. Otherwise a CopyOnly backup will be taken.
                 $backupSqlDatabaseParameters = @{
                     DatabaseObject = $databaseObject
-                    BackupAction = 'Database'
-                    BackupFile = $databaseFullBackupFile
-                    ErrorAction = 'Stop'
+                    BackupAction   = 'Database'
+                    BackupFile     = $databaseFullBackupFile
+                    ErrorAction    = 'Stop'
                 }
 
                 # If no full backup was ever taken, do not take a backup with CopyOnly
@@ -420,9 +420,9 @@ function Set-TargetResource
                 # Create the parameters to perform a transaction log backup
                 $backupSqlDatabaseLogParams = @{
                     DatabaseObject = $databaseObject
-                    BackupAction = 'Log'
-                    BackupFile = $databaseLogBackupFile
-                    ErrorAction = 'Stop'
+                    BackupAction   = 'Log'
+                    BackupFile     = $databaseLogBackupFile
+                    ErrorAction    = 'Stop'
                 }
 
                 try
@@ -473,10 +473,10 @@ function Set-TargetResource
 
                 # Build the parameters to restore the transaction log
                 $restoreSqlDatabaseLogParameters = @{
-                    Database = $databaseToAddToAvailabilityGroup
-                    BackupFile = $databaseLogBackupFile
+                    Database      = $databaseToAddToAvailabilityGroup
+                    BackupFile    = $databaseLogBackupFile
                     RestoreAction = 'Log'
-                    NoRecovery = $true
+                    NoRecovery    = $true
                 }
 
                 try
@@ -507,7 +507,7 @@ function Set-TargetResource
                 finally
                 {
                     # Clean up the backup files
-                    Remove-Item -Path $databaseFullBackupFile,$databaseLogBackupFile -Force -ErrorAction Continue
+                    Remove-Item -Path $databaseFullBackupFile, $databaseLogBackupFile -Force -ErrorAction Continue
                 }
             }
             else
@@ -519,7 +519,7 @@ function Set-TargetResource
 
     if ( $databasesToRemoveFromAvailabilityGroup.Count -gt 0 )
     {
-        Write-Verbose -Message ($script:localizedData.RemovingDatabasesToAvailabilityGroup -f $AvailabilityGroupName,( $databasesToRemoveFromAvailabilityGroup -join ', ' ))
+        Write-Verbose -Message ($script:localizedData.RemovingDatabasesToAvailabilityGroup -f $AvailabilityGroupName, ( $databasesToRemoveFromAvailabilityGroup -join ', ' ))
 
         foreach ( $databaseToAddToAvailabilityGroup in $databasesToRemoveFromAvailabilityGroup )
         {
@@ -624,16 +624,16 @@ function Test-TargetResource
         [System.String]
         $BackupPath,
 
-        [Parameter(Mandatory = $false)]
-        [ValidateSet('Present','Absent')]
+        [Parameter()]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [Boolean]
         $Force,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [Boolean]
         $MatchDatabaseOwner
     )
@@ -641,11 +641,11 @@ function Test-TargetResource
     $configurationInDesiredState = $true
 
     $getTargetResourceParameters = @{
-        DatabaseName = $DatabaseName
-        SQLServer = $SQLServer
-        SQLInstanceName = $SQLInstanceName
+        DatabaseName          = $DatabaseName
+        SQLServer             = $SQLServer
+        SQLInstanceName       = $SQLInstanceName
         AvailabilityGroupName = $AvailabilityGroupName
-        BackupPath = $BackupPath
+        BackupPath            = $BackupPath
     }
     $currentConfiguration = Get-TargetResource @getTargetResourceParameters
 
@@ -680,9 +680,9 @@ function Test-TargetResource
             }
 
             $getDatabasesToAddToAvailabilityGroupParameters = @{
-                DatabaseName = $DatabaseName
-                Ensure = $Ensure
-                ServerObject = $primaryServerObject
+                DatabaseName      = $DatabaseName
+                Ensure            = $Ensure
+                ServerObject      = $primaryServerObject
                 AvailabilityGroup = $availabilityGroup
             }
             $databasesToAddToAvailabilityGroup = Get-DatabasesToAddToAvailabilityGroup @getDatabasesToAddToAvailabilityGroupParameters
@@ -690,14 +690,14 @@ function Test-TargetResource
             if ( $databasesToAddToAvailabilityGroup.Count -gt 0 )
             {
                 $configurationInDesiredState = $false
-                Write-Verbose -Message ($script:localizedData.DatabaseShouldBeMember -f $AvailabilityGroupName,( $databasesToAddToAvailabilityGroup -join ', ' ))
+                Write-Verbose -Message ($script:localizedData.DatabaseShouldBeMember -f $AvailabilityGroupName, ( $databasesToAddToAvailabilityGroup -join ', ' ))
             }
 
             $getDatabasesToRemoveFromAvailabilityGroupParameters = @{
-                DatabaseName = $DatabaseName
-                Ensure = $Ensure
-                Force = $Force
-                ServerObject = $primaryServerObject
+                DatabaseName      = $DatabaseName
+                Ensure            = $Ensure
+                Force             = $Force
+                ServerObject      = $primaryServerObject
                 AvailabilityGroup = $availabilityGroup
             }
             $databasesToRemoveFromAvailabilityGroup = Get-DatabasesToRemoveFromAvailabilityGroup @getDatabasesToRemoveFromAvailabilityGroupParameters
@@ -705,7 +705,7 @@ function Test-TargetResource
             if ( $databasesToRemoveFromAvailabilityGroup.Count -gt 0 )
             {
                 $configurationInDesiredState = $false
-                Write-Verbose -Message ($script:localizedData.DatabaseShouldNotBeMember -f $AvailabilityGroupName,( $databasesToRemoveFromAvailabilityGroup -join ', ' ))
+                Write-Verbose -Message ($script:localizedData.DatabaseShouldNotBeMember -f $AvailabilityGroupName, ( $databasesToRemoveFromAvailabilityGroup -join ', ' ))
             }
         }
     }
@@ -744,7 +744,7 @@ function Get-DatabasesToAddToAvailabilityGroup
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [System.String[]]
         $DatabaseName,
 
@@ -820,7 +820,7 @@ function Get-DatabasesToRemoveFromAvailabilityGroup
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [System.String[]]
         $DatabaseName,
 
@@ -828,7 +828,7 @@ function Get-DatabasesToRemoveFromAvailabilityGroup
         [System.String]
         $Ensure,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [Boolean]
         $Force,
 
@@ -888,7 +888,7 @@ function Get-MatchingDatabaseNames
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [System.String[]]
         $DatabaseName,
 
@@ -922,11 +922,11 @@ function Get-DatabaseNamesNotFoundOnTheInstance
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [System.String[]]
         $DatabaseName,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [System.String[]]
         $MatchingDatabaseNames
     )
@@ -946,7 +946,7 @@ function Get-DatabaseNamesNotFoundOnTheInstance
             }
         }
 
-        $databasesNotFoundOnTheInstance.Add($dbName,$databaseToAddToAvailabilityGroupNotFound)
+        $databasesNotFoundOnTheInstance.Add($dbName, $databaseToAddToAvailabilityGroupNotFound)
     }
 
     $result = $databasesNotFoundOnTheInstance.GetEnumerator() | Where-Object -FilterScript { $_.Value } | Select-Object -ExpandProperty Key

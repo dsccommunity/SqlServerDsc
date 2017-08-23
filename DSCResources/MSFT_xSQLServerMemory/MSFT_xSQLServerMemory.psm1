@@ -56,7 +56,7 @@ function Get-TargetResource
 
     .PARAMETER SQLInstanceName
     The name of the SQL instance to be configured.
-    
+
     .PARAMETER Ensure
     When set to 'Present' then min and max memory will be set to either the value in parameter MinMemory and MaxMemory or dynamically configured when parameter DynamicAlloc is set to $true.
     When set to 'Absent' min and max memory will be set to default values.
@@ -87,7 +87,7 @@ function Set-TargetResource
         $SQLServer = $env:COMPUTERNAME,
 
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -98,14 +98,14 @@ function Set-TargetResource
         [Parameter()]
         [System.Int32]
         $MinMemory,
-        
+
         [Parameter()]
         [System.Int32]
         $MaxMemory
     )
 
     $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-    
+
     if ($sqlServerObject)
     {
         Write-Verbose -Message 'Setting the minimum and maximum memory used by the instance.'
@@ -118,8 +118,8 @@ function Set-TargetResource
                     if ($MaxMemory)
                     {
                         throw New-TerminatingError -ErrorType MaxMemoryParamMustBeNull `
-                                                   -FormatArgs @( $SQLServer,$SQLInstanceName ) `
-                                                   -ErrorCategory InvalidArgument  
+                            -FormatArgs @( $SQLServer, $SQLInstanceName ) `
+                            -ErrorCategory InvalidArgument
                     }
 
                     $MaxMemory = Get-SqlDscDynamicMaxMemory
@@ -130,21 +130,21 @@ function Set-TargetResource
                     if (-not $MaxMemory)
                     {
                         throw New-TerminatingError -ErrorType MaxMemoryParamMustNotBeNull `
-                                                   -FormatArgs @( $SQLServer,$SQLInstanceName ) `
-                                                   -ErrorCategory InvalidArgument  
+                            -FormatArgs @( $SQLServer, $SQLInstanceName ) `
+                            -ErrorCategory InvalidArgument
                     }
                 }
 
                 $sqlServerObject.Configuration.MaxServerMemory.ConfigValue = $MaxMemory
                 New-VerboseMessage -Message "Maximum memory used by the instance has been limited to $($MaxMemory)MB."
             }
-            
+
             'Absent'
             {
                 $sqlServerObject.Configuration.MaxServerMemory.ConfigValue = 2147483647
                 $sqlServerObject.Configuration.MinServerMemory.ConfigValue = 0
                 New-VerboseMessage -Message ('Ensure is set to absent. Minimum and maximum server memory' + `
-                                             'values used by the instance are reset to the default values.')
+                        'values used by the instance are reset to the default values.')
             }
         }
 
@@ -161,9 +161,9 @@ function Set-TargetResource
         catch
         {
             throw New-TerminatingError -ErrorType AlterServerMemoryFailed `
-                                       -FormatArgs @($SQLServer,$SQLInstanceName) `
-                                       -ErrorCategory InvalidOperation `
-                                       -InnerException $_.Exception
+                -FormatArgs @($SQLServer, $SQLInstanceName) `
+                -ErrorCategory InvalidOperation `
+                -InnerException $_.Exception
         }
     }
 }
@@ -177,7 +177,7 @@ function Set-TargetResource
 
     .PARAMETER SQLInstanceName
     The name of the SQL instance to be configured.
-    
+
     .PARAMETER Ensure
     When set to 'Present' then min and max memory will be set to either the value in parameter MinMemory and MaxMemory or dynamically configured when parameter DynamicAlloc is set to $true.
     When set to 'Absent' min and max memory will be set to default values.
@@ -209,7 +209,7 @@ function Test-TargetResource
         $SQLServer = $env:COMPUTERNAME,
 
         [Parameter()]
-        [ValidateSet("Present","Absent")]
+        [ValidateSet("Present", "Absent")]
         [System.String]
         $Ensure = 'Present',
 
@@ -226,7 +226,7 @@ function Test-TargetResource
         $MaxMemory
     )
 
-    Write-Verbose -Message 'Testing the values of the minimum and maximum memory server configuration option set to be used by the instance.'  
+    Write-Verbose -Message 'Testing the values of the minimum and maximum memory server configuration option set to be used by the instance.'
 
     $getTargetResourceParameters = @{
         SQLInstanceName = $SQLInstanceName
@@ -234,7 +234,7 @@ function Test-TargetResource
     }
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-    
+
     $currentMinMemory = $getTargetResourceResult.MinMemory
     $currentMaxMemory = $getTargetResourceResult.MaxMemory
     $isServerMemoryInDesiredState = $true
@@ -263,8 +263,8 @@ function Test-TargetResource
                 if ($MaxMemory)
                 {
                     throw New-TerminatingError -ErrorType MaxMemoryParamMustBeNull `
-                                               -FormatArgs @( $SQLServer,$SQLInstanceName ) `
-                                               -ErrorCategory InvalidArgument  
+                        -FormatArgs @( $SQLServer, $SQLInstanceName ) `
+                        -ErrorCategory InvalidArgument
                 }
 
                 $MaxMemory = Get-SqlDscDynamicMaxMemory
@@ -275,24 +275,24 @@ function Test-TargetResource
                 if (-not $MaxMemory)
                 {
                     throw New-TerminatingError -ErrorType MaxMemoryParamMustNotBeNull `
-                                               -FormatArgs @( $SQLServer,$SQLInstanceName ) `
-                                               -ErrorCategory InvalidArgument  
+                        -FormatArgs @( $SQLServer, $SQLInstanceName ) `
+                        -ErrorCategory InvalidArgument
                 }
             }
 
             if ($MaxMemory -ne $currentMaxMemory)
             {
                 New-VerboseMessage -Message ("Current maximum server memory used by the instance " + `
-                                             "is $($currentMaxMemory)MB. Expected $($MaxMemory)MB.")
+                        "is $($currentMaxMemory)MB. Expected $($MaxMemory)MB.")
                 $isServerMemoryInDesiredState = $false
             }
 
             if ($MinMemory)
             {
-               if ($MinMemory -ne $currentMinMemory)
+                if ($MinMemory -ne $currentMinMemory)
                 {
                     New-VerboseMessage -Message ("Current minimum server memory used by the instance " + `
-                                                 "is $($currentMinMemory)MB. Expected $($MinMemory)MB.")
+                            "is $($currentMinMemory)MB. Expected $($MinMemory)MB.")
                     $isServerMemoryInDesiredState = $false
                 }
             }
@@ -312,7 +312,7 @@ function Get-SqlDscDynamicMaxMemory
     {
         $physicalMemory = ((Get-CimInstance -ClassName Win32_PhysicalMemory).Capacity | Measure-Object -Sum).Sum
         $physicalMemoryInMegaBytes = [Math]::Round($physicalMemory / 1MB)
-        
+
         # Find how much to save for OS: 20% of total ram for under 15GB / 12.5% for over 20GB
         if ($physicalMemoryInMegaBytes -ge 20480)
         {
@@ -336,7 +336,7 @@ function Get-SqlDscDynamicMaxMemory
         }
 
         $operatingSystemArchitecture = (Get-CimInstance -ClassName Win32_operatingsystem).OSArchitecture
-        
+
         # Find threadStackSize 1MB x86/ 2MB x64/ 4MB IA64
         if ($operatingSystemArchitecture -eq '32-bit')
         {
@@ -356,8 +356,8 @@ function Get-SqlDscDynamicMaxMemory
     catch
     {
         throw New-TerminatingError -ErrorType ErrorGetDynamicMaxMemory `
-                                   -ErrorCategory InvalidOperation `
-                                   -InnerException $_.Exception
+            -ErrorCategory InvalidOperation `
+            -InnerException $_.Exception
     }
 
     $maxMemory

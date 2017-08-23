@@ -1,6 +1,6 @@
-﻿# Generated from SQLServer module, module version 20.0 (SQL Server Management Studio 13.0.15600.2 - August 2016)
+# Generated from SQLServer module, module version 20.0 (SQL Server Management Studio 13.0.15600.2 - August 2016)
 
-# Suppressing this rule because these functions are from an external module 
+# Suppressing this rule because these functions are from an external module
 # and are only being used as stubs
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingUserNameAndPassWordParams', '')]
 param()

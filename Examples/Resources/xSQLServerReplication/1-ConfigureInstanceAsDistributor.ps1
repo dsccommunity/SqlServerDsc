@@ -1,4 +1,4 @@
-﻿<#
+<#
 .EXAMPLE
     This example shows how to configure a SQL Server instance as the distributor.
 #>
@@ -18,11 +18,11 @@ Configuration Example
     {
         xSQLServerReplication distributor
         {
-            Ensure = 'Present'
-            InstanceName = 'MSSQLSERVER'
+            Ensure               = 'Present'
+            InstanceName         = 'MSSQLSERVER'
             AdminLinkCredentials = $SysAdminAccount
-            DistributorMode = 'Local'
-            WorkingDirectory = 'C:\Temp'
+            DistributorMode      = 'Local'
+            WorkingDirectory     = 'C:\Temp'
 
             PsDscRunAsCredential = $SysAdminAccount
         }

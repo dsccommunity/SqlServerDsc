@@ -1,4 +1,4 @@
-﻿<#
+<#
 .EXAMPLE
     This example will remove an Availability Group listener with the same name as the cluster role VCO.
 #>
@@ -18,11 +18,11 @@ Configuration Example
     {
         xSQLServerAvailabilityGroupListener RemoveAvailabilityGroupListenerWithSameNameAsVCO
         {
-            Ensure = 'Absent'
-            NodeName = 'SQLNODE01.company.local'
-            InstanceName = 'MSSQLSERVER'
-            AvailabilityGroup = 'AG-01'
-            Name = "AG-01"
+            Ensure               = 'Absent'
+            NodeName             = 'SQLNODE01.company.local'
+            InstanceName         = 'MSSQLSERVER'
+            AvailabilityGroup    = 'AG-01'
+            Name                 = "AG-01"
 
             PsDscRunAsCredential = $SysAdminAccount
         }

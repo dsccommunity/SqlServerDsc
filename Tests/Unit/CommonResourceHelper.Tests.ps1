@@ -1,4 +1,4 @@
-﻿Describe 'CommonResourceHelper Unit Tests' {
+Describe 'CommonResourceHelper Unit Tests' {
     BeforeAll {
         # Import the CommonResourceHelper module to test
         $dscResourcesFolderFilePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) `
@@ -120,7 +120,7 @@
                     $mockException = New-Object System.Exception $mockExceptionErrorMessage
                     $mockErrorRecord = New-Object System.Management.Automation.ErrorRecord $mockException, $null, 'InvalidResult', $null
 
-                    { New-InvalidResultException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should Throw 'System.Exception: Mocked error ---> System.Exception: Mocked exception error message'
+                    { New-InvalidResultException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should Throw ('System.Exception: {0} ---> System.Exception: {1}' -f $mockErrorMessage, $mockExceptionErrorMessage)
                 }
             }
 
@@ -144,7 +144,7 @@
                     $mockException = New-Object System.Exception $mockExceptionErrorMessage
                     $mockErrorRecord = New-Object System.Management.Automation.ErrorRecord $mockException, $null, 'InvalidResult', $null
 
-                    { New-ObjectNotFoundException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should Throw 'System.Exception: Mocked error ---> System.Exception: Mocked exception error message'
+                    { New-ObjectNotFoundException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should Throw ('System.Exception: {0} ---> System.Exception: {1}' -f $mockErrorMessage, $mockExceptionErrorMessage)
                 }
             }
 
@@ -168,7 +168,7 @@
                     $mockException = New-Object System.Exception $mockExceptionErrorMessage
                     $mockErrorRecord = New-Object System.Management.Automation.ErrorRecord $mockException, $null, 'InvalidResult', $null
 
-                    { New-InvalidOperationException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should Throw 'System.InvalidOperationException: Mocked error ---> System.Exception: Mocked exception error message'
+                    { New-InvalidOperationException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should Throw ('System.InvalidOperationException: {0} ---> System.Exception: {1}' -f $mockErrorMessage, $mockExceptionErrorMessage)
                 }
             }
 
@@ -181,7 +181,7 @@
                     $mockErrorMessage = 'Mocked error'
                     $mockArgumentName = 'MockArgument'
 
-                    { New-InvalidArgumentException -Message $mockErrorMessage -ArgumentName $mockArgumentName } | Should Throw 'Parameter name: MockArgument'
+                    { New-InvalidArgumentException -Message $mockErrorMessage -ArgumentName $mockArgumentName } | Should Throw ('Parameter name: {0}' -f $mockArgumentName)
                 }
             }
 

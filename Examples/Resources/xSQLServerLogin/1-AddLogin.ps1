@@ -1,6 +1,6 @@
 <#
 .EXAMPLE
-This example shows how to ensure that the Windows user 'CONTOSO\WindowsUser' exists. 
+This example shows how to ensure that the Windows user 'CONTOSO\WindowsUser' exists.
 
 .EXAMPLE
 This example shows how to ensure that the Windows group 'CONTOSO\WindowsGroup' exists.
@@ -9,7 +9,7 @@ This example shows how to ensure that the Windows group 'CONTOSO\WindowsGroup' e
 This example shows how to ensure that the SQL Login 'SqlLogin' exists.
 #>
 
-Configuration Example 
+Configuration Example
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -20,53 +20,53 @@ Configuration Example
         [PSCredential]
         $LoginCredential
     )
-    
+
     Import-DscResource -ModuleName xSqlServer
 
     node localhost {
         xSQLServerLogin Add_WindowsUser
         {
-            Ensure = 'Present'
-            Name = 'CONTOSO\WindowsUser'
-            LoginType = 'WindowsUser'
-            SQLServer = 'SQLServer'
-            SQLInstanceName = 'DSC'
+            Ensure               = 'Present'
+            Name                 = 'CONTOSO\WindowsUser'
+            LoginType            = 'WindowsUser'
+            SQLServer            = 'SQLServer'
+            SQLInstanceName      = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount
         }
 
         xSQLServerLogin Add_DisabledWindowsUser
         {
-            Ensure = 'Present'
-            Name = 'CONTOSO\WindowsUser2'
-            LoginType = 'WindowsUser'
-            SQLServer = 'SQLServer'
-            SQLInstanceName = 'DSC'
+            Ensure               = 'Present'
+            Name                 = 'CONTOSO\WindowsUser2'
+            LoginType            = 'WindowsUser'
+            SQLServer            = 'SQLServer'
+            SQLInstanceName      = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount
-            Disabled = $true
+            Disabled             = $true
         }
 
         xSQLServerLogin Add_WindowsGroup
         {
-            Ensure = 'Present'
-            Name = 'CONTOSO\WindowsGroup'
-            LoginType = 'WindowsGroup'
-            SQLServer = 'SQLServer'
-            SQLInstanceName = 'DSC'
+            Ensure               = 'Present'
+            Name                 = 'CONTOSO\WindowsGroup'
+            LoginType            = 'WindowsGroup'
+            SQLServer            = 'SQLServer'
+            SQLInstanceName      = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount
         }
 
         xSQLServerLogin Add_SqlLogin
         {
-            Ensure = 'Present'
-            Name = 'SqlLogin'
-            LoginType = 'SqlLogin'
-            SQLServer = 'SQLServer'
-            SQLInstanceName = 'DSC'
-            LoginCredential = $LoginCredential
-            LoginMustChangePassword = $false
+            Ensure                         = 'Present'
+            Name                           = 'SqlLogin'
+            LoginType                      = 'SqlLogin'
+            SQLServer                      = 'SQLServer'
+            SQLInstanceName                = 'DSC'
+            LoginCredential                = $LoginCredential
+            LoginMustChangePassword        = $false
             LoginPasswordExpirationEnabled = $true
-            LoginPasswordPolicyEnforced = $true
-            PsDscRunAsCredential = $SysAdminAccount
+            LoginPasswordPolicyEnforced    = $true
+            PsDscRunAsCredential           = $SysAdminAccount
         }
     }
 }

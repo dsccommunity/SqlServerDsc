@@ -1,6 +1,6 @@
-﻿Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'xSQLServerHelper.psm1') `
-                               -Force
+Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
+        -ChildPath 'xSQLServerHelper.psm1') `
+    -Force
 <#
     .SYNOPSIS
         Returns the current state of an endpoint.
@@ -56,9 +56,9 @@ function Get-TargetResource
 
     return @{
         InstanceName = [System.String] $InstanceName
-        NodeName = [System.String] $NodeName
-        Name = [System.String] $Name
-        State = [System.String] $currentState
+        NodeName     = [System.String] $NodeName
+        Name         = [System.String] $Name
+        State        = [System.String] $currentState
     }
 }
 
@@ -96,15 +96,15 @@ function Set-TargetResource
         $Name,
 
         [Parameter()]
-        [ValidateSet('Started','Stopped','Disabled')]
+        [ValidateSet('Started', 'Stopped', 'Disabled')]
         [System.String]
         $State = 'Started'
     )
 
     $parameters = @{
         InstanceName = [System.String] $InstanceName
-        NodeName = [System.String] $NodeName
-        Name = [System.String] $Name
+        NodeName     = [System.String] $NodeName
+        Name         = [System.String] $Name
     }
 
     $getTargetResourceResult = Get-TargetResource @parameters
@@ -120,7 +120,7 @@ function Set-TargetResource
 
             $setEndpointParams = @{
                 InputObject = $endpointObject
-                State = $State
+                State       = $State
             }
 
             Set-SqlHADREndpoint @setEndpointParams -ErrorAction Stop | Out-Null
@@ -171,15 +171,15 @@ function Test-TargetResource
         $Name,
 
         [Parameter()]
-        [ValidateSet('Started','Stopped','Disabled')]
+        [ValidateSet('Started', 'Stopped', 'Disabled')]
         [System.String]
         $State = 'Started'
     )
 
     $parameters = @{
         InstanceName = $InstanceName
-        NodeName = $NodeName
-        Name = $Name
+        NodeName     = $NodeName
+        Name         = $Name
     }
 
     New-VerboseMessage -Message "Testing state $State on endpoint '$Name'"

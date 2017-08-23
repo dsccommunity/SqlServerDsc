@@ -20,33 +20,33 @@ Configuration Example
         {
             ServerInstance = 'localhost\SQL2016'
 
-            SetFilePath = 'C:\DSCTemp\SQLScripts\Set-RunSQLScript-AsSYSTEM.sql'
-            TestFilePath = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript-AsSYSTEM.sql'
-            GetFilePath = 'C:\DSCTemp\SQLScripts\Get-RunSQLScript-AsSYSTEM.sql'
-            Variable = @("FilePath=C:\temp\log\AuditFiles")
+            SetFilePath    = 'C:\DSCTemp\SQLScripts\Set-RunSQLScript-AsSYSTEM.sql'
+            TestFilePath   = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript-AsSYSTEM.sql'
+            GetFilePath    = 'C:\DSCTemp\SQLScripts\Get-RunSQLScript-AsSYSTEM.sql'
+            Variable       = @("FilePath=C:\temp\log\AuditFiles")
         }
 
         xSQLServerScript 'RunSQLScript-AsUSER'
         {
-            ServerInstance = 'localhost\SQL2016'
+            ServerInstance       = 'localhost\SQL2016'
 
-            SetFilePath = 'C:\DSCTemp\SQLScripts\Set-RunSQLScript-AsUSER.sql'
-            TestFilePath = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript-AsUSER.sql'
-            GetFilePath = 'C:\DSCTemp\SQLScripts\Get-RunSQLScript-AsUSER.sql'
-            Variable = @("FilePath=C:\temp\log\AuditFiles")
+            SetFilePath          = 'C:\DSCTemp\SQLScripts\Set-RunSQLScript-AsUSER.sql'
+            TestFilePath         = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript-AsUSER.sql'
+            GetFilePath          = 'C:\DSCTemp\SQLScripts\Get-RunSQLScript-AsUSER.sql'
+            Variable             = @("FilePath=C:\temp\log\AuditFiles")
 
             PsDscRunAsCredential = $WindowsCredential
         }
 
         xSQLServerScript 'RunSQLScript-With30SecondTimeout'
         {
-            ServerInstance = 'localhost\SQL2016'
+            ServerInstance       = 'localhost\SQL2016'
 
-            SetFilePath = 'C:\DSCTemp\SQLScripts\Set-RunSQLScript-WithQueryTimeout.sql'
-            TestFilePath = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript-WithQueryTimeout.sql'
-            GetFilePath = 'C:\DSCTemp\SQLScripts\Get-RunSQLScript-WithQueryTimeout.sql'
-            QueryTimeout = 30
-            Variable = @("FilePath=C:\temp\log\AuditFiles")
+            SetFilePath          = 'C:\DSCTemp\SQLScripts\Set-RunSQLScript-WithQueryTimeout.sql'
+            TestFilePath         = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript-WithQueryTimeout.sql'
+            GetFilePath          = 'C:\DSCTemp\SQLScripts\Get-RunSQLScript-WithQueryTimeout.sql'
+            QueryTimeout         = 30
+            Variable             = @("FilePath=C:\temp\log\AuditFiles")
 
             PsDscRunAsCredential = $WindowsCredential
         }

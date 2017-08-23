@@ -536,7 +536,7 @@ function Test-SQLDscParameterState
     param
     (
         [Parameter(Mandatory = $true)]
-        [HashTable]
+        [System.Collections.Hashtable]
         $CurrentValues,
 
         [Parameter(Mandatory = $true)]

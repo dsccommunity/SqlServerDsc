@@ -1,6 +1,6 @@
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'xSQLServerHelper.psm1') `
-                               -Force
+        -ChildPath 'xSQLServerHelper.psm1') `
+    -Force
 <#
     .SYNOPSIS
     Returns the current permissions for the user in the database
@@ -40,7 +40,7 @@ function Get-TargetResource
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Grant','Deny','GrantWithGrant')]
+        [ValidateSet('Grant', 'Deny', 'GrantWithGrant')]
         [System.String]
         $PermissionState,
 
@@ -52,12 +52,12 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLServer,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER'
+        $SQLInstanceName
     )
 
     $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
@@ -96,32 +96,32 @@ function Get-TargetResource
                 catch
                 {
                     throw New-TerminatingError -ErrorType FailedToEnumDatabasePermissions `
-                                               -FormatArgs @($Name, $Database, $SQLServer, $SQLInstanceName) `
-                                               -ErrorCategory InvalidOperation `
-                                               -InnerException $_.Exception
+                        -FormatArgs @($Name, $Database, $SQLServer, $SQLInstanceName) `
+                        -ErrorCategory InvalidOperation `
+                        -InnerException $_.Exception
                 }
 
             }
             else
             {
                 throw New-TerminatingError -ErrorType LoginNotFound `
-                                           -FormatArgs @($Name,$SQLServer,$SQLInstanceName) `
-                                           -ErrorCategory ObjectNotFound `
-                                           -InnerException $_.Exception
+                    -FormatArgs @($Name, $SQLServer, $SQLInstanceName) `
+                    -ErrorCategory ObjectNotFound `
+                    -InnerException $_.Exception
             }
         }
         else
         {
             throw New-TerminatingError -ErrorType NoDatabase `
-                                       -FormatArgs @($Database,$SQLServer,$SQLInstanceName) `
-                                       -ErrorCategory InvalidResult `
-                                       -InnerException $_.Exception
+                -FormatArgs @($Database, $SQLServer, $SQLInstanceName) `
+                -ErrorCategory InvalidResult `
+                -InnerException $_.Exception
         }
 
         if ($getSqlDatabasePermissionResult)
         {
             $resultOfPermissionCompare = Compare-Object -ReferenceObject $Permissions `
-                                                        -DifferenceObject $getSqlDatabasePermissionResult
+                -DifferenceObject $getSqlDatabasePermissionResult
             if ($null -eq $resultOfPermissionCompare)
             {
                 $currentEnsure = 'Present'
@@ -173,7 +173,7 @@ function Set-TargetResource
     param
     (
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure,
 
@@ -188,7 +188,7 @@ function Set-TargetResource
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Grant','Deny','GrantWithGrant')]
+        [ValidateSet('Grant', 'Deny', 'GrantWithGrant')]
         [System.String]
         $PermissionState,
 
@@ -223,16 +223,16 @@ function Set-TargetResource
                     try
                     {
                         New-VerboseMessage -Message "Adding SQL login $Name as a user of database $Database"
-                        $sqlDatabaseUser = New-Object -TypeName Microsoft.SqlServer.Management.Smo.User -ArgumentList ($sqlDatabaseObject,$Name)
+                        $sqlDatabaseUser = New-Object -TypeName Microsoft.SqlServer.Management.Smo.User -ArgumentList ($sqlDatabaseObject, $Name)
                         $sqlDatabaseUser.Login = $Name
                         $sqlDatabaseUser.Create()
                     }
                     catch
                     {
                         throw New-TerminatingError -ErrorType AddLoginDatabaseSetError `
-                                                   -FormatArgs @($SQLServer, $SQLInstanceName, $Name, $Database) `
-                                                   -ErrorCategory InvalidOperation `
-                                                   -InnerException $_.Exception
+                            -FormatArgs @($SQLServer, $SQLInstanceName, $Name, $Database) `
+                            -ErrorCategory InvalidOperation `
+                            -InnerException $_.Exception
                     }
                 }
 
@@ -252,7 +252,7 @@ function Set-TargetResource
                             'Present'
                             {
                                 New-VerboseMessage -Message ('{0} the permissions ''{1}'' to the database {2} on the server {3}\{4}' `
-                                                     -f $PermissionState, ($Permissions -join ','), $Database, $SQLServer, $SQLInstanceName)
+                                        -f $PermissionState, ($Permissions -join ','), $Database, $SQLServer, $SQLInstanceName)
 
                                 switch ($PermissionState)
                                 {
@@ -276,7 +276,7 @@ function Set-TargetResource
                             'Absent'
                             {
                                 New-VerboseMessage -Message ('Revoking {0} permissions {1} to the database {2} on the server {3}\{4}' `
-                                                            -f $PermissionState, ($Permissions -join ','), $Database, $SQLServer, $SQLInstanceName)
+                                        -f $PermissionState, ($Permissions -join ','), $Database, $SQLServer, $SQLInstanceName)
 
                                 if ($PermissionState -eq 'GrantWithGrant')
                                 {
@@ -292,26 +292,26 @@ function Set-TargetResource
                     catch
                     {
                         throw New-TerminatingError -ErrorType FailedToSetPermissionDatabase `
-                                                   -FormatArgs @($Name, $Database, $SQLServer, $SQLInstanceName) `
-                                                   -ErrorCategory InvalidOperation `
-                                                   -InnerException $_.Exception
+                            -FormatArgs @($Name, $Database, $SQLServer, $SQLInstanceName) `
+                            -ErrorCategory InvalidOperation `
+                            -InnerException $_.Exception
                     }
                 }
             }
             else
             {
                 throw New-TerminatingError -ErrorType LoginNotFound `
-                                           -FormatArgs @($Name,$SQLServer,$SQLInstanceName) `
-                                           -ErrorCategory ObjectNotFound `
-                                           -InnerException $_.Exception
+                    -FormatArgs @($Name, $SQLServer, $SQLInstanceName) `
+                    -ErrorCategory ObjectNotFound `
+                    -InnerException $_.Exception
             }
         }
         else
         {
             throw New-TerminatingError -ErrorType NoDatabase `
-                                       -FormatArgs @($Database,$SQLServer,$SQLInstanceName) `
-                                       -ErrorCategory InvalidResult `
-                                       -InnerException $_.Exception
+                -FormatArgs @($Database, $SQLServer, $SQLInstanceName) `
+                -ErrorCategory InvalidResult `
+                -InnerException $_.Exception
         }
     }
 }
@@ -348,7 +348,7 @@ function Test-TargetResource
     param
     (
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure,
 
@@ -363,7 +363,7 @@ function Test-TargetResource
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Grant','Deny','GrantWithGrant')]
+        [ValidateSet('Grant', 'Deny', 'GrantWithGrant')]
         [System.String]
         $PermissionState,
 
@@ -403,8 +403,8 @@ function Test-TargetResource
         'Absent'.
     #>
     return Test-SQLDscParameterState -CurrentValues $getTargetResourceResult `
-                                     -DesiredValues $PSBoundParameters `
-                                     -ValuesToCheck @('Name', 'Ensure', 'PermissionState')
+        -DesiredValues $PSBoundParameters `
+        -ValuesToCheck @('Name', 'Ensure', 'PermissionState')
 }
 
 Export-ModuleMember -Function *-TargetResource

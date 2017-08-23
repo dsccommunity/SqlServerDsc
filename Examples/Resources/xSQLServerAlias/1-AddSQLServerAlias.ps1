@@ -17,30 +17,30 @@ Configuration Example
     node localhost {
         xSQLServerAlias Add_SqlAlias_TCP
         {
-            Ensure = 'Present'
-            Name = 'SQLDSC-TCP'
-            ServerName = "SQLServer\DSC"
-            Protocol = 'TCP'
-            TcpPort = 1777
+            Ensure               = 'Present'
+            Name                 = 'SQLDSC-TCP'
+            ServerName           = "SQLServer\DSC"
+            Protocol             = 'TCP'
+            TcpPort              = 1777
             PsDscRunAsCredential = $SysAdminAccount
         }
 
         xSQLServerAlias Add_SqlAlias_TCPUseDynamicTcpPort
         {
-            Ensure = 'Present'
-            Name = 'SQLDSC-DYN'
-            ServerName = "SQLServer\DSC"
-            Protocol = 'TCP'
-            UseDynamicTcpPort = $true
+            Ensure               = 'Present'
+            Name                 = 'SQLDSC-DYN'
+            ServerName           = "SQLServer\DSC"
+            Protocol             = 'TCP'
+            UseDynamicTcpPort    = $true
             PsDscRunAsCredential = $SysAdminAccount
         }
 
         xSQLServerAlias Add_SqlAlias_NP
         {
-            Ensure = 'Present'
-            Name = 'SQLDSC-NP'
-            ServerName = "\\sqlnode\PIPE\sql\query"
-            Protocol = 'NP'
+            Ensure               = 'Present'
+            Name                 = 'SQLDSC-NP'
+            ServerName           = "\\sqlnode\PIPE\sql\query"
+            Protocol             = 'NP'
             PsDscRunAsCredential = $SysAdminAccount
         }
     }
