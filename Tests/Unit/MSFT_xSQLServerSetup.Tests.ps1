@@ -3866,7 +3866,7 @@ try
 
                         Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceGroupToResource -ParameterFilter {
                             ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
-                        } -Verfiable
+                        } -Verifiable
 
                         Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceToPossibleOwner -ParameterFilter {
                             $Association -eq 'MSCluster_ResourceToPossibleOwner'
@@ -4206,7 +4206,7 @@ try
 
                         Mock -CommandName Get-CimAssociatedInstance -MockWith {} -ParameterFilter {
                             ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
-                        } -Verfiable
+                        } -Verifiable
 
                         Mock -CommandName Get-CimAssociatedInstance -MockWith {} -ParameterFilter {
                             $Association -eq 'MSCluster_ResourceToPossibleOwner'
@@ -4311,7 +4311,7 @@ try
 
                         Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceGroupToResource -ParameterFilter {
                             ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
-                        } -Verfiable
+                        } -Verifiable
 
                         Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceToPossibleOwner -ParameterFilter {
                             $Association -eq 'MSCluster_ResourceToPossibleOwner'
