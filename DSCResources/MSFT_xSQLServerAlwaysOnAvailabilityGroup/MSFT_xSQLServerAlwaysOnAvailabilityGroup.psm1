@@ -420,7 +420,7 @@ function Set-TargetResource
                 }
                 catch
                 {
-                    throw New-TerminatingError -ErrorType CreateAvailabilityGroupFailed -FormatArgs $Name -ErrorCategory OperationStopped -InnerException $_.Exception
+					throw New-TerminatingError -ErrorType CreateAvailabilityGroupFailed -FormatArgs $Name -ErrorCategory OperationStopped -InnerException $_.Exception
                 }
             }
             # Otherwise let's check each of the parameters passed and update the Availability Group accordingly
@@ -450,8 +450,8 @@ function Set-TargetResource
                     $availabilityGroup.AvailabilityReplicas[$serverObject.Name].BackupPriority = $BackupPriority
                     Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.Name]
                 }
-				
-                if ( ( $version -ge 13 ) -and ( $DatabaseHealthTrigger -ne $availabilityGroup.BasicAvailabilityGroup ) )
+                
+                if ( ( $version -ge 13 ) -and ( $BasicAvailabilityGroup -ne $availabilityGroup.BasicAvailabilityGroup ) )
                 {
                     $availabilityGroup.BasicAvailabilityGroup = $BasicAvailabilityGroup
                     Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
