@@ -1,5 +1,3 @@
-cls
-
 $script:DSCModuleName      = 'xSQLServer'
 $script:DSCResourceName    = 'MSFT_xSQLServerAlwaysOnAvailabilityGroup'
 
