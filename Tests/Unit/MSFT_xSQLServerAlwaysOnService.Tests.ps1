@@ -43,9 +43,7 @@ $enableHadrNamedInstance = @{
 try
 {
     Describe "$($script:DSCResourceName)\Get-TargetResource" {
-
         Context 'When HADR is disabled' {
-
             Mock -CommandName Connect-SQL -MockWith {
                 return New-Object PSObject -Property @{
                     IsHadrEnabled = $false
@@ -53,20 +51,16 @@ try
             } -ModuleName $script:DSCResourceName -Verifiable
 
             It 'Should return that HADR is disabled' {
-
                 # Get the current state
                 $result = Get-TargetResource @enableHadr
-
                 $result.IsHadrEnabled | Should Be $false
 
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
 
             It 'Should return that HADR is disabled' {
-
                 # Get the current state
                 $result = Get-TargetResource @enableHadrNamedInstance
-
                 $result.IsHadrEnabled | Should Be $false
 
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1 -Exactly
@@ -74,7 +68,6 @@ try
         }
 
         Context 'When HADR is enabled' {
-
             Mock -CommandName Connect-SQL -MockWith {
                 return New-Object PSObject -Property @{
                     IsHadrEnabled = $true
@@ -82,20 +75,16 @@ try
             } -ModuleName $script:DSCResourceName -Verifiable
 
             It 'Should return that HADR is enabled' {
-
                 # Get the current state
                 $result = Get-TargetResource @enableHadr
-
                 $result.IsHadrEnabled | Should Be $true
 
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
 
             It 'Should return that HADR is enabled' {
-
                 # Get the current state
                 $result = Get-TargetResource @enableHadrNamedInstance
-
                 $result.IsHadrEnabled | Should Be $true
 
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1 -Exactly
@@ -111,47 +100,30 @@ try
             } -ModuleName $script:DSCResourceName -Verifiable
 
             It 'Should fail with the correct error message' {
+                # Regression test for issue #519
                 { Get-TargetResource @enableHadr } | Should Not Throw 'Index operation failed; the array index evaluated to null'
-                { Get-TargetResource @enableHadr } | Should Throw 'The status of property Server.IsHadrEnabled was neither $true or $false. Status is ''''. InnerException: Server.IsHadrEnabled was set to $null.'
+
+                $result = Get-TargetResource @enableHadr
+                $result.IsHadrEnabled | Should Be $false
+
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 2 -Exactly
-            }
-        }
-
-        Context 'When Server.IsHadrEnabled returns unexpected value' {
-            Mock -CommandName Connect-SQL -MockWith {
-                return New-Object PSObject -Property @{
-                    IsHadrEnabled = 'UnknownStatus'
-                }
-            } -ModuleName $script:DSCResourceName -Verifiable
-
-            It 'Should fail with the correct error message' {
-                { Get-TargetResource @enableHadr } | Should Throw 'The status of property Server.IsHadrEnabled was neither $true or $false. Status is ''UnknownStatus''. InnerException: Server.IsHadrEnabled was set to unexpected value.'
-                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
         }
     }
 
     Describe "$($script:DSCResourceName)\Set-TargetResource" {
-
-                # Loading stub cmdlets
+        # Loading stub cmdlets
         Import-Module -Name ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SQLPSStub.psm1 ) -Force
 
         Mock -CommandName Disable-SqlAlwaysOn -MockWith {} -ModuleName $script:DSCResourceName
-
         Mock -CommandName Enable-SqlAlwaysOn -MockWith {} -ModuleName $script:DSCResourceName
-
         Mock -CommandName Import-SQLPSModule -MockWith {} -ModuleName $script:DSCResourceName
-
         Mock -CommandName New-TerminatingError { $ErrorType } -ModuleName $script:DSCResourceName
-
         Mock -CommandName New-VerboseMessage -MockWith {} -ModuleName $script:DSCResourceName
-
         Mock -CommandName Restart-SqlService -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'When HADR is not in the desired state' {
-
             It 'Should enable SQL Always On when Ensure is set to Present' {
-
                 Mock -CommandName Connect-SQL -MockWith {
                     return New-Object PSObject -Property @{
                         IsHadrEnabled = $true
@@ -166,7 +138,6 @@ try
             }
 
             It 'Should disable SQL Always On when Ensure is set to Absent' {
-
                 Mock -CommandName Connect-SQL -MockWith {
                 return New-Object PSObject -Property @{
                         IsHadrEnabled = $false
@@ -181,7 +152,6 @@ try
             }
 
             It 'Should enable SQL Always On on a named instance when Ensure is set to Present' {
-
                 Mock -CommandName Connect-SQL -MockWith {
                     return New-Object PSObject -Property @{
                         IsHadrEnabled = $true
@@ -196,7 +166,6 @@ try
             }
 
             It 'Should disable SQL Always On on a named instance when Ensure is set to Absent' {
-
                 Mock -CommandName Connect-SQL -MockWith {
                     return New-Object PSObject -Property @{
                         IsHadrEnabled = $false
@@ -211,7 +180,6 @@ try
             }
 
             It 'Should throw the correct error message when Ensure is set to Present, but IsHadrEnabled is $false' {
-
                 Mock -CommandName Connect-SQL -MockWith {
                     return New-Object PSObject -Property @{
                         IsHadrEnabled = $false
@@ -227,7 +195,6 @@ try
             }
 
             It 'Should throw the correct error message when Ensure is set to Absent, but IsHadrEnabled is $true' {
-
                 Mock -CommandName Connect-SQL -MockWith {
                     return New-Object PSObject -Property @{
                         IsHadrEnabled = $true

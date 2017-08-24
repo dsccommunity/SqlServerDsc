@@ -42,7 +42,7 @@ function Get-TargetResource
 
     $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
-    $isAlwaysOnEnabled = $sqlServerObject.IsHadrEnabled
+    $isAlwaysOnEnabled = [System.Boolean] $sqlServerObject.IsHadrEnabled
     if ($isAlwaysOnEnabled -eq $true)
     {
         $statusString = 'enabled'
@@ -50,27 +50,6 @@ function Get-TargetResource
     elseif ($isAlwaysOnEnabled -eq $false)
     {
         $statusString = 'disabled'
-    }
-    else
-    {
-        # This is a validation test for issue #519.
-        try
-        {
-            if ($isAlwaysOnEnabled -eq $null)
-            {
-                throw 'Server.IsHadrEnabled was set to $null.'
-            }
-            else
-            {
-                $statusString = $isAlwaysOnEnabled
-
-                throw 'Server.IsHadrEnabled was set to unexpected value.'
-            }
-        }
-        catch
-        {
-            throw New-TerminatingError -ErrorType UnexpectedAlwaysOnStatus -FormatArgs $statusString -ErrorCategory InvalidResult -InnerException $_.Exception
-        }
     }
 
     New-VerboseMessage -Message ( 'SQL Always On is {0} on "{1}\{2}".' -f $statusString, $SQLServer, $SQLInstanceName )
@@ -189,7 +168,7 @@ function Test-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure,
 
