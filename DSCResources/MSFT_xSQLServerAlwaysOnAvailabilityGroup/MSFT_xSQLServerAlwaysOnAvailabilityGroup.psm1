@@ -420,7 +420,7 @@ function Set-TargetResource
                 }
                 catch
                 {
-					throw New-TerminatingError -ErrorType CreateAvailabilityGroupFailed -FormatArgs $Name -ErrorCategory OperationStopped -InnerException $_.Exception
+                    throw New-TerminatingError -ErrorType CreateAvailabilityGroupFailed -FormatArgs $Name -ErrorCategory OperationStopped -InnerException $_.Exception
                 }
             }
             # Otherwise let's check each of the parameters passed and update the Availability Group accordingly
