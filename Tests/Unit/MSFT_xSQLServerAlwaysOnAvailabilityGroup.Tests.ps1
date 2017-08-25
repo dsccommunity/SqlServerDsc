@@ -1247,7 +1247,7 @@ try
                     $mockConnectSqlVersion13ServerObject.AvailabilityGroups['PresentAG'].DatabaseHealthTrigger = $defaultPresentParameters.DatabaseHealthTrigger
                 }
 
-                It 'Should set the DtcSupportEnabled to the desired state' {
+                It 'Should not set the DtcSupportEnabled to the desired state' {
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -Scope It -ParameterFilter { $SQLServer -eq 'Server1' }
                     Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -Scope It -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
