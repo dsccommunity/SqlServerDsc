@@ -1223,8 +1223,8 @@ try
 
                 It 'Should set the DatabaseHealthTrigger to the desired state' {
 
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -Scope It -ParameterFilter { $SQLServer -eq 'Server1' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -Scope It -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -ParameterFilter { $SQLServer -eq 'Server1' }
+                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
                     
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
@@ -1249,8 +1249,8 @@ try
 
                 It 'Should not set the DtcSupportEnabled to the desired state' {
 
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -Scope It -ParameterFilter { $SQLServer -eq 'Server1' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -Scope It -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -ParameterFilter { $SQLServer -eq 'Server1' }
+                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
                     
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
