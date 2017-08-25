@@ -112,17 +112,9 @@ try
             $mockAvailabilityGroup.PrimaryReplicaServerName = 'Server1'
             $mockAvailabilityGroup.LocalReplicaRole = 'Primary'
             $mockAvailabilityGroup.AvailabilityReplicas = $mockAvailabilityReplicaCollection
-
-            If ( $sqlVersion -ge 13 )
-            {
-                ForEach ( $member in ( 'BasicAvailabilityGroup','DatabaseHealthTrigger','DtcSupportEnabled' ) )
-                {
-                    If ( -not ( $mockAvailabilityGroup | get-member -Name $member ) )
-                    {
-                        $mockAvailabilityGroup | Add-Member -NotePropertyName $member -NotePropertyValue $False
-                    }
-                }
-            }
+            $mockAvailabilityGroup.BasicAvailabilityGroup = $False
+            $mockAvailabilityGroup.DatabaseHealthTrigger = $False
+            $mockAvailabilityGroup.DtcSupportEnabled = $False
 
             # Create the availability group collectionto store the availability groups in
             $mockAvailabilityGroupCollection = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityGroupCollection
