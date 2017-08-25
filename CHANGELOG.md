@@ -79,7 +79,7 @@
     administrator (issue #691).
   - Added a simple integration test ([issue #709](https://github.com/PowerShell/xSQLServer/issues/709)).
   - Fixed PS Script Analyzer errors ([issue #729](https://github.com/PowerShell/xSQLServer/issues/729))
-    
+
 ## 8.0.0.0
 
 - BREAKING CHANGE: The module now requires WMF 5.
