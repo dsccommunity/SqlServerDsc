@@ -126,7 +126,7 @@ function Get-TargetResource
         Specifies if the option Database Level Health Detection is enabled. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions.
 
     .PARAMETER DtcSupportEnabled
-        Specifies if the option Database DTC Support is enabled. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions. This can't be altered once the Availability Group' is created and is ignored if it is the case.
+        Specifies if the option Database DTC Support is enabled. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions. This can't be altered once the Availability Group is created and is ignored if it is the case.
 
     .PARAMETER ConnectionModeInPrimaryRole
         Specifies how the availability replica handles connections when in the primary role.
@@ -697,8 +697,10 @@ function Test-TargetResource
                 'HealthCheckTimeout'
             )
 
-            # Add properties compatible with SQL Server 2016 or later versions
-            # DtcSupportEnabled is enabled at the creation of the Availability Group only, hence it will not be checked in this block
+			<#
+                Add properties compatible with SQL Server 2016 or later versions
+                DtcSupportEnabled is enabled at the creation of the Availability Group only, hence it will not be checked in this block
+			#>
             if ( $sqlMajorVersion -ge 13 )
             {
                 $parametersToCheck += 'BasicAvailabilityGroup'
