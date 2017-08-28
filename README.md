@@ -215,9 +215,8 @@ It will also manage the Availability Group replica on the specified node.
   integers from 0 through 100. Of the set of replicas which are online and available,
   the replica that has the highest priority performs the backup. Default is 50.
 * **`[Boolean]` BasicAvailabilityGroup** _(Write)_: Specifies the type of
-  availability group is Basic. This is only available is SQL Server 2016
+  availability group is Basic. This is only available is SQL Server 2016 
   and later and is ignored when applied to previous versions.
-  and is ignored when these requirements are not met.
 * **`[Boolean]` DatabaseHealthTrigger** _(Write)_: Specifies if the option
   Database Level Health Detection is enabled. This is only available is SQL
   Server 2016 and later and is ignored when applied to previous versions.

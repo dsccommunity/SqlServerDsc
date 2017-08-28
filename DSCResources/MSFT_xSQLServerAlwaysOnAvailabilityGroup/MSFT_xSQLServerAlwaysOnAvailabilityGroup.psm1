@@ -69,7 +69,7 @@ function Get-TargetResource
             EndpointURL                   = $availabilityGroup.AvailabilityReplicas[$serverObject.Name].EndpointUrl
             EndpointPort                  = $endpointPort
             SQLServerNetName              = $serverObject.NetName
-            sqlMajorVersion               = $serverObject.Version.Major
+            sqlMajorVersion               = $sqlMajorVersion
         }
 
         # Add properties that are only present in SQL 2016 or newer
@@ -698,6 +698,7 @@ function Test-TargetResource
             )
 
             # Add properties compatible with SQL Server 2016 or later versions
+			# DtcSupportEnabled is enabled at the creation of the Availability Group only, hence it will not be checked in this block
             if ( $sqlMajorVersion -ge 13 )
             {
                 $parametersToCheck += 'BasicAvailabilityGroup'
