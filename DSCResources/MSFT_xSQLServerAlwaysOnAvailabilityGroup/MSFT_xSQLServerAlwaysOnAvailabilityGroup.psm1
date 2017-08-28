@@ -69,7 +69,7 @@ function Get-TargetResource
             EndpointURL                   = $availabilityGroup.AvailabilityReplicas[$serverObject.Name].EndpointUrl
             EndpointPort                  = $endpointPort
             SQLServerNetName              = $serverObject.NetName
-            sqlMajorVersion               = $sqlMajorVersion
+            Version                       = $sqlMajorVersion
         }
 
         # Add properties that are only present in SQL 2016 or newer
@@ -664,7 +664,7 @@ function Test-TargetResource
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
     
     # Define current version and edition for check compatibility
-    $sqlMajorVersion = $getTargetResourceResult.sqlMajorVersion
+    $sqlMajorVersion = $getTargetResourceResult.Version
 
     switch ($Ensure)
     {
