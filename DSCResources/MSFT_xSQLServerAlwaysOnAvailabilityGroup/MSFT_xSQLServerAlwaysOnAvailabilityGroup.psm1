@@ -697,10 +697,10 @@ function Test-TargetResource
                 'HealthCheckTimeout'
             )
 
-			<#
+            <#
                 Add properties compatible with SQL Server 2016 or later versions
                 DtcSupportEnabled is enabled at the creation of the Availability Group only, hence it will not be checked in this block
-			#>
+            #>
             if ( $sqlMajorVersion -ge 13 )
             {
                 $parametersToCheck += 'BasicAvailabilityGroup'
