@@ -29,16 +29,26 @@ $TestEnvironment = Initialize-TestEnvironment `
     (see issue #774).
     SQLPS is removed because otherwise the common test will load
     the SMO assembly and fail the unit tests (see issue #239)
+
+    $rootTempPath must be set to the same folder that was created
+    in the appveyor.yml file.
 #>
 $rootTempPath = Join-Path -Path $env:TEMP -ChildPath 'SqlModuleTemp'
-$copyItemParameters = @{
-    Path = Join-Path -Path $rootTempPath -ChildPath '*'
-    Destination = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules'
-    Recurse = $true
-    Force = $true
-}
+if (Test-Path -Path $rootTempPath)
+{
+    $copyItemParameters = @{
+        Path = Join-Path -Path $rootTempPath -ChildPath '*'
+        Destination = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules'
+        Recurse = $true
+        Force = $true
+    }
 
-Copy-Item @copyItemParameters
+    Copy-Item @copyItemParameters
+}
+else
+{
+    Write-Verbose -Message ('The folder ''{0}'' did not exist, ignoring copying SQLPS from temp path. Expecting it to be installed by SQL Server instead.' -f $rootTempPath) -Verbose
+}
 
 $mockInstanceName = 'DSCSQL2016'
 $mockFeatures = 'SQLENGINE,CONN,BC,SDK'
