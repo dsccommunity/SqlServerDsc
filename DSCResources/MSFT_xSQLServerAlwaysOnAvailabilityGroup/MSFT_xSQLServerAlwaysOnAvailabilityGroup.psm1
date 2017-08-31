@@ -37,6 +37,9 @@ function Get-TargetResource
     # Connect to the instance
     $serverObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
+    # Define current version for check compatibility
+    $sqlMajorVersion = $serverObject.Version.Major
+
     # Get the endpoint properties
     $endpoint = $serverObject.Endpoints | Where-Object { $_.EndpointType -eq 'DatabaseMirroring' }
     if ( $endpoint )
@@ -66,13 +69,15 @@ function Get-TargetResource
             EndpointURL                   = $availabilityGroup.AvailabilityReplicas[$serverObject.Name].EndpointUrl
             EndpointPort                  = $endpointPort
             SQLServerNetName              = $serverObject.NetName
-            Version                       = $serverObject.Version.Major
+            Version                       = $sqlMajorVersion
         }
 
         # Add properties that are only present in SQL 2016 or newer
-        if ( $serverObject.Version.Major -ge 13 )
+        if ( $sqlMajorVersion -ge 13 )
         {
             $alwaysOnAvailabilityGroupResource.Add('BasicAvailabilityGroup', $availabilityGroup.BasicAvailabilityGroup)
+            $alwaysOnAvailabilityGroupResource.Add('DatabaseHealthTrigger', $availabilityGroup.DatabaseHealthTrigger)
+            $alwaysOnAvailabilityGroupResource.Add('DtcSupportEnabled', $availabilityGroup.DtcSupportEnabled)
         }
     }
     else
@@ -116,6 +121,12 @@ function Get-TargetResource
 
     .PARAMETER BasicAvailabilityGroup
         Specifies the type of availability group is Basic. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions.
+
+    .PARAMETER DatabaseHealthTrigger
+        Specifies if the option Database Level Health Detection is enabled. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions.
+
+    .PARAMETER DtcSupportEnabled
+        Specifies if the option Database DTC Support is enabled. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions. This can't be altered once the Availability Group is created and is ignored if it is the case.
 
     .PARAMETER ConnectionModeInPrimaryRole
         Specifies how the availability replica handles connections when in the primary role.
@@ -170,8 +181,16 @@ function Set-TargetResource
         $BackupPriority = 50,
 
         [Parameter()]
-        [bool]
+        [Boolean]
         $BasicAvailabilityGroup,
+
+        [Parameter()]
+        [Boolean]
+        $DatabaseHealthTrigger,
+
+        [Parameter()]
+        [Boolean]
+        $DtcSupportEnabled,
 
         [Parameter()]
         [ValidateSet('AllowAllConnections', 'AllowReadWriteConnections')]
@@ -218,8 +237,9 @@ function Set-TargetResource
     {
         throw New-TerminatingError -ErrorType HadrNotEnabled -FormatArgs $Ensure, $SQLInstanceName -ErrorCategory NotImplemented
     }
-
-    $version = $serverObject.Version.Major
+    
+    # Define current version for check compatibility
+    $sqlMajorVersion = $serverObject.Version.Major
 
     # Get the Availability Group if it exists
     $availabilityGroup = $serverObject.AvailabilityGroups[$Name]
@@ -332,7 +352,7 @@ function Set-TargetResource
                 # Set up the parameters to create the AG Replica
                 $newReplicaParams = @{
                     Name             = $serverObject.Name
-                    Version          = $version
+                    Version          = $sqlMajorVersion
                     AsTemplate       = $true
                     AvailabilityMode = $AvailabilityMode
                     EndpointUrl      = "TCP://$($EndpointHostName):$($endpoint.Protocol.Tcp.ListenerPort)"
@@ -376,9 +396,11 @@ function Set-TargetResource
                     $newAvailabilityGroupParams.Add('AutomatedBackupPreference', $AutomatedBackupPreference)
                 }
 
-                if ( $BasicAvailabilityGroup -and ( $version -ge 13 ) )
+                if ( $sqlMajorVersion -ge 13 )
                 {
                     $newAvailabilityGroupParams.Add('BasicAvailabilityGroup', $BasicAvailabilityGroup)
+                    $newAvailabilityGroupParams.Add('DatabaseHealthTrigger', $DatabaseHealthTrigger)
+                    $newAvailabilityGroupParams.Add('DtcSupportEnabled', $DtcSupportEnabled)
                 }
 
                 if ( $FailureConditionLevel )
@@ -428,10 +450,16 @@ function Set-TargetResource
                     $availabilityGroup.AvailabilityReplicas[$serverObject.Name].BackupPriority = $BackupPriority
                     Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.Name]
                 }
-
-                if ( $BasicAvailabilityGroup -and ( $version -ge 13 ) -and ( $BasicAvailabilityGroup -ne $availabilityGroup.BasicAvailabilityGroup ) )
+                
+                if ( ( $sqlMajorVersion -ge 13 ) -and ( $BasicAvailabilityGroup -ne $availabilityGroup.BasicAvailabilityGroup ) )
                 {
                     $availabilityGroup.BasicAvailabilityGroup = $BasicAvailabilityGroup
+                    Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
+                }
+
+                if ( ( $sqlMajorVersion -ge 13 ) -and ( $DatabaseHealthTrigger -ne $availabilityGroup.DatabaseHealthTrigger ) )
+                {
+                    $availabilityGroup.DatabaseHealthTrigger = $DatabaseHealthTrigger
                     Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
                 }
 
@@ -524,6 +552,12 @@ function Set-TargetResource
     .PARAMETER BasicAvailabilityGroup
         Specifies the type of availability group is Basic. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions.
 
+    .PARAMETER DatabaseHealthTrigger
+        Specifies if the option Database Level Health Detection is enabled. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions.
+
+    .PARAMETER DtcSupportEnabled
+        Specifies if the option Database DTC Support is enabled. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions.
+
     .PARAMETER ConnectionModeInPrimaryRole
         Specifies how the availability replica handles connections when in the primary role.
 
@@ -578,8 +612,16 @@ function Test-TargetResource
         $BackupPriority = 50,
 
         [Parameter()]
-        [bool]
+        [Boolean]
         $BasicAvailabilityGroup,
+
+        [Parameter()]
+        [Boolean]
+        $DatabaseHealthTrigger,
+
+        [Parameter()]
+        [Boolean]
+        $DtcSupportEnabled,
 
         [Parameter()]
         [ValidateSet('AllowAllConnections', 'AllowReadWriteConnections')]
@@ -620,6 +662,9 @@ function Test-TargetResource
     $result = $true
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+    
+    # Define current version for check compatibility
+    $sqlMajorVersion = $getTargetResourceResult.Version
 
     switch ($Ensure)
     {
@@ -645,13 +690,22 @@ function Test-TargetResource
                 'AutomatedBackupPreference',
                 'AvailabilityMode',
                 'BackupPriority',
-                'BasicAvailabilityGroup',
                 'ConnectionModeInPrimaryRole',
                 'ConnectionModeInSecondaryRole',
                 'FailureConditionLevel',
                 'FailoverMode',
                 'HealthCheckTimeout'
             )
+
+            <#
+                Add properties compatible with SQL Server 2016 or later versions
+                DtcSupportEnabled is enabled at the creation of the Availability Group only, hence it will not be checked in this block
+            #>
+            if ( $sqlMajorVersion -ge 13 )
+            {
+                $parametersToCheck += 'BasicAvailabilityGroup'
+                $parametersToCheck += 'DatabaseHealthTrigger'
+            }
 
             if ( $getTargetResourceResult.Ensure -eq 'Present' )
             {
@@ -669,15 +723,6 @@ function Test-TargetResource
 
                     if ( $getTargetResourceResult.($parameterName) -ne $parameterValue )
                     {
-                        if ( $parameterName -eq 'BasicAvailabilityGroup' )
-                        {
-                            # Move on to the next property if the instance is not at least SQL Server 2016
-                            if ( $getTargetResourceResult.Version -lt 13 )
-                            {
-                                continue
-                            }
-                        }
-
                         New-VerboseMessage -Message "'$($parameterName)' should be '$($parameterValue)' but is '$($getTargetResourceResult.($parameterName))'"
 
                         $result = $False

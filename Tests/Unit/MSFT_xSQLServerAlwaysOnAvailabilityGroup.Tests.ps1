@@ -34,6 +34,8 @@ try
             AvailabilityMode = 'AsynchronousCommit'
             BackupPriority = 50
             BasicAvailabilityGroup = $false
+            DatabaseHealthTrigger = $false
+            DtcSupportEnabled = $false
             ConnectionModeInPrimaryRole = 'AllowAllConnections'
             ConnectionModeInSecondaryRole = 'AllowNoConnections'
             FailureConditionLevel = 'OnServerDown'
@@ -51,6 +53,8 @@ try
             AvailabilityMode = 'AsynchronousCommit'
             BackupPriority = 50
             BasicAvailabilityGroup = $false
+            DatabaseHealthTrigger = $false
+            DtcSupportEnabled = $false
             ConnectionModeInPrimaryRole = 'AllowAllConnections'
             ConnectionModeInSecondaryRole = 'AllowNoConnections'
             FailureConditionLevel = 'OnServerDown'
@@ -108,6 +112,9 @@ try
             $mockAvailabilityGroup.PrimaryReplicaServerName = 'Server1'
             $mockAvailabilityGroup.LocalReplicaRole = 'Primary'
             $mockAvailabilityGroup.AvailabilityReplicas = $mockAvailabilityReplicaCollection
+            $mockAvailabilityGroup.BasicAvailabilityGroup = $False
+            $mockAvailabilityGroup.DatabaseHealthTrigger = $False
+            $mockAvailabilityGroup.DtcSupportEnabled = $False
 
             # Create the availability group collectionto store the availability groups in
             $mockAvailabilityGroupCollection = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityGroupCollection
@@ -426,6 +433,8 @@ try
                     $result.FailoverMode | Should Be 'Manual'
                     $result.HealthCheckTimeout | Should Be 30000
                     $result.BasicAvailabilityGroup | Should BeNullOrEmpty
+                    $result.DatabaseHealthTrigger | Should BeNullOrEmpty
+                    $result.DtcSupportEnabled | Should BeNullOrEmpty
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }
@@ -456,6 +465,8 @@ try
                     $result.FailoverMode | Should Be 'Manual'
                     $result.HealthCheckTimeout | Should Be 30000
                     $result.BasicAvailabilityGroup | Should BeNullOrEmpty
+                    $result.DatabaseHealthTrigger | Should BeNullOrEmpty
+                    $result.DtcSupportEnabled | Should BeNullOrEmpty
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }
@@ -486,6 +497,8 @@ try
                     $result.FailoverMode | Should Be 'Manual'
                     $result.HealthCheckTimeout | Should Be 30000
                     $result.BasicAvailabilityGroup | Should Be $false
+                    $result.DatabaseHealthTrigger | Should Be $false
+                    $result.DtcSupportEnabled | Should Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }
@@ -516,6 +529,8 @@ try
                     $result.FailoverMode | Should Be 'Manual'
                     $result.HealthCheckTimeout | Should Be 30000
                     $result.BasicAvailabilityGroup | Should Be $false
+                    $result.DatabaseHealthTrigger | Should Be $false
+                    $result.DtcSupportEnabled | Should Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }
@@ -574,6 +589,8 @@ try
 
                     $defaultAbsentParameters.Ensure = 'Present'
                     $defaultAbsentParameters.BasicAvailabilityGroup = $true
+                    $defaultAbsentParameters.DatabaseHealthTrigger = $true
+                    $defaultAbsentParameters.DtcSupportEnabled = $true
 
                     { Set-TargetResource @defaultAbsentParameters } | Should Not Throw
 
@@ -1204,6 +1221,58 @@ try
                     $mockConnectSqlVersion13ServerObject.AvailabilityGroups['PresentAG'].BasicAvailabilityGroup = $defaultPresentParameters.BasicAvailabilityGroup
                 }
 
+                It 'Should set the DatabaseHealthTrigger to the desired state' {
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -ParameterFilter { $SQLServer -eq 'Server1' }
+                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    
+                    $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
+                    $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
+                    $defaultPresentParametersIncorrectProperties.DatabaseHealthTrigger = $true
+                    $mockAvailabilityGroupProperty = 'DatabaseHealthTrigger'
+                    $mockAvailabilityGroupPropertyValue = $true
+                    
+                    { Set-TargetResource @defaultPresentParametersIncorrectProperties } | Should Not Throw
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
+
+                    $mockConnectSqlVersion13ServerObject.AvailabilityGroups['PresentAG'].DatabaseHealthTrigger = $defaultPresentParameters.DatabaseHealthTrigger
+                }
+
+                It 'Should not set the DtcSupportEnabled to the desired state' {
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -ParameterFilter { $SQLServer -eq 'Server1' }
+                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    
+                    $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
+                    $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
+                    $defaultPresentParametersIncorrectProperties.DtcSupportEnabled = $true
+                    $mockAvailabilityGroupProperty = 'DtcSupportEnabled'
+                    $mockAvailabilityGroupPropertyValue = $true
+                    
+                    { Set-TargetResource @defaultPresentParametersIncorrectProperties } | Should Not Throw
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
+
+                    $mockConnectSqlVersion13ServerObject.AvailabilityGroups['PresentAG'].DtcSupportEnabled = $defaultPresentParameters.DtcSupportEnabled
+                }
+
                 It 'Should set the ConnectionModeInPrimaryRole to the desired state' {
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable
@@ -1743,6 +1812,8 @@ try
                     $defaultPresentParametersIncorrectParameter.Ensure = 'Present'
                     $defaultPresentParametersIncorrectParameter.AvailabilityMode = 'SynchronousCommit'
                     $defaultPresentParametersIncorrectParameter.BasicAvailabilityGroup = $true
+                    $defaultPresentParametersIncorrectParameter.DatabaseHealthTrigger = $true
+                    $defaultPresentParametersIncorrectParameter.DtcSupportEnabled = $true
 
                     Test-TargetResource @defaultPresentParametersIncorrectParameter | Should Be $false
 

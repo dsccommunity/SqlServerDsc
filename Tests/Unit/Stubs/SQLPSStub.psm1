@@ -673,7 +673,15 @@ function New-SqlAvailabilityGroup {
 
         [Parameter()]
         [switch]
-        $BasicAvailabilityGroup
+        $BasicAvailabilityGroup,
+
+        [Parameter()]
+        [switch]
+        $DatabaseHealthTrigger,
+
+        [Parameter()]
+        [switch]
+        $DtcSupportEnabled
    )
 
     throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand

@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Changes to xSQLServerAlwaysOnAvailabilityGroup
+  - Change the check of the values entered as parameter for
+    BasicAvailabilityGroup. It is a boolean, hence it was not possible to
+    disable the feature.
+  - Add possibility to enable/disable the feature DatabaseHealthTrigger
+    (SQL Server 2016 or later only).
+  - Add possibility to enable the feature DtcSupportEnabled (SQL Server 2016 or
+    later only). The feature currently can't be altered once the Availability
+    Group is created.
+
 ## 8.1.0.0
 
 - Changes to xSQLServer
