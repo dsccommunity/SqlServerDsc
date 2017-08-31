@@ -663,7 +663,7 @@ function Test-TargetResource
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
     
-    # Define current version and edition for check compatibility
+    # Define current version for check compatibility
     $sqlMajorVersion = $getTargetResourceResult.Version
 
     switch ($Ensure)
