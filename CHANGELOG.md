@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Changes to xSQLServer
+  - Fixed an issue with trailing slashes in the 'UpdateSource' Property ([issue #720](https://github.com/PowerShell/xSQLServer/issues/720)).
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
   - Change the check of the values entered as parameter for
     BasicAvailabilityGroup. It is a boolean, hence it was not possible to
