@@ -3066,6 +3066,8 @@ try
                             InstallSQLDataDir = 'E:'
                             InstallSharedDir = 'C:\Program Files\Microsoft SQL Server'
                             InstallSharedWOWDir = 'C:\Program Files (x86)\Microsoft SQL Server'
+                            UpdateEnabled = 'True'
+                            UpdateSource = 'C:\Updates\' # Regression test for issue #720
                         }
 
                         if ( $mockSqlMajorVersion -in (13,14) )
@@ -3087,6 +3089,8 @@ try
                             InstallSQLDataDir = 'E:\'
                             InstallSharedDir = 'C:\Program Files\Microsoft SQL Server'
                             InstallSharedWOWDir = 'C:\Program Files (x86)\Microsoft SQL Server'
+                            UpdateEnabled = 'True'
+                            UpdateSource = 'C:\Updates' # Regression test for issue #720
                         }
 
                         { Set-TargetResource @testParameters } | Should Not Throw
