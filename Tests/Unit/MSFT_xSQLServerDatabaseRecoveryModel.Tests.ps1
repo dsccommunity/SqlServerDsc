@@ -44,8 +44,8 @@ try
             SQLInstanceName = $mockSqlServerInstanceName
             SQLServer       = $mockSqlServerName
         }
-        
-        #region Function mocks        
+
+        #region Function mocks
         $mockConnectSQL = {
             return @(
                 (
@@ -54,7 +54,7 @@ try
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSqlServerName -PassThru |
                         Add-Member -MemberType ScriptProperty -Name Databases -Value {
                             return @{
-                                $mockSqlDatabaseName = ( New-Object Object | 
+                                $mockSqlDatabaseName = ( New-Object Object |
                                     Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
                                     Add-Member -MemberType NoteProperty -Name RecoveryModel -Value $mockSqlDatabaseRecoveryModel -PassThru |
                                     Add-Member -MemberType ScriptMethod -Name Alter -Value {
@@ -62,7 +62,7 @@ try
                                         {
                                             throw 'Mock Alter Method was called with invalid operation.'
                                         }
-                                        
+
                                         if ( $this.RecoveryModel -ne $mockExpectedRecoveryModel )
                                         {
                                             throw "Called Alter Drop() method without setting the right recovery model. Expected '{0}'. But was '{1}'." `
@@ -71,7 +71,7 @@ try
                                     } -PassThru
                                     )
                                 }
-                            } -PassThru -Force                                        
+                            } -PassThru -Force
                 )
             )
         }
@@ -100,7 +100,7 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
-               
+
             Context 'When the system is not in the desired state' {
                 It 'Should return wrong RecoveryModel' {
                     $testParameters = $mockDefaultParameters
@@ -123,7 +123,7 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
-    
+
             Context 'When the system is in the desired state for a database' {
                 It 'Should return the correct RecoveryModel' {
                     $testParameters = $mockDefaultParameters
@@ -131,7 +131,7 @@ try
                         Name = 'AdventureWorks'
                         RecoveryModel = 'Simple'
                     }
-    
+
                     $result = Get-TargetResource @testParameters
                     $result.RecoveryModel | Should Be $testParameters.RecoveryModel
                 }
@@ -149,7 +149,7 @@ try
 
             Assert-VerifiableMocks
         }
-    
+
         Describe "MSFT_xSQLServerDatabaseRecoveryModel\Test-TargetResource" -Tag 'Test'{
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
@@ -166,10 +166,10 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should Be $false
                 }
-            
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
-                }                
+                }
             }
 
             Context 'When the system is in the desired state' {
@@ -186,12 +186,12 @@ try
 
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
-                } 
+                }
             }
 
             Assert-VerifiableMocks
         }
-    
+
         Describe "MSFT_xSQLServerDatabaseRecoveryModel\Set-TargetResource" -Tag 'Set'{
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
@@ -230,7 +230,7 @@ try
 
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
-                } 
+                }
             }
 
             Context 'When the system is not in the desired state' {
@@ -243,7 +243,7 @@ try
                         RecoveryModel = 'Full'
                     }
 
-                    $throwInvalidOperation = ('Exception calling "Alter" with "0" argument(s): ' + 
+                    $throwInvalidOperation = ('Exception calling "Alter" with "0" argument(s): ' +
                                               '"Mock Alter Method was called with invalid operation."')
 
                     { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
@@ -251,9 +251,9 @@ try
 
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
-                } 
+                }
             }
-        
+
             Assert-VerifiableMocks
         }
     }
