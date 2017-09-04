@@ -13,6 +13,7 @@
   - Add possibility to enable the feature DtcSupportEnabled (SQL Server 2016 or
     later only). The feature currently can't be altered once the Availability
     Group is created.
+
 ## 8.1.0.0
 
 - Changes to xSQLServer
