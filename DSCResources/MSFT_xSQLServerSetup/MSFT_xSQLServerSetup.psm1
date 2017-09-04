@@ -1805,7 +1805,7 @@ function Get-SqlMajorVersion
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [String]
         $Path
     )
@@ -1825,7 +1825,7 @@ function Get-FirstItemPropertyValue
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [String]
         $Path
     )

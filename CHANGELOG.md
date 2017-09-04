@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Changes to xSQLServerAlwaysOnAvailabilityGroup
+  - Change the check of the values entered as parameter for
+    BasicAvailabilityGroup. It is a boolean, hence it was not possible to
+    disable the feature.
+  - Add possibility to enable/disable the feature DatabaseHealthTrigger
+    (SQL Server 2016 or later only).
+  - Add possibility to enable the feature DtcSupportEnabled (SQL Server 2016 or
+    later only). The feature currently can't be altered once the Availability
+    Group is created.
+
+## 8.1.0.0
+
 - Changes to xSQLServer
   - Added back .markdownlint.json so that lint rule MD013 is enforced.
   - Change the module to use the image 'Visual Studio 2017' as the build worker
@@ -39,6 +51,8 @@
       1-WaitForASingleClusterGroup.ps1, 2-WaitForMultipleClusterGroups.ps1.
   - Updated year to 2017 in license file ([issue #711](https://github.com/PowerShell/xFailOverCluster/issues/711)).
   - Code style clean-up throughout the module to align against the Style Guideline.
+  - Fixed typos and the use of wrong parameters in unit tests which was found
+    after release of new version of Pester ([issue #773](https://github.com/PowerShell/xFailOverCluster/issues/773)).
 - Changes to xSQLServerAlwaysOnService
   - Added resource description in README.md.
   - Updated parameters descriptions in comment-based help, schema.mof and README.md.
@@ -51,11 +65,20 @@
   - Added examples (issue #633)
     - 1-EnableAlwaysOn.ps1
     - 2-DisableAlwaysOn.ps1
+  - Fixed PS Script Analyzer errors ([issue #724](https://github.com/PowerShell/xSQLServer/issues/724))
+  - Casting the result of the property IsHadrEnabled to [System.Boolean] so that
+    $null is never returned, which resulted in an exception ([issue #763](https://github.com/PowerShell/xFailOverCluster/issues/763)).
+- Changes to xSQLServerDatabasePermission
+  - Fixed PS Script Analyzer errors ([issue #725](https://github.com/PowerShell/xSQLServer/issues/725))
+- Changes to xSQLServerScript
+  - Fixed PS Script Analyzer errors ([issue #728](https://github.com/PowerShell/xSQLServer/issues/728))
 - Changes to xSQLServerSetup
   - Added Swedish localization ([issue #695](https://github.com/PowerShell/xSQLServer/issues/695)).
   - Now Get-TargetResource correctly returns an array for property ASSysAdminAccounts,
     and no longer throws an error when there is just one Analysis Services
     administrator (issue #691).
+  - Added a simple integration test ([issue #709](https://github.com/PowerShell/xSQLServer/issues/709)).
+  - Fixed PS Script Analyzer errors ([issue #729](https://github.com/PowerShell/xSQLServer/issues/729))
 
 ## 8.0.0.0
 

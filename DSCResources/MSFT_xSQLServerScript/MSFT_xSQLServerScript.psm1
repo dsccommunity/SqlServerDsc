@@ -65,7 +65,7 @@ function Get-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [System.UInt32]
         $QueryTimeout,
 
@@ -153,7 +153,7 @@ function Set-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [System.UInt32]
         $QueryTimeout,
 
@@ -228,7 +228,7 @@ function Test-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [System.UInt32]
         $QueryTimeout,
 
@@ -298,7 +298,7 @@ function Invoke-SqlScript
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [System.UInt32]
         $QueryTimeout,
 
