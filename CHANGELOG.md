@@ -55,7 +55,6 @@
   - Code style clean-up throughout the module to align against the Style Guideline.
   - Fixed typos and the use of wrong parameters in unit tests which was found
     after release of new version of Pester ([issue #773](https://github.com/PowerShell/xFailOverCluster/issues/773)).
-  - Fixed an issue with trailing slashes in the 'UpdateSource' Property ([issue #720](https://github.com/PowerShell/xSQLServer/issues/720)).
 - Changes to xSQLServerAlwaysOnService
   - Added resource description in README.md.
   - Updated parameters descriptions in comment-based help, schema.mof and README.md.
