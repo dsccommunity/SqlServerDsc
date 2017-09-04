@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Changes to xSQLServer
+  - Fixed an issue with trailing slashes in the 'UpdateSource' Property ([issue #720](https://github.com/PowerShell/xSQLServer/issues/720)).
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
   - Change the check of the values entered as parameter for
     BasicAvailabilityGroup. It is a boolean, hence it was not possible to
@@ -11,7 +13,6 @@
   - Add possibility to enable the feature DtcSupportEnabled (SQL Server 2016 or
     later only). The feature currently can't be altered once the Availability
     Group is created.
-
 ## 8.1.0.0
 
 - Changes to xSQLServer
