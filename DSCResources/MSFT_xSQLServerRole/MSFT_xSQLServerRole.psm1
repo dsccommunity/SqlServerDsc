@@ -67,7 +67,7 @@ function Get-TargetResource
         {
             try
             {
-                $membersInRole = $sqlServerRoleObject.EnumMemberNames()
+                [System.String[]]$membersInRole = $sqlServerRoleObject.EnumMemberNames()
             }
             catch
             {
