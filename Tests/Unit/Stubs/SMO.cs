@@ -701,6 +701,8 @@ namespace Microsoft.SqlServer.Management.Smo
         public AvailabilityDatabaseCollection AvailabilityDatabases;
         public AvailabilityReplicaCollection AvailabilityReplicas;
         public bool BasicAvailabilityGroup;
+        public bool DatabaseHealthTrigger;
+        public bool DtcSupportEnabled;
         public string FailureConditionLevel;
         public string HealthCheckTimeout;
         public string Name;
@@ -723,6 +725,8 @@ namespace Microsoft.SqlServer.Management.Smo
                 AvailabilityDatabases = this.AvailabilityDatabases,
                 AvailabilityReplicas = this.AvailabilityReplicas,
                 BasicAvailabilityGroup = this.BasicAvailabilityGroup,
+                DatabaseHealthTrigger = this.DatabaseHealthTrigger,
+                DtcSupportEnabled = this.DtcSupportEnabled,
                 FailureConditionLevel = this.FailureConditionLevel,
                 HealthCheckTimeout = this.HealthCheckTimeout,
                 Name = this.Name,
