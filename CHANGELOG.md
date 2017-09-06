@@ -14,7 +14,8 @@
     later only). The feature currently can't be altered once the Availability
     Group is created.
   - Changes to xSQLServerRole
-    - Fixed Error due to Return Variable Type ([Issue #790](https://github.com/PowerShell/xSQLServer/issues/790)).
+    - Running Get-DscConfiguration no longer throws an error saying property
+      Members is not an array ([Issue #790](https://github.com/PowerShell/xSQLServer/issues/790)).
 
 ## 8.1.0.0
 
