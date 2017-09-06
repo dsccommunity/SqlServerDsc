@@ -212,6 +212,13 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
+                It 'Should return the members as string array' {
+                    $result = Get-TargetResource @testParameters
+                    ($result.Members -is [String[]]) | Should Be $true
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
                     $result.SQLServer | Should Be $testParameters.SQLServer
@@ -264,6 +271,13 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
+                It 'Should return the members as string array' {
+                    $result = Get-TargetResource @testParameters
+                    ($result.Members -is [String[]]) | Should Be $true
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
                     $result.SQLServer | Should Be $testParameters.SQLServer
@@ -291,6 +305,13 @@ try
                 It 'Should return the members as not null' {
                     $result = Get-TargetResource @testParameters
                     $result.Members | Should Not Be $null
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
+                It 'Should return the members as string array' {
+                    $result = Get-TargetResource @testParameters
+                    ($result.Members -is [String[]]) | Should Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -425,6 +446,13 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
+                It 'Should return the members as string array' {
+                    $result = Get-TargetResource @testParameters
+                    ($result.Members -is [String[]]) | Should Be $true
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
                     $result.SQLServer | Should Be $testParameters.SQLServer
@@ -452,6 +480,13 @@ try
                 It 'Should return the members as not null' {
                     $result = Get-TargetResource @testParameters
                     $result.Members | Should Not Be $null
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
+                It 'Should return the members as string array' {
+                    $result = Get-TargetResource @testParameters
+                    ($result.Members -is [String[]]) | Should Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
