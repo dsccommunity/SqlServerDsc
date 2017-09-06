@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Changes to xSQLServer
+  - Changes to xSQLServerRole
+    - Fixed Error due to Return Variable Type ([Issue #790](https://github.com/PowerShell/xSQLServer/issues/790)).
+
 ## 8.1.0.0
 
 - Changes to xSQLServer
