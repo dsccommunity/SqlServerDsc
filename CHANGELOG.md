@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Changes to xSQLServer
+- Changes to xSQLServerSetup
   - Fixed an issue with trailing slashes in the 'UpdateSource' Property ([issue #720](https://github.com/PowerShell/xSQLServer/issues/720)).
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
   - Change the check of the values entered as parameter for
@@ -13,9 +13,9 @@
   - Add possibility to enable the feature DtcSupportEnabled (SQL Server 2016 or
     later only). The feature currently can't be altered once the Availability
     Group is created.
-  - Changes to xSQLServerRole
-    - Running Get-DscConfiguration no longer throws an error saying property
-      Members is not an array ([Issue #790](https://github.com/PowerShell/xSQLServer/issues/790)).
+- Changes to xSQLServerRole
+  - Running Get-DscConfiguration no longer throws an error saying property
+    Members is not an array ([issue #790](https://github.com/PowerShell/xSQLServer/issues/790)).
 
 ## 8.1.0.0
 
