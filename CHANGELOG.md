@@ -40,7 +40,7 @@
     - EndpointURL
 - Changes to xSQLServerHelper
   - Fixed Connect-SQL by ensuring the Status property returns 'Online' prior to
-    returning the SQL Server object. ([issue #333]https://github.com/PowerShell/xSQLServer/issues/333)
+    returning the SQL Server object ([issue #333](https://github.com/PowerShell/xSQLServer/issues/333)).
 - Changes to xSQLServerRole
   - Running Get-DscConfiguration no longer throws an error saying property
     Members is not an array ([issue #790](https://github.com/PowerShell/xSQLServer/issues/790)).
