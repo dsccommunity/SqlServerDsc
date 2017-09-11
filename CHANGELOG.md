@@ -22,6 +22,8 @@
   - Fixed so that the integration test renames back the SQLPS module folders if
     they was renamed by AppVeyor (in the appveyor.yml file).
     ([issue #774](https://github.com/PowerShell/xFailOverCluster/issues/774)).
+  - Fixed so integration test does not write warnings when SQLPS module is loaded
+    ([issue #798](https://github.com/PowerShell/xFailOverCluster/issues/798)).
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
   - Change the check of the values entered as parameter for
     BasicAvailabilityGroup. It is a boolean, hence it was not possible to

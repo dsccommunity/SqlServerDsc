@@ -30,7 +30,19 @@ test_script:
             Write-Verbose ('Renaming ''{0}'' to ''..\{1}''' -f $_, $newFolderName) -Verbose
             Rename-Item $_ -NewName $newFolderName -Force
         }
-        Write-Verbose -Message '---------------------------------' -Verbose
+
+        Write-Verbose -Message '' -Verbose
+
+        # Workaround for issue #798
+        Write-Verbose -Message '--- WORKAROUND FOR ISSUE #798 ---' -Verbose
+        $azureModules = Get-Module -ListAvailable -Name 'Azure*'
+        $azureUniqueModulePath = Split-Path -Path (Split-Path $azureModules.Path -Parent) -Parent | Sort-Object -Unique
+        $azureUniqueModulePath | ForEach-Object -Process {
+            $newFolderName = '{0}.old' -f (Split-Path -Path $_ -Leaf)
+            Write-Verbose ('Renaming ''{0}'' to ''..\{1}''' -f $_, $newFolderName) -Verbose
+            Rename-Item $_ -NewName $newFolderName -Force
+        }
+        Write-Verbose -Message '' -Verbose
 
         Invoke-AppveyorTestScriptTask -CodeCoverage -CodeCovIo -ExcludeTag @() -RunTestInOrder
 
