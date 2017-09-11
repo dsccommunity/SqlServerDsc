@@ -25,29 +25,18 @@ $TestEnvironment = Initialize-TestEnvironment `
 #endregion
 
 <#
-    Copies back the SQLPS module that was removed by AppVeyor.yml
-    (see issue #774).
-    SQLPS is removed because otherwise the common test will load
-    the SMO assembly and fail the unit tests (see issue #239)
-
-    $rootTempPath must be set to the same folder that was created
-    in the appveyor.yml file.
+    Workaround for issue #774. In the appveyor.yml file the folder
+    C:\Program Files (x86)\Microsoft SQL Server\**\Tools\PowerShell\Modules
+    was renamed to
+    C:\Program Files (x86)\Microsoft SQL Server\**\Tools\PowerShell\Modules.old
+    here we rename back the folder to the correct name. Only the version need
+    for our tests are renamed.
 #>
-$rootTempPath = Join-Path -Path $env:TEMP -ChildPath 'SqlModuleTemp'
-if (Test-Path -Path $rootTempPath)
-{
-    $copyItemParameters = @{
-        Path = Join-Path -Path $rootTempPath -ChildPath '*'
-        Destination = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules'
-        Recurse = $true
-        Force = $true
-    }
-
-    Copy-Item @copyItemParameters
-}
-else
-{
-    Write-Verbose -Message ('The folder ''{0}'' did not exist, ignoring copying SQLPS from temp path. Expecting it to be installed by SQL Server instead.' -f $rootTempPath) -Verbose
+$sqlModulePath = Get-ChildItem -Path 'C:\Program Files (x86)\Microsoft SQL Server\**\Tools\PowerShell\*.old'
+$sqlModulePath | ForEach-Object -Process {
+    $newFolderName = (Split-Path -Path $_ -Leaf) -replace '\.old'
+    Write-Verbose ('Renaming ''{0}'' to ''..\{1}''' -f $_, $newFolderName) -Verbose
+    Rename-Item $_ -NewName $newFolderName -Force
 }
 
 $mockInstanceName = 'DSCSQL2016'
