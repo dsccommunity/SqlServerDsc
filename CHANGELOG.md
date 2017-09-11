@@ -2,8 +2,26 @@
 
 ## Unreleased
 
+- Changes to xSQLServer
+  - Updated appveyor.yml so that integration tests run in order and so that
+    the SQLPS module folders are renamed to not disturb the units test, but
+    can be renamed back by the integration tests xSQLServerSetup so that the
+    integration tests can run successfully.
+    ([issue #774](https://github.com/PowerShell/xFailOverCluster/issues/774)).
+- Changes to xSQLServerHelper
+  - Changes to Connect-SQL and Import-SQLPSModule
+    - Now it correctly loads the correct assemblies when SqlServer module is
+      present (issue #649).
+    - Now SQLPS module will be correctly loaded (discovered) after installation
+      of SQL Server. Previously resources depending on SQLPS module could fail
+      because SQLPS was not found after installation because the PSModulePath
+      environment variable in the (LCM) PowerShell session did not contain the new
+      module path.
 - Changes to xSQLServerSetup
   - Fixed an issue with trailing slashes in the 'UpdateSource' Property ([issue #720](https://github.com/PowerShell/xSQLServer/issues/720)).
+  - Fixed so that the integration test renames back the SQLPS module folders if
+    they was renamed by AppVeyor (in the appveyor.yml file).
+    ([issue #774](https://github.com/PowerShell/xFailOverCluster/issues/774)).
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
   - Change the check of the values entered as parameter for
     BasicAvailabilityGroup. It is a boolean, hence it was not possible to
@@ -58,7 +76,6 @@
   - Code style clean-up throughout the module to align against the Style Guideline.
   - Fixed typos and the use of wrong parameters in unit tests which was found
     after release of new version of Pester ([issue #773](https://github.com/PowerShell/xFailOverCluster/issues/773)).
-  - Updated appveyor.yml so that integration tests can run in AppVeyor ([issue #774](https://github.com/PowerShell/xFailOverCluster/issues/774)).
 - Changes to xSQLServerAlwaysOnService
   - Added resource description in README.md.
   - Updated parameters descriptions in comment-based help, schema.mof and README.md.
@@ -84,8 +101,6 @@
     and no longer throws an error when there is just one Analysis Services
     administrator (issue #691).
   - Added a simple integration test ([issue #709](https://github.com/PowerShell/xSQLServer/issues/709)).
-    - Fixed so that the integration test copies back the SQLPS module
-      ([issue #774](https://github.com/PowerShell/xFailOverCluster/issues/774)).
   - Fixed PS Script Analyzer errors ([issue #729](https://github.com/PowerShell/xSQLServer/issues/729))
 
 ## 8.0.0.0
@@ -152,14 +167,6 @@
       parameter Verbose.
     - Moved localization strings from xSQLServer.strings.psd1 to
       xSQLServerHelper.strings.psd1.
-  - Changes to Connect-SQL and Import-SQLPSModule
-    - Now it correctly loads the correct assemblies when SqlServer module is
-      present (issue #649).
-    - Now SQLPS module will be correctly loaded (discovered) after installation
-      of SQL Server. Previously resources depending on SQLPS module could fail
-      because SQLPS was not found after installation because the PSModulePath
-      environment variable in the (LCM) PowerShell session did not contain the new
-      module path.
 - Changes to xSQLServerSetup
   - BREAKING CHANGE: Replaced StartWin32Process helper function with the cmdlet
     Start-Process (issue #41, #93 and #126).
