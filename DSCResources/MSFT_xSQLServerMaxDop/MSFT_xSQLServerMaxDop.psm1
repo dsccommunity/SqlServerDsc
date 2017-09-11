@@ -212,8 +212,7 @@ function Test-TargetResource
     switch ($Ensure)
     {
         'Absent'
-        {
-            if ($getMaxDop -ne 0)
+        {            if ($getMaxDop -ne 0)
             {
                 New-VerboseMessage -Message "Current MaxDop is $getMaxDop should be updated to 0"
                 $isMaxDopInDesiredState = $false
@@ -260,8 +259,21 @@ function Test-TargetResource
 function Get-SqlDscDynamicMaxDop
 {
     $cimInstanceProc = Get-CimInstance -ClassName Win32_Processor
-    $numProcs = (Measure-Object -InputObject $cimInstanceProc -Property NumberOfLogicalProcessors -Sum).Sum
-    $numCores = (Measure-Object -InputObject $cimInstanceProc -Property NumberOfCores -Sum).Sum
+    
+    # init variables
+    $numProcs = 0
+    $numCores = 0
+    
+    # loop through returned objects
+    foreach($Processor in $cimInstanceProc)
+    {
+        # increment number of processors
+        $numProcs += $Processor.NumberOfLogicalProcessors
+        
+        # increment number of cores
+        $numCores += $Processor.NumberOfCores
+    }
+
 
     if ($numProcs -eq 1)
     {
