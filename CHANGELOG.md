@@ -13,6 +13,8 @@
   - Add possibility to enable the feature DtcSupportEnabled (SQL Server 2016 or
     later only). The feature currently can't be altered once the Availability
     Group is created.
+- Changes to xSQLServerAlwaysOnAvailabilityGroupReplica
+  - Fixed the formatting for the AvailabilityGroupNotFound error.
 - Changes to xSQLServerRole
   - Running Get-DscConfiguration no longer throws an error saying property
     Members is not an array ([issue #790](https://github.com/PowerShell/xSQLServer/issues/790)).
