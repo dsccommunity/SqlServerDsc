@@ -212,7 +212,8 @@ function Test-TargetResource
     switch ($Ensure)
     {
         'Absent'
-        {            if ($getMaxDop -ne 0)
+        {            
+            if ($getMaxDop -ne 0)
             {
                 New-VerboseMessage -Message "Current MaxDop is $getMaxDop should be updated to 0"
                 $isMaxDopInDesiredState = $false
