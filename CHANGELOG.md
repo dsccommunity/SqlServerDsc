@@ -16,6 +16,8 @@
 - Changes to xSQLServerRole
   - Running Get-DscConfiguration no longer throws an error saying property
     Members is not an array ([issue #790](https://github.com/PowerShell/xSQLServer/issues/790)).
+- Changes to xSqlServerMaxDop
+  - Fixed error where Measure-Object cmdlet would fail claiming it could not find the specified property
 
 ## 8.1.0.0
 
