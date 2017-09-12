@@ -24,6 +24,21 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 #endregion
 
+<#
+    Workaround for issue #774. In the appveyor.yml file the folder
+    C:\Program Files (x86)\Microsoft SQL Server\**\Tools\PowerShell\Modules
+    was renamed to
+    C:\Program Files (x86)\Microsoft SQL Server\**\Tools\PowerShell\Modules.old
+    here we rename back the folder to the correct name. Only the version need
+    for our tests are renamed.
+#>
+$sqlModulePath = Get-ChildItem -Path 'C:\Program Files (x86)\Microsoft SQL Server\**\Tools\PowerShell\*.old'
+$sqlModulePath | ForEach-Object -Process {
+    $newFolderName = (Split-Path -Path $_ -Leaf) -replace '\.old'
+    Write-Verbose ('Renaming ''{0}'' to ''..\{1}''' -f $_, $newFolderName) -Verbose
+    Rename-Item $_ -NewName $newFolderName -Force
+}
+
 $mockInstanceName = 'DSCSQL2016'
 $mockFeatures = 'SQLENGINE,CONN,BC,SDK'
 $mockSqlCollation = 'Finnish_Swedish_CI_AS'

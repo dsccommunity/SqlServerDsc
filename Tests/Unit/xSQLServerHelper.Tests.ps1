@@ -1071,6 +1071,7 @@ InModuleScope $script:moduleName {
     Describe 'Testing Connect-SQL' -Tag ConnectSql {
         BeforeEach {
             Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
+            Mock -CommandName Import-SQLPSModule
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter `

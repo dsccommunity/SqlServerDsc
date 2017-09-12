@@ -2,8 +2,28 @@
 
 ## Unreleased
 
+- Changes to xSQLServer
+  - Updated appveyor.yml so that integration tests run in order and so that
+    the SQLPS module folders are renamed to not disturb the units test, but
+    can be renamed back by the integration tests xSQLServerSetup so that the
+    integration tests can run successfully.
+    ([issue #774](https://github.com/PowerShell/xFailOverCluster/issues/774)).
+- Changes to xSQLServerHelper
+  - Changes to Connect-SQL and Import-SQLPSModule
+    - Now it correctly loads the correct assemblies when SqlServer module is
+      present (issue #649).
+    - Now SQLPS module will be correctly loaded (discovered) after installation
+      of SQL Server. Previously resources depending on SQLPS module could fail
+      because SQLPS was not found after installation because the PSModulePath
+      environment variable in the (LCM) PowerShell session did not contain the new
+      module path.
 - Changes to xSQLServerSetup
   - Fixed an issue with trailing slashes in the 'UpdateSource' Property ([issue #720](https://github.com/PowerShell/xSQLServer/issues/720)).
+  - Fixed so that the integration test renames back the SQLPS module folders if
+    they was renamed by AppVeyor (in the appveyor.yml file).
+    ([issue #774](https://github.com/PowerShell/xFailOverCluster/issues/774)).
+  - Fixed so integration test does not write warnings when SQLPS module is loaded
+    ([issue #798](https://github.com/PowerShell/xFailOverCluster/issues/798)).
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
   - Change the check of the values entered as parameter for
     BasicAvailabilityGroup. It is a boolean, hence it was not possible to
