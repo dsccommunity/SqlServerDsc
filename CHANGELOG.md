@@ -35,6 +35,9 @@
     Group is created.
 - Changes to xSQLServerAlwaysOnAvailabilityGroupReplica
   - Fixed the formatting for the AvailabilityGroupNotFound error.
+  - Added the following read-only properties to the schema ([issue #477](https://github.com/PowerShell/xSQLServer/issues/477))
+    - EndpointPort
+    - EndpointURL
 - Changes to xSQLServerRole
   - Running Get-DscConfiguration no longer throws an error saying property
     Members is not an array ([issue #790](https://github.com/PowerShell/xSQLServer/issues/790)).

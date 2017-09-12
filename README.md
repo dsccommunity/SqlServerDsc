@@ -349,6 +349,10 @@ Always On Availability Group Replica.
 
 #### Read-Only Properties from Get-TargetResource
 
+* **`[Uint16]` EndpointPort** _(Read)_: Output the network port the endpoint is
+  listening on. Used by Get-TargetResource.
+* **`[String]` EndpointUrl** _(Read)_: Output the endpoint URL of the
+  Availability Group Replica. Used by Get-TargetResource.
 * **`[String]` SQLServerNetName** _(Read)_: Output the NetName property from the
   SQL Server object.
 
