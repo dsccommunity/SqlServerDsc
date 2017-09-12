@@ -500,7 +500,7 @@ function Set-TargetResource
                 # The Availability Group doesn't exist on the primary replica
                 else
                 {
-                    throw New-TerminatingError -ErrorType AvailabilityGroupNotFound -FormatArgs $Name, $PrimaryReplicaSQLInstanceName -ErrorCategory ResourceUnavailable
+                    throw New-TerminatingError -ErrorType AvailabilityGroupNotFound -FormatArgs $AvailabilityGroupName, $PrimaryReplicaSQLInstanceName -ErrorCategory ResourceUnavailable
                 }
             }
         }
