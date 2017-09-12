@@ -265,14 +265,14 @@ function Get-SqlDscDynamicMaxDop
     $numProcs = 0
     $numCores = 0
     
-    # loop through returned objects
-    foreach($Processor in $cimInstanceProc)
+    # Loop through returned objects
+    foreach ($processor in $cimInstanceProc)
     {
         # increment number of processors
-        $numProcs += $Processor.NumberOfLogicalProcessors
+        $numProcs += $processor.NumberOfLogicalProcessors
         
         # increment number of cores
-        $numCores += $Processor.NumberOfCores
+        $numCores += $processor.NumberOfCores
     }
 
 
