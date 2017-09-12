@@ -237,7 +237,7 @@ function Set-TargetResource
     {
         throw New-TerminatingError -ErrorType HadrNotEnabled -FormatArgs $Ensure, $SQLInstanceName -ErrorCategory NotImplemented
     }
-    
+
     # Define current version for check compatibility
     $sqlMajorVersion = $serverObject.Version.Major
 
@@ -272,67 +272,8 @@ function Set-TargetResource
 
         Present
         {
-            $clusterServiceName = 'NT SERVICE\ClusSvc'
-            $ntAuthoritySystemName = 'NT AUTHORITY\SYSTEM'
-            $availabilityGroupManagementPerms = @('Connect SQL', 'Alter Any Availability Group', 'View Server State')
-            $clusterPermissionsPresent = $false
-
-            foreach ( $loginName in @( $clusterServiceName, $ntAuthoritySystemName ) )
-            {
-                if ( $serverObject.Logins[$loginName] )
-                {
-                    $testLoginEffectivePermissionsParams = @{
-                        SQLServer       = $SQLServer
-                        SQLInstanceName = $SQLInstanceName
-                        LoginName       = $loginName
-                        Permissions     = $availabilityGroupManagementPerms
-                    }
-
-                    $clusterPermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
-
-                    if ( $clusterPermissionsPresent )
-                    {
-                        # Exit the loop when the script verifies the required cluster permissions are present
-                        break
-                    }
-                    else
-                    {
-                        switch ( $loginName )
-                        {
-                            $clusterServiceName
-                            {
-                                New-VerboseMessage -Message "The recommended account '$loginName' is missing one or more of the following permissions: $( $availabilityGroupManagementPerms -join ', ' ). Trying with '$ntAuthoritySystemName'."
-                            }
-
-                            $ntAuthoritySystemName
-                            {
-                                New-VerboseMessage -Message "'$loginName' is missing one or more of the following permissions: $( $availabilityGroupManagementPerms -join ', ' )"
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    switch ( $loginName )
-                    {
-                        $clusterServiceName
-                        {
-                            New-VerboseMessage -Message "The recommended login '$loginName' is not present. Trying with '$ntAuthoritySystemName'."
-                        }
-
-                        $ntAuthoritySystemName
-                        {
-                            New-VerboseMessage -Message "The login '$loginName' is not present."
-                        }
-                    }
-                }
-            }
-
-            # If neither 'NT SERVICE\ClusSvc' or 'NT AUTHORITY\SYSTEM' have the required permissions, throw an error
-            if ( -not $clusterPermissionsPresent )
-            {
-                throw New-TerminatingError -ErrorType ClusterPermissionsMissing -FormatArgs $SQLServer, $SQLInstanceName -ErrorCategory SecurityError
-            }
+            # Ensure the appropriate cluster permissions are present
+            Test-ClusterPermissions -ServerObject $serverObject
 
             $endpoint = $serverObject.Endpoints | Where-Object { $_.EndpointType -eq 'DatabaseMirroring' }
             if ( -not $endpoint )
@@ -450,7 +391,7 @@ function Set-TargetResource
                     $availabilityGroup.AvailabilityReplicas[$serverObject.Name].BackupPriority = $BackupPriority
                     Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.Name]
                 }
-                
+
                 if ( ( $sqlMajorVersion -ge 13 ) -and ( $BasicAvailabilityGroup -ne $availabilityGroup.BasicAvailabilityGroup ) )
                 {
                     $availabilityGroup.BasicAvailabilityGroup = $BasicAvailabilityGroup
@@ -662,7 +603,7 @@ function Test-TargetResource
     $result = $true
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-    
+
     # Define current version for check compatibility
     $sqlMajorVersion = $getTargetResourceResult.Version
 
