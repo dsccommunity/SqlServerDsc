@@ -698,8 +698,8 @@ namespace Microsoft.SqlServer.Management.Smo
         {}
 
         public string AutomatedBackupPreference;
-        public AvailabilityDatabaseCollection AvailabilityDatabases;
-        public AvailabilityReplicaCollection AvailabilityReplicas;
+        public AvailabilityDatabaseCollection AvailabilityDatabases = new AvailabilityDatabaseCollection();
+        public AvailabilityReplicaCollection AvailabilityReplicas = new AvailabilityReplicaCollection();
         public bool BasicAvailabilityGroup;
         public bool DatabaseHealthTrigger;
         public bool DtcSupportEnabled;
