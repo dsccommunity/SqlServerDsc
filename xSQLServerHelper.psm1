@@ -1210,13 +1210,17 @@ function Test-ClusterPermissions
     $availabilityGroupManagementPerms = @('Connect SQL', 'Alter Any Availability Group', 'View Server State')
     $clusterPermissionsPresent = $false
 
+    # Retrieve the SQL Server and Instance name from the server object
+    $sqlServer = $ServerObject.NetName
+    $sqlInstanceName = $ServerObject.ServiceName
+
     foreach ( $loginName in @( $clusterServiceName, $ntAuthoritySystemName ) )
     {
-        if ( $serverObject.Logins[$loginName] -and -not $clusterPermissionsPresent )
+        if ( $ServerObject.Logins[$loginName] -and -not $clusterPermissionsPresent )
         {
             $testLoginEffectivePermissionsParams = @{
-                SQLServer       = $SQLServer
-                SQLInstanceName = $SQLInstanceName
+                SQLServer       = $sqlServer
+                SQLInstanceName = $sqlInstanceName
                 LoginName       = $loginName
                 Permissions     = $availabilityGroupManagementPerms
             }
@@ -1229,12 +1233,12 @@ function Test-ClusterPermissions
                 {
                     $clusterServiceName
                     {
-                        New-VerboseMessage -Message "The recommended account '$loginName' is missing one or more of the following permissions: $( $availabilityGroupManagementPerms -join ', ' ). Trying with '$ntAuthoritySystemName'."
+                        Write-Verbose -Message ( $script:localizedData.ClusterLoginMissingPermissions -f 'recommended ',$loginName,( $availabilityGroupManagementPerms -join ', ' ) )
                     }
 
                     $ntAuthoritySystemName
                     {
-                        New-VerboseMessage -Message "'$loginName' is missing one or more of the following permissions: $( $availabilityGroupManagementPerms -join ', ' )"
+                        Write-Verbose -Message ( $script:localizedData.ClusterLoginMissingPermissions -f '',$loginName,( $availabilityGroupManagementPerms -join ', ' ) )
                     }
                 }
             }
@@ -1245,12 +1249,12 @@ function Test-ClusterPermissions
             {
                 $clusterServiceName
                 {
-                    New-VerboseMessage -Message "The recommended login '$loginName' is not present. Trying with '$ntAuthoritySystemName'."
+                    Write-Verbose -Message ($script:localizedData.ClusterLoginMissing -f 'recommended ',$loginName,"Trying with '$ntAuthoritySystemName'.")
                 }
 
                 $ntAuthoritySystemName
                 {
-                    New-VerboseMessage -Message "The login '$loginName' is not present."
+                    Write-Verbose -Message ( $script:localizedData.ClusterLoginMissing -f '',$loginName,'' )
                 }
             }
         }
@@ -1259,13 +1263,6 @@ function Test-ClusterPermissions
     # If neither 'NT SERVICE\ClusSvc' or 'NT AUTHORITY\SYSTEM' have the required permissions, throw an error.
     if ( -not $clusterPermissionsPresent )
     {
-        throw New-TerminatingError -ErrorType ClusterPermissionsMissing -FormatArgs $SQLServer, $SQLInstanceName -ErrorCategory SecurityError
-    }
-
-    # Make sure a database mirroring endpoint exists.
-    $endpoint = $serverObject.Endpoints | Where-Object { $_.EndpointType -eq 'DatabaseMirroring' }
-    if ( -not $endpoint )
-    {
-        throw New-TerminatingError -ErrorType DatabaseMirroringEndpointNotFound -FormatArgs $SQLServer, $SQLInstanceName -ErrorCategory ObjectNotFound
+        throw ($script:localizedData.ClusterPermissionsMissing -f $sqlServer,$sqlInstanceName )
     }
 }

@@ -275,6 +275,7 @@ function Set-TargetResource
             # Ensure the appropriate cluster permissions are present
             Test-ClusterPermissions -ServerObject $serverObject
 
+            # Make sure a database mirroring endpoint exists.
             $endpoint = $serverObject.Endpoints | Where-Object { $_.EndpointType -eq 'DatabaseMirroring' }
             if ( -not $endpoint )
             {

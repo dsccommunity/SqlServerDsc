@@ -248,7 +248,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public string InstanceName;
         public bool IsClustered = false;
         public bool IsHadrEnabled = false;
-        public Hashtable Logins;
+        public Hashtable Logins = new Hashtable();
         public string Name;
         public string NetName;
         public Hashtable Roles;
