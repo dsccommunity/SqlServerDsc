@@ -237,13 +237,13 @@ namespace Microsoft.SqlServer.Management.Smo
     {
         public string MockGranteeName;
 
-        public AvailabilityGroupCollection AvailabilityGroups;
+        public AvailabilityGroupCollection AvailabilityGroups = new AvailabilityGroupCollection();
         public ConnectionContext ConnectionContext;
         public string ComputerNamePhysicalNetBIOS;
-        public DatabaseCollection Databases;
+        public DatabaseCollection Databases = new DatabaseCollection();
         public string DisplayName;
         public string DomainInstanceName;
-        public EndpointCollection Endpoints;
+        public EndpointCollection Endpoints = new EndpointCollection();
         public string FilestreamLevel = "Disabled";
         public string InstanceName;
         public bool IsClustered = false;
@@ -251,9 +251,9 @@ namespace Microsoft.SqlServer.Management.Smo
         public Hashtable Logins = new Hashtable();
         public string Name;
         public string NetName;
-        public Hashtable Roles;
+        public Hashtable Roles = new Hashtable();
         public string ServiceName;
-        public Hashtable Version;
+        public Hashtable Version = new Hashtable();
 
         public Server(){}
         public Server(string name)

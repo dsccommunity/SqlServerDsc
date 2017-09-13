@@ -94,13 +94,13 @@ try
 
         #region Endpoint mocks
 
-            $mockEndpoint = @() # Will be dynamically set during tests
+            $mockDatabaseMirroringEndpoint = $true
 
             $mockEndpointPort = 5022
 
             $mockDatabaseMirroringEndpointAbsent = @()
 
-            $mockDatabaseMirroringEndpointPresent = @(
+            <#$mockDatabaseMirroringEndpointPresent = @(
                 (
                     New-Object Object |
                         Add-Member -MemberType NoteProperty -Name 'EndpointType' -Value 'DatabaseMirroring' -PassThru |
@@ -120,8 +120,7 @@ try
                             )
                         } -PassThru -Force
                 )
-            )
-
+            )#>
         #endregion
 
         #region Availability Group mock variables
@@ -194,6 +193,7 @@ try
                 $SQLInstanceName
             )
 
+            <#
             $mock = @(
                 (
                     New-Object Object |
@@ -275,8 +275,26 @@ try
 
             # Type the mock as a server object
             $mock.PSObject.TypeNames.Insert(0,'Microsoft.SqlServer.Management.Smo.Server')
+            #>
 
-            return $mock
+            $mockServerObject = New-Object Microsoft.SqlServer.Management.Smo.Server
+            $mockServerObject.Name = $mockServer1Name
+            $mockServerObject.NetName = $mockServer1NetName
+            $mockServerObject.IsHadrEnabled = $mockServer1IsHadrEnabled
+
+            if ( $mockDatabaseMirroringEndpoint )
+            {
+                $mockEndpoint = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Endpoint
+                $mockEndpoint.EndpointType = 'DatabaseMirroring'
+                $mockEndpoint.Protocol = @{
+                    TCP = @{
+                        ListenerPort = $mockendpointPort
+                    }
+                }
+                $mockServerObject.Endpoints.Add($mockEndpoint)
+            }
+
+            return $mockServerObject
         }
 
         $mockConnectSqlServer2 = {
@@ -628,7 +646,7 @@ try
                     SQLInstanceName = $mockSqlInstanceName
                 }
 
-                $mockEndpoint = $mockDatabaseMirroringEndpointPresent
+                $mockDatabaseMirroringEndpoint = $true
 
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer1 -Verifiable
             }
