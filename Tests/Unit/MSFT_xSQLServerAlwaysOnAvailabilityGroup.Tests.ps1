@@ -543,6 +543,8 @@ try
                 $mockLogins = $mockAllLoginsPresent # Need this for legacy purposes
                 $mockConnectSqlVersion12ServerObject.Logins = $mockAllLoginsPresent
                 $mockConnectSqlVersion13ServerObject.Logins = $mockAllLoginsPresent
+
+                Mock -CommandName Test-ClusterPermissions -MockWith { $null } -Verifiable
             }
 
             Mock -CommandName Invoke-Query -MockWith {} -Verifiable
@@ -560,8 +562,7 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable
                     Mock -CommandName New-SqlAvailabilityGroup {} -Verifiable
                     Mock -CommandName New-SqlAvailabilityReplica -MockWith $mockNewSqlAvailabilityReplica -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $false } -Verifiable -ParameterFilter { $LoginName -eq 'NT AUTHORITY\SYSTEM' }
+                    Mock -CommandName Test-ClusterPermissions
 
                     $defaultAbsentParameters.Ensure = 'Present'
 
@@ -573,8 +574,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter { $LoginName -eq 'NT AUTHORITY\SYSTEM' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
                 }
@@ -600,8 +600,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter { $LoginName -eq 'NT AUTHORITY\SYSTEM' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
                 }
@@ -615,8 +614,6 @@ try
                     Mock -CommandName Invoke-Query -MockWith {} -Verifiable
                     Mock -CommandName New-SqlAvailabilityGroup {} -Verifiable
                     Mock -CommandName New-SqlAvailabilityReplica -MockWith $mockNewSqlAvailabilityReplica -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $false } -Verifiable -ParameterFilter { $LoginName -eq 'NT AUTHORITY\SYSTEM' }
 
                     $defaultAbsentParameters.Ensure = 'Present'
 
@@ -628,31 +625,30 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter { $LoginName -eq 'NT AUTHORITY\SYSTEM' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
                 }
 
-                It 'Should throw the correct error (ClusterPermissionsMissing) when the logins "NT SERVICE\ClusSvc" or "NT AUTHORITY\SYSTEM" are absent' {
+                It "Should throw when the logins '$($mockNtServiceClusSvcName)' or '$($mockNtAuthoritySystemName)' are absent or do not have the correct permissions" {
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable
                     Mock -CommandName New-SqlAvailabilityGroup {} -Verifiable
                     Mock -CommandName New-SqlAvailabilityReplica -MockWith $mockNewSqlAvailabilityReplica -Verifiable
+                    Mock -CommandName Test-ClusterPermissions -MockWith { throw } -Verifiable
 
                     $defaultAbsentParameters.Ensure = 'Present'
                     $mockConnectSqlVersion12ServerObject.Logins = $mockAllLoginsAbsent.Clone()
 
-                    { Set-TargetResource @defaultAbsentParameters } | Should Throw 'ClusterPermissionsMissing'
+                    { Set-TargetResource @defaultAbsentParameters } | Should Throw
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter { $LoginName -eq 'NT AUTHORITY\SYSTEM' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
                 }
@@ -662,8 +658,6 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable
                     Mock -CommandName New-SqlAvailabilityGroup {} -Verifiable
                     Mock -CommandName New-SqlAvailabilityReplica -MockWith $mockNewSqlAvailabilityReplica -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $false } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT AUTHORITY\SYSTEM' }
 
                     $defaultAbsentParameters.Ensure = 'Present'
 
@@ -675,31 +669,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT AUTHORITY\SYSTEM' }
-                    Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
-                }
-
-                It 'Should throw the correct error, ClusterPermissionsMissing, when Ensure is set to Present, but the cluster does not have the correct permissions' {
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable
-                    Mock -CommandName New-SqlAvailabilityGroup {} -Verifiable
-                    Mock -CommandName New-SqlAvailabilityReplica -MockWith $mockNewSqlAvailabilityReplica -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $false } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $false } -Verifiable -ParameterFilter { $LoginName -eq 'NT AUTHORITY\SYSTEM' }
-
-                    $defaultAbsentParameters.Ensure = 'Present'
-
-                    { Set-TargetResource @defaultAbsentParameters } | Should Throw 'ClusterPermissionsMissing'
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT AUTHORITY\SYSTEM' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
                 }
@@ -715,7 +685,6 @@ try
                     } -Verifiable
                     Mock -CommandName New-SqlAvailabilityGroup {} -Verifiable
                     Mock -CommandName New-SqlAvailabilityReplica -MockWith $mockNewSqlAvailabilityReplica -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
 
                     $defaultAbsentParameters.Ensure = 'Present'
 
@@ -727,7 +696,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
                 }
@@ -737,7 +706,6 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable
                     Mock -CommandName New-SqlAvailabilityGroup {} -Verifiable
                     Mock -CommandName New-SqlAvailabilityReplica -MockWith { throw 'CreateAvailabilityGroupReplicaFailed' } -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
 
                     $defaultAbsentParameters.Ensure = 'Present'
 
@@ -749,7 +717,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 1
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
                 }
@@ -759,7 +727,6 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable
                     Mock -CommandName New-SqlAvailabilityGroup {} -Verifiable
                     Mock -CommandName New-SqlAvailabilityReplica -MockWith { throw 'CreateAvailabilityGroupReplicaFailed' } -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
 
                     $defaultAbsentParameters.Ensure = 'Present'
 
@@ -771,7 +738,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
                 }
@@ -781,7 +748,6 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable
                     Mock -CommandName New-SqlAvailabilityReplica -MockWith $mockNewSqlAvailabilityReplica -Verifiable
                     Mock -CommandName New-SqlAvailabilityGroup -MockWith { throw 'CreateAvailabilityGroupFailed' } -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
                     Mock -CommandName Test-TargetResource -MockWith { $false } -Verifiable
 
                     $defaultAbsentParameters.Ensure = 'Present'
@@ -794,7 +760,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
                 }
@@ -804,7 +770,6 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable
                     Mock -CommandName New-SqlAvailabilityReplica -MockWith $mockNewSqlAvailabilityReplica -Verifiable
                     Mock -CommandName New-SqlAvailabilityGroup -MockWith { throw 'CreateAvailabilityGroupFailed' } -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
                     Mock -CommandName Test-TargetResource -MockWith {$false}
 
                     $defaultAbsentParameters.Ensure = 'Present'
@@ -817,7 +782,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
                 }
@@ -835,7 +800,6 @@ try
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable
                     Mock -CommandName Remove-SqlAvailabilityGroup -MockWith {} -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith {} -Verifiable
 
                     $defaultPresentParameters.Ensure = 'Absent'
 
@@ -847,7 +811,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
                 }
@@ -856,7 +820,6 @@ try
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable
                     Mock -CommandName Remove-SqlAvailabilityGroup -MockWith {} -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith {} -Verifiable
 
                     $defaultPresentParameters.Ensure = 'Absent'
 
@@ -869,7 +832,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
                 }
@@ -903,7 +866,6 @@ try
                     } -Verifiable
 
                     Mock -CommandName Remove-SqlAvailabilityGroup -MockWith {} -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith {} -Verifiable
 
                     $defaultPresentParameters.Ensure = 'Absent'
 
@@ -915,7 +877,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
                 }
@@ -924,7 +886,6 @@ try
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable
                     Mock -CommandName Remove-SqlAvailabilityGroup -MockWith { throw 'RemoveAvailabilityGroupFailed' } -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith {} -Verifiable
 
                     $defaultPresentParameters.Ensure = 'Absent'
 
@@ -936,7 +897,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
                 }
@@ -945,7 +906,6 @@ try
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable
                     Mock -CommandName Remove-SqlAvailabilityGroup -MockWith { throw 'RemoveAvailabilityGroupFailed' } -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith {} -Verifiable
 
                     $defaultPresentParameters.Ensure = 'Absent'
 
@@ -957,7 +917,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
                 }
@@ -1096,8 +1056,6 @@ try
                         return $mock
                     } -Verifiable -ParameterFilter { $SQLServer -eq 'Server2' }
 
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
-
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
                     $mockAvailabilityGroupReplicaProperty = ''
@@ -1112,7 +1070,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 1 -Exactly
                 }
@@ -1120,7 +1078,6 @@ try
                 It 'Should set the AutomatedBackupPreference to the desired state' {
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable -ParameterFilter { $SQLServer -eq 'Server1' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
 
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
@@ -1136,7 +1093,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
 
@@ -1146,7 +1103,6 @@ try
                 It 'Should set the AvailabilityMode to the desired state' {
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
 
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
@@ -1162,7 +1118,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 1 -Exactly
 
@@ -1172,7 +1128,6 @@ try
                 It 'Should set the BackupPriority to the desired state' {
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
 
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
@@ -1188,7 +1143,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 1 -Exactly
 
@@ -1198,7 +1153,6 @@ try
                 It 'Should set the BasicAvailabilityGroup to the desired state' {
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -ParameterFilter { $SQLServer -eq 'Server1' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
 
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
@@ -1214,7 +1168,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
 
@@ -1224,14 +1178,13 @@ try
                 It 'Should set the DatabaseHealthTrigger to the desired state' {
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -ParameterFilter { $SQLServer -eq 'Server1' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
-                    
+
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
                     $defaultPresentParametersIncorrectProperties.DatabaseHealthTrigger = $true
                     $mockAvailabilityGroupProperty = 'DatabaseHealthTrigger'
                     $mockAvailabilityGroupPropertyValue = $true
-                    
+
                     { Set-TargetResource @defaultPresentParametersIncorrectProperties } | Should Not Throw
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
@@ -1240,7 +1193,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
 
@@ -1250,14 +1203,13 @@ try
                 It 'Should not set the DtcSupportEnabled to the desired state' {
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion13 -Verifiable -ParameterFilter { $SQLServer -eq 'Server1' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
-                    
+
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
                     $defaultPresentParametersIncorrectProperties.DtcSupportEnabled = $true
                     $mockAvailabilityGroupProperty = 'DtcSupportEnabled'
                     $mockAvailabilityGroupPropertyValue = $true
-                    
+
                     { Set-TargetResource @defaultPresentParametersIncorrectProperties } | Should Not Throw
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
@@ -1266,7 +1218,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
 
@@ -1276,7 +1228,6 @@ try
                 It 'Should set the ConnectionModeInPrimaryRole to the desired state' {
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
 
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
@@ -1292,7 +1243,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 1 -Exactly
 
@@ -1303,7 +1254,6 @@ try
                 It 'Should set the ConnectionModeInSecondaryRole to the desired state' {
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable -ParameterFilter { $SQLServer -eq 'Server1' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
 
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
@@ -1319,7 +1269,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 1 -Exactly
 
@@ -1393,7 +1343,6 @@ try
 
                         return $mock
                     } -Verifiable -ParameterFilter { $SQLServer -eq 'Server1' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
 
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
@@ -1408,7 +1357,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 1 -Exactly
 
@@ -1418,7 +1367,6 @@ try
                 It 'Should set the EndpointUrl to the desired state when the EndpointHostName is specified' {
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable -ParameterFilter { $SQLServer -eq 'Server1' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
 
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
@@ -1434,7 +1382,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 1 -Exactly
 
@@ -1508,7 +1456,6 @@ try
 
                         return $mock
                     } -Verifiable -ParameterFilter { $SQLServer -eq 'Server1' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
 
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
@@ -1524,7 +1471,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 1 -Exactly
 
@@ -1598,7 +1545,6 @@ try
 
                         return $mock
                     } -Verifiable -ParameterFilter { $SQLServer -eq 'Server1' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
 
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
@@ -1613,7 +1559,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 1 -Exactly
 
@@ -1623,7 +1569,6 @@ try
                 It 'Should set the FailureConditionLevel to the desired state' {
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable -ParameterFilter { $SQLServer -eq 'Server1' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
 
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
@@ -1639,7 +1584,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
 
@@ -1649,7 +1594,6 @@ try
                 It 'Should set the FailoverMode to the desired state' {
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable -ParameterFilter { $SQLServer -eq 'Server1' }
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
 
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
@@ -1665,7 +1609,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 1 -Exactly
 
@@ -1675,7 +1619,6 @@ try
                 It 'Should set the HealthCheckTimeout to the desired state' {
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSqlVersion12 -Verifiable
-                    Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true } -Verifiable -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
 
                     $defaultPresentParametersIncorrectProperties = $defaultPresentParameters.Clone()
                     $defaultPresentParametersIncorrectProperties.Ensure = 'Present'
@@ -1691,7 +1634,7 @@ try
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq 'NT SERVICE\ClusSvc' }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
 
