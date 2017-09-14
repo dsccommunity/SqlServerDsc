@@ -8,6 +8,8 @@
     can be renamed back by the integration tests xSQLServerSetup so that the
     integration tests can run successfully.
     ([issue #774](https://github.com/PowerShell/xFailOverCluster/issues/774)).
+  - Changed so the maximum version to be installed is 4.0.6.0. Quick fix until we
+    can resolve the unit tests (see issue #807).
 - Changes to xSQLServerHelper
   - Changes to Connect-SQL and Import-SQLPSModule
     - Now it correctly loads the correct assemblies when SqlServer module is
