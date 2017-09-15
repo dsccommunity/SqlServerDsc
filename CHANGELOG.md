@@ -6,7 +6,7 @@
   - Updated appveyor.yml so that integration tests run in order and so that
     the SQLPS module folders are renamed to not disturb the units test, but
     can be renamed back by the integration tests xSQLServerSetup so that the
-    integration tests can run successfully.
+    integration tests can run successfully
     ([issue #774](https://github.com/PowerShell/xFailOverCluster/issues/774)).
   - Changed so the maximum version to be installed is 4.0.6.0, when running unit
     tests in AppVeyor. Quick fix until we can resolve the unit tests (see
@@ -23,9 +23,10 @@
       environment variable in the (LCM) PowerShell session did not contain the new
       module path.
 - Changes to xSQLServerSetup
-  - Fixed an issue with trailing slashes in the 'UpdateSource' Property ([issue #720](https://github.com/PowerShell/xSQLServer/issues/720)).
+  - Fixed an issue with trailing slashes in the 'UpdateSource' property
+    ([issue #720](https://github.com/PowerShell/xSQLServer/issues/720)).
   - Fixed so that the integration test renames back the SQLPS module folders if
-    they was renamed by AppVeyor (in the appveyor.yml file).
+    they was renamed by AppVeyor (in the appveyor.yml file)
     ([issue #774](https://github.com/PowerShell/xFailOverCluster/issues/774)).
   - Fixed so integration test does not write warnings when SQLPS module is loaded
     ([issue #798](https://github.com/PowerShell/xFailOverCluster/issues/798)).
@@ -41,7 +42,7 @@
     - Changed so that only one of the Modules-folder for the SQLPS PowerShell module
       for SQL Server 2016 is renamed back so it can be used with the integration
       tests. There was an issue when more than one SQLPS module was present (see
-      more information in issue #806).
+      more information in [issue #806](https://github.com/PowerShell/xFailOverCluster/issues/806)).
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
   - Change the check of the values entered as parameter for
     BasicAvailabilityGroup. It is a boolean, hence it was not possible to
