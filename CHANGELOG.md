@@ -8,14 +8,15 @@
     can be renamed back by the integration tests xSQLServerSetup so that the
     integration tests can run successfully.
     ([issue #774](https://github.com/PowerShell/xFailOverCluster/issues/774)).
-  - Changed so the maximum version to be installed is 4.0.6.0. Quick fix until we
-    can resolve the unit tests (see issue #807).
-  - Moved the code block that contains workarounds so it is run during the
-    install phase instead of the test phase.
+  - Changed so the maximum version to be installed is 4.0.6.0, when running unit
+    tests in AppVeyor. Quick fix until we can resolve the unit tests (see
+    [issue #807](https://github.com/PowerShell/xFailOverCluster/issues/807)).
+  - Moved the code block, that contains workarounds in appveyor.yml, so it is run
+    during the install phase instead of the test phase.
 - Changes to xSQLServerHelper
   - Changes to Connect-SQL and Import-SQLPSModule
     - Now it correctly loads the correct assemblies when SqlServer module is
-      present (issue #649).
+      present ([issue #649](https://github.com/PowerShell/xFailOverCluster/issues/649)).
     - Now SQLPS module will be correctly loaded (discovered) after installation
       of SQL Server. Previously resources depending on SQLPS module could fail
       because SQLPS was not found after installation because the PSModulePath
