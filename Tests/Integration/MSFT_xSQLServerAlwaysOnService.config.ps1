@@ -162,12 +162,6 @@ Configuration MSFT_xSQLServerAlwaysOnService_DisableAlwaysOn_Config
             RestartTimeout       = $Node.RestartTimeout
 
             PsDscRunAsCredential = $SqlInstallCredential
-
-            DependsOn            = @(
-                '[WindowsFeature]AddFeatureFailoverClustering'
-                '[WindowsFeature]AddFeatureFailoverClusteringPowerShellModule'
-                '[Script]CreateActiveDirectoryDetachedCluster'
-            )
         }
     }
 }
