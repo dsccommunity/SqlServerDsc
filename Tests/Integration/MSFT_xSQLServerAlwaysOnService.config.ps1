@@ -140,3 +140,34 @@ Configuration MSFT_xSQLServerAlwaysOnService_EnableAlwaysOn_Config
         }
     }
 }
+
+Configuration MSFT_xSQLServerAlwaysOnService_DisableAlwaysOn_Config
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlInstallCredential
+    )
+
+    Import-DscResource -ModuleName 'xSQLServer'
+
+    node localhost {
+        xSQLServerAlwaysOnService 'Integration_Test'
+        {
+            Ensure               = 'Absent'
+            SQLServer            = $Node.ComputerName
+            SQLInstanceName      = $Node.InstanceName
+            RestartTimeout       = $Node.RestartTimeout
+
+            PsDscRunAsCredential = $SqlInstallCredential
+
+            DependsOn            = @(
+                '[WindowsFeature]AddFeatureFailoverClustering'
+                '[WindowsFeature]AddFeatureFailoverClusteringPowerShellModule'
+                '[Script]CreateActiveDirectoryDetachedCluster'
+            )
+        }
+    }
+}

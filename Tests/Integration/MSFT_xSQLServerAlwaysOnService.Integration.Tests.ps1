@@ -34,37 +34,75 @@ try
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
     . $configFile
 
-    $configurationName = "$($script:DSCResourceName)_EnableAlwaysOn_Config"
-    $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
-
     Describe "$($script:DSCResourceName)_Integration" {
-        It 'Should compile and apply the MOF without throwing' {
-            {
-                # The variable $ConfigurationData was dot-sourced above.
-                & $configurationName `
-                    -SqlInstallCredential $mockSqlInstallCredential `
-                    -OutputPath $TestDrive `
-                    -ConfigurationData $ConfigurationData
-
-                Start-DscConfiguration -Path $TestDrive `
-                    -ComputerName localhost -Wait -Verbose -Force
-            } | Should Not Throw
+        BeforeAll {
+            $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
         }
 
-        It 'Should be able to call Get-DscConfiguration without throwing' {
-            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not Throw
-        }
+        $configurationName = "$($script:DSCResourceName)_EnableAlwaysOn_Config"
 
-        It 'Should have set the resource and all the parameters should match' {
-            $currentConfiguration = Get-DscConfiguration
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    # The variable $ConfigurationData was dot-sourced above.
+                    & $configurationName `
+                        -SqlInstallCredential $mockSqlInstallCredential `
+                        -OutputPath $TestDrive `
+                        -ConfigurationData $ConfigurationData
 
-            $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
-                $_.ConfigurationName -eq $configurationName
-            } | Where-Object -FilterScript {
-                $_.ResourceId -eq $resourceId
+                    Start-DscConfiguration -Path $TestDrive `
+                        -ComputerName localhost -Wait -Verbose -Force
+                } | Should Not Throw
             }
 
-            $resourceCurrentState.IsHadrEnabled | Should Be $true
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $currentConfiguration = Get-DscConfiguration
+
+                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName
+                } | Where-Object -FilterScript {
+                    $_.ResourceId -eq $resourceId
+                }
+
+                $resourceCurrentState.IsHadrEnabled | Should Be $true
+            }
+        }
+
+        $configurationName = "$($script:DSCResourceName)_DisableAlwaysOn_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    # The variable $ConfigurationData was dot-sourced above.
+                    & $configurationName `
+                        -SqlInstallCredential $mockSqlInstallCredential `
+                        -OutputPath $TestDrive `
+                        -ConfigurationData $ConfigurationData
+
+                    Start-DscConfiguration -Path $TestDrive `
+                        -ComputerName localhost -Wait -Verbose -Force
+                } | Should Not Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $currentConfiguration = Get-DscConfiguration
+
+                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName
+                } | Where-Object -FilterScript {
+                    $_.ResourceId -eq $resourceId
+                }
+
+                $resourceCurrentState.IsHadrEnabled | Should Be $false
+            }
         }
     }
 }
