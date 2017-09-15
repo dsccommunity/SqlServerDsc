@@ -22,7 +22,7 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 function Invoke-TestSetup
 {
-    # Compile the SMO stubs for use by the unit tests.`
+    # Compile the SMO stubs for use by the unit tests.
     Add-Type -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SMO.cs')
 }
 
@@ -51,8 +51,8 @@ try
         # Stores the result of SetServiceAccount calls
         $testServiceAccountUpdated = @{
             Processed = $false
-            NewUserAccount = [String]::Empty
-            NewPassword = [String]::Emtpy
+            NewUserAccount = [System.String]::Empty
+            NewPassword = [System.String]::Emtpy
         }
 
         # Script block for changing the service account in mocks
@@ -63,13 +63,27 @@ try
                 $User,
 
                 [System.String]
-                $Pass
+                $Password
             )
 
             # Update the object
             $testServiceAccountUpdated.Processed = $true
             $testServiceAccountUpdated.NewUserAccount = $User
-            $testServiceAccountUpdated.NewPassword = $Pass
+            $testServiceAccountUpdated.NewPassword = $Password
+        }
+
+        # Script block to throw an exception when changing a service account.
+        $mockSetServiceAccount_Exception = {
+            param
+            (
+                [System.String]
+                $User,
+
+                [System.String]
+                $Password
+            )
+
+            throw (New-Object -TypeName Microsoft.SqlServer.Management.Smo.FailedOperationException 'SetServiceAccount')
         }
 
         # Splat for creating the SetServiceAccount method
@@ -77,6 +91,12 @@ try
             Name = 'SetServiceAccount'
             MemberType = 'ScriptMethod'
             Value = $mockSetServiceAccount
+        }
+
+        $mockAddMemberParameters_SetServiceAccount_Exception = @{
+            Name = 'SetServiceAccount'
+            MemberType = 'ScriptMethod'
+            Value = $mockSetServiceAccount_Exception
         }
 
         # Used to mock ManagedComputer object for a default instance
@@ -119,8 +139,10 @@ try
             return $managedComputerObject
         }
 
-        # Creates a new ManagedComputer object for a default instance that thows an exception
-        # when attempting to set the service account
+        <#
+            Creates a new ManagedComputer object for a default instance that thows an exception
+            when attempting to set the service account
+        #>
         $mockNewObject_ManagedComputer_DefaultInstance_SetServiceAccountException = {
             $managedComputerObject = New-Object -TypeName PSObject -Property @{
                 Name = $mockSqlServer
@@ -134,18 +156,7 @@ try
             }
 
             $managedComputerObject.Services | ForEach-Object {
-                $_ | Add-Member -Name SetServiceAccount -MemberType ScriptMethod -Value {
-                    param
-                    (
-                        [System.String]
-                        $User,
-
-                        [System.String]
-                        $Pass
-                    )
-
-                    throw (New-Object -TypeName Microsoft.SqlServer.Management.Smo.FailedOperationException 'SetServiceAccount')
-                }
+                $_ | Add-Member @mockAddMemberParameters_SetServiceAccount_Exception
             }
 
             return $managedComputerObject
@@ -185,18 +196,7 @@ try
             }
 
             $managedComputerObject.Services | ForEach-Object {
-                $_ | Add-Member -Name SetServiceAccount -MemberType ScriptMethod -Value {
-                    param
-                    (
-                        [System.String]
-                        $User,
-
-                        [System.String]
-                        $Pass
-                    )
-
-                    throw (New-Object -TypeName Microsoft.SqlServer.Management.Smo.FailedOperationException 'SetServiceAccount')
-                }
+                $_ | Add-Member @mockAddMemberParameters_SetServiceAccount_Exception
             }
 
             return $managedComputerObject
@@ -226,14 +226,45 @@ try
         Describe 'MSFT_xSQLServerServiceAccount\ConvertTo-ManagedServiceType' -Tag 'Helper' {
             Context 'Translating service types' {
                 $testCases = @(
-                    @{ ServiceType = 'DatabaseEngine'; ExpectedType = 'SqlServer' }
-                    @{ ServiceType = 'SQLServerAgent'; ExpectedType = 'SqlAgent' }
-                    @{ ServiceType = 'Search'; ExpectedType = 'Search' }
-                    @{ ServiceType = 'IntegrationServices'; ExpectedType = 'SqlServerIntegrationService' }
-                    @{ ServiceType = 'AnalysisServices'; ExpectedType = 'AnalysisServer' }
-                    @{ ServiceType = 'ReportingServices'; ExpectedType = 'ReportServer' }
-                    @{ ServiceType = 'SQLServerBrowser'; ExpectedType = 'SqlBrowser' }
-                    @{ ServiceType = 'NotificationServices'; ExpectedType = 'NotificationServer' }
+                    @{
+                        ServiceType = 'DatabaseEngine'
+                        ExpectedType = 'SqlServer'
+                    }
+
+                    @{
+                        ServiceType = 'SQLServerAgent'
+                        ExpectedType = 'SqlAgent'
+                    }
+
+                    @{
+                        ServiceType = 'Search'
+                        ExpectedType = 'Search'
+                    }
+
+                    @{
+                        ServiceType = 'IntegrationServices'
+                        ExpectedType = 'SqlServerIntegrationService'
+                    }
+
+                    @{
+                        ServiceType = 'AnalysisServices'
+                        ExpectedType = 'AnalysisServer'
+                    }
+
+                    @{
+                        ServiceType = 'ReportingServices'
+                        ExpectedType = 'ReportServer'
+                    }
+
+                    @{
+                        ServiceType = 'SQLServerBrowser'
+                        ExpectedType = 'SqlBrowser'
+                    }
+
+                    @{
+                        ServiceType = 'NotificationServices'
+                        ExpectedType = 'NotificationServer'
+                    }
                 )
 
                 It 'Should properly map <ServiceType> to ManagedServiceType-><ExpectedType>' -TestCases $testCases {
@@ -540,8 +571,8 @@ try
 
                 BeforeEach {
                     $testServiceAccountUpdated.Processed = $false
-                    $testServiceAccountUpdated.NewUserAccount = [String]::Empty
-                    $testServiceAccountUpdated.NewPassword = [String]::Empty
+                    $testServiceAccountUpdated.NewUserAccount = [System.String]::Empty
+                    $testServiceAccountUpdated.NewPassword = [System.String]::Empty
                 }
 
                 It 'Should update the service account information' {
@@ -565,7 +596,7 @@ try
                     $setTargetResourceParameters.ServiceType = 'SQLServerAgent'
 
                     # Get the localized error message
-                    $mockCorrectErrorMessage = $script:localizedData.SericeNotFound -f $setTargetResourceParameters.ServiceType, $setTargetResourceParameters.SQLServer, $setTargetResourceParameters.SQLInstanceName
+                    $mockCorrectErrorMessage = $script:localizedData.ServiceNotFound -f $setTargetResourceParameters.ServiceType, $setTargetResourceParameters.SQLServer, $setTargetResourceParameters.SQLInstanceName
 
                     # Attempt to update the service account
                     { Set-TargetResource @setTargetResourceParameters } | Should Throw $mockCorrectErrorMessage
@@ -624,8 +655,8 @@ try
 
                 BeforeEach {
                     $testServiceAccountUpdated.Processed = $false
-                    $testServiceAccountUpdated.NewUserAccount = [String]::Empty
-                    $testServiceAccountUpdated.NewPassword = [String]::Empty
+                    $testServiceAccountUpdated.NewUserAccount = [System.String]::Empty
+                    $testServiceAccountUpdated.NewPassword = [System.String]::Empty
                 }
 
                 It 'Should update the service account information' {
@@ -649,7 +680,7 @@ try
                     $setTargetResourceParameters.ServiceType = 'SQLServerAgent'
 
                     # Get the expected localized error message
-                    $mockCorrectErrorMessage = $script:localizedData.SericeNotFound -f $setTargetResourceParameters.ServiceType, $setTargetResourceParameters.SQLServer, $setTargetResourceParameters.SQLInstanceName
+                    $mockCorrectErrorMessage = $script:localizedData.ServiceNotFound -f $setTargetResourceParameters.ServiceType, $setTargetResourceParameters.SQLServer, $setTargetResourceParameters.SQLInstanceName
 
                     # Attempt to update the service account
                     { Set-TargetResource @setTargetResourceParameters } | Should Throw $mockCorrectErrorMessage
