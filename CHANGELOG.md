@@ -8,12 +8,15 @@
     can be renamed back by the integration tests xSQLServerSetup so that the
     integration tests can run successfully.
     ([issue #774](https://github.com/PowerShell/xFailOverCluster/issues/774)).
-  - Changed so the maximum version to be installed is 4.0.6.0. Quick fix until we
-    can resolve the unit tests (see issue #807).
+  - Changed so the maximum version to be installed is 4.0.6.0, when running unit
+    tests in AppVeyor. Quick fix until we can resolve the unit tests (see
+    [issue #807](https://github.com/PowerShell/xFailOverCluster/issues/807)).
+  - Moved the code block, that contains workarounds in appveyor.yml, so it is run
+    during the install phase instead of the test phase.
 - Changes to xSQLServerHelper
   - Changes to Connect-SQL and Import-SQLPSModule
     - Now it correctly loads the correct assemblies when SqlServer module is
-      present (issue #649).
+      present ([issue #649](https://github.com/PowerShell/xFailOverCluster/issues/649)).
     - Now SQLPS module will be correctly loaded (discovered) after installation
       of SQL Server. Previously resources depending on SQLPS module could fail
       because SQLPS was not found after installation because the PSModulePath
@@ -26,6 +29,19 @@
     ([issue #774](https://github.com/PowerShell/xFailOverCluster/issues/774)).
   - Fixed so integration test does not write warnings when SQLPS module is loaded
     ([issue #798](https://github.com/PowerShell/xFailOverCluster/issues/798)).
+  - Changes to integration tests.
+    - Moved the configuration block from the MSFT\_xSQLServerSetup.Integration.Tests.ps1
+      to the MSFT\_xSQLServerSetup.config.ps1 to align with the other integration
+      test. And also get most of the configuration in one place.
+    - Changed the tests so that the local SqlInstall account is added as a member
+      of the local administrators group.
+    - Changed the tests so that the local SqlInstall account is added as a member
+      of the system administrators in SQL Server (Database Engine) - needed for the
+      xSQLServerAlwaysOnService integration tests.
+    - Changed so that only one of the Modules-folder for the SQLPS PowerShell module
+      for SQL Server 2016 is renamed back so it can be used with the integration
+      tests. There was an issue when more than one SQLPS module was present (see
+      more information in issue #806).
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
   - Change the check of the values entered as parameter for
     BasicAvailabilityGroup. It is a boolean, hence it was not possible to
@@ -46,9 +62,11 @@
 - Changes to xSQLServerRole
   - Running Get-DscConfiguration no longer throws an error saying property
     Members is not an array ([issue #790](https://github.com/PowerShell/xSQLServer/issues/790)).
-- Changes to xSqlServerMaxDop
+- Changes to xSQLServerMaxDop
   - Fixed error where Measure-Object cmdlet would fail claiming it could not
-  find the specified property ([issue #801](https://github.com/PowerShell/xSQLServer/issues/801))
+    find the specified property ([issue #801](https://github.com/PowerShell/xSQLServer/issues/801))
+- Changes to xSQLServerAlwaysOnService
+  - Added integration test ([issue #736](https://github.com/PowerShell/xSQLServer/issues/736)).
 
 ## 8.1.0.0
 

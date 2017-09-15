@@ -2,7 +2,33 @@
 [Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 1)]
 param()
 
-configuration MSFT_xSQLServerSetup_InstallSqlEngineAsSystem_Config
+# Get a spare drive letter
+$mockLastDrive = ((Get-Volume).DriveLetter | Sort-Object | Select-Object -Last 1)
+$mockIsoMediaDriveLetter = [char](([int][char]$mockLastDrive) + 1)
+
+$ConfigurationData = @{
+    AllNodes = @(
+        @{
+            NodeName                    = 'localhost'
+
+            InstanceName                = 'DSCSQL2016'
+            Features                    = 'SQLENGINE,CONN,BC,SDK'
+            SQLCollation                = 'Finnish_Swedish_CI_AS'
+            InstallSharedDir            = 'C:\Program Files\Microsoft SQL Server'
+            InstallSharedWOWDir         = 'C:\Program Files (x86)\Microsoft SQL Server'
+            UpdateEnabled               = 'False'
+            SuppressReboot              = $true # Make sure we don't reboot during testing.
+            ForceReboot                 = $false
+
+            ImagePath                   = "$env:TEMP\SQL2016.iso"
+            DriveLetter                 = $mockIsoMediaDriveLetter
+
+            PSDscAllowPlainTextPassword = $true
+        }
+    )
+}
+
+Configuration MSFT_xSQLServerSetup_InstallSqlEngineAsSystem_Config
 {
     param
     (
@@ -67,6 +93,13 @@ configuration MSFT_xSQLServerSetup_InstallSqlEngineAsSystem_Config
             Password = $SqlInstallCredential
         }
 
+        Group 'AddSqlInstallAsAdministrator'
+        {
+            Ensure = 'Present'
+            GroupName = 'Administrators'
+            MembersToInclude = $SqlInstallCredential.UserName
+        }
+
         User 'CreateSqlAdminAccount'
         {
             Ensure   = 'Present'
@@ -99,6 +132,11 @@ configuration MSFT_xSQLServerSetup_InstallSqlEngineAsSystem_Config
             # This must be set if using SYSTEM account to install.
             SQLSysAdminAccounts   = @(
                 $SqlAdministratorCredential.UserName
+                <#
+                    Must have permission to properties IsClustered and
+                    IsHadrEnable for xSQLServerAlwaysOnService.
+                #>
+                $SqlInstallCredential.UserName
             )
 
             DependsOn             = @(
@@ -106,6 +144,7 @@ configuration MSFT_xSQLServerSetup_InstallSqlEngineAsSystem_Config
                 '[User]CreateSqlServiceAccount'
                 '[User]CreateSqlAgentServiceAccount'
                 '[User]CreateSqlInstallAccount'
+                '[Group]AddSqlInstallAsAdministrator'
                 '[User]CreateSqlAdminAccount'
                 '[WindowsFeature]NetFramework45'
             )
