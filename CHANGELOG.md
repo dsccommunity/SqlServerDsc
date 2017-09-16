@@ -68,6 +68,9 @@
     find the specified property ([issue #801](https://github.com/PowerShell/xSQLServer/issues/801))
 - Changes to xSQLServerAlwaysOnService
   - Added integration test ([issue #736](https://github.com/PowerShell/xSQLServer/issues/736)).
+- Added new resource xSQLServerAccount ([issue #706](https://github.com/PowerShell/xSQLServer/issues/706))
+  - Added localization support for all strings
+  - Added examples for usage
 
 ## 8.1.0.0
 
