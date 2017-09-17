@@ -9,8 +9,6 @@ $mockIsoMediaDriveLetter = [char](([int][char]$mockLastDrive) + 1)
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                    = 'localhost'
-
             InstanceName                = 'DSCRS2016'
             Features                    = 'RS'
             InstallSharedDir            = 'C:\Program Files\Microsoft SQL Server'
@@ -22,7 +20,8 @@ $ConfigurationData = @{
             ImagePath                   = "$env:TEMP\SQL2016.iso"
             DriveLetter                 = $mockIsoMediaDriveLetter
 
-            ReportDatabaseInstanceName  = 'DSCSQL2016'
+            RSSQLServer                 = $env:COMPUTERNAME
+            RSSQLInstanceName           = 'DSCSQL2016'
 
             PSDscAllowPlainTextPassword = $true
         }
@@ -105,20 +104,20 @@ Configuration MSFT_xSQLServerRSConfig_InstallReportingServices_Config
                 '[WindowsFeature]NetFramework45'
             )
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential  = $SqlInstallCredential
         }
 
         xSQLServerRSConfig 'Integration_Test'
         {
             # Instance name for the Reporting Services.
-            InstanceName = $Node.InstanceName
+            InstanceName         = $Node.InstanceName
 
             <#
                 Instance for Reporting Services databases.
                 Note: This instance is created in a prior integration test.
             #>
-            RSSQLServer = $Node.NodeName
-            RSSQLInstanceName = $Node.ReportDatabaseInstanceName
+            RSSQLServer          = $Node.RSSQLServer
+            RSSQLInstanceName    = $Node.RSSQLInstanceName
 
             PsDscRunAsCredential = $SqlAdministratorCredential
 
