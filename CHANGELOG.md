@@ -104,6 +104,7 @@
   - Now the resource will restart the Reporting Services service after
     initializing ([issue #592](https://github.com/PowerShell/xSQLServer/issues/592)).
     This will enable the Reports site to work.
+  - Added integration test ([issue #753](https://github.com/PowerShell/xSQLServer/issues/753)).
 
 ## 8.1.0.0
 
