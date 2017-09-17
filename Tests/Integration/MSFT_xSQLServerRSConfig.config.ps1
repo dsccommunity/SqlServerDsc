@@ -9,6 +9,8 @@ $mockIsoMediaDriveLetter = [char](([int][char]$mockLastDrive) + 1)
 $ConfigurationData = @{
     AllNodes = @(
         @{
+            NodeName                    = 'localhost'
+
             InstanceName                = 'DSCRS2016'
             Features                    = 'RS'
             InstallSharedDir            = 'C:\Program Files\Microsoft SQL Server'
