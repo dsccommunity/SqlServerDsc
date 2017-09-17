@@ -35,7 +35,7 @@ $mockSqlAdminCredential = New-Object -TypeName System.Management.Automation.PSCr
 
 $mockReportingServicesServiceAccountPassword = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
 $mockReportingServicesServiceAccountUserName = "$env:COMPUTERNAME\svc-Reporting"
-$mockReportingServicesServiceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlServiceAccountUserName, $mockSqlServiceAccountPassword
+$mockReportingServicesServiceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockReportingServicesServiceAccountUserName, $mockReportingServicesServiceAccountPassword
 
 try
 {
