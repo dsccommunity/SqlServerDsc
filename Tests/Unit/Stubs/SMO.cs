@@ -351,6 +351,11 @@ namespace Microsoft.SqlServer.Management.Smo
         public string MockName;
         public LoginType MockLoginType;
 
+        public Login( string name )
+        {
+            this.Name = name;
+        }
+
         public Login( Server server, string name )
         {
             this.Name = name;
