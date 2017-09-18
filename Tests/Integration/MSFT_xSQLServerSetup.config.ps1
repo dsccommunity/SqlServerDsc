@@ -75,8 +75,8 @@ Configuration MSFT_xSQLServerSetup_InstallSqlEngineAsSystem_Config
         User 'CreateSqlServiceAccount'
         {
             Ensure   = 'Present'
-            UserName = Split-Path -Path $mockSqlServiceCredential.UserName -Leaf
-            Password = $mockSqlServiceCredential
+            UserName = Split-Path -Path $SqlServiceCredential.UserName -Leaf
+            Password = $SqlServiceCredential
         }
 
         User 'CreateSqlAgentServiceAccount'

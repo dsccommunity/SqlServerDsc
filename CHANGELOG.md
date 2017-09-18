@@ -43,6 +43,8 @@
       for SQL Server 2016 is renamed back so it can be used with the integration
       tests. There was an issue when more than one SQLPS module was present (see
       more information in [issue #806](https://github.com/PowerShell/xFailOverCluster/issues/806)).
+    - Fixed wrong variable name for SQL service credential. It was using the
+      integration test variable name instead of the parameter name.
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
   - Change the check of the values entered as parameter for
     BasicAvailabilityGroup. It is a boolean, hence it was not possible to
