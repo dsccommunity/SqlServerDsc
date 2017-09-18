@@ -121,7 +121,7 @@ Configuration MSFT_xSQLServerRSConfig_InstallReportingServices_Config
             RSSQLServer          = $Node.RSSQLServer
             RSSQLInstanceName    = $Node.RSSQLInstanceName
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            PsDscRunAsCredential = $SqlInstallCredential
 
             DependsOn            = @(
                 '[xSQLServerSetup]InstallReportingServicesInstance'
