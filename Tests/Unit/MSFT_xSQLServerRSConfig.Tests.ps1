@@ -48,9 +48,12 @@ try
         }
 
         $mockGetWmiObject_ConfigurationSetting_NamedInstance = {
-            return New-Object Object |
+            return @(
+                (
+                    New-Object Object |
                         Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $mockDynamicIsInitialized -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru |
                         Add-Member -MemberType ScriptMethod -Name SetVirtualDirectory {
@@ -87,13 +90,58 @@ try
 
                             return $null
                         } -PassThru -Force
+                ),
+                (
+                    # Array is a regression test for issue #819.
+                    New-Object Object |
+                        Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $true -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value 'DummyInstance' -PassThru -Force
+                )
+            )
         }
 
         $mockGetWmiObject_ConfigurationSetting_DefaultInstance = {
-            return @{
-                DatabaseServerName = $mockReportingServicesDatabaseServerName
-                IsInitialized = $mockDynamicIsInitialized
-            }
+            return New-Object Object |
+                Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
+                Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $false -PassThru |
+                Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockDefaultInstanceName -PassThru |
+                Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
+                Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru |
+                Add-Member -MemberType ScriptMethod -Name SetVirtualDirectory {
+                    $script:mockIsMethodCalled_SetVirtualDirectory = $true
+
+                    return $null
+                } -PassThru |
+                Add-Member -MemberType ScriptMethod -Name ReserveURL {
+                    $script:mockIsMethodCalled_ReserveURL = $true
+
+                    return $null
+                } -PassThru |
+                Add-Member -MemberType ScriptMethod -Name GenerateDatabaseCreationScript {
+                    $script:mockIsMethodCalled_GenerateDatabaseCreationScript = $true
+
+                    return @{
+                        Script = 'select * from something'
+                    }
+                } -PassThru |
+                Add-Member -MemberType ScriptMethod -Name GenerateDatabaseRightsScript {
+                    $script:mockIsMethodCalled_GenerateDatabaseRightsScript = $true
+
+                    return @{
+                        Script = 'select * from something'
+                    }
+                } -PassThru |
+                Add-Member -MemberType ScriptMethod -Name SetDatabaseConnection {
+                    $script:mockIsMethodCalled_SetDatabaseConnection = $true
+
+                    return $null
+                } -PassThru |
+                Add-Member -MemberType ScriptMethod -Name InitializeReportServer {
+                    $script:mockIsMethodCalled_InitializeReportServer = $true
+
+                    return $null
+                } -PassThru -Force
         }
 
         $mockGetWmiObject_ConfigurationSetting_ParameterFilter = {
@@ -116,7 +164,7 @@ try
 
                 Mock -CommandName Get-ItemProperty -MockWith $mockGetItemProperty -Verifiable
 
-                $testParameters = @{
+                $defaultParameters = @{
                     InstanceName = $mockNamedInstanceName
                     RSSQLServer = $mockReportingServicesDatabaseServerName
                     RSSQLInstanceName = $mockReportingServicesDatabaseNamedInstanceName
@@ -134,7 +182,7 @@ try
                 $mockDynamicIsInitialized = $true
 
                 It 'Should return the same values as passed as parameters' {
-                    $resultGetTargetResource = Get-TargetResource @testParameters
+                    $resultGetTargetResource = Get-TargetResource @defaultParameters
                     $resultGetTargetResource.InstanceName | Should Be $mockNamedInstanceName
                     $resultGetTargetResource.RSSQLServer | Should Be $mockReportingServicesDatabaseServerName
                     $resultGetTargetResource.RSSQLInstanceName | Should Be $mockReportingServicesDatabaseNamedInstanceName
@@ -142,7 +190,7 @@ try
                 }
 
                 It 'Should return the the state as initialized' {
-                    $resultGetTargetResource = Get-TargetResource @testParameters
+                    $resultGetTargetResource = Get-TargetResource @defaultParameters
                     $resultGetTargetResource.IsInitialized | Should Be $true
                 }
             }
@@ -153,15 +201,18 @@ try
                         -MockWith $mockGetWmiObject_ConfigurationSetting_DefaultInstance `
                         -ParameterFilter $mockGetWmiObject_ConfigurationSetting_ParameterFilter `
                         -Verifiable
+
+                    $testParameters = $defaultParameters.Clone()
+                    $testParameters['InstanceName'] = $mockDefaultInstanceName
                 }
 
                 $mockDynamicIsInitialized = $false
 
                 It 'Should return the same values as passed as parameters' {
                     $resultGetTargetResource = Get-TargetResource @testParameters
-                    $resultGetTargetResource.InstanceName | Should Be $mockNamedInstanceName
+                    $resultGetTargetResource.InstanceName | Should Be $mockDefaultInstanceName
                     $resultGetTargetResource.RSSQLServer | Should Be $mockReportingServicesDatabaseServerName
-                    $resultGetTargetResource.RSSQLInstanceName | Should Be 'MSSQLSERVER'
+                    $resultGetTargetResource.RSSQLInstanceName | Should Be $mockReportingServicesDatabaseNamedInstanceName
                     $resultGetTargetResource | Should BeOfType [System.Collections.Hashtable]
                 }
 
@@ -196,7 +247,7 @@ try
                     }
 
                     It 'Should throw the correct error message' {
-                        { Get-TargetResource @testParameters } | Should Throw 'SQL Reporting Services instance ''INSTANCE'' does not exist!'
+                        { Get-TargetResource @defaultParameters } | Should Throw 'SQL Reporting Services instance ''INSTANCE'' does not exist!'
                     }
                 }
             }
@@ -220,7 +271,7 @@ try
                             return $true
                         }
 
-                        $testParameters = @{
+                        $defaultParameters = @{
                             InstanceName = $mockNamedInstanceName
                             RSSQLServer = $mockReportingServicesDatabaseServerName
                             RSSQLInstanceName = $mockReportingServicesDatabaseNamedInstanceName
@@ -248,7 +299,7 @@ try
                     }
 
                     It 'Should configure Reporting Service without throwing an error' {
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @defaultParameters } | Should Not Throw
 
                         # Test so each mock of methods was called.
                         $script:mockIsMethodCalled_GenerateDatabaseRightsScript | Should Be $true
@@ -269,7 +320,7 @@ try
                         }
 
                         It 'Should throw the correct error message' {
-                            { Set-TargetResource @testParameters } | Should Throw 'Test-TargetResource returned false after calling set.'
+                            { Set-TargetResource @defaultParameters } | Should Throw 'Test-TargetResource returned false after calling set.'
                         }
                     }
                 }
@@ -282,7 +333,7 @@ try
                             return $true
                         } -Verifiable
 
-                        $testParameters = @{
+                        $defaultParameters = @{
                             InstanceName = $mockDefaultInstanceName
                             RSSQLServer = $mockReportingServicesDatabaseServerName
                             RSSQLInstanceName = $mockReportingServicesDatabaseDefaultInstanceName
@@ -291,7 +342,7 @@ try
 
                     BeforeEach {
                         Mock -CommandName Get-WmiObject `
-                            -MockWith $mockGetWmiObject_ConfigurationSetting_NamedInstance `
+                            -MockWith $mockGetWmiObject_ConfigurationSetting_DefaultInstance `
                             -ParameterFilter $mockGetWmiObject_ConfigurationSetting_ParameterFilter `
                             -Verifiable
 
@@ -302,7 +353,7 @@ try
                     }
 
                     It 'Should configure Reporting Service without throwing an error' {
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @defaultParameters } | Should Not Throw
 
                         # Test so each mock of methods was called.
                         $script:mockIsMethodCalled_GenerateDatabaseRightsScript | Should Be $true
@@ -330,7 +381,7 @@ try
                         }
                     } -Verifiable
 
-                    $testParameters = @{
+                    $defaultParameters = @{
                         InstanceName = $mockNamedInstanceName
                         RSSQLServer = $mockReportingServicesDatabaseServerName
                         RSSQLInstanceName = $mockReportingServicesDatabaseNamedInstanceName
@@ -338,7 +389,7 @@ try
                 }
 
                 It 'Should return state as not in desired state' {
-                    $resultTestTargetResource  = Test-TargetResource @testParameters
+                    $resultTestTargetResource  = Test-TargetResource @defaultParameters
                     $resultTestTargetResource | Should Be $false
                 }
             }
@@ -351,7 +402,7 @@ try
                         }
                     } -Verifiable
 
-                    $testParameters = @{
+                    $defaultParameters = @{
                         InstanceName = $mockNamedInstanceName
                         RSSQLServer = $mockReportingServicesDatabaseServerName
                         RSSQLInstanceName = $mockReportingServicesDatabaseNamedInstanceName
@@ -359,7 +410,7 @@ try
                 }
 
                 It 'Should return state as in desired state' {
-                    $resultTestTargetResource  = Test-TargetResource @testParameters
+                    $resultTestTargetResource  = Test-TargetResource @defaultParameters
                     $resultTestTargetResource | Should Be $true
                 }
             }
