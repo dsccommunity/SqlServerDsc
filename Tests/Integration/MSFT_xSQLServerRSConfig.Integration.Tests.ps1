@@ -42,6 +42,10 @@ try
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
     . $configFile
 
+    $mockInstanceName = $ConfigurationData.AllNodes.InstanceName
+    $mockRSSQLServer = $ConfigurationData.AllNodes.RSSQLServer
+    $mockRSSQLInstanceName = $ConfigurationData.AllNodes.RSSQLInstanceName
+
     Describe "$($script:DSCResourceName)_Integration" {
         BeforeAll {
             $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
@@ -52,16 +56,27 @@ try
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
                 {
-                    # The variable $ConfigurationData was dot-sourced above.
-                    & $configurationName `
-                        -SqlInstallCredential $mockSqlInstallCredential `
-                        -ReportingServicesServiceCredential $mockReportingServicesServiceCredential `
-                        -SqlAdministratorCredential $mockSqlAdminCredential `
-                        -OutputPath $TestDrive `
-                        -ConfigurationData $ConfigurationData
+                    $configurationParameters = @{
+                        SqlInstallCredential               = $mockSqlInstallCredential
+                        SqlAdministratorCredential         = $mockSqlAdminCredential
+                        ReportingServicesServiceCredential = $mockReportingServicesServiceCredential
+                        OutputPath                         = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData                  = $ConfigurationData
+                    }
 
-                    Start-DscConfiguration -Path $TestDrive `
-                        -ComputerName localhost -Wait -Verbose -Force
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
                 } | Should Not Throw
             }
 
@@ -69,17 +84,20 @@ try
                 { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not Throw
             }
 
-            # It 'Should have set the resource and all the parameters should match' {
-            #     $currentConfiguration = Get-DscConfiguration
+            It 'Should have set the resource and all the parameters should match' {
+                $currentConfiguration = Get-DscConfiguration
 
-            #     $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
-            #         $_.ConfigurationName -eq $configurationName
-            #     } | Where-Object -FilterScript {
-            #         $_.ResourceId -eq $resourceId
-            #     }
+                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName
+                } | Where-Object -FilterScript {
+                    $_.ResourceId -eq $resourceId
+                }
 
-            #     $resourceCurrentState.IsHadrEnabled | Should Be $true
-            # }
+                $resourceCurrentState.InstanceName | Should Be $mockInstanceName
+                $resourceCurrentState.RSSQLServer | Should Be $mockRSSQLServer
+                $resourceCurrentState.RSSQLInstanceName | Should Be $mockRSSQLInstanceName
+                $resourceCurrentState.IsInitialized | Should Be $true
+            }
         }
     }
 }
