@@ -43,6 +43,16 @@ try
                 'DtcSupportEnabled'
             )
 
+            # Define properties that are Availability Replica properties
+            $availabilityGroupReplicaProperties = @(
+                'AvailabilityMode',
+                'BackupPriority',
+                'ConnectionModeInPrimaryRole',
+                'ConnectionModeInSecondaryRole',
+                'EndpointHostName',
+                'FailoverMode'
+            )
+
             # The following will be set dynamically during tests
             $mockAvailabilityGroupName = ''
             $mockAvailabilityReplicaEndpointProtocol = ''
@@ -844,21 +854,56 @@ try
                     $currentTestParameters = $mockResourceParameters.Clone()
                     $currentTestParameters.$Parameter = $ParameterValue
 
+                    # Define how many times each mock should be called
+                    if ( $currentTestParameters.Ensure -eq 'Present' )
+                    {
+                        $assertConnectSql = 2
+                        $assertRemoveSqlAvailabilityGroup = 0
+                        $assertTestClusterPermissions = 1
+
+                        # Determine if the Availability Group or Availability Group Replica is being updated
+                        if ( $availabilityGroupReplicaProperties -contains ( Get-Variable -Name Parameter ).Value )
+                        {
+                            $assertUpdateAvailabilityGroup = 0
+                            $assertUpdateAvailabilityGroupReplica = 1
+                        }
+                        else
+                        {
+                            $assertUpdateAvailabilityGroup = 1
+                            $assertUpdateAvailabilityGroupReplica = 0
+                        }
+
+                        # This validates the endpoint hostname is calculated correctly
+                        if ( ( $Parameter -eq 'EndpointHostName' ) -and ( [string]::IsNullOrEmpty($ParameterValue) ) )
+                        {
+                            $assertUpdateAvailabilityGroup = 0
+                            $assertUpdateAvailabilityGroupReplica = 0
+                        }
+                    }
+                    else
+                    {
+                        $assertConnectSql = 1
+                        $assertRemoveSqlAvailabilityGroup = 1
+                        $assertTestClusterPermissions = 0
+                        $assertUpdateAvailabilityGroup = 0
+                        $assertUpdateAvailabilityGroupReplica = 0
+                    }
+
                     { Set-TargetResource @currentTestParameters } | Should Not Throw
 
-                    #Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $SQLServer -eq $mockServer1Name }
-                    #Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 0 -Exactly -ParameterFilter { $SQLServer -eq $mockServer2Name }
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times $assertConnectSql -Exactly -ParameterFilter { $SQLServer -eq $mockServer1Name }
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 0 -Exactly -ParameterFilter { $SQLServer -eq $mockServer2Name }
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly -ParameterFilter { $Name -eq $mockAvailabilityGroupReplicaAbsentName }
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly -ParameterFilter { $Name -eq $mockAvailabilityGroupReplicaPresentName }
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter { $Name -eq $mockAvailabilityGroupPresentName }
                     Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter { $Name -eq $mockAvailabilityGroupCreateErrorName }
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
-                    #Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.Name -eq $mockAvailabilityGroup1Name }
-                    #Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.Name -eq $mockAvailabilityGroupRemoveErrorName }
-                    #Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
-                    #Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
-                    #Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times $assertRemoveSqlAvailabilityGroup -Exactly -ParameterFilter { $InputObject.Name -eq $mockAvailabilityGroup1Name }
+                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.Name -eq $mockAvailabilityGroupRemoveErrorName }
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times $assertTestClusterPermissions -Exactly
+                    Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times $assertUpdateAvailabilityGroup -Exactly
+                    Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times $assertUpdateAvailabilityGroupReplica -Exactly
                 }
 
                 It 'Should set the property "EndpointUrl" to the desired state when the mock "<MockVariableName>" is "<MockVariableValue>" and the version is "<Version>"' -TestCases $presentEndpointUrlTestCases {

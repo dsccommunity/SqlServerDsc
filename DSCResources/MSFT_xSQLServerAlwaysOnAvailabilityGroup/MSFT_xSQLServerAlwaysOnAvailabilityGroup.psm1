@@ -290,7 +290,6 @@ function Set-TargetResource
             # If the availability group does not exist, create it
             if ( -not $availabilityGroup )
             {
-
                 # Set up the parameters to create the AG Replica
                 $newReplicaParams = @{
                     Name             = $serverObject.Name
