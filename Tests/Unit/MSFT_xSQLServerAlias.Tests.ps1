@@ -824,7 +824,7 @@ try
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
     #endregion Get-TargetResource
 

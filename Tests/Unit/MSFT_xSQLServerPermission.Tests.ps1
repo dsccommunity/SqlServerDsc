@@ -169,7 +169,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe 'MSFT_xSQLServerPermission\Test-TargetResource' {
@@ -237,7 +237,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe 'MSFT_xSQLServerPermission\Set-TargetResource' {
@@ -318,7 +318,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
     }
 }

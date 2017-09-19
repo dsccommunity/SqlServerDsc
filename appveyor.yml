@@ -7,7 +7,7 @@ install:
     - git clone https://github.com/PowerShell/DscResource.Tests
     - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
     - ps: Import-Module "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
-    - ps: Invoke-AppveyorInstallTask -PesterMaximumVersion '4.0.6.0'
+    - ps: Invoke-AppveyorInstallTask
 
 #---------------------------------#
 #      build configuration        #

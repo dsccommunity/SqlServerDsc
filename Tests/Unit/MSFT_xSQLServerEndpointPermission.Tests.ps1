@@ -164,7 +164,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe 'MSFT_xSQLServerEndpointPermission\Test-TargetResource' -Tag 'Test' {
@@ -234,7 +234,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe 'MSFT_xSQLServerEndpointPermission\Set-TargetResource' -Tag 'Set' {
@@ -334,7 +334,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
     }
 }
