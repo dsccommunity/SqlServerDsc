@@ -103,7 +103,7 @@ try
 
         $mockGetWmiObject_ConfigurationSetting_DefaultInstance = {
             return New-Object Object |
-                Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
+                Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName" -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $false -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockDefaultInstanceName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
@@ -212,7 +212,7 @@ try
                     $resultGetTargetResource = Get-TargetResource @testParameters
                     $resultGetTargetResource.InstanceName | Should Be $mockDefaultInstanceName
                     $resultGetTargetResource.RSSQLServer | Should Be $mockReportingServicesDatabaseServerName
-                    $resultGetTargetResource.RSSQLInstanceName | Should Be $mockReportingServicesDatabaseNamedInstanceName
+                    $resultGetTargetResource.RSSQLInstanceName | Should Be $mockReportingServicesDatabaseDefaultInstanceName
                     $resultGetTargetResource | Should BeOfType [System.Collections.Hashtable]
                 }
 
