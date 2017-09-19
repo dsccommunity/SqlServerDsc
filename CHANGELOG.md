@@ -71,6 +71,9 @@
 - Added new resource xSQLServerAccount ([issue #706](https://github.com/PowerShell/xSQLServer/issues/706))
   - Added localization support for all strings
   - Added examples for usage
+- Changes to xSQLServerRSConfig
+  - No longer returns a null value from Test-TargetResource when Reporting
+    Services has not been initialized ([issue #822](https://github.com/PowerShell/xSQLServer/issues/822)).
 
 ## 8.1.0.0
 
