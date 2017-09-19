@@ -53,7 +53,15 @@ function Get-TargetResource
             $RSSQLInstanceName = 'MSSQLSERVER'
         }
 
-        [System.Boolean] $isInitialized = $reportingServicesConfiguration.IsInitialized
+        $isInitialized = $reportingServicesConfiguration.IsInitialized
+        if (-not $isInitialized)
+        {
+            <#
+                Make sure the value returned is false, if the value returned was
+                either empty, $null or $false. Fic for issue #822.
+            #>
+            [System.Boolean] $isInitialized = $false
+        }
     }
     else
     {
