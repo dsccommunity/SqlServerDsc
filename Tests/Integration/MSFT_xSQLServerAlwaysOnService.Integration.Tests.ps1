@@ -62,7 +62,7 @@ try
                         ErrorAction = 'Stop'
                     }
 
-s                    Start-DscConfiguration @startDscConfigurationParameters
+                    Start-DscConfiguration @startDscConfigurationParameters
                 } | Should Not Throw
             }
 
