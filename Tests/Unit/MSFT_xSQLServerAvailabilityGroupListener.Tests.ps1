@@ -221,7 +221,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe 'xSQLServerAvailabilityGroupListener\Test-TargetResource' {
@@ -536,7 +536,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe 'xSQLServerAvailabilityGroupListener\Set-TargetResource' {
@@ -857,7 +857,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
     }
 }

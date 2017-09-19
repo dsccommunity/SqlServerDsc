@@ -402,7 +402,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     Describe 'Testing Invoke-Query' {
@@ -707,7 +707,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     $mockGetItemProperty_MicrosoftSQLServer_InstanceNames_SQL = {
@@ -783,7 +783,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     $mockApplicationDomainName = 'xSQLServerHelperTests'
@@ -821,7 +821,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     <#
@@ -872,7 +872,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     <#
@@ -1176,7 +1176,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     Describe 'Testing Test-SQLDscParameterState' -Tag TestSQLDscParameterState {
@@ -1455,7 +1455,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     Describe 'Testing New-WarningMessage' -Tag NewWarningMessage {
@@ -1479,7 +1479,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     Describe 'Testing New-TerminatingError' -Tag NewWarningMessage {
@@ -1498,7 +1498,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     Describe 'Testing Split-FullSQLInstanceName' {

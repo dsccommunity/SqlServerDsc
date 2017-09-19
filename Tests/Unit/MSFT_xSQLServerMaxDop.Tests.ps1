@@ -116,7 +116,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe "MSFT_xSQLServerMaxDop\Test-TargetResource" -Tag 'Test'{
@@ -337,7 +337,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe "MSFT_xSQLServerMaxDop\Set-TargetResource" -Tag 'Set'{
@@ -458,7 +458,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
     }
 }

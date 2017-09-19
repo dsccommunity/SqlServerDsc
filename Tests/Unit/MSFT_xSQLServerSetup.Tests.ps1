@@ -2259,7 +2259,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe "xSQLServerSetup\Test-TargetResource" -Tag 'Test' {
@@ -2881,7 +2881,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe "xSQLServerSetup\Set-TargetResource" -Tag 'Set' {
@@ -4486,7 +4486,7 @@ try
 
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         # Tests only the parts of the code that does not already get tested thru the other tests.

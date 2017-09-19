@@ -416,7 +416,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe "MSFT_xSQLServerDatabaseRole\Test-TargetResource" -Tag 'Test'{
@@ -538,7 +538,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe "MSFT_xSQLServerDatabaseRole\Set-TargetResource" -Tag 'Set'{
@@ -714,7 +714,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
     }
 }

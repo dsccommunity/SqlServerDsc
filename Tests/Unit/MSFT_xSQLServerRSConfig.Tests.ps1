@@ -177,7 +177,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe "xSQLServerRSConfig\Set-TargetResource" -Tag 'Set' {
@@ -294,7 +294,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe "xSQLServerRSConfig\Test-TargetResource" -Tag 'Test' {
@@ -340,7 +340,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
     }
 }

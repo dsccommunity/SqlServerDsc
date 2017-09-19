@@ -139,7 +139,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe "MSFT_xSQLServerDatabaseOwner\Test-TargetResource" -Tag 'Test'{
@@ -183,7 +183,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe "MSFT_xSQLServerDatabaseOwner\Set-TargetResource" -Tag 'Set'{
@@ -293,7 +293,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
     }
 }

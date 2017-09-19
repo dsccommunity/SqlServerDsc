@@ -13,6 +13,7 @@
     [issue #807](https://github.com/PowerShell/xFailOverCluster/issues/807)).
   - Moved the code block, that contains workarounds in appveyor.yml, so it is run
     during the install phase instead of the test phase.
+  - Fix problem with tests breaking with Pester 4.0.7 ([issue #807](https://github.com/PowerShell/xFailOverCluster/issues/807)).
 - Changes to xSQLServerHelper
   - Changes to Connect-SQL and Import-SQLPSModule
     - Now it correctly loads the correct assemblies when SqlServer module is
