@@ -180,6 +180,16 @@ try
                     }
                 }
 
+                # Regression test for issue #822.
+                Context 'When Reporting Services has not been initialized (IsInitialized returns empty string)' {
+                    $mockDynamicIsInitialized = ''
+
+                    It 'Should return the state as not initialized' {
+                        $resultGetTargetResource = Get-TargetResource @testParameters
+                        $resultGetTargetResource.IsInitialized | Should Be $false
+                    }
+                }
+
                 Context 'When there is no Reporting Services instance' {
                     BeforeEach {
                         Mock -CommandName Get-ItemProperty
