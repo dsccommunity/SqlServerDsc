@@ -842,13 +842,11 @@ function Restart-SqlService
 
 <#
     .SYNOPSIS
-    Restarts a SQL Server instance and associated services
-
-    .PARAMETER SQLServer
-    Hostname of the SQL Server to be configured
+    Restarts a Reporting Services instance and associated services
 
     .PARAMETER SQLInstanceName
-    Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
+    Name of the instance to be restarted. Default is 'MSSQLSERVER'
+    (the default instance).
 #>
 function Restart-ReportingServicesService
 {
