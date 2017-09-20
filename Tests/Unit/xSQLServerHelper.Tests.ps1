@@ -1619,4 +1619,68 @@ InModuleScope $script:moduleName {
             }
         }
     }
+
+    Describe 'Testing Restart-ReportingServicesService' {
+        Context 'When restarting a Report Services default instance' {
+            BeforeAll {
+                $mockServiceName = 'ReportServer'
+
+                Mock -CommandName Restart-Service -Verifiable
+                Mock -CommandName Start-Service -Verifiable
+                Mock -CommandName Get-Service -MockWith {
+                    return @{
+                        Name = $mockServiceName
+                        DependentServices = @(
+                            @{
+                                Name = 'DependentService'
+                                Status = 'Running'
+                                DependentServices = @()
+                            }
+                        )
+                    }
+                }
+            }
+
+            It 'Should restart the service and dependent service' {
+                { Restart-ReportingServicesService -SQLInstanceName 'MSSQLSERVER' } | Should Not Throw
+
+                Assert-MockCalled -CommandName Get-Service -ParameterFilter {
+                    $Name -eq $mockServiceName
+                } -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
+            }
+        }
+
+        Context 'When restarting a Report Services named instance' {
+            BeforeAll {
+                $mockServiceName = 'ReportServer$TEST'
+
+                Mock -CommandName Restart-Service -Verifiable
+                Mock -CommandName Start-Service -Verifiable
+                Mock -CommandName Get-Service -MockWith {
+                    return @{
+                        Name = $mockServiceName
+                        DependentServices = @(
+                            @{
+                                Name = 'DependentService'
+                                Status = 'Running'
+                                DependentServices = @()
+                            }
+                        )
+                    }
+                }
+            }
+
+            It 'Should restart the service and dependent service' {
+                { Restart-ReportingServicesService -SQLInstanceName 'TEST' } | Should Not Throw
+
+                Assert-MockCalled -CommandName Get-Service -ParameterFilter {
+                    $Name -eq $mockServiceName
+                } -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
+            }
+        }
+    }
 }

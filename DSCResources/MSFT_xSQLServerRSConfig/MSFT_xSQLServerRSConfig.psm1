@@ -192,6 +192,8 @@ function Set-TargetResource
         Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseRightsScript.Script
         $null = $reportingServicesConfiguration.SetDatabaseConnection($reportingServicesConnection, $reportingServicesDatabaseName, 2, '', '')
         $null = $reportingServicesConfiguration.InitializeReportServer($reportingServicesConfiguration.InstallationID)
+
+        Restart-ReportingServicesService -SQLInstanceName $InstanceName
     }
 
     if ( !(Test-TargetResource @PSBoundParameters) )

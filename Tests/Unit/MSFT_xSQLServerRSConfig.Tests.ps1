@@ -260,6 +260,7 @@ try
                 Mock -CommandName Import-SQLPSModule -Verifiable
                 Mock -CommandName Invoke-Sqlcmd -Verifiable
                 Mock -CommandName Get-ItemProperty -MockWith $mockGetItemProperty -Verifiable
+                Mock -CommandName Restart-ReportingServicesService -Verifiable
             }
 
             Context 'When the system is not in the desired state' {
@@ -311,6 +312,7 @@ try
 
                         Assert-MockCalled -CommandName Get-WmiObject -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
                     }
 
                     Context 'When there is no Reporting Services instance after Set-TargetResource has been called' {
@@ -365,6 +367,7 @@ try
 
                         Assert-MockCalled -CommandName Get-WmiObject -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
                     }
                 }
             }

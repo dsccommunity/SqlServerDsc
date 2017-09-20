@@ -819,7 +819,7 @@ function Restart-SqlService
     }
     else
     {
-        Write-Verbose -Message ($script:localizedData.GetSqlServerService) -Verbose
+        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f 'SQL Server') -Verbose
         $sqlService = Get-Service -DisplayName "SQL Server ($($serverObject.ServiceName))"
 
         <#
@@ -829,7 +829,7 @@ function Restart-SqlService
         $agentService = $sqlService.DependentServices | Where-Object -FilterScript { $_.Status -eq 'Running' }
 
         # Restart the SQL Server service
-        Write-Verbose -Message ($script:localizedData.RestartSqlServerService) -Verbose
+        Write-Verbose -Message ($script:localizedData.RestartService -f 'SQL Server') -Verbose
         $sqlService | Restart-Service -Force
 
         # Start dependent services
@@ -837,6 +837,55 @@ function Restart-SqlService
             Write-Verbose -Message ($script:localizedData.StartingDependentService -f $_.DisplayName) -Verbose
             $_ | Start-Service
         }
+    }
+}
+
+<#
+    .SYNOPSIS
+    Restarts a SQL Server instance and associated services
+
+    .PARAMETER SQLServer
+    Hostname of the SQL Server to be configured
+
+    .PARAMETER SQLInstanceName
+    Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
+#>
+function Restart-ReportingServicesService
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $SQLInstanceName = 'MSSQLSERVER'
+    )
+
+    $ServiceName = 'ReportServer'
+
+    if (-not ($SQLInstanceName -eq 'MSSQLSERVER'))
+    {
+        $ServiceName += '${0}' -f $SQLInstanceName
+    }
+
+    Write-Verbose -Message ($script:localizedData.GetServiceInformation -f 'Reporting Services') -Verbose
+    $reportingServicesService = Get-Service -Name $ServiceName
+
+    <#
+        Get all dependent services that are running.
+        There are scenarios where an automatic service is stopped and should
+        not be restarted automatically.
+    #>
+    $dependentService = $reportingServicesService.DependentServices | Where-Object -FilterScript {
+        $_.Status -eq 'Running'
+    }
+
+    Write-Verbose -Message ($script:localizedData.RestartService -f 'Reporting Services') -Verbose
+    $reportingServicesService | Restart-Service -Force
+
+    # Start dependent services
+    $dependentService | ForEach-Object {
+        Write-Verbose -Message ($script:localizedData.StartingDependentService -f $_.DisplayName) -Verbose
+        $_ | Start-Service
     }
 }
 
