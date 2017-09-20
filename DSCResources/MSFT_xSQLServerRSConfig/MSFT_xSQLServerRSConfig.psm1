@@ -42,6 +42,10 @@ function Get-TargetResource
         $sqlVersion = ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\Setup" -Name 'Version').Version).Split('.')[0]
 
         $reportingServicesConfiguration = Get-WmiObject -Class MSReportServer_ConfigurationSetting -Namespace "root\Microsoft\SQLServer\ReportServer\RS_$InstanceName\v$sqlVersion\Admin"
+        $reportingServicesConfiguration = $reportingServicesConfiguration | Where-Object -FilterScript {
+            $_.InstanceName -eq $InstanceName
+        }
+
         if ( $reportingServicesConfiguration.DatabaseServerName.Contains('\') )
         {
             $RSSQLServer = $reportingServicesConfiguration.DatabaseServerName.Split('\')[0]
@@ -140,15 +144,18 @@ function Set-TargetResource
 
         if ( $RSSQLInstanceName -eq 'MSSQLSERVER' )
         {
-            $reportingServicesConnnection = $RSSQLServer
+            $reportingServicesConnection = $RSSQLServer
         }
         else
         {
-            $reportingServicesConnnection = "$RSSQLServer\$RSSQLInstanceName"
+            $reportingServicesConnection = "$RSSQLServer\$RSSQLInstanceName"
         }
 
         $language = (Get-WMIObject -Class Win32_OperatingSystem -Namespace root/cimv2 -ErrorAction SilentlyContinue).OSLanguage
         $reportingServicesConfiguration = Get-WmiObject -Class MSReportServer_ConfigurationSetting -Namespace "root\Microsoft\SQLServer\ReportServer\RS_$InstanceName\v$sqlVersion\Admin"
+        $reportingServicesConfiguration = $reportingServicesConfiguration | Where-Object -FilterScript {
+            $_.InstanceName -eq $InstanceName
+        }
 
         if ( $reportingServicesConfiguration.VirtualDirectoryReportServer -ne $reportServerVirtualDirectoryName )
         {
@@ -181,9 +188,9 @@ function Set-TargetResource
         $reportingServicesServiceAccountUserName = (Get-WmiObject -Class Win32_Service | Where-Object {$_.Name -eq $reportingServicesServiceName}).StartName
         $reportingServicesDatabaseRightsScript = $reportingServicesConfiguration.GenerateDatabaseRightsScript($reportingServicesServiceAccountUserName, $reportingServicesDatabaseName, $false, $true)
 
-        Invoke-Sqlcmd -ServerInstance $reportingServicesConnnection -Query $reportingServicesDatabaseScript.Script
-        Invoke-Sqlcmd -ServerInstance $reportingServicesConnnection -Query $reportingServicesDatabaseRightsScript.Script
-        $null = $reportingServicesConfiguration.SetDatabaseConnection($reportingServicesConnnection, $reportingServicesDatabaseName, 2, '', '')
+        Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseScript.Script
+        Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseRightsScript.Script
+        $null = $reportingServicesConfiguration.SetDatabaseConnection($reportingServicesConnection, $reportingServicesDatabaseName, 2, '', '')
         $null = $reportingServicesConfiguration.InitializeReportServer($reportingServicesConfiguration.InstallationID)
     }
 
