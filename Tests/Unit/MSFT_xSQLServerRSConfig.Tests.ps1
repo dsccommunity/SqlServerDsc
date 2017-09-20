@@ -50,7 +50,7 @@ try
         $mockGetWmiObject_ConfigurationSetting_NamedInstance = {
             return New-Object Object |
                         Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $true -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $mockDynamicIsInitialized -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru |
                         Add-Member -MemberType ScriptMethod -Name SetVirtualDirectory {
@@ -92,7 +92,7 @@ try
         $mockGetWmiObject_ConfigurationSetting_DefaultInstance = {
             return @{
                 DatabaseServerName = $mockReportingServicesDatabaseServerName
-                IsInitialized = $false
+                IsInitialized = $mockDynamicIsInitialized
             }
         }
 
@@ -131,6 +131,8 @@ try
                         -Verifiable
                 }
 
+                $mockDynamicIsInitialized = $true
+
                 It 'Should return the same values as passed as parameters' {
                     $resultGetTargetResource = Get-TargetResource @testParameters
                     $resultGetTargetResource.InstanceName | Should Be $mockNamedInstanceName
@@ -153,6 +155,8 @@ try
                         -Verifiable
                 }
 
+                $mockDynamicIsInitialized = $false
+
                 It 'Should return the same values as passed as parameters' {
                     $resultGetTargetResource = Get-TargetResource @testParameters
                     $resultGetTargetResource.InstanceName | Should Be $mockNamedInstanceName
@@ -161,9 +165,29 @@ try
                     $resultGetTargetResource | Should BeOfType [System.Collections.Hashtable]
                 }
 
-                It 'Should return the the state as initialized' {
+                It 'Should return the state as not initialized' {
                     $resultGetTargetResource = Get-TargetResource @testParameters
                     $resultGetTargetResource.IsInitialized | Should Be $false
+                }
+
+                # Regression test for issue #822.
+                Context 'When Reporting Services has not been initialized (IsInitialized returns $null)' {
+                    $mockDynamicIsInitialized = $null
+
+                    It 'Should return the state as not initialized' {
+                        $resultGetTargetResource = Get-TargetResource @testParameters
+                        $resultGetTargetResource.IsInitialized | Should Be $false
+                    }
+                }
+
+                # Regression test for issue #822.
+                Context 'When Reporting Services has not been initialized (IsInitialized returns empty string)' {
+                    $mockDynamicIsInitialized = ''
+
+                    It 'Should return the state as not initialized' {
+                        $resultGetTargetResource = Get-TargetResource @testParameters
+                        $resultGetTargetResource.IsInitialized | Should Be $false
+                    }
                 }
 
                 Context 'When there is no Reporting Services instance' {
