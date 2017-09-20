@@ -1198,6 +1198,8 @@ function Split-FullSQLInstanceName
 #>
 function Test-ClusterPermissions
 {
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -1233,14 +1235,18 @@ function Test-ClusterPermissions
                 {
                     $clusterServiceName
                     {
-                        Write-Verbose -Message ( $script:localizedData.ClusterLoginMissingPermissions -f 'recommended ',$loginName,( $availabilityGroupManagementPerms -join ', ' ) )
+                        Write-Verbose -Message ( $script:localizedData.ClusterLoginMissingRecommendedPermissions -f $loginName,( $availabilityGroupManagementPerms -join ', ' ) ) -Verbose
                     }
 
                     $ntAuthoritySystemName
                     {
-                        Write-Verbose -Message ( $script:localizedData.ClusterLoginMissingPermissions -f '',$loginName,( $availabilityGroupManagementPerms -join ', ' ) )
+                        Write-Verbose -Message ( $script:localizedData.ClusterLoginMissingPermissions -f $loginName,( $availabilityGroupManagementPerms -join ', ' ) ) -Verbose
                     }
                 }
+            }
+            else
+            {
+                Write-Verbose -Message ( $script:localizedData.ClusterLoginPermissionsPresent -f $loginName ) -Verbose
             }
         }
         elseif ( -not $clusterPermissionsPresent )
@@ -1249,12 +1255,12 @@ function Test-ClusterPermissions
             {
                 $clusterServiceName
                 {
-                    Write-Verbose -Message ($script:localizedData.ClusterLoginMissing -f 'recommended ',$loginName,"Trying with '$ntAuthoritySystemName'.")
+                    Write-Verbose -Message ($script:localizedData.ClusterLoginMissingRecommendedPermissions -f $loginName,"Trying with '$ntAuthoritySystemName'.") -Verbose
                 }
 
                 $ntAuthoritySystemName
                 {
-                    Write-Verbose -Message ( $script:localizedData.ClusterLoginMissing -f '',$loginName,'' )
+                    Write-Verbose -Message ( $script:localizedData.ClusterLoginMissing -f $loginName,'' ) -Verbose
                 }
             }
         }
@@ -1265,4 +1271,6 @@ function Test-ClusterPermissions
     {
         throw ($script:localizedData.ClusterPermissionsMissing -f $sqlServer,$sqlInstanceName )
     }
+
+    return $clusterPermissionsPresent
 }

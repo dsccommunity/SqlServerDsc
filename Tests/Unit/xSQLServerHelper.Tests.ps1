@@ -1533,20 +1533,30 @@ InModuleScope $script:moduleName {
 
     Describe 'Testing Test-ClusterPermissions' {
         BeforeAll {
-            Mock -CommandName Test-LoginEffectivePermissions -MockWith { $mockClusterServicePermissionsPresent } -Verifiable -ParameterFilter { $LoginName -eq $clusterServiceName }
-            Mock -CommandName Test-LoginEffectivePermissions -MockWith { $mockSystemPermissionsPresent } -Verifiable -ParameterFilter { $LoginName -eq $systemAccountName }
+            Mock -CommandName Test-LoginEffectivePermissions -MockWith {
+                $mockClusterServicePermissionsPresent
+            } -Verifiable -ParameterFilter {
+                $LoginName -eq $clusterServiceName
+            }
+
+            Mock -CommandName Test-LoginEffectivePermissions -MockWith {
+                $mockSystemPermissionsPresent
+            } -Verifiable -ParameterFilter {
+                $LoginName -eq $systemAccountName
+            }
 
             $clusterServiceName = 'NT SERVICE\ClusSvc'
             $systemAccountName= 'NT AUTHORITY\System'
         }
+
         BeforeEach {
             $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
             $mockServerObject.NetName = 'TestServer'
             $mockServerObject.ServiceName = 'MSSQLSERVER'
 
             $mockLogins = @{
-                $clusterServiceName = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login($mockServerObject,$clusterServiceName)
-                $systemAccountName = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login($mockServerObject,$systemAccountName)
+                $clusterServiceName = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $mockServerObject,$clusterServiceName
+                $systemAccountName = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $mockServerObject,$systemAccountName
             }
 
             $mockServerObject.Logins = $mockLogins
@@ -1561,15 +1571,23 @@ InModuleScope $script:moduleName {
 
                 { Test-ClusterPermissions -ServerObject $mockServerObject } | Should Throw ( "The cluster does not have permissions to manage the Availability Group on '{0}\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either '$($clusterServiceName)' or '$($systemAccountName)'." -f $mockServerObject.NetName,$mockServerObject.ServiceName )
 
-                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter { $LoginName -eq $clusterServiceName }
-                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter { $LoginName -eq $systemAccountName }
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter {
+                    $LoginName -eq $clusterServiceName
+                }
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter {
+                    $LoginName -eq $systemAccountName
+                }
             }
 
             It "Should throw the correct error when the logins '$($clusterServiceName)' and '$($systemAccountName)' do not have permissions to manage availability groups" {
                 { Test-ClusterPermissions -ServerObject $mockServerObject } | Should Throw ( "The cluster does not have permissions to manage the Availability Group on '{0}\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either '$($clusterServiceName)' or '$($systemAccountName)'." -f $mockServerObject.NetName,$mockServerObject.ServiceName )
 
-                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq $clusterServiceName }
-                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq $systemAccountName }
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
+                    $LoginName -eq $clusterServiceName
+                }
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
+                    $LoginName -eq $systemAccountName
+                }
             }
         }
 
@@ -1577,19 +1595,27 @@ InModuleScope $script:moduleName {
             It "Should return NullOrEmpty when '$($clusterServiceName)' is present and has the permissions to manage availability groups" {
                 $mockClusterServicePermissionsPresent = $true
 
-                Test-ClusterPermissions -ServerObject $mockServerObject | Should BeNullOrEmpty
+                Test-ClusterPermissions -ServerObject $mockServerObject | Should Be $true
 
-                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq $clusterServiceName }
-                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter { $LoginName -eq $systemAccountName }
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
+                    $LoginName -eq $clusterServiceName
+                }
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter {
+                    $LoginName -eq $systemAccountName
+                }
             }
 
             It "Should return NullOrEmpty when '$($systemAccountName)' is present and has the permissions to manage availability groups" {
                 $mockSystemPermissionsPresent = $true
 
-                Test-ClusterPermissions -ServerObject $mockServerObject | Should BeNullOrEmpty
+                Test-ClusterPermissions -ServerObject $mockServerObject | Should Be $true
 
-                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq $clusterServiceName }
-                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter { $LoginName -eq $systemAccountName }
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
+                    $LoginName -eq $clusterServiceName
+                }
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
+                    $LoginName -eq $systemAccountName
+                }
             }
         }
     }
