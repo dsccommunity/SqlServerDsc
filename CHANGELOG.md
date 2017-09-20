@@ -46,6 +46,8 @@
       more information in [issue #806](https://github.com/PowerShell/xFailOverCluster/issues/806)).
     - Fixed wrong variable name for SQL service credential. It was using the
       integration test variable name instead of the parameter name.
+    - Added ErrorAction 'Stop' to the cmdlet Start-DscConfiguration
+      ([issue #824](https://github.com/PowerShell/xSQLServer/issues/824)).
 - Changes to xSQLServerAlwaysOnAvailabilityGroup
   - Change the check of the values entered as parameter for
     BasicAvailabilityGroup. It is a boolean, hence it was not possible to
@@ -71,6 +73,8 @@
     find the specified property ([issue #801](https://github.com/PowerShell/xSQLServer/issues/801))
 - Changes to xSQLServerAlwaysOnService
   - Added integration test ([issue #736](https://github.com/PowerShell/xSQLServer/issues/736)).
+    - Added ErrorAction 'Stop' to the cmdlet Start-DscConfiguration
+      ([issue #824](https://github.com/PowerShell/xSQLServer/issues/824)).
 - Added new resource xSQLServerAccount ([issue #706](https://github.com/PowerShell/xSQLServer/issues/706))
   - Added localization support for all strings
   - Added examples for usage

@@ -105,17 +105,28 @@ try
     Describe "$($script:DSCResourceName)_Integration" {
         It 'Should compile and apply the MOF without throwing' {
             {
-                # The variable $ConfigurationData was dot-sourced above.
-                & $configurationName `
-                    -SqlInstallCredential $mockSqlInstallCredential `
-                    -SqlAdministratorCredential $mockSqlAdminCredential `
-                    -SqlServiceCredential $mockSqlServiceCredential `
-                    -SqlAgentServiceCredential $mockSqlAgentServiceCredential `
-                    -OutputPath $TestDrive `
-                    -ConfigurationData $ConfigurationData
+                $configurationParameters = @{
+                    SqlInstallCredential = $mockSqlInstallCredential
+                    SqlAdministratorCredential = $mockSqlAdminCredential
+                    SqlServiceCredential = $mockSqlServiceCredential
+                    SqlAgentServiceCredential = $mockSqlAgentServiceCredential
+                    OutputPath = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData = $ConfigurationData
+                }
 
-                Start-DscConfiguration -Path $TestDrive `
-                    -ComputerName localhost -Wait -Verbose -Force
+                & $configurationName @configurationParameters
+
+                $startDscConfigurationParameters = @{
+                    Path = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait = $true
+                    Verbose = $true
+                    Force = $true
+                    ErrorAction = 'Stop'
+                }
+
+                Start-DscConfiguration @startDscConfigurationParameters
             } | Should Not Throw
         } -ErrorVariable itBlockError
 
