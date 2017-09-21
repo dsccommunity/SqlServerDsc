@@ -1,6 +1,8 @@
 # Change log for xSQLServer
 
 ## Unreleased
+- Changes to xSQLServerNetwork
+  - added parameter sysadmin account to the example
 
 - Changes to xSQLServer
   - Updated appveyor.yml so that integration tests run in order and so that
