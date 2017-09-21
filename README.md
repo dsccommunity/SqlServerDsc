@@ -243,6 +243,14 @@ It will also manage the Availability Group replica on the specified node.
 * **`[Uint32]` HealthCheckTimeout** _(Write)_: Specifies the length of time, in
   milliseconds, after which AlwaysOn availability groups declare an unresponsive
   server to be unhealthy. Default is 30000.
+* **`[String]` EndpointUrl** _(Read)_: Gets the Endpoint URL of the
+  availability group replica endpoint.
+* **`[Uint32]` EndpointPort** _(Read)_: Gets the port the database mirroring
+  endpoint is listening on
+* **`[String]` SQLServerNetName** _(Read)_: Gets the hostname the SQL Server
+  Instance is listening on.
+* **`[Uint32]` Version** _(Read)_: Gets the major version of the SQL Server
+  Instance.
 
 #### Examples
 
