@@ -60,6 +60,11 @@
     Group is created.
   - Use the new helper function "Test-ClusterPermissions".
   - Refactored the unit tests to allow them to be more user friendly.
+    Added the following read-only properties to the schema ([issue #476](https://github.com/PowerShell/xSQLServer/issues/476))
+    - EndpointPort
+    - EndpointURL
+    - SQLServerNetName
+    - Version
 - Changes to xSQLServerAlwaysOnAvailabilityGroupReplica
   - Fixed the formatting for the AvailabilityGroupNotFound error.
   - Added the following read-only properties to the schema ([issue #477](https://github.com/PowerShell/xSQLServer/issues/477))
