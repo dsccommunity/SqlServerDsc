@@ -98,6 +98,50 @@ try
                 $resourceCurrentState.RSSQLInstanceName | Should Be $mockRSSQLInstanceName
                 $resourceCurrentState.IsInitialized | Should Be $true
             }
+
+            It 'Should be able to access the ReportServer site without any error' {
+                $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $mockInstanceName
+
+                try
+                {
+                    $webRequestReportServer = Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials
+                    # if the request finishes successfully this should return status code 200.
+                    $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
+                }
+                catch
+                {
+                    <#
+                        If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
+                        we can pull the status code from the Exception.Response property.
+                    #>
+                    $webRequestResponse = $_.Exception.Response
+                    $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
+                }
+
+                $webRequestStatusCode | Should BeExactly 200
+            }
+
+            It 'Should be able to access the Reports site without any error' {
+                $reportsUri = 'http://{0}/Reports_{1}' -f $env:COMPUTERNAME, $mockInstanceName
+
+                try
+                {
+                    $webRequestReportServer = Invoke-WebRequest -Uri $reportsUri -UseDefaultCredentials
+                    # if the request finishes successfully this should return status code 200.
+                    $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
+                }
+                catch
+                {
+                    <#
+                        If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
+                        we can pull the status code from the Exception.Response property.
+                    #>
+                    $webRequestResponse = $_.Exception.Response
+                    $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
+                }
+
+                $webRequestStatusCode | Should BeExactly 200
+            }
         }
     }
 }
