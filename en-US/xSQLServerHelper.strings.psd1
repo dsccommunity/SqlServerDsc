@@ -38,6 +38,11 @@ ConvertFrom-StringData @'
     ExecuteNonQueryFailed = Executing non-query failed on database '{0}'.
     AlterAvailabilityGroupReplicaFailed = Failed to alter the availability group replica '{0}'.
     GetEffectivePermissionForLogin = Getting the effective permissions for the login '{0}' on '{1}'.
+    ClusterPermissionsMissing = The cluster does not have permissions to manage the Availability Group on '{0}\\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either 'NT SERVICE\\ClusSvc' or 'NT AUTHORITY\\SYSTEM'.
+    ClusterLoginMissing = The login '{0}' is not present. {1}
+    ClusterLoginMissingPermissions = The account '{0}' is missing one or more of the following permissions: {1}
+    ClusterLoginMissingRecommendedPermissions = The recommended account '{0}' is missing one or more of the following permissions: {1}
+    ClusterLoginPermissionsPresent = The cluster login '{0}' has the required permissions.
 
     # - NOTE!
     # - Below strings are used by helper functions New-TerminatingError and New-WarningMessage.
@@ -108,7 +113,6 @@ ConvertFrom-StringData @'
     DropLoginFailed = Dropping the login '{0}' failed.
 
     # AlwaysOnAvailabilityGroup
-    ClusterPermissionsMissing = The cluster does not have permissions to manage the Availability Group on '{0}\\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either 'NT SERVICE\\ClusSvc' or 'NT AUTHORITY\\SYSTEM'.
     CreateAvailabilityGroupReplicaFailed = Creating the Availability Group Replica '{0}' failed on the instance '{1}'.
     CreateAvailabilityGroupFailed = Creating the availability group '{0}'.
     DatabaseMirroringEndpointNotFound = No database mirroring endpoint was found on '{0}\{1}'.

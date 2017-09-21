@@ -23,6 +23,7 @@
       because SQLPS was not found after installation because the PSModulePath
       environment variable in the (LCM) PowerShell session did not contain the new
       module path.
+  - Added new helper function "Test-ClusterPermissions" ([issue #446](https://github.com/PowerShell/xSQLServer/issues/446)).
 - Changes to xSQLServerSetup
   - Fixed an issue with trailing slashes in the 'UpdateSource' property
     ([issue #720](https://github.com/PowerShell/xSQLServer/issues/720)).
@@ -57,11 +58,14 @@
   - Add possibility to enable the feature DtcSupportEnabled (SQL Server 2016 or
     later only). The feature currently can't be altered once the Availability
     Group is created.
+  - Use the new helper function "Test-ClusterPermissions".
+  - Refactored the unit tests to allow them to be more user friendly.
 - Changes to xSQLServerAlwaysOnAvailabilityGroupReplica
   - Fixed the formatting for the AvailabilityGroupNotFound error.
   - Added the following read-only properties to the schema ([issue #477](https://github.com/PowerShell/xSQLServer/issues/477))
     - EndpointPort
     - EndpointURL
+  - Use the new helper function "Test-ClusterPermissions".
 - Changes to xSQLServerHelper
   - Fixed Connect-SQL by ensuring the Status property returns 'Online' prior to
     returning the SQL Server object ([issue #333](https://github.com/PowerShell/xSQLServer/issues/333)).
@@ -75,6 +79,15 @@
   - Added integration test ([issue #736](https://github.com/PowerShell/xSQLServer/issues/736)).
     - Added ErrorAction 'Stop' to the cmdlet Start-DscConfiguration
       ([issue #824](https://github.com/PowerShell/xSQLServer/issues/824)).
+- Changes to SMO.cs
+  - Added default properties to the Server class
+    - AvailabilityGroups
+    - Databases
+    - EndpointCollection
+  - Added a new overload to the Login class
+  - Added default properties to the AvailabilityReplicas class
+    - AvailabilityDatabases
+    - AvailabilityReplicas
 - Added new resource xSQLServerAccount ([issue #706](https://github.com/PowerShell/xSQLServer/issues/706))
   - Added localization support for all strings
   - Added examples for usage
