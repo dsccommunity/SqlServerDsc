@@ -208,7 +208,7 @@ function Set-TargetResource
         {
             throw 'Unable to find WMI object Win32_OperatingSystem.'
         }
-        Unable to find WMI object Win32_OperatingSystem.
+
         $language = $wmiOperatingSystem.OSLanguage
 
         if ( -not $reportingServicesData.Configuration.IsInitialized )
