@@ -4,16 +4,16 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
 
 <#
     .SYNOPSIS
-    Gets the SQL Reporting Services initialization status.
+        Gets the SQL Reporting Services initialization status.
 
     .PARAMETER InstanceName
-    Name of the SQL Server Reporting Services instance to be configured.
+        Name of the SQL Server Reporting Services instance to be configured.
 
     .PARAMETER RSSQLServer
-    Name of the SQL Server to host the Reporting Service database.
+        Name of the SQL Server to host the Reporting Service database.
 
     .PARAMETER RSSQLInstanceName
-    Name of the SQL Server instance to host the Reporting Service database.
+        Name of the SQL Server instance to host the Reporting Service database.
 #>
 function Get-TargetResource
 {
@@ -102,28 +102,28 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-    Initializes SQL Reporting Services.
+        Initializes SQL Reporting Services.
 
     .PARAMETER InstanceName
-    Name of the SQL Server Reporting Services instance to be configured.
+        Name of the SQL Server Reporting Services instance to be configured.
 
     .PARAMETER RSSQLServer
-    Name of the SQL Server to host the Reporting Service database.
+        Name of the SQL Server to host the Reporting Service database.
 
     .PARAMETER RSSQLInstanceName
-    Name of the SQL Server instance to host the Reporting Service database.
+        Name of the SQL Server instance to host the Reporting Service database.
 
     .PARAMETER ReportServerVirtualDirectory
-    Report Server Web Service virtual directory. Optional.
+        Report Server Web Service virtual directory. Optional.
 
     .PARAMETER ReportsVirtualDirectory
-    Report Manager/Report Web App virtual directory name. Optional.
+        Report Manager/Report Web App virtual directory name. Optional.
 
     .PARAMETER ReportServerReservedUrl
-    Report Server URL reservations. Optional. If not specified, 'http://+:80' URL reservation will be used.
+        Report Server URL reservations. Optional. If not specified, 'http://+:80' URL reservation will be used.
 
     .PARAMETER ReportsReservedUrl
-    Report Manager/Report Web App URL reservations. Optional. If not specified, 'http://+:80' URL reservation will be used.
+        Report Manager/Report Web App URL reservations. Optional. If not specified, 'http://+:80' URL reservation will be used.
 #>
 function Set-TargetResource
 {
@@ -206,8 +206,9 @@ function Set-TargetResource
         $wmiOperatingSystem = Get-WMIObject -Class Win32_OperatingSystem -Namespace 'root/cimv2' -ErrorAction SilentlyContinue
         if ( $null -eq $wmiOperatingSystem )
         {
-            throw "Unable to find WMI object Win32_OperatingSystem."
+            throw 'Unable to find WMI object Win32_OperatingSystem.'
         }
+        Unable to find WMI object Win32_OperatingSystem.
         $language = $wmiOperatingSystem.OSLanguage
 
         if ( -not $reportingServicesData.Configuration.IsInitialized )
@@ -279,19 +280,22 @@ function Set-TargetResource
             $currentConfig = Get-TargetResource @getTargetResourceParameters
 
             <#
-                SSRS virtual directories (both Report Server and Report Manager/Report Web App)
-                are a part of SSRS URL reservations.
+                SQL Server Reporting Services virtual directories (both
+                Report Server and Report Manager/Report Web App) are a
+                part of SQL Server Reporting Services URL reservations.
 
-                The default SSRS URL reservations are:
+                The default SQL Server Reporting Services URL reservations are:
                 http://+:80/ReportServer/ (for Report Server)
                 and
                 http://+:80/Reports/ (for Report Manager/Report Web App)
 
-                You can get them by running 'netsh http show urlacl' from command line.
+                You can get them by running 'netsh http show urlacl' from
+                command line.
 
-                In order to change a virtual directory, we first need to remove existing URL reservations,
-                change the appropriate virtual directory setting and re-add URL reservations, which 
-                will then contain the new virtual directory.
+                In order to change a virtual directory, we first need to remove
+                existing URL reservations, change the appropriate virtual directory
+                setting and re-add URL reservations, which will then contain the
+                new virtual directory.
             #>
 
             if ( -not [string]::IsNullOrEmpty($ReportServerVirtualDirectory) -and ($ReportServerVirtualDirectory -ne $currentConfig.ReportServerVirtualDirectory) )
@@ -368,28 +372,28 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-    Tests the SQL Reporting Services initialization status.
+        Tests the SQL Reporting Services initialization status.
 
     .PARAMETER InstanceName
-    Name of the SQL Server Reporting Services instance to be configured.
+        Name of the SQL Server Reporting Services instance to be configured.
 
     .PARAMETER RSSQLServer
-    Name of the SQL Server to host the Reporting Service database.
+        Name of the SQL Server to host the Reporting Service database.
 
     .PARAMETER RSSQLInstanceName
-    Name of the SQL Server instance to host the Reporting Service database.
+        Name of the SQL Server instance to host the Reporting Service database.
 
     .PARAMETER ReportServerVirtualDirectory
-    Report Server Web Service virtual directory. Optional.
+        Report Server Web Service virtual directory. Optional.
 
     .PARAMETER ReportsVirtualDirectory
-    Report Manager/Report Web App virtual directory name. Optional.
+        Report Manager/Report Web App virtual directory name. Optional.
 
     .PARAMETER ReportServerReservedUrl
-    Report Server URL reservations. Optional. If not specified, 'http://+:80' URL reservation will be used.
+        Report Server URL reservations. Optional. If not specified, 'http://+:80' URL reservation will be used.
 
     .PARAMETER ReportsReservedUrl
-    Report Manager/Report Web App URL reservations. Optional. If not specified, 'http://+:80' URL reservation will be used.
+        Report Manager/Report Web App URL reservations. Optional. If not specified, 'http://+:80' URL reservation will be used.
 #>
 function Test-TargetResource
 {
@@ -481,11 +485,11 @@ function Test-TargetResource
 
 <#
     .SYNOPSIS
-    Returns SQL Reporting Services data: configuration object used to initialize and configure
-    SQL Reporting Services and the name of the Reports Web application name (changed in SQL 2016)
+        Returns SQL Reporting Services data: configuration object used to initialize and configure
+        SQL Reporting Services and the name of the Reports Web application name (changed in SQL 2016)
 
     .PARAMETER InstanceName
-    Name of the SQL Server Reporting Services instance for which the data is being retrieved.
+        Name of the SQL Server Reporting Services instance for which the data is being retrieved.
 #>
 function Get-ReportingServicesData
 {
