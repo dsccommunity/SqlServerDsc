@@ -24,6 +24,7 @@ Configuration Example
             IsEnabled       = $true
             TCPDynamicPorts = '0'
             RestartService  = $true
+            PsDscRunAsCredential = $SysAdminAccount
         }
     }
 }

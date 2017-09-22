@@ -2,7 +2,7 @@
 
 ## Unreleased
 - Changes to xSQLServerNetwork
-  - added parameter sysadmin account to the example
+  - added sysadmin account parameter usage to the examples
 
 - Changes to xSQLServer
   - Updated appveyor.yml so that integration tests run in order and so that
