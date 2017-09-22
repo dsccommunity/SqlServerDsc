@@ -101,6 +101,9 @@
     Services has not been initialized ([issue #822](https://github.com/PowerShell/xSQLServer/issues/822)).
   - Fixed so that when two Reporting Services are installed for the same major
     version the resource does not throw an error ([issue #819](https://github.com/PowerShell/xSQLServer/issues/819)).
+  - Now the resource will restart the Reporting Services service after
+    initializing ([issue #592](https://github.com/PowerShell/xSQLServer/issues/592)).
+    This will enable the Reports site to work.
 
 ## 8.1.0.0
 

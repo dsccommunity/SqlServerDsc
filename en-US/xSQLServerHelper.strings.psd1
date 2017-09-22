@@ -31,8 +31,8 @@ ConvertFrom-StringData @'
     BringClusterResourcesOffline = Bringing the SQL Server resources {0} offline.
     BringSqlServerClusterResourcesOnline = Bringing the SQL Server resource back online.
     BringSqlServerAgentClusterResourcesOnline = Bringing the SQL Server Agent resource online.
-    GetSqlServerService = Getting SQL Server service information.
-    RestartSqlServerService = SQL Server service restarting.
+    GetServiceInformation = Getting {0} service information.
+    RestartService = {0} service restarting.
     StartingDependentService = Starting service {0}
     ExecuteQueryWithResultsFailed = Executing query with results failed on database '{0}'.
     ExecuteNonQueryFailed = Executing non-query failed on database '{0}'.
