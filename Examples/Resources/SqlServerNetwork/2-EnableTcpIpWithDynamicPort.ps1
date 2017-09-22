@@ -19,11 +19,12 @@ Configuration Example
     {
         SqlServerNetwork 'ChangeTcpIpOnDefaultInstance'
         {
-            InstanceName   = 'MSSQLSERVER'
-            ProtocolName   = 'Tcp'
-            IsEnabled      = $true
-            TCPDynamicPort = $true
-            RestartService = $true
+            InstanceName         = 'MSSQLSERVER'
+            ProtocolName         = 'Tcp'
+            IsEnabled            = $true
+            TCPDynamicPort       = $true
+            RestartService       = $true
+            PsDscRunAsCredential = $SysAdminAccount
         }
     }
 }

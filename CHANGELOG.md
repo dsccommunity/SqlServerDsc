@@ -2,7 +2,7 @@
 
 ## Unreleased
 - Changes to xSQLServerNetwork
-  - added parameter sysadmin account to the example
+  - added sysadmin account parameter usage to the examples
 
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
