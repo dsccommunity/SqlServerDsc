@@ -65,12 +65,14 @@
     - EndpointURL
     - SQLServerNetName
     - Version
+  - Use the Get-PrimaryReplicaServerObject helper function
 - Changes to xSQLServerAlwaysOnAvailabilityGroupReplica
   - Fixed the formatting for the AvailabilityGroupNotFound error.
   - Added the following read-only properties to the schema ([issue #477](https://github.com/PowerShell/xSQLServer/issues/477))
     - EndpointPort
     - EndpointURL
   - Use the new helper function "Test-ClusterPermissions".
+  - Use the Get-PrimaryReplicaServerObject helper function
 - Changes to xSQLServerHelper
   - Fixed Connect-SQL by ensuring the Status property returns 'Online' prior to
     returning the SQL Server object ([issue #333](https://github.com/PowerShell/xSQLServer/issues/333)).
