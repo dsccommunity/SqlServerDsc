@@ -368,11 +368,8 @@ function Set-TargetResource
             else
             {
                 # Make sure we're communicating with the primary replica
-                if ( $availabilityGroup.LocalReplicaRole -ne 'Primary' )
-                {
-                    $primaryServerObject = Connect-SQL -SQLServer $availabilityGroup.PrimaryReplicaServerName
-                    $availabilityGroup = $primaryServerObject.AvailabilityGroups[$Name]
-                }
+                $primaryServerObject = Get-PrimaryReplicaServerObject -ServerObject $serverObject -AvailabilityGroup $availabilityGroup
+                $availabilityGroup = $primaryServerObject.AvailabilityGroups[$Name]
 
                 if ( $AutomatedBackupPreference -ne $availabilityGroup.AutomatedBackupPreference )
                 {

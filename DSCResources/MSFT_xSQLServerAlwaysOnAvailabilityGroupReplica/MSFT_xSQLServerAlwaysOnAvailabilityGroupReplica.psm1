@@ -240,7 +240,7 @@ function Set-TargetResource
     {
         while ( $availabilityGroup.LocalReplicaRole -ne 'Primary' )
         {
-            $primaryServerObject = Connect-SQL -SQLServer $availabilityGroup.PrimaryReplicaServerName
+            $primaryServerObject = Get-PrimaryReplicaServerObject -ServerObject $serverObject -AvailabilityGroup $availabilityGroup
             $availabilityGroup = $primaryServerObject.AvailabilityGroups[$AvailabilityGroupName]
         }
     }
@@ -378,13 +378,8 @@ function Set-TargetResource
                 if ( $primaryReplicaAvailabilityGroup )
                 {
                     # Make sure the instance defined as the primary replica in the parameters is actually the primary replica
-                    if ( $primaryReplicaAvailabilityGroup.LocalReplicaRole -ne 'Primary' )
-                    {
-                        New-VerboseMessage -Message "The instance '$PrimaryReplicaSQLServer\$PrimaryReplicaSQLInstanceName' is not currently the primary replica. Connecting to '$($primaryReplicaAvailabilityGroup.PrimaryReplicaServerName)'."
-
-                        $primaryReplicaServerObject = Connect-SQL -SQLServer $primaryReplicaAvailabilityGroup.PrimaryReplicaServerName
-                        $primaryReplicaAvailabilityGroup = $primaryReplicaServerObject.AvailabilityGroups[$AvailabilityGroupName]
-                    }
+                    $primaryReplicaServerObject = Get-PrimaryReplicaServerObject -ServerObject $primaryReplicaServerObject -AvailabilityGroup $primaryReplicaAvailabilityGroup
+                    $availabilityGroup = $primaryReplicaServerObject.AvailabilityGroups[$AvailabilityGroupName]
 
                     # Build the endpoint URL
                     $endpointUrl = "TCP://$($EndpointHostName):$($endpointPort)"
