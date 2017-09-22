@@ -168,7 +168,16 @@ try
 
                 [Parameter()]
                 [string]
-                $SQLInstanceName
+                $SQLInstanceName,
+
+                # The following two parameters are used to mock Get-PrimaryReplicaServerObject
+                [Parameter()]
+                [Microsoft.SqlServer.Management.Smo.AvailabilityGroup]
+                $AvailabilityGroup,
+
+                [Parameter()]
+                [Microsoft.SqlServer.Management.Smo.Server]
+                $ServerObject
             )
 
             # Mock the server object
@@ -262,7 +271,16 @@ try
 
                 [Parameter()]
                 [string]
-                $SQLInstanceName
+                $SQLInstanceName,
+
+                # The following two parameters are used to mock Get-PrimaryReplicaServerObject
+                [Parameter()]
+                [Microsoft.SqlServer.Management.Smo.AvailabilityGroup]
+                $AvailabilityGroup,
+
+                [Parameter()]
+                [Microsoft.SqlServer.Management.Smo.Server]
+                $ServerObject
             )
 
             # Mock the server object
@@ -373,7 +391,16 @@ try
 
                 [Parameter()]
                 [string]
-                $SQLInstanceName
+                $SQLInstanceName,
+
+                # The following two parameters are used to mock Get-PrimaryReplicaServerObject
+                [Parameter()]
+                [Microsoft.SqlServer.Management.Smo.AvailabilityGroup]
+                $AvailabilityGroup,
+
+                [Parameter()]
+                [Microsoft.SqlServer.Management.Smo.Server]
+                $ServerObject
             )
 
             # Mock the server object
@@ -586,6 +613,15 @@ try
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer1 -Verifiable -ParameterFilter { $SQLServer -eq $mockServer1Name }
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer2 -Verifiable -ParameterFilter { $SQLServer -eq $mockServer2Name }
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer3 -Verifiable -ParameterFilter { $SQLServer -eq $mockServer3Name }
+                Mock -CommandName Get-PrimaryReplicaServerObject -MockWith $mockConnectSqlServer1 -Verifiable -ParameterFilter {
+                    $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                }
+                Mock -CommandName Get-PrimaryReplicaServerObject -MockWith $mockConnectSqlServer2 -Verifiable -ParameterFilter {
+                    $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                }
+                Mock -CommandName Get-PrimaryReplicaServerObject -MockWith $mockConnectSqlServer3 -Verifiable -ParameterFilter {
+                    $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                }
                 Mock -CommandName Join-SqlAvailabilityGroup -MockWith {} -Verifiable
                 Mock -CommandName New-SqlAvailabilityReplica {} -Verifiable
                 Mock -CommandName Test-ClusterPermissions -MockWith { $null } -Verifiable
@@ -614,8 +650,17 @@ try
                     { Set-TargetResource @setTargetResourceParameters } | Should Not Throw
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer1Name } -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 0 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer3Name } -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                    }
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
@@ -632,8 +677,17 @@ try
                     { Set-TargetResource @setTargetResourceParameters } | Should Throw 'RemoveAvailabilityGroupReplicaFailed'
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer1Name } -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 0 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer3Name } -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                    }
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
@@ -680,6 +734,15 @@ try
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer1Name } -Times 1 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 0 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer3Name } -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                    }
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
@@ -700,6 +763,15 @@ try
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer1Name } -Times 1 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 0 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer3Name } -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                    }
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
@@ -716,6 +788,15 @@ try
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer1Name } -Times 1 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 1 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer3Name } -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                    }
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Join-SqlAvailabilityGroup -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 1 -Exactly
@@ -725,7 +806,7 @@ try
                     Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
                 }
 
-                It 'Should throw the correct error (DatabaseMirroringEndpointNotFound) when the database mirroring endpoint is not absent' {
+                It 'Should throw the correct error (DatabaseMirroringEndpointNotFound) when the database mirroring endpoint is absent' {
 
                     $mockDatabaseMirroringEndpoint = $false
 
@@ -734,6 +815,15 @@ try
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer1Name } -Times 1 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 0 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer3Name } -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                    }
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
@@ -752,6 +842,15 @@ try
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer1Name } -Times 1 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 1 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer3Name } -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                    }
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Join-SqlAvailabilityGroup -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 1 -Exactly
@@ -768,8 +867,17 @@ try
                     { Set-TargetResource @setTargetResourceParameters } | Should Not Throw
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer1Name } -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 0 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer3Name } -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                    }
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Join-SqlAvailabilityGroup -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 1 -Exactly
@@ -788,6 +896,15 @@ try
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer1Name } -Times 1 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 1 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer3Name } -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                    }
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 1 -Exactly
@@ -806,6 +923,15 @@ try
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer1Name } -Times 1 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 1 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer3Name } -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                    }
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Join-SqlAvailabilityGroup -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 1 -Exactly
@@ -824,6 +950,15 @@ try
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer1Name } -Times 1 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 1 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer3Name } -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                    }
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
@@ -882,8 +1017,17 @@ try
                     { Set-TargetResource @setTargetResourceParameters } | Should Throw 'ReplicaNotFound'
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer1Name } -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 0 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer3Name } -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                    }
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
@@ -904,8 +1048,17 @@ try
                         { Set-TargetResource @setTargetResourceParameters } | Should Not Throw
 
                         Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer1Name } -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 1 -Exactly
+                        Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 0 -Exactly
                         Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer3Name } -Times 0 -Exactly
+                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                            $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                        }
+                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                            $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                        }
+                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                            $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                        }
                         Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                         Assert-MockCalled -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                         Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
@@ -923,8 +1076,17 @@ try
                     { Set-TargetResource @setTargetResourceParameters } | Should Not Throw
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer1Name } -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 0 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer3Name } -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                    }
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
@@ -943,8 +1105,17 @@ try
                     { Set-TargetResource @setTargetResourceParameters } | Should Not Throw
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer1Name } -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 0 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer3Name } -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                    }
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
@@ -963,8 +1134,17 @@ try
                     { Set-TargetResource @setTargetResourceParameters } | Should Not Throw
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer1Name } -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer2Name } -Times 0 -Exactly
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter { $SQLServer -eq $mockServer3Name } -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                    }
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
