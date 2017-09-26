@@ -1,6 +1,7 @@
 # Change log for SqlServerDsc
 
 ## Unreleased
+
 - Changes to xSQLServerNetwork
   - added sysadmin account parameter usage to the examples
 
