@@ -1,6 +1,7 @@
 # Change log for xSQLServer
 
 ## Unreleased
+
 - Changes to xSQLServerNetwork
   - added sysadmin account parameter usage to the examples
 
