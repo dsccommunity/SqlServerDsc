@@ -2,12 +2,11 @@
 
 ## Unreleased
 
-- Changes to xSQLServerNetwork
-  - added sysadmin account parameter usage to the examples
-
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
+- Changes to SqlServerNetwork
+  - Added sysadmin account parameter usage to the examples.
 - Changes to SqlServiceAccount
   - Default services are now properly detected
     ([issue #930](https://github.com/PowerShell/SqlServerDsc/issues/930)).
