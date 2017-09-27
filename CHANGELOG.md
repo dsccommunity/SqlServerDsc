@@ -2,9 +2,6 @@
 
 ## Unreleased
 
-- Changes to xSQLServerNetwork
-  - added sysadmin account parameter usage to the examples
-
 - Changes to xSQLServer
   - Updated appveyor.yml so that integration tests run in order and so that
     the SQLPS module folders are renamed to not disturb the units test, but
@@ -99,6 +96,8 @@
     Services has not been initialized ([issue #822](https://github.com/PowerShell/xSQLServer/issues/822)).
   - Fixed so that when two Reporting Services are installed for the same major
     version the resource does not throw an error ([issue #819](https://github.com/PowerShell/xSQLServer/issues/819)).
+- Changes to xSQLServerNetwork
+  - added sysadmin account parameter usage to the examples
 
 ## 8.1.0.0
 
