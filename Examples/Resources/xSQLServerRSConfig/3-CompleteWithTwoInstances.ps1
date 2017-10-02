@@ -1,6 +1,9 @@
 <#
 .EXAMPLE
-    This example performs a default SSRS configuration. It will initialize SSRS
+    This example installs to instances where the first named instance is used for
+    the Reporting Services databases, and the second named instance is used for
+    Reporting Services. After installing the two instances, the configuration
+    performs a default SSRS configuration. It will initialize SSRS
     and register default Report Server Web Service and Report Manager URLs:
     http://localhost:80/ReportServer (Report Server Web Service)
     http://localhost:80/Reports (Report Manager)
