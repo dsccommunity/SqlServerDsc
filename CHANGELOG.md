@@ -136,6 +136,9 @@
   - BREAKING CHANGE: Parameters RSSQLServer and RSSQLInstanceName has been renamed
     to DatabaseServerName and DatabaseInstanceName respectively
     ([issue #923](https://github.com/PowerShell/SqlServerDsc/issues/923)).
+- Changes to SqlDatabaseRole
+  - Added complete example for SqlRS (based on the integration tests)
+    ([issue #634](https://github.com/PowerShell/xSQLServer/issues/634)).
 - Changes to SqlServerConfiguration
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
     to ServerName and InstanceName respectively
