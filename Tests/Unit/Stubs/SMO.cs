@@ -246,6 +246,10 @@ namespace Microsoft.SqlServer.Management.Smo
         public EndpointCollection Endpoints = new EndpointCollection();
         public string FilestreamLevel = "Disabled";
         public string InstanceName;
+        public string ServiceName;
+        public string DefaultFile;
+        public string DefaultLog;
+        public string BackupDirectory;
         public bool IsClustered = false;
         public bool IsHadrEnabled = false;
         public bool IsMemberOfWsfcCluster = false;
