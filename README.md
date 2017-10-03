@@ -117,6 +117,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx).
 * [**xSQLServerDatabase**](#xsqlserverdatabase) resource to manage ensure database
   is present or absent.
+* [**xSQLServerDatabaseDefaultLocations**](#xsqlserverdatabasedefaultlocations)
+  resource to manage database default locations for Data, Logs, and Backups for SQL Server
 * [**xSQLServerDatabaseOwner**](#xsqlserverdatabaseowner) resource to manage SQL
   database owners.
 * [**xSQLServerDatabasePermission**](#xsqlserverdatabasepermission) resource to
@@ -503,6 +505,29 @@ database, please read:
 
 * [Create a Database](/Examples/Resources/xSQLServerDatabase/1-CreateDatabase.ps1)
 * [Delete a database](/Examples/Resources/xSQLServerDatabase/2-DeleteDatabase.ps1)
+
+### xSQLServerDatabaseDefaultLocationns
+
+This resource is used to configure database default locations for Data, Log, and Backup for SQL Server..
+For more information about database default locations, please read the article
+[Changing the Database Default Locations](https://technet.microsoft.com/en-us/library/dd206993.aspx).
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2008 or later.
+
+#### Parameters
+
+* **`[String]` DefaultLocationType** _(Key)_: The name of database default location (Data, Log, Backup) to be configured.
+* **`[String]` DefaultLocationPath** _(Required)_: The location of the default directory to be configured.
+* **`[String]` SQLServer** _(Write)_: The host name of the SQL Server to be configured.
+* **`[String]` SQLInstance** _(Write)_: The name of the SQL instance to be configured.
+
+#### Examples
+
+* [Set database owner](/Examples/Resources/xSQLServerDatabaseDefaultLocations/1-SetDatabaseDefaultLocations.ps1)
+
 
 ### xSQLServerDatabaseOwner
 
