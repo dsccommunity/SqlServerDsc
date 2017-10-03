@@ -28,17 +28,24 @@ Function Get-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLInstanceName = 'MSSQLSERVER',
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('Data', 'Log', 'Backup')]
         [System.String]
-        $DefaultLocationType
+        $DefaultLocationType,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $DefaultLocationPath
     )
 
     Write-Verbose -Message ($script:localizedData.DefaultLocationTypeInformation -f $DefaultLocationType, $SQLInstanceName)
@@ -77,11 +84,11 @@ Function Get-TargetResource
     .SYNOPSIS
     This function sets the current path for the default SQL Instance location for the Data, Log, or Backups files.
 
-    .PARAMETER SQLServer
-    The host name of the SQL Server to be configured.
-
     .PARAMETER SQLInstanceName
     The name of the SQL instance to be configured.
+
+    .PARAMETER SQLServer
+    The host name of the SQL Server to be configured.
 
     .PARAMETER DefaultLocationType
     The default location type. Valid states are Data, Log, or Backups.
@@ -97,13 +104,12 @@ Function Get-TargetResource
 Function Set-TargetResource
 {
     [CmdletBinding()]
-    [OutputType([System.Boolean])]
     param
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLInstanceName,
+        $SQLInstanceName = 'MSSQLSERVER',
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -131,11 +137,11 @@ Function Set-TargetResource
 
     Write-Verbose -Message ($script:localizedData.VerifyChangeDefaultLocationType -f $DefaultLocationType)
 
-    $parameters = @{
-        SQLInstanceName     = $SQLInstanceName
-        SQLServer           = $SQLServer
-        DefaultLocationType = $DefaultLocationType
-    }
+ #   $parameters = @{
+ #       SQLInstanceName     = $SQLInstanceName
+ #       SQLServer           = $SQLServer
+ #       DefaultLocationType = $DefaultLocationType
+ #   }
 
     $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
@@ -212,7 +218,7 @@ function Test-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLInstanceName,
+        $SQLInstanceName = 'MSSQLSERVER',
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -240,6 +246,7 @@ function Test-TargetResource
         SQLInstanceName     = $SQLInstanceName
         SQLServer           = $SQLServer
         DefaultLocationType = $DefaultLocationType
+        DefaultLocationPath = $DefaultLocationPath
     }
 
     $currentValues = Get-TargetResource @parameters

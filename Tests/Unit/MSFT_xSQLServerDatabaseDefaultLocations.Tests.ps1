@@ -115,7 +115,7 @@ try
                             $DefaultLocationPath
                         )
 
-                        $result = Get-TargetResource @mockDefaultParameters -DefaultLocationType $DefaultLocationType
+                        $result = Get-TargetResource @mockDefaultParameters -DefaultLocationType $DefaultLocationType -DefaultLocationPath $DefaultLocationPath
 
                         $result.DefaultLocationPath | Should Be $DefaultLocationPath
                         $result.DefaultLocationType | Should Be $DefaultLocationType
