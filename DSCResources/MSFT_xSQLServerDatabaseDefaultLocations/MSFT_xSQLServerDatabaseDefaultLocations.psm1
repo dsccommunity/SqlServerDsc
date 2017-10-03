@@ -78,7 +78,7 @@ Function Get-TargetResource
     This function sets the current path for the default SQL Instance location for the Data, Log, or Backups files.
 
     .PARAMETER SQLServer
-    The host name of the SQL Server to be configured.  Default value is $env:COMPUTERNAME.
+    The host name of the SQL Server to be configured.
 
     .PARAMETER SQLInstanceName
     The name of the SQL instance to be configured.
@@ -191,7 +191,7 @@ Function Set-TargetResource
     This function tests the current path to the  default database location for the Data, Log, or Backups files.
 
     .PARAMETER SQLServer
-    The host name of the SQL Server to be configured.  Default value is $env:COMPUTERNAME.
+    The host name of the SQL Server to be configured.
 
     .PARAMETER SQLInstanceName
     The name of the SQL instance to be configured.
