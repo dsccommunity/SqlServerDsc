@@ -14,7 +14,7 @@ Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stub
 
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName 'xSQLServer' `
-    -DSCResourceName 'MSFT_xSQLServerDefaultDatabaseLocation' `
+    -DSCResourceName 'MSFT_xSQLServerDatabaseDefaultLocations' `
     -TestType Unit
 
 #endregion HEADER
@@ -31,7 +31,7 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope 'MSFT_xSQLServerDefaultDatabaseLocation' {
+    InModuleScope 'MSFT_xSQLServerDatabaseDefaultLocations' {
         $mockSQLServerName = 'localhost'
         $mockSQLServerInstanceName = 'MSSQLSERVER'
         $mockSQLDefaultDataLocation = 'C:\Program Files\Data\'
@@ -62,11 +62,6 @@ try
                         Add-Member -MemberType NoteProperty -Name DefaultLog -Value $mockSQLDefaultLogLocation -PassThru |
                         Add-Member -MemberType NoteProperty -Name BackupDirectory -Value $mockSQLDefaultBackupLocation -PassThru |
                         Add-Member -MemberType ScriptMethod -Name Alter -Value {
- #                           if ( $this.DefaultFile -ne $mockExpectedAlterDefaultFileLocationPath )
- #                           {
- #                               throw "Called mocked Alter() method without setting the correct Default File Location Path. Expected '{0}', but was '{1}'." `
- #                                     -f $mockExpectedAlterDefaultFileLocationPath, $this.DefaultFile
- #                           }
                             if ($mockInvalidOperationForAlterMethod)
                             {
                                 throw 'Mock Alter Method was called with invalid operation.'
@@ -108,7 +103,7 @@ try
         )
         #endregion
 
-        Describe "MSFT_xSQLServerDefaultDatabaseXLocation\Get-TargetResource" -Tag 'Get'{
+        Describe "MSFT_xSQLServerDatabaseDefaultLocations\Get-TargetResource" -Tag 'Get'{
             Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                 Context 'When the system is either in the desired state or not in the desired state' {
@@ -134,7 +129,7 @@ try
              }
         }
 
-        Describe "MSFT_xSQLServerDefaultDatabaseXLocation\Test-TargetResource" -Tag 'Test'{
+        Describe "MSFT_xSQLServerDatabaseDefaultLocations\Test-TargetResource" -Tag 'Test'{
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
@@ -171,7 +166,7 @@ try
             }
         }
 
-        Describe "MSFT_xSQLServerDefaultDatabaseXLocation\Set-TargetResource" -Tag 'Set'{
+        Describe "MSFT_xSQLServerDatabaseDefaultLocations\Set-TargetResource" -Tag 'Set'{
             BeforeAll {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
                 Mock -CommandName Restart-SqlService -MockWith {} -Verifiable
@@ -235,5 +230,5 @@ finally
     Invoke-TestCleanup
 }
 
-## invoke-pester -Script .\tests\unit\MSFT_xSQLServerDefaultDatabaseLocation.Tests.ps1
-# invoke-pester -Script .\tests\unit\MSFT_xSQLServerDefaultDatabaseLocation.Tests.ps1 -CodeCoverage .\DSCResources\MSFT_xSQLServerDefaultDatabaseLocation\MSFT_xSQLServerDefaultDatabaseLocation.psm1
+## invoke-pester -Script .\tests\unit\MSFT_xSQLServerDatabaseDefaultLocations.Tests.ps1
+# invoke-pester -Script .\tests\unit\MSFT_xSQLServerDatabaseDefaultLocations.Tests.ps1 -CodeCoverage .\DSCResources\MSFT_xSQLServerDatabaseDefaultLocations\MSFT_xSQLServerDatabaseDefaultLocations.psm1

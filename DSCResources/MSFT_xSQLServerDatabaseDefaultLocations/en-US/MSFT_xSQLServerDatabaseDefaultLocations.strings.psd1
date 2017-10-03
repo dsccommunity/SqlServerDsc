@@ -1,4 +1,4 @@
-# Localized resources for xSQLServerDefaultDatabaseLocation
+# Localized resources for MSFT_xSQLServerDatabaseDefaultLocations
 
 ConvertFrom-StringData @'
     DefaultLocationTypeInformation = Getting Default File Location for '{0}' for SQL Instance '{1}'.
