@@ -14,7 +14,7 @@ Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stub
 
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName 'xSQLServer' `
-    -DSCResourceName 'MSFT_xSQLServerDatabaseDefaultLocations' `
+    -DSCResourceName 'MSFT_xSQLServerDatabaseDefaultLocation' `
     -TestType Unit
 
 #endregion HEADER
@@ -31,7 +31,7 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope 'MSFT_xSQLServerDatabaseDefaultLocations' {
+    InModuleScope 'MSFT_xSQLServerDatabaseDefaultLocation' {
         $mockSQLServerName = 'localhost'
         $mockSQLServerInstanceName = 'MSSQLSERVER'
         $mockSQLDefaultDataLocation = 'C:\Program Files\Data\'
@@ -103,7 +103,7 @@ try
         )
         #endregion
 
-        Describe "MSFT_xSQLServerDatabaseDefaultLocations\Get-TargetResource" -Tag 'Get'{
+        Describe "MSFT_xSQLServerDatabaseDefaultLocation\Get-TargetResource" -Tag 'Get'{
             Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                 Context 'When the system is either in the desired state or not in the desired state' {
@@ -129,7 +129,7 @@ try
              }
         }
 
-        Describe "MSFT_xSQLServerDatabaseDefaultLocations\Test-TargetResource" -Tag 'Test'{
+        Describe "MSFT_xSQLServerDatabaseDefaultLocation\Test-TargetResource" -Tag 'Test'{
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
@@ -166,7 +166,7 @@ try
             }
         }
 
-        Describe "MSFT_xSQLServerDatabaseDefaultLocations\Set-TargetResource" -Tag 'Set'{
+        Describe "MSFT_xSQLServerDatabaseDefaultLocation\Set-TargetResource" -Tag 'Set'{
             BeforeAll {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
                 Mock -CommandName Restart-SqlService -MockWith {} -Verifiable
