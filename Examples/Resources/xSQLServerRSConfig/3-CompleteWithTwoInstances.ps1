@@ -19,10 +19,10 @@ $ConfigurationData = @{
             Features                    = 'RS'
 
             # This is values used for the Database Engine instance.
-            RSSQLServer                 = $env:COMPUTERNAME
-            RSSQLInstanceName           = 'RSDB'
-            RSSQLFeatures               = 'SQLENGINE'
-            RSSQLCollation              = 'Finnish_Swedish_CI_AS'
+            RSServer                 = $env:COMPUTERNAME
+            RSInstanceName           = 'RSDB'
+            RSFeatures               = 'SQLENGINE'
+            RSCollation              = 'Finnish_Swedish_CI_AS'
 
             # This is values used for both instances.
             MediaPath                   = 'Z:\Sql2016Media'
@@ -67,6 +67,7 @@ Configuration Example
         $ReportingServicesServiceCredential
     )
 
+    Import-DscResource -ModuleName PSDscResources
     Import-DscResource -ModuleName xSqlServer
 
     node localhost {
@@ -78,11 +79,11 @@ Configuration Example
 
         xSQLServerSetup 'InstallDatabaseEngine'
         {
-            InstanceName          = $Node.RSSQLInstanceName
-            Features              = $Node.RSSQLFeatures
+            InstanceName          = $Node.RSInstanceName
+            Features              = $Node.RSFeatures
             SourcePath            = $Node.MediaPath
             BrowserSvcStartupType = $Node.BrowserSvcStartupType
-            SQLCollation          = $Node.RSSQLCollation
+            SQLCollation          = $Node.RSCollation
             SQLSvcAccount         = $SqlServiceCredential
             AgtSvcAccount         = $SqlAgentServiceCredential
             InstallSharedDir      = $Node.InstallSharedDir
@@ -129,8 +130,8 @@ Configuration Example
             InstanceName         = $Node.InstanceName
 
             # Instance for Reporting Services databases.
-            RSSQLServer          = $Node.RSSQLServer
-            RSSQLInstanceName    = $Node.RSSQLInstanceName
+            RSSQLServer          = $Node.RSServer
+            RSSQLInstanceName    = $Node.RSInstanceName
 
             PsDscRunAsCredential = $SqlInstallCredential
 
