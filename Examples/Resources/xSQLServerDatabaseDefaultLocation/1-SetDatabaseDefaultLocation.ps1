@@ -15,7 +15,7 @@ Configuration Example
 
     node localhost
     {
-        xSQLServerDatabaseDefaultLocations Set_SqlDatabaseDefaultDirectory_Data
+        xSQLServerDatabaseDefaultLocation Set_SqlDatabaseDefaultDirectory_Data
         {
             DefaultLocationPath  = 'C:\Program Files\Microsoft SQL Server'
             DefaultLocationType  = 'Data'
@@ -24,7 +24,7 @@ Configuration Example
             PsDscRunAsCredential = $SysAdminAccount
         }
 
-        xSQLServerDatabaseDefaultLocations Set_SqlDatabaseDefaultDirectory_Log
+        xSQLServerDatabaseDefaultLocation Set_SqlDatabaseDefaultDirectory_Log
         {
             DefaultLocationPath  = 'C:\Program Files\Microsoft SQL Server'
             DefaultLocationType  = 'Log'
@@ -33,7 +33,7 @@ Configuration Example
             PsDscRunAsCredential = $SysAdminAccount
         }
 
-        xSQLServerDatabaseDefaultLocations Set_SqlDatabaseDefaultDirectory_Backup
+        xSQLServerDatabaseDefaultLocation Set_SqlDatabaseDefaultDirectory_Backup
         {
             DefaultLocationPath  = 'C:\Program Files\Microsoft SQL Server'
             DefaultLocationType  = 'Backup'
