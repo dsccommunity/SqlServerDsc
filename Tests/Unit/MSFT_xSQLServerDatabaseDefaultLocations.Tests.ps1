@@ -229,6 +229,3 @@ finally
 {
     Invoke-TestCleanup
 }
-
-## invoke-pester -Script .\tests\unit\MSFT_xSQLServerDatabaseDefaultLocations.Tests.ps1
-# invoke-pester -Script .\tests\unit\MSFT_xSQLServerDatabaseDefaultLocations.Tests.ps1 -CodeCoverage .\DSCResources\MSFT_xSQLServerDatabaseDefaultLocations\MSFT_xSQLServerDatabaseDefaultLocations.psm1
