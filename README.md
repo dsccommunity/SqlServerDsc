@@ -536,7 +536,8 @@ locations, please read the article
 
 #### Examples
 
-* [Set database owner](/Examples/Resources/xSQLServerDatabaseDefaultLocations/1-SetDatabaseDefaultLocations.ps1)
+* [Set database default locations]
+(/Examples/Resources/xSQLServerDatabaseDefaultLocations/1-SetDatabaseDefaultLocations.ps1)
 
 ### xSQLServerDatabaseOwner
 
