@@ -20,7 +20,6 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xSQLServerDatabase
     .PARAMETER DefaultLocationType
         The default location type to set. Valid values are 'Data','Log', and 'Backup'.
 #>
-
 Function Get-TargetResource
 {
     [CmdletBinding()]
@@ -136,12 +135,6 @@ Function Set-TargetResource
     $isRestartNeeded = $false
 
     Write-Verbose -Message ($script:localizedData.VerifyChangeDefaultLocationType -f $DefaultLocationType)
-
- #   $parameters = @{
- #       SQLInstanceName     = $SQLInstanceName
- #       SQLServer           = $SQLServer
- #       DefaultLocationType = $DefaultLocationType
- #   }
 
     $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
