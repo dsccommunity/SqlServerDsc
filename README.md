@@ -117,8 +117,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx).
 * [**xSQLServerDatabase**](#xsqlserverdatabase) resource to manage ensure database
   is present or absent.
-* [**xSQLServerDatabaseDefaultLocations**](#xsqlserverdatabasedefaultlocations)
-  resource to manage database default locations for Data, Logs, and Backups for SQL Server
+* [**xSQLServerDatabaseDefaultLocations**](#xsqlserverdatabasedefaultlocations) resource
+  to manage default locations for Data, Logs, and Backups for SQL Server
 * [**xSQLServerDatabaseOwner**](#xsqlserverdatabaseowner) resource to manage SQL
   database owners.
 * [**xSQLServerDatabasePermission**](#xsqlserverdatabasepermission) resource to
@@ -536,8 +536,7 @@ locations, please read the article
 
 #### Examples
 
-* [Set database default locations]
-(/Examples/Resources/xSQLServerDatabaseDefaultLocations/1-SetDatabaseDefaultLocations.ps1)
+* [Set database default locations](/Examples/Resources/xSQLServerDatabaseDefaultLocations/1-SetDatabaseDefaultLocations.ps1)
 
 ### xSQLServerDatabaseOwner
 
