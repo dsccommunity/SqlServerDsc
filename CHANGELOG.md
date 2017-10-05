@@ -109,6 +109,9 @@
   - Added integration test ([issue #753](https://github.com/PowerShell/xSQLServer/issues/753)).
   - Added support for configuring URL reservations and virtual directory names
     ([issue #570](https://github.com/PowerShell/xSQLServer/issues/570))
+- Added resource
+  - xSQLServerDatabaseDefaultLocation
+    ([issue #656](https://github.com/PowerShell/xSQLServer/issues/656))
 
 ## 8.1.0.0
 
