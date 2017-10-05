@@ -2259,7 +2259,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe "xSQLServerSetup\Test-TargetResource" -Tag 'Test' {
@@ -2881,7 +2881,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe "xSQLServerSetup\Set-TargetResource" -Tag 'Set' {
@@ -3066,6 +3066,8 @@ try
                             InstallSQLDataDir = 'E:'
                             InstallSharedDir = 'C:\Program Files\Microsoft SQL Server'
                             InstallSharedWOWDir = 'C:\Program Files (x86)\Microsoft SQL Server'
+                            UpdateEnabled = 'True'
+                            UpdateSource = 'C:\Updates\' # Regression test for issue #720
                         }
 
                         if ( $mockSqlMajorVersion -in (13,14) )
@@ -3087,6 +3089,8 @@ try
                             InstallSQLDataDir = 'E:\'
                             InstallSharedDir = 'C:\Program Files\Microsoft SQL Server'
                             InstallSharedWOWDir = 'C:\Program Files (x86)\Microsoft SQL Server'
+                            UpdateEnabled = 'True'
+                            UpdateSource = 'C:\Updates' # Regression test for issue #720
                         }
 
                         { Set-TargetResource @testParameters } | Should Not Throw
@@ -4482,7 +4486,7 @@ try
 
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         # Tests only the parts of the code that does not already get tested thru the other tests.

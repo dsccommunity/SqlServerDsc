@@ -138,7 +138,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
 
@@ -188,7 +188,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe 'MSFT_xWaitForAvailabilityGroup\Set-TargetResource' -Tag 'Set'{
@@ -234,7 +234,7 @@ try
                         -Exactly -Times 2 -Scope It                }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
     }
 }

@@ -1,5 +1,6 @@
 $script:DSCModuleName = 'xSQLServer'
-$script:DSCResourceName = 'MSFT_xSQLServerSetup'
+$script:DSCResourceFriendlyName = 'xSQLServerSetup'
+$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 if (-not $env:APPVEYOR -eq $true)
 {
@@ -24,99 +25,108 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 #endregion
 
-$mockInstanceName = 'DSCSQL2016'
-$mockFeatures = 'SQLENGINE,CONN,BC,SDK'
-$mockSqlCollation = 'Finnish_Swedish_CI_AS'
-$mockInstallSharedDir = 'C:\Program Files\Microsoft SQL Server'
-$mockInstallSharedWOWDir = 'C:\Program Files (x86)\Microsoft SQL Server'
-$mockUpdateEnable = 'False'
-$mockSuppressReboot = $true # Make sure we don't reboot during testing.
-$mockForceReboot = $false
 
-$mockSourceMediaUrl = 'http://care.dlservice.microsoft.com/dl/download/F/E/9/FE9397FA-BFAB-4ADD-8B97-91234BC774B2/SQLServer2016-x64-ENU.iso'
-$mockIsoMediaFilePath = "$env:TEMP\SQL2016.iso"
-
-# Get a spare drive letter
-$mockLastDrive = ((Get-Volume).DriveLetter | Sort-Object | Select-Object -Last 1)
-$mockIsoMediaDriveLetter = [char](([int][char]$mockLastDrive) + 1)
-
-$mockSqlInstallAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-$mockSqlInstallAccountUserName = "$env:COMPUTERNAME\SqlInstall"
-$mockSqlInstallCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlInstallAccountUserName, $mockSqlInstallAccountPassword
-
-$mockSqlAdminAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-$mockSqlAdminAccountUserName = "$env:COMPUTERNAME\SqlAdmin"
-$mockSqlAdminCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAdminAccountUserName, $mockSqlAdminAccountPassword
-
-$mockSqlServiceAccountPassword = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
-$mockSqlServiceAccountUserName = "$env:COMPUTERNAME\svc-Sql"
-$mockSqlServiceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlServiceAccountUserName, $mockSqlServiceAccountPassword
-
-$mockSqlAgentServiceAccountPassword = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
-$mockSqlAgentServiceAccountUserName = "$env:COMPUTERNAME\svc-SqlAgent"
-$mockSqlAgentServiceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAgentServiceAccountUserName, $mockSqlAgentServiceAccountPassword
-
-# Download SQL Server media
-if (-not (Test-Path -Path $mockIsoMediaFilePath))
-{
-    Write-Verbose -Message "Start downloading the SQL Server media iso at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
-
-    Invoke-WebRequest -Uri $mockSourceMediaUrl -OutFile $mockIsoMediaFilePath
-
-    # Double check that the SQL media was downloaded.
-    if (-not (Test-Path -Path $mockIsoMediaFilePath))
-    {
-        Write-Warning -Message ('SQL media could not be downloaded, can not run the integration test.')
-        return
-    }
-    else
-    {
-        Write-Verbose -Message "Finished downloading the SQL Server media iso at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
-    }
-}
-else
-{
-    Write-Verbose -Message 'SQL Server media is already downloaded' -Verbose
+<#
+    Workaround for issue #774. In the appveyor.yml file the folder
+    C:\Program Files (x86)\Microsoft SQL Server\**\Tools\PowerShell\Modules
+    was renamed to
+    C:\Program Files (x86)\Microsoft SQL Server\**\Tools\PowerShell\Modules.old
+    here we rename back the folder to the correct name. Only the version need
+    for our tests are renamed.
+#>
+$sqlModulePath = Get-ChildItem -Path 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\*.old'
+$sqlModulePath | ForEach-Object -Process {
+    $newFolderName = (Split-Path -Path $_ -Leaf) -replace '\.old'
+    Write-Verbose ('Renaming ''{0}'' to ''..\{1}''' -f $_, $newFolderName) -Verbose
+    Rename-Item $_ -NewName $newFolderName -Force
 }
 
 try
 {
-    $ConfigurationData = @{
-        AllNodes = @(
-            @{
-                NodeName                    = 'localhost'
-                ImagePath                   = $mockIsoMediaFilePath
-                DriveLetter                 = $mockIsoMediaDriveLetter
-                InstanceName                = $mockInstanceName
-                Features                    = $mockFeatures
-                SQLCollation                = $mockSqlCollation
-                InstallSharedDir            = $mockInstallSharedDir
-                InstallSharedWOWDir         = $mockInstallSharedWOWDir
-                UpdateEnabled               = $mockUpdateEnable
-                SuppressReboot              = $mockSuppressReboot
-                ForceReboot                 = $mockForceReboot
-
-                PSDscAllowPlainTextPassword = $true
-            }
-        )
-    }
-
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
     . $configFile
+
+    # These sets variables used for verification from the dot-sourced $ConfigurationData variable.
+    $mockInstanceName = $ConfigurationData.AllNodes.InstanceName
+    $mockFeatures = $ConfigurationData.AllNodes.Features
+    $mockSqlCollation = $ConfigurationData.AllNodes.SQLCollation
+    $mockInstallSharedDir = $ConfigurationData.AllNodes.InstallSharedDir
+    $mockInstallSharedWOWDir = $ConfigurationData.AllNodes.InstallSharedWOWDir
+    $mockUpdateEnable = $ConfigurationData.AllNodes.UpdateEnabled
+    $mockSuppressReboot = $ConfigurationData.AllNodes.SuppressReboot
+    $mockForceReboot = $ConfigurationData.AllNodes.ForceReboot
+    $mockIsoMediaFilePath = $ConfigurationData.AllNodes.ImagePath
+    $mockIsoMediaDriveLetter = $ConfigurationData.AllNodes.DriveLetter
+
+    $mockSourceMediaUrl = 'http://care.dlservice.microsoft.com/dl/download/F/E/9/FE9397FA-BFAB-4ADD-8B97-91234BC774B2/SQLServer2016-x64-ENU.iso'
+
+    # Download SQL Server media
+    if (-not (Test-Path -Path $mockIsoMediaFilePath))
+    {
+        Write-Verbose -Message "Start downloading the SQL Server media iso at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
+
+        Invoke-WebRequest -Uri $mockSourceMediaUrl -OutFile $mockIsoMediaFilePath
+
+        # Double check that the SQL media was downloaded.
+        if (-not (Test-Path -Path $mockIsoMediaFilePath))
+        {
+            Write-Warning -Message ('SQL media could not be downloaded, can not run the integration test.')
+            return
+        }
+        else
+        {
+            Write-Verbose -Message "Finished downloading the SQL Server media iso at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
+        }
+    }
+    else
+    {
+        Write-Verbose -Message 'SQL Server media is already downloaded' -Verbose
+    }
+
+    $mockSqlInstallAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+    $mockSqlInstallAccountUserName = "$env:COMPUTERNAME\SqlInstall"
+    $mockSqlInstallCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlInstallAccountUserName, $mockSqlInstallAccountPassword
+
+    $mockSqlAdminAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+    $mockSqlAdminAccountUserName = "$env:COMPUTERNAME\SqlAdmin"
+    $mockSqlAdminCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAdminAccountUserName, $mockSqlAdminAccountPassword
+
+    $mockSqlServiceAccountPassword = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+    $mockSqlServiceAccountUserName = "$env:COMPUTERNAME\svc-Sql"
+    $mockSqlServiceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlServiceAccountUserName, $mockSqlServiceAccountPassword
+
+    $mockSqlAgentServiceAccountPassword = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+    $mockSqlAgentServiceAccountUserName = "$env:COMPUTERNAME\svc-SqlAgent"
+    $mockSqlAgentServiceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAgentServiceAccountUserName, $mockSqlAgentServiceAccountPassword
+
+    $configurationName = "$($script:DSCResourceName)_InstallSqlEngineAsSystem_Config"
+    $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
 
     Describe "$($script:DSCResourceName)_Integration" {
         It 'Should compile and apply the MOF without throwing' {
             {
-                & "$($script:DSCResourceName)_InstallSqlEngineAsSystem_Config" `
-                    -SqlInstallCredential $mockSqlInstallCredential `
-                    -SqlAdministratorCredential $mockSqlAdminCredential `
-                    -SqlServiceCredential $mockSqlServiceCredential `
-                    -SqlAgentServiceCredential $mockSqlAgentServiceCredential `
-                    -OutputPath $TestDrive `
-                    -ConfigurationData $ConfigurationData
+                $configurationParameters = @{
+                    SqlInstallCredential = $mockSqlInstallCredential
+                    SqlAdministratorCredential = $mockSqlAdminCredential
+                    SqlServiceCredential = $mockSqlServiceCredential
+                    SqlAgentServiceCredential = $mockSqlAgentServiceCredential
+                    OutputPath = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData = $ConfigurationData
+                }
 
-                Start-DscConfiguration -Path $TestDrive `
-                    -ComputerName localhost -Wait -Verbose -Force
+                & $configurationName @configurationParameters
+
+                $startDscConfigurationParameters = @{
+                    Path = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait = $true
+                    Verbose = $true
+                    Force = $true
+                    ErrorAction = 'Stop'
+                }
+
+                Start-DscConfiguration @startDscConfigurationParameters
             } | Should Not Throw
         } -ErrorVariable itBlockError
 
@@ -155,9 +165,9 @@ try
             $currentConfiguration = Get-DscConfiguration
 
             $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
-                $_.ConfigurationName -eq "$($script:DSCResourceName)_InstallSqlEngineAsSystem_Config"
+                $_.ConfigurationName -eq $configurationName
             } | Where-Object -FilterScript {
-                $_.ResourceId -eq '[xSQLServerSetup]Integration_Test'
+                $_.ResourceId -eq $resourceId
             }
 
             $resourceCurrentState.Action                     | Should BeNullOrEmpty
@@ -203,6 +213,7 @@ try
             $resourceCurrentState.SQLSvcAccountUsername      | Should Be ('.\{0}' -f (Split-Path -Path $mockSqlServiceAccountUserName -Leaf))
             $resourceCurrentState.SQLSysAdminAccounts        | Should Be @(
                 $mockSqlAdminAccountUserName,
+                $mockSqlInstallAccountUserName,
                 "NT SERVICE\MSSQL`$$mockInstanceName",
                 "NT SERVICE\SQLAgent`$$mockInstanceName",
                 'NT SERVICE\SQLWriter',

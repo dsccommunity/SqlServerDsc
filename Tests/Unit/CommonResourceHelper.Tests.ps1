@@ -100,7 +100,7 @@ Describe 'CommonResourceHelper Unit Tests' {
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe 'New-InvalidResultException' {
@@ -124,7 +124,7 @@ Describe 'CommonResourceHelper Unit Tests' {
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe 'New-ObjectNotFoundException' {
@@ -148,7 +148,7 @@ Describe 'CommonResourceHelper Unit Tests' {
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe 'New-InvalidOperationException' {
@@ -172,7 +172,7 @@ Describe 'CommonResourceHelper Unit Tests' {
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe 'New-InvalidArgumentException' {
@@ -185,7 +185,7 @@ Describe 'CommonResourceHelper Unit Tests' {
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
     }
 }

@@ -177,7 +177,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe 'MSFT_xSQLServerEndpointState\Test-TargetResource' -Tag Test {
@@ -255,7 +255,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
 
         Describe 'MSFT_xSQLServerEndpointState\Set-TargetResource' -Tag Set {
@@ -330,7 +330,7 @@ try
                 }
             }
 
-            Assert-VerifiableMocks
+            Assert-VerifiableMock
         }
     }
 }

@@ -237,23 +237,23 @@ namespace Microsoft.SqlServer.Management.Smo
     {
         public string MockGranteeName;
 
-        public AvailabilityGroupCollection AvailabilityGroups;
+        public AvailabilityGroupCollection AvailabilityGroups = new AvailabilityGroupCollection();
         public ConnectionContext ConnectionContext;
         public string ComputerNamePhysicalNetBIOS;
-        public DatabaseCollection Databases;
+        public DatabaseCollection Databases = new DatabaseCollection();
         public string DisplayName;
         public string DomainInstanceName;
-        public EndpointCollection Endpoints;
+        public EndpointCollection Endpoints = new EndpointCollection();
         public string FilestreamLevel = "Disabled";
         public string InstanceName;
         public bool IsClustered = false;
         public bool IsHadrEnabled = false;
-        public Hashtable Logins;
+        public Hashtable Logins = new Hashtable();
         public string Name;
         public string NetName;
-        public Hashtable Roles;
+        public Hashtable Roles = new Hashtable();
         public string ServiceName;
-        public Hashtable Version;
+        public Hashtable Version = new Hashtable();
 
         public Server(){}
         public Server(string name)
@@ -285,7 +285,7 @@ namespace Microsoft.SqlServer.Management.Smo
                 Version = this.Version
             };
         }
-        
+
         public Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[] EnumServerPermissions( string principal, Microsoft.SqlServer.Management.Smo.ServerPermissionSet permissionSetQuery )
         {
             Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[] permissionInfo = null;
@@ -350,6 +350,11 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public string MockName;
         public LoginType MockLoginType;
+
+        public Login( string name )
+        {
+            this.Name = name;
+        }
 
         public Login( Server server, string name )
         {
@@ -698,9 +703,11 @@ namespace Microsoft.SqlServer.Management.Smo
         {}
 
         public string AutomatedBackupPreference;
-        public AvailabilityDatabaseCollection AvailabilityDatabases;
-        public AvailabilityReplicaCollection AvailabilityReplicas;
+        public AvailabilityDatabaseCollection AvailabilityDatabases = new AvailabilityDatabaseCollection();
+        public AvailabilityReplicaCollection AvailabilityReplicas = new AvailabilityReplicaCollection();
         public bool BasicAvailabilityGroup;
+        public bool DatabaseHealthTrigger;
+        public bool DtcSupportEnabled;
         public string FailureConditionLevel;
         public string HealthCheckTimeout;
         public string Name;
@@ -723,6 +730,8 @@ namespace Microsoft.SqlServer.Management.Smo
                 AvailabilityDatabases = this.AvailabilityDatabases,
                 AvailabilityReplicas = this.AvailabilityReplicas,
                 BasicAvailabilityGroup = this.BasicAvailabilityGroup,
+                DatabaseHealthTrigger = this.DatabaseHealthTrigger,
+                DtcSupportEnabled = this.DtcSupportEnabled,
                 FailureConditionLevel = this.FailureConditionLevel,
                 HealthCheckTimeout = this.HealthCheckTimeout,
                 Name = this.Name,
@@ -787,7 +796,7 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public void Create() {}
     }
-    
+
     // TypeName: Microsoft.SqlServer.Management.Smo.DatabaseCollection
     // Used by:
     //  xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
@@ -926,4 +935,33 @@ namespace Microsoft.SqlServer.Management.Smo
     }
 
     #endregion Public Classes
+}
+
+namespace Microsoft.SqlServer.Management.Smo.Wmi
+{
+    #region Public Enums
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType
+    // Used by:
+    //  MSFT_xSQLServerServiceAccount.Tests.ps1
+    public enum ManagedServiceType
+    {
+        SqlServer = 1,
+
+        SqlAgent = 2,
+
+        Search = 3,
+
+        SqlServerIntegrationService = 4,
+
+        AnalysisServer = 5,
+
+        ReportServer = 6,
+
+        SqlBrowser = 7,
+
+        NotificationServer = 8
+    }
+
+    #endregion
 }

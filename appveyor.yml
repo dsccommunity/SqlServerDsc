@@ -21,12 +21,30 @@ build: false
 
 test_script:
     - ps: |
-        Write-Verbose -Message 'Removing all SQL related PowerShell modules so they can not be used by the common tests.' -Verbose
-        Write-Verbose -Message 'This is a workaround because the AppVeyor build worker image contains SQL Server. More information in issue #239.' -Verbose
-        Write-Verbose -Message 'Modules that are being removed:' -Verbose
-        Get-Module -ListAvailable -Name 'sql*' | ForEach-Object -Process { Write-Verbose $_.Path -Verbose; Remove-Item $_.Path -Force -Verbose; }
+        # Workaround for issue #239 and issue #774.
+        Write-Verbose -Message '--- WORKAROUND FOR ISSUE #239 AND ISSUE #774 ---' -Verbose
+        $sqlModules = Get-Module -ListAvailable -Name 'sql*'
+        $sqlUniqueModulePath = Split-Path -Path (Split-Path $sqlModules.Path -Parent) -Parent | Sort-Object -Unique
+        $sqlUniqueModulePath | ForEach-Object -Process {
+            $newFolderName = '{0}.old' -f (Split-Path -Path $_ -Leaf)
+            Write-Verbose ('Renaming ''{0}'' to ''..\{1}''' -f $_, $newFolderName) -Verbose
+            Rename-Item $_ -NewName $newFolderName -Force
+        }
 
-        Invoke-AppveyorTestScriptTask -CodeCoverage -CodeCovIo -ExcludeTag @()
+        Write-Verbose -Message '' -Verbose
+
+        # Workaround for issue #798
+        Write-Verbose -Message '--- WORKAROUND FOR ISSUE #798 ---' -Verbose
+        $azureModules = Get-Module -ListAvailable -Name 'Azure*'
+        $azureUniqueModulePath = Split-Path -Path (Split-Path $azureModules.Path -Parent) -Parent | Sort-Object -Unique
+        $azureUniqueModulePath | ForEach-Object -Process {
+            $newFolderName = '{0}.old' -f (Split-Path -Path $_ -Leaf)
+            Write-Verbose ('Renaming ''{0}'' to ''..\{1}''' -f $_, $newFolderName) -Verbose
+            Rename-Item $_ -NewName $newFolderName -Force
+        }
+        Write-Verbose -Message '' -Verbose
+
+        Invoke-AppveyorTestScriptTask -CodeCoverage -CodeCovIo -ExcludeTag @() -RunTestInOrder
 
 #---------------------------------#
 #      deployment configuration   #

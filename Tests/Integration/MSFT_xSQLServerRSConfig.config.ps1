@@ -1,5 +1,5 @@
 # This is used to make sure the integration test run in the correct order.
-[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 1)]
+[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 2)]
 param()
 
 # Get a spare drive letter
@@ -11,9 +11,8 @@ $ConfigurationData = @{
         @{
             NodeName                    = 'localhost'
 
-            InstanceName                = 'DSCSQL2016'
-            Features                    = 'SQLENGINE,CONN,BC,SDK'
-            SQLCollation                = 'Finnish_Swedish_CI_AS'
+            InstanceName                = 'DSCRS2016'
+            Features                    = 'RS'
             InstallSharedDir            = 'C:\Program Files\Microsoft SQL Server'
             InstallSharedWOWDir         = 'C:\Program Files (x86)\Microsoft SQL Server'
             UpdateEnabled               = 'False'
@@ -23,12 +22,15 @@ $ConfigurationData = @{
             ImagePath                   = "$env:TEMP\SQL2016.iso"
             DriveLetter                 = $mockIsoMediaDriveLetter
 
+            RSSQLServer                 = $env:COMPUTERNAME
+            RSSQLInstanceName           = 'DSCSQL2016'
+
             PSDscAllowPlainTextPassword = $true
         }
     )
 }
 
-Configuration MSFT_xSQLServerSetup_InstallSqlEngineAsSystem_Config
+Configuration MSFT_xSQLServerRSConfig_InstallReportingServices_Config
 {
     param
     (
@@ -40,17 +42,12 @@ Configuration MSFT_xSQLServerSetup_InstallSqlEngineAsSystem_Config
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
-        $SqlServiceCredential,
+        $ReportingServicesServiceCredential,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAgentServiceCredential
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName 'PSDscResources'
@@ -65,46 +62,18 @@ Configuration MSFT_xSQLServerSetup_InstallSqlEngineAsSystem_Config
             Ensure      = 'Present'
         }
 
-        xWaitForVolume WaitForMountOfIsoMedia
+        xWaitForVolume 'WaitForMountOfIsoMedia'
         {
             DriveLetter      = $Node.DriveLetter
             RetryIntervalSec = 5
             RetryCount       = 10
         }
 
-        User 'CreateSqlServiceAccount'
+        User 'CreateReportingServicesServiceAccount'
         {
             Ensure   = 'Present'
-            UserName = Split-Path -Path $SqlServiceCredential.UserName -Leaf
-            Password = $SqlServiceCredential
-        }
-
-        User 'CreateSqlAgentServiceAccount'
-        {
-            Ensure   = 'Present'
-            UserName = Split-Path -Path $SqlAgentServiceCredential.UserName -Leaf
-            Password = $SqlAgentServiceCredential
-        }
-
-        User 'CreateSqlInstallAccount'
-        {
-            Ensure   = 'Present'
-            UserName = Split-Path -Path $SqlInstallCredential.UserName -Leaf
-            Password = $SqlInstallCredential
-        }
-
-        Group 'AddSqlInstallAsAdministrator'
-        {
-            Ensure = 'Present'
-            GroupName = 'Administrators'
-            MembersToInclude = $SqlInstallCredential.UserName
-        }
-
-        User 'CreateSqlAdminAccount'
-        {
-            Ensure   = 'Present'
-            UserName = Split-Path -Path $SqlAdministratorCredential.UserName -Leaf
-            Password = $SqlAdministratorCredential
+            UserName = Split-Path -Path $ReportingServicesServiceCredential.UserName -Leaf
+            Password = $ReportingServicesServiceCredential
         }
 
         WindowsFeature 'NetFramework45'
@@ -113,16 +82,13 @@ Configuration MSFT_xSQLServerSetup_InstallSqlEngineAsSystem_Config
             Ensure = 'Present'
         }
 
-        xSQLServerSetup 'Integration_Test'
+        xSQLServerSetup 'InstallReportingServicesInstance'
         {
             InstanceName          = $Node.InstanceName
             Features              = $Node.Features
             SourcePath            = "$($Node.DriveLetter):\"
             BrowserSvcStartupType = 'Automatic'
-            SQLCollation          = $Node.SQLCollation
-            SQLSvcAccount         = $SqlServiceCredential
-            AgtSvcAccount         = $SqlAgentServiceCredential
-            ASSvcAccount          = $SqlServiceCredential
+            RSSvcAccount          = $ReportingServicesServiceCredential
             InstallSharedDir      = $Node.InstallSharedDir
             InstallSharedWOWDir   = $Node.InstallSharedWOWDir
             UpdateEnabled         = $Node.UpdateEnabled
@@ -132,21 +98,33 @@ Configuration MSFT_xSQLServerSetup_InstallSqlEngineAsSystem_Config
             # This must be set if using SYSTEM account to install.
             SQLSysAdminAccounts   = @(
                 $SqlAdministratorCredential.UserName
-                <#
-                    Must have permission to properties IsClustered and
-                    IsHadrEnable for xSQLServerAlwaysOnService.
-                #>
-                $SqlInstallCredential.UserName
             )
 
             DependsOn             = @(
                 '[xMountImage]MountIsoMedia'
-                '[User]CreateSqlServiceAccount'
-                '[User]CreateSqlAgentServiceAccount'
-                '[User]CreateSqlInstallAccount'
-                '[Group]AddSqlInstallAsAdministrator'
-                '[User]CreateSqlAdminAccount'
+                '[User]CreateReportingServicesServiceAccount'
                 '[WindowsFeature]NetFramework45'
+            )
+
+            PsDscRunAsCredential  = $SqlInstallCredential
+        }
+
+        xSQLServerRSConfig 'Integration_Test'
+        {
+            # Instance name for the Reporting Services.
+            InstanceName         = $Node.InstanceName
+
+            <#
+                Instance for Reporting Services databases.
+                Note: This instance is created in a prior integration test.
+            #>
+            RSSQLServer          = $Node.RSSQLServer
+            RSSQLInstanceName    = $Node.RSSQLInstanceName
+
+            PsDscRunAsCredential = $SqlInstallCredential
+
+            DependsOn            = @(
+                '[xSQLServerSetup]InstallReportingServicesInstance'
             )
         }
     }

@@ -849,7 +849,8 @@ function Set-TargetResource
         'ASLogDir',
         'ASBackupDir',
         'ASTempDir',
-        'ASConfigDir'
+        'ASConfigDir',
+        'UpdateSource'
     )
 
     # Remove trailing slash ('\') from paths

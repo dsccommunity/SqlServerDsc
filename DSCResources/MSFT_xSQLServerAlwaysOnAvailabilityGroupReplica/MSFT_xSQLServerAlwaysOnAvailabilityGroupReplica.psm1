@@ -240,7 +240,7 @@ function Set-TargetResource
     {
         while ( $availabilityGroup.LocalReplicaRole -ne 'Primary' )
         {
-            $primaryServerObject = Connect-SQL -SQLServer $availabilityGroup.PrimaryReplicaServerName
+            $primaryServerObject = Get-PrimaryReplicaServerObject -ServerObject $serverObject -AvailabilityGroup $availabilityGroup
             $availabilityGroup = $primaryServerObject.AvailabilityGroups[$AvailabilityGroupName]
         }
     }
@@ -269,62 +269,8 @@ function Set-TargetResource
 
         Present
         {
-            $clusterServiceName = 'NT SERVICE\ClusSvc'
-            $ntAuthoritySystemName = 'NT AUTHORITY\SYSTEM'
-            $availabilityGroupManagementPerms = @('Connect SQL', 'Alter Any Availability Group', 'View Server State')
-            $clusterPermissionsPresent = $false
-
-            foreach ( $loginName in @( $clusterServiceName, $ntAuthoritySystemName ) )
-            {
-                if ( $serverObject.Logins[$loginName] -and -not $clusterPermissionsPresent )
-                {
-                    $testLoginEffectivePermissionsParams = @{
-                        SQLServer       = $SQLServer
-                        SQLInstanceName = $SQLInstanceName
-                        LoginName       = $loginName
-                        Permissions     = $availabilityGroupManagementPerms
-                    }
-
-                    $clusterPermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
-
-                    if ( -not $clusterPermissionsPresent )
-                    {
-                        switch ( $loginName )
-                        {
-                            $clusterServiceName
-                            {
-                                New-VerboseMessage -Message "The recommended account '$loginName' is missing one or more of the following permissions: $( $availabilityGroupManagementPerms -join ', ' ). Trying with '$ntAuthoritySystemName'."
-                            }
-
-                            $ntAuthoritySystemName
-                            {
-                                New-VerboseMessage -Message "'$loginName' is missing one or more of the following permissions: $( $availabilityGroupManagementPerms -join ', ' )"
-                            }
-                        }
-                    }
-                }
-                elseif ( -not $clusterPermissionsPresent )
-                {
-                    switch ( $loginName )
-                    {
-                        $clusterServiceName
-                        {
-                            New-VerboseMessage -Message "The recommended login '$loginName' is not present. Trying with '$ntAuthoritySystemName'."
-                        }
-
-                        $ntAuthoritySystemName
-                        {
-                            New-VerboseMessage -Message "The login '$loginName' is not present."
-                        }
-                    }
-                }
-            }
-
-            # If neither 'NT SERVICE\ClusSvc' or 'NT AUTHORITY\SYSTEM' have the required permissions, throw an error.
-            if ( -not $clusterPermissionsPresent )
-            {
-                throw New-TerminatingError -ErrorType ClusterPermissionsMissing -FormatArgs $SQLServer, $SQLInstanceName -ErrorCategory SecurityError
-            }
+            # Ensure the appropriate cluster permissions are present
+            Test-ClusterPermissions -ServerObject $serverObject
 
             # Make sure a database mirroring endpoint exists.
             $endpoint = $serverObject.Endpoints | Where-Object { $_.EndpointType -eq 'DatabaseMirroring' }
@@ -432,13 +378,8 @@ function Set-TargetResource
                 if ( $primaryReplicaAvailabilityGroup )
                 {
                     # Make sure the instance defined as the primary replica in the parameters is actually the primary replica
-                    if ( $primaryReplicaAvailabilityGroup.LocalReplicaRole -ne 'Primary' )
-                    {
-                        New-VerboseMessage -Message "The instance '$PrimaryReplicaSQLServer\$PrimaryReplicaSQLInstanceName' is not currently the primary replica. Connecting to '$($primaryReplicaAvailabilityGroup.PrimaryReplicaServerName)'."
-
-                        $primaryReplicaServerObject = Connect-SQL -SQLServer $primaryReplicaAvailabilityGroup.PrimaryReplicaServerName
-                        $primaryReplicaAvailabilityGroup = $primaryReplicaServerObject.AvailabilityGroups[$AvailabilityGroupName]
-                    }
+                    $primaryReplicaServerObject = Get-PrimaryReplicaServerObject -ServerObject $primaryReplicaServerObject -AvailabilityGroup $primaryReplicaAvailabilityGroup
+                    $availabilityGroup = $primaryReplicaServerObject.AvailabilityGroups[$AvailabilityGroupName]
 
                     # Build the endpoint URL
                     $endpointUrl = "TCP://$($EndpointHostName):$($endpointPort)"
@@ -500,7 +441,7 @@ function Set-TargetResource
                 # The Availability Group doesn't exist on the primary replica
                 else
                 {
-                    throw New-TerminatingError -ErrorType AvailabilityGroupNotFound -FormatArgs $Name, $PrimaryReplicaSQLInstanceName -ErrorCategory ResourceUnavailable
+                    throw New-TerminatingError -ErrorType AvailabilityGroupNotFound -FormatArgs $AvailabilityGroupName, $PrimaryReplicaSQLInstanceName -ErrorCategory ResourceUnavailable
                 }
             }
         }

@@ -149,6 +149,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   the secure connection level for SQL Server Reporting Services.
 * [**xSQLServerScript**](#xsqlserverscript) resource to extend DSC Get/Set/Test
   functionality to T-SQL.
+* [**xSQLServerServiceAccount**](#xsqlserverserviceaccount) Manage the service account
+  for SQL Server services.
 * [**xSQLServerSetup**](#xsqlserversetup) installs a standalone SQL Server instance.
 * [**xWaitForAvailabilityGroup**](#xwaitforavailabilitygroup) resource to wait until
   availability group is created on primary server.
@@ -215,8 +217,15 @@ It will also manage the Availability Group replica on the specified node.
   integers from 0 through 100. Of the set of replicas which are online and available,
   the replica that has the highest priority performs the backup. Default is 50.
 * **`[Boolean]` BasicAvailabilityGroup** _(Write)_: Specifies the type of
-  availability group is Basic. This is only available is SQL Server 2016 and later
-  and is ignored when applied to previous versions.
+  availability group is Basic. This is only available is SQL Server 2016
+  and later and is ignored when applied to previous versions.
+* **`[Boolean]` DatabaseHealthTrigger** _(Write)_: Specifies if the option
+  Database Level Health Detection is enabled. This is only available is SQL
+  Server 2016 and later and is ignored when applied to previous versions.
+* **`[Boolean]` DtcSupportEnabled** _(Write)_: Specifies if the option Database
+  DTC Support is enabled. This is only available is SQL Server 2016 and later
+  and is ignored when applied to previous versions. This can't be altered once
+  the Availability Group is created and is ignored if it is the case.
 * **`[String]` ConnectionModeInPrimaryRole** _(Write)_: Specifies how the availability
   replica handles connections when in the primary role.
   { AllowAllConnections | AllowReadWriteConnections }
@@ -235,9 +244,21 @@ It will also manage the Availability Group replica on the specified node.
   milliseconds, after which AlwaysOn availability groups declare an unresponsive
   server to be unhealthy. Default is 30000.
 
+#### Read-Only Properties from Get-TargetResource
+
+* **`[String]` EndpointUrl** _(Read)_: Gets the Endpoint URL of the
+  availability group replica endpoint.
+* **`[Uint32]` EndpointPort** _(Read)_: Gets the port the database mirroring
+  endpoint is listening on
+* **`[String]` SQLServerNetName** _(Read)_: Gets the hostname the SQL Server
+  instance is listening on.
+* **`[Uint32]` Version** _(Read)_: Gets the major version of the SQL Server
+  instance.
+
 #### Examples
 
 * [Add a SQL Server Always On Availability Group](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroup/1-CreateAvailabilityGroup.ps1)
+* [Add a SQL Server Always On Availability Group and explicitly defines its properties](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroup/3-CreateAvailabilityGroupDetailed.ps1)
 * [Remove a SQL Server Always On Availability Group](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroup/2-RemoveAvailabilityGroup.ps1)
 
 ### xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
@@ -341,6 +362,10 @@ Always On Availability Group Replica.
 
 #### Read-Only Properties from Get-TargetResource
 
+* **`[Uint16]` EndpointPort** _(Read)_: Output the network port the endpoint is
+  listening on. Used by Get-TargetResource.
+* **`[String]` EndpointUrl** _(Read)_: Output the endpoint URL of the
+  Availability Group Replica. Used by Get-TargetResource.
 * **`[String]` SQLServerNetName** _(Read)_: Output the NetName property from the
   SQL Server object.
 
@@ -1078,7 +1103,7 @@ server roles, please read the below articles.
 
 ### xSQLServerRSConfig
 
-No description.
+Initializes and configures SQL Reporting Services server.
 
 #### Requirements
 
@@ -1096,6 +1121,15 @@ No description.
   Reporting Service database.
 * **`[String]` RSSQLInstanceName** _(Required)_: Name of the SQL Server instance
   to host the Reporting Service database.
+* **`[String]` ReportServerVirtualDir** _(Write)_: Report Server Web Service virtual
+  directory. Optional.
+* **`[String]` ReportsVirtualDir** _(Write)_: Report Manager/Report Web App virtual
+  directory name. Optional.
+* **`[String[]]` ReportServerReservedUrl** _(Write)_: Report Server URL reservations.
+  Optional. If not specified, 'http://+:80' URL reservation will be used.
+* **`[String[]]` ReportsReservedUrl** _(Write)_: Report Manager/Report Web App URL
+  reservations. Optional. If not specified, 'http://+:80' URL reservation will be
+  used.
 
 #### Read-Only Properties from Get-TargetResource
 
@@ -1199,6 +1233,36 @@ See [issue #273](https://github.com/PowerShell/xSQLServer/issues/273) for more i
 
 * [Run a script using SQL Authentication](/Examples/Resources/xSQLServerScript/1-RunScriptUsingSQLAuthentication.ps1)
 * [Run a script using Windows Authentication](/Examples/Resources/xSQLServerScript/2-RunScriptUsingWindowsAuthentication.ps1)
+
+### xSQLServerServiceAccount
+
+Manage the service account for SQL Server services.
+
+#### Requirements
+
+* Target machine must have access to the SQLPS PowerShell module or the SqlServer
+  PowerShell module.
+
+#### Parameters
+
+* **`[String]` SQLServer** (Key): The host name of the SQL Server to be configured.
+* **`[String]` SQLInstanceName** (Key): The name of the SQL instance to be configured.
+* **`[String]` ServiceType** (Key): The service type for **SQLInstanceName**.
+  { DatabaseEngine | SQLServerAgent | Search | IntegrationServices
+  | AnalysisServices | ReportingServices | SQLServerBrowser
+  | NotificationServices }
+* **`[PSCredential]` ServiceAccount** (Required): The service account that should
+  be used when running the service.
+* **`[Boolean]` RestartService** (Write): Determines whether the service is
+  automatically restarted.
+* **`[Boolean]` Force** (Write): Forces the service account to be updated.
+  Useful for password changes. This will cause `Set-TargetResource` to be run on
+  each consecutive run.
+
+#### Examples
+
+* [Run service under a user account](/Examples/Resources/xSQLServerServiceAccount/1-ConfigureServiceAccount-UserAccount.ps1)
+* [Run service with a virtual account](/Examples/Resources/xSQLServerServiceAccount/2-ConfigureServiceAccount-VirtualAccount.ps1)
 
 ### xSQLServerSetup
 

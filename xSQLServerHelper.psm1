@@ -37,7 +37,7 @@ function Connect-SQL
         $SetupCredential
     )
 
-    $null = [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.Smo')
+    Import-SQLPSModule
 
     if ($SQLInstanceName -eq 'MSSQLSERVER')
     {
@@ -50,7 +50,7 @@ function Connect-SQL
 
     if ($SetupCredential)
     {
-        $sql = New-Object Microsoft.SqlServer.Management.Smo.Server
+        $sql = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
         $sql.ConnectionContext.ConnectAsUser = $true
         $sql.ConnectionContext.ConnectAsUserPassword = $SetupCredential.GetNetworkCredential().Password
         $sql.ConnectionContext.ConnectAsUserName = $SetupCredential.GetNetworkCredential().UserName
@@ -59,18 +59,19 @@ function Connect-SQL
     }
     else
     {
-        $sql = New-Object Microsoft.SqlServer.Management.Smo.Server $databaseEngineInstance
+        $sql = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server -ArgumentList $databaseEngineInstance
     }
 
-    if (-not $sql)
+    if ( $sql.Status -match '^Online$' )
+    {
+        Write-Verbose -Message ($script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance) -Verbose
+        return $sql
+    }
+    else
     {
         $errorMessage = $script:localizedData.FailedToConnectToDatabaseEngineInstance -f $databaseEngineInstance
         New-InvalidOperationException -Message $errorMessage
     }
-
-    Write-Verbose -Message ($script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance) -Verbose
-
-    return $sql
 }
 
 <#
@@ -697,6 +698,15 @@ function Import-SQLPSModule
     else
     {
         Write-Verbose -Message ($script:localizedData.PreferredModuleNotFound) -Verbose
+
+        <#
+            After installing SQL Server the current PowerShell session doesn't know about the new path
+            that was added for the SQLPS module.
+            This reloads PowerShell session environment variable PSModulePath to make sure it contains
+            all paths.
+        #>
+        $env:PSModulePath = [System.Environment]::GetEnvironmentVariable('PSModulePath', 'Machine')
+
         $module = (Get-Module -FullyQualifiedName 'SQLPS' -ListAvailable).Name
     }
 
@@ -809,7 +819,7 @@ function Restart-SqlService
     }
     else
     {
-        Write-Verbose -Message ($script:localizedData.GetSqlServerService) -Verbose
+        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f 'SQL Server') -Verbose
         $sqlService = Get-Service -DisplayName "SQL Server ($($serverObject.ServiceName))"
 
         <#
@@ -819,7 +829,7 @@ function Restart-SqlService
         $agentService = $sqlService.DependentServices | Where-Object -FilterScript { $_.Status -eq 'Running' }
 
         # Restart the SQL Server service
-        Write-Verbose -Message ($script:localizedData.RestartSqlServerService) -Verbose
+        Write-Verbose -Message ($script:localizedData.RestartService -f 'SQL Server') -Verbose
         $sqlService | Restart-Service -Force
 
         # Start dependent services
@@ -827,6 +837,53 @@ function Restart-SqlService
             Write-Verbose -Message ($script:localizedData.StartingDependentService -f $_.DisplayName) -Verbose
             $_ | Start-Service
         }
+    }
+}
+
+<#
+    .SYNOPSIS
+    Restarts a Reporting Services instance and associated services
+
+    .PARAMETER SQLInstanceName
+    Name of the instance to be restarted. Default is 'MSSQLSERVER'
+    (the default instance).
+#>
+function Restart-ReportingServicesService
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $SQLInstanceName = 'MSSQLSERVER'
+    )
+
+    $ServiceName = 'ReportServer'
+
+    if (-not ($SQLInstanceName -eq 'MSSQLSERVER'))
+    {
+        $ServiceName += '${0}' -f $SQLInstanceName
+    }
+
+    Write-Verbose -Message ($script:localizedData.GetServiceInformation -f 'Reporting Services') -Verbose
+    $reportingServicesService = Get-Service -Name $ServiceName
+
+    <#
+        Get all dependent services that are running.
+        There are scenarios where an automatic service is stopped and should
+        not be restarted automatically.
+    #>
+    $dependentService = $reportingServicesService.DependentServices | Where-Object -FilterScript {
+        $_.Status -eq 'Running'
+    }
+
+    Write-Verbose -Message ($script:localizedData.RestartService -f 'Reporting Services') -Verbose
+    $reportingServicesService | Restart-Service -Force
+
+    # Start dependent services
+    $dependentService | ForEach-Object {
+        Write-Verbose -Message ($script:localizedData.StartingDependentService -f $_.DisplayName) -Verbose
+        $_ | Start-Service
     }
 }
 
@@ -1177,4 +1234,90 @@ function Split-FullSQLInstanceName
         SQLServer = $sqlServer
         SQLInstanceName = $sqlInstanceName
     }
+}
+
+<#
+    .SYNOPSIS
+        Determine if the cluster has the required permissions to the supplied server.
+
+    .PARAMETER ServerObject
+        The server object on which to perform the test.
+#>
+function Test-ClusterPermissions
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [Microsoft.SqlServer.Management.Smo.Server]
+        $ServerObject
+    )
+
+    $clusterServiceName = 'NT SERVICE\ClusSvc'
+    $ntAuthoritySystemName = 'NT AUTHORITY\SYSTEM'
+    $availabilityGroupManagementPerms = @('Connect SQL', 'Alter Any Availability Group', 'View Server State')
+    $clusterPermissionsPresent = $false
+
+    # Retrieve the SQL Server and Instance name from the server object
+    $sqlServer = $ServerObject.NetName
+    $sqlInstanceName = $ServerObject.ServiceName
+
+    foreach ( $loginName in @( $clusterServiceName, $ntAuthoritySystemName ) )
+    {
+        if ( $ServerObject.Logins[$loginName] -and -not $clusterPermissionsPresent )
+        {
+            $testLoginEffectivePermissionsParams = @{
+                SQLServer       = $sqlServer
+                SQLInstanceName = $sqlInstanceName
+                LoginName       = $loginName
+                Permissions     = $availabilityGroupManagementPerms
+            }
+
+            $clusterPermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+
+            if ( -not $clusterPermissionsPresent )
+            {
+                switch ( $loginName )
+                {
+                    $clusterServiceName
+                    {
+                        Write-Verbose -Message ( $script:localizedData.ClusterLoginMissingRecommendedPermissions -f $loginName,( $availabilityGroupManagementPerms -join ', ' ) ) -Verbose
+                    }
+
+                    $ntAuthoritySystemName
+                    {
+                        Write-Verbose -Message ( $script:localizedData.ClusterLoginMissingPermissions -f $loginName,( $availabilityGroupManagementPerms -join ', ' ) ) -Verbose
+                    }
+                }
+            }
+            else
+            {
+                Write-Verbose -Message ( $script:localizedData.ClusterLoginPermissionsPresent -f $loginName ) -Verbose
+            }
+        }
+        elseif ( -not $clusterPermissionsPresent )
+        {
+            switch ( $loginName )
+            {
+                $clusterServiceName
+                {
+                    Write-Verbose -Message ($script:localizedData.ClusterLoginMissingRecommendedPermissions -f $loginName,"Trying with '$ntAuthoritySystemName'.") -Verbose
+                }
+
+                $ntAuthoritySystemName
+                {
+                    Write-Verbose -Message ( $script:localizedData.ClusterLoginMissing -f $loginName,'' ) -Verbose
+                }
+            }
+        }
+    }
+
+    # If neither 'NT SERVICE\ClusSvc' or 'NT AUTHORITY\SYSTEM' have the required permissions, throw an error.
+    if ( -not $clusterPermissionsPresent )
+    {
+        throw ($script:localizedData.ClusterPermissionsMissing -f $sqlServer,$sqlInstanceName )
+    }
+
+    return $clusterPermissionsPresent
 }

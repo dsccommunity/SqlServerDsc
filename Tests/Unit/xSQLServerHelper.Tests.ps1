@@ -59,33 +59,52 @@ InModuleScope $script:moduleName {
         }
 
         return New-Object Object |
-                    Add-Member -MemberType NoteProperty -Name ConnectionContext -Value (
-                        New-Object Object |
-                            Add-Member -MemberType NoteProperty -Name ServerInstance -Value $serverInstance -PassThru |
-                            Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
-                            Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
-                            Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name Connect {
-                                if ($mockExpectedDatabaseEngineInstance -eq 'MSSQLSERVER')
-                                {
-                                    $mockExpectedServiceInstance = $mockExpectedDatabaseEngineServer
-                                }
-                                else
-                                {
-                                    $mockExpectedServiceInstance = "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
-                                }
+            Add-Member -MemberType ScriptProperty -Name Status -Value {
+                if ($mockExpectedDatabaseEngineInstance -eq 'MSSQLSERVER')
+                {
+                    $mockExpectedServiceInstance = $mockExpectedDatabaseEngineServer
+                }
+                else
+                {
+                    $mockExpectedServiceInstance = "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+                }
 
-                                if ($this.serverInstance -ne $mockExpectedServiceInstance)
-                                {
-                                    throw ("Mock method Connect() was expecting ServerInstance to be '{0}', but was '{1}'." -f $mockExpectedServiceInstance, $this.serverInstance )
-                                }
+                if ( $this.ConnectionContext.ServerInstance -eq $mockExpectedServiceInstance )
+                {
+                    return 'Online'
+                }
+                else
+                {
+                    return $null
+                }
+            } -PassThru |
+            Add-Member -MemberType NoteProperty -Name ConnectionContext -Value (
+                New-Object Object |
+                    Add-Member -MemberType NoteProperty -Name ServerInstance -Value $serverInstance -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
+                    Add-Member -MemberType ScriptMethod -Name Connect {
+                        if ($mockExpectedDatabaseEngineInstance -eq 'MSSQLSERVER')
+                        {
+                            $mockExpectedServiceInstance = $mockExpectedDatabaseEngineServer
+                        }
+                        else
+                        {
+                            $mockExpectedServiceInstance = "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+                        }
 
-                                if ($mockThrowInvalidOperation)
-                                {
-                                    throw 'Unable to connect.'
-                                }
-                            } -PassThru -Force
-                    ) -PassThru -Force
+                        if ($this.serverInstance -ne $mockExpectedServiceInstance)
+                        {
+                            throw ("Mock method Connect() was expecting ServerInstance to be '{0}', but was '{1}'." -f $mockExpectedServiceInstance, $this.serverInstance )
+                        }
+
+                        if ($mockThrowInvalidOperation)
+                        {
+                            throw 'Unable to connect.'
+                        }
+                    } -PassThru -Force
+            ) -PassThru -Force
     }
 
     $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter = {
@@ -383,7 +402,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     Describe 'Testing Invoke-Query' {
@@ -688,7 +707,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     $mockGetItemProperty_MicrosoftSQLServer_InstanceNames_SQL = {
@@ -764,7 +783,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     $mockApplicationDomainName = 'xSQLServerHelperTests'
@@ -802,7 +821,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     <#
@@ -853,7 +872,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     <#
@@ -1071,6 +1090,7 @@ InModuleScope $script:moduleName {
     Describe 'Testing Connect-SQL' -Tag ConnectSql {
         BeforeEach {
             Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
+            Mock -CommandName Import-SQLPSModule
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter `
@@ -1079,9 +1099,10 @@ InModuleScope $script:moduleName {
 
         Context 'When connecting to the default instance using Windows Authentication' {
             It 'Should return the correct service instance' {
-                $mockExpectedDatabaseEngineServer = $env:COMPUTERNAME
+                $mockExpectedDatabaseEngineServer = 'TestServer'
+                $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
 
-                $databaseEngineServerObject = Connect-SQL
+                $databaseEngineServerObject = Connect-SQL -SQLServer $mockExpectedDatabaseEngineServer
                 $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly $mockExpectedDatabaseEngineServer
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
@@ -1155,7 +1176,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     Describe 'Testing Test-SQLDscParameterState' -Tag TestSQLDscParameterState {
@@ -1434,7 +1455,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     Describe 'Testing New-WarningMessage' -Tag NewWarningMessage {
@@ -1458,7 +1479,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     Describe 'Testing New-TerminatingError' -Tag NewWarningMessage {
@@ -1477,7 +1498,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Assert-VerifiableMocks
+        Assert-VerifiableMock
     }
 
     Describe 'Testing Split-FullSQLInstanceName' {
@@ -1506,6 +1527,159 @@ InModuleScope $script:moduleName {
                 $result.Count | Should Be 2
                 $result.SQLServer | Should Be 'ServerName'
                 $result.SQLInstanceName | Should Be 'InstanceName'
+            }
+        }
+    }
+
+    Describe 'Testing Test-ClusterPermissions' {
+        BeforeAll {
+            Mock -CommandName Test-LoginEffectivePermissions -MockWith {
+                $mockClusterServicePermissionsPresent
+            } -Verifiable -ParameterFilter {
+                $LoginName -eq $clusterServiceName
+            }
+
+            Mock -CommandName Test-LoginEffectivePermissions -MockWith {
+                $mockSystemPermissionsPresent
+            } -Verifiable -ParameterFilter {
+                $LoginName -eq $systemAccountName
+            }
+
+            $clusterServiceName = 'NT SERVICE\ClusSvc'
+            $systemAccountName= 'NT AUTHORITY\System'
+        }
+
+        BeforeEach {
+            $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+            $mockServerObject.NetName = 'TestServer'
+            $mockServerObject.ServiceName = 'MSSQLSERVER'
+
+            $mockLogins = @{
+                $clusterServiceName = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $mockServerObject,$clusterServiceName
+                $systemAccountName = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $mockServerObject,$systemAccountName
+            }
+
+            $mockServerObject.Logins = $mockLogins
+
+            $mockClusterServicePermissionsPresent = $false
+            $mockSystemPermissionsPresent = $false
+        }
+
+        Context 'When the cluster does not have permissions to the instance' {
+            It "Should throw the correct error when the logins '$($clusterServiceName)' or '$($systemAccountName)' are absent" {
+                $mockServerObject.Logins = @{}
+
+                { Test-ClusterPermissions -ServerObject $mockServerObject } | Should Throw ( "The cluster does not have permissions to manage the Availability Group on '{0}\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either '$($clusterServiceName)' or '$($systemAccountName)'." -f $mockServerObject.NetName,$mockServerObject.ServiceName )
+
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter {
+                    $LoginName -eq $clusterServiceName
+                }
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter {
+                    $LoginName -eq $systemAccountName
+                }
+            }
+
+            It "Should throw the correct error when the logins '$($clusterServiceName)' and '$($systemAccountName)' do not have permissions to manage availability groups" {
+                { Test-ClusterPermissions -ServerObject $mockServerObject } | Should Throw ( "The cluster does not have permissions to manage the Availability Group on '{0}\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either '$($clusterServiceName)' or '$($systemAccountName)'." -f $mockServerObject.NetName,$mockServerObject.ServiceName )
+
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
+                    $LoginName -eq $clusterServiceName
+                }
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
+                    $LoginName -eq $systemAccountName
+                }
+            }
+        }
+
+        Context 'When the cluster has permissions to the instance' {
+            It "Should return NullOrEmpty when '$($clusterServiceName)' is present and has the permissions to manage availability groups" {
+                $mockClusterServicePermissionsPresent = $true
+
+                Test-ClusterPermissions -ServerObject $mockServerObject | Should Be $true
+
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
+                    $LoginName -eq $clusterServiceName
+                }
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter {
+                    $LoginName -eq $systemAccountName
+                }
+            }
+
+            It "Should return NullOrEmpty when '$($systemAccountName)' is present and has the permissions to manage availability groups" {
+                $mockSystemPermissionsPresent = $true
+
+                Test-ClusterPermissions -ServerObject $mockServerObject | Should Be $true
+
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
+                    $LoginName -eq $clusterServiceName
+                }
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
+                    $LoginName -eq $systemAccountName
+                }
+            }
+        }
+    }
+
+    Describe 'Testing Restart-ReportingServicesService' {
+        Context 'When restarting a Report Services default instance' {
+            BeforeAll {
+                $mockServiceName = 'ReportServer'
+
+                Mock -CommandName Restart-Service -Verifiable
+                Mock -CommandName Start-Service -Verifiable
+                Mock -CommandName Get-Service -MockWith {
+                    return @{
+                        Name = $mockServiceName
+                        DependentServices = @(
+                            @{
+                                Name = 'DependentService'
+                                Status = 'Running'
+                                DependentServices = @()
+                            }
+                        )
+                    }
+                }
+            }
+
+            It 'Should restart the service and dependent service' {
+                { Restart-ReportingServicesService -SQLInstanceName 'MSSQLSERVER' } | Should Not Throw
+
+                Assert-MockCalled -CommandName Get-Service -ParameterFilter {
+                    $Name -eq $mockServiceName
+                } -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
+            }
+        }
+
+        Context 'When restarting a Report Services named instance' {
+            BeforeAll {
+                $mockServiceName = 'ReportServer$TEST'
+
+                Mock -CommandName Restart-Service -Verifiable
+                Mock -CommandName Start-Service -Verifiable
+                Mock -CommandName Get-Service -MockWith {
+                    return @{
+                        Name = $mockServiceName
+                        DependentServices = @(
+                            @{
+                                Name = 'DependentService'
+                                Status = 'Running'
+                                DependentServices = @()
+                            }
+                        )
+                    }
+                }
+            }
+
+            It 'Should restart the service and dependent service' {
+                { Restart-ReportingServicesService -SQLInstanceName 'TEST' } | Should Not Throw
+
+                Assert-MockCalled -CommandName Get-Service -ParameterFilter {
+                    $Name -eq $mockServiceName
+                } -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
             }
         }
     }
