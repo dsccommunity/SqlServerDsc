@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 8.2.0.0
+
 - Changes to xSQLServer
   - Updated appveyor.yml so that integration tests run in order and so that
     the SQLPS module folders are renamed to not disturb the units test, but
