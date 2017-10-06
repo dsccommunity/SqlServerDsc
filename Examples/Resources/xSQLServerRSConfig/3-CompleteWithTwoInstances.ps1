@@ -3,8 +3,10 @@
     This example installs to instances where the first named instance is used for
     the Reporting Services databases, and the second named instance is used for
     Reporting Services. After installing the two instances, the configuration
-    performs a default SSRS configuration. It will initialize SSRS
-    and register default Report Server Web Service and Report Manager URLs:
+    performs a default SQL Server Reporting Services configuration. It will
+    initialize SQL Server Reporting Services and register the default
+    Report Server Web Service and Report Manager URLs:
+
     http://localhost:80/ReportServer (Report Server Web Service)
     http://localhost:80/Reports (Report Manager)
 #>
@@ -68,9 +70,9 @@ Configuration Example
     )
 
     Import-DscResource -ModuleName PSDscResources
-    Import-DscResource -ModuleName xSqlServer
+    Import-DscResource -ModuleName xSQLServer
 
-    node localhost {
+    Node localhost {
         WindowsFeature 'NetFramework45'
         {
             Name   = 'NET-Framework-45-Core'
