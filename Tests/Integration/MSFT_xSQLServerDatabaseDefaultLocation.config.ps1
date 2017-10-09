@@ -12,9 +12,9 @@ $ConfigurationData = @{
 
             PSDscAllowPlainTextPassword = $true
 
-            DataFilePath                = 'C:\SQLData'
-            LogFilePath                 = 'C:\SQLLog'
-            BackupFilePath              = 'C:\Backups'
+            DataFilePath                = 'C:\SQLData\'
+            LogFilePath                 = 'C:\SQLLog\'
+            BackupFilePath              = 'C:\Backups\'
         }
     )
 }
@@ -122,7 +122,7 @@ Configuration MSFT_xSQLServerDatabaseDefaultLocation_Backup_Config
         {
             DefaultLocationType  = 'Backup'
             DefaultLocationPath  = $Node.BackupFilePath
-            RestartService       = $true
+            RestartService       = $false
             SQLServer            = $Node.ComputerName
             SQLInstanceName      = $Node.InstanceName
 
