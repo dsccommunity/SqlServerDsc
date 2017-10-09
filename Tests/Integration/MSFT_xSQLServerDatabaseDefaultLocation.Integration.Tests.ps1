@@ -80,7 +80,7 @@ try
                 }
 
                 $resourceCurrentState.DefaultLocationType | Should Be 'Data'
-                $resourceCurrentState.DefaultLocationPath | Should Be ( Join-Path -Path $ConfigurationData.AllNodes.DataFilePath -ChildPath '' )
+                ( Join-Path -Path $resourceCurrentState.DefaultLocationPath -ChildPath '' ) | Should Be ( Join-Path -Path $ConfigurationData.AllNodes.DataFilePath -ChildPath '' )
             }
         }
 
@@ -125,7 +125,7 @@ try
                 }
 
                 $resourceCurrentState.DefaultLocationType | Should Be 'Log'
-                $resourceCurrentState.DefaultLocationPath | Should Be ( Join-Path -Path $ConfigurationData.AllNodes.LogFilePath -ChildPath '' )
+                ( Join-Path -Path $resourceCurrentState.DefaultLocationPath -ChildPath '' ) | Should Be ( Join-Path -Path $ConfigurationData.AllNodes.LogFilePath -ChildPath '' )
             }
         }
 
@@ -170,7 +170,7 @@ try
                 }
 
                 $resourceCurrentState.DefaultLocationType | Should Be 'Backup'
-                $resourceCurrentState.DefaultLocationPath | Should Be ( Join-Path -Path $ConfigurationData.AllNodes.BackupFilePath -ChildPath '' )
+                ( Join-Path -Path $resourceCurrentState.DefaultLocationPath -ChildPath '' ) | Should Be ( Join-Path -Path $ConfigurationData.AllNodes.BackupFilePath -ChildPath '' )
             }
         }
     }
