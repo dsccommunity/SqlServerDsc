@@ -80,10 +80,7 @@
     later only). The feature currently can't be altered once the Availability
     Group is created.
   - Use the new helper function "Test-ClusterPermissions".
-  - Refactored the unit tests to allow them to be more user friendly and to test
-    additional SQLServer variations.
-    - Each test will utilize the Import-SQLModuleStub to ensure the correct
-      module is loaded ([issue #784](https://github.com/PowerShell/xSQLServer/issues/784)).
+  - Refactored the unit tests to allow them to be more user friendly.
   - Added the following read-only properties to the schema ([issue #476](https://github.com/PowerShell/xSQLServer/issues/476))
     - EndpointPort
     - EndpointURL
