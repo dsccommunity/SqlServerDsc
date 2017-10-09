@@ -35,6 +35,7 @@ Configuration MSFT_xSQLServerDatabaseDefaultLocation_Data_Config
     node localhost {
         File 'SQLDataPath'
         {
+            Checksum        = 'SHA-256'
             DestinationPath = $Node.DataFilePath
             Ensure          = 'Present'
             Force           = $true
@@ -45,6 +46,7 @@ Configuration MSFT_xSQLServerDatabaseDefaultLocation_Data_Config
         {
             DefaultLocationType  = 'Data'
             DefaultLocationPath  = $Node.DataFilePath
+            RestartService       = $true
             SQLServer            = $Node.ComputerName
             SQLInstanceName      = $Node.InstanceName
 
@@ -71,6 +73,7 @@ Configuration MSFT_xSQLServerDatabaseDefaultLocation_Log_Config
     node localhost {
         File 'SQLLogPath'
         {
+            Checksum        = 'SHA-256'
             DestinationPath = $Node.LogFilePath
             Ensure          = 'Present'
             Force           = $true
@@ -81,6 +84,7 @@ Configuration MSFT_xSQLServerDatabaseDefaultLocation_Log_Config
         {
             DefaultLocationType  = 'Log'
             DefaultLocationPath  = $Node.LogFilePath
+            RestartService       = $true
             SQLServer            = $Node.ComputerName
             SQLInstanceName      = $Node.InstanceName
 
@@ -107,6 +111,7 @@ Configuration MSFT_xSQLServerDatabaseDefaultLocation_Backup_Config
     node localhost {
         File 'SQLBackupPath'
         {
+            Checksum        = 'SHA-256'
             DestinationPath = $Node.BackupFilePath
             Ensure          = 'Present'
             Force           = $true
@@ -117,6 +122,7 @@ Configuration MSFT_xSQLServerDatabaseDefaultLocation_Backup_Config
         {
             DefaultLocationType  = 'Backup'
             DefaultLocationPath  = $Node.BackupFilePath
+            RestartService       = $true
             SQLServer            = $Node.ComputerName
             SQLInstanceName      = $Node.InstanceName
 
