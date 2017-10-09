@@ -44,7 +44,7 @@
       because SQLPS was not found after installation because the PSModulePath
       environment variable in the (LCM) PowerShell session did not contain the new
       module path.
-  - Added new helper function "Test-ClusterPermissions" ([issue #446](https://github.com/PowerShell/xSQLServer/issues/446).
+  - Added new helper function "Test-ClusterPermissions" ([issue #446](https://github.com/PowerShell/xSQLServer/issues/446)).
 - Changes to xSQLServerSetup
   - Fixed an issue with trailing slashes in the 'UpdateSource' property
     ([issue #720](https://github.com/PowerShell/xSQLServer/issues/720)).
