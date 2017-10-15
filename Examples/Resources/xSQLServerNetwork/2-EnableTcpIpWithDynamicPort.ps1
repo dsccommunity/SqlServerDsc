@@ -22,7 +22,7 @@ Configuration Example
             SQLInstanceName = 'MSSQLSERVER'
             ProtocolName    = 'Tcp'
             IsEnabled       = $true
-            TCPDynamicPorts = $true
+            TCPDynamicPort  = $true
             RestartService  = $true
         }
     }
