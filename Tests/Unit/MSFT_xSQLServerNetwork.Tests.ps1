@@ -263,7 +263,8 @@ try
                     }
 
                     It 'Should throw the correct error message' {
-                        { Test-TargetResource @testParameters } | Should -Throw 'Unable to set both tcp dynamic port and tcp static port. Only one can be set.'
+                        $testErrorMessage = $script:localizedData.ErrorDynamicAndStaticPortSpecified
+                        { Test-TargetResource @testParameters } | Should -Throw $testErrorMessage
                     }
                 }
             }
@@ -442,7 +443,8 @@ try
                     }
 
                     It 'Should throw the correct error message' {
-                        { Set-TargetResource @testParameters } | Should -Throw 'Unable to set both tcp dynamic port and tcp static port. Only one can be set.'
+                        $testErrorMessage = ($script:localizedData.ErrorDynamicAndStaticPortSpecified)
+                        { Set-TargetResource @testParameters } | Should -Throw $testErrorMessage
                     }
                 }
             }

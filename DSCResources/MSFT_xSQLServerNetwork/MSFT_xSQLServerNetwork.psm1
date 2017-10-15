@@ -1,5 +1,11 @@
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
         -ChildPath 'xSQLServerHelper.psm1') -Force
+Import-Module -Name (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent) `
+        -ChildPath 'CommonResourceHelper.psm1')
+
+# Load localized string data
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xSQLServerNetwork'
+
 <#
     .SYNOPSIS
     Returns the current state of the SQL Server network properties.
@@ -33,10 +39,10 @@ function Get-TargetResource
 
         $managedComputerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer
 
-        Write-Verbose "Getting network protocol [$ProtocolName] for SQL instance [$SQLInstanceName]."
+        Write-Verbose ($script:localizedData.GetNetworkProtocol -f $SQLInstanceName, $ProtocolName)
         $tcp = $managedComputerObject.ServerInstances[$SQLInstanceName].ServerProtocols[$ProtocolName]
 
-        Write-Verbose "Reading current network properties."
+        Write-Verbose $script:localizedData.ReadingNetworkProperties
         $returnValue = @{
             SQLInstanceName = $SQLInstanceName
             ProtocolName    = $ProtocolName
@@ -133,7 +139,7 @@ function Set-TargetResource
 
     if ($TcpDynamicPort -and $TcpPort)
     {
-        throw New-TerminatingError -ErrorType 'Unable to set both tcp dynamic port and tcp static port. Only one can be set.' -ErrorCategory InvalidOperation
+        throw New-TerminatingError -ErrorType $script:localizedData.ErrorDynamicAndStaticPortSpecified -ErrorCategory InvalidOperation
     }
 
     $getTargetResourceResult = Get-TargetResource -SQLInstanceName $SQLInstanceName -ProtocolName $ProtocolName
@@ -154,20 +160,20 @@ function Set-TargetResource
 
         $managedComputerObject = New-Object Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer
 
-        Write-Verbose "Getting [$ProtocolName] network protocol for [$SQLInstanceName] SQL instance"
+        Write-Verbose ($script:localizedData.GetNetworkProtocol -f $ProtocolName, $SQLInstanceName)
         $tcp = $managedComputerObject.ServerInstances[$SQLInstanceName].ServerProtocols[$ProtocolName]
 
-        Write-Verbose 'Checking [IsEnabled] property.'
+        Write-Verbose ($script:localizedData.CheckingProperty -f 'IsEnabled')
         if ($desiredState.IsEnabled -ine $getTargetResourceResult.IsEnabled)
         {
-            Write-Verbose "Updating [IsEnabled] from $($getTargetResourceResult.IsEnabled) to $($desiredState.IsEnabled)."
+            Write-Verbose ($script:localizedData.UpdatingProperty -f 'IsEnabled', $getTargetResourceResult.IsEnabled, $desiredState.IsEnabled)
             $tcp.IsEnabled = $desiredState.IsEnabled
             $tcp.Alter()
 
             $isRestartNeeded = $true
         }
 
-        Write-Verbose 'Checking [TcpDynamicPort] property.'
+        Write-Verbose ($script:localizedData.CheckingProperty -f 'TcpDynamicPort')
         if ($desiredState.TcpDynamicPort -ne $getTargetResourceResult.TcpDynamicPort)
         {
             # Translates the current and desired state to a string for display
@@ -185,14 +191,14 @@ function Set-TargetResource
             $fromTcpDynamicPortDisplayValue = $dynamicPortDisplayValueTable[$getTargetResourceResult.TcpDynamicPort]
             $toTcpDynamicPortDisplayValue = $dynamicPortDisplayValueTable[$desiredState.TcpDynamicPort]
 
-            Write-Verbose "Updating [TcpDynamicPorts] from $($fromTcpDynamicPortDisplayValue) to $($toTcpDynamicPortDisplayValue)."
+            Write-Verbose ($script:localizedData.UpdatingProperty -f 'TcpDynamicPorts', $fromTcpDynamicPortDisplayValue, $toTcpDynamicPortDisplayValue)
             $tcp.IPAddresses['IPAll'].IPAddressProperties['TcpDynamicPorts'].Value = $desiredDynamicPortValue[$desiredState.TcpDynamicPort]
             $tcp.Alter()
 
             $isRestartNeeded = $true
         }
 
-        Write-Verbose 'Checking [TcpPort property].'
+        Write-Verbose ($script:localizedData.CheckingProperty -f 'TcpPort')
         if ($desiredState.TcpPort -ine $getTargetResourceResult.TcpPort)
         {
             $fromTcpPort = $getTargetResourceResult.TcpPort
@@ -207,7 +213,7 @@ function Set-TargetResource
                 $toTcpPort = 'none'
             }
 
-            Write-Verbose "Updating [TcpPort] from $($fromTcpPort) to $($toTcpPort)."
+            Write-Verbose ($script:localizedData.UpdatingProperty -f 'TcpPort', $fromTcpPort, $toTcpPort)
             $tcp.IPAddresses['IPAll'].IPAddressProperties['TcpPort'].Value = $desiredState.TcpPort
             $tcp.Alter()
 
@@ -307,18 +313,18 @@ function Test-TargetResource
 
     if ($TcpDynamicPort -and $TcpPort)
     {
-        throw New-TerminatingError -ErrorType 'Unable to set both tcp dynamic port and tcp static port. Only one can be set.' -ErrorCategory InvalidOperation
+        throw New-TerminatingError -ErrorType $script:localizedData.ErrorDynamicAndStaticPortSpecified -ErrorCategory InvalidOperation
     }
 
     $getTargetResourceResult = Get-TargetResource -SQLInstanceName $SQLInstanceName -ProtocolName $ProtocolName
 
-    Write-Verbose "Comparing desired state with current state."
+    Write-Verbose $script:localizedData.CompareStates
 
     $isInDesiredState = $true
 
     if ($ProtocolName -ne $getTargetResourceResult.ProtocolName)
     {
-        Write-Verbose ('Expected protocol to be ''{0}'', but was ''{1}''.' -f $ProtocolName, $getTargetResourceResult.ProtocolName)
+        Write-Verbose ($script:localizedData.ExpectedPropertyValue -f 'ProtocolName', $ProtocolName, $getTargetResourceResult.ProtocolName)
 
         $isInDesiredState = $false
     }
@@ -332,7 +338,7 @@ function Test-TargetResource
                 $false = 'disabled'
             }
 
-            Write-Verbose ('Expected protocol to be {0}, but was {1}.' -f $evaluateEnableOrDisable[$IsEnabled], $evaluateEnableOrDisable[$getTargetResourceResult.IsEnabled])
+            Write-Verbose ($script:localizedData.ExpectedPropertyValue -f 'IsEnabled', $evaluateEnableOrDisable[$IsEnabled], $evaluateEnableOrDisable[$getTargetResourceResult.IsEnabled])
 
             $isInDesiredState = $false
         }
@@ -342,7 +348,7 @@ function Test-TargetResource
     {
         if ($TcpDynamicPort -and $getTargetResourceResult.TcpDynamicPort -eq $false)
         {
-            Write-Verbose 'Expected tcp dynamic port to be used, but it was not.'
+            Write-Verbose ($script:localizedData.ExpectedPropertyValue -f 'TcpDynamicPort', $TcpDynamicPort, $getTargetResourceResult.TcpDynamicPort)
 
             $isInDesiredState = $false
         }
@@ -352,13 +358,13 @@ function Test-TargetResource
     {
         if ($getTargetResourceResult.TcpPort -eq '')
         {
-            Write-Verbose 'Expected tcp static port to be used, but it was not.'
+            Write-Verbose ($script:localizedData.ExpectedPropertyValue -f 'TcpPort', $TcpPort, $getTargetResourceResult.TcpPort)
 
             $isInDesiredState = $false
         }
         elseif ($TcpPort -ne $getTargetResourceResult.TcpPort)
         {
-            Write-Verbose ('Expected tcp static port to be ''{0}'', but was ''{1}''.' -f $TcpPort, $getTargetResourceResult.TcpPort)
+            Write-Verbose ($script:localizedData.ExpectedPropertyValue -f 'TcpPort', $TcpPort, $getTargetResourceResult.TcpPort)
 
             $isInDesiredState = $false
         }
@@ -366,7 +372,7 @@ function Test-TargetResource
 
     if ($isInDesiredState)
     {
-        Write-Verbose "In desired state."
+        Write-Verbose ($script:localizedData.InDesiredState)
     }
 
     return $isInDesiredState
