@@ -24,7 +24,7 @@ function Get-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName,
+        $InstanceName,
 
         # For now there is only support for the tcp protocol.
         [Parameter(Mandatory = $true)]
@@ -35,16 +35,16 @@ function Get-TargetResource
 
     try
     {
-        $applicationDomainObject = Register-SqlWmiManagement -SQLInstanceName $SQLInstanceName
+        $applicationDomainObject = Register-SqlWmiManagement -SQLInstanceName $InstanceName
 
         $managedComputerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer
 
-        Write-Verbose ($script:localizedData.GetNetworkProtocol -f $SQLInstanceName, $ProtocolName)
-        $tcp = $managedComputerObject.ServerInstances[$SQLInstanceName].ServerProtocols[$ProtocolName]
+        Write-Verbose -Message ($script:localizedData.GetNetworkProtocol -f $ProtocolName, $InstanceName)
+        $tcp = $managedComputerObject.ServerInstances[$InstanceName].ServerProtocols[$ProtocolName]
 
-        Write-Verbose $script:localizedData.ReadingNetworkProperties
+        Write-Verbose -Message $script:localizedData.ReadingNetworkProperties
         $returnValue = @{
-            SQLInstanceName = $SQLInstanceName
+            InstanceName = $InstanceName
             ProtocolName    = $ProtocolName
             IsEnabled       = $tcp.IsEnabled
             TcpDynamicPort  = ($tcp.IPAddresses['IPAll'].IPAddressProperties['TcpDynamicPorts'].Value -ge 0)
@@ -52,7 +52,7 @@ function Get-TargetResource
         }
 
         $returnValue.Keys | ForEach-Object {
-            Write-Verbose "$_ = $($returnValue[$_])"
+            Write-Verbose -Message "$_ = $($returnValue[$_])"
         }
     }
     finally
@@ -109,7 +109,7 @@ function Set-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName,
+        $InstanceName,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('Tcp')]
@@ -139,17 +139,18 @@ function Set-TargetResource
 
     if ($TcpDynamicPort -and $TcpPort)
     {
-        throw New-TerminatingError -ErrorType $script:localizedData.ErrorDynamicAndStaticPortSpecified -ErrorCategory InvalidOperation
+        $errorMessage = $script:localizedData.ErrorDynamicAndStaticPortSpecified
+        New-InvalidOperationException -Message $errorMessage
     }
 
-    $getTargetResourceResult = Get-TargetResource -SQLInstanceName $SQLInstanceName -ProtocolName $ProtocolName
+    $getTargetResourceResult = Get-TargetResource -InstanceName $InstanceName -ProtocolName $ProtocolName
 
     try
     {
-        $applicationDomainObject = Register-SqlWmiManagement -SQLInstanceName $SQLInstanceName
+        $applicationDomainObject = Register-SqlWmiManagement -SQLInstanceName $InstanceName
 
         $desiredState = @{
-            SQLInstanceName = $SQLInstanceName
+            InstanceName = $InstanceName
             ProtocolName    = $ProtocolName
             IsEnabled       = $IsEnabled
             TcpDynamicPort  = $TcpDynamicPort
@@ -160,20 +161,20 @@ function Set-TargetResource
 
         $managedComputerObject = New-Object Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer
 
-        Write-Verbose ($script:localizedData.GetNetworkProtocol -f $ProtocolName, $SQLInstanceName)
-        $tcp = $managedComputerObject.ServerInstances[$SQLInstanceName].ServerProtocols[$ProtocolName]
+        Write-Verbose -Message ($script:localizedData.GetNetworkProtocol -f $ProtocolName, $InstanceName)
+        $tcp = $managedComputerObject.ServerInstances[$InstanceName].ServerProtocols[$ProtocolName]
 
-        Write-Verbose ($script:localizedData.CheckingProperty -f 'IsEnabled')
+        Write-Verbose -Message ($script:localizedData.CheckingProperty -f 'IsEnabled')
         if ($desiredState.IsEnabled -ine $getTargetResourceResult.IsEnabled)
         {
-            Write-Verbose ($script:localizedData.UpdatingProperty -f 'IsEnabled', $getTargetResourceResult.IsEnabled, $desiredState.IsEnabled)
+            Write-Verbose -Message ($script:localizedData.UpdatingProperty -f 'IsEnabled', $getTargetResourceResult.IsEnabled, $desiredState.IsEnabled)
             $tcp.IsEnabled = $desiredState.IsEnabled
             $tcp.Alter()
 
             $isRestartNeeded = $true
         }
 
-        Write-Verbose ($script:localizedData.CheckingProperty -f 'TcpDynamicPort')
+        Write-Verbose -Message ($script:localizedData.CheckingProperty -f 'TcpDynamicPort')
         if ($desiredState.TcpDynamicPort -ne $getTargetResourceResult.TcpDynamicPort)
         {
             # Translates the current and desired state to a string for display
@@ -191,14 +192,14 @@ function Set-TargetResource
             $fromTcpDynamicPortDisplayValue = $dynamicPortDisplayValueTable[$getTargetResourceResult.TcpDynamicPort]
             $toTcpDynamicPortDisplayValue = $dynamicPortDisplayValueTable[$desiredState.TcpDynamicPort]
 
-            Write-Verbose ($script:localizedData.UpdatingProperty -f 'TcpDynamicPorts', $fromTcpDynamicPortDisplayValue, $toTcpDynamicPortDisplayValue)
+            Write-Verbose -Message ($script:localizedData.UpdatingProperty -f 'TcpDynamicPorts', $fromTcpDynamicPortDisplayValue, $toTcpDynamicPortDisplayValue)
             $tcp.IPAddresses['IPAll'].IPAddressProperties['TcpDynamicPorts'].Value = $desiredDynamicPortValue[$desiredState.TcpDynamicPort]
             $tcp.Alter()
 
             $isRestartNeeded = $true
         }
 
-        Write-Verbose ($script:localizedData.CheckingProperty -f 'TcpPort')
+        Write-Verbose -Message ($script:localizedData.CheckingProperty -f 'TcpPort')
         if ($desiredState.TcpPort -ine $getTargetResourceResult.TcpPort)
         {
             $fromTcpPort = $getTargetResourceResult.TcpPort
@@ -213,7 +214,7 @@ function Set-TargetResource
                 $toTcpPort = 'none'
             }
 
-            Write-Verbose ($script:localizedData.UpdatingProperty -f 'TcpPort', $fromTcpPort, $toTcpPort)
+            Write-Verbose -Message ($script:localizedData.UpdatingProperty -f 'TcpPort', $fromTcpPort, $toTcpPort)
             $tcp.IPAddresses['IPAll'].IPAddressProperties['TcpPort'].Value = $desiredState.TcpPort
             $tcp.Alter()
 
@@ -222,7 +223,7 @@ function Set-TargetResource
 
         if ($RestartService -and $isRestartNeeded)
         {
-            Restart-SqlService -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -Timeout $RestartTimeout
+            Restart-SqlService -SQLServer $SQLServer -SQLInstanceName $InstanceName -Timeout $RestartTimeout
         }
     }
     finally
@@ -283,7 +284,7 @@ function Test-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName,
+        $InstanceName,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('Tcp')]
@@ -313,18 +314,19 @@ function Test-TargetResource
 
     if ($TcpDynamicPort -and $TcpPort)
     {
-        throw New-TerminatingError -ErrorType $script:localizedData.ErrorDynamicAndStaticPortSpecified -ErrorCategory InvalidOperation
+        $errorMessage = $script:localizedData.ErrorDynamicAndStaticPortSpecified
+        New-InvalidOperationException -Message $errorMessage
     }
 
-    $getTargetResourceResult = Get-TargetResource -SQLInstanceName $SQLInstanceName -ProtocolName $ProtocolName
+    $getTargetResourceResult = Get-TargetResource -InstanceName $InstanceName -ProtocolName $ProtocolName
 
-    Write-Verbose $script:localizedData.CompareStates
+    Write-Verbose -Message $script:localizedData.CompareStates
 
     $isInDesiredState = $true
 
     if ($ProtocolName -ne $getTargetResourceResult.ProtocolName)
     {
-        Write-Verbose ($script:localizedData.ExpectedPropertyValue -f 'ProtocolName', $ProtocolName, $getTargetResourceResult.ProtocolName)
+        Write-Verbose -Message ($script:localizedData.ExpectedPropertyValue -f 'ProtocolName', $ProtocolName, $getTargetResourceResult.ProtocolName)
 
         $isInDesiredState = $false
     }
@@ -338,7 +340,7 @@ function Test-TargetResource
                 $false = 'disabled'
             }
 
-            Write-Verbose ($script:localizedData.ExpectedPropertyValue -f 'IsEnabled', $evaluateEnableOrDisable[$IsEnabled], $evaluateEnableOrDisable[$getTargetResourceResult.IsEnabled])
+            Write-Verbose -Message ($script:localizedData.ExpectedPropertyValue -f 'IsEnabled', $evaluateEnableOrDisable[$IsEnabled], $evaluateEnableOrDisable[$getTargetResourceResult.IsEnabled])
 
             $isInDesiredState = $false
         }
@@ -348,7 +350,7 @@ function Test-TargetResource
     {
         if ($TcpDynamicPort -and $getTargetResourceResult.TcpDynamicPort -eq $false)
         {
-            Write-Verbose ($script:localizedData.ExpectedPropertyValue -f 'TcpDynamicPort', $TcpDynamicPort, $getTargetResourceResult.TcpDynamicPort)
+            Write-Verbose -Message ($script:localizedData.ExpectedPropertyValue -f 'TcpDynamicPort', $TcpDynamicPort, $getTargetResourceResult.TcpDynamicPort)
 
             $isInDesiredState = $false
         }
@@ -358,13 +360,13 @@ function Test-TargetResource
     {
         if ($getTargetResourceResult.TcpPort -eq '')
         {
-            Write-Verbose ($script:localizedData.ExpectedPropertyValue -f 'TcpPort', $TcpPort, $getTargetResourceResult.TcpPort)
+            Write-Verbose -Message ($script:localizedData.ExpectedPropertyValue -f 'TcpPort', $TcpPort, $getTargetResourceResult.TcpPort)
 
             $isInDesiredState = $false
         }
         elseif ($TcpPort -ne $getTargetResourceResult.TcpPort)
         {
-            Write-Verbose ($script:localizedData.ExpectedPropertyValue -f 'TcpPort', $TcpPort, $getTargetResourceResult.TcpPort)
+            Write-Verbose -Message ($script:localizedData.ExpectedPropertyValue -f 'TcpPort', $TcpPort, $getTargetResourceResult.TcpPort)
 
             $isInDesiredState = $false
         }
@@ -372,7 +374,7 @@ function Test-TargetResource
 
     if ($isInDesiredState)
     {
-        Write-Verbose ($script:localizedData.InDesiredState)
+        Write-Verbose -Message ($script:localizedData.InDesiredState)
     }
 
     return $isInDesiredState

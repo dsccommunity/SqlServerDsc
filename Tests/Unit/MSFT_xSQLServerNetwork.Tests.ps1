@@ -95,7 +95,7 @@ try
         }
 
         $mockDefaultParameters = @{
-            SQLInstanceName = $mockInstanceName
+            InstanceName = $mockInstanceName
             ProtocolName = $mockTcpProtocolName
         }
 
@@ -133,7 +133,7 @@ try
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
+                    $result.InstanceName | Should Be $testParameters.InstanceName
                     $result.ProtocolName | Should Be $testParameters.ProtocolName
                 }
             }
