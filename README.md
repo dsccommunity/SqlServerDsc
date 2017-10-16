@@ -981,7 +981,7 @@ Read more about the network settings in the article
   is set to a non-empty string.
 * **`[String]` TcpPort** _(Write)_: The TCP port(s) that SQL Server should be listening
   on. If the IP address should listen on more than one port, list all ports separated
-  with a comma ('1433,1500,1501'). To use this parameter set TcpDynamicPorts to
+  with a comma ('1433,1500,1501'). To use this parameter set TcpDynamicPort to
   $false.
 * **`[Boolean]` RestartService** _(Write)_: If set to $true then SQL Server and
   dependent services will be restarted if a change to the configuration is made.

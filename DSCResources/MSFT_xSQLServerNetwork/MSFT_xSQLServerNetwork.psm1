@@ -10,7 +10,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xSQLServerNetwork'
     .SYNOPSIS
     Returns the current state of the SQL Server network properties.
 
-    .PARAMETER SQLInstanceName
+    .PARAMETER InstanceName
     The name of the SQL instance to be configured.
 
     .PARAMETER ProtocolName
@@ -70,7 +70,7 @@ function Get-TargetResource
     .PARAMETER SQLServer
     The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
-    .PARAMETER SQLInstanceName
+    .PARAMETER InstanceName
     The name of the SQL instance to be configured.
 
     .PARAMETER ProtocolName
@@ -241,7 +241,7 @@ function Set-TargetResource
 
     Not used in Test-TargetResource.
 
-    .PARAMETER SQLInstanceName
+    .PARAMETER InstanceName
     The name of the SQL instance to be configured.
 
     .PARAMETER ProtocolName
