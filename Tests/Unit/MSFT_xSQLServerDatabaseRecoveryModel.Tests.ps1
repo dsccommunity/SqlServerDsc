@@ -93,7 +93,7 @@ try
                     $throwInvalidOperation = ("Database 'UnknownDatabase' does not exist " + `
                                               "on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Get-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -110,13 +110,13 @@ try
                     }
 
                     $result = Get-TargetResource @testParameters
-                    $result.RecoveryModel | Should Not Be $testParameters.RecoveryModel
+                    $result.RecoveryModel | Should -Not -Be $testParameters.RecoveryModel
                 }
 
                 It 'Should return the same values as passed as parameters' {
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.Name | Should Be $testParameters.Name
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.Name | Should -Be $testParameters.Name
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -133,13 +133,13 @@ try
                     }
 
                     $result = Get-TargetResource @testParameters
-                    $result.RecoveryModel | Should Be $testParameters.RecoveryModel
+                    $result.RecoveryModel | Should -Be $testParameters.RecoveryModel
                 }
 
                 It 'Should return the same values as passed as parameters' {
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.Name | Should Be $testParameters.Name
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.Name | Should -Be $testParameters.Name
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -164,7 +164,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -181,7 +181,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -208,7 +208,7 @@ try
                     $throwInvalidOperation = ("Database 'UnknownDatabase' does not exist " + `
                                               "on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -225,7 +225,7 @@ try
                         RecoveryModel = 'Full'
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -246,7 +246,7 @@ try
                     $throwInvalidOperation = ('Exception calling "Alter" with "0" argument(s): ' +
                                               '"Mock Alter Method was called with invalid operation."')
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {

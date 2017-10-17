@@ -154,20 +154,20 @@ try
             Context 'When the system is not in the desired state' {
                 It 'Should return the desired state as absent' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
                 }
 
                 It 'Should not return any values in the properties for the endpoint' {
                     $result = Get-TargetResource @testParameters
-                    $result.EndpointName | Should Be ''
-                    $result.Port | Should Be ''
-                    $result.IpAddress | Should Be ''
+                    $result.EndpointName | Should -Be ''
+                    $result.Port | Should -Be ''
+                    $result.IpAddress | Should -Be ''
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -182,16 +182,16 @@ try
             Context 'When the system is in the desired state' {
                 It 'Should return the desired state as present' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Present'
+                    $result.Ensure | Should -Be 'Present'
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.EndpointName | Should Be $testParameters.EndpointName
-                    $result.Port | Should Be $mockEndpointListenerPort
-                    $result.IpAddress | Should Be $mockEndpointListenerIpAddress
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.EndpointName | Should -Be $testParameters.EndpointName
+                    $result.Port | Should -Be $mockEndpointListenerPort
+                    $result.IpAddress | Should -Be $mockEndpointListenerIpAddress
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -204,7 +204,7 @@ try
 
                 Context 'When endpoint exist but with wrong endpoint type' {
                     It 'Should throw the correct error' {
-                        { Get-TargetResource @testParameters } | Should Throw 'Endpoint ''DefaultEndpointMirror'' does exist, but it is not of type ''DatabaseMirroring''.'
+                        { Get-TargetResource @testParameters } | Should -Throw 'Endpoint ''DefaultEndpointMirror'' does exist, but it is not of type ''DatabaseMirroring''.'
                     }
                 }
 
@@ -218,7 +218,7 @@ try
                         return $null
                     }
 
-                    { Get-TargetResource @testParameters } | Should Throw 'Was unable to connect to the instance ''localhost\INSTANCE1'''
+                    { Get-TargetResource @testParameters } | Should -Throw 'Was unable to connect to the instance ''localhost\INSTANCE1'''
                 }
             }
 
@@ -240,7 +240,7 @@ try
                     $testParameters.Add('Ensure', 'Present')
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -251,7 +251,7 @@ try
                     $testParameters.Add('IpAddress', $mockEndpointListenerIpAddress)
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -263,7 +263,7 @@ try
                     $testParameters.Add('Ensure', 'Absent')
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -278,7 +278,7 @@ try
                         $testParameters.Add('Port', $mockEndpointListenerPort)
 
                         $result = Test-TargetResource @testParameters
-                        $result | Should Be $false
+                        $result | Should -Be $false
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -298,7 +298,7 @@ try
 
 
                         $result = Test-TargetResource @testParameters
-                        $result | Should Be $false
+                        $result | Should -Be $false
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -314,7 +314,7 @@ try
 
                 It 'Should return that desired state is present when wanted desired state is to be Present (using default values)' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -326,7 +326,7 @@ try
                     $testParameters.Add('Ensure', 'Absent')
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -363,11 +363,11 @@ try
                         }
                     } -Verifiable
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
-                    $script:mockMethodCreateRan | Should Be $true
-                    $script:mockMethodStartRan | Should Be $true
-                    $script:mockMethodAlterRan | Should Be $false
-                    $script:mockMethodDropRan | Should Be $false
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodCreateRan | Should -Be $true
+                    $script:mockMethodStartRan | Should -Be $true
+                    $script:mockMethodAlterRan | Should -Be $false
+                    $script:mockMethodDropRan | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -392,11 +392,11 @@ try
                     $testParameters.Add('Port', $mockEndpointListenerPort)
                     $testParameters.Add('IpAddress', $mockEndpointListenerIpAddress)
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
-                    $script:mockMethodCreateRan | Should Be $true
-                    $script:mockMethodStartRan | Should Be $true
-                    $script:mockMethodAlterRan | Should Be $false
-                    $script:mockMethodDropRan | Should Be $false
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodCreateRan | Should -Be $true
+                    $script:mockMethodStartRan | Should -Be $true
+                    $script:mockMethodAlterRan | Should -Be $false
+                    $script:mockMethodDropRan | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -419,11 +419,11 @@ try
 
                     $testParameters.Add('Ensure', 'Absent')
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
-                    $script:mockMethodCreateRan | Should Be $false
-                    $script:mockMethodStartRan | Should Be $false
-                    $script:mockMethodAlterRan | Should Be $false
-                    $script:mockMethodDropRan | Should Be $true
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodCreateRan | Should -Be $false
+                    $script:mockMethodStartRan | Should -Be $false
+                    $script:mockMethodAlterRan | Should -Be $false
+                    $script:mockMethodDropRan | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -450,11 +450,11 @@ try
                     $testParameters.Add('Port', $mockOtherEndpointListenerPort)
                     $testParameters.Add('IpAddress', $mockEndpointListenerIpAddress)
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
-                    $script:mockMethodCreateRan | Should Be $false
-                    $script:mockMethodStartRan | Should Be $false
-                    $script:mockMethodAlterRan | Should Be $true
-                    $script:mockMethodDropRan | Should Be $false
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodCreateRan | Should -Be $false
+                    $script:mockMethodStartRan | Should -Be $false
+                    $script:mockMethodAlterRan | Should -Be $true
+                    $script:mockMethodDropRan | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -481,11 +481,11 @@ try
                     $testParameters.Add('Port', $mockEndpointListenerPort)
                     $testParameters.Add('IpAddress', $mockOtherEndpointListenerIpAddress)
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
-                    $script:mockMethodCreateRan | Should Be $false
-                    $script:mockMethodStartRan | Should Be $false
-                    $script:mockMethodAlterRan | Should Be $true
-                    $script:mockMethodDropRan | Should Be $false
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodCreateRan | Should -Be $false
+                    $script:mockMethodStartRan | Should -Be $false
+                    $script:mockMethodAlterRan | Should -Be $true
+                    $script:mockMethodDropRan | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -503,7 +503,7 @@ try
                             }
                         } -Verifiable
 
-                        { Set-TargetResource @testParameters } | Should Throw 'Endpoint ''DefaultEndpointMirror'' does not exist'
+                        { Set-TargetResource @testParameters } | Should -Throw 'Endpoint ''DefaultEndpointMirror'' does not exist'
                     }
                 }
 
@@ -519,7 +519,7 @@ try
 
                         $testParameters.Add('Ensure', 'Absent')
 
-                        { Set-TargetResource @testParameters } | Should Throw 'Endpoint ''DefaultEndpointMirror'' does not exist'
+                        { Set-TargetResource @testParameters } | Should -Throw 'Endpoint ''DefaultEndpointMirror'' does not exist'
                     }
                 }
 
@@ -530,7 +530,7 @@ try
                             return $null
                         }
 
-                        { Set-TargetResource @testParameters } | Should Throw 'Was unable to connect to the instance ''localhost\INSTANCE1'''
+                        { Set-TargetResource @testParameters } | Should -Throw 'Was unable to connect to the instance ''localhost\INSTANCE1'''
                     }
                 }
             }
@@ -560,11 +560,11 @@ try
                     $testParameters.Add('Port', $mockEndpointListenerPort)
                     $testParameters.Add('IpAddress', $mockEndpointListenerIpAddress)
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
-                    $script:mockMethodCreateRan | Should Be $false
-                    $script:mockMethodStartRan | Should Be $false
-                    $script:mockMethodAlterRan | Should Be $false
-                    $script:mockMethodDropRan | Should Be $false
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodCreateRan | Should -Be $false
+                    $script:mockMethodStartRan | Should -Be $false
+                    $script:mockMethodAlterRan | Should -Be $false
+                    $script:mockMethodDropRan | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -587,11 +587,11 @@ try
 
                     $testParameters.Add('Ensure', 'Absent')
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
-                    $script:mockMethodCreateRan | Should Be $false
-                    $script:mockMethodStartRan | Should Be $false
-                    $script:mockMethodAlterRan | Should Be $false
-                    $script:mockMethodDropRan | Should Be $false
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodCreateRan | Should -Be $false
+                    $script:mockMethodStartRan | Should -Be $false
+                    $script:mockMethodAlterRan | Should -Be $false
+                    $script:mockMethodDropRan | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -610,7 +610,7 @@ try
                             }
                         } -Verifiable
 
-                        { Set-TargetResource @testParameters } | Should Throw 'Exception calling "Create" with "0" argument(s): "Called mocked Create() method on and endpoint with wrong name. Expected ''UnknownEndpoint''. But was ''DefaultEndpointMirror''."'
+                        { Set-TargetResource @testParameters } | Should -Throw 'Exception calling "Create" with "0" argument(s): "Called mocked Create() method on and endpoint with wrong name. Expected ''UnknownEndpoint''. But was ''DefaultEndpointMirror''."'
                     }
                 }
 
@@ -624,7 +624,7 @@ try
 
                         $testParameters.Add('Ensure', 'Absent')
 
-                        { Set-TargetResource @testParameters } | Should Throw 'Exception calling "Drop" with "0" argument(s): "Called mocked Drop() method on and endpoint with wrong name. Expected ''UnknownEndpoint''. But was ''DefaultEndpointMirror''."'
+                        { Set-TargetResource @testParameters } | Should -Throw 'Exception calling "Drop" with "0" argument(s): "Called mocked Drop() method on and endpoint with wrong name. Expected ''UnknownEndpoint''. But was ''DefaultEndpointMirror''."'
                     }
                 }
 
@@ -642,7 +642,7 @@ try
                         $testParameters.Add('Port', $mockOtherEndpointListenerPort)
                         $testParameters.Add('IpAddress', $mockEndpointListenerIpAddress)
 
-                        { Set-TargetResource @testParameters } | Should Throw 'Exception calling "Alter" with "0" argument(s): "Called mocked Alter() method on and endpoint with wrong name. Expected ''UnknownEndpoint''. But was ''DefaultEndpointMirror''."'
+                        { Set-TargetResource @testParameters } | Should -Throw 'Exception calling "Alter" with "0" argument(s): "Called mocked Alter() method on and endpoint with wrong name. Expected ''UnknownEndpoint''. But was ''DefaultEndpointMirror''."'
                     }
                 }
             }

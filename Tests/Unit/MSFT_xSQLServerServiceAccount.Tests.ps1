@@ -280,8 +280,8 @@ try
                     # Get the ManagedServiceType
                     $managedServiceType = ConvertTo-ManagedServiceType -ServiceType $ServiceType
 
-                    $managedServiceType | Should BeOfType Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType
-                    $managedServiceType | Should Be $ExpectedType
+                    $managedServiceType | Should -BeOfType Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType
+                    $managedServiceType | Should -Be $ExpectedType
                 }
             }
         }
@@ -303,7 +303,7 @@ try
                     $getServiceObjectParameters.SQLInstanceName = $mockDefaultInstanceName
 
                     $serviceObject = Get-ServiceObject @getServiceObjectParameters
-                    $serviceObject.Type | Should Be 'SqlServer'
+                    $serviceObject.Type | Should -Be 'SqlServer'
 
                     # Ensure mocks are properly used
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Exactly -Times 1
@@ -319,7 +319,7 @@ try
                     $getServiceObjectParameters.SQLInstanceName = $mockNamedInstance
 
                     $serviceObject = Get-ServiceObject @getServiceObjectParameters
-                    $serviceObject.Type | Should Be 'SqlServer'
+                    $serviceObject.Type | Should -Be 'SqlServer'
 
                     # Ensure mocks are properly used
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Exactly -Times 1
@@ -346,10 +346,10 @@ try
                     $testServiceInformation = Get-TargetResource @defaultGetTargetResourceParameters
 
                     # Validate the hashtable returned
-                    $testServiceInformation.SQLServer | Should Be $mockSqlServer
-                    $testServiceInformation.SQLInstanceName | Should Be $mockDefaultInstanceName
-                    $testServiceInformation.ServiceType | Should Be 'SqlServer'
-                    $testServiceInformation.ServiceAccount | Should Be $mockDefaultServiceAccountName
+                    $testServiceInformation.SQLServer | Should -Be $mockSqlServer
+                    $testServiceInformation.SQLInstanceName | Should -Be $mockDefaultInstanceName
+                    $testServiceInformation.ServiceType | Should -Be 'SqlServer'
+                    $testServiceInformation.ServiceAccount | Should -Be $mockDefaultServiceAccountName
 
                     # Ensure mocks were properly used
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Exactly -Times 1
@@ -361,7 +361,7 @@ try
                     $getTargetResourceParameters.ServiceType = 'SQLServerAgent'
 
                     { Get-TargetResource @getTargetResourceParameters } |
-                        Should Throw "The SQLServerAgent service on $($mockSqlServer)\$($mockDefaultInstanceName) could not be found."
+                        Should -Throw "The SQLServerAgent service on $($mockSqlServer)\$($mockDefaultInstanceName) could not be found."
 
                     # Ensure mocks were properly used
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Exactly -Times 1
@@ -385,10 +385,10 @@ try
                     $testServiceInformation = Get-TargetResource @defaultGetTargetResourceParameters
 
                     # Validate the hashtable returned
-                    $testServiceInformation.SQLServer | Should Be $mockSqlServer
-                    $testServiceInformation.SQLInstanceName | Should Be $mockNamedInstance
-                    $testServiceInformation.ServiceType | Should Be 'SqlServer'
-                    $testServiceInformation.ServiceAccount | Should Be $mockDesiredServiceAccountName
+                    $testServiceInformation.SQLServer | Should -Be $mockSqlServer
+                    $testServiceInformation.SQLInstanceName | Should -Be $mockNamedInstance
+                    $testServiceInformation.ServiceType | Should -Be 'SqlServer'
+                    $testServiceInformation.ServiceAccount | Should -Be $mockDesiredServiceAccountName
 
                     # Ensure mocks were properly used
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Exactly -Times 1
@@ -400,7 +400,7 @@ try
                     $getTargetResourceParameters.ServiceType = 'SQLServerAgent'
 
                     { Get-TargetResource @getTargetResourceParameters } |
-                        Should Throw "The SQLServerAgent service on $($mockSqlServer)\$($mockNamedInstance) could not be found."
+                        Should -Throw "The SQLServerAgent service on $($mockSqlServer)\$($mockNamedInstance) could not be found."
 
                     # Ensure mocks were properly used
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Exactly -Times 1
@@ -425,7 +425,7 @@ try
                     $currentState = Get-TargetResource @defaultGetTargetResourceParameters
 
                     # Validate the service account
-                    $currentState.ServiceAccount | Should Be $mockLocalServiceAccountName
+                    $currentState.ServiceAccount | Should -Be $mockLocalServiceAccountName
 
                     # Ensure mocks were properly used
                     Assert-MockCalled -CommandName New-Object -ParameterFilter $mockNewObject_ParameterFilter -Scope It -Exactly -Times 1
@@ -447,7 +447,7 @@ try
                         ServiceAccount = $mockServiceAccountCredential
                     }
 
-                    Test-TargetResource @testTargetResourceParameters | Should Be $false
+                    Test-TargetResource @testTargetResourceParameters | Should -Be $false
 
                     # Ensure mocks are properly used
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Exactly -Times 1
@@ -466,7 +466,7 @@ try
                         ServiceAccount = $mockDefaultServiceAccountCredential
                     }
 
-                    Test-TargetResource @testTargetResourceParameters | Should Be $true
+                    Test-TargetResource @testTargetResourceParameters | Should -Be $true
 
                     # Ensure mocks are properly used
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Exactly -Times 1
@@ -486,7 +486,7 @@ try
                         Force = $true
                     }
 
-                    Test-TargetResource @testTargetResourceParameters | Should Be $false
+                    Test-TargetResource @testTargetResourceParameters | Should -Be $false
 
                     # Ensure mocks are properly used
                     Assert-MockCalled -CommandName New-Object -ParameterFilter $mockNewObject_ParameterFilter -Scope It -Exactly -Times 0
@@ -504,7 +504,7 @@ try
                         ServiceAccount = $mockDefaultServiceAccountCredential
                     }
 
-                    Test-TargetResource @testTargetResourceParameters | Should Be $false
+                    Test-TargetResource @testTargetResourceParameters | Should -Be $false
 
                     # Ensure mocks are properly used
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Exactly -Times 1
@@ -523,7 +523,7 @@ try
                         ServiceAccount = $mockServiceAccountCredential
                     }
 
-                    Test-TargetResource @testTargetResourceParameters | Should Be $true
+                    Test-TargetResource @testTargetResourceParameters | Should -Be $true
 
                     # Ensure mocks are properly used
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Exactly -Times 1
@@ -544,7 +544,7 @@ try
                     }
 
                     # Validate the return  value
-                    Test-TargetResource @testTargetResourceParameters | Should Be $false
+                    Test-TargetResource @testTargetResourceParameters | Should -Be $false
 
                     # Ensure mocks are properly used
                     Assert-MockCalled -CommandName New-Object -ParameterFilter $mockNewObject_ParameterFilter -Scope It -Exactly -Times 0
@@ -582,9 +582,9 @@ try
                     Set-TargetResource @setTargetResourceParameters
 
                     # Validate that the correct information was passed through and updated
-                    $testServiceAccountUpdated.Processed | Should Be $true
-                    $testServiceAccountUpdated.NewUserAccount | Should Be $setTargetResourceParameters.ServiceAccount.Username
-                    $testServiceAccountUpdated.NewPassword | Should Be $setTargetResourceParameters.ServiceAccount.GetNetworkCredential().Password
+                    $testServiceAccountUpdated.Processed | Should -Be $true
+                    $testServiceAccountUpdated.NewUserAccount | Should -Be $setTargetResourceParameters.ServiceAccount.Username
+                    $testServiceAccountUpdated.NewPassword | Should -Be $setTargetResourceParameters.ServiceAccount.GetNetworkCredential().Password
 
                     # Ensure mocks are used properly
                     Assert-MockCalled -CommandName New-Object -ParameterFilter $mockNewObject_ParameterFilter -Scope It -Exactly -Times 1
@@ -599,7 +599,7 @@ try
                     $mockCorrectErrorMessage = $script:localizedData.ServiceNotFound -f $setTargetResourceParameters.ServiceType, $setTargetResourceParameters.SQLServer, $setTargetResourceParameters.SQLInstanceName
 
                     # Attempt to update the service account
-                    { Set-TargetResource @setTargetResourceParameters } | Should Throw $mockCorrectErrorMessage
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw $mockCorrectErrorMessage
 
                     # Ensure mocks are used properly
                     Assert-MockCalled -CommandName New-Object -ParameterFilter $mockNewObject_ParameterFilter -Scope It -Exactly -Times 1
@@ -631,7 +631,7 @@ try
                     $mockCorrectErrorMessage = $script:localizedData.SetServiceAccountFailed -f $setTargetResourceParameters.SQLServer, $setTargetResourceParameters.SQLInstanceName, ''
 
                     # Attempt to update the service account
-                    { Set-TargetResource @setTargetResourceParameters } | Should Throw $mockCorrectErrorMessage
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw $mockCorrectErrorMessage
 
                     # Ensure mocks are used properly
                     Assert-MockCalled -CommandName New-Object -ParameterFilter $mockNewObject_ParameterFilter -Scope It -Exactly -Times 1
@@ -666,9 +666,9 @@ try
                     Set-TargetResource @setTargetResourceParameters
 
                     # Validate that the correct information was passed through and updated
-                    $testServiceAccountUpdated.Processed | Should Be $true
-                    $testServiceAccountUpdated.NewUserAccount | Should Be $setTargetResourceParameters.ServiceAccount.Username
-                    $testServiceAccountUpdated.NewPassword | Should Be $setTargetResourceParameters.ServiceAccount.GetNetworkCredential().Password
+                    $testServiceAccountUpdated.Processed | Should -Be $true
+                    $testServiceAccountUpdated.NewUserAccount | Should -Be $setTargetResourceParameters.ServiceAccount.Username
+                    $testServiceAccountUpdated.NewPassword | Should -Be $setTargetResourceParameters.ServiceAccount.GetNetworkCredential().Password
 
                     # Ensure mocks are used properly
                     Assert-MockCalled -CommandName New-Object -ParameterFilter $mockNewObject_ParameterFilter -Scope It -Exactly -Times 1
@@ -683,7 +683,7 @@ try
                     $mockCorrectErrorMessage = $script:localizedData.ServiceNotFound -f $setTargetResourceParameters.ServiceType, $setTargetResourceParameters.SQLServer, $setTargetResourceParameters.SQLInstanceName
 
                     # Attempt to update the service account
-                    { Set-TargetResource @setTargetResourceParameters } | Should Throw $mockCorrectErrorMessage
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw $mockCorrectErrorMessage
 
                     # Ensure mocks are used properly
                     Assert-MockCalled -CommandName New-Object -ParameterFilter $mockNewObject_ParameterFilter -Scope It -Exactly -Times 1
@@ -715,7 +715,7 @@ try
                     $mockCorrectErrorMessage = $script:localizedData.SetServiceAccountFailed -f $setTargetResourceParameters.SQLServer, $setTargetResourceParameters.SQLInstanceName, ''
 
                     # Attempt to update the service information
-                    { Set-TargetResource @setTargetResourceParameters } | Should Throw $mockCorrectErrorMessage
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw $mockCorrectErrorMessage
 
                     # Ensure mocks are used properly
                     Assert-MockCalled -CommandName New-Object -ParameterFilter $mockNewObject_ParameterFilter -Scope It -Exactly -Times 1

@@ -139,15 +139,15 @@ try
 
                 It 'Should return the state as absent' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.Name | Should Be $testParameters.Name
-                    $result.Collation | Should Be $testParameters.Collation
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.Name | Should -Be $testParameters.Name
+                    $result.Collation | Should -Be $testParameters.Collation
                 }
 
 
@@ -166,15 +166,15 @@ try
 
                 It 'Should return the state as present' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Present'
+                    $result.Ensure | Should -Be 'Present'
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.Name | Should Be $testParameters.Name
-                    $result.Collation | Should Be $testParameters.Collation
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.Name | Should -Be $testParameters.Name
+                    $result.Collation | Should -Be $testParameters.Collation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -200,7 +200,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should return the state as false when desired database exists but has the incorrect collation' {
@@ -212,7 +212,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -229,7 +229,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -247,7 +247,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 It 'Should return the state as true when desired database exists and has the correct collation' {
@@ -259,7 +259,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -276,7 +276,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -306,7 +306,7 @@ try
                         Ensure  = 'Present'
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should not throw when changing the database collation' {
@@ -317,7 +317,7 @@ try
                         Collation = 'SQL_Latin1_General_CP1_CS_AS'
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -342,7 +342,7 @@ try
                         Ensure  = 'Absent'
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -364,7 +364,7 @@ try
                     $throwInvalidOperation = ('InnerException: Exception calling "Create" ' + `
                                               'with "0" argument(s): "Mock Create Method was called with invalid operation."')
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should throw the correct error when invalid collation is specified' {
@@ -377,7 +377,7 @@ try
 
                     $throwInvalidOperation = ("The specified collation '{3}' is not a valid collation for database {2} on {0}\{1}." -f $mockSqlServerName, $mockSqlServerInstanceName, $testParameters.Name, $testParameters.Collation)
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -406,7 +406,7 @@ try
                     $throwInvalidOperation = ('InnerException: Exception calling "Drop" ' + `
                                               'with "0" argument(s): "Mock Drop Method was called with invalid operation."')
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {

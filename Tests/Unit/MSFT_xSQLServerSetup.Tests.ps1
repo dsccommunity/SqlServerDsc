@@ -90,16 +90,16 @@ try
             Write-Verbose -Message ('Expected: {0}' -f ($ExpectedArgument.Keys -join ',') ) -Verbose
             Write-Verbose -Message ('Actual: {0}' -f ($actualValues.Keys -join ',')) -Verbose
 
-            $actualValues.Count | Should Be $ExpectedArgument.Count
+            $actualValues.Count | Should -Be $ExpectedArgument.Count
 
             Write-Verbose 'Verifying actual setup arguments against expected setup arguments' -Verbose
             foreach ($argumentKey in $ExpectedArgument.Keys)
             {
                 $argumentKeyName = $argumentHashTable.GetEnumerator() | Where-Object -FilterScript { $_.Name -eq $argumentKey } | Select-Object -ExpandProperty Name
-                $argumentKeyName | Should Be $argumentKey
+                $argumentKeyName | Should -Be $argumentKey
 
                 $argumentValue = $argumentHashTable.$argumentKey
-                $argumentValue | Should Be $ExpectedArgument.$argumentKey
+                $argumentValue | Should -Be $ExpectedArgument.$argumentKey
             }
         }
 
@@ -1068,7 +1068,7 @@ try
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.InstanceName | Should Be $testParameters.InstanceName
+                        $result.InstanceName | Should -Be $testParameters.InstanceName
 
                         Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 0 -Scope It
@@ -1101,36 +1101,36 @@ try
 
                     It 'Should not return any names of installed features' {
                         $result = Get-TargetResource @testParameters
-                        $result.Features | Should Be ''
+                        $result.Features | Should -Be ''
                     }
 
                     It 'Should return the correct values in the hash table' {
                         $result = Get-TargetResource @testParameters
-                        $result.SourcePath | Should Be $mockSourcePath
-                        $result.InstanceName | Should Be $mockDefaultInstance_InstanceName
-                        $result.InstanceID | Should BeNullOrEmpty
-                        $result.InstallSharedDir | Should BeNullOrEmpty
-                        $result.InstallSharedWOWDir | Should BeNullOrEmpty
-                        $result.SQLSvcAccountUsername | Should BeNullOrEmpty
-                        $result.AgtSvcAccountUsername | Should BeNullOrEmpty
-                        $result.SqlCollation | Should BeNullOrEmpty
-                        $result.SQLSysAdminAccounts | Should BeNullOrEmpty
-                        $result.SecurityMode | Should BeNullOrEmpty
-                        $result.InstallSQLDataDir | Should BeNullOrEmpty
-                        $result.SQLUserDBDir | Should BeNullOrEmpty
-                        $result.SQLUserDBLogDir | Should BeNullOrEmpty
-                        $result.SQLBackupDir | Should BeNullOrEmpty
-                        $result.FTSvcAccountUsername | Should BeNullOrEmpty
-                        $result.RSSvcAccountUsername | Should BeNullOrEmpty
-                        $result.ASSvcAccountUsername | Should BeNullOrEmpty
-                        $result.ASCollation | Should BeNullOrEmpty
-                        $result.ASSysAdminAccounts | Should BeNullOrEmpty
-                        $result.ASDataDir | Should BeNullOrEmpty
-                        $result.ASLogDir | Should BeNullOrEmpty
-                        $result.ASBackupDir | Should BeNullOrEmpty
-                        $result.ASTempDir | Should BeNullOrEmpty
-                        $result.ASConfigDir | Should BeNullOrEmpty
-                        $result.ISSvcAccountUsername | Should BeNullOrEmpty
+                        $result.SourcePath | Should -Be $mockSourcePath
+                        $result.InstanceName | Should -Be $mockDefaultInstance_InstanceName
+                        $result.InstanceID | Should -BeNullOrEmpty
+                        $result.InstallSharedDir | Should -BeNullOrEmpty
+                        $result.InstallSharedWOWDir | Should -BeNullOrEmpty
+                        $result.SQLSvcAccountUsername | Should -BeNullOrEmpty
+                        $result.AgtSvcAccountUsername | Should -BeNullOrEmpty
+                        $result.SqlCollation | Should -BeNullOrEmpty
+                        $result.SQLSysAdminAccounts | Should -BeNullOrEmpty
+                        $result.SecurityMode | Should -BeNullOrEmpty
+                        $result.InstallSQLDataDir | Should -BeNullOrEmpty
+                        $result.SQLUserDBDir | Should -BeNullOrEmpty
+                        $result.SQLUserDBLogDir | Should -BeNullOrEmpty
+                        $result.SQLBackupDir | Should -BeNullOrEmpty
+                        $result.FTSvcAccountUsername | Should -BeNullOrEmpty
+                        $result.RSSvcAccountUsername | Should -BeNullOrEmpty
+                        $result.ASSvcAccountUsername | Should -BeNullOrEmpty
+                        $result.ASCollation | Should -BeNullOrEmpty
+                        $result.ASSysAdminAccounts | Should -BeNullOrEmpty
+                        $result.ASDataDir | Should -BeNullOrEmpty
+                        $result.ASLogDir | Should -BeNullOrEmpty
+                        $result.ASBackupDir | Should -BeNullOrEmpty
+                        $result.ASTempDir | Should -BeNullOrEmpty
+                        $result.ASConfigDir | Should -BeNullOrEmpty
+                        $result.ISSvcAccountUsername | Should -BeNullOrEmpty
                     }
                 }
 
@@ -1194,7 +1194,7 @@ try
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.InstanceName | Should Be $testParameters.InstanceName
+                        $result.InstanceName | Should -Be $testParameters.InstanceName
 
                         Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 1 -Scope It
@@ -1236,36 +1236,36 @@ try
                         } -MockWith {} -Verifiable
 
                         $result = Get-TargetResource @testParameters
-                        $result.Features | Should Be ''
+                        $result.Features | Should -Be ''
                     }
 
                     It 'Should return the correct values in the hash table' {
                         $result = Get-TargetResource @testParameters
-                        $result.SourcePath | Should Be $mockSourcePathUNC
-                        $result.InstanceName | Should Be $mockDefaultInstance_InstanceName
-                        $result.InstanceID | Should BeNullOrEmpty
-                        $result.InstallSharedDir | Should BeNullOrEmpty
-                        $result.InstallSharedWOWDir | Should BeNullOrEmpty
-                        $result.SQLSvcAccountUsername | Should BeNullOrEmpty
-                        $result.AgtSvcAccountUsername | Should BeNullOrEmpty
-                        $result.SqlCollation | Should BeNullOrEmpty
-                        $result.SQLSysAdminAccounts | Should BeNullOrEmpty
-                        $result.SecurityMode | Should BeNullOrEmpty
-                        $result.InstallSQLDataDir | Should BeNullOrEmpty
-                        $result.SQLUserDBDir | Should BeNullOrEmpty
-                        $result.SQLUserDBLogDir | Should BeNullOrEmpty
-                        $result.SQLBackupDir | Should BeNullOrEmpty
-                        $result.FTSvcAccountUsername | Should BeNullOrEmpty
-                        $result.RSSvcAccountUsername | Should BeNullOrEmpty
-                        $result.ASSvcAccountUsername | Should BeNullOrEmpty
-                        $result.ASCollation | Should BeNullOrEmpty
-                        $result.ASSysAdminAccounts | Should BeNullOrEmpty
-                        $result.ASDataDir | Should BeNullOrEmpty
-                        $result.ASLogDir | Should BeNullOrEmpty
-                        $result.ASBackupDir | Should BeNullOrEmpty
-                        $result.ASTempDir | Should BeNullOrEmpty
-                        $result.ASConfigDir | Should BeNullOrEmpty
-                        $result.ISSvcAccountUsername | Should BeNullOrEmpty
+                        $result.SourcePath | Should -Be $mockSourcePathUNC
+                        $result.InstanceName | Should -Be $mockDefaultInstance_InstanceName
+                        $result.InstanceID | Should -BeNullOrEmpty
+                        $result.InstallSharedDir | Should -BeNullOrEmpty
+                        $result.InstallSharedWOWDir | Should -BeNullOrEmpty
+                        $result.SQLSvcAccountUsername | Should -BeNullOrEmpty
+                        $result.AgtSvcAccountUsername | Should -BeNullOrEmpty
+                        $result.SqlCollation | Should -BeNullOrEmpty
+                        $result.SQLSysAdminAccounts | Should -BeNullOrEmpty
+                        $result.SecurityMode | Should -BeNullOrEmpty
+                        $result.InstallSQLDataDir | Should -BeNullOrEmpty
+                        $result.SQLUserDBDir | Should -BeNullOrEmpty
+                        $result.SQLUserDBLogDir | Should -BeNullOrEmpty
+                        $result.SQLBackupDir | Should -BeNullOrEmpty
+                        $result.FTSvcAccountUsername | Should -BeNullOrEmpty
+                        $result.RSSvcAccountUsername | Should -BeNullOrEmpty
+                        $result.ASSvcAccountUsername | Should -BeNullOrEmpty
+                        $result.ASCollation | Should -BeNullOrEmpty
+                        $result.ASSysAdminAccounts | Should -BeNullOrEmpty
+                        $result.ASDataDir | Should -BeNullOrEmpty
+                        $result.ASLogDir | Should -BeNullOrEmpty
+                        $result.ASBackupDir | Should -BeNullOrEmpty
+                        $result.ASTempDir | Should -BeNullOrEmpty
+                        $result.ASConfigDir | Should -BeNullOrEmpty
+                        $result.ISSvcAccountUsername | Should -BeNullOrEmpty
                     }
                 }
 
@@ -1368,11 +1368,11 @@ try
                         $result = Get-TargetResource @testParameters
                         if ($mockSqlMajorVersion -in (13,14))
                         {
-                            $result.Features | Should Be 'SQLENGINE,REPLICATION,DQC,DQ,FULLTEXT,RS,AS,IS,BOL,MDS'
+                            $result.Features | Should -Be 'SQLENGINE,REPLICATION,DQC,DQ,FULLTEXT,RS,AS,IS,BOL,MDS'
                         }
                         else
                         {
-                            $result.Features | Should Be 'SQLENGINE,REPLICATION,DQC,DQ,FULLTEXT,RS,AS,IS,BOL,MDS,SSMS,ADV_SSMS'
+                            $result.Features | Should -Be 'SQLENGINE,REPLICATION,DQC,DQ,FULLTEXT,RS,AS,IS,BOL,MDS,SSMS,ADV_SSMS'
                         }
                     }
                 }
@@ -1470,7 +1470,7 @@ try
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.InstanceName | Should Be $testParameters.InstanceName
+                        $result.InstanceName | Should -Be $testParameters.InstanceName
 
                         Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 0 -Scope It
@@ -1550,41 +1550,41 @@ try
                         if ($mockSqlMajorVersion -in (13,14))
                         {
                             $featuresForSqlServer2016 = (($mockDefaultParameters.Features.ToUpper()) -replace 'SSMS,','') -replace ',ADV_SSMS',''
-                            $result.Features | Should Be $featuresForSqlServer2016
+                            $result.Features | Should -Be $featuresForSqlServer2016
                         }
                         else
                         {
-                            $result.Features | Should Be $mockDefaultParameters.Features.ToUpper()
+                            $result.Features | Should -Be $mockDefaultParameters.Features.ToUpper()
                         }
                     }
 
                     It 'Should return the correct values in the hash table' {
                         $result = Get-TargetResource @testParameters
-                        $result.SourcePath | Should Be $mockSourcePath
-                        $result.InstanceName | Should Be $mockDefaultInstance_InstanceName
-                        $result.InstanceID | Should Be $mockDefaultInstance_InstanceName
-                        $result.InstallSharedDir | Should Be $mockSqlSharedDirectory
-                        $result.InstallSharedWOWDir | Should Be $mockSqlSharedWowDirectory
-                        $result.SQLSvcAccountUsername | Should Be $mockSqlServiceAccount
-                        $result.AgtSvcAccountUsername | Should Be $mockAgentServiceAccount
-                        $result.SqlCollation | Should Be $mockSqlCollation
-                        $result.SQLSysAdminAccounts | Should Be $mockSqlSystemAdministrator
-                        $result.SecurityMode | Should Be 'Windows'
-                        $result.InstallSQLDataDir | Should Be $mockSqlInstallPath
-                        $result.SQLUserDBDir | Should Be $mockSqlDefaultDatabaseFilePath
-                        $result.SQLUserDBLogDir | Should Be $mockSqlDefaultDatabaseLogPath
-                        $result.SQLBackupDir | Should Be $mockDynamicSqlBackupPath
-                        $result.FTSvcAccountUsername | Should Be $mockSqlServiceAccount
-                        $result.RSSvcAccountUsername | Should Be $mockSqlServiceAccount
-                        $result.ASSvcAccountUsername | Should Be $mockSqlServiceAccount
-                        $result.ASCollation | Should Be $mockSqlAnalysisCollation
-                        $result.ASSysAdminAccounts | Should Be $mockSqlAnalysisAdmins
-                        $result.ASDataDir | Should Be $mockSqlAnalysisDataDirectory
-                        $result.ASLogDir | Should Be $mockSqlAnalysisLogDirectory
-                        $result.ASBackupDir | Should Be $mockSqlAnalysisBackupDirectory
-                        $result.ASTempDir | Should Be $mockSqlAnalysisTempDirectory
-                        $result.ASConfigDir | Should Be $mockSqlAnalysisConfigDirectory
-                        $result.ISSvcAccountUsername | Should Be $mockSqlServiceAccount
+                        $result.SourcePath | Should -Be $mockSourcePath
+                        $result.InstanceName | Should -Be $mockDefaultInstance_InstanceName
+                        $result.InstanceID | Should -Be $mockDefaultInstance_InstanceName
+                        $result.InstallSharedDir | Should -Be $mockSqlSharedDirectory
+                        $result.InstallSharedWOWDir | Should -Be $mockSqlSharedWowDirectory
+                        $result.SQLSvcAccountUsername | Should -Be $mockSqlServiceAccount
+                        $result.AgtSvcAccountUsername | Should -Be $mockAgentServiceAccount
+                        $result.SqlCollation | Should -Be $mockSqlCollation
+                        $result.SQLSysAdminAccounts | Should -Be $mockSqlSystemAdministrator
+                        $result.SecurityMode | Should -Be 'Windows'
+                        $result.InstallSQLDataDir | Should -Be $mockSqlInstallPath
+                        $result.SQLUserDBDir | Should -Be $mockSqlDefaultDatabaseFilePath
+                        $result.SQLUserDBLogDir | Should -Be $mockSqlDefaultDatabaseLogPath
+                        $result.SQLBackupDir | Should -Be $mockDynamicSqlBackupPath
+                        $result.FTSvcAccountUsername | Should -Be $mockSqlServiceAccount
+                        $result.RSSvcAccountUsername | Should -Be $mockSqlServiceAccount
+                        $result.ASSvcAccountUsername | Should -Be $mockSqlServiceAccount
+                        $result.ASCollation | Should -Be $mockSqlAnalysisCollation
+                        $result.ASSysAdminAccounts | Should -Be $mockSqlAnalysisAdmins
+                        $result.ASDataDir | Should -Be $mockSqlAnalysisDataDirectory
+                        $result.ASLogDir | Should -Be $mockSqlAnalysisLogDirectory
+                        $result.ASBackupDir | Should -Be $mockSqlAnalysisBackupDirectory
+                        $result.ASTempDir | Should -Be $mockSqlAnalysisTempDirectory
+                        $result.ASConfigDir | Should -Be $mockSqlAnalysisConfigDirectory
+                        $result.ISSvcAccountUsername | Should -Be $mockSqlServiceAccount
                     }
 
                     <#
@@ -1597,8 +1597,8 @@ try
 
                     It 'Should return the correct type and value for property ASSysAdminAccounts' {
                         $result = Get-TargetResource @testParameters
-                        Write-Output -NoEnumerate $result.ASSysAdminAccounts | Should BeOfType [System.String[]]
-                        $result.ASSysAdminAccounts | Should Be $mockSqlAnalysisSingleAdministrator
+                        Write-Output -NoEnumerate $result.ASSysAdminAccounts | Should -BeOfType [System.String[]]
+                        $result.ASSysAdminAccounts | Should -Be $mockSqlAnalysisSingleAdministrator
                     }
 
                     # Setting back the default administrators for mock Connect-SQLAnalysis.
@@ -1699,7 +1699,7 @@ try
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.InstanceName | Should Be $testParameters.InstanceName
+                        $result.InstanceName | Should -Be $testParameters.InstanceName
 
                         Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 1 -Scope It
@@ -1779,41 +1779,41 @@ try
                         if ($mockSqlMajorVersion -in (13,14))
                         {
                             $featuresForSqlServer2016 = (($mockDefaultParameters.Features.ToUpper()) -replace 'SSMS,','') -replace ',ADV_SSMS',''
-                            $result.Features | Should Be $featuresForSqlServer2016
+                            $result.Features | Should -Be $featuresForSqlServer2016
                         }
                         else
                         {
-                            $result.Features | Should Be $mockDefaultParameters.Features.ToUpper()
+                            $result.Features | Should -Be $mockDefaultParameters.Features.ToUpper()
                         }
                     }
 
                     It 'Should return the correct values in the hash table' {
                         $result = Get-TargetResource @testParameters
-                        $result.SourcePath | Should Be $mockSourcePathUNC
-                        $result.InstanceName | Should Be $mockDefaultInstance_InstanceName
-                        $result.InstanceID | Should Be $mockDefaultInstance_InstanceName
-                        $result.InstallSharedDir | Should Be $mockSqlSharedDirectory
-                        $result.InstallSharedWOWDir | Should Be $mockSqlSharedWowDirectory
-                        $result.SQLSvcAccountUsername | Should Be $mockSqlServiceAccount
-                        $result.AgtSvcAccountUsername | Should Be $mockAgentServiceAccount
-                        $result.SqlCollation | Should Be $mockSqlCollation
-                        $result.SQLSysAdminAccounts | Should Be $mockSqlSystemAdministrator
-                        $result.SecurityMode | Should Be 'Windows'
-                        $result.InstallSQLDataDir | Should Be $mockSqlInstallPath
-                        $result.SQLUserDBDir | Should Be $mockSqlDefaultDatabaseFilePath
-                        $result.SQLUserDBLogDir | Should Be $mockSqlDefaultDatabaseLogPath
-                        $result.SQLBackupDir | Should Be $mockDynamicSqlBackupPath
-                        $result.FTSvcAccountUsername | Should Be $mockSqlServiceAccount
-                        $result.RSSvcAccountUsername | Should Be $mockSqlServiceAccount
-                        $result.ASSvcAccountUsername | Should Be $mockSqlServiceAccount
-                        $result.ASCollation | Should Be $mockSqlAnalysisCollation
-                        $result.ASSysAdminAccounts | Should Be $mockSqlAnalysisAdmins
-                        $result.ASDataDir | Should Be $mockSqlAnalysisDataDirectory
-                        $result.ASLogDir | Should Be $mockSqlAnalysisLogDirectory
-                        $result.ASBackupDir | Should Be $mockSqlAnalysisBackupDirectory
-                        $result.ASTempDir | Should Be $mockSqlAnalysisTempDirectory
-                        $result.ASConfigDir | Should Be $mockSqlAnalysisConfigDirectory
-                        $result.ISSvcAccountUsername | Should Be $mockSqlServiceAccount
+                        $result.SourcePath | Should -Be $mockSourcePathUNC
+                        $result.InstanceName | Should -Be $mockDefaultInstance_InstanceName
+                        $result.InstanceID | Should -Be $mockDefaultInstance_InstanceName
+                        $result.InstallSharedDir | Should -Be $mockSqlSharedDirectory
+                        $result.InstallSharedWOWDir | Should -Be $mockSqlSharedWowDirectory
+                        $result.SQLSvcAccountUsername | Should -Be $mockSqlServiceAccount
+                        $result.AgtSvcAccountUsername | Should -Be $mockAgentServiceAccount
+                        $result.SqlCollation | Should -Be $mockSqlCollation
+                        $result.SQLSysAdminAccounts | Should -Be $mockSqlSystemAdministrator
+                        $result.SecurityMode | Should -Be 'Windows'
+                        $result.InstallSQLDataDir | Should -Be $mockSqlInstallPath
+                        $result.SQLUserDBDir | Should -Be $mockSqlDefaultDatabaseFilePath
+                        $result.SQLUserDBLogDir | Should -Be $mockSqlDefaultDatabaseLogPath
+                        $result.SQLBackupDir | Should -Be $mockDynamicSqlBackupPath
+                        $result.FTSvcAccountUsername | Should -Be $mockSqlServiceAccount
+                        $result.RSSvcAccountUsername | Should -Be $mockSqlServiceAccount
+                        $result.ASSvcAccountUsername | Should -Be $mockSqlServiceAccount
+                        $result.ASCollation | Should -Be $mockSqlAnalysisCollation
+                        $result.ASSysAdminAccounts | Should -Be $mockSqlAnalysisAdmins
+                        $result.ASDataDir | Should -Be $mockSqlAnalysisDataDirectory
+                        $result.ASLogDir | Should -Be $mockSqlAnalysisLogDirectory
+                        $result.ASBackupDir | Should -Be $mockSqlAnalysisBackupDirectory
+                        $result.ASTempDir | Should -Be $mockSqlAnalysisTempDirectory
+                        $result.ASConfigDir | Should -Be $mockSqlAnalysisConfigDirectory
+                        $result.ISSvcAccountUsername | Should -Be $mockSqlServiceAccount
                     }
                 }
 
@@ -1884,7 +1884,7 @@ try
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.InstanceName | Should Be $testParameters.InstanceName
+                        $result.InstanceName | Should -Be $testParameters.InstanceName
 
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
@@ -1923,36 +1923,36 @@ try
                         } -MockWith {} -Verifiable
 
                         $result = Get-TargetResource @testParameters
-                        $result.Features | Should Be ''
+                        $result.Features | Should -Be ''
                     }
 
                     It 'Should return the correct values in the hash table' {
                         $result = Get-TargetResource @testParameters
-                        $result.SourcePath | Should Be $mockSourcePath
-                        $result.InstanceName | Should Be $mockNamedInstance_InstanceName
-                        $result.InstanceID | Should BeNullOrEmpty
-                        $result.InstallSharedDir | Should BeNullOrEmpty
-                        $result.InstallSharedWOWDir | Should BeNullOrEmpty
-                        $result.SQLSvcAccountUsername | Should BeNullOrEmpty
-                        $result.AgtSvcAccountUsername | Should BeNullOrEmpty
-                        $result.SqlCollation | Should BeNullOrEmpty
-                        $result.SQLSysAdminAccounts | Should BeNullOrEmpty
-                        $result.SecurityMode | Should BeNullOrEmpty
-                        $result.InstallSQLDataDir | Should BeNullOrEmpty
-                        $result.SQLUserDBDir | Should BeNullOrEmpty
-                        $result.SQLUserDBLogDir | Should BeNullOrEmpty
-                        $result.SQLBackupDir | Should BeNullOrEmpty
-                        $result.FTSvcAccountUsername | Should BeNullOrEmpty
-                        $result.RSSvcAccountUsername | Should BeNullOrEmpty
-                        $result.ASSvcAccountUsername | Should BeNullOrEmpty
-                        $result.ASCollation | Should BeNullOrEmpty
-                        $result.ASSysAdminAccounts | Should BeNullOrEmpty
-                        $result.ASDataDir | Should BeNullOrEmpty
-                        $result.ASLogDir | Should BeNullOrEmpty
-                        $result.ASBackupDir | Should BeNullOrEmpty
-                        $result.ASTempDir | Should BeNullOrEmpty
-                        $result.ASConfigDir | Should BeNullOrEmpty
-                        $result.ISSvcAccountUsername | Should BeNullOrEmpty
+                        $result.SourcePath | Should -Be $mockSourcePath
+                        $result.InstanceName | Should -Be $mockNamedInstance_InstanceName
+                        $result.InstanceID | Should -BeNullOrEmpty
+                        $result.InstallSharedDir | Should -BeNullOrEmpty
+                        $result.InstallSharedWOWDir | Should -BeNullOrEmpty
+                        $result.SQLSvcAccountUsername | Should -BeNullOrEmpty
+                        $result.AgtSvcAccountUsername | Should -BeNullOrEmpty
+                        $result.SqlCollation | Should -BeNullOrEmpty
+                        $result.SQLSysAdminAccounts | Should -BeNullOrEmpty
+                        $result.SecurityMode | Should -BeNullOrEmpty
+                        $result.InstallSQLDataDir | Should -BeNullOrEmpty
+                        $result.SQLUserDBDir | Should -BeNullOrEmpty
+                        $result.SQLUserDBLogDir | Should -BeNullOrEmpty
+                        $result.SQLBackupDir | Should -BeNullOrEmpty
+                        $result.FTSvcAccountUsername | Should -BeNullOrEmpty
+                        $result.RSSvcAccountUsername | Should -BeNullOrEmpty
+                        $result.ASSvcAccountUsername | Should -BeNullOrEmpty
+                        $result.ASCollation | Should -BeNullOrEmpty
+                        $result.ASSysAdminAccounts | Should -BeNullOrEmpty
+                        $result.ASDataDir | Should -BeNullOrEmpty
+                        $result.ASLogDir | Should -BeNullOrEmpty
+                        $result.ASBackupDir | Should -BeNullOrEmpty
+                        $result.ASTempDir | Should -BeNullOrEmpty
+                        $result.ASConfigDir | Should -BeNullOrEmpty
+                        $result.ISSvcAccountUsername | Should -BeNullOrEmpty
                     }
                 }
 
@@ -2047,7 +2047,7 @@ try
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.InstanceName | Should Be $testParameters.InstanceName
+                        $result.InstanceName | Should -Be $testParameters.InstanceName
 
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
@@ -2125,41 +2125,41 @@ try
                         if ($mockSqlMajorVersion -in (13,14))
                         {
                             $featuresForSqlServer2016 = (($mockDefaultParameters.Features.ToUpper()) -replace 'SSMS,','') -replace ',ADV_SSMS',''
-                            $result.Features | Should Be $featuresForSqlServer2016
+                            $result.Features | Should -Be $featuresForSqlServer2016
                         }
                         else
                         {
-                            $result.Features | Should Be $mockDefaultParameters.Features.ToUpper()
+                            $result.Features | Should -Be $mockDefaultParameters.Features.ToUpper()
                         }
                     }
 
                     It 'Should return the correct values in the hash table' {
                         $result = Get-TargetResource @testParameters
-                        $result.SourcePath | Should Be $mockSourcePath
-                        $result.InstanceName | Should Be $mockNamedInstance_InstanceName
-                        $result.InstanceID | Should Be $mockNamedInstance_InstanceName
-                        $result.InstallSharedDir | Should Be $mockSqlSharedDirectory
-                        $result.InstallSharedWOWDir | Should Be $mockSqlSharedWowDirectory
-                        $result.SQLSvcAccountUsername | Should Be $mockSqlServiceAccount
-                        $result.AgtSvcAccountUsername | Should Be $mockAgentServiceAccount
-                        $result.SqlCollation | Should Be $mockSqlCollation
-                        $result.SQLSysAdminAccounts | Should Be $mockSqlSystemAdministrator
-                        $result.SecurityMode | Should Be 'Windows'
-                        $result.InstallSQLDataDir | Should Be $mockSqlInstallPath
-                        $result.SQLUserDBDir | Should Be $mockSqlDefaultDatabaseFilePath
-                        $result.SQLUserDBLogDir | Should Be $mockSqlDefaultDatabaseLogPath
-                        $result.SQLBackupDir | Should Be $mockDynamicSqlBackupPath
-                        $result.FTSvcAccountUsername | Should Be $mockSqlServiceAccount
-                        $result.RSSvcAccountUsername | Should Be $mockSqlServiceAccount
-                        $result.ASSvcAccountUsername | Should Be $mockSqlServiceAccount
-                        $result.ASCollation | Should Be $mockSqlAnalysisCollation
-                        $result.ASSysAdminAccounts | Should Be $mockSqlAnalysisAdmins
-                        $result.ASDataDir | Should Be $mockSqlAnalysisDataDirectory
-                        $result.ASLogDir | Should Be $mockSqlAnalysisLogDirectory
-                        $result.ASBackupDir | Should Be $mockSqlAnalysisBackupDirectory
-                        $result.ASTempDir | Should Be $mockSqlAnalysisTempDirectory
-                        $result.ASConfigDir | Should Be $mockSqlAnalysisConfigDirectory
-                        $result.ISSvcAccountUsername | Should Be $mockSqlServiceAccount
+                        $result.SourcePath | Should -Be $mockSourcePath
+                        $result.InstanceName | Should -Be $mockNamedInstance_InstanceName
+                        $result.InstanceID | Should -Be $mockNamedInstance_InstanceName
+                        $result.InstallSharedDir | Should -Be $mockSqlSharedDirectory
+                        $result.InstallSharedWOWDir | Should -Be $mockSqlSharedWowDirectory
+                        $result.SQLSvcAccountUsername | Should -Be $mockSqlServiceAccount
+                        $result.AgtSvcAccountUsername | Should -Be $mockAgentServiceAccount
+                        $result.SqlCollation | Should -Be $mockSqlCollation
+                        $result.SQLSysAdminAccounts | Should -Be $mockSqlSystemAdministrator
+                        $result.SecurityMode | Should -Be 'Windows'
+                        $result.InstallSQLDataDir | Should -Be $mockSqlInstallPath
+                        $result.SQLUserDBDir | Should -Be $mockSqlDefaultDatabaseFilePath
+                        $result.SQLUserDBLogDir | Should -Be $mockSqlDefaultDatabaseLogPath
+                        $result.SQLBackupDir | Should -Be $mockDynamicSqlBackupPath
+                        $result.FTSvcAccountUsername | Should -Be $mockSqlServiceAccount
+                        $result.RSSvcAccountUsername | Should -Be $mockSqlServiceAccount
+                        $result.ASSvcAccountUsername | Should -Be $mockSqlServiceAccount
+                        $result.ASCollation | Should -Be $mockSqlAnalysisCollation
+                        $result.ASSysAdminAccounts | Should -Be $mockSqlAnalysisAdmins
+                        $result.ASDataDir | Should -Be $mockSqlAnalysisDataDirectory
+                        $result.ASLogDir | Should -Be $mockSqlAnalysisLogDirectory
+                        $result.ASBackupDir | Should -Be $mockSqlAnalysisBackupDirectory
+                        $result.ASTempDir | Should -Be $mockSqlAnalysisTempDirectory
+                        $result.ASConfigDir | Should -Be $mockSqlAnalysisConfigDirectory
+                        $result.ISSvcAccountUsername | Should -Be $mockSqlServiceAccount
                     }
                 }
 
@@ -2191,9 +2191,9 @@ try
                         Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-CimAssociatedInstance -Exactly -Times 0 -Scope It
 
-                        $currentState.FailoverClusterGroupName | Should BeNullOrEmpty
-                        $currentState.FailoverClusterNetworkName | Should BeNullOrEmpty
-                        $currentState.FailoverClusterIPAddress | Should BeNullOrEmpty
+                        $currentState.FailoverClusterGroupName | Should -BeNullOrEmpty
+                        $currentState.FailoverClusterNetworkName | Should -BeNullOrEmpty
+                        $currentState.FailoverClusterIPAddress | Should -BeNullOrEmpty
                     }
                 }
 
@@ -2232,7 +2232,7 @@ try
                             $Filter -eq "Type = 'SQL Server'"
                         }
 
-                        { Get-TargetResource @testParameters } | Should Throw 'Could not locate a SQL Server cluster resource for instance MSSQLSERVER.'
+                        { Get-TargetResource @testParameters } | Should -Throw 'Could not locate a SQL Server cluster resource for instance MSSQLSERVER.'
 
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 1 -Scope It -ParameterFilter { $Filter -eq "Type = 'SQL Server'" }
@@ -2246,15 +2246,15 @@ try
                         Assert-MockCalled -CommandName Get-CimAssociatedInstance -Exactly -Times 1 -Scope It -ParameterFilter { $ResultClassName -eq 'MSCluster_ResourceGroup' }
                         Assert-MockCalled -CommandName Get-CimAssociatedInstance -Exactly -Times 2 -Scope It -ParameterFilter { $ResultClassName -eq 'MSCluster_Resource' }
 
-                        $currentState.InstanceName | Should Be $testParameters.InstanceName
+                        $currentState.InstanceName | Should -Be $testParameters.InstanceName
                     }
 
                     It 'Should return correct cluster information' {
                         $currentState = Get-TargetResource @testParameters
 
-                        $currentState.FailoverClusterGroupName | Should Be $mockDefaultInstance_FailoverClusterGroupName
-                        $currentState.FailoverClusterIPAddress | Should Be $mockDefaultInstance_FailoverClusterIPAddress
-                        $currentSTate.FailoverClusterNetworkName | Should Be $mockDefaultInstance_FailoverClusterNetworkName
+                        $currentState.FailoverClusterGroupName | Should -Be $mockDefaultInstance_FailoverClusterGroupName
+                        $currentState.FailoverClusterIPAddress | Should -Be $mockDefaultInstance_FailoverClusterIPAddress
+                        $currentSTate.FailoverClusterNetworkName | Should -Be $mockDefaultInstance_FailoverClusterNetworkName
                     }
                 }
             }
@@ -2371,7 +2371,7 @@ try
                     Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable -Verifiable
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                     Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
@@ -2440,7 +2440,7 @@ try
                     $testParameters.Features = 'SSMS'
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
@@ -2539,7 +2539,7 @@ try
                     $testParameters.Features = 'ADV_SSMS'
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
@@ -2605,7 +2605,7 @@ try
 
                     $result = Test-TargetResource @testClusterParameters
 
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 # This is a test for regression testing of issue #432
@@ -2631,7 +2631,7 @@ try
                     }
 
                     $result = Test-TargetResource @testClusterParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
             }
 
@@ -2734,7 +2734,7 @@ try
 
                 It 'Should return that the desired state is present' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
@@ -2812,7 +2812,7 @@ try
 
                     $result = Test-TargetResource @testClusterParameters
 
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 1 -Scope It -ParameterFilter { $Filter -eq "Type = 'SQL Server'" }
@@ -2851,7 +2851,7 @@ try
 
                     $result = Test-TargetResource @testClusterParameters
 
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 # This is a test for regression testing of issue #432
@@ -2877,7 +2877,7 @@ try
                     }
 
                     $result = Test-TargetResource @testClusterParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
             }
 
@@ -3013,7 +3013,7 @@ try
                         Mock -CommandName Write-Warning
 
                         It 'Should warn that target nod need to restart' {
-                            { Set-TargetResource @testParameters } | Should Not Throw
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
 
                             Assert-MockCalled -CommandName Write-Warning -Exactly -Times 1 -Scope It
                         }
@@ -3025,7 +3025,7 @@ try
                         Mock -CommandName Write-Warning
 
                         It 'Should throw the correct error message' {
-                            { Set-TargetResource @testParameters } | Should Not Throw
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
 
                             Assert-MockCalled -CommandName Write-Warning -Exactly -Times 1 -Scope It
                         }
@@ -3093,7 +3093,7 @@ try
                             UpdateSource = 'C:\Updates' # Regression test for issue #720
                         }
 
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
 
                         Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 0 -Scope It
@@ -3134,7 +3134,7 @@ try
                             $testParameters.Features = 'SSMS'
                             $mockStartSqlSetupProcessExpectedArgument = @{}
 
-                            { Set-TargetResource @testParameters } | Should Throw "'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
+                            { Set-TargetResource @testParameters } | Should -Throw "'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
 
                         It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016' {
@@ -3147,7 +3147,7 @@ try
                             $testParameters.Features = 'ADV_SSMS'
                             $mockStartSqlSetupProcessExpectedArgument = @{}
 
-                            { Set-TargetResource @testParameters } | Should Throw "'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
+                            { Set-TargetResource @testParameters } | Should -Throw "'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
                     }
                     else
@@ -3169,7 +3169,7 @@ try
                                 Features = 'SSMS'
                             }
 
-                            { Set-TargetResource @testParameters } | Should Not Throw
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
 
                             Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                             Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
@@ -3210,7 +3210,7 @@ try
                                 Features = 'ADV_SSMS'
                             }
 
-                            { Set-TargetResource @testParameters } | Should Not Throw
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
 
                             Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                             Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
@@ -3298,7 +3298,7 @@ try
                             ASSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
 
                         Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 2 -Scope It
@@ -3334,14 +3334,14 @@ try
                             $testParameters.Features = 'SSMS'
                             $mockStartSqlSetupProcessExpectedArgument = ''
 
-                            { Set-TargetResource @testParameters } | Should Throw "'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
+                            { Set-TargetResource @testParameters } | Should -Throw "'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
 
                         It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016' {
                             $testParameters.Features = 'ADV_SSMS'
                             $mockStartSqlSetupProcessExpectedArgument = ''
 
-                            { Set-TargetResource @testParameters } | Should Throw "'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
+                            { Set-TargetResource @testParameters } | Should -Throw "'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
                     }
                     else
@@ -3357,7 +3357,7 @@ try
                                 Features = 'SSMS'
                             }
 
-                            { Set-TargetResource @testParameters } | Should Not Throw
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
 
                             Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                             Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
@@ -3393,7 +3393,7 @@ try
                                 Features = 'ADV_SSMS'
                             }
 
-                            { Set-TargetResource @testParameters } | Should Not Throw
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
 
                             Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                             Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -3471,7 +3471,7 @@ try
                             ASSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
 
                         Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 2 -Scope It
@@ -3507,14 +3507,14 @@ try
                             $testParameters.Features = 'SSMS'
                             $mockStartSqlSetupProcessExpectedArgument = @{}
 
-                            { Set-TargetResource @testParameters } | Should Throw "'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
+                            { Set-TargetResource @testParameters } | Should -Throw "'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
 
                         It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016' {
                             $testParameters.Features = 'ADV_SSMS'
                             $mockStartSqlSetupProcessExpectedArgument = @{}
 
-                            { Set-TargetResource @testParameters } | Should Throw "'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
+                            { Set-TargetResource @testParameters } | Should -Throw "'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
                     }
                     else
@@ -3530,7 +3530,7 @@ try
                                 Features = 'SSMS'
                             }
 
-                            { Set-TargetResource @testParameters } | Should Not Throw
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
 
                             Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                             Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
@@ -3566,7 +3566,7 @@ try
                                 Features = 'ADV_SSMS'
                             }
 
-                            { Set-TargetResource @testParameters } | Should Not Throw
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
 
                             Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                             Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -3647,7 +3647,7 @@ try
                             ASSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
 
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
@@ -3678,14 +3678,14 @@ try
                             $testParameters.Features = $($testParameters.Features), 'SSMS' -join ','
                             $mockStartSqlSetupProcessExpectedArgument = @{}
 
-                            { Set-TargetResource @testParameters } | Should Throw "'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
+                            { Set-TargetResource @testParameters } | Should -Throw "'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
 
                         It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016' {
                             $testParameters.Features = $($testParameters.Features), 'ADV_SSMS' -join ','
                             $mockStartSqlSetupProcessExpectedArgument = @{}
 
-                            { Set-TargetResource @testParameters } | Should Throw "'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
+                            { Set-TargetResource @testParameters } | Should -Throw "'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
                     }
                     else
@@ -3701,7 +3701,7 @@ try
                                 Features = 'SSMS'
                             }
 
-                            { Set-TargetResource @testParameters } | Should Not Throw
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
 
                             Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                             Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
@@ -3736,7 +3736,7 @@ try
                                 Features = 'ADV_SSMS'
                             }
 
-                            { Set-TargetResource @testParameters } | Should Not Throw
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
 
                             Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                             Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -3832,7 +3832,7 @@ try
                             SkipRules = 'Cluster_VerifyForErrors'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
                     }
                 }
 
@@ -3934,7 +3934,7 @@ try
                             SQLBackupDir = $mockDynamicSqlBackupPath
                         }
 
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
                     }
 
                     It 'Should pass proper parameters to setup when only InstallSQLDataDir is assigned a path' {
@@ -3955,7 +3955,7 @@ try
                         $setTargetResourceParameters.Remove('SQLTempDbLogDir')
                         $setTargetResourceParameters.Remove('SQLBackupDir')
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should Not Throw
+                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
                     }
 
                     It 'Should pass proper parameters to setup when three variables are assigned the same drive, but different paths' {
@@ -3980,7 +3980,7 @@ try
                         $setTargetResourceParameters['SQLUserDBDir'] = 'E:\SQLData\UserDb'
                         $setTargetResourceParameters['SQLUserDBLogDir'] = 'E:\SQLData\UserDbLogs'
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should Not Throw
+                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
                     }
 
                     It 'Should throw an error when one or more paths are not resolved to clustered storage' {
@@ -3989,7 +3989,7 @@ try
                         # Pass in a bad path
                         $badPathParameters.SQLUserDBDir = 'C:\MSSQL\'
 
-                        { Set-TargetResource @badPathParameters } | Should Throw 'Unable to map the specified paths to valid cluster storage. Drives mapped: Backup; SysData; TempDbData; TempDbLogs; UserLogs'
+                        { Set-TargetResource @badPathParameters } | Should -Throw 'Unable to map the specified paths to valid cluster storage. Drives mapped: Backup; SysData; TempDbData; TempDbLogs; UserLogs'
                     }
 
                     It 'Should properly map paths to clustered disk resources' {
@@ -4008,7 +4008,7 @@ try
                             FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
                     }
 
                     It 'Should build a DEFAULT address string when no network is specified' {
@@ -4030,7 +4030,7 @@ try
                             SkipRules = 'Cluster_VerifyForErrors'
                         }
 
-                        { Set-TargetResource @missingNetworkParameters } | Should Not Throw
+                        { Set-TargetResource @missingNetworkParameters } | Should -Not -Throw
                     }
 
                     It 'Should throw an error when an invalid IP Address is specified' {
@@ -4041,7 +4041,7 @@ try
                             FailoverClusterIPAddress = '192.168.0.100'
                         }
 
-                        { Set-TargetResource @invalidAddressParameters } | Should Throw 'Unable to map the specified IP Address(es) to valid cluster networks.'
+                        { Set-TargetResource @invalidAddressParameters } | Should -Throw 'Unable to map the specified IP Address(es) to valid cluster networks.'
                     }
 
                     It 'Should throw an error when an invalid IP Address is specified for a multi-subnet instance' {
@@ -4052,7 +4052,7 @@ try
                             FailoverClusterIPAddress = @('10.0.0.100','192.168.0.100')
                         }
 
-                        { Set-TargetResource @invalidAddressParameters } | Should Throw 'Unable to map the specified IP Address(es) to valid cluster networks.'
+                        { Set-TargetResource @invalidAddressParameters } | Should -Throw 'Unable to map the specified IP Address(es) to valid cluster networks.'
                     }
 
                     It 'Should build a valid IP address string for a single address' {
@@ -4072,7 +4072,7 @@ try
                             Action = 'InstallFailoverCluster'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
                     }
 
                     It 'Should build a valid IP address string for a multi-subnet cluster' {
@@ -4097,7 +4097,7 @@ try
                             Action = 'InstallFailoverCluster'
                         }
 
-                        { Set-TargetResource @multiSubnetParameters } | Should Not Throw
+                        { Set-TargetResource @multiSubnetParameters } | Should -Not -Throw
                     }
 
                     It 'Should pass proper parameters to setup when Cluster Shared volumes are specified' {
@@ -4130,7 +4130,7 @@ try
                             SQLBackupDir = $mockCSVClusterDiskMap['Backup'].Path
                         }
 
-                        { Set-TargetResource @csvTestParameters } | Should Not Throw
+                        { Set-TargetResource @csvTestParameters } | Should -Not -Throw
                     }
 
                     It 'Should pass proper parameters to setup when Cluster Shared volumes are specified and are the same for one or more parameter values' {
@@ -4163,7 +4163,7 @@ try
                             SQLBackupDir = "$($mockCSVClusterDiskMap['Backup'].Path)\Backup"
                         }
 
-                        { Set-TargetResource @csvTestParameters } | Should Not Throw
+                        { Set-TargetResource @csvTestParameters } | Should -Not -Throw
                     }
                 }
 
@@ -4240,7 +4240,7 @@ try
                         $mockStartSqlSetupProcessExpectedArgument.Remove('FailoverClusterGroup')
                         $mockStartSqlSetupProcessExpectedArgument.Remove('SQLSysAdminAccounts')
 
-                        { Set-TargetResource @testParameters } | Should Not throw
+                        { Set-TargetResource @testParameters } | Should -Not -throw
 
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
@@ -4346,7 +4346,7 @@ try
                         # Pass in a bad path
                         $badPathParameters.SQLUserDBDir = 'C:\MSSQL\'
 
-                        { Set-TargetResource @badPathParameters } | Should Throw 'Unable to map the specified paths to valid cluster storage. Drives mapped: Backup; SysData; TempDbData; TempDbLogs; UserLogs'
+                        { Set-TargetResource @badPathParameters } | Should -Throw 'Unable to map the specified paths to valid cluster storage. Drives mapped: Backup; SysData; TempDbData; TempDbLogs; UserLogs'
                     }
 
                     It 'Should properly map paths to clustered disk resources' {
@@ -4366,7 +4366,7 @@ try
                             FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
                     }
 
                     It 'Should build a DEFAULT address string when no network is specified' {
@@ -4388,7 +4388,7 @@ try
                             SkipRules = 'Cluster_VerifyForErrors'
                         }
 
-                        { Set-TargetResource @missingNetworkParameters } | Should Not Throw
+                        { Set-TargetResource @missingNetworkParameters } | Should -Not -Throw
                     }
 
                     It 'Should throw an error when an invalid IP Address is specified' {
@@ -4399,7 +4399,7 @@ try
                             FailoverClusterIPAddress = '192.168.0.100'
                         }
 
-                        { Set-TargetResource @invalidAddressParameters } | Should Throw 'Unable to map the specified IP Address(es) to valid cluster networks.'
+                        { Set-TargetResource @invalidAddressParameters } | Should -Throw 'Unable to map the specified IP Address(es) to valid cluster networks.'
                     }
 
                     It 'Should throw an error when an invalid IP Address is specified for a multi-subnet instance' {
@@ -4410,7 +4410,7 @@ try
                             FailoverClusterIPAddress = @('10.0.0.100','192.168.0.100')
                         }
 
-                        { Set-TargetResource @invalidAddressParameters } | Should Throw 'Unable to map the specified IP Address(es) to valid cluster networks.'
+                        { Set-TargetResource @invalidAddressParameters } | Should -Throw 'Unable to map the specified IP Address(es) to valid cluster networks.'
                     }
 
                     It 'Should build a valid IP address string for a single address' {
@@ -4430,7 +4430,7 @@ try
                             Action = 'CompleteFailoverCluster'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
                     }
 
                     It 'Should build a valid IP address string for a multi-subnet cluster' {
@@ -4455,7 +4455,7 @@ try
                             Action = 'CompleteFailoverCluster'
                         }
 
-                        { Set-TargetResource @multiSubnetParameters } | Should Not Throw
+                        { Set-TargetResource @multiSubnetParameters } | Should -Not -Throw
                     }
 
                     It 'Should pass proper parameters to setup' {
@@ -4480,7 +4480,7 @@ try
                             SQLBackupDir = $mockDynamicSqlBackupPath
                         }
 
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
                     }
                 }
 
@@ -4514,7 +4514,7 @@ try
                         DestinationPath = $mockRobocopyArgumentDestinationPath
                     }
 
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should Not Throw
+                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
 
                     Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Start-Process  -Exactly -Times 1 -Scope It
@@ -4536,7 +4536,7 @@ try
                         DestinationPath = $mockRobocopyArgumentDestinationPath
                     }
 
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should Not Throw
+                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
 
                     Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Start-Process -Exactly -Times 1 -Scope It
@@ -4559,7 +4559,7 @@ try
                         DestinationPath = $mockRobocopyArgumentDestinationPath
                     }
 
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should Throw "Robocopy reported errors when copying files. Error code: $mockStartSqlSetupProcessExitCode."
+                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Throw "Robocopy reported errors when copying files. Error code: $mockStartSqlSetupProcessExitCode."
 
                     Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Start-Process -Exactly -Times 1 -Scope It
@@ -4573,7 +4573,7 @@ try
                         DestinationPath = $mockRobocopyArgumentDestinationPath
                     }
 
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should Throw "Robocopy reported errors when copying files. Error code: $mockStartSqlSetupProcessExitCode."
+                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Throw "Robocopy reported errors when copying files. Error code: $mockStartSqlSetupProcessExitCode."
 
                     Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Start-Process -Exactly -Times 1 -Scope It
@@ -4587,7 +4587,7 @@ try
                         DestinationPath = $mockRobocopyArgumentDestinationPath
                     }
 
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should Throw "Robocopy reported that failures occurred when copying files. Error code: $mockStartSqlSetupProcessExitCode."
+                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Throw "Robocopy reported that failures occurred when copying files. Error code: $mockStartSqlSetupProcessExitCode."
 
                     Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Start-Process -Exactly -Times 1 -Scope It
@@ -4615,7 +4615,7 @@ try
                         DestinationPath = $mockRobocopyArgumentDestinationPath
                     }
 
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should Not Throw
+                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
 
                     Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Start-Process -Exactly -Times 1 -Scope It
@@ -4629,7 +4629,7 @@ try
                         DestinationPath = $mockRobocopyArgumentDestinationPath
                     }
 
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should Not Throw
+                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
 
                     Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName Start-Process -Exactly -Times 1 -Scope It
@@ -4643,7 +4643,7 @@ try
                         DestinationPath = $mockRobocopyArgumentDestinationPath
                     }
 
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should Not Throw
+                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
                 }
             }
         }
@@ -4680,29 +4680,29 @@ try
                     It "Should return the correct parameters when the account is a system account." {
                         $result = Get-ServiceAccountParameters -ServiceAccount $mockSystemServiceAccount -ServiceType $serviceType
 
-                        $result.$("$($serviceType)SVCACCOUNT") | Should BeExactly $mockSystemServiceAccount.UserName
-                        $result.ContainsKey("$($serviceType)SVCPASSWORD") | Should Be $false
+                        $result.$("$($serviceType)SVCACCOUNT") | Should -BeExactly $mockSystemServiceAccount.UserName
+                        $result.ContainsKey("$($serviceType)SVCPASSWORD") | Should -Be $false
                     }
 
                     It "Should return the correct parameters when the account is a virtual service account" {
                         $result = Get-ServiceAccountParameters -ServiceAccount $mockVirtualServiceAccount -ServiceType $serviceType
 
-                        $result.$("$($serviceType)SVCACCOUNT") | Should BeExactly $mockVirtualServiceAccount.UserName
-                        $result.ContainsKey("$($serviceType)SVCPASSWORD") | Should Be $false
+                        $result.$("$($serviceType)SVCACCOUNT") | Should -BeExactly $mockVirtualServiceAccount.UserName
+                        $result.ContainsKey("$($serviceType)SVCPASSWORD") | Should -Be $false
                     }
 
                     It "Should return the correct parameters when the account is a managed service account" {
                         $result = Get-ServiceAccountParameters -ServiceAccount $mockManagedServiceAccount -ServiceType $serviceType
 
-                        $result.$("$($serviceType)SVCACCOUNT") | Should BeExactly $mockManagedServiceAccount.UserName
-                        $result.ContainsKey("$($serviceType)SVCPASSWORD") | Should Be $false
+                        $result.$("$($serviceType)SVCACCOUNT") | Should -BeExactly $mockManagedServiceAccount.UserName
+                        $result.ContainsKey("$($serviceType)SVCPASSWORD") | Should -Be $false
                     }
 
                     It "Should return the correct parameters when the account is a domain account" {
                         $result = Get-ServiceAccountParameters -ServiceAccount $mockDomainServiceAccount -ServiceType $serviceType
 
-                        $result.$("$($serviceType)SVCACCOUNT") | Should BeExactly $mockDomainServiceAccount.UserName
-                        $result.$("$($serviceType)SVCPASSWORD") | Should BeExactly $mockDomainServiceAccount.GetNetworkCredential().Password
+                        $result.$("$($serviceType)SVCACCOUNT") | Should -BeExactly $mockDomainServiceAccount.UserName
+                        $result.$("$($serviceType)SVCPASSWORD") | Should -BeExactly $mockDomainServiceAccount.GetNetworkCredential().Password
                     }
                 }
             }
@@ -4715,7 +4715,7 @@ try
 
             Context 'When using Get-TemporaryFolder' {
                 It 'Should return the correct temporary path.' {
-                    Get-TemporaryFolder | Should BeExactly $mockExpectedTempPath
+                    Get-TemporaryFolder | Should -BeExactly $mockExpectedTempPath
                 }
             }
         }
@@ -4730,7 +4730,7 @@ try
                     }
 
                     $processExitCode = Start-SqlSetupProcess @startSqlSetupProcessParameters
-                    $processExitCode | Should BeExactly 0
+                    $processExitCode | Should -BeExactly 0
                 }
             }
 
@@ -4742,7 +4742,7 @@ try
                         Timeout = 2
                     }
 
-                    { Start-SqlSetupProcess @startSqlSetupProcessParameters } | Should Throw
+                    { Start-SqlSetupProcess @startSqlSetupProcessParameters } | Should -Throw
                 }
             }
         }

@@ -693,7 +693,7 @@ try
 
                     $result = Get-TargetResource @getTargetResourceParameters
 
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }
@@ -723,31 +723,31 @@ try
 
                     $result = Get-TargetResource @getTargetResourceParameters
 
-                    $result.Name | Should Be $Name
-                    $result.SQLServer | Should Be $SQLServer
-                    $result.SQLInstanceName | Should Be $SQLInstanceName
-                    $result.Ensure | Should Be 'Present'
-                    $result.AutomatedBackupPreference | Should Be $mockAvailabilityGroupProperties.AutomatedBackupPreference
-                    $result.AvailabilityMode | Should Be $mockAvailabilityGroupReplicaProperties.$mockSqlServer.AvailabilityMode
-                    $result.BackupPriority | Should Be $mockAvailabilityGroupReplicaProperties.$mockSqlServer.BackupPriority
-                    $result.ConnectionModeInPrimaryRole | Should Be $mockAvailabilityGroupReplicaProperties.$mockSqlServer.ConnectionModeInPrimaryRole
-                    $result.ConnectionModeInSecondaryRole | Should Be $mockAvailabilityGroupReplicaProperties.$mockSqlServer.ConnectionModeInSecondaryRole
-                    $result.EndpointURL | Should Be "$($mockAvailabilityGroupReplicaProperties.$mockSqlServer.EndpointProtocol)://$($mockAvailabilityGroupReplicaProperties.$mockSqlServer.EndpointHostName):$($mockAvailabilityGroupReplicaProperties.$mockSqlServer.EndpointPort)"
-                    $result.FailureConditionLevel | Should Be $mockAvailabilityGroupProperties.FailureConditionLevel
-                    $result.FailoverMode | Should Be $mockAvailabilityGroupReplicaProperties.$mockSqlServer.FailoverMode
-                    $result.HealthCheckTimeout | Should Be $mockAvailabilityGroupProperties.HealthCheckTimeout
+                    $result.Name | Should -Be $Name
+                    $result.SQLServer | Should -Be $SQLServer
+                    $result.SQLInstanceName | Should -Be $SQLInstanceName
+                    $result.Ensure | Should -Be 'Present'
+                    $result.AutomatedBackupPreference | Should -Be $mockAvailabilityGroupProperties.AutomatedBackupPreference
+                    $result.AvailabilityMode | Should -Be $mockAvailabilityGroupReplicaProperties.$mockSqlServer.AvailabilityMode
+                    $result.BackupPriority | Should -Be $mockAvailabilityGroupReplicaProperties.$mockSqlServer.BackupPriority
+                    $result.ConnectionModeInPrimaryRole | Should -Be $mockAvailabilityGroupReplicaProperties.$mockSqlServer.ConnectionModeInPrimaryRole
+                    $result.ConnectionModeInSecondaryRole | Should -Be $mockAvailabilityGroupReplicaProperties.$mockSqlServer.ConnectionModeInSecondaryRole
+                    $result.EndpointURL | Should -Be "$($mockAvailabilityGroupReplicaProperties.$mockSqlServer.EndpointProtocol)://$($mockAvailabilityGroupReplicaProperties.$mockSqlServer.EndpointHostName):$($mockAvailabilityGroupReplicaProperties.$mockSqlServer.EndpointPort)"
+                    $result.FailureConditionLevel | Should -Be $mockAvailabilityGroupProperties.FailureConditionLevel
+                    $result.FailoverMode | Should -Be $mockAvailabilityGroupReplicaProperties.$mockSqlServer.FailoverMode
+                    $result.HealthCheckTimeout | Should -Be $mockAvailabilityGroupProperties.HealthCheckTimeout
 
                     if ( $Version -ge 13 )
                     {
-                        $result.BasicAvailabilityGroup | Should Be $mockAvailabilityGroupProperties.BasicAvailabilityGroup
-                        $result.DatabaseHealthTrigger | Should Be $mockAvailabilityGroupProperties.DatabaseHealthTrigger
-                        $result.DtcSupportEnabled | Should Be $mockAvailabilityGroupProperties.DtcSupportEnabled
+                        $result.BasicAvailabilityGroup | Should -Be $mockAvailabilityGroupProperties.BasicAvailabilityGroup
+                        $result.DatabaseHealthTrigger | Should -Be $mockAvailabilityGroupProperties.DatabaseHealthTrigger
+                        $result.DtcSupportEnabled | Should -Be $mockAvailabilityGroupProperties.DtcSupportEnabled
                     }
                     else
                     {
-                        $result.BasicAvailabilityGroup | Should BeNullOrEmpty
-                        $result.DatabaseHealthTrigger | Should BeNullOrEmpty
-                        $result.DtcSupportEnabled | Should BeNullOrEmpty
+                        $result.BasicAvailabilityGroup | Should -BeNullOrEmpty
+                        $result.DatabaseHealthTrigger | Should -BeNullOrEmpty
+                        $result.DtcSupportEnabled | Should -BeNullOrEmpty
                     }
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
@@ -803,7 +803,7 @@ try
                         $ParameterName = $ParameterValue
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should Not Throw
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly
@@ -858,7 +858,7 @@ try
                         SQLInstanceName = $SQLInstanceName
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should Throw "$($ErrorResult)"
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw "$($ErrorResult)"
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly
@@ -956,7 +956,7 @@ try
                         SQLInstanceName = $SQLInstanceName
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should Not Throw
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly
@@ -1011,7 +1011,7 @@ try
                         SQLInstanceName = $SQLInstanceName
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should Throw "$($ErrorResult)"
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw "$($ErrorResult)"
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly
@@ -1061,7 +1061,7 @@ try
                         SQLInstanceName = $SQLInstanceName
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should Throw $Result
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw $Result
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly
@@ -1111,7 +1111,7 @@ try
                         SQLInstanceName = $SQLInstanceName
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should Throw $Result
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw $Result
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly
@@ -1169,7 +1169,7 @@ try
                         SQLInstanceName = $SQLInstanceName
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should Not Throw
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly
@@ -1217,7 +1217,7 @@ try
                         SQLInstanceName = $SQLInstanceName
                     }
 
-                    Test-TargetResource @testTargetResourceParameters | Should Be $Result
+                    Test-TargetResource @testTargetResourceParameters | Should -Be $Result
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }
@@ -1245,7 +1245,7 @@ try
                         SQLInstanceName = $SQLInstanceName
                     }
 
-                    Test-TargetResource @testTargetResourceParameters | Should Be $Result
+                    Test-TargetResource @testTargetResourceParameters | Should -Be $Result
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }
@@ -1276,7 +1276,7 @@ try
                         $ParameterName = $ParameterValue
                     }
 
-                    Test-TargetResource @testTargetResourceParameters | Should Be $Result
+                    Test-TargetResource @testTargetResourceParameters | Should -Be $Result
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }
@@ -1321,7 +1321,7 @@ try
                         SQLInstanceName = $SQLInstanceName
                     }
 
-                    Test-TargetResource @testTargetResourceParameters | Should Be $Result
+                    Test-TargetResource @testTargetResourceParameters | Should -Be $Result
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }
@@ -1340,7 +1340,7 @@ try
             Context 'When the Availability Group is altered' {
                 It 'Should silently alter the Availability Group' {
 
-                    { Update-AvailabilityGroup -AvailabilityGroup $mockAvailabilityGroup } | Should Not Throw
+                    { Update-AvailabilityGroup -AvailabilityGroup $mockAvailabilityGroup } | Should -Not -Throw
 
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                 }
@@ -1349,7 +1349,7 @@ try
 
                     $mockAvailabilityGroup.Name = 'AlterFailed'
 
-                    { Update-AvailabilityGroup -AvailabilityGroup $mockAvailabilityGroup } | Should Throw 'AlterAvailabilityGroupFailed'
+                    { Update-AvailabilityGroup -AvailabilityGroup $mockAvailabilityGroup } | Should -Throw 'AlterAvailabilityGroupFailed'
 
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 1 -Exactly
                 }

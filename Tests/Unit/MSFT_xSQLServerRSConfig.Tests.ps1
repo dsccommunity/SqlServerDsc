@@ -224,19 +224,19 @@ try
 
                 It 'Should return the same values as passed as parameters' {
                     $resultGetTargetResource = Get-TargetResource @defaultParameters
-                    $resultGetTargetResource.InstanceName | Should Be $mockNamedInstanceName
-                    $resultGetTargetResource.RSSQLServer | Should Be $mockReportingServicesDatabaseServerName
-                    $resultGetTargetResource.RSSQLInstanceName | Should Be $mockReportingServicesDatabaseNamedInstanceName
-                    $resultGetTargetResource | Should BeOfType [System.Collections.Hashtable]
+                    $resultGetTargetResource.InstanceName | Should -Be $mockNamedInstanceName
+                    $resultGetTargetResource.RSSQLServer | Should -Be $mockReportingServicesDatabaseServerName
+                    $resultGetTargetResource.RSSQLInstanceName | Should -Be $mockReportingServicesDatabaseNamedInstanceName
+                    $resultGetTargetResource | Should -BeOfType [System.Collections.Hashtable]
                 }
 
                 It 'Should return the the state as initialized' {
                     $resultGetTargetResource = Get-TargetResource @defaultParameters
-                    $resultGetTargetResource.IsInitialized | Should Be $true
-                    $resultGetTargetResource.ReportServerVirtualDirectory | Should Be $mockVirtualDirectoryReportServerName
-                    $resultGetTargetResource.ReportsVirtualDirectory | Should Be $mockVirtualDirectoryReportManagerName
-                    $resultGetTargetResource.ReportServerReservedUrl | Should Be $mockReportServerApplicationUrl
-                    $resultGetTargetResource.ReportsReservedUrl | Should Be $mockReportsApplicationUrl
+                    $resultGetTargetResource.IsInitialized | Should -Be $true
+                    $resultGetTargetResource.ReportServerVirtualDirectory | Should -Be $mockVirtualDirectoryReportServerName
+                    $resultGetTargetResource.ReportsVirtualDirectory | Should -Be $mockVirtualDirectoryReportManagerName
+                    $resultGetTargetResource.ReportServerReservedUrl | Should -Be $mockReportServerApplicationUrl
+                    $resultGetTargetResource.ReportsReservedUrl | Should -Be $mockReportsApplicationUrl
                 }
             }
 
@@ -259,19 +259,19 @@ try
 
                 It 'Should return the same values as passed as parameters' {
                     $resultGetTargetResource = Get-TargetResource @testParameters
-                    $resultGetTargetResource.InstanceName | Should Be $mockDefaultInstanceName
-                    $resultGetTargetResource.RSSQLServer | Should Be $mockReportingServicesDatabaseServerName
-                    $resultGetTargetResource.RSSQLInstanceName | Should Be $mockReportingServicesDatabaseDefaultInstanceName
-                    $resultGetTargetResource | Should BeOfType [System.Collections.Hashtable]
+                    $resultGetTargetResource.InstanceName | Should -Be $mockDefaultInstanceName
+                    $resultGetTargetResource.RSSQLServer | Should -Be $mockReportingServicesDatabaseServerName
+                    $resultGetTargetResource.RSSQLInstanceName | Should -Be $mockReportingServicesDatabaseDefaultInstanceName
+                    $resultGetTargetResource | Should -BeOfType [System.Collections.Hashtable]
                 }
 
                 It 'Should return the state as not initialized' {
                     $resultGetTargetResource = Get-TargetResource @testParameters
-                    $resultGetTargetResource.IsInitialized | Should Be $false
-                    $resultGetTargetResource.ReportServerVirtualDirectory | Should BeNullOrEmpty
-                    $resultGetTargetResource.ReportsVirtualDirectory | Should BeNullOrEmpty
-                    $resultGetTargetResource.ReportServerReservedUrl | Should BeNullOrEmpty
-                    $resultGetTargetResource.ReportsReservedUrl | Should BeNullOrEmpty
+                    $resultGetTargetResource.IsInitialized | Should -Be $false
+                    $resultGetTargetResource.ReportServerVirtualDirectory | Should -BeNullOrEmpty
+                    $resultGetTargetResource.ReportsVirtualDirectory | Should -BeNullOrEmpty
+                    $resultGetTargetResource.ReportServerReservedUrl | Should -BeNullOrEmpty
+                    $resultGetTargetResource.ReportsReservedUrl | Should -BeNullOrEmpty
                 }
 
                 # Regression test for issue #822.
@@ -280,7 +280,7 @@ try
 
                     It 'Should return the state as not initialized' {
                         $resultGetTargetResource = Get-TargetResource @testParameters
-                        $resultGetTargetResource.IsInitialized | Should Be $false
+                        $resultGetTargetResource.IsInitialized | Should -Be $false
                     }
                 }
 
@@ -290,7 +290,7 @@ try
 
                     It 'Should return the state as not initialized' {
                         $resultGetTargetResource = Get-TargetResource @testParameters
-                        $resultGetTargetResource.IsInitialized | Should Be $false
+                        $resultGetTargetResource.IsInitialized | Should -Be $false
                     }
                 }
 
@@ -300,7 +300,7 @@ try
                     }
 
                     It 'Should throw the correct error message' {
-                        { Get-TargetResource @defaultParameters } | Should Throw 'SQL Reporting Services instance ''INSTANCE'' does not exist!'
+                        { Get-TargetResource @defaultParameters } | Should -Throw 'SQL Reporting Services instance ''INSTANCE'' does not exist!'
                     }
                 }
             }
@@ -354,15 +354,15 @@ try
                     }
 
                     It 'Should configure Reporting Service without throwing an error' {
-                        { Set-TargetResource @defaultParameters } | Should Not Throw
+                        { Set-TargetResource @defaultParameters } | Should -Not -Throw
 
                         # Test so each mock of methods was called.
-                        $script:mockIsMethodCalled_GenerateDatabaseRightsScript | Should Be $true
-                        $script:mockIsMethodCalled_GenerateDatabaseCreationScript | Should Be $true
-                        $script:mockIsMethodCalled_SetVirtualDirectory | Should Be $true
-                        $script:mockIsMethodCalled_ReserveURL | Should Be $true
-                        $script:mockIsMethodCalled_SetDatabaseConnection | Should Be $true
-                        $script:mockIsMethodCalled_InitializeReportServer | Should Be $true
+                        $script:mockIsMethodCalled_GenerateDatabaseRightsScript | Should -Be $true
+                        $script:mockIsMethodCalled_GenerateDatabaseCreationScript | Should -Be $true
+                        $script:mockIsMethodCalled_SetVirtualDirectory | Should -Be $true
+                        $script:mockIsMethodCalled_ReserveURL | Should -Be $true
+                        $script:mockIsMethodCalled_SetDatabaseConnection | Should -Be $true
+                        $script:mockIsMethodCalled_InitializeReportServer | Should -Be $true
 
                         Assert-MockCalled -CommandName Get-WmiObject -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
@@ -376,7 +376,7 @@ try
                         }
 
                         It 'Should throw the correct error message' {
-                            { Set-TargetResource @defaultParameters } | Should Throw 'Test-TargetResource returned false after calling set.'
+                            { Set-TargetResource @defaultParameters } | Should -Throw 'Test-TargetResource returned false after calling set.'
                         }
                     }
 
@@ -387,7 +387,7 @@ try
                             } -ParameterFilter $mockGetWmiObject_OperatingSystem_ParameterFilter -Verifiable                        }
 
                         It 'Should throw the correct error message' {
-                            { Set-TargetResource @defaultParameters } | Should Throw 'Unable to find WMI object Win32_OperatingSystem.'
+                            { Set-TargetResource @defaultParameters } | Should -Throw 'Unable to find WMI object Win32_OperatingSystem.'
                         }
                     }
                 }
@@ -440,15 +440,15 @@ try
                     }
 
                     It 'Should configure Reporting Service without throwing an error' {
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
 
                         # Test so each mock of methods was called.
-                        $script:mockIsMethodCalled_GenerateDatabaseRightsScript | Should Be $false
-                        $script:mockIsMethodCalled_GenerateDatabaseCreationScript | Should Be $false
-                        $script:mockIsMethodCalled_SetVirtualDirectory | Should Be $true
-                        $script:mockIsMethodCalled_ReserveURL | Should Be $true
-                        $script:mockIsMethodCalled_SetDatabaseConnection | Should Be $false
-                        $script:mockIsMethodCalled_InitializeReportServer | Should Be $false
+                        $script:mockIsMethodCalled_GenerateDatabaseRightsScript | Should -Be $false
+                        $script:mockIsMethodCalled_GenerateDatabaseCreationScript | Should -Be $false
+                        $script:mockIsMethodCalled_SetVirtualDirectory | Should -Be $true
+                        $script:mockIsMethodCalled_ReserveURL | Should -Be $true
+                        $script:mockIsMethodCalled_SetDatabaseConnection | Should -Be $false
+                        $script:mockIsMethodCalled_InitializeReportServer | Should -Be $false
 
                         Assert-MockCalled -CommandName Get-WmiObject -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 0 -Scope It
@@ -484,15 +484,15 @@ try
                     }
 
                     It 'Should configure Reporting Service without throwing an error' {
-                        { Set-TargetResource @defaultParameters } | Should Not Throw
+                        { Set-TargetResource @defaultParameters } | Should -Not -Throw
 
                         # Test so each mock of methods was called.
-                        $script:mockIsMethodCalled_GenerateDatabaseRightsScript | Should Be $true
-                        $script:mockIsMethodCalled_GenerateDatabaseCreationScript | Should Be $true
-                        $script:mockIsMethodCalled_SetVirtualDirectory | Should Be $true
-                        $script:mockIsMethodCalled_ReserveURL | Should Be $true
-                        $script:mockIsMethodCalled_SetDatabaseConnection | Should Be $true
-                        $script:mockIsMethodCalled_InitializeReportServer | Should Be $true
+                        $script:mockIsMethodCalled_GenerateDatabaseRightsScript | Should -Be $true
+                        $script:mockIsMethodCalled_GenerateDatabaseCreationScript | Should -Be $true
+                        $script:mockIsMethodCalled_SetVirtualDirectory | Should -Be $true
+                        $script:mockIsMethodCalled_ReserveURL | Should -Be $true
+                        $script:mockIsMethodCalled_SetDatabaseConnection | Should -Be $true
+                        $script:mockIsMethodCalled_InitializeReportServer | Should -Be $true
 
                         Assert-MockCalled -CommandName Get-WmiObject -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
@@ -523,7 +523,7 @@ try
 
                     It 'Should return state as not in desired state' {
                         $resultTestTargetResource = Test-TargetResource @testParameters
-                        $resultTestTargetResource | Should Be $false
+                        $resultTestTargetResource | Should -Be $false
                     }
                 }
 
@@ -548,7 +548,7 @@ try
 
                     It 'Should return state as not in desired state' {
                         $resultTestTargetResource = Test-TargetResource @testParameters
-                        $resultTestTargetResource | Should Be $false
+                        $resultTestTargetResource | Should -Be $false
                     }
                 }
 
@@ -573,7 +573,7 @@ try
 
                     It 'Should return state as not in desired state' {
                         $resultTestTargetResource = Test-TargetResource @testParameters
-                        $resultTestTargetResource | Should Be $false
+                        $resultTestTargetResource | Should -Be $false
                     }
                 }
 
@@ -596,7 +596,7 @@ try
 
                     It 'Should return state as not in desired state' {
                         $resultTestTargetResource = Test-TargetResource @testParameters
-                        $resultTestTargetResource | Should Be $false
+                        $resultTestTargetResource | Should -Be $false
                     }
                 }
 
@@ -619,7 +619,7 @@ try
 
                     It 'Should return state as not in desired state' {
                         $resultTestTargetResource = Test-TargetResource @testParameters
-                        $resultTestTargetResource | Should Be $false
+                        $resultTestTargetResource | Should -Be $false
                     }
                 }
             }
@@ -641,7 +641,7 @@ try
 
                 It 'Should return state as in desired state' {
                     $resultTestTargetResource = Test-TargetResource @defaultParameters
-                    $resultTestTargetResource | Should Be $true
+                    $resultTestTargetResource | Should -Be $true
                 }
             }
 

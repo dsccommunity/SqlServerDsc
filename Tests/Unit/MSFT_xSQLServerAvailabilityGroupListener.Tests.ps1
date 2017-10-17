@@ -106,30 +106,30 @@ try
 
                 It 'Should return the desired state as absent' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.NodeName | Should Be $testParameters.NodeName
-                    $result.InstanceName | Should Be $testParameters.InstanceName
-                    $result.Name | Should Be $testParameters.Name
-                    $result.AvailabilityGroup | Should Be $testParameters.AvailabilityGroup
+                    $result.NodeName | Should -Be $testParameters.NodeName
+                    $result.InstanceName | Should -Be $testParameters.InstanceName
+                    $result.Name | Should -Be $testParameters.Name
+                    $result.AvailabilityGroup | Should -Be $testParameters.AvailabilityGroup
                 }
 
                 It 'Should not return any IP addresses' {
                     $result = Get-TargetResource @testParameters
-                    $result.IpAddress | Should Be $null
+                    $result.IpAddress | Should -Be $null
                 }
 
                 It 'Should not return port' {
                     $result = Get-TargetResource @testParameters
-                    $result.Port | Should Be 0
+                    $result.Port | Should -Be 0
                 }
 
                 It 'Should return that DHCP is not used' {
                     $result = Get-TargetResource @testParameters
-                    $result.DHCP | Should Be $false
+                    $result.DHCP | Should -Be $false
                 }
 
                 It 'Should call the mock function Get-SQLAlwaysOnAvailabilityGroupListener' {
@@ -141,32 +141,32 @@ try
             Context 'When the system is in the desired state, without DHCP' {
                 It 'Should return the desired state as present' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Present'
+                    $result.Ensure | Should -Be 'Present'
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.NodeName | Should Be $testParameters.NodeName
-                    $result.InstanceName | Should Be $testParameters.InstanceName
-                    $result.Name | Should Be $testParameters.Name
-                    $result.AvailabilityGroup | Should Be $testParameters.AvailabilityGroup
+                    $result.NodeName | Should -Be $testParameters.NodeName
+                    $result.InstanceName | Should -Be $testParameters.InstanceName
+                    $result.Name | Should -Be $testParameters.Name
+                    $result.AvailabilityGroup | Should -Be $testParameters.AvailabilityGroup
                 }
 
                 It 'Should return correct IP address' {
                     $result = Get-TargetResource @testParameters
-                    $result.IpAddress | Should Be '192.168.0.1/255.255.255.0'
+                    $result.IpAddress | Should -Be '192.168.0.1/255.255.255.0'
                 }
 
                 It 'Should return correct port' {
                     $result = Get-TargetResource @testParameters
-                    $result.Port | Should Be $mockKnownPortNumber
+                    $result.Port | Should -Be $mockKnownPortNumber
                 }
 
                 It 'Should return that DHCP is not used' {
                     $mockDynamicIsDhcp = $false
 
                     $result = Get-TargetResource @testParameters
-                    $result.DHCP | Should Be $false
+                    $result.DHCP | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -178,32 +178,32 @@ try
             Context 'When the system is in the desired state, with DHCP' {
                 It 'Should return the desired state as present' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Present'
+                    $result.Ensure | Should -Be 'Present'
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.NodeName | Should Be $testParameters.NodeName
-                    $result.InstanceName | Should Be $testParameters.InstanceName
-                    $result.Name | Should Be $testParameters.Name
-                    $result.AvailabilityGroup | Should Be $testParameters.AvailabilityGroup
+                    $result.NodeName | Should -Be $testParameters.NodeName
+                    $result.InstanceName | Should -Be $testParameters.InstanceName
+                    $result.Name | Should -Be $testParameters.Name
+                    $result.AvailabilityGroup | Should -Be $testParameters.AvailabilityGroup
                 }
 
                 It 'Should return correct IP address' {
                     $result = Get-TargetResource @testParameters
-                    $result.IpAddress | Should Be '192.168.0.1/255.255.255.0'
+                    $result.IpAddress | Should -Be '192.168.0.1/255.255.255.0'
                 }
 
                 It 'Should return correct port' {
                     $result = Get-TargetResource @testParameters
-                    $result.Port | Should Be $mockKnownPortNumber
+                    $result.Port | Should -Be $mockKnownPortNumber
                 }
 
                 It 'Should return that DHCP is used' {
                     $mockDynamicIsDhcp = $true
 
                     $result = Get-TargetResource @testParameters
-                    $result.DHCP | Should Be $true
+                    $result.DHCP | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -217,7 +217,7 @@ try
                 $mockDynamicAvailabilityGroup = $mockUnknownAvailabilityGroup
 
                 It 'Should throw the correct error' {
-                    { Get-TargetResource @testParameters } | Should Throw 'Trying to make a change to a listener that does not exist. InnerException: Unable to locate the availability group 'AG01' on the instance 'MSSQLSERVER'.'
+                    { Get-TargetResource @testParameters } | Should -Throw 'Trying to make a change to a listener that does not exist. InnerException: Unable to locate the availability group 'AG01' on the instance 'MSSQLSERVER'.'
                 }
             }
 
@@ -241,7 +241,7 @@ try
                     Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {} -Verifiable
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
@@ -268,7 +268,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
@@ -282,7 +282,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
@@ -296,7 +296,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
@@ -307,7 +307,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
@@ -337,7 +337,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
@@ -369,7 +369,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
@@ -380,7 +380,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
@@ -407,7 +407,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
@@ -425,7 +425,7 @@ try
                     Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {} -Verifiable
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
@@ -455,7 +455,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
@@ -466,7 +466,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
@@ -477,7 +477,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
@@ -509,7 +509,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
@@ -520,7 +520,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
@@ -532,7 +532,7 @@ try
                         return $null
                     }
 
-                    { Test-TargetResource @testParameters } | Should Throw 'Got unexpected result from Get-TargetResource. No change is made.'
+                    { Test-TargetResource @testParameters } | Should -Throw 'Got unexpected result from Get-TargetResource. No change is made.'
                 }
             }
 
@@ -560,7 +560,7 @@ try
                         DHCP = $false
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
                     Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
@@ -578,7 +578,7 @@ try
                         DHCP = $true
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
                     Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
@@ -595,7 +595,7 @@ try
                         DHCP = $true
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
                     Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
@@ -614,7 +614,7 @@ try
                         DHCP = $false
                     }
 
-                    { Set-TargetResource @testParameters } | Should Throw
+                    { Set-TargetResource @testParameters } | Should -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
@@ -633,7 +633,7 @@ try
                         DHCP = $true
                     }
 
-                    { Set-TargetResource @testParameters } | Should Throw
+                    { Set-TargetResource @testParameters } | Should -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
@@ -652,7 +652,7 @@ try
                         DHCP = $false
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
                     Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
@@ -672,7 +672,7 @@ try
                         DHCP = $false
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
                     Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
@@ -688,8 +688,8 @@ try
                         Ensure = 'Absent'
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
-                    $script:mockMethodDropRan | Should Be $true # Should have made one call to the Drop() method.
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodDropRan | Should -Be $true # Should have made one call to the Drop() method.
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
                     Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
@@ -714,7 +714,7 @@ try
                         }
                     }
 
-                    { Set-TargetResource @testParameters } | Should Throw 'Unable to locate the availability group ''AG01'' on the instance ''MSSQLSERVER''.'
+                    { Set-TargetResource @testParameters } | Should -Throw 'Unable to locate the availability group ''AG01'' on the instance ''MSSQLSERVER''.'
                 }
 
                 It 'Should throw the correct error when availability group is not found and Ensure is set to ''Absent''' {
@@ -728,7 +728,7 @@ try
                         }
                     }
 
-                    { Set-TargetResource @testParameters } | Should Throw 'Unable to locate the availability group ''AG01'' on the instance ''MSSQLSERVER''.'
+                    { Set-TargetResource @testParameters } | Should -Throw 'Unable to locate the availability group ''AG01'' on the instance ''MSSQLSERVER''.'
                 }
 
                 $mockDynamicAvailabilityGroup = $mockKnownAvailabilityGroup
@@ -739,7 +739,7 @@ try
                         Ensure = 'Absent'
                     }
 
-                    { Set-TargetResource @testParameters } | Should Throw 'Trying to make a change to a listener that does not exist.'
+                    { Set-TargetResource @testParameters } | Should -Throw 'Trying to make a change to a listener that does not exist.'
                 }
 
                 It 'Should throw the correct error when listener is not found and Ensure is set to ''Present''' {
@@ -761,7 +761,7 @@ try
                         }
                     }
 
-                    { Set-TargetResource @testParameters } | Should Throw 'Trying to make a change to a listener that does not exist.'
+                    { Set-TargetResource @testParameters } | Should -Throw 'Trying to make a change to a listener that does not exist.'
                 }
 
                 $mockDynamicAvailabilityGroup = $mockUnknownAvailabilityGroup
@@ -786,7 +786,7 @@ try
                         }
                     }
 
-                    { Set-TargetResource @testParameters } | Should Throw 'Unable to locate the availability group ''AG01'' on the instance ''MSSQLSERVER''.'
+                    { Set-TargetResource @testParameters } | Should -Throw 'Unable to locate the availability group ''AG01'' on the instance ''MSSQLSERVER''.'
                 }
             }
 
@@ -802,7 +802,7 @@ try
                         Port = $mockKnownPortNumber
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
                     Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
@@ -820,7 +820,7 @@ try
                         Port = $mockKnownPortNumber
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
                     Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
@@ -836,8 +836,8 @@ try
                         Ensure = 'Absent'
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
-                    $script:mockMethodDropRan | Should Be $false # Should not have called Drop() method.
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodDropRan | Should -Be $false # Should not have called Drop() method.
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
@@ -853,7 +853,7 @@ try
                         return $null
                     }
 
-                    { Set-TargetResource @testParameters } | Should Throw 'Got unexpected result from Get-TargetResource. No change is made.'
+                    { Set-TargetResource @testParameters } | Should -Throw 'Got unexpected result from Get-TargetResource. No change is made.'
                 }
             }
 

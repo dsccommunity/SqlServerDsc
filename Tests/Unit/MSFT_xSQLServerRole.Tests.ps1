@@ -170,23 +170,23 @@ try
 
                 It 'Should return the state as absent when the role does not exist' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the members as null' {
                     $result = Get-TargetResource @testParameters
-                    $result.Members | Should Be $null
+                    $result.Members | Should -Be $null
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.ServerRoleName | Should Be $testParameters.ServerRoleName
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -200,14 +200,14 @@ try
 
                 It 'Should not return the state as absent when the role exist' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Not Be 'Absent'
+                    $result.Ensure | Should -Not -Be 'Absent'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the members as not null' {
                     $result = Get-TargetResource @testParameters
-                    $result.Members | Should Not Be $null
+                    $result.Members | Should -Not -Be $null
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -215,16 +215,16 @@ try
                 # Regression test for issue #790
                 It 'Should return the members as string array' {
                     $result = Get-TargetResource @testParameters
-                    ($result.Members -is [String[]]) | Should Be $true
+                    ($result.Members -is [String[]]) | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.ServerRoleName | Should Be $testParameters.ServerRoleName
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -243,7 +243,7 @@ try
                                               'Exception calling "EnumMemberNames" with "0" argument(s): ' + `
                                               '"Mock EnumMemberNames Method was called with invalid operation."')
 
-                    { Get-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -260,14 +260,14 @@ try
 
                 It 'Should return the state as present when the members are correct' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Present'
+                    $result.Ensure | Should -Be 'Present'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the members as not null' {
                     $result = Get-TargetResource @testParameters
-                    $result.Members | Should Be $testParameters.Members
+                    $result.Members | Should -Be $testParameters.Members
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -275,16 +275,16 @@ try
                 # Regression test for issue #790
                 It 'Should return the members as string array' {
                     $result = Get-TargetResource @testParameters
-                    ($result.Members -is [String[]]) | Should Be $true
+                    ($result.Members -is [String[]]) | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.ServerRoleName | Should Be $testParameters.ServerRoleName
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -299,14 +299,14 @@ try
 
                 It 'Should return the state as present when the correct members exist' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Present'
+                    $result.Ensure | Should -Be 'Present'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the members as not null' {
                     $result = Get-TargetResource @testParameters
-                    $result.Members | Should Not Be $null
+                    $result.Members | Should -Not -Be $null
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -314,17 +314,17 @@ try
                 # Regression test for issue #790
                 It 'Should return the members as string array' {
                     $result = Get-TargetResource @testParameters
-                    ($result.Members -is [String[]]) | Should Be $true
+                    ($result.Members -is [String[]]) | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.ServerRoleName | Should Be $testParameters.ServerRoleName
-                    $result.MembersToInclude | Should Be $testParameters.MembersToInclude
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
+                    $result.MembersToInclude | Should -Be $testParameters.MembersToInclude
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -339,17 +339,17 @@ try
 
                 It 'Should return the state as present when the members does not exist' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Present'
+                    $result.Ensure | Should -Be 'Present'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.ServerRoleName | Should Be $testParameters.ServerRoleName
-                    $result.MembersToExclude | Should Be $testParameters.MembersToExclude
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
+                    $result.MembersToExclude | Should -Be $testParameters.MembersToExclude
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -368,7 +368,7 @@ try
                                               'MembersToExclude must not be set, or be set ' + `
                                               'to $null, when parameter Members are used.')
 
-                    { Get-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -390,7 +390,7 @@ try
                                               'MembersToExclude must not be set, or be set ' + `
                                               'to $null, when parameter Members are used.')
 
-                    { Get-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -406,23 +406,23 @@ try
 
                 It 'Should return the state as absent when the role does not exist' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the members as null' {
                     $result = Get-TargetResource @testParameters
-                    $result.Members | Should Be $null
+                    $result.Members | Should -Be $null
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.ServerRoleName | Should Be $testParameters.ServerRoleName
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -437,14 +437,14 @@ try
 
                 It 'Should return the state as absent when the members in the role are wrong' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the members as not null' {
                     $result = Get-TargetResource @testParameters
-                    $result.Members | Should Not Be $null
+                    $result.Members | Should -Not -Be $null
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -452,16 +452,16 @@ try
                 # Regression test for issue #790
                 It 'Should return the members as string array' {
                     $result = Get-TargetResource @testParameters
-                    ($result.Members -is [String[]]) | Should Be $true
+                    ($result.Members -is [String[]]) | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.ServerRoleName | Should Be $testParameters.ServerRoleName
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -476,14 +476,14 @@ try
 
                 It 'Should return the state as absent when the members in the role are missing' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the members as not null' {
                     $result = Get-TargetResource @testParameters
-                    $result.Members | Should Not Be $null
+                    $result.Members | Should -Not -Be $null
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -491,17 +491,17 @@ try
                 # Regression test for issue #790
                 It 'Should return the members as string array' {
                     $result = Get-TargetResource @testParameters
-                    ($result.Members -is [String[]]) | Should Be $true
+                    ($result.Members -is [String[]]) | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.ServerRoleName | Should Be $testParameters.ServerRoleName
-                    $result.MembersToInclude | Should Be $testParameters.MembersToInclude
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
+                    $result.MembersToInclude | Should -Be $testParameters.MembersToInclude
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -516,17 +516,17 @@ try
 
                 It 'Should return the state as absent when the members in the role are present' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.ServerRoleName | Should Be $testParameters.ServerRoleName
-                    $result.MembersToExclude | Should Be $testParameters.MembersToExclude
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
+                    $result.MembersToExclude | Should -Be $testParameters.MembersToExclude
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -549,7 +549,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -564,7 +564,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -579,7 +579,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -595,7 +595,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -615,7 +615,7 @@ try
                                               'MembersToExclude must not be set, or be set ' + `
                                               'to $null, when parameter Members are used.')
 
-                    { Test-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Test-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -631,7 +631,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -647,7 +647,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -667,7 +667,7 @@ try
                                               'MembersToExclude must not be set, or be set ' + `
                                               'to $null, when parameter Members are used.')
 
-                    { Test-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Test-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -683,7 +683,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -699,7 +699,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -726,7 +726,7 @@ try
                         ServerRoleName = $mockSqlServerRole
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -746,7 +746,7 @@ try
                                               '"Drop" with "0" argument(s): "Mock Drop Method ' + `
                                               'was called with invalid operation."')
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -762,7 +762,7 @@ try
                         ServerRoleName = $mockSqlServerRoleAdd
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -790,7 +790,7 @@ try
                                               '"Create" with "0" argument(s): "Mock Create Method ' + `
                                               'was called with invalid operation."')
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -816,7 +816,7 @@ try
                                               'MembersToExclude must not be set, or be set ' + `
                                               'to $null, when parameter Members are used.')
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -836,7 +836,7 @@ try
                                               'MembersToExclude must not be set, or be set ' + `
                                               'to $null, when parameter Members are used.')
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -853,7 +853,7 @@ try
                         MembersToInclude = $mockSqlServerLoginTree
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -875,7 +875,7 @@ try
                                               'on localhost\MSSQLSERVER. InnerException: Exception calling "AddMember" ' + `
                                               'with "1" argument(s): "Mock AddMember Method was called with invalid operation."')
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -894,7 +894,7 @@ try
 
                     $throwInvalidOperation = ("Login 'KingJulian' does not exist on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -911,7 +911,7 @@ try
                         MembersToExclude = $mockSqlServerLoginTwo
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -933,7 +933,7 @@ try
                                               'on localhost\MSSQLSERVER. InnerException: Exception calling "DropMember" ' + `
                                               'with "1" argument(s): "Mock DropMember Method was called with invalid operation."')
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -953,7 +953,7 @@ try
 
                     $throwInvalidOperation = ("Login 'KingJulian' does not exist on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -972,7 +972,7 @@ try
 
                     $throwInvalidOperation = ("Login 'KingJulian' does not exist on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -991,7 +991,7 @@ try
                         Members = @($mockSqlServerLoginOne,$mockSqlServerLoginTree)
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }

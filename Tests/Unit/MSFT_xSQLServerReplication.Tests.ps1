@@ -38,7 +38,7 @@ try
                         -MockWith { return [pscustomobject]@{ Version = '12.1.4100.1' } } `
                         -ParameterFilter { $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.MSSQLSERVER\Setup' }
 
-                    Get-SqlServerMajorVersion -InstanceName 'MSSQLSERVER' | Should be '12'
+                    Get-SqlServerMajorVersion -InstanceName 'MSSQLSERVER' | Should -be '12'
                 }
 
                 It 'Should throw error if major version cannot be resolved' {
@@ -47,18 +47,18 @@ try
                         -MockWith { return [pscustomobject]@{ Version = '' } }`
                         -ParameterFilter { $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.MSSQLSERVER\Setup' }
 
-                    { Get-SqlServerMajorVersion -InstanceName 'MSSQLSERVER' } | Should Throw "instance: MSSQLSERVER!"
+                    { Get-SqlServerMajorVersion -InstanceName 'MSSQLSERVER' } | Should -Throw "instance: MSSQLSERVER!"
                 }
             }
 
             Context 'Get-SqlLocalServerName' {
 
                 It 'Should return COMPUTERNAME given MSSQLSERVER' {
-                    Get-SqlLocalServerName -InstanceName MSSQLSERVER | Should be $env:COMPUTERNAME
+                    Get-SqlLocalServerName -InstanceName MSSQLSERVER | Should -be $env:COMPUTERNAME
                 }
 
                 It 'Should return COMPUTERNAME\InstanceName given InstanceName' {
-                    Get-SqlLocalServerName -InstanceName InstanceName | Should be "$($env:COMPUTERNAME)\InstanceName"
+                    Get-SqlLocalServerName -InstanceName InstanceName | Should -be "$($env:COMPUTERNAME)\InstanceName"
                 }
 
             }
@@ -133,28 +133,28 @@ try
                     Assert-MockCalled -CommandName Uninstall-Distributor -Times 0
                 }
                 It 'Get method returns Ensure = Absent' {
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
                 }
                 It "Get method returns InstanceName = $($testParameters.InstanceName)" {
-                    $result.InstanceName | Should Be $testParameters.InstanceName
+                    $result.InstanceName | Should -Be $testParameters.InstanceName
                 }
                 It "Get method returns DistributorMode = $($testParameters.DistributorMode)" {
-                    $result.DistributorMode | Should Be $testParameters.DistributorMode
+                    $result.DistributorMode | Should -Be $testParameters.DistributorMode
                 }
                 It 'Get method returns DistributionDBName = distribution' {
-                    $result.DistributionDBName | Should Be 'distribution'
+                    $result.DistributionDBName | Should -Be 'distribution'
                 }
                 It 'Get method returns RemoteDistributor is empty' {
-                    $result.RemoteDistributor | Should Be ''
+                    $result.RemoteDistributor | Should -Be ''
                 }
                 It 'Get method returns WorkingDirectory = C:\temp' {
-                    $result.WorkingDirectory | Should Be 'C:\temp'
+                    $result.WorkingDirectory | Should -Be 'C:\temp'
                 }
             }
 
             Context 'Test method' {
                 It 'Test method returns false' {
-                    Test-TargetResource @testParameters | Should be $false
+                    Test-TargetResource @testParameters | Should -be $false
                 }
             }
 
@@ -264,28 +264,28 @@ try
                     Assert-MockCalled -CommandName Uninstall-Distributor -Times 0
                 }
                 It 'Get method returns Ensure = Absent' {
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
                 }
                 It "Get method returns InstanceName = $($testParameters.InstanceName)" {
-                    $result.InstanceName | Should Be $testParameters.InstanceName
+                    $result.InstanceName | Should -Be $testParameters.InstanceName
                 }
                 It "Get method returns DistributorMode = $($testParameters.DistributorMode)" {
-                    $result.DistributorMode | Should Be $testParameters.DistributorMode
+                    $result.DistributorMode | Should -Be $testParameters.DistributorMode
                 }
                 It 'Get method returns DistributionDBName = distribution' {
-                    $result.DistributionDBName | Should Be 'distribution'
+                    $result.DistributionDBName | Should -Be 'distribution'
                 }
                 It "Get method returns RemoteDistributor = $($testParameters.RemoteDistributor)" {
-                    $result.RemoteDistributor | Should Be $testParameters.RemoteDistributor
+                    $result.RemoteDistributor | Should -Be $testParameters.RemoteDistributor
                 }
                 It 'Get method returns WorkingDirectory = C:\temp' {
-                    $result.WorkingDirectory | Should Be 'C:\temp'
+                    $result.WorkingDirectory | Should -Be 'C:\temp'
                 }
             }
 
             Context 'Test method' {
                 It 'Test method returns false' {
-                    Test-TargetResource @testParameters | Should be $false
+                    Test-TargetResource @testParameters | Should -be $false
                 }
             }
 
@@ -397,28 +397,28 @@ try
                     Assert-MockCalled -CommandName Uninstall-Distributor -Times 0
                 }
                 It 'Get method returns Ensure = Present' {
-                    $result.Ensure | Should Be 'Present'
+                    $result.Ensure | Should -Be 'Present'
                 }
                 It "Get method returns InstanceName = $($testParameters.InstanceName)" {
-                    $result.InstanceName | Should Be $testParameters.InstanceName
+                    $result.InstanceName | Should -Be $testParameters.InstanceName
                 }
                 It "Get method returns DistributorMode = $($testParameters.DistributorMode)" {
-                    $result.DistributorMode | Should Be $testParameters.DistributorMode
+                    $result.DistributorMode | Should -Be $testParameters.DistributorMode
                 }
                 It 'Get method returns DistributionDBName = distribution' {
-                    $result.DistributionDBName | Should Be 'distribution'
+                    $result.DistributionDBName | Should -Be 'distribution'
                 }
                 It 'Get method returns RemoteDistributor = SERVERNAME' {
-                    $result.RemoteDistributor | Should Be 'SERVERNAME'
+                    $result.RemoteDistributor | Should -Be 'SERVERNAME'
                 }
                 It 'Get method returns WorkingDirectory = C:\temp' {
-                    $result.WorkingDirectory | Should Be 'C:\temp'
+                    $result.WorkingDirectory | Should -Be 'C:\temp'
                 }
             }
 
             Context 'Test method' {
                 It 'Test method returns true' {
-                    Test-TargetResource @testParameters | Should be $true
+                    Test-TargetResource @testParameters | Should -be $true
                 }
             }
 
@@ -525,28 +525,28 @@ try
                     Assert-MockCalled -CommandName Uninstall-Distributor -Times 0
                 }
                 It 'Get method returns Ensure = Present' {
-                    $result.Ensure | Should Be 'Present'
+                    $result.Ensure | Should -Be 'Present'
                 }
                 It "Get method returns InstanceName = $($testParameters.InstanceName)" {
-                    $result.InstanceName | Should Be $testParameters.InstanceName
+                    $result.InstanceName | Should -Be $testParameters.InstanceName
                 }
                 It "Get method returns DistributorMode = $($testParameters.DistributorMode)" {
-                    $result.DistributorMode | Should Be $testParameters.DistributorMode
+                    $result.DistributorMode | Should -Be $testParameters.DistributorMode
                 }
                 It 'Get method returns DistributionDBName = distribution' {
-                    $result.DistributionDBName | Should Be 'distribution'
+                    $result.DistributionDBName | Should -Be 'distribution'
                 }
                 It "Get method returns RemoteDistributor = $($testParameters.RemoteDistributor)" {
-                    $result.RemoteDistributor | Should Be $testParameters.RemoteDistributor
+                    $result.RemoteDistributor | Should -Be $testParameters.RemoteDistributor
                 }
                 It 'Get method returns WorkingDirectory = C:\temp' {
-                    $result.WorkingDirectory | Should Be 'C:\temp'
+                    $result.WorkingDirectory | Should -Be 'C:\temp'
                 }
             }
 
             Context 'Test method' {
                 It 'Test method returns true' {
-                    Test-TargetResource @testParameters | Should be $true
+                    Test-TargetResource @testParameters | Should -be $true
                 }
             }
 
@@ -652,28 +652,28 @@ try
                     Assert-MockCalled -CommandName Uninstall-Distributor -Times 0
                 }
                 It 'Get method returns Ensure = Present' {
-                    $result.Ensure | Should Be 'Present'
+                    $result.Ensure | Should -Be 'Present'
                 }
                 It "Get method returns InstanceName = $($testParameters.InstanceName)" {
-                    $result.InstanceName | Should Be $testParameters.InstanceName
+                    $result.InstanceName | Should -Be $testParameters.InstanceName
                 }
                 It "Get method returns DistributorMode = $($testParameters.DistributorMode)" {
-                    $result.DistributorMode | Should Be $testParameters.DistributorMode
+                    $result.DistributorMode | Should -Be $testParameters.DistributorMode
                 }
                 It 'Get method returns DistributionDBName = distribution' {
-                    $result.DistributionDBName | Should Be 'distribution'
+                    $result.DistributionDBName | Should -Be 'distribution'
                 }
                 It 'Get method returns RemoteDistributor is empty' {
-                    $result.RemoteDistributor | Should Be 'SERVERNAME'
+                    $result.RemoteDistributor | Should -Be 'SERVERNAME'
                 }
                 It 'Get method returns WorkingDirectory = C:\temp' {
-                    $result.WorkingDirectory | Should Be 'C:\temp'
+                    $result.WorkingDirectory | Should -Be 'C:\temp'
                 }
             }
 
             Context 'Test method' {
                 It 'Test method returns false' {
-                    Test-TargetResource @testParameters | Should be $false
+                    Test-TargetResource @testParameters | Should -be $false
                 }
             }
 
@@ -782,28 +782,28 @@ try
                     Assert-MockCalled -CommandName Uninstall-Distributor -Times 0
                 }
                 It 'Get method returns Ensure = Present' {
-                    $result.Ensure | Should Be 'Present'
+                    $result.Ensure | Should -Be 'Present'
                 }
                 It "Get method returns InstanceName = $($testParameters.InstanceName)" {
-                    $result.InstanceName | Should Be $testParameters.InstanceName
+                    $result.InstanceName | Should -Be $testParameters.InstanceName
                 }
                 It "Get method returns DistributorMode = $($testParameters.DistributorMode)" {
-                    $result.DistributorMode | Should Be $testParameters.DistributorMode
+                    $result.DistributorMode | Should -Be $testParameters.DistributorMode
                 }
                 It 'Get method returns DistributionDBName = distribution' {
-                    $result.DistributionDBName | Should Be 'distribution'
+                    $result.DistributionDBName | Should -Be 'distribution'
                 }
                 It "Get method returns RemoteDistributor = $($testParameters.RemoteDistributor)" {
-                    $result.RemoteDistributor | Should Be $testParameters.RemoteDistributor
+                    $result.RemoteDistributor | Should -Be $testParameters.RemoteDistributor
                 }
                 It 'Get method returns WorkingDirectory = C:\temp' {
-                    $result.WorkingDirectory | Should Be 'C:\temp'
+                    $result.WorkingDirectory | Should -Be 'C:\temp'
                 }
             }
 
             Context 'Test method' {
                 It 'Test method returns false' {
-                    Test-TargetResource @testParameters | Should be $false
+                    Test-TargetResource @testParameters | Should -be $false
                 }
             }
 
@@ -910,28 +910,28 @@ try
                     Assert-MockCalled -CommandName Uninstall-Distributor -Times 0
                 }
                 It 'Get method returns Ensure = Absent' {
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
                 }
                 It "Get method returns InstanceName = $($testParameters.InstanceName)" {
-                    $result.InstanceName | Should Be $testParameters.InstanceName
+                    $result.InstanceName | Should -Be $testParameters.InstanceName
                 }
                 It "Get method returns DistributorMode = $($testParameters.DistributorMode)" {
-                    $result.DistributorMode | Should Be $testParameters.DistributorMode
+                    $result.DistributorMode | Should -Be $testParameters.DistributorMode
                 }
                 It 'Get method returns DistributionDBName = distribution' {
-                    $result.DistributionDBName | Should Be 'distribution'
+                    $result.DistributionDBName | Should -Be 'distribution'
                 }
                 It 'Get method returns RemoteDistributor is empty' {
-                    $result.RemoteDistributor | Should Be ''
+                    $result.RemoteDistributor | Should -Be ''
                 }
                 It "Get method returns WorkingDirectory = $($testParameters.WorkingDirectory)" {
-                    $result.WorkingDirectory | Should Be $testParameters.WorkingDirectory
+                    $result.WorkingDirectory | Should -Be $testParameters.WorkingDirectory
                 }
             }
 
             Context 'Test method' {
                 It 'Test method returns true' {
-                    Test-TargetResource @testParameters | Should be $true
+                    Test-TargetResource @testParameters | Should -be $true
                 }
             }
 

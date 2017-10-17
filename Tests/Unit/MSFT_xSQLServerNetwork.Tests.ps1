@@ -122,9 +122,9 @@ try
 
                 It 'Should return the correct values' {
                     $result = Get-TargetResource @testParameters
-                    $result.IsEnabled | Should Be $mockDynamicValue_IsEnabled
-                    $result.TcpDynamicPort | Should Be $false
-                    $result.TcpPort | Should Be $mockDynamicValue_TcpPort
+                    $result.IsEnabled | Should -Be $mockDynamicValue_IsEnabled
+                    $result.TcpDynamicPort | Should -Be $false
+                    $result.TcpPort | Should -Be $mockDynamicValue_TcpPort
 
                     Assert-MockCalled -CommandName Register-SqlWmiManagement -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
@@ -133,8 +133,8 @@ try
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.InstanceName | Should Be $testParameters.InstanceName
-                    $result.ProtocolName | Should Be $testParameters.ProtocolName
+                    $result.InstanceName | Should -Be $testParameters.InstanceName
+                    $result.ProtocolName | Should -Be $testParameters.ProtocolName
                 }
             }
 
@@ -196,7 +196,7 @@ try
 
                     It 'Should return $false' {
                         $result = Test-TargetResource @testParameters
-                        $result | Should Be $false
+                        $result | Should -Be $false
                     }
                 }
 
@@ -211,7 +211,7 @@ try
 
                         It 'Should return $false' {
                             $result = Test-TargetResource @testParameters
-                            $result | Should Be $false
+                            $result | Should -Be $false
                         }
                     }
 
@@ -225,7 +225,7 @@ try
 
                         It 'Should return $false' {
                             $result = Test-TargetResource @testParameters
-                            $result | Should Be $false
+                            $result | Should -Be $false
                         }
                     }
                 }
@@ -248,7 +248,7 @@ try
 
                         It 'Should return $false' {
                             $result = Test-TargetResource @testParameters
-                            $result | Should Be $false
+                            $result | Should -Be $false
                         }
                     }
                 }
@@ -287,7 +287,7 @@ try
 
                     It 'Should return $true' {
                         $result = Test-TargetResource @testParameters
-                        $result | Should Be $true
+                        $result | Should -Be $true
                     }
                 }
 
@@ -301,7 +301,7 @@ try
 
                     It 'Should return $true' {
                         $result = Test-TargetResource @testParameters
-                        $result | Should Be $true
+                        $result | Should -Be $true
                     }
                 }
             }
