@@ -22,7 +22,7 @@
     module stubs are loaded ([issue #784](https://github.com/PowerShell/xSQLServer/issues/784)).
 - Changes to xSQLServerNetwork
   - BREAKING CHANGE: Renamed parameter TcpDynamicPorts to TcpDynamicPort and
-    changed type to Boolean.
+    changed type to Boolean ([issue #534](https://github.com/PowerShell/xSQLServer/issues/534)).
   - Resolved issue when switching from dynamic to static port.
     configuration ([issue #534](https://github.com/PowerShell/xSQLServer/issues/534)).
   - Added localization (en-US) for all strings in resource and unit tests
