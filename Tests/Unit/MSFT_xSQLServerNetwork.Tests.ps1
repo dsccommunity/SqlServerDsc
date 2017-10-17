@@ -36,6 +36,7 @@ try
         $mockInstanceName = 'TEST'
         $mockTcpProtocolName = 'Tcp'
         $mockNamedPipesProtocolName = 'NP'
+        $mockTcpDynamicPortNumber = '24680'
 
         $script:WasMethodAlterCalled = $false
 
@@ -54,7 +55,7 @@ try
                                                         Add-Member -MemberType ScriptProperty -Name 'IPAddressProperties' {
                                                             return @{
                                                                 'TcpDynamicPorts' = New-Object -TypeName Object |
-                                                                    Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockDynamicValue_TcpDynamicPorts -PassThru -Force
+                                                                    Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockDynamicValue_TcpDynamicPort -PassThru -Force
                                                                 'TcpPort' = New-Object -TypeName Object |
                                                                     Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockDynamicValue_TcpPort -PassThru -Force
                                                             }
@@ -115,14 +116,14 @@ try
                 BeforeEach {
                     $mockDynamicValue_TcpProtocolName = $mockTcpProtocolName
                     $mockDynamicValue_IsEnabled = $true
-                    $mockDynamicValue_TcpDynamicPorts = '0'
+                    $mockDynamicValue_TcpDynamicPort = ''
                     $mockDynamicValue_TcpPort = '4509'
                 }
 
                 It 'Should return the correct values' {
                     $result = Get-TargetResource @testParameters
                     $result.IsEnabled | Should Be $mockDynamicValue_IsEnabled
-                    $result.TcpDynamicPorts | Should Be $mockDynamicValue_TcpDynamicPorts
+                    $result.TcpDynamicPort | Should Be $false
                     $result.TcpPort | Should Be $mockDynamicValue_TcpPort
 
                     Assert-MockCalled -CommandName Register-SqlWmiManagement -Exactly -Times 1 -Scope It
@@ -157,7 +158,7 @@ try
                 BeforeEach {
                     $mockDynamicValue_TcpProtocolName = $mockTcpProtocolName
                     $mockDynamicValue_IsEnabled = $true
-                    $mockDynamicValue_TcpDynamicPorts = ''
+                    $mockDynamicValue_TcpDynamicPort = ''
                     $mockDynamicValue_TcpPort = '4509'
                 }
 
@@ -170,7 +171,7 @@ try
                     BeforeEach {
                         $testParameters += @{
                             IsEnabled = $true
-                            TcpDynamicPorts = ''
+                            TcpDynamicPort = $false
                             TcpPort = '4509'
                         }
 
@@ -188,7 +189,7 @@ try
                     BeforeEach {
                         $testParameters += @{
                             IsEnabled = $false
-                            TcpDynamicPorts = ''
+                            TcpDynamicPort = $false
                             TcpPort = '4509'
                         }
                     }
@@ -200,10 +201,10 @@ try
                 }
 
                 Context 'When current state is using static tcp port' {
-                    Context 'When TcpDynamicPorts is not in desired state' {
+                    Context 'When TcpDynamicPort is not in desired state' {
                         BeforeEach {
                             $testParameters += @{
-                                TcpDynamicPorts = '0'
+                                TcpDynamicPort = $true
                                 IsEnabled = $false
                             }
                         }
@@ -233,7 +234,7 @@ try
                     BeforeEach {
                         $mockDynamicValue_TcpProtocolName = $mockTcpProtocolName
                         $mockDynamicValue_IsEnabled = $true
-                        $mockDynamicValue_TcpDynamicPorts = '0'
+                        $mockDynamicValue_TcpDynamicPort = $mockTcpDynamicPortNumber
                         $mockDynamicValue_TcpPort = ''
                     }
 
@@ -252,17 +253,18 @@ try
                     }
                 }
 
-                Context 'When both TcpDynamicPorts and TcpPort is being set' {
+                Context 'When both TcpDynamicPort and TcpPort are being set' {
                     BeforeEach {
                         $testParameters += @{
-                            TcpDynamicPorts = '0'
+                            TcpDynamicPort = $true
                             TcpPort = '1433'
                             IsEnabled = $false
                         }
                     }
 
                     It 'Should throw the correct error message' {
-                        { Test-TargetResource @testParameters } | Should -Throw 'Unable to set both tcp dynamic port and tcp static port. Only one can be set.'
+                        $testErrorMessage = $script:localizedData.ErrorDynamicAndStaticPortSpecified
+                        { Test-TargetResource @testParameters } | Should -Throw $testErrorMessage
                     }
                 }
             }
@@ -271,7 +273,7 @@ try
                 BeforeEach {
                     $mockDynamicValue_TcpProtocolName = $mockTcpProtocolName
                     $mockDynamicValue_IsEnabled = $true
-                    $mockDynamicValue_TcpDynamicPorts = '0'
+                    $mockDynamicValue_TcpDynamicPort = $mockTcpDynamicPortNumber
                     $mockDynamicValue_TcpPort = '1433'
                 }
 
@@ -289,10 +291,10 @@ try
                     }
                 }
 
-                Context 'When TcpDynamicPorts is in desired state' {
+                Context 'When TcpDynamicPort is in desired state' {
                     BeforeEach {
                         $testParameters += @{
-                            TcpDynamicPorts = '0'
+                            TcpDynamicPort = $true
                             IsEnabled = $true
                         }
                     }
@@ -329,7 +331,7 @@ try
                     # This is the values the mock will return
                     $mockDynamicValue_TcpProtocolName = $mockTcpProtocolName
                     $mockDynamicValue_IsEnabled = $true
-                    $mockDynamicValue_TcpDynamicPorts = ''
+                    $mockDynamicValue_TcpDynamicPort = ''
                     $mockDynamicValue_TcpPort = '4509'
 
                     <#
@@ -345,7 +347,7 @@ try
                     BeforeEach {
                         $testParameters += @{
                             IsEnabled = $false
-                            TcpDynamicPorts = ''
+                            TcpDynamicPort = $false
                             TcpPort = '4509'
                             RestartService = $true
                         }
@@ -362,11 +364,11 @@ try
                 }
 
                 Context 'When current state is using static tcp port' {
-                    Context 'When TcpDynamicPorts is not in desired state' {
+                    Context 'When TcpDynamicPort is not in desired state' {
                         BeforeEach {
                             $testParameters += @{
                                 IsEnabled = $true
-                                TcpDynamicPorts = '0'
+                                TcpDynamicPort = $true
                             }
                         }
 
@@ -382,7 +384,7 @@ try
                         BeforeEach {
                             $testParameters += @{
                                 IsEnabled = $true
-                                TcpDynamicPorts = ''
+                                TcpDynamicPort = $false
                                 TcpPort = '4508'
                             }
                         }
@@ -401,7 +403,7 @@ try
                         # This is the values the mock will return
                         $mockDynamicValue_TcpProtocolName = $mockTcpProtocolName
                         $mockDynamicValue_IsEnabled = $true
-                        $mockDynamicValue_TcpDynamicPorts = '0'
+                        $mockDynamicValue_TcpDynamicPort = $mockTcpDynamicPortNumber
                         $mockDynamicValue_TcpPort = ''
 
                         <#
@@ -417,7 +419,7 @@ try
                         BeforeEach {
                             $testParameters += @{
                                 IsEnabled = $true
-                                TcpDynamicPorts = ''
+                                TcpDynamicPort = $false
                                 TcpPort = '4508'
                             }
                         }
@@ -431,17 +433,18 @@ try
                     }
                 }
 
-                Context 'When both TcpDynamicPorts and TcpPort is being set' {
+                Context 'When both TcpDynamicPort and TcpPort are being set' {
                     BeforeEach {
                         $testParameters += @{
-                            TcpDynamicPorts = '0'
+                            TcpDynamicPort = $true
                             TcpPort = '1433'
                             IsEnabled = $false
                         }
                     }
 
                     It 'Should throw the correct error message' {
-                        { Set-TargetResource @testParameters } | Should -Throw 'Unable to set both tcp dynamic port and tcp static port. Only one can be set.'
+                        $testErrorMessage = ($script:localizedData.ErrorDynamicAndStaticPortSpecified)
+                        { Set-TargetResource @testParameters } | Should -Throw $testErrorMessage
                     }
                 }
             }
@@ -451,7 +454,7 @@ try
                     # This is the values the mock will return
                     $mockDynamicValue_TcpProtocolName = $mockTcpProtocolName
                     $mockDynamicValue_IsEnabled = $true
-                    $mockDynamicValue_TcpDynamicPorts = ''
+                    $mockDynamicValue_TcpDynamicPort = ''
                     $mockDynamicValue_TcpPort = '4509'
 
                     <#
@@ -462,7 +465,7 @@ try
 
                     $testParameters += @{
                         IsEnabled = $true
-                        TcpDynamicPorts = ''
+                        TcpDynamicPort = $false
                         TcpPort = '4509'
                     }
                 }
