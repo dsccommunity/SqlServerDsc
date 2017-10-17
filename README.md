@@ -515,9 +515,9 @@ database, please read:
 
 ### xSQLServerDatabaseDefaultLocation
 
-This resource is used to configure database default locations for Data, Log,
-and Backup for SQL Server.  For more information about database default
-locations, please read the article
+This resource is used to configure default locations for user databases. The
+types of default locations that can be changed are Data, Log, and Backup. For
+more information about database default locations, please read the article
 [Changing the Database Default Locations](https://technet.microsoft.com/en-us/library/dd206993.aspx).
 
 #### Requirements
@@ -527,12 +527,15 @@ locations, please read the article
 
 #### Parameters
 
-* **`[String]` DefaultLocationType** _(Key)_: The name of database default
-  location (Data, Log, Backup) to be configured.
-* **`[String]` DefaultLocationPath** _(Required)_: The location of the default
-  directory to be configured.
 * **`[String]` SQLServer** _(Write)_: The host name of the SQL Server to be configured.
-* **`[String]` SQLInstance** _(Write)_: The name of the SQL instance to be configured.
+* **`[String]` SQLInstanceName** _(Write)_: The name of the SQL instance to be configured.
+* **`[String]` DefaultLocationType** _(Key)_: The type of database default
+  location to be configured. { Data | Log | Backup }
+* **`[String]` DefaultLocationPath** _(Required)_: The path to the default
+  directory to be configured.
+* **`[Boolean]` RestartService** _(Write)_: If set to $true then SQL Server and
+dependent services will be restarted if a change to the configuration is made.
+The default value is $false.
 
 #### Examples
 
