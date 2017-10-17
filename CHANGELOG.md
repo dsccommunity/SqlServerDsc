@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Changes to xSQLServer
+  - Updated Pester command flags to v4
 - Changes to xSQLServerDatabase
   - Added parameter to specify collation for a database to be different from server
     collation ([issue #767](https://github.com/PowerShell/xSQLServer/issues/767)).
