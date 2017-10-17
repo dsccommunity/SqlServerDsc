@@ -124,7 +124,7 @@ try
 
                 Context 'When endpoint is missing' {
                     It 'Should throw the correct error message' {
-                        { Get-TargetResource @testParameters } | Should -Throw 'Unexpected result when trying to verify existence of endpoint 'DefaultEndpointMirror'. InnerException: Endpoint 'DefaultEndpointMirror' does not exist'
+                        { Get-TargetResource @testParameters } | Should -Throw 'Unexpected result when trying to verify existence of endpoint ''DefaultEndpointMirror''. InnerException: Endpoint ''DefaultEndpointMirror'' does not exist'
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }

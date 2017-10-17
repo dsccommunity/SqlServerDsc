@@ -217,7 +217,7 @@ try
                 $mockDynamicAvailabilityGroup = $mockUnknownAvailabilityGroup
 
                 It 'Should throw the correct error' {
-                    { Get-TargetResource @testParameters } | Should -Throw 'Trying to make a change to a listener that does not exist. InnerException: Unable to locate the availability group 'AG01' on the instance 'MSSQLSERVER'.'
+                    { Get-TargetResource @testParameters } | Should -Throw 'Trying to make a change to a listener that does not exist. InnerException: Unable to locate the availability group ''AG01'' on the instance ''MSSQLSERVER''.'
                 }
             }
 
