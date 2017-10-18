@@ -100,16 +100,16 @@ try
                 $result = Get-TargetResource @testParameters
 
                 It 'Should return the current value for MinMemory' {
-                    $result.MinMemory | Should Be 2048
+                    $result.MinMemory | Should -Be 2048
                 }
 
                 It 'Should return the current value for MaxMemory' {
-                    $result.MaxMemory | Should Be 10300
+                    $result.MaxMemory | Should -Be 10300
                 }
 
                 It 'Should return the same values as passed as parameters' {
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -172,7 +172,7 @@ try
 
                 It 'Should return the state as false when desired MinMemory and MaxMemory are not present' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -194,7 +194,7 @@ try
 
                 It 'Should return the state as false when desired MaxMemory is not present' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -217,7 +217,7 @@ try
 
                 It 'Should return the state as true when desired MinMemory and MaxMemory are present' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -238,7 +238,7 @@ try
                 }
 
                 It 'Should throw the correct error' {
-                    { Test-TargetResource @testParameters } | Should Throw 'The parameter MaxMemory must be null when DynamicAlloc is set to true.'
+                    { Test-TargetResource @testParameters } | Should -Throw 'The parameter MaxMemory must be null when DynamicAlloc is set to true.'
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -258,7 +258,7 @@ try
                 }
 
                 It 'Should throw the correct error' {
-                    {Test-TargetResource @testParameters } | Should Throw 'The parameter MaxMemory must not be null when DynamicAlloc is set to false.'
+                    {Test-TargetResource @testParameters } | Should -Throw 'The parameter MaxMemory must not be null when DynamicAlloc is set to false.'
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -279,7 +279,7 @@ try
 
                 It 'Should return the state as false when desired MinMemory and MaxMemory are not present' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -319,7 +319,7 @@ try
 
                 It 'Should return the state as true when desired MinMemory and MaxMemory are present' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -358,7 +358,7 @@ try
 
                 It 'Should return the state as false when desired MinMemory and MaxMemory are not set to the default values' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -383,7 +383,7 @@ try
 
                 It 'Should return the state as true when desired MinMemory and MaxMemory are present' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -404,7 +404,7 @@ try
                 }
 
                 It 'Should not throw an error' {
-                    { Test-TargetResource @testParameters } | Should Not Throw
+                    { Test-TargetResource @testParameters } | Should -Not -Throw
                 }
             }
 
@@ -464,7 +464,7 @@ try
                 }
 
                 It 'Should throw the correct error' {
-                    { Set-TargetResource @testParameters } | Should Throw 'The parameter MaxMemory must be null when DynamicAlloc is set to true.'
+                    { Set-TargetResource @testParameters } | Should -Throw 'The parameter MaxMemory must be null when DynamicAlloc is set to true.'
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -484,7 +484,7 @@ try
                 }
 
                 It 'Should throw the correct error' {
-                    { Set-TargetResource @testParameters } | Should Throw 'The parameter MaxMemory must not be null when DynamicAlloc is set to false.'
+                    { Set-TargetResource @testParameters } | Should -Throw 'The parameter MaxMemory must not be null when DynamicAlloc is set to false.'
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -504,7 +504,7 @@ try
                 }
 
                 It 'Should set the MinMemory and MaxMemory to the default values' {
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -533,7 +533,7 @@ try
                 }
 
                 It 'Should set the MinMemory and MaxMemory to the correct values when Ensure parameter is set to Present and DynamicAlloc is set to false' {
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -554,7 +554,7 @@ try
                 }
 
                 It 'Should set the MaxMemory to the correct values when Ensure parameter is set to Present and DynamicAlloc is set to true' {
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -596,7 +596,7 @@ try
                 }
 
                 It 'Should set the MaxMemory to the correct values when Ensure parameter is set to Present and DynamicAlloc is set to true' {
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -660,7 +660,7 @@ try
                 }
 
                 It 'Should throw the correct error' {
-                    { Set-TargetResource @testParameters } | Should Throw ("Failed to alter the server configuration memory for $($env:COMPUTERNAME)" + "\" +`
+                    { Set-TargetResource @testParameters } | Should -Throw ("Failed to alter the server configuration memory for $($env:COMPUTERNAME)" + "\" +`
                                                                         "$mockSQLServerInstanceName. InnerException: Exception calling ""Alter"" with ""0"" argument(s): " + `
                                                                         """Mock Alter Method was called with invalid operation.""")
                 }
@@ -686,7 +686,7 @@ try
                 }
 
                 It 'Should throw the correct error' {
-                    { Set-TargetResource @testParameters } | Should Throw 'Failed to calculate dynamically the maximum memory.'
+                    { Set-TargetResource @testParameters } | Should -Throw 'Failed to calculate dynamically the maximum memory.'
                 }
 
                 It 'Should call the mock function Connect-SQL' {

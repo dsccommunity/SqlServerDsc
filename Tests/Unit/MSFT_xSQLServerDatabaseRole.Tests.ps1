@@ -232,7 +232,7 @@ try
                     $throwInvalidOperation = ("Database 'unknownDatabaseName' does not exist " + `
                                               "on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Get-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -252,7 +252,7 @@ try
                      $throwInvalidOperation = ("Role 'unknownRoleName' does not exist on database " + `
                                                "'AdventureWorks' on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Get-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -269,7 +269,7 @@ try
                         Role        = @($mockSqlDatabaseRole,$mockSqlDatabaseRoleSecond)
                     }
 
-                    { Get-TargetResource @testParameters } | Should Not Throw
+                    { Get-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -289,7 +289,7 @@ try
                     $throwInvalidOperation = ("Login 'unknownLoginName' does not exist " + `
                                               "on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Get-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -307,24 +307,24 @@ try
 
                 It 'Should return the state as absent' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should not return any granted roles' {
                     $result = Get-TargetResource @testParameters
-                    $result.Role | Should Be $null
+                    $result.Role | Should -Be $null
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.Database | Should Be $testParameters.Database
-                    $result.Name | Should Be $testParameters.Name
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.Database | Should -Be $testParameters.Database
+                    $result.Name | Should -Be $testParameters.Name
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -340,24 +340,24 @@ try
 
                 It 'Should return the state as absent' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should only return the one granted role' {
                     $result = Get-TargetResource @testParameters
-                    $result.Role | Should Be $mockSqlDatabaseRole
+                    $result.Role | Should -Be $mockSqlDatabaseRole
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.Database | Should Be $testParameters.Database
-                    $result.Name | Should Be $testParameters.Name
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.Database | Should -Be $testParameters.Database
+                    $result.Name | Should -Be $testParameters.Name
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -373,17 +373,17 @@ try
 
                 It 'Should return the state as absent' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.Database | Should Be $testParameters.Database
-                    $result.Name | Should Be $testParameters.Name
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.Database | Should -Be $testParameters.Database
+                    $result.Name | Should -Be $testParameters.Name
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -399,18 +399,18 @@ try
 
                 It 'Should return the state as absent' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Present'
+                    $result.Ensure | Should -Be 'Present'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.Database | Should Be $testParameters.Database
-                    $result.Name | Should Be $testParameters.Name
-                    $result.Role | Should Be $testParameters.Role
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.Database | Should -Be $testParameters.Database
+                    $result.Name | Should -Be $testParameters.Name
+                    $result.Role | Should -Be $testParameters.Role
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -435,7 +435,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -454,7 +454,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -473,7 +473,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -492,7 +492,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -511,7 +511,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -530,7 +530,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -560,7 +560,7 @@ try
                         Ensure      = 'Present'
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -589,7 +589,7 @@ try
                                               'the instance localhost\MSSQLSERVER. InnerException: Exception calling "Create" ' + `
                                               'with "0" argument(s): "Mock Create Method was called with invalid operation."')
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -615,7 +615,7 @@ try
                         Ensure      = 'Present'
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -645,7 +645,7 @@ try
                                               'InnerException: Exception calling "AddMember" with "1" argument(s): ' + `
                                               '"Mock AddMember Method was called with invalid operation."')
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -669,7 +669,7 @@ try
                         Ensure      = 'Absent'
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -700,7 +700,7 @@ try
                                               'InnerException: Exception calling "DropMember" with "1" argument(s): ' + `
                                               '"Mock DropMember Method was called with invalid operation."')
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {

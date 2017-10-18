@@ -111,24 +111,24 @@ try
             $result = Get-TargetResource @testParameters
 
             It 'Should return the state as present' {
-                $result.Ensure | Should Be 'Present'
+                $result.Ensure | Should -Be 'Present'
             }
 
             It 'Should return the same values as passed as parameters' {
-                $result.Name | Should Be $testParameters.Name
-                $result.ServerName | Should Be $testParameters.ServerName
+                $result.Name | Should -Be $testParameters.Name
+                $result.ServerName | Should -Be $testParameters.ServerName
             }
 
             It 'Should return TCP as the protocol used' {
-                $result.Protocol | Should Be 'TCP'
+                $result.Protocol | Should -Be 'TCP'
             }
 
             It "Should return $tcpPort as the port number used" {
-                $result.TcpPort | Should Be $tcpPort
+                $result.TcpPort | Should -Be $tcpPort
             }
 
             It 'Should not return any pipe name' {
-                $result.PipeName | Should Be ''
+                $result.PipeName | Should -Be ''
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -152,24 +152,24 @@ try
             $result = Get-TargetResource @testParameters
 
             It 'Should return the state as absent' {
-                $result.Ensure | Should Be 'Absent'
+                $result.Ensure | Should -Be 'Absent'
             }
 
             It 'Should return the same values as passed as parameters' {
-                $result.Name | Should Be $testParameters.Name
-                $result.ServerName | Should Be $testParameters.ServerName
+                $result.Name | Should -Be $testParameters.Name
+                $result.ServerName | Should -Be $testParameters.ServerName
             }
 
             It 'Should not return any protocol' {
-                $result.Protocol | Should Be ''
+                $result.Protocol | Should -Be ''
             }
 
             It 'Should not return a port number' {
-                $result.TcpPort | Should Be 0
+                $result.TcpPort | Should -Be 0
             }
 
             It 'Should not return any pipe name' {
-                $result.PipeName | Should Be ''
+                $result.PipeName | Should -Be ''
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -193,24 +193,24 @@ try
             $result = Get-TargetResource @testParameters
 
             It 'Should return the state as present' {
-                $result.Ensure | Should Be 'Present'
+                $result.Ensure | Should -Be 'Present'
             }
 
             It 'Should return the same values as passed as parameters' {
-                $result.Name | Should Be $testParameters.Name
-                $result.ServerName | Should Be $testParameters.ServerName
+                $result.Name | Should -Be $testParameters.Name
+                $result.ServerName | Should -Be $testParameters.ServerName
             }
 
             It 'Should return TCP as the protocol used' {
-                $result.Protocol | Should Be 'TCP'
+                $result.Protocol | Should -Be 'TCP'
             }
 
             It "Should return $differentTcpPort as the port number used" {
-                $result.TcpPort | Should Be $differentTcpPort
+                $result.TcpPort | Should -Be $differentTcpPort
             }
 
             It 'Should not return any pipe name' {
-                $result.PipeName | Should Be ''
+                $result.PipeName | Should -Be ''
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -234,27 +234,27 @@ try
             $result = Get-TargetResource @testParameters
 
             It 'Should return the state as present' {
-                $result.Ensure | Should Be 'Present'
+                $result.Ensure | Should -Be 'Present'
             }
 
             It 'Should return the same values as passed as parameters' {
-                $result.Name | Should Be $testParameters.Name
+                $result.Name | Should -Be $testParameters.Name
             }
 
             It 'Should return different server name than the one passed as parameter' {
-                $result.ServerName | Should Be $differentServerNameTcp
+                $result.ServerName | Should -Be $differentServerNameTcp
             }
 
             It 'Should return TCP as the protocol used' {
-                $result.Protocol | Should Be 'TCP'
+                $result.Protocol | Should -Be 'TCP'
             }
 
             It "Should return $tcpPort as the port number used" {
-                $result.TcpPort | Should Be $tcpPort
+                $result.TcpPort | Should -Be $tcpPort
             }
 
             It 'Should not return any pipe name' {
-                $result.PipeName | Should Be ''
+                $result.PipeName | Should -Be ''
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -297,28 +297,28 @@ try
             $result = Get-TargetResource @testParameters
 
             It 'Should return the state as present' {
-                $result.Ensure | Should Be 'Present'
+                $result.Ensure | Should -Be 'Present'
             }
 
             It 'Should return the same values as passed as parameters' {
-                $result.Name | Should Be $testParameters.Name
-                $result.ServerName | Should Be $testParameters.ServerName
+                $result.Name | Should -Be $testParameters.Name
+                $result.ServerName | Should -Be $testParameters.ServerName
             }
 
             It 'Should return TCP as the protocol used' {
-                $result.Protocol | Should Be 'TCP'
+                $result.Protocol | Should -Be 'TCP'
             }
 
             It 'Should return the UseDynamicTcpPort parameter as false' {
-                $result.UseDynamicTcpPort | Should Be $false
+                $result.UseDynamicTcpPort | Should -Be $false
             }
 
             It "Should not return any pipe name" {
-                $result.PipeName | Should Be ''
+                $result.PipeName | Should -Be ''
             }
 
             It 'Should not return any TCP Port' {
-                $result.TcpPort | Should Be 1433
+                $result.TcpPort | Should -Be 1433
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -348,18 +348,18 @@ try
             $result = Get-TargetResource @testParameters
 
             It 'Should return the state as present' {
-                $result.Ensure | Should Be 'Present'
+                $result.Ensure | Should -Be 'Present'
             }
 
             It 'Should return the same values as passed as parameters' {
-                $result.Name | Should Be $testParameters.Name
-                $result.ServerName | Should Be $testParameters.ServerName
-                $result.Protocol | Should Be $defaultParameters.Protocol
-                $result.TcpPort | Should Be $defaultParameters.TcpPort
+                $result.Name | Should -Be $testParameters.Name
+                $result.ServerName | Should -Be $testParameters.ServerName
+                $result.Protocol | Should -Be $defaultParameters.Protocol
+                $result.TcpPort | Should -Be $defaultParameters.TcpPort
             }
 
             It 'Should not return any pipe name' {
-                $result.PipeName | Should Be ''
+                $result.PipeName | Should -Be ''
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -398,28 +398,28 @@ try
             $result = Get-TargetResource @testParameters
 
             It 'Should return the state as present' {
-                $result.Ensure | Should Be 'Present'
+                $result.Ensure | Should -Be 'Present'
             }
 
             It 'Should return the same values as passed as parameters' {
-                $result.Name | Should Be $testParameters.Name
-                $result.ServerName | Should Be $testParameters.ServerName
+                $result.Name | Should -Be $testParameters.Name
+                $result.ServerName | Should -Be $testParameters.ServerName
             }
 
             It 'Should return TCP as the protocol used' {
-                $result.Protocol | Should Be 'TCP'
+                $result.Protocol | Should -Be 'TCP'
             }
 
             It 'Should return the UseDynamicTcpPort parameter as false' {
-                $result.UseDynamicTcpPort | Should Be $false
+                $result.UseDynamicTcpPort | Should -Be $false
             }
 
             It "Should not return any pipe name" {
-                $result.PipeName | Should Be ''
+                $result.PipeName | Should -Be ''
             }
 
             It 'Should not return any TCP Port' {
-                $result.TcpPort | Should Be 1433
+                $result.TcpPort | Should -Be 1433
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -445,24 +445,24 @@ try
             $result = Get-TargetResource @testParameters
 
             It 'Should return the state as absent' {
-                $result.Ensure | Should Be 'Absent'
+                $result.Ensure | Should -Be 'Absent'
             }
 
             It 'Should return the same values as passed as parameters' {
-                $result.Name | Should Be $testParameters.Name
-                $result.ServerName | Should Be $testParameters.ServerName
+                $result.Name | Should -Be $testParameters.Name
+                $result.ServerName | Should -Be $testParameters.ServerName
             }
 
             It 'Should not return any protocol' {
-                $result.Protocol | Should Be ''
+                $result.Protocol | Should -Be ''
             }
 
             It 'Should not return a port number' {
-                $result.TcpPort | Should Be 0
+                $result.TcpPort | Should -Be 0
             }
 
             It 'Should not return any pipe name' {
-                $result.PipeName | Should Be ''
+                $result.PipeName | Should -Be ''
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -531,24 +531,24 @@ try
             $result = Get-TargetResource @testParameters
 
             It 'Should return the state as present' {
-                $result.Ensure | Should Be 'Present'
+                $result.Ensure | Should -Be 'Present'
             }
 
             It 'Should return the same values as passed as parameters' {
-                $result.Name | Should Be $testParameters.Name
-                $result.ServerName | Should Be $testParameters.ServerName
+                $result.Name | Should -Be $testParameters.Name
+                $result.ServerName | Should -Be $testParameters.ServerName
             }
 
             It 'Should return NP as the protocol used' {
-                $result.Protocol | Should Be 'NP'
+                $result.Protocol | Should -Be 'NP'
             }
 
             It 'Should not return a port number' {
-                $result.TcpPort | Should Be 0
+                $result.TcpPort | Should -Be 0
             }
 
             It 'Should return the correct pipe name based on the passed ServerName parameter' {
-                $result.PipeName | Should Be "\\$serverNameNamedPipes\PIPE\sql\query"
+                $result.PipeName | Should -Be "\\$serverNameNamedPipes\PIPE\sql\query"
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -572,24 +572,24 @@ try
             $result = Get-TargetResource @testParameters
 
             It 'Should return the state as present' {
-                $result.Ensure | Should Be 'Present'
+                $result.Ensure | Should -Be 'Present'
             }
 
             It 'Should return the same values as passed as parameters' {
-                $result.Name | Should Be $testParameters.Name
-                $result.ServerName | Should Be $testParameters.ServerName
+                $result.Name | Should -Be $testParameters.Name
+                $result.ServerName | Should -Be $testParameters.ServerName
             }
 
             It 'Should return NP as the protocol used' {
-                $result.Protocol | Should Be 'NP'
+                $result.Protocol | Should -Be 'NP'
             }
 
             It 'Should not return a port number' {
-                $result.TcpPort | Should Be 0
+                $result.TcpPort | Should -Be 0
             }
 
             It 'Should return the correct pipe name based on the passed ServerName parameter' {
-                $result.PipeName | Should Be $differentPipeName
+                $result.PipeName | Should -Be $differentPipeName
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -613,24 +613,24 @@ try
             $result = Get-TargetResource @testParameters
 
             It 'Should return the state as absent' {
-                $result.Ensure | Should Be 'Absent'
+                $result.Ensure | Should -Be 'Absent'
             }
 
             It 'Should return the same values as passed as parameters' {
-                $result.Name | Should Be $testParameters.Name
-                $result.ServerName | Should Be $testParameters.ServerName
+                $result.Name | Should -Be $testParameters.Name
+                $result.ServerName | Should -Be $testParameters.ServerName
             }
 
             It 'Should not return any protocol' {
-                $result.Protocol | Should Be ''
+                $result.Protocol | Should -Be ''
             }
 
             It 'Should not return a port number' {
-                $result.TcpPort | Should Be 0
+                $result.TcpPort | Should -Be 0
             }
 
             It 'Should not return any pipe name' {
-                $result.PipeName | Should Be ''
+                $result.PipeName | Should -Be ''
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -660,24 +660,24 @@ try
             $result = Get-TargetResource @testParameters
 
             It 'Should return the state as present' {
-                $result.Ensure | Should Be 'Present'
+                $result.Ensure | Should -Be 'Present'
             }
 
             It 'Should return the same values as passed as parameters' {
-                $result.Name | Should Be $testParameters.Name
-                $result.ServerName | Should Be $testParameters.ServerName
+                $result.Name | Should -Be $testParameters.Name
+                $result.ServerName | Should -Be $testParameters.ServerName
             }
 
             It 'Should return NP as the protocol used' {
-                $result.Protocol | Should Be 'NP'
+                $result.Protocol | Should -Be 'NP'
             }
 
             It 'Should not return a port number' {
-                $result.TcpPort | Should Be 0
+                $result.TcpPort | Should -Be 0
             }
 
             It 'Should return the correct pipe name based on the passed ServerName parameter' {
-                $result.PipeName | Should Be $pipeName
+                $result.PipeName | Should -Be $pipeName
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -722,28 +722,28 @@ try
             $result = Get-TargetResource @testParameters
 
             It 'Should return the state as present' {
-                $result.Ensure | Should Be 'Present'
+                $result.Ensure | Should -Be 'Present'
             }
 
             It 'Should return the same values as passed as parameters' {
-                $result.Name | Should Be $testParameters.Name
-                $result.ServerName | Should Be $testParameters.ServerName
+                $result.Name | Should -Be $testParameters.Name
+                $result.ServerName | Should -Be $testParameters.ServerName
             }
 
             It 'Should return TCP as the protocol used' {
-                $result.Protocol | Should Be 'TCP'
+                $result.Protocol | Should -Be 'TCP'
             }
 
             It 'Should return the UseDynamicTcpPort parameter as true' {
-                $result.UseDynamicTcpPort | Should Be $true
+                $result.UseDynamicTcpPort | Should -Be $true
             }
 
             It "Should not return any pipe name" {
-                $result.PipeName | Should Be ''
+                $result.PipeName | Should -Be ''
             }
 
             It 'Should not return any TCP Port' {
-                $result.TcpPort | Should Be 0
+                $result.TcpPort | Should -Be 0
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -786,28 +786,28 @@ try
             $result = Get-TargetResource @testParameters
 
             It 'Should return the state as present' {
-                $result.Ensure | Should Be 'Present'
+                $result.Ensure | Should -Be 'Present'
             }
 
             It 'Should return the same values as passed as parameters' {
-                $result.Name | Should Be $testParameters.Name
-                $result.ServerName | Should Be $testParameters.ServerName
+                $result.Name | Should -Be $testParameters.Name
+                $result.ServerName | Should -Be $testParameters.ServerName
             }
 
             It 'Should return TCP as the protocol used' {
-                $result.Protocol | Should Be 'TCP'
+                $result.Protocol | Should -Be 'TCP'
             }
 
             It 'Should return the UseDynamicTcpPort parameter as true' {
-                $result.UseDynamicTcpPort | Should Be $true
+                $result.UseDynamicTcpPort | Should -Be $true
             }
 
             It "Should not return any pipe name" {
-                $result.PipeName | Should Be ''
+                $result.PipeName | Should -Be ''
             }
 
             It 'Should not return any TCP Port' {
-                $result.TcpPort | Should Be 0
+                $result.TcpPort | Should -Be 0
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -1074,7 +1074,7 @@ try
             }
 
             It "Should return true from the test method" {
-                Test-TargetResource @testParameters | Should Be $true
+                Test-TargetResource @testParameters | Should -Be $true
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -1096,7 +1096,7 @@ try
             }
 
             It "Should return true from the test method" {
-                Test-TargetResource @testParameters | Should Be $true
+                Test-TargetResource @testParameters | Should -Be $true
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -1118,7 +1118,7 @@ try
             }
 
             It "Should return false from the test method" {
-                Test-TargetResource @testParameters | Should Be $false
+                Test-TargetResource @testParameters | Should -Be $false
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -1140,7 +1140,7 @@ try
             }
 
             It "Should return false from the test method" {
-                Test-TargetResource @testParameters | Should Be $false
+                Test-TargetResource @testParameters | Should -Be $false
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -1179,7 +1179,7 @@ try
 
             It "Should return true from the test method" {
                 $testParameters.Add('Protocol','NP')
-                Test-TargetResource @testParameters | Should Be $true
+                Test-TargetResource @testParameters | Should -Be $true
             }
 
             It 'Should call the mocked functions exactly 1 time each' {
@@ -1201,7 +1201,7 @@ try
             }
 
             It "Should return false from the test method" {
-                Test-TargetResource @testParameters | Should Be $false
+                Test-TargetResource @testParameters | Should -Be $false
             }
 
             It 'Should call the mocked functions exactly 1 time each' {

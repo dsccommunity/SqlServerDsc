@@ -95,12 +95,12 @@ try
             $result = Get-TargetResource @desiredState
 
             It 'Should return the same values as passed' {
-                $result.SQLServer | Should Be $desiredState.SQLServer
-                $result.SQLInstanceName | Should Be $desiredState.SQLInstanceName
-                $result.OptionName | Should Be $desiredState.OptionName
-                $result.OptionValue | Should Not Be $desiredState.OptionValue
-                $result.RestartService | Should Be $desiredState.RestartService
-                $result.RestartTimeout | Should Be $desiredState.RestartTimeout
+                $result.SQLServer | Should -Be $desiredState.SQLServer
+                $result.SQLInstanceName | Should -Be $desiredState.SQLInstanceName
+                $result.OptionName | Should -Be $desiredState.OptionName
+                $result.OptionValue | Should -Not -Be $desiredState.OptionValue
+                $result.RestartService | Should -Be $desiredState.RestartService
+                $result.RestartTimeout | Should -Be $desiredState.RestartTimeout
             }
 
             It 'Should call Connect-SQL mock when getting the current state' {
@@ -132,12 +132,12 @@ try
             $result = Get-TargetResource @desiredState
 
             It 'Should return the same values as passed' {
-                $result.SQLServer | Should Be $desiredState.SQLServer
-                $result.SQLInstanceName | Should Be $desiredState.SQLInstanceName
-                $result.OptionName | Should Be $desiredState.OptionName
-                $result.OptionValue | Should Be $desiredState.OptionValue
-                $result.RestartService | Should Be $desiredState.RestartService
-                $result.RestartTimeout | Should Be $desiredState.RestartTimeout
+                $result.SQLServer | Should -Be $desiredState.SQLServer
+                $result.SQLInstanceName | Should -Be $desiredState.SQLInstanceName
+                $result.OptionName | Should -Be $desiredState.OptionName
+                $result.OptionValue | Should -Be $desiredState.OptionValue
+                $result.RestartService | Should -Be $desiredState.RestartService
+                $result.RestartTimeout | Should -Be $desiredState.RestartTimeout
             }
 
             It 'Should call Connect-SQL mock when getting the current state' {
@@ -166,7 +166,7 @@ try
             } -ModuleName $script:DSCResourceName -Verifiable
 
             It 'Should call New-TerminatingError mock when a bad option name is specified' {
-                { Get-TargetResource @invalidOption } | Should Throw 'ConfigurationOptionNotFound'
+                { Get-TargetResource @invalidOption } | Should -Throw 'ConfigurationOptionNotFound'
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName New-TerminatingError -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope Context -Times 1
             }
@@ -196,11 +196,11 @@ try
         } -ModuleName $script:DSCResourceName -Verifiable
 
         It 'Should cause Test-TargetResource to return false when not in the desired state' {
-            Test-TargetResource @defaultState | Should be $false
+            Test-TargetResource @defaultState | Should -Be $false
         }
 
         It 'Should cause Test-TargetResource method to return true' {
-            Test-TargetResource @desiredState | Should be $true
+            Test-TargetResource @desiredState | Should -Be $true
         }
     }
 

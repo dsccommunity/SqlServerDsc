@@ -83,14 +83,14 @@ try
                 Context 'When desired state should be Started, but the current state is Stopped' {
                     It 'Should not return the state as Started' {
                         $result = Get-TargetResource @testParameters
-                        $result.State | Should Not Be $mockEndpointStateStarted
+                        $result.State | Should -Not -Be $mockEndpointStateStarted
                     }
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.NodeName | Should Be $testParameters.NodeName
-                        $result.InstanceName | Should Be $testParameters.InstanceName
-                        $result.Name | Should Be $testParameters.Name
+                        $result.NodeName | Should -Be $testParameters.NodeName
+                        $result.InstanceName | Should -Be $testParameters.InstanceName
+                        $result.Name | Should -Be $testParameters.Name
                     }
 
                     It 'Should call the mock function Connect-SQL' {
@@ -104,14 +104,14 @@ try
                 Context 'When desired state should be Stopped, but the current state is Started' {
                     It 'Should not return the state as Stopped' {
                         $result = Get-TargetResource @testParameters
-                        $result.State | Should Not Be $mockEndpointStateStopped
+                        $result.State | Should -Not -Be $mockEndpointStateStopped
                     }
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.NodeName | Should Be $testParameters.NodeName
-                        $result.InstanceName | Should Be $testParameters.InstanceName
-                        $result.Name | Should Be $testParameters.Name
+                        $result.NodeName | Should -Be $testParameters.NodeName
+                        $result.InstanceName | Should -Be $testParameters.InstanceName
+                        $result.Name | Should -Be $testParameters.Name
                     }
 
                     It 'Should call the mock function Connect-SQL' {
@@ -124,7 +124,7 @@ try
 
                 Context 'When endpoint is missing' {
                     It 'Should throw the correct error message' {
-                        { Get-TargetResource @testParameters } | Should Throw 'Unexpected result when trying to verify existence of endpoint 'DefaultEndpointMirror'. InnerException: Endpoint 'DefaultEndpointMirror' does not exist'
+                        { Get-TargetResource @testParameters } | Should -Throw 'Unexpected result when trying to verify existence of endpoint ''DefaultEndpointMirror''. InnerException: Endpoint ''DefaultEndpointMirror'' does not exist'
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -139,14 +139,14 @@ try
                 Context 'When desired state is Started' {
                     It 'Should return the state as Started' {
                         $result = Get-TargetResource @testParameters
-                        $result.State | Should Be $mockEndpointStateStarted
+                        $result.State | Should -Be $mockEndpointStateStarted
                     }
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.NodeName | Should Be $testParameters.NodeName
-                        $result.InstanceName | Should Be $testParameters.InstanceName
-                        $result.Name | Should Be $testParameters.Name
+                        $result.NodeName | Should -Be $testParameters.NodeName
+                        $result.InstanceName | Should -Be $testParameters.InstanceName
+                        $result.Name | Should -Be $testParameters.Name
                     }
 
                     It 'Should call the mock function Connect-SQL' {
@@ -160,14 +160,14 @@ try
                 Context 'When desired state is Stopped' {
                     It 'Should return the state as Stopped' {
                         $result = Get-TargetResource @testParameters
-                        $result.State | Should Be $mockEndpointStateStopped
+                        $result.State | Should -Be $mockEndpointStateStopped
                     }
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.NodeName | Should Be $testParameters.NodeName
-                        $result.InstanceName | Should Be $testParameters.InstanceName
-                        $result.Name | Should Be $testParameters.Name
+                        $result.NodeName | Should -Be $testParameters.NodeName
+                        $result.InstanceName | Should -Be $testParameters.InstanceName
+                        $result.Name | Should -Be $testParameters.Name
                     }
 
                     It 'Should call the mock function Connect-SQL' {
@@ -195,7 +195,7 @@ try
                         $testParameters.Add('State', $mockEndpointStateStarted)
 
                         $result = Test-TargetResource @testParameters
-                        $result | Should Be $false
+                        $result | Should -Be $false
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -208,7 +208,7 @@ try
                         $testParameters.Add('State', $mockEndpointStateStopped)
 
                         $result = Test-TargetResource @testParameters
-                        $result | Should Be $false
+                        $result | Should -Be $false
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -223,7 +223,7 @@ try
                         $testParameters.Add('State', $mockEndpointStateStarted)
 
                         $result = Test-TargetResource @testParameters
-                        $result | Should Be $true
+                        $result | Should -Be $true
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -236,7 +236,7 @@ try
                         $testParameters.Add('State', $mockEndpointStateStopped)
 
                         $result = Test-TargetResource @testParameters
-                        $result | Should Be $true
+                        $result | Should -Be $true
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -248,7 +248,7 @@ try
                             return $null
                         } -Verifiable
 
-                        { Test-TargetResource @testParameters } | Should Throw 'Got unexpected result from Get-TargetResource. No change is made.'
+                        { Test-TargetResource @testParameters } | Should -Throw 'Got unexpected result from Get-TargetResource. No change is made.'
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 0 -Scope It
                     }
@@ -323,7 +323,7 @@ try
                             return $null
                         } -Verifiable
 
-                        { Set-TargetResource @testParameters } | Should Throw 'Got unexpected result from Get-TargetResource. No change is made.'
+                        { Set-TargetResource @testParameters } | Should -Throw 'Got unexpected result from Get-TargetResource. No change is made.'
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 0 -Scope It
                     }
