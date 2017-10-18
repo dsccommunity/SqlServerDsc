@@ -141,7 +141,7 @@ function Get-TargetResource
         Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. Default is 30,000.
 
     .PARAMETER ProcessOnlyOnActiveNode
-        Specifies whether to process the resource if the current node is not the active host of the SQL Server Instance.
+        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
 #>
 function Set-TargetResource
 {
@@ -519,7 +519,7 @@ function Set-TargetResource
         Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. Default is 30,000.
 
     .PARAMETER ProcessOnlyOnActiveNode
-        Specifies whether to process the resource if the current node is not the active host of the SQL Server Instance.
+        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
 #>
 function Test-TargetResource
 {
