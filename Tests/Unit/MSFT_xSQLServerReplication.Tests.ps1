@@ -38,7 +38,7 @@ try
                         -MockWith { return [pscustomobject]@{ Version = '12.1.4100.1' } } `
                         -ParameterFilter { $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.MSSQLSERVER\Setup' }
 
-                    Get-SqlServerMajorVersion -InstanceName 'MSSQLSERVER' | Should -be '12'
+                    Get-SqlServerMajorVersion -InstanceName 'MSSQLSERVER' | Should -Be '12'
                 }
 
                 It 'Should throw error if major version cannot be resolved' {
@@ -54,11 +54,11 @@ try
             Context 'Get-SqlLocalServerName' {
 
                 It 'Should return COMPUTERNAME given MSSQLSERVER' {
-                    Get-SqlLocalServerName -InstanceName MSSQLSERVER | Should -be $env:COMPUTERNAME
+                    Get-SqlLocalServerName -InstanceName MSSQLSERVER | Should -Be $env:COMPUTERNAME
                 }
 
                 It 'Should return COMPUTERNAME\InstanceName given InstanceName' {
-                    Get-SqlLocalServerName -InstanceName InstanceName | Should -be "$($env:COMPUTERNAME)\InstanceName"
+                    Get-SqlLocalServerName -InstanceName InstanceName | Should -Be "$($env:COMPUTERNAME)\InstanceName"
                 }
 
             }
@@ -154,7 +154,7 @@ try
 
             Context 'Test method' {
                 It 'Test method returns false' {
-                    Test-TargetResource @testParameters | Should -be $false
+                    Test-TargetResource @testParameters | Should -Be $false
                 }
             }
 
@@ -285,7 +285,7 @@ try
 
             Context 'Test method' {
                 It 'Test method returns false' {
-                    Test-TargetResource @testParameters | Should -be $false
+                    Test-TargetResource @testParameters | Should -Be $false
                 }
             }
 
@@ -418,7 +418,7 @@ try
 
             Context 'Test method' {
                 It 'Test method returns true' {
-                    Test-TargetResource @testParameters | Should -be $true
+                    Test-TargetResource @testParameters | Should -Be $true
                 }
             }
 
@@ -546,7 +546,7 @@ try
 
             Context 'Test method' {
                 It 'Test method returns true' {
-                    Test-TargetResource @testParameters | Should -be $true
+                    Test-TargetResource @testParameters | Should -Be $true
                 }
             }
 
@@ -673,7 +673,7 @@ try
 
             Context 'Test method' {
                 It 'Test method returns false' {
-                    Test-TargetResource @testParameters | Should -be $false
+                    Test-TargetResource @testParameters | Should -Be $false
                 }
             }
 
@@ -803,7 +803,7 @@ try
 
             Context 'Test method' {
                 It 'Test method returns false' {
-                    Test-TargetResource @testParameters | Should -be $false
+                    Test-TargetResource @testParameters | Should -Be $false
                 }
             }
 
@@ -931,7 +931,7 @@ try
 
             Context 'Test method' {
                 It 'Test method returns true' {
-                    Test-TargetResource @testParameters | Should -be $true
+                    Test-TargetResource @testParameters | Should -Be $true
                 }
             }
 

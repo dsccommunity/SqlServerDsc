@@ -4240,7 +4240,7 @@ try
                         $mockStartSqlSetupProcessExpectedArgument.Remove('FailoverClusterGroup')
                         $mockStartSqlSetupProcessExpectedArgument.Remove('SQLSysAdminAccounts')
 
-                        { Set-TargetResource @testParameters } | Should -Not -throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
 
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It

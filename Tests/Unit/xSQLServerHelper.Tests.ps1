@@ -1504,11 +1504,11 @@ InModuleScope $script:moduleName {
     Describe 'Testing Split-FullSQLInstanceName' {
         Context 'When the "FullSQLInstanceName" parameter is not supplied' {
             It 'Should throw when the "FullSQLInstanceName" parameter is $null' {
-                { Split-FullSQLInstanceName -FullSQLInstanceName $null } | Should -throw
+                { Split-FullSQLInstanceName -FullSQLInstanceName $null } | Should -Throw
             }
 
             It 'Should throw when the "FullSQLInstanceName" parameter is an empty string' {
-                { Split-FullSQLInstanceName -FullSQLInstanceName '' } | Should -throw
+                { Split-FullSQLInstanceName -FullSQLInstanceName '' } | Should -Throw
             }
         }
 

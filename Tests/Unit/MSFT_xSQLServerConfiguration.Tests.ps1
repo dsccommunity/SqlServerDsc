@@ -196,11 +196,11 @@ try
         } -ModuleName $script:DSCResourceName -Verifiable
 
         It 'Should cause Test-TargetResource to return false when not in the desired state' {
-            Test-TargetResource @defaultState | Should -be $false
+            Test-TargetResource @defaultState | Should -Be $false
         }
 
         It 'Should cause Test-TargetResource method to return true' {
-            Test-TargetResource @desiredState | Should -be $true
+            Test-TargetResource @desiredState | Should -Be $true
         }
     }
 

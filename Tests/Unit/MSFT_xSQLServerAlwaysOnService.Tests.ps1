@@ -220,7 +220,7 @@ try
             } -ModuleName $script:DSCResourceName -Verifiable
 
             It 'Should cause Test-TargetResource to return false when not in the desired state' {
-                Test-TargetResource @disableHadr | Should -be $false
+                Test-TargetResource @disableHadr | Should -Be $false
             }
         }
 
@@ -232,7 +232,7 @@ try
             } -ModuleName $script:DSCResourceName -Verifiable
 
             It 'Should cause Test-TargetResource to return true when in the desired state' {
-                Test-TargetResource @enableHadr | Should -be $true
+                Test-TargetResource @enableHadr | Should -Be $true
             }
         }
     }
