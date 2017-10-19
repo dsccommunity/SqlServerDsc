@@ -1,6 +1,6 @@
 <#
 .EXAMPLE
-    This example performs a custom	 SSRS configuration. It will initialize SSRS
+    This example performs a custom SSRS configuration. It will initialize SSRS
     and register custom Report Server Web Service and Report Manager URLs:
 
     http://localhost:80/MyReportServer
@@ -22,8 +22,8 @@ Configuration Example
             InstanceName = 'MSSQLSERVER'
             RSSQLServer = 'localhost'
             RSSQLInstanceName = 'MSSQLSERVER'
-            ReportServerVirtualDir = 'MyReportServer'
-            ReportsVirtualDir = 'MyReports'
+            ReportServerVirtualDirectory = 'MyReportServer'
+            ReportsVirtualDirectory = 'MyReports'
             ReportServerReservedUrl = @('http://+:80', 'https://+:443')
             ReportsReservedUrl = @('http://+:80', 'https://+:443')
         }

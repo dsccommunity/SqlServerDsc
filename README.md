@@ -1140,7 +1140,8 @@ Initializes and configures SQL Reporting Services server.
 
 #### Examples
 
-None.
+* [Default configuration](Examples/Resources/xSQLServerRSConfig/1-DefaultConfiguration.ps1)
+* [Custom virtual directories and reserved URLs](Examples/Resources/xSQLServerRSConfig/2-CustomConfiguration.ps1)
 
 ### xSQLServerRSSecureConnectionLevel
 

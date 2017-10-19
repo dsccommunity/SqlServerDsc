@@ -30,6 +30,8 @@
   - Added localization (en-US) for all strings in resource and unit tests
     ([issue #618](https://github.com/PowerShell/xSQLServer/issues/618)).
   - Updated examples to reflect new parameters.
+- Changes to xSQLServerRSConfig
+  - Added examples
 
 ## 8.2.0.0
 
