@@ -243,9 +243,9 @@ It will also manage the Availability Group replica on the specified node.
 * **`[Uint32]` HealthCheckTimeout** _(Write)_: Specifies the length of time, in
   milliseconds, after which AlwaysOn availability groups declare an unresponsive
   server to be unhealthy. Default is 30000.
-* **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies whether to
-  process the resource if the current node is not the active host of the SQL
-  Server Instance.
+* **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
+  will only determine if a change is needed if the target node is the active
+  host of the SQL Server Instance.
 
 #### Read-Only Properties from Get-TargetResource
 

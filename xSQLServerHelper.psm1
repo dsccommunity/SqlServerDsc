@@ -1343,16 +1343,20 @@ function Test-ActiveNode
     $result = $false
 
     # Determine if this is a failover cluster instance (FCI)
-    if ( $serverObject.IsMemberOfWsfcCluster )
+    if ( $ServerObject.IsMemberOfWsfcCluster )
     {
-        # If the current node name is the same as the name the instances is
-        # running on, then this is the active node
-        $result = $serverObject.ComputerNamePhysicalNetBIOS -eq $env:COMPUTERNAME
+        <#
+            If the current node name is the same as the name the instances is
+            running on, then this is the active node
+        #>
+        $result = $ServerObject.ComputerNamePhysicalNetBIOS -eq $env:COMPUTERNAME
     }
     else
     {
-        # This is a standalone instance, therefore the node will always host
-        # the instance.
+        <#
+            This is a standalone instance, therefore the node will always host
+            the instance.
+        #>
         $result = $true
     }
 
