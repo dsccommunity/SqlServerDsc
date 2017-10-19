@@ -1208,7 +1208,9 @@ try
         Describe 'xSQLServerAlwaysOnAvailabilityGroup\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
-                Mock -CommandName Test-ActiveNode -MockWith { $mockProcessOnlyOnActiveNode } -Verifiable
+                Mock -CommandName Test-ActiveNode -MockWith {
+                    $mockProcessOnlyOnActiveNode
+                } -Verifiable
             }
 
             Context 'When the Availability Group is Absent' {

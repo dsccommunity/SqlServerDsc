@@ -59,7 +59,7 @@ function Get-TargetResource
         SQLServer       = $SQLServer
         SQLInstanceName = $SQLInstanceName
         Ensure          = 'Absent'
-        IsActiveNode      = $isActiveNode
+        IsActiveNode    = $isActiveNode
     }
 
     if ( $availabilityGroup )
@@ -142,6 +142,7 @@ function Get-TargetResource
 
     .PARAMETER ProcessOnlyOnActiveNode
         Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+        Not used in Set-TargetResource.
 #>
 function Set-TargetResource
 {
@@ -615,10 +616,13 @@ function Test-TargetResource
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-    # If this is supposed to process only the active node, and this is not the
-    # active node, don't bother evaluating the test.
+    <#
+        If this is supposed to process only the active node, and this is not the
+        active node, don't bother evaluating the test.
+    #>
     if ( $ProcessOnlyOnActiveNode -and -not $getTargetResourceResult.IsActiveNode )
     {
+        New-VerboseMessage -Message ( 'The node "{0}" is not actively hosting the instance "{1}". Exiting the test.' -f $env:COMPUTERNAME,$SQLInstanceName )
         return $result
     }
 

@@ -21,7 +21,7 @@
     ([issue #517](https://github.com/PowerShell/xSQLServer/issues/517)).
   - Made the resource cluster aware. When ProcessOnlyOnActiveNode is specified,
     the resource will only determine if a change is needed if the target node
-    is the active host of the SQL Server Instance. ([issue #868](https://github.com/PowerShell/xSQLServer/issues/868)).
+    is the active host of the SQL Server instance ([issue #868](https://github.com/PowerShell/xSQLServer/issues/868)).
 - Added the CommonTestHelper.psm1 to store common testing functions.
   - Added the Import-SQLModuleStub function to ensure the correct version of the
     module stubs are loaded ([issue #784](https://github.com/PowerShell/xSQLServer/issues/784)).
