@@ -44,6 +44,9 @@ function Get-TargetResource
     # Connect to the instance
     $serverObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
+    # Is this node actively hosting the SQL instance?
+    $isActiveNode = Test-ActiveNode -ServerObject $serverObject
+
     # Get the endpoint properties
     $endpoint = $serverObject.Endpoints | Where-Object { $_.EndpointType -eq 'DatabaseMirroring' }
     if ( $endpoint )
@@ -62,6 +65,7 @@ function Get-TargetResource
         ConnectionModeInSecondaryRole = ''
         FailoverMode                  = ''
         EndpointUrl                   = ''
+        IsActiveNode                  = $isActiveNode
         ReadOnlyRoutingConnectionUrl  = ''
         ReadOnlyRoutingList           = @()
         SQLServer                     = $SQLServer
@@ -148,6 +152,10 @@ function Get-TargetResource
 
     .PARAMETER ReadOnlyRoutingList
         Specifies an ordered list of replica server names that represent the probe sequence for connection director to use when redirecting read-only connections through this availability replica. This parameter applies if the availability replica is the current primary replica of the availability group.
+
+    .PARAMETER ProcessOnlyOnActiveNode
+        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+        Not used in Set-TargetResource.
 #>
 function Set-TargetResource
 {
@@ -218,7 +226,11 @@ function Set-TargetResource
 
         [Parameter()]
         [String[]]
-        $ReadOnlyRoutingList
+        $ReadOnlyRoutingList,
+
+        [Parameter()]
+        [Boolean]
+        $ProcessOnlyOnActiveNode
     )
 
     Import-SQLPSModule
@@ -496,6 +508,9 @@ function Set-TargetResource
 
     .PARAMETER ReadOnlyRoutingList
         Specifies an ordered list of replica server names that represent the probe sequence for connection director to use when redirecting read-only connections through this availability replica. This parameter applies if the availability replica is the current primary replica of the availability group.
+
+    .PARAMETER ProcessOnlyOnActiveNode
+        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
 #>
 function Test-TargetResource
 {
@@ -567,7 +582,11 @@ function Test-TargetResource
 
         [Parameter()]
         [String[]]
-        $ReadOnlyRoutingList
+        $ReadOnlyRoutingList,
+
+        [Parameter()]
+        [Boolean]
+        $ProcessOnlyOnActiveNode
     )
 
     $getTargetResourceParameters = @{
@@ -581,6 +600,17 @@ function Test-TargetResource
     $result = $true
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
+    <#
+        If this is supposed to process only the active node, and this is not the
+        active node, don't bother evaluating the test.
+    #>
+    if ( $ProcessOnlyOnActiveNode -and -not $getTargetResourceResult.IsActiveNode )
+    {
+        # Use localization if the resource has been converted
+        New-VerboseMessage -Message ( 'The node "{0}" is not actively hosting the instance "{1}". Exiting the test.' -f $env:COMPUTERNAME,$SQLInstanceName )
+        return $result
+    }
 
     switch ($Ensure)
     {

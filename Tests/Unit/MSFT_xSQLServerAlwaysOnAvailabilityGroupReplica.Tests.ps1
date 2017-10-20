@@ -52,6 +52,7 @@ try
         $mockFailoverMode = 'Manual'
         $mockReadOnlyRoutingConnectionUrl = "TCP://$($mockSqlServer).domain.com:1433"
         $mockReadOnlyRoutingList = @($mockSqlServer)
+        $mockProcessOnlyOnActiveNode = $false
 
         #endregion
 
@@ -1288,9 +1289,13 @@ try
                     FailoverMode                  = $mockFailoverMode
                     ReadOnlyRoutingConnectionUrl  = $mockReadOnlyRoutingConnectionUrl
                     ReadOnlyRoutingList           = $mockReadOnlyRoutingList
+                    ProcessOnlyOnActiveNode       = $mockProcessOnlyOnActiveNode
                 }
 
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer1 -Verifiable
+                Mock -CommandName Test-ActiveNode -MockWith {
+                    return -not $mockProcessOnlyOnActiveNode
+                } -Verifiable
             }
 
             Context 'When the desired state is absent' {
@@ -1338,6 +1343,7 @@ try
                     Test-TargetResource @testTargetResourceParameters | Should -Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
                 }
 
                 It 'Should return $true when the Availability Replica is present' {
@@ -1345,6 +1351,7 @@ try
                     Test-TargetResource @testTargetResourceParameters | Should -Be $true
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
                 }
 
                 foreach ( $propertyToCheck in $propertiesToCheck.GetEnumerator() )
@@ -1355,6 +1362,7 @@ try
                         Test-TargetResource @testTargetResourceParameters | Should -Be $false
 
                         Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                        Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
                     }
                 }
 
@@ -1365,6 +1373,7 @@ try
                     Test-TargetResource @testTargetResourceParameters | Should -Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
                 }
 
                 It 'Should return $true when the Availability Replica is present and the Endpoint Hostname is not specified' {
@@ -1374,6 +1383,7 @@ try
                     Test-TargetResource @testTargetResourceParameters | Should -Be $true
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
                 }
 
                 It 'Should return $false when the Availability Replica is present and the Endpoint Hostname is not in the desired state' {
@@ -1383,6 +1393,7 @@ try
                     Test-TargetResource @testTargetResourceParameters | Should -Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
                 }
 
                 It 'Should return $false when the Availability Replica is present and the Endpoint Protocol is not in the desired state' {
@@ -1392,6 +1403,7 @@ try
                     Test-TargetResource @testTargetResourceParameters | Should -Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
                 }
 
                 It 'Should return $false when the Availability Replica is present and the Endpoint Port is not in the desired state' {
@@ -1401,6 +1413,20 @@ try
                     Test-TargetResource @testTargetResourceParameters | Should -Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
+
+                    $mockAlternateEndpointPort = $false
+                }
+
+                It 'Should return $true when ProcessOnlyOnActiveNode is "$true" and the current node is not actively hosting the instance' {
+                    $mockProcessOnlyOnActiveNode = $true
+
+                    $testTargetResourceParameters.ProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNode
+
+                    Test-TargetResource @testTargetResourceParameters | Should -Be $true
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
                 }
             }
         }

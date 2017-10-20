@@ -1,14 +1,21 @@
 <#
 .EXAMPLE
     This example shows how to ensure that the Availability Group Replica 'SQL2' exists in the Availability Group 'TestAG'.
+
+    In the event this is applied to a Failover Cluster Instance (FCI), the
+    ProcessOnlyOnActiveNode property will tell the Test-TargetResource function
+    to evaluate if any changes are needed if the node is actively hosting the
+    SQL Server Instance.
 #>
 
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName              = '*'
-            SQLInstanceName       = 'MSSQLSERVER'
-            AvailabilityGroupName = 'TestAG'
+            NodeName                = '*'
+            SQLInstanceName         = 'MSSQLSERVER'
+            AvailabilityGroupName   = 'TestAG'
+            ProcessOnlyOnActiveNode = $true
+
         },
 
         @{
@@ -94,6 +101,7 @@ Configuration Example
                 SQLInstanceName               = $Node.SQLInstanceName
                 PrimaryReplicaSQLServer       = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).NodeName
                 PrimaryReplicaSQLInstanceName = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).SQLInstanceName
+                ProcessOnlyOnActiveNode       = $Node.ProcessOnlyOnActiveNode
             }
         }
     }
