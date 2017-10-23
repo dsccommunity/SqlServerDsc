@@ -17,7 +17,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xSQLServerDatabase
     .PARAMETER SQLInstanceName
     The name of the SQL instance to be configured.
 
-    .PARAMETER DefaultLocationType
+    .PARAMETER Type
     The type of database default location to be configured. { Data | Log | Backup }
 #>
 Function Get-TargetResource
@@ -39,43 +39,38 @@ Function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateSet('Data', 'Log', 'Backup')]
         [System.String]
-        $DefaultLocationType,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $DefaultLocationPath
+        $Type
     )
 
-    Write-Verbose -Message ($script:localizedData.DefaultLocationTypeInformation -f $DefaultLocationType, $SQLInstanceName)
+    Write-Verbose -Message ($script:localizedData.GetCurrentPath -f $Type, $SQLInstanceName)
 
     # Connect to the instance
     $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
     # Check which default location is being retrieved
-    switch ($DefaultLocationType)
+    switch ($Type)
     {
         'Data'
         {
-            $DefaultLocationPath = $sqlServerObject.DefaultFile
+            $Path = $sqlServerObject.DefaultFile
         }
 
         'Log'
         {
-            $DefaultLocationPath = $sqlServerObject.DefaultLog
+            $Path = $sqlServerObject.DefaultLog
         }
 
         'Backup'
         {
-            $DefaultLocationPath = $sqlServerObject.BackupDirectory
+            $Path = $sqlServerObject.BackupDirectory
         }
     }
 
     return @{
         SqlInstanceName     = $SQLInstanceName
         SqlServer           = $SQLServer
-        DefaultLocationType = $DefaultLocationType
-        DefaultLocationPath = $DefaultLocationPath
+        Type                = $Type
+        Path                = $Path
     }
 }
 
@@ -89,10 +84,10 @@ Function Get-TargetResource
     .PARAMETER SQLInstanceName
     The name of the SQL instance to be configured.
 
-    .PARAMETER DefaultLocationType
+    .PARAMETER Type
     The type of database default location to be configured. { Data | Log | Backup }
 
-    .PARAMETER DefaultLocationPath
+    .PARAMETER Path
     The path to the default directory to be configured.
 
     .PARAMETER RestartService
@@ -117,65 +112,73 @@ Function Set-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateSet('Data', 'Log', 'Backup')]
         [System.String]
-        $DefaultLocationType,
+        $Type,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $DefaultLocationPath,
+        $Path,
 
         [Parameter()]
         [System.Boolean]
         $RestartService = $false
     )
 
-    Write-Verbose -Message ($script:localizedData.InfoOnSettingDefaultLocationType -f $DefaultLocationType)
-    $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-
-    # Check which default location is being updated
-    switch ($DefaultLocationType)
+    # Make sure the Path exists, needs to be cluster aware as well for this check
+    if(-Not (Test-Path $Path))
     {
-        'Data'
-        {
-            $currentValueDefaultLocationPath = $sqlServerObject.DefaultFile
-            $sqlServerObject.DefaultFile = $DefaultLocationPath
-        }
-
-        'Log'
-        {
-            $currentValueDefaultLocationPath = $sqlServerObject.DefaultLog
-            $sqlServerObject.DefaultLog = $DefaultLocationPath
-        }
-
-        'Backup'
-        {
-            $currentValueDefaultLocationPath = $sqlServerObject.BackupDirectory
-            $sqlServerObject.BackupDirectory = $DefaultLocationPath
-        }
+        throw ($script:localizedData.InvalidPath -f $Path )
     }
-
-    # Wrap the Alter command in a try-catch in case the update doesn't work
-    try
+    else
     {
-        $originalErrorActionPreference = $ErrorActionPreference
-        $ErrorActionPreference = 'Stop'
-        $sqlServerObject.Alter()
-        Write-Verbose -Message ($script:localizedData.DefaultLocationChanged -f $DefaultLocationType, $currentValueDefaultLocationPath, $DefaultLocationPath)
+        Write-Verbose -Message ($script:localizedData.SettingDefaultPath -f $Type)
+        $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
-        if ($RestartService)
+        # Check which default location is being updated
+        switch ($Type)
         {
-            Write-Verbose -Message ($script:localizedData.RestartSqlServer -f $SqlServer, $SQLInstanceName)
-            Restart-SqlService -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+            'Data'
+            {
+                $currentValuePath = $sqlServerObject.DefaultFile
+                $sqlServerObject.DefaultFile = $Path
+            }
+
+            'Log'
+            {
+                $currentValuePath = $sqlServerObject.DefaultLog
+                $sqlServerObject.DefaultLog = $Path
+            }
+
+            'Backup'
+            {
+                $currentValuePath = $sqlServerObject.BackupDirectory
+                $sqlServerObject.BackupDirectory = $Path
+            }
         }
-    }
-    catch
-    {
-        $errorMessage = $script:localizedData.DefaultLocationAlterFailed
-        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-    }
-    finally
-    {
-        $ErrorActionPreference = $originalErrorActionPreference
+
+        # Wrap the Alter command in a try-catch in case the update doesn't work
+        try
+        {
+            $originalErrorActionPreference = $ErrorActionPreference
+            $ErrorActionPreference = 'Stop'
+            $sqlServerObject.Alter()
+            Write-Verbose -Message ($script:localizedData.DefaultPathChanged -f $Type, $currentValuePath, $Path)
+
+            if ($RestartService)
+            {
+                Write-Verbose -Message ($script:localizedData.RestartSqlServer -f $SqlServer, $SQLInstanceName)
+                Restart-SqlService -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+            }
+        }
+        catch
+        {
+            $errorMessage = $script:localizedData.ChangingPathFailed
+            New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+        }
+        finally
+        {
+            $ErrorActionPreference = $originalErrorActionPreference
+        }
     }
 }
 
@@ -189,10 +192,10 @@ Function Set-TargetResource
     .PARAMETER SQLInstanceName
     The name of the SQL instance to be configured.
 
-    .PARAMETER DefaultLocationType
+    .PARAMETER Type
     The type of database default location to be configured. { Data | Log | Backup }
 
-    .PARAMETER DefaultLocationPath
+    .PARAMETER Path
     The path to the default directory to be configured.
 
     .PARAMETER RestartService
@@ -218,36 +221,35 @@ function Test-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateSet('Data', 'Log', 'Backup')]
         [System.String]
-        $DefaultLocationType,
+        $Type,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $DefaultLocationPath,
+        $Path,
 
         [Parameter()]
         [System.Boolean]
         $RestartService = $false
     )
 
-    Write-Verbose -Message ($script:localizedData.DefaultLocationTypeTestInfo -f $DefaultLocationType)
+    Write-Verbose -Message ($script:localizedData.TestingCurrentPath -f $Type)
 
     $getTargetResourceParameters = @{
         SQLInstanceName     = $SQLInstanceName
         SQLServer           = $SQLServer
-        DefaultLocationType = $DefaultLocationType
-        DefaultLocationPath = $DefaultLocationPath
+        Type                = $Type
     }
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-    $isDefaultLocationInDesiredState = $true
+    $isDefaultPathInDesiredState = $true
 
-    if ($getTargetResourceResult.DefaultLocationPath -ne $DefaultLocationPath)
+    if ($getTargetResourceResult.Path -ne $Path)
     {
-        Write-Verbose -Message ($script:localizedData.DefaultLocationTestPathDifference -f $DefaultLocationType, $getTargetResourceResult.DefaultLocationPath, $DefaultLocationPath)
-        $isDefaultLocationInDesiredState = $false
+        Write-Verbose -Message ($script:localizedData.DefaultPathDifference -f $Type, $getTargetResourceResult.Path, $Path)
+        $isDefaultPathInDesiredState = $false
     }
 
-    return $isDefaultLocationInDesiredState
+    return $isDefaultPathInDesiredState
 }
 

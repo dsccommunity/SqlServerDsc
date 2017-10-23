@@ -529,10 +529,10 @@ more information about database default locations, please read the article
 
 * **`[String]` SQLServer** _(Write)_: The host name of the SQL Server to be configured.
 * **`[String]` SQLInstanceName** _(Write)_: The name of the SQL instance to be configured.
-* **`[String]` DefaultLocationType** _(Key)_: The type of database default
-  location to be configured. { Data | Log | Backup }
-* **`[String]` DefaultLocationPath** _(Required)_: The path to the default
-  directory to be configured.
+* **`[String]` Type** _(Key)_: The type of database default location to be
+configured. { Data | Log | Backup }
+* **`[String]` Path** _(Required)_: The path to the default directory to be
+configured.
 * **`[Boolean]` RestartService** _(Write)_: If set to $true then SQL Server and
 dependent services will be restarted if a change to the configuration is made.
 The default value is $false.
