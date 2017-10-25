@@ -366,7 +366,7 @@ Always On Availability Group Replica.
   the availability group.
 * **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
   will only determine if a change is needed if the target node is the active
-  host of the SQL Server Instance.
+  host of the SQL Server instance.
 
 #### Read-Only Properties from Get-TargetResource
 
