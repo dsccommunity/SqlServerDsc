@@ -364,6 +364,9 @@ Always On Availability Group Replica.
   when redirecting read-only connections through this availability replica. This
   parameter applies if the availability replica is the current primary replica of
   the availability group.
+* **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
+  will only determine if a change is needed if the target node is the active
+  host of the SQL Server instance.
 
 #### Read-Only Properties from Get-TargetResource
 
@@ -373,6 +376,8 @@ Always On Availability Group Replica.
   Availability Group Replica. Used by Get-TargetResource.
 * **`[String]` SQLServerNetName** _(Read)_: Output the NetName property from the
   SQL Server object.
+* **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
+  actively hosting the SQL Server instance.
 
 #### Examples
 
