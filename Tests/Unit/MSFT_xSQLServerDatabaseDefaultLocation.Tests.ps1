@@ -124,7 +124,7 @@ try
                         $Path
                     )
 
-                    $getTargetResourceResult = Get-TargetResource @mockDefaultParameters -Type $Type
+                    $getTargetResourceResult = Get-TargetResource @mockDefaultParameters -Type $Type -Path $Path
 
                     $getTargetResourceResult.Path | Should Be $Path
                     $getTargetResourceResult.Type | Should Be $Type

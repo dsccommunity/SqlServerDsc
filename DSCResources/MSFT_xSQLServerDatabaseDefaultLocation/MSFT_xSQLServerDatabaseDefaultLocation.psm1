@@ -26,10 +26,10 @@ Function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLServer,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -39,7 +39,13 @@ Function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateSet('Data', 'Log', 'Backup')]
         [System.String]
-        $Type
+        $Type,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $Path
+
     )
 
     Write-Verbose -Message ($script:localizedData.GetCurrentPath -f $Type, $SQLInstanceName)
@@ -107,10 +113,10 @@ Function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLServer,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -223,10 +229,10 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLServer,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -258,6 +264,7 @@ function Test-TargetResource
         SQLInstanceName     = $SQLInstanceName
         SQLServer           = $SQLServer
         Type                = $Type
+        Path                = $Path
     }
 
     $isDefaultPathInDesiredState = $true

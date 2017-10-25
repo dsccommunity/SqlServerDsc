@@ -527,15 +527,24 @@ more information about database default locations, please read the article
 
 #### Parameters
 
-* **`[String]` SQLServer** _(Write)_: The host name of the SQL Server to be configured.
-* **`[String]` SQLInstanceName** _(Write)_: The name of the SQL instance to be configured.
+* **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
+* **`[String]` SQLInstanceName** _(Required)_: The name of the SQL instance to
+  be configured.
 * **`[String]` Type** _(Key)_: The type of database default location to be
-configured. { Data | Log | Backup }
-* **`[String]` Path** _(Required)_: The path to the default directory to be
-configured.
+  configured. { Data | Log | Backup }
+* **`[String]` Path** _(Required)_: The path to the default directory to be configured.
 * **`[Boolean]` RestartService** _(Write)_: If set to $true then SQL Server and
-dependent services will be restarted if a change to the configuration is made.
-The default value is $false.
+  dependent services will be restarted if a change to the configuration is made.
+  The default value is $false.
+* **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
+  will only determine if a change is needed if the target node is the active
+  host of the SQL Server Instance.
+
+#### Read-Only Property from Get-TargetResource
+
+* **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
+  actively hosting the SQL Server instance.
+
 
 #### Examples
 

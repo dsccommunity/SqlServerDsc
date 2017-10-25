@@ -17,11 +17,12 @@ Configuration Example
     {
         xSQLServerDatabaseDefaultLocation Set_SqlDatabaseDefaultDirectory_Data
         {
-            SQLServer            = 'SQLServer'
-            SQLInstanceName      = 'DSC'
-            Type                 = 'Data'
-            Path                 = 'C:\Program Files\Microsoft SQL Server'
-            PsDscRunAsCredential = $SysAdminAccount
+            SQLServer                     = 'SQLServer'
+            SQLInstanceName               = 'DSC'
+            ProcessOnlyOnActiveNode       = $true
+            Type                          = 'Data'
+            Path                          = 'C:\Program Files\Microsoft SQL Server'
+            PsDscRunAsCredential          = $SysAdminAccount
         }
 
         xSQLServerDatabaseDefaultLocation Set_SqlDatabaseDefaultDirectory_Log
