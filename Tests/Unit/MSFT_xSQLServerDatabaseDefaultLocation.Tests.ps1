@@ -19,7 +19,8 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 #endregion HEADER
 
-function Invoke-TestSetup {}
+function Invoke-TestSetup {
+ }
 
 function Invoke-TestCleanup {
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
@@ -48,6 +49,7 @@ try
         $mockInvalidPathForLog = 'C:\InvalidPath'
         $mockInvalidPathForBackup = 'C:\InvalidPath'
         $mockInvalidOperationForAlterMethod = $false
+        $mockProcessOnlyOnActiveNode = $true
 
         $script:WasMethodAlterCalled = $false
 
@@ -60,12 +62,12 @@ try
         }
 
         $mockConnectSQL = {
-            return New-Object Object |
-                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSqlServerInstanceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSqlServerName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name DefaultFile -Value $mockSqlDataPath -PassThru |
-                        Add-Member -MemberType NoteProperty -Name DefaultLog -Value $mockSqlLogPath -PassThru |
-                        Add-Member -MemberType NoteProperty -Name BackupDirectory -Value $mockSqlBackupPath -PassThru |
+            return New-Object Object -TypeName Microsoft.SqlServer.Management.Smo.Server |
+                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSqlServerInstanceName -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSqlServerName -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name DefaultFile -Value $mockSqlDataPath -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name DefaultLog -Value $mockSqlLogPath -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name BackupDirectory -Value $mockSqlBackupPath -PassThru -Force |
                         Add-Member -MemberType ScriptMethod -Name Alter -Value {
                             if ($mockInvalidOperationForAlterMethod)
                             {
@@ -103,6 +105,15 @@ try
         Describe 'MSFT_xSQLServerDatabaseDefaultLocation\Get-TargetResource' -Tag 'Get'{
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+                Mock -CommandName Test-ActiveNode -Mockwith {
+                    param
+                    (
+                        [psobject]
+                        $ServerObject
+                    )
+
+                    return $true
+                } -Verifiable
             }
 
             Context 'When the system is either in the desired state or not in the desired state' {
@@ -128,6 +139,9 @@ try
         Describe 'MSFT_xSQLServerDatabaseDefaultLocation\Test-TargetResource' -Tag 'Test'{
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+                Mock -CommandName Test-ActiveNode -MockWith {
+                    $mockProcessOnlyOnActiveNode
+                } -Verifiable
             }
 
             Context 'When the system is in the desired state.' {
@@ -158,6 +172,42 @@ try
                     $testTargetResourceResult | Should Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+            Context 'When the ProcessOnlyOnActiveNode parameter is passed' {
+                AfterAll {
+                    $mockProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNodeOriginal
+                }
+
+                BeforeAll {
+                    $mockProcessOnlyOnActiveNodeOriginal = $mockProcessOnlyOnActiveNode
+                    $mockProcessOnlyOnActiveNode = $false
+                }
+
+                It 'Should be "true" when ProcessOnlyOnActiveNode is <mockProcessOnlyOnActiveNode>.' {
+                    $testTargetResourceParameters = $mockDefaultParameters
+                    $testTargetResourceParameters += @{
+                        Path    = $mockSqlDataPath
+                        Type    = 'Data'
+                        ProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNode
+                    }
+                    Test-TargetResource @testTargetResourceParameters | Should Be $true
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
+                }
+
+                It 'Should be "true" when ProcessOnlyOnActiveNode is <mockProcessOnlyOnActiveNodeOriginal>.' {
+                    $testTargetResourceParameters = $mockDefaultParameters
+                    $testTargetResourceParameters += @{
+                        Path    = $mockSqlDataPath
+                        Type    = 'Data'
+                        ProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNodeOriginal
+                    }
+                    Test-TargetResource @testTargetResourceParameters | Should Be $true
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
                 }
             }
         }

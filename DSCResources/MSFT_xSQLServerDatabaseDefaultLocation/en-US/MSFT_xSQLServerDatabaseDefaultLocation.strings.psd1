@@ -9,4 +9,5 @@ ConvertFrom-StringData @'
     DefaultPathDifference = Current default path for '{0}' is '{1}' and should be updated to '{2}'.
     ChangingPathFailed = Changing the default path failed.
     InvalidPath = The path '{0}' does not exist.
+    NotActiveClusterNode = 'The node "{0}" is not actively hosting the instance "{1}". Exiting the test.'
 '@

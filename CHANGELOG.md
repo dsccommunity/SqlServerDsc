@@ -25,7 +25,6 @@
 - Added the CommonTestHelper.psm1 to store common testing functions.
   - Added the Import-SQLModuleStub function to ensure the correct version of the
     module stubs are loaded ([issue #784](https://github.com/PowerShell/xSQLServer/issues/784)).
-<<<<<<< HEAD
 - Changes to xSQLServerNetwork
   - BREAKING CHANGE: Renamed parameter TcpDynamicPorts to TcpDynamicPort and
     changed type to Boolean ([issue #534](https://github.com/PowerShell/xSQLServer/issues/534)).
@@ -36,11 +35,9 @@
   - Updated examples to reflect new parameters.
 - Changes to xSQLServerRSConfig
   - Added examples
-=======
 - Added resource
   - xSQLServerDatabaseDefaultLocation
     ([issue #656](https://github.com/PowerShell/xSQLServer/issues/656))
->>>>>>> Update 1 of  changes from code review
 
 ## 8.2.0.0
 

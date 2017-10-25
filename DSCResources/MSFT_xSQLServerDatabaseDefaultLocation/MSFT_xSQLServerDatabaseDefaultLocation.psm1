@@ -47,6 +47,9 @@ Function Get-TargetResource
     # Connect to the instance
     $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
+    # Is this node actively hosting the SQL instance?
+    $isActiveNode = Test-ActiveNode -ServerObject $sqlServerObject
+
     # Check which default location is being retrieved
     switch ($Type)
     {
@@ -71,6 +74,7 @@ Function Get-TargetResource
         SqlServer           = $SQLServer
         Type                = $Type
         Path                = $Path
+        IsActiveNode        = $isActiveNode
     }
 }
 
@@ -93,6 +97,10 @@ Function Get-TargetResource
     .PARAMETER RestartService
     If set to $true then SQL Server and dependent services will be restarted if a change to the default location
     is made.  The default value is $false.
+
+    .PARAMETER ProcessOnlyOnActiveNode
+    Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+    Not used in Set-TargetResource.
 #>
 Function Set-TargetResource
 {
@@ -121,7 +129,11 @@ Function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $RestartService = $false
+        $RestartService = $false,
+
+        [Parameter()]
+        [Boolean]
+        $ProcessOnlyOnActiveNode
     )
 
     # Make sure the Path exists, needs to be cluster aware as well for this check
@@ -201,6 +213,9 @@ Function Set-TargetResource
     .PARAMETER RestartService
     If set to $true then SQL Server and dependent services will be restarted if a change to the default location
     is made.  The default value is $false.
+
+    .PARAMETER ProcessOnlyOnActiveNode
+    Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
 #>
 function Test-TargetResource
 {
@@ -230,7 +245,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $RestartService = $false
+        $RestartService = $false,
+
+        [Parameter()]
+        [Boolean]
+        $ProcessOnlyOnActiveNode
     )
 
     Write-Verbose -Message ($script:localizedData.TestingCurrentPath -f $Type)
@@ -241,8 +260,18 @@ function Test-TargetResource
         Type                = $Type
     }
 
-    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
     $isDefaultPathInDesiredState = $true
+
+    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+    <#
+        If this is supposed to process only the active node, and this is not the
+        active node, don't bother evaluating the test.
+    #>
+    if ( $ProcessOnlyOnActiveNode -and -not $getTargetResourceResult.IsActiveNode )
+    {
+        Write-Verbose -Message ($script:localizedData.NotActiveClusterNode -f $env:COMPUTERNAME,$SQLInstanceName )
+        return $isDefaultPathInDesiredState
+    }
 
     if ($getTargetResourceResult.Path -ne $Path)
     {
