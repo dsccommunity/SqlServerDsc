@@ -3,6 +3,45 @@
 ## Unreleased
 
 - Changes to xSQLServer
+  - Updated Pester syntax to v4
+- Changes to xSQLServerDatabase
+  - Added parameter to specify collation for a database to be different from server
+    collation ([issue #767](https://github.com/PowerShell/xSQLServer/issues/767)).
+  - Fixed unit tests for Get-TargetResource to ensure correctly testing return
+    values ([issue #849](https://github.com/PowerShell/xSQLServer/issues/849))
+- Changes to xSQLServerAlwaysOnAvailabilityGroup
+  - Refactored the unit tests to allow them to be more user friendly and to test
+    additional SQLServer variations.
+    - Each test will utilize the Import-SQLModuleStub to ensure the correct
+      module is loaded ([issue #784](https://github.com/PowerShell/xSQLServer/issues/784)).
+  - Fixed an issue when setting the SQLServer parameter to a Fully Qualified
+    Domain Name (FQDN) ([issue #468](https://github.com/PowerShell/xSQLServer/issues/468)).
+  - Fixed the logic so that if a parameter is not supplied to the resource, the
+    resource will not attempt to apply the defaults on subsequent checks
+    ([issue #517](https://github.com/PowerShell/xSQLServer/issues/517)).
+  - Made the resource cluster aware. When ProcessOnlyOnActiveNode is specified,
+    the resource will only determine if a change is needed if the target node
+    is the active host of the SQL Server instance ([issue #868](https://github.com/PowerShell/xSQLServer/issues/868)).
+- Added the CommonTestHelper.psm1 to store common testing functions.
+  - Added the Import-SQLModuleStub function to ensure the correct version of the
+    module stubs are loaded ([issue #784](https://github.com/PowerShell/xSQLServer/issues/784)).
+- Changes to xSQLServerNetwork
+  - BREAKING CHANGE: Renamed parameter TcpDynamicPorts to TcpDynamicPort and
+    changed type to Boolean ([issue #534](https://github.com/PowerShell/xSQLServer/issues/534)).
+  - Resolved issue when switching from dynamic to static port.
+    configuration ([issue #534](https://github.com/PowerShell/xSQLServer/issues/534)).
+  - Added localization (en-US) for all strings in resource and unit tests
+    ([issue #618](https://github.com/PowerShell/xSQLServer/issues/618)).
+  - Updated examples to reflect new parameters.
+- Changes to xSQLServerRSConfig
+  - Added examples
+- Added resource
+  - xSQLServerDatabaseDefaultLocation
+    ([issue #656](https://github.com/PowerShell/xSQLServer/issues/656))
+
+## 8.2.0.0
+
+- Changes to xSQLServer
   - Updated appveyor.yml so that integration tests run in order and so that
     the SQLPS module folders are renamed to not disturb the units test, but
     can be renamed back by the integration tests xSQLServerSetup so that the
@@ -60,12 +99,12 @@
     Group is created.
   - Use the new helper function "Test-ClusterPermissions".
   - Refactored the unit tests to allow them to be more user friendly.
-    Added the following read-only properties to the schema ([issue #476](https://github.com/PowerShell/xSQLServer/issues/476))
+  - Added the following read-only properties to the schema ([issue #476](https://github.com/PowerShell/xSQLServer/issues/476))
     - EndpointPort
     - EndpointURL
     - SQLServerNetName
     - Version
-  - Use the Get-PrimaryReplicaServerObject helper function
+  - Use the Get-PrimaryReplicaServerObject helper function.
 - Changes to xSQLServerAlwaysOnAvailabilityGroupReplica
   - Fixed the formatting for the AvailabilityGroupNotFound error.
   - Added the following read-only properties to the schema ([issue #477](https://github.com/PowerShell/xSQLServer/issues/477))

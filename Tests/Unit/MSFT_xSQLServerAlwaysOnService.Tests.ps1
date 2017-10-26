@@ -53,7 +53,7 @@ try
             It 'Should return that HADR is disabled' {
                 # Get the current state
                 $result = Get-TargetResource @enableHadr
-                $result.IsHadrEnabled | Should Be $false
+                $result.IsHadrEnabled | Should -Be $false
 
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
@@ -61,7 +61,7 @@ try
             It 'Should return that HADR is disabled' {
                 # Get the current state
                 $result = Get-TargetResource @enableHadrNamedInstance
-                $result.IsHadrEnabled | Should Be $false
+                $result.IsHadrEnabled | Should -Be $false
 
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
@@ -77,7 +77,7 @@ try
             It 'Should return that HADR is enabled' {
                 # Get the current state
                 $result = Get-TargetResource @enableHadr
-                $result.IsHadrEnabled | Should Be $true
+                $result.IsHadrEnabled | Should -Be $true
 
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
@@ -85,7 +85,7 @@ try
             It 'Should return that HADR is enabled' {
                 # Get the current state
                 $result = Get-TargetResource @enableHadrNamedInstance
-                $result.IsHadrEnabled | Should Be $true
+                $result.IsHadrEnabled | Should -Be $true
 
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
@@ -101,10 +101,10 @@ try
 
             It 'Should fail with the correct error message' {
                 # Regression test for issue #519
-                { Get-TargetResource @enableHadr } | Should Not Throw 'Index operation failed; the array index evaluated to null'
+                { Get-TargetResource @enableHadr } | Should -Not -Throw 'Index operation failed; the array index evaluated to null'
 
                 $result = Get-TargetResource @enableHadr
-                $result.IsHadrEnabled | Should Be $false
+                $result.IsHadrEnabled | Should -Be $false
 
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 2 -Exactly
             }
@@ -186,7 +186,7 @@ try
                     }
                 } -ModuleName $script:DSCResourceName -Verifiable
 
-                { Set-TargetResource @enableHadr } | Should Throw 'AlterAlwaysOnServiceFailed'
+                { Set-TargetResource @enableHadr } | Should -Throw 'AlterAlwaysOnServiceFailed'
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Disable-SqlAlwaysOn -Scope It -Times 0
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Enable-SqlAlwaysOn -Scope It -Times 1
@@ -201,7 +201,7 @@ try
                     }
                 } -ModuleName $script:DSCResourceName -Verifiable
 
-                { Set-TargetResource @disableHadr } | Should Throw 'AlterAlwaysOnServiceFailed'
+                { Set-TargetResource @disableHadr } | Should -Throw 'AlterAlwaysOnServiceFailed'
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Disable-SqlAlwaysOn -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Enable-SqlAlwaysOn -Scope It -Times 0
@@ -220,7 +220,7 @@ try
             } -ModuleName $script:DSCResourceName -Verifiable
 
             It 'Should cause Test-TargetResource to return false when not in the desired state' {
-                Test-TargetResource @disableHadr | Should be $false
+                Test-TargetResource @disableHadr | Should -Be $false
             }
         }
 
@@ -232,7 +232,7 @@ try
             } -ModuleName $script:DSCResourceName -Verifiable
 
             It 'Should cause Test-TargetResource to return true when in the desired state' {
-                Test-TargetResource @enableHadr | Should be $true
+                Test-TargetResource @enableHadr | Should -Be $true
             }
         }
     }

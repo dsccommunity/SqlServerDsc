@@ -241,7 +241,7 @@ try
                     $throwInvalidOperation = ("Database 'unknownDatabaseName' does not exist " + `
                                               "on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Get-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -260,7 +260,7 @@ try
                     $throwInvalidOperation = ("Login 'unknownLoginName' does not exist " + `
                                               "on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Get-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -280,7 +280,7 @@ try
                     $throwInvalidOperation = ('Failed to get permission for login named Zebes\SamusAran of ' + `
                                               'the database named AdventureWorks on localhost\MSSQLSERVER.')
 
-                    { Get-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -297,16 +297,16 @@ try
 
                 It 'Should return the state as absent when the desired permission does not exist' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.ServerRoleName | Should Be $testParameters.ServerRoleName
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -323,16 +323,16 @@ try
 
                 It 'Should not return the state as absent when the desired permission does not exist' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Not Be 'Absent'
+                    $result.Ensure | Should -Not -Be 'Absent'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.ServerRoleName | Should Be $testParameters.ServerRoleName
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -349,16 +349,16 @@ try
 
                 It 'Should return the state as absent when the desired permission does not exist' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Present'
+                    $result.Ensure | Should -Be 'Present'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.ServerRoleName | Should Be $testParameters.ServerRoleName
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -375,16 +375,16 @@ try
 
                 It 'Should not return the state as absent when the desired permission does not exist' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Not Be 'Present'
+                    $result.Ensure | Should -Not -Be 'Present'
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.ServerRoleName | Should Be $testParameters.ServerRoleName
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -412,7 +412,7 @@ try
                     $throwInvalidOperation = ("Database 'unknownDatabaseName' does not exist " + `
                                               "on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Test-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Test-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -432,7 +432,7 @@ try
                     $throwInvalidOperation = ("Login 'unknownLoginName' does not exist " + `
                                               "on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Test-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Test-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -453,7 +453,7 @@ try
                     $throwInvalidOperation = ('Failed to get permission for login named Zebes\SamusAran of ' + `
                                               'the database named AdventureWorks on localhost\MSSQLSERVER.')
 
-                    { Test-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Test-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -470,7 +470,7 @@ try
                         Ensure = 'Absent'
                     }
 
-                    Test-TargetResource @testParameters | Should Be $true
+                    Test-TargetResource @testParameters | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -487,7 +487,7 @@ try
                         Ensure = 'Absent'
                     }
 
-                    Test-TargetResource @testParameters | Should Be $false
+                    Test-TargetResource @testParameters | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -504,7 +504,7 @@ try
                         Ensure = 'Present'
                     }
 
-                    Test-TargetResource @testParameters | Should Be $false
+                    Test-TargetResource @testParameters | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -521,7 +521,7 @@ try
                         Ensure = 'Present'
                     }
 
-                    Test-TargetResource @testParameters | Should Be $true
+                    Test-TargetResource @testParameters | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -557,7 +557,7 @@ try
                     $throwInvalidOperation = ("Database 'unknownDatabaseName' does not exist " + `
                                               "on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -577,7 +577,7 @@ try
                     $throwInvalidOperation = ("Login 'unknownLoginName' does not exist " + `
                                               "on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -599,9 +599,9 @@ try
                                               'as a user of the database AdventureWorks, ' + `
                                               'on the instance localhost\MSSQLSERVER.')
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
-                    $script:mockMethodCreateLoginRan | Should Be $true
+                    $script:mockMethodCreateLoginRan | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -627,11 +627,11 @@ try
                             Ensure      = 'Present'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                        { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
-                        $script:mockMethodGrantRan | Should Be $true
-                        $script:mockMethodDenyRan | Should Be $false
-                        $script:mockMethodRevokeRan | Should Be $false
+                        $script:mockMethodGrantRan | Should -Be $true
+                        $script:mockMethodDenyRan | Should -Be $false
+                        $script:mockMethodRevokeRan | Should -Be $false
                     }
 
                     It 'Should throw the correct error when mock Grant() method is called (for GrantWithGrant)' {
@@ -644,11 +644,11 @@ try
                             Ensure      = 'Present'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                        { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
-                        $script:mockMethodGrantRan | Should Be $true
-                        $script:mockMethodDenyRan | Should Be $false
-                        $script:mockMethodRevokeRan | Should Be $false
+                        $script:mockMethodGrantRan | Should -Be $true
+                        $script:mockMethodDenyRan | Should -Be $false
+                        $script:mockMethodRevokeRan | Should -Be $false
                     }
 
 
@@ -662,11 +662,11 @@ try
                             Ensure      = 'Present'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                        { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
-                        $script:mockMethodGrantRan | Should Be $false
-                        $script:mockMethodDenyRan | Should Be $true
-                        $script:mockMethodRevokeRan | Should Be $false
+                        $script:mockMethodGrantRan | Should -Be $false
+                        $script:mockMethodDenyRan | Should -Be $true
+                        $script:mockMethodRevokeRan | Should -Be $false
                     }
 
                     It 'Should throw the correct error when mock Revoke() method is called' {
@@ -679,11 +679,11 @@ try
                             Ensure      = 'Absent'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                        { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
-                        $script:mockMethodGrantRan | Should Be $false
-                        $script:mockMethodDenyRan | Should Be $false
-                        $script:mockMethodRevokeRan | Should Be $true
+                        $script:mockMethodGrantRan | Should -Be $false
+                        $script:mockMethodDenyRan | Should -Be $false
+                        $script:mockMethodRevokeRan | Should -Be $true
                     }
 
                     It 'Should throw the correct error when mock Revoke() method is called' {
@@ -696,11 +696,11 @@ try
                             Ensure      = 'Absent'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                        { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
 
-                        $script:mockMethodGrantRan | Should Be $false
-                        $script:mockMethodDenyRan | Should Be $false
-                        $script:mockMethodRevokeRan | Should Be $true
+                        $script:mockMethodGrantRan | Should -Be $false
+                        $script:mockMethodDenyRan | Should -Be $false
+                        $script:mockMethodRevokeRan | Should -Be $true
                     }
                 }
 
@@ -718,9 +718,9 @@ try
                                 Ensure      = 'Present'
                             }
 
-                            { Set-TargetResource @testParameters } | Should Not Throw
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                            $script:mockMethodCreateLoginRan | Should Be $true
+                            $script:mockMethodCreateLoginRan | Should -Be $true
 
                             Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                         }
@@ -737,11 +737,11 @@ try
                             Ensure      = 'Present'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                        $script:mockMethodGrantRan | Should Be $true
-                        $script:mockMethodDenyRan | Should Be $false
-                        $script:mockMethodRevokeRan | Should Be $false
+                        $script:mockMethodGrantRan | Should -Be $true
+                        $script:mockMethodDenyRan | Should -Be $false
+                        $script:mockMethodRevokeRan | Should -Be $false
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -757,11 +757,11 @@ try
                             Ensure      = 'Present'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                        $script:mockMethodGrantRan | Should Be $true
-                        $script:mockMethodDenyRan | Should Be $false
-                        $script:mockMethodRevokeRan | Should Be $false
+                        $script:mockMethodGrantRan | Should -Be $true
+                        $script:mockMethodDenyRan | Should -Be $false
+                        $script:mockMethodRevokeRan | Should -Be $false
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -777,11 +777,11 @@ try
                             Ensure      = 'Present'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                        $script:mockMethodGrantRan | Should Be $false
-                        $script:mockMethodDenyRan | Should Be $true
-                        $script:mockMethodRevokeRan | Should Be $false
+                        $script:mockMethodGrantRan | Should -Be $false
+                        $script:mockMethodDenyRan | Should -Be $true
+                        $script:mockMethodRevokeRan | Should -Be $false
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -799,11 +799,11 @@ try
                             Ensure      = 'Absent'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                        $script:mockMethodGrantRan | Should Be $false
-                        $script:mockMethodDenyRan | Should Be $false
-                        $script:mockMethodRevokeRan | Should Be $true
+                        $script:mockMethodGrantRan | Should -Be $false
+                        $script:mockMethodDenyRan | Should -Be $false
+                        $script:mockMethodRevokeRan | Should -Be $true
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -819,11 +819,11 @@ try
                             Ensure      = 'Absent'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                        $script:mockMethodGrantRan | Should Be $false
-                        $script:mockMethodDenyRan | Should Be $false
-                        $script:mockMethodRevokeRan | Should Be $true
+                        $script:mockMethodGrantRan | Should -Be $false
+                        $script:mockMethodDenyRan | Should -Be $false
+                        $script:mockMethodRevokeRan | Should -Be $true
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -839,11 +839,11 @@ try
                             Ensure      = 'Absent'
                         }
 
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                        $script:mockMethodGrantRan | Should Be $false
-                        $script:mockMethodDenyRan | Should Be $false
-                        $script:mockMethodRevokeRan | Should Be $true
+                        $script:mockMethodGrantRan | Should -Be $false
+                        $script:mockMethodDenyRan | Should -Be $false
+                        $script:mockMethodRevokeRan | Should -Be $true
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }

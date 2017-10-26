@@ -245,6 +245,9 @@ It will also manage the Availability Group replica on the specified node.
 * **`[Uint32]` HealthCheckTimeout** _(Write)_: Specifies the length of time, in
   milliseconds, after which AlwaysOn availability groups declare an unresponsive
   server to be unhealthy. Default is 30000.
+* **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
+  will only determine if a change is needed if the target node is the active
+  host of the SQL Server Instance.
 
 #### Read-Only Properties from Get-TargetResource
 
@@ -256,6 +259,8 @@ It will also manage the Availability Group replica on the specified node.
   instance is listening on.
 * **`[Uint32]` Version** _(Read)_: Gets the major version of the SQL Server
   instance.
+* **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
+  actively hosting the SQL Server instance.
 
 #### Examples
 
@@ -498,6 +503,8 @@ database, please read:
 * **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
 * **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
 * **`[String]` Name** _(Key)_: The name of database to be created or dropped.
+* **`[String]` Collation** _(Write)_: The name of the SQL collation to use
+  for the new database. Defaults to server collation.
 * **`[String]` Ensure** _(Write)_: When set to 'Present', the database will be created.
   When set to 'Absent', the database will be dropped. { *Present* | Absent }.
 
@@ -508,9 +515,9 @@ database, please read:
 
 ### xSQLServerDatabaseDefaultLocation
 
-This resource is used to configure database default locations for Data, Log,
-and Backup for SQL Server.  For more information about database default
-locations, please read the article
+This resource is used to configure default locations for user databases. The
+types of default locations that can be changed are Data, Log, and Backup. For
+more information about database default locations, please read the article
 [Changing the Database Default Locations](https://technet.microsoft.com/en-us/library/dd206993.aspx).
 
 #### Requirements
@@ -520,12 +527,23 @@ locations, please read the article
 
 #### Parameters
 
-* **`[String]` DefaultLocationType** _(Key)_: The name of database default
-  location (Data, Log, Backup) to be configured.
-* **`[String]` DefaultLocationPath** _(Required)_: The location of the default
-  directory to be configured.
-* **`[String]` SQLServer** _(Write)_: The host name of the SQL Server to be configured.
-* **`[String]` SQLInstance** _(Write)_: The name of the SQL instance to be configured.
+* **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
+* **`[String]` SQLInstanceName** _(Required)_: The name of the SQL instance to
+  be configured.
+* **`[String]` Type** _(Key)_: The type of database default location to be
+  configured. { Data | Log | Backup }
+* **`[String]` Path** _(Required)_: The path to the default directory to be configured.
+* **`[Boolean]` RestartService** _(Write)_: If set to $true then SQL Server and
+  dependent services will be restarted if a change to the configuration is made.
+  The default value is $false.
+* **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
+  will only determine if a change is needed if the target node is the active
+  host of the SQL Server Instance.
+
+#### Read-Only Property from Get-TargetResource
+
+* **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
+  actively hosting the SQL Server instance.
 
 #### Examples
 
@@ -1001,13 +1019,13 @@ Read more about the network settings in the article
 * **`[String]` SQLServer** _(Write)_: The host name of the SQL Server to be configured.
   Default value is $env:COMPUTERNAME.
 * **`[Boolean]` IsEnabled** _(Write)_: Enables or disables the network protocol.
-* **`[String]` TcpDynamicPorts** _(Write)_: Set the value to '0' if dynamic ports
-  should be used. If static port should be used set this to a empty string value.
-  Value can not be set to '0' if TcpPort is also set to a value. { '0','' }.
+* **`[Boolean]` TcpDynamicPort** _(Write)_: Specifies whether the SQL Server
+  instance should use a dynamic port. Value cannot be set to $true if TcpPort
+  is set to a non-empty string.
 * **`[String]` TcpPort** _(Write)_: The TCP port(s) that SQL Server should be listening
   on. If the IP address should listen on more than one port, list all ports separated
-  with a comma ('1433,1500,1501'). To use this parameter set TcpDynamicPorts to
-  the value '' (empty string).
+  with a comma ('1433,1500,1501'). To use this parameter set TcpDynamicPort to
+  $false.
 * **`[Boolean]` RestartService** _(Write)_: If set to $true then SQL Server and
   dependent services will be restarted if a change to the configuration is made.
   The default value is $false.
@@ -1165,7 +1183,8 @@ Initializes and configures SQL Reporting Services server.
 
 #### Examples
 
-None.
+* [Default configuration](Examples/Resources/xSQLServerRSConfig/1-DefaultConfiguration.ps1)
+* [Custom virtual directories and reserved URLs](Examples/Resources/xSQLServerRSConfig/2-CustomConfiguration.ps1)
 
 ### xSQLServerRSSecureConnectionLevel
 

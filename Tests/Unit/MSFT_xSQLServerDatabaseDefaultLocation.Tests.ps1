@@ -32,195 +32,262 @@ try
     Invoke-TestSetup
 
     InModuleScope 'MSFT_xSQLServerDatabaseDefaultLocation' {
-        $mockSQLServerName = 'localhost'
-        $mockSQLServerInstanceName = 'MSSQLSERVER'
-        $mockSQLDefaultDataLocation = 'C:\Program Files\Data\'
-        $mockSQLDefaultLogLocation = 'C:\Program Files\Log\'
-        $mockSQLDefaultBackupLocation = 'C:\Program Files\Backup\'
-        $mockSQLAltDefaultDataLocation = 'C:\Program Files\'
-        $mockSQLAltDefaultLogLocation = 'C:\Program Files\'
-        $mockSQLAltDefaultBackupLocation = 'C:\Program Files\'
+        $mockSqlServerName = 'localhost'
+        $mockSqlServerInstanceName = 'MSSQLSERVER'
+        $mockSQLDataPath = 'C:\Program Files\Data\'
+        $mockSqlLogPath = 'C:\Program Files\Log\'
+        $mockSqlBackupPath = 'C:\Program Files\Backup\'
+        $mockSqlAlterDataPath = 'C:\Program Files\'
+        $mockSqlAlterLogPath = 'C:\Program Files\'
+        $mockSqlAlterBackupPath = 'C:\Program Files\'
         $mockRestartService = $true
-        $mockExpectedAlterDefaultFileLocationPath = "C:\temp"
-        $mockExpectedAlterDefaultLogLocationPath = "C:\temp"
-        $mockExpectedAlterBackupDirectoryLocationPath = "C:\temp"
+        $mockExpectedAlterDataPath = 'C:\temp'
+        $mockExpectedAlterLogPath = 'C:\temp'
+        $mockExpectedAlterBackupPath = 'C:\temp'
+        $mockInvalidPathForData = 'C:\InvalidPath'
+        $mockInvalidPathForLog = 'C:\InvalidPath'
+        $mockInvalidPathForBackup = 'C:\InvalidPath'
         $mockInvalidOperationForAlterMethod = $false
+        $mockProcessOnlyOnActiveNode = $true
+
+        $script:WasMethodAlterCalled = $false
 
         #region Function mocks
 
         # Default parameters that are used for the It-blocks
         $mockDefaultParameters = @{
-            SQLInstanceName = $mockSQLServerInstanceName
-            SQLServer       = $mockSQLServerName
+            SQLInstanceName = $mockSqlServerInstanceName
+            SQLServer       = $mockSqlServerName
         }
 
         $mockConnectSQL = {
-            return New-Object Object |
-                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSQLServerInstanceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSQLServerName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name DefaultFile -Value $mockSQLDefaultDataLocation -PassThru |
-                        Add-Member -MemberType NoteProperty -Name DefaultLog -Value $mockSQLDefaultLogLocation -PassThru |
-                        Add-Member -MemberType NoteProperty -Name BackupDirectory -Value $mockSQLDefaultBackupLocation -PassThru |
+            return New-Object Object -TypeName Microsoft.SqlServer.Management.Smo.Server |
+                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSqlServerInstanceName -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSqlServerName -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name DefaultFile -Value $mockSqlDataPath -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name DefaultLog -Value $mockSqlLogPath -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name BackupDirectory -Value $mockSqlBackupPath -PassThru -Force |
                         Add-Member -MemberType ScriptMethod -Name Alter -Value {
                             if ($mockInvalidOperationForAlterMethod)
                             {
                                 throw 'Mock Alter Method was called with invalid operation.'
                             }
-                        } -PassThru
-                        Add-Member -MemberType ScriptMethod -Name AlterLog -Value {
-                            if ($mockInvalidOperationForAlterMethod)
-                            {
-                                throw 'Mock Alter Method was called with invalid operation.'
-                            }
-                        } -PassThru
-                        Add-Member -MemberType ScriptMethod -Name AlterBackup -Value {
-                            if ($mockInvalidOperationForAlterMethod)
-                            {
-                                throw 'Mock Alter Method was called with invalid operation.'
-                            }
+                            $script:WasMethodAlterCalled = $true
                         } -PassThru -Force
         }
 
         $testCases = @(
             @{
-                DefaultLocationType = 'Data'
-                DefaultLocationPath= $mockSQLDefaultDataLocation
-                AltLocationPath = $mockSQLAltDefaultDataLocation
-                AlterLocationPath = $mockExpectedAlterDefaultFileLocationPath
+                Type = 'Data'
+                Path = $mockSqlDataPath
+                AlterPath = $mockSqlAlterDataPath
+                ExepectedAlterPath = $mockExpectedAlterDataPath
+                InvalidPath = $mockInvalidPathForData
             },
             @{
-                DefaultLocationType = 'Log'
-                DefaultLocationPath= $mockSQLDefaultLogLocation
-                AltLocationPath = $mockSQLAltDefaultLogLocation
-                AlterLocationPath = $mockExpectedAlterDefaultLogLocationPath
+                Type = 'Log'
+                Path = $mockSqlLogPath
+                AlterPath = $mockSqlAlterLogPath
+                ExepectedAlterPath = $mockExpectedAlterLogPath
+                InvalidPath = $mockInvalidPathForLog
             },
             @{
-                DefaultLocationType = 'Backup'
-                DefaultLocationPath= $mockSQLDefaultBackupLocation
-                AltLocationPath = $mockSQLAltDefaultBackupLocation
-                AlterLocationPath = $mockExpectedAlterBackupDirectoryLocationPath
+                Type = 'Backup'
+                Path = $mockSqlBackupPath
+                AlterPath = $mockSqlAlterBackupPath
+                ExepectedAlterPath = $mockExpectedAlterBackupPath
+                InvalidPath = $mockInvalidPathForBackup
             }
         )
         #endregion
 
-        Describe "MSFT_xSQLServerDatabaseDefaultLocation\Get-TargetResource" -Tag 'Get'{
-            Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+        Describe 'MSFT_xSQLServerDatabaseDefaultLocation\Get-TargetResource' -Tag 'Get'{
+            BeforeEach {
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+                Mock -CommandName Test-ActiveNode -Mockwith {
+                    param
+                    (
+                        [psobject]
+                        $ServerObject
+                    )
 
-                Context 'When the system is either in the desired state or not in the desired state' {
+                    return $true
+                } -Verifiable
+            }
 
-                    It 'Should get the default path for <DefaultLocationType> with the value <DefaultLocationPath>' -testcases $testCases {
-                        param
-                        (
-                            $DefaultLocationType,
-                            $DefaultLocationPath
-                        )
+            Context 'When the system is either in the desired state or not in the desired state' {
+                It 'Should get the default path for <Type> with the value <Path>' -TestCases $testCases {
+                    param
+                    (
+                        $Type,
+                        $Path
+                    )
 
-                        $result = Get-TargetResource @mockDefaultParameters -DefaultLocationType $DefaultLocationType -DefaultLocationPath $DefaultLocationPath
+                    $getTargetResourceResult = Get-TargetResource @mockDefaultParameters -Type $Type -Path $Path
 
-                        $result.DefaultLocationPath | Should Be $DefaultLocationPath
-                        $result.DefaultLocationType | Should Be $DefaultLocationType
-                        $result.SQLServer | Should Be $mockDefaultParameters.SQLServer
-                        $result.SQLInstanceName | Should Be $mockDefaultParameters.SQLInstanceName
-                    }
+                    $getTargetResourceResult.Path | Should Be $Path
+                    $getTargetResourceResult.Type | Should Be $Type
+                    $getTargetResourceResult.SQLServer | Should Be $mockDefaultParameters.SQLServer
+                    $getTargetResourceResult.SQLInstanceName | Should Be $mockDefaultParameters.SQLInstanceName
 
-                    It 'Should call the mock function Connect-SQL' {
-                        Assert-MockCalled Connect-SQL -Exactly -Times 3 -Scope Context
-                    }
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                }
              }
         }
 
-        Describe "MSFT_xSQLServerDatabaseDefaultLocation\Test-TargetResource" -Tag 'Test'{
+        Describe 'MSFT_xSQLServerDatabaseDefaultLocation\Test-TargetResource' -Tag 'Test'{
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+                Mock -CommandName Test-ActiveNode -MockWith {
+                    $mockProcessOnlyOnActiveNode
+                } -Verifiable
             }
 
-            Context 'When the default path is already set.' {
-                It 'Should return true when the desired state of the <DefaultLocationType> path has the value <DefaultLocationPath>' -testcases $testCases {
+            Context 'When the system is in the desired state.' {
+                It 'Should return true when the desired state of the <Type> path has the value <Path>' -TestCases $testCases {
                     param
                     (
-                        $DefaultLocationType,
-                        $DefaultLocationPath,
-                        $AltLocationPath
+                        $Type,
+                        $Path
                     )
 
-                    Test-TargetResource @mockDefaultParameters -DefaultLocationType $DefaultLocationType -DefaultLocationPath $DefaultLocationPath | Should Be $true
-                }
-                It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 3 -Scope Context
+                    $testTargetResourceResult = Test-TargetResource @mockDefaultParameters -Type $Type -Path $Path
+                    $testTargetResourceResult | Should Be $true
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
-            Context 'When the default path is different.' {
-                It 'Should return false when the desired state of the <DefaultLocationType> path does not equal <DefaultLocationPath>' -testcases $testCases {
+
+            Context 'When the system is not in the desired state.' {
+                It 'Should return false when the desired state of the <Type> path does not equal <Path>' -TestCases $testCases {
                     param
                     (
-                        $DefaultLocationType,
-                        $DefaultLocationPath,
-                        $AltLocationPath
+                        $Type,
+                        $Path,
+                        $AlterPath
                     )
 
-                    Test-TargetResource @mockDefaultParameters -DefaultLocationType $DefaultLocationType -DefaultLocationPath $AltLocationPath | Should Be $false
+                    $testTargetResourceResult = Test-TargetResource @mockDefaultParameters -Type $Type -Path $AlterPath
+                    $testTargetResourceResult | Should Be $false
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
-                It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 3 -Scope Context
+            }
+            Context 'When the ProcessOnlyOnActiveNode parameter is passed' {
+                AfterAll {
+                    $mockProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNodeOriginal
+                }
+
+                BeforeAll {
+                    $mockProcessOnlyOnActiveNodeOriginal = $mockProcessOnlyOnActiveNode
+                    $mockProcessOnlyOnActiveNode = $false
+                }
+
+                It 'Should be "true" when ProcessOnlyOnActiveNode is <mockProcessOnlyOnActiveNode>.' {
+                    $testTargetResourceParameters = $mockDefaultParameters
+                    $testTargetResourceParameters += @{
+                        Path    = $mockSqlDataPath
+                        Type    = 'Data'
+                        ProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNode
+                    }
+                    Test-TargetResource @testTargetResourceParameters | Should Be $true
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
+                }
+
+                It 'Should be "true" when ProcessOnlyOnActiveNode is <mockProcessOnlyOnActiveNodeOriginal>.' {
+                    $testTargetResourceParameters = $mockDefaultParameters
+                    $testTargetResourceParameters += @{
+                        Path    = $mockSqlDataPath
+                        Type    = 'Data'
+                        ProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNodeOriginal
+                    }
+                    Test-TargetResource @testTargetResourceParameters | Should Be $true
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
                 }
             }
         }
 
-        Describe "MSFT_xSQLServerDatabaseDefaultLocation\Set-TargetResource" -Tag 'Set'{
-            BeforeAll {
+        Describe 'MSFT_xSQLServerDatabaseDefaultLocation\Set-TargetResource' -Tag 'Set'{
+            BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
-                Mock -CommandName Restart-SqlService -MockWith {} -Verifiable
+                Mock -CommandName Restart-SqlService -Verifiable
+
+                # This is used to evaluate if mocked Alter() method was called.
+                $script:WasMethodAlterCalled = $false
             }
 
-            Context 'When the desired Default location parameter is not set.' {
-                It 'Should not throw when the default path is not set to value and restart service is true.' -testcases $testCases {
+            Context 'When the system is not in the desired state.' {
+                It 'Should not throw when the path is successfully changed.' -TestCases $testCases {
                     param
                     (
-                        $DefaultLocationType,
-                        $DefaultLocationPath,
-                        $AltLocationPath
+                        $Type,
+                        $Path,
+                        $AlterPath
                     )
 
                     $setTargetResourceParameters = @{
-                        DefaultLocationType = $DefaultLocationType
-                        DefaultLocationPath = $AltLocationPath
+                        Type = $Type
+                        Path = $AlterPath
                         RestartService = $mockRestartService
                     }
 
 
                     {Set-TargetResource @mockDefaultParameters @setTargetResourceParameters} | Should Not Throw
+                    $script:WasMethodAlterCalled | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     Assert-MockCalled Restart-SqlService -Exactly -Times 1 -Scope It
                 }
-            }
 
-
-            $mockInvalidOperationForAlterMethod = $true
-
-            Context 'When the desired Default location parameter is not set.' {
-                It 'Should throw the correct error when Alter() method was called with invalid operation' -testcases $testCases {
+                It 'Should throw when the path is invalid.' -TestCases $testCases {
                     param
                     (
-                        $DefaultLocationType,
-                        $DefaultLocationPath,
-                        $AltLocationPath,
-                        $AlterLocationPath
+                        $Type,
+                        $InvalidPath
                     )
 
-                    $throwInvalidOperation = "The alter command for setting the default location failed."
-
                     $setTargetResourceParameters = @{
-                        DefaultLocationType = $DefaultLocationType
-                        DefaultLocationPath = $AlterLocationPath
+                        Type = $Type
+                        Path = $InvalidPath
                         RestartService = $mockRestartService
                     }
 
-                    {Set-TargetResource @mockDefaultParameters @setTargetResourceParameters} | Should Throw $throwInvalidOperation
+                    $throwInvalidPath = "The path '$InvalidPath' does not exist."
+                    {Set-TargetResource @mockDefaultParameters @setTargetResourceParameters} | Should Throw $throwInvalidPath
+                    $script:WasMethodAlterCalled | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled Connect-SQL -Exactly -Times 0 -Scope It
                     Assert-MockCalled Restart-SqlService -Exactly -Times 0 -Scope It
                 }
+            }
+
+            $mockInvalidOperationForAlterMethod = $true
+
+            It 'Should throw the correct error when Alter() method was called with invalid operation' -TestCases $testCases {
+                param
+                (
+                    $Type,
+                    $Path,
+                    $AlterPath,
+                    $ExepectedAlterPath
+                )
+
+                $throwInvalidOperation = "Changing the default path failed."
+
+                $setTargetResourceParameters = @{
+                    Type = $Type
+                    Path = $ExepectedAlterPath
+                    RestartService = $mockRestartService
+                }
+
+                {Set-TargetResource @mockDefaultParameters @setTargetResourceParameters} | Should Throw $throwInvalidOperation
+
+                Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                Assert-MockCalled Restart-SqlService -Exactly -Times 0 -Scope It
             }
         }
     }

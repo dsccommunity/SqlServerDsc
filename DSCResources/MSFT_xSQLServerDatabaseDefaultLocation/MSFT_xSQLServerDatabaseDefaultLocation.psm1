@@ -9,16 +9,16 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xSQLServerDatabase
 
 <#
     .SYNOPSIS
-        Returns the current path to the the desired default location for the Data, Log, or Backup files.
-
-    .PARAMETER SQLInstanceName
-        The name of the SQL instance to be configured.
+    Returns the current path to the the desired default location for the Data, Log, or Backup files.
 
     .PARAMETER SQLServer
-        The host name of the SQL Server to be configured.
+    The host name of the SQL Server to be configured.
 
-    .PARAMETER DefaultLocationType
-        The default location type to set. Valid values are 'Data','Log', and 'Backup'.
+    .PARAMETER SQLInstanceName
+    The name of the SQL instance to be configured.
+
+    .PARAMETER Type
+    The type of database default location to be configured. { Data | Log | Backup }
 #>
 Function Get-TargetResource
 {
@@ -29,53 +29,58 @@ Function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER',
+        $SQLServer,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLInstanceName,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('Data', 'Log', 'Backup')]
         [System.String]
-        $DefaultLocationType,
+        $Type,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $DefaultLocationPath
+        $Path
+
     )
 
-    Write-Verbose -Message ($script:localizedData.DefaultLocationTypeInformation -f $DefaultLocationType, $SQLInstanceName)
+    Write-Verbose -Message ($script:localizedData.GetCurrentPath -f $Type, $SQLInstanceName)
 
     # Connect to the instance
     $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
+    # Is this node actively hosting the SQL instance?
+    $isActiveNode = Test-ActiveNode -ServerObject $sqlServerObject
+
     # Check which default location is being retrieved
-    switch ($DefaultLocationType)
+    switch ($Type)
     {
-        "Data"
+        'Data'
         {
-            $DefaultLocationPath = $sqlServerObject.DefaultFile
+            $Path = $sqlServerObject.DefaultFile
         }
 
-        "Log"
+        'Log'
         {
-            $DefaultLocationPath = $sqlServerObject.DefaultLog
+            $Path = $sqlServerObject.DefaultLog
         }
 
-        "Backup"
+        'Backup'
         {
-            $DefaultLocationPath = $sqlServerObject.BackupDirectory
+            $Path = $sqlServerObject.BackupDirectory
         }
     }
 
     return @{
         SqlInstanceName     = $SQLInstanceName
         SqlServer           = $SQLServer
-        DefaultLocationType = $DefaultLocationType
-        DefaultLocationPath = $DefaultLocationPath
+        Type                = $Type
+        Path                = $Path
+        IsActiveNode        = $isActiveNode
     }
 }
 
@@ -83,22 +88,25 @@ Function Get-TargetResource
     .SYNOPSIS
     This function sets the current path for the default SQL Instance location for the Data, Log, or Backups files.
 
-    .PARAMETER SQLInstanceName
-    The name of the SQL instance to be configured.
-
     .PARAMETER SQLServer
     The host name of the SQL Server to be configured.
 
-    .PARAMETER DefaultLocationType
-    The default location type. Valid states are Data, Log, or Backups.
+    .PARAMETER SQLInstanceName
+    The name of the SQL instance to be configured.
 
-    .PARAMETER DefaultLocationPath
-    The path for the default location of the Data, Log, or Backups.
+    .PARAMETER Type
+    The type of database default location to be configured. { Data | Log | Backup }
+
+    .PARAMETER Path
+    The path to the default directory to be configured.
 
     .PARAMETER RestartService
     If set to $true then SQL Server and dependent services will be restarted if a change to the default location
-    is made.  The defaul value is $false.
+    is made.  The default value is $false.
 
+    .PARAMETER ProcessOnlyOnActiveNode
+    Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+    Not used in Set-TargetResource.
 #>
 Function Set-TargetResource
 {
@@ -108,86 +116,93 @@ Function Set-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER',
+        $SQLServer,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLInstanceName,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('Data', 'Log', 'Backup')]
         [System.String]
-        $DefaultLocationType,
+        $Type,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $DefaultLocationPath,
+        $Path,
 
         [Parameter()]
-        [System.boolean]
-        $RestartService = $false
+        [System.Boolean]
+        $RestartService = $false,
+
+        [Parameter()]
+        [Boolean]
+        $ProcessOnlyOnActiveNode
     )
 
-    Write-Verbose -Message ($script:localizedData.InfoOnSettingDefaultLocationType -f $DefaultLocationType)
-
-    $isRestartNeeded = $false
-
-    Write-Verbose -Message ($script:localizedData.VerifyChangeDefaultLocationType -f $DefaultLocationType)
-
-    $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-
-    # Check which default location is being updated
-    Switch ($DefaultLocationType)
+    # Make sure the Path exists, needs to be cluster aware as well for this check
+    if(-Not (Test-Path $Path))
     {
-        "Data"
+        throw ($script:localizedData.InvalidPath -f $Path )
+    }
+    else
+    {
+        Write-Verbose -Message ($script:localizedData.SettingDefaultPath -f $Type)
+        $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+
+        # Check which default location is being updated
+        switch ($Type)
         {
-            $sqlServerObject.DefaultFile = $DefaultLocationPath
+            'Data'
+            {
+                $currentValuePath = $sqlServerObject.DefaultFile
+                $sqlServerObject.DefaultFile = $Path
+            }
+
+            'Log'
+            {
+                $currentValuePath = $sqlServerObject.DefaultLog
+                $sqlServerObject.DefaultLog = $Path
+            }
+
+            'Backup'
+            {
+                $currentValuePath = $sqlServerObject.BackupDirectory
+                $sqlServerObject.BackupDirectory = $Path
+            }
         }
 
-        "Log"
+        # Wrap the Alter command in a try-catch in case the update doesn't work
+        try
         {
-            $sqlServerObject.DefaultLog = $DefaultLocationPath
-        }
+            $originalErrorActionPreference = $ErrorActionPreference
+            $ErrorActionPreference = 'Stop'
+            $sqlServerObject.Alter()
+            Write-Verbose -Message ($script:localizedData.DefaultPathChanged -f $Type, $currentValuePath, $Path)
 
-        "Backup"
+            if ($RestartService)
+            {
+                Write-Verbose -Message ($script:localizedData.RestartSqlServer -f $SqlServer, $SQLInstanceName)
+                Restart-SqlService -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+            }
+        }
+        catch
         {
-            $sqlServerObject.BackupDirectory = $DefaultLocationPath
+            $errorMessage = $script:localizedData.ChangingPathFailed
+            New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
         }
-
+        finally
+        {
+            $ErrorActionPreference = $originalErrorActionPreference
+        }
     }
-
-    # Wrap the Alter command in a try-catch in case the update doesn't work
-    try
-    {
-        $originalErrorActionPreference = $ErrorActionPreference
-        $ErrorActionPreference = 'Stop'
-        $sqlServerObject.Alter()
-        Write-Verbose -Message ($script:localizedData.DefaultLocationChanged -f $DefaultLocationType, $getDefaultLocationPath, $DefaultLocationPath)
-        $isRestartNeeded = $true
-    }
-    catch
-    {
-        $errorMessage = $script:localizedData.DefaultLocationAlterFailed
-        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-    }
-    finally
-    {
-        $ErrorActionPreference = $originalErrorActionPreference
-    }
-
-    if ($RestartService -and $isRestartNeeded)
-    {
-        Write-Verbose -Message ($script:localizedData.RestartSQLServer -f $SqlServer, $SQLInstanceName)
-        Restart-SqlService -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-    }
-
 }
 
 <#
     .SYNOPSIS
-    This function tests the current path to the  default database location for the Data, Log, or Backups files.
+    This function tests the current path to the default database location for the Data, Log, or Backups files.
 
     .PARAMETER SQLServer
     The host name of the SQL Server to be configured.
@@ -195,12 +210,18 @@ Function Set-TargetResource
     .PARAMETER SQLInstanceName
     The name of the SQL instance to be configured.
 
-    .PARAMETER DefaultLocationType
-    The default location type. Valid states are Data, Log, or Backups.
+    .PARAMETER Type
+    The type of database default location to be configured. { Data | Log | Backup }
 
-    .PARAMETER DefaultLocationPath
-    The path for the default location of the Data, Log, or Backups.
+    .PARAMETER Path
+    The path to the default directory to be configured.
 
+    .PARAMETER RestartService
+    If set to $true then SQL Server and dependent services will be restarted if a change to the default location
+    is made.  The default value is $false.
+
+    .PARAMETER ProcessOnlyOnActiveNode
+    Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
 #>
 function Test-TargetResource
 {
@@ -211,47 +232,60 @@ function Test-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER',
+        $SQLServer,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $SQLInstanceName,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('Data', 'Log', 'Backup')]
         [System.String]
-        $DefaultLocationType,
+        $Type,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $DefaultLocationPath,
+        $Path,
 
         [Parameter()]
-        [System.boolean]
-        $RestartService = $false
+        [System.Boolean]
+        $RestartService = $false,
+
+        [Parameter()]
+        [Boolean]
+        $ProcessOnlyOnActiveNode
     )
 
-    Write-Verbose -Message ($script:localizedData.DefaultLocationTypeTestInfo -f $DefaultLocationType)
+    Write-Verbose -Message ($script:localizedData.TestingCurrentPath -f $Type)
 
-    $parameters = @{
+    $getTargetResourceParameters = @{
         SQLInstanceName     = $SQLInstanceName
         SQLServer           = $SQLServer
-        DefaultLocationType = $DefaultLocationType
-        DefaultLocationPath = $DefaultLocationPath
+        Type                = $Type
+        Path                = $Path
     }
 
-    $currentValues = Get-TargetResource @parameters
-    $getDefaultLocationPath = $currentValues.DefaultLocationPath
-    $isMDefaultLocationInDesiredState = $true
+    $isDefaultPathInDesiredState = $true
 
-    if ($getDefaultLocationPath -ne $DefaultLocationPath)
+    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+    <#
+        If this is supposed to process only the active node, and this is not the
+        active node, don't bother evaluating the test.
+    #>
+    if ( $ProcessOnlyOnActiveNode -and -not $getTargetResourceResult.IsActiveNode )
     {
-        New-VerboseMessage -Message ($script:localizedData.DefaultLocationTestPathDifference -f $DefaultLocationType, $getDefaultLocationPath, $DefaultLocationPath)
-        $isMDefaultLocationInDesiredState = $false
+        Write-Verbose -Message ($script:localizedData.NotActiveClusterNode -f $env:COMPUTERNAME,$SQLInstanceName )
+        return $isDefaultPathInDesiredState
     }
 
-    return $isMDefaultLocationInDesiredState
+    if ($getTargetResourceResult.Path -ne $Path)
+    {
+        Write-Verbose -Message ($script:localizedData.DefaultPathDifference -f $Type, $getTargetResourceResult.Path, $Path)
+        $isDefaultPathInDesiredState = $false
+    }
+
+    return $isDefaultPathInDesiredState
 }
 

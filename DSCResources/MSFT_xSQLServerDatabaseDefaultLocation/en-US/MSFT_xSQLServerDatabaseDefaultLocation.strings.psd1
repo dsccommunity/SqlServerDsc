@@ -1,13 +1,13 @@
 # Localized resources for MSFT_xSQLServerDatabaseDefaultLocation
 
 ConvertFrom-StringData @'
-    DefaultLocationTypeInformation = Getting Default File Location for '{0}' for SQL Instance '{1}'.
-    InfoOnSettingDefaultLocationType = Setting the default location for the '{0}' files.
-    VerifyChangeDefaultLocationType = Verifying the default '{0}' file path is changing.
-    DefaultLocationChanged = The default file location for '{0}' has been changed from '{1}' to '{2}'.
-    DefaultLocationNoChange = The default value '{0}' is already set for '{1}' files.
-    RestartSQLServer = Restarting SQL Server: {0}\\{1}.
-    DefaultLocationTypeTestInfo = Testing the default location for the '{0}' files.
-    DefaultLocationTestPathDifference = Current default location for '{0}' is '{1}' and should be updated to '{2}'.
-    DefaultLocationAlterFailed = The alter command for setting the default location failed.
+    GetCurrentPath = Getting default path for '{0}' for Instance '{1}'.
+    SettingDefaultPath = Setting the default path for the '{0}' files.
+    DefaultPathChanged = The default path for '{0}' has been changed from '{1}' to '{2}'.
+    RestartSqlServer = Restarting Sql Server: {0}\\{1}.
+    TestingCurrentPath = Testing the default path for the '{0}' files.
+    DefaultPathDifference = Current default path for '{0}' is '{1}' and should be updated to '{2}'.
+    ChangingPathFailed = Changing the default path failed.
+    InvalidPath = The path '{0}' does not exist.
+    NotActiveClusterNode = 'The node "{0}" is not actively hosting the instance "{1}". Exiting the test.'
 '@

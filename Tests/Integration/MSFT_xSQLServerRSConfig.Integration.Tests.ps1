@@ -77,11 +77,11 @@ try
                     }
 
                     Start-DscConfiguration @startDscConfigurationParameters
-                } | Should Not Throw
+                } | Should -Not -Throw
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
-                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not Throw
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
             }
 
             It 'Should have set the resource and all the parameters should match' {
@@ -93,10 +93,10 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.InstanceName | Should Be $mockInstanceName
-                $resourceCurrentState.RSSQLServer | Should Be $mockRSSQLServer
-                $resourceCurrentState.RSSQLInstanceName | Should Be $mockRSSQLInstanceName
-                $resourceCurrentState.IsInitialized | Should Be $true
+                $resourceCurrentState.InstanceName | Should -Be $mockInstanceName
+                $resourceCurrentState.RSSQLServer | Should -Be $mockRSSQLServer
+                $resourceCurrentState.RSSQLInstanceName | Should -Be $mockRSSQLInstanceName
+                $resourceCurrentState.IsInitialized | Should -Be $true
             }
 
             It 'Should be able to access the ReportServer site without any error' {
@@ -118,7 +118,7 @@ try
                     $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
                 }
 
-                $webRequestStatusCode | Should BeExactly 200
+                $webRequestStatusCode | Should -BeExactly 200
             }
 
             It 'Should be able to access the Reports site without any error' {
@@ -140,7 +140,7 @@ try
                     $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
                 }
 
-                $webRequestStatusCode | Should BeExactly 200
+                $webRequestStatusCode | Should -BeExactly 200
             }
         }
     }

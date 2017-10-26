@@ -7,7 +7,7 @@ Configuration Example
     param
     (
         [Parameter(Mandatory = $true)]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         $SysAdminAccount
     )
 
@@ -17,28 +17,29 @@ Configuration Example
     {
         xSQLServerDatabaseDefaultLocation Set_SqlDatabaseDefaultDirectory_Data
         {
-            DefaultLocationPath  = 'C:\Program Files\Microsoft SQL Server'
-            DefaultLocationType  = 'Data'
-            SQLServer            = 'SQLServer'
-            SQLInstanceName      = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            SQLServer                     = 'SQLServer'
+            SQLInstanceName               = 'DSC'
+            ProcessOnlyOnActiveNode       = $true
+            Type                          = 'Data'
+            Path                          = 'C:\Program Files\Microsoft SQL Server'
+            PsDscRunAsCredential          = $SysAdminAccount
         }
 
         xSQLServerDatabaseDefaultLocation Set_SqlDatabaseDefaultDirectory_Log
         {
-            DefaultLocationPath  = 'C:\Program Files\Microsoft SQL Server'
-            DefaultLocationType  = 'Log'
             SQLServer            = 'SQLServer'
             SQLInstanceName      = 'DSC'
+            Type                 = 'Log'
+            Path                 = 'C:\Program Files\Microsoft SQL Server'
             PsDscRunAsCredential = $SysAdminAccount
         }
 
         xSQLServerDatabaseDefaultLocation Set_SqlDatabaseDefaultDirectory_Backup
         {
-            DefaultLocationPath  = 'C:\Program Files\Microsoft SQL Server'
-            DefaultLocationType  = 'Backup'
             SQLServer            = 'SQLServer'
             SQLInstanceName      = 'DSC'
+            Type                 = 'Backup'
+            Path                 = 'C:\Program Files\Microsoft SQL Server'
             PsDscRunAsCredential = $SysAdminAccount
         }
     }

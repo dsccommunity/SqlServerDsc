@@ -63,11 +63,11 @@ try
                     }
 
                     Start-DscConfiguration @startDscConfigurationParameters
-                } | Should Not Throw
+                } | Should -Not -Throw
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
-                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not Throw
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
             }
 
             It 'Should have set the resource and all the parameters should match' {
@@ -79,7 +79,7 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.IsHadrEnabled | Should Be $true
+                $resourceCurrentState.IsHadrEnabled | Should -Be $true
             }
         }
 
@@ -96,11 +96,11 @@ try
 
                     Start-DscConfiguration -Path $TestDrive `
                         -ComputerName localhost -Wait -Verbose -Force
-                } | Should Not Throw
+                } | Should -Not -Throw
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
-                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not Throw
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
             }
 
             It 'Should have set the resource and all the parameters should match' {
@@ -112,7 +112,7 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.IsHadrEnabled | Should Be $false
+                $resourceCurrentState.IsHadrEnabled | Should -Be $false
             }
         }
     }

@@ -39,8 +39,10 @@ try
         $mockSqlDatabaseName                 = 'AdventureWorks'
         $mockInvalidOperationForCreateMethod = $false
         $mockInvalidOperationForDropMethod   = $false
+        $mockInvalidOperationForAlterMethod  = $false
         $mockExpectedDatabaseNameToCreate    = 'Contoso'
         $mockExpectedDatabaseNameToDrop      = 'Sales'
+        $mockSqlDatabaseCollation            = 'SQL_Latin1_General_CP1_CI_AS'
 
         # Default parameters that are used for the It-blocks
         $mockDefaultParameters = @{
@@ -56,10 +58,25 @@ try
                     New-Object Object |
                         Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSqlServerInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSqlServerName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Collation -Value $mockSqlDatabaseCollation -PassThru |
+                        Add-Member -MemberType ScriptMethod -Name EnumCollations -Value {
+                            return @(
+                                ( New-Object Object |
+                                    Add-Member -MemberType NoteProperty Name -Value $mockSqlDatabaseCollation -PassThru
+                                ),
+                                ( New-Object Object |
+                                    Add-Member -MemberType NoteProperty Name -Value 'SQL_Latin1_General_CP1_CS_AS' -PassThru
+                                ),
+                                ( New-Object Object |
+                                    Add-Member -MemberType NoteProperty Name -Value 'SQL_Latin1_General_Pref_CP850_CI_AS' -PassThru
+                                )
+                            )
+                        } -PassThru -Force |
                         Add-Member -MemberType ScriptProperty -Name Databases -Value {
                             return @{
-                                $mockSqlDatabaseName = ( New-Object Object |
+                                    $mockSqlDatabaseName = ( New-Object Object |
                                     Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name Collation -Value $mockSqlDatabaseCollation -PassThru |
                                     Add-Member -MemberType ScriptMethod -Name Drop -Value {
                                         if ($mockInvalidOperationForDropMethod)
                                         {
@@ -70,6 +87,12 @@ try
                                         {
                                             throw "Called mocked Drop() method without dropping the right database. Expected '{0}'. But was '{1}'." `
                                                   -f $mockExpectedDatabaseNameToDrop, $this.Name
+                                        }
+                                    } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name Alter -Value {
+                                        if ($mockInvalidOperationForAlterMethod)
+                                        {
+                                            throw 'Mock Alter Method was called with invalid operation.'
                                         }
                                     } -PassThru
                                     )
@@ -84,6 +107,7 @@ try
                 (
                     New-Object Object |
                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Collation -Value '' -PassThru |
                         Add-Member -MemberType ScriptMethod -Name Create -Value {
                             if ($mockInvalidOperationForCreateMethod)
                             {
@@ -107,46 +131,54 @@ try
             }
 
             Context 'When the system is not in the desired state' {
-                It 'Should return the state as absent' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        Name = 'UnknownDatabase'
-                    }
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    Name = 'UnknownDatabase'
+                    Collation = 'SQL_Latin1_General_CP1_CI_AS'
+                }
 
+                It 'Should return the state as absent' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
                 }
 
                 It 'Should return the same values as passed as parameters' {
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.Name | Should Be $testParameters.Name
+                    $result = Get-TargetResource @testParameters
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.Name | Should -Be $testParameters.Name
+                    $result.Collation | Should -Be $testParameters.Collation
                 }
 
+
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
                 }
             }
 
             Context 'When the system is in the desired state for a database' {
-                It 'Should return the state as present' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        Name = 'AdventureWorks'
-                    }
 
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    Name = 'AdventureWorks'
+                    Collation = 'SQL_Latin1_General_CP1_CI_AS'
+                }
+
+                It 'Should return the state as present' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Present'
+                    $result.Ensure | Should -Be 'Present'
                 }
 
                 It 'Should return the same values as passed as parameters' {
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
-                    $result.Name | Should Be $testParameters.Name
+                    $result = Get-TargetResource @testParameters
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
+                    $result.Name | Should -Be $testParameters.Name
+                    $result.Collation | Should -Be $testParameters.Collation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
                 }
             }
 
@@ -164,14 +196,27 @@ try
                     $testParameters += @{
                         Name    = 'UnknownDatabase'
                         Ensure  = 'Present'
+                        Collation = 'SQL_Latin1_General_CP1_CS_AS'
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
+                }
+
+                It 'Should return the state as false when desired database exists but has the incorrect collation' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name    = 'AdventureWorks'
+                        Ensure  = 'Present'
+                        Collation = 'SQL_Latin1_General_CP1_CS_AS'
+                    }
+
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
                 }
             }
 
@@ -184,7 +229,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -198,14 +243,27 @@ try
                     $testParameters += @{
                         Name    = 'AdventureWorks'
                         Ensure  = 'Present'
+                        Collation = 'SQL_Latin1_General_CP1_CI_AS'
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
+                }
+
+                It 'Should return the state as true when desired database exists and has the correct collation' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name    = 'AdventureWorks'
+                        Ensure  = 'Present'
+                        Collation = 'SQL_Latin1_General_CP1_CI_AS'
+                    }
+
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
                 }
             }
 
@@ -218,7 +276,7 @@ try
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -248,11 +306,22 @@ try
                         Ensure  = 'Present'
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                }
+
+                It 'Should not throw when changing the database collation' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name    = 'Contoso'
+                        Ensure  = 'Present'
+                        Collation = 'SQL_Latin1_General_CP1_CS_AS'
+                    }
+
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
                 }
 
                 It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Database' {
@@ -273,7 +342,7 @@ try
                         Ensure  = 'Absent'
                     }
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -282,6 +351,7 @@ try
             }
 
             $mockInvalidOperationForCreateMethod = $true
+            $mockInvalidOperationForAlterMethod  = $true
 
             Context 'When the system is not in the desired state and Ensure is set to Present' {
                 It 'Should throw the correct error when Create() method was called with invalid operation' {
@@ -294,11 +364,24 @@ try
                     $throwInvalidOperation = ('InnerException: Exception calling "Create" ' + `
                                               'with "0" argument(s): "Mock Create Method was called with invalid operation."')
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                }
+
+                It 'Should throw the correct error when invalid collation is specified' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name    = 'Sales'
+                        Ensure  = 'Present'
+                        Collation = 'InvalidCollation'
+                    }
+
+                    $throwInvalidOperation = ("The specified collation '{3}' is not a valid collation for database {2} on {0}\{1}." -f $mockSqlServerName, $mockSqlServerInstanceName, $testParameters.Name, $testParameters.Collation)
+
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
                 }
 
                 It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Database' {
@@ -316,13 +399,14 @@ try
                 $testParameters += @{
                     Name    = 'AdventureWorks'
                     Ensure  = 'Absent'
+                    Collation = 'SQL_Latin1_General_CP1_CS_AS'
                 }
 
                 It 'Should throw the correct error when Drop() method was called with invalid operation' {
                     $throwInvalidOperation = ('InnerException: Exception calling "Drop" ' + `
                                               'with "0" argument(s): "Mock Drop Method was called with invalid operation."')
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
