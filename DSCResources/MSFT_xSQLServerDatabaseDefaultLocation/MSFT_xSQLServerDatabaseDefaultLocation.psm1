@@ -19,6 +19,9 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xSQLServerDatabase
 
     .PARAMETER Type
     The type of database default location to be configured. { Data | Log | Backup }
+
+    .PARAMETER Path
+    The path to the default directory to be configured.
 #>
 Function Get-TargetResource
 {
