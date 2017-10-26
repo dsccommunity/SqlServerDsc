@@ -48,7 +48,6 @@ Function Get-TargetResource
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Path
-
     )
 
     Write-Verbose -Message ($script:localizedData.GetCurrentPath -f $Type, $SQLInstanceName)

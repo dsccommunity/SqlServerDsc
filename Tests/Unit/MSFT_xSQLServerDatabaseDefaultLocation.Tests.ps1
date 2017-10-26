@@ -41,9 +41,9 @@ try
         $mockSqlAlterLogPath = 'C:\Program Files\'
         $mockSqlAlterBackupPath = 'C:\Program Files\'
         $mockRestartService = $true
-        $mockExpectedAlterDataPath = 'C:\temp'
-        $mockExpectedAlterLogPath = 'C:\temp'
-        $mockExpectedAlterBackupPath = 'C:\temp'
+        $mockExpectedAlterDataPath = $env:temp
+        $mockExpectedAlterLogPath = $env:temp
+        $mockExpectedAlterBackupPath = $env:temp
         $mockInvalidPathForData = 'C:\InvalidPath'
         $mockInvalidPathForLog = 'C:\InvalidPath'
         $mockInvalidPathForBackup = 'C:\InvalidPath'
