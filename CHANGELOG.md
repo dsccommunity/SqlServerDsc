@@ -29,6 +29,10 @@
 - Added the CommonTestHelper.psm1 to store common testing functions.
   - Added the Import-SQLModuleStub function to ensure the correct version of the
     module stubs are loaded ([issue #784](https://github.com/PowerShell/xSQLServer/issues/784)).
+- Changes to xSQLServerMemory
+  - Made the resource cluster aware. When ProcessOnlyOnActiveNode is specified,
+    the resource will only determine if a change is needed if the target node
+    is the active host of the SQL Server instance ([issue #867](https://github.com/PowerShell/xSQLServer/issues/867)).
 - Changes to xSQLServerNetwork
   - BREAKING CHANGE: Renamed parameter TcpDynamicPorts to TcpDynamicPort and
     changed type to Boolean ([issue #534](https://github.com/PowerShell/xSQLServer/issues/534)).
