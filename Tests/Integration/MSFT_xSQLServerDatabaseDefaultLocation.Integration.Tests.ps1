@@ -79,8 +79,8 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.DefaultLocationType | Should -Be 'Data'
-                ( Join-Path -Path $resourceCurrentState.DefaultLocationPath -ChildPath '' ) | Should -Be ( Join-Path -Path $ConfigurationData.AllNodes.DataFilePath -ChildPath '' )
+                $resourceCurrentState.Type | Should -Be 'Data'
+                ( Join-Path -Path $resourceCurrentState.Path -ChildPath '' ) | Should -Be ( Join-Path -Path $ConfigurationData.AllNodes.DataFilePath -ChildPath '' )
             }
         }
 
@@ -124,8 +124,8 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.DefaultLocationType | Should -Be 'Log'
-                ( Join-Path -Path $resourceCurrentState.DefaultLocationPath -ChildPath '' ) | Should -Be ( Join-Path -Path $ConfigurationData.AllNodes.LogFilePath -ChildPath '' )
+                $resourceCurrentState.Type | Should -Be 'Log'
+                ( Join-Path -Path $resourceCurrentState.Path -ChildPath '' ) | Should -Be ( Join-Path -Path $ConfigurationData.AllNodes.LogFilePath -ChildPath '' )
             }
         }
 
@@ -169,8 +169,8 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.DefaultLocationType | Should -Be 'Backup'
-                ( Join-Path -Path $resourceCurrentState.DefaultLocationPath -ChildPath '' ) | Should -Be ( Join-Path -Path $ConfigurationData.AllNodes.BackupFilePath -ChildPath '' )
+                $resourceCurrentState.Type | Should -Be 'Backup'
+                ( Join-Path -Path $resourceCurrentState.Path -ChildPath '' ) | Should -Be ( Join-Path -Path $ConfigurationData.AllNodes.BackupFilePath -ChildPath '' )
             }
         }
     }
