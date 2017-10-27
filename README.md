@@ -117,6 +117,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx).
 * [**xSQLServerDatabase**](#xsqlserverdatabase) resource to manage ensure database
   is present or absent.
+* [**xSQLServerDatabaseDefaultLocation**](#xsqlserverdatabasedefaultlocation) resource
+  to manage default locations for Data, Logs, and Backups for SQL Server
 * [**xSQLServerDatabaseOwner**](#xsqlserverdatabaseowner) resource to manage SQL
   database owners.
 * [**xSQLServerDatabasePermission**](#xsqlserverdatabasepermission) resource to
@@ -515,6 +517,42 @@ database, please read:
 
 * [Create a Database](/Examples/Resources/xSQLServerDatabase/1-CreateDatabase.ps1)
 * [Delete a database](/Examples/Resources/xSQLServerDatabase/2-DeleteDatabase.ps1)
+
+### xSQLServerDatabaseDefaultLocation
+
+This resource is used to configure default locations for user databases. The
+types of default locations that can be changed are Data, Log, and Backup. For
+more information about database default locations, please read the article
+[Changing the Database Default Locations](https://technet.microsoft.com/en-us/library/dd206993.aspx).
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2008 or later.
+
+#### Parameters
+
+* **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
+* **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to
+  be configured.
+* **`[String]` Type** _(Key)_: The type of database default location to be
+  configured. { Data | Log | Backup }
+* **`[String]` Path** _(Required)_: The path to the default directory to be configured.
+* **`[Boolean]` RestartService** _(Write)_: If set to $true then SQL Server and
+  dependent services will be restarted if a change to the configuration is made.
+  The default value is $false.
+* **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
+  will only determine if a change is needed if the target node is the active
+  host of the SQL Server Instance.
+
+#### Read-Only Property from Get-TargetResource
+
+* **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
+  actively hosting the SQL Server instance.
+
+#### Examples
+
+* [Set database default locations](/Examples/Resources/xSQLServerDatabaseDefaultLocation/1-SetDatabaseDefaultLocation.ps1)
 
 ### xSQLServerDatabaseOwner
 
