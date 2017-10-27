@@ -528,7 +528,7 @@ more information about database default locations, please read the article
 #### Parameters
 
 * **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
-* **`[String]` SQLInstanceName** _(Required)_: The name of the SQL instance to
+* **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to
   be configured.
 * **`[String]` Type** _(Key)_: The type of database default location to be
   configured. { Data | Log | Backup }

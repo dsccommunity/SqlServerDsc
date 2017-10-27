@@ -9,19 +9,20 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xSQLServerDatabase
 
 <#
     .SYNOPSIS
-    Returns the current path to the the desired default location for the Data, Log, or Backup files.
+        Returns the current path to the the desired default location for the Data, Log, or Backup files.
 
     .PARAMETER SQLServer
-    The host name of the SQL Server to be configured.
+        The host name of the SQL Server to be configured.
 
     .PARAMETER SQLInstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 
     .PARAMETER Type
-    The type of database default location to be configured. { Data | Log | Backup }
+        The type of database default location to be configured. { Data | Log | Backup }
 
     .PARAMETER Path
-    The path to the default directory to be configured.
+        The path to the default directory to be configured.
+        Not used in Get-TargetResource
 #>
 Function Get-TargetResource
 {
@@ -63,17 +64,17 @@ Function Get-TargetResource
     {
         'Data'
         {
-            $Path = $sqlServerObject.DefaultFile
+            $currentPath = $sqlServerObject.DefaultFile
         }
 
         'Log'
         {
-            $Path = $sqlServerObject.DefaultLog
+            $currentPath = $sqlServerObject.DefaultLog
         }
 
         'Backup'
         {
-            $Path = $sqlServerObject.BackupDirectory
+            $currentPath = $sqlServerObject.BackupDirectory
         }
     }
 
@@ -81,34 +82,34 @@ Function Get-TargetResource
         SqlInstanceName     = $SQLInstanceName
         SqlServer           = $SQLServer
         Type                = $Type
-        Path                = $Path
+        Path                = $currentPath
         IsActiveNode        = $isActiveNode
     }
 }
 
 <#
     .SYNOPSIS
-    This function sets the current path for the default SQL Instance location for the Data, Log, or Backups files.
+        This function sets the current path for the default SQL Instance location for the Data, Log, or Backups files.
 
     .PARAMETER SQLServer
-    The host name of the SQL Server to be configured.
+        The host name of the SQL Server to be configured.
 
     .PARAMETER SQLInstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 
     .PARAMETER Type
-    The type of database default location to be configured. { Data | Log | Backup }
+        The type of database default location to be configured. { Data | Log | Backup }
 
     .PARAMETER Path
-    The path to the default directory to be configured.
+        The path to the default directory to be configured.
 
     .PARAMETER RestartService
-    If set to $true then SQL Server and dependent services will be restarted if a change to the default location
-    is made.  The default value is $false.
+        If set to $true then SQL Server and dependent services will be restarted if a change to the default location
+        is made.  The default value is $false.
 
     .PARAMETER ProcessOnlyOnActiveNode
-    Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
-    Not used in Set-TargetResource.
+        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+        Not used in Set-TargetResource.
 #>
 Function Set-TargetResource
 {
@@ -140,14 +141,14 @@ Function Set-TargetResource
         $RestartService = $false,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $ProcessOnlyOnActiveNode
     )
 
     # Make sure the Path exists, needs to be cluster aware as well for this check
-    if(-Not (Test-Path $Path))
+    if (-Not (Test-Path $Path))
     {
-        throw ($script:localizedData.InvalidPath -f $Path )
+        throw ($script:localizedData.InvalidPath -f $Path)
     }
     else
     {
@@ -204,26 +205,26 @@ Function Set-TargetResource
 
 <#
     .SYNOPSIS
-    This function tests the current path to the default database location for the Data, Log, or Backups files.
+        This function tests the current path to the default database location for the Data, Log, or Backups files.
 
     .PARAMETER SQLServer
-    The host name of the SQL Server to be configured.
+        The host name of the SQL Server to be configured.
 
     .PARAMETER SQLInstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 
     .PARAMETER Type
-    The type of database default location to be configured. { Data | Log | Backup }
+        The type of database default location to be configured. { Data | Log | Backup }
 
     .PARAMETER Path
-    The path to the default directory to be configured.
+        The path to the default directory to be configured.
 
     .PARAMETER RestartService
-    If set to $true then SQL Server and dependent services will be restarted if a change to the default location
-    is made.  The default value is $false.
+        If set to $true then SQL Server and dependent services will be restarted if a change to the default location
+        is made.  The default value is $false.
 
     .PARAMETER ProcessOnlyOnActiveNode
-    Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
 #>
 function Test-TargetResource
 {
@@ -256,7 +257,7 @@ function Test-TargetResource
         $RestartService = $false,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $ProcessOnlyOnActiveNode
     )
 
@@ -279,10 +280,8 @@ function Test-TargetResource
     if ( $ProcessOnlyOnActiveNode -and -not $getTargetResourceResult.IsActiveNode )
     {
         Write-Verbose -Message ($script:localizedData.NotActiveClusterNode -f $env:COMPUTERNAME,$SQLInstanceName )
-        return $isDefaultPathInDesiredState
     }
-
-    if ($getTargetResourceResult.Path -ne $Path)
+    elseif ($getTargetResourceResult.Path -ne $Path)
     {
         Write-Verbose -Message ($script:localizedData.DefaultPathDifference -f $Type, $getTargetResourceResult.Path, $Path)
         $isDefaultPathInDesiredState = $false

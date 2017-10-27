@@ -44,8 +44,8 @@ Configuration MSFT_xSQLServerDatabaseDefaultLocation_Data_Config
 
         xSQLServerDatabaseDefaultLocation 'Integration_Test'
         {
-            DefaultLocationType  = 'Data'
-            DefaultLocationPath  = $Node.DataFilePath
+            Type  = 'Data'
+            Path  = $Node.DataFilePath
             RestartService       = $true
             SQLServer            = $Node.ComputerName
             SQLInstanceName      = $Node.InstanceName
@@ -82,8 +82,8 @@ Configuration MSFT_xSQLServerDatabaseDefaultLocation_Log_Config
 
         xSQLServerDatabaseDefaultLocation 'Integration_Test'
         {
-            DefaultLocationType  = 'Log'
-            DefaultLocationPath  = $Node.LogFilePath
+            Type  = 'Log'
+            Path  = $Node.LogFilePath
             RestartService       = $true
             SQLServer            = $Node.ComputerName
             SQLInstanceName      = $Node.InstanceName
@@ -120,8 +120,8 @@ Configuration MSFT_xSQLServerDatabaseDefaultLocation_Backup_Config
 
         xSQLServerDatabaseDefaultLocation 'Integration_Test'
         {
-            DefaultLocationType  = 'Backup'
-            DefaultLocationPath  = $Node.BackupFilePath
+            Type  = 'Backup'
+            Path  = $Node.BackupFilePath
             RestartService       = $false
             SQLServer            = $Node.ComputerName
             SQLInstanceName      = $Node.InstanceName

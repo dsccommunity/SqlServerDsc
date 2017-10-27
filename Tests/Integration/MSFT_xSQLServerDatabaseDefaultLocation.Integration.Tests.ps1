@@ -63,11 +63,11 @@ try
                     }
 
                     Start-DscConfiguration @startDscConfigurationParameters
-                } | Should Not Throw
+                } | Should -Not -Throw
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
-                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not Throw
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
             }
 
             It 'Should have set the resource and all the parameters should match' {
@@ -79,8 +79,8 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.DefaultLocationType | Should Be 'Data'
-                ( Join-Path -Path $resourceCurrentState.DefaultLocationPath -ChildPath '' ) | Should Be ( Join-Path -Path $ConfigurationData.AllNodes.DataFilePath -ChildPath '' )
+                $resourceCurrentState.DefaultLocationType | Should -Be 'Data'
+                ( Join-Path -Path $resourceCurrentState.DefaultLocationPath -ChildPath '' ) | Should -Be ( Join-Path -Path $ConfigurationData.AllNodes.DataFilePath -ChildPath '' )
             }
         }
 
@@ -108,11 +108,11 @@ try
                     }
 
                     Start-DscConfiguration @startDscConfigurationParameters
-                } | Should Not Throw
+                } | Should -Not -Throw
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
-                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not Throw
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
             }
 
             It 'Should have set the resource and all the parameters should match' {
@@ -124,8 +124,8 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.DefaultLocationType | Should Be 'Log'
-                ( Join-Path -Path $resourceCurrentState.DefaultLocationPath -ChildPath '' ) | Should Be ( Join-Path -Path $ConfigurationData.AllNodes.LogFilePath -ChildPath '' )
+                $resourceCurrentState.DefaultLocationType | Should -Be 'Log'
+                ( Join-Path -Path $resourceCurrentState.DefaultLocationPath -ChildPath '' ) | Should -Be ( Join-Path -Path $ConfigurationData.AllNodes.LogFilePath -ChildPath '' )
             }
         }
 
@@ -153,11 +153,11 @@ try
                     }
 
                     Start-DscConfiguration @startDscConfigurationParameters
-                } | Should Not Throw
+                } | Should -Not -Throw
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
-                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not Throw
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
             }
 
             It 'Should have set the resource and all the parameters should match' {
@@ -169,8 +169,8 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.DefaultLocationType | Should Be 'Backup'
-                ( Join-Path -Path $resourceCurrentState.DefaultLocationPath -ChildPath '' ) | Should Be ( Join-Path -Path $ConfigurationData.AllNodes.BackupFilePath -ChildPath '' )
+                $resourceCurrentState.DefaultLocationType | Should -Be 'Backup'
+                ( Join-Path -Path $resourceCurrentState.DefaultLocationPath -ChildPath '' ) | Should -Be ( Join-Path -Path $ConfigurationData.AllNodes.BackupFilePath -ChildPath '' )
             }
         }
     }
