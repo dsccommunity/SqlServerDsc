@@ -13,6 +13,9 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 
+# Loading mocked classes
+Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SMO.cs )
+
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:DSCModuleName `
     -DSCResourceName $script:DSCResourceName `
@@ -40,6 +43,7 @@ try
         $mockPhysicalMemoryCapacity = 8589934592
         $mockExpectedMinMemoryForAlterMethod = 0
         $mockExpectedMaxMemoryForAlterMethod = 2147483647
+        $mockTestActiveNode = $true
 
         # Default parameters that are used for the It-blocks
         $mockDefaultParameters = @{
@@ -52,9 +56,10 @@ try
         $mockConnectSQL = {
             return @(
                 (
-                    New-Object Object |
-                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSQLServerInstanceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSQLServerName -PassThru |
+                    # New-Object Object |
+                    New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server |
+                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSQLServerInstanceName -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSQLServerName -PassThru -Force |
                         Add-Member -MemberType ScriptProperty -Name Configuration -Value {
                             return @( ( New-Object Object |
                                 Add-Member -MemberType ScriptProperty -Name MinServerMemory -Value {
@@ -74,7 +79,7 @@ try
                                     ) )
                                 } -PassThru -Force
                             ) )
-                        } -PassThru |
+                        } -PassThru -Force |
                         Add-Member -MemberType ScriptMethod -Name Alter -Value {
                             if ( $this.Configuration.MinServerMemory.ConfigValue -ne $mockExpectedMinMemoryForAlterMethod )
                             {
@@ -93,6 +98,7 @@ try
 
         Describe "MSFT_xSQLServerMemory\Get-TargetResource" -Tag 'Get'{
             Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+            Mock -CommandName Test-ActiveNode -MockWith { return $mockTestActiveNode } -Verifiable
 
             Context 'When the system is either in the desired state or not in the desired state' {
                 $testParameters = $mockDefaultParameters
@@ -114,6 +120,10 @@ try
 
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+
+                It 'Should call the mock function Test-ActiveNode' {
+                    Assert-MockCalled Test-ActiveNode -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -160,6 +170,8 @@ try
 
                 $mockGetCimInstanceOS
             } -ParameterFilter { $ClassName -eq 'Win32_operatingsystem' } -Verifiable
+
+            Mock -CommandName Test-ActiveNode -MockWith { return $mockTestActiveNode } -Verifiable
 
             Context 'When the system is not in the desired state and DynamicAlloc is set to false' {
                 $testParameters = $mockDefaultParameters
@@ -300,6 +312,50 @@ try
 
                 It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_operatingsystem' {
                     Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
+                        $ClassName -eq 'Win32_operatingsystem'
+                    } -Scope Context
+                }
+            }
+
+            Context 'When the system is not in the desired state, DynamicAlloc is set to true and ProcessOnlyOnActiveNode is set to true' {
+                AfterAll {
+                    $mockTestActiveNode = $true
+                }
+
+                BeforeAll {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Ensure                  = 'Present'
+                        DynamicAlloc            = $true
+                        ProcessOnlyOnActiveNode = $true
+                    }
+
+                    $mockTestActiveNode = $false
+                }
+
+                It 'Should return the state as true' {
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $true
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+
+                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_PhysicalMemory' {
+                    Assert-MockCalled Get-CimInstance -Exactly -Times 0 -ParameterFilter {
+                        $ClassName -eq 'Win32_PhysicalMemory'
+                    } -Scope Context
+                }
+
+                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_Processor' {
+                    Assert-MockCalled Get-CimInstance -Exactly -Times 0 -ParameterFilter {
+                        $ClassName -eq 'Win32_Processor'
+                    } -Scope Context
+                }
+
+                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_operatingsystem' {
+                    Assert-MockCalled Get-CimInstance -Exactly -Times 0 -ParameterFilter {
                         $ClassName -eq 'Win32_operatingsystem'
                     } -Scope Context
                 }

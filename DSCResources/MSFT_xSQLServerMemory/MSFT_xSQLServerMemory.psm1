@@ -37,7 +37,7 @@ function Get-TargetResource
         $maxMemory = $sqlServerObject.Configuration.MaxServerMemory.ConfigValue
 
         # Is this node actively hosting the SQL instance?
-        $isActiveNode = Test-ActiveNode -ServerObject $serverObject
+        $isActiveNode = Test-ActiveNode -ServerObject $sqlServerObject
     }
 
     $returnValue = @{
@@ -254,6 +254,10 @@ function Test-TargetResource
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
+    $currentMinMemory = $getTargetResourceResult.MinMemory
+    $currentMaxMemory = $getTargetResourceResult.MaxMemory
+    $isServerMemoryInDesiredState = $true
+
     <#
         If this is supposed to process only the active node, and this is not the
         active node, don't bother evaluating the test.
@@ -262,12 +266,8 @@ function Test-TargetResource
     {
         # Use localization if the resource has been converted
         New-VerboseMessage -Message ( 'The node "{0}" is not actively hosting the instance "{1}". Exiting the test.' -f $env:COMPUTERNAME,$SQLInstanceName )
-        return $result
+        return $isServerMemoryInDesiredState
     }
-
-    $currentMinMemory = $getTargetResourceResult.MinMemory
-    $currentMaxMemory = $getTargetResourceResult.MaxMemory
-    $isServerMemoryInDesiredState = $true
 
     switch ($Ensure)
     {
