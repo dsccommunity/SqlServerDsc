@@ -314,6 +314,14 @@ group.
   login on all replicas and that the PSDscRunAsAccount has impersonate permissions.
   If set to $false, the owner of the database will be the PSDscRunAsAccount.
   The default is '$true'.
+* **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
+  will only determine if a change is needed if the target node is the active
+  host of the SQL Server Instance.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
+  actively hosting the SQL Server instance.
 
 ### xSQLServerAlwaysOnAvailabilityGroupReplica
 

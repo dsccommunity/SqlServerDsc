@@ -45,3 +45,6 @@ PARAMETER MatchDatabaseOwner
     If set to $false, the owner of the database will be the PSDscRunAsCredential.
 
     The default is '$true'.
+
+.PARAMETER ProcessOnlyOnActiveNode
+        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
