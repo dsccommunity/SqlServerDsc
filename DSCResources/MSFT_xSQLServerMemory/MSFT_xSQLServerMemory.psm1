@@ -76,7 +76,7 @@ function Get-TargetResource
         This is the maximum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
 
     .PARAMETER ProcessOnlyOnActiveNode
-        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server instance.
         Not used in Set-TargetResource.
 #>
 function Set-TargetResource
@@ -205,7 +205,7 @@ function Set-TargetResource
         This is the maximum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
 
     .PARAMETER ProcessOnlyOnActiveNode
-        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server instance.
 #>
 function Test-TargetResource
 {

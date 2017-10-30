@@ -7,6 +7,6 @@ class MSFT_xSQLServerMemory : OMI_BaseResource
     [Write, Description("If set to $true then max memory will be dynamically configured. When this is set parameter is set to $true, the parameter MaxMemory must be set to $null or not be configured. Default value is $false.")] Boolean DynamicAlloc;
     [Write, Description("Minimum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.")] Sint32 MinMemory;
     [Write, Description("Maximum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.")] Sint32 MaxMemory;
-    [Write, Description("Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.")] Boolean ProcessOnlyOnActiveNode;
+    [Write, Description("Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server instance.")] Boolean ProcessOnlyOnActiveNode;
     [Read, Description("Determines if the current node is actively hosting the SQL Server instance.")] Boolean IsActiveNode;
 };

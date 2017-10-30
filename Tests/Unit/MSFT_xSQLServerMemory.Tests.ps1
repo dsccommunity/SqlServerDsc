@@ -342,19 +342,19 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
-                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_PhysicalMemory' {
+                It 'Should not call the mock function Get-CimInstance with ClassName equal to Win32_PhysicalMemory' {
                     Assert-MockCalled Get-CimInstance -Exactly -Times 0 -ParameterFilter {
                         $ClassName -eq 'Win32_PhysicalMemory'
                     } -Scope Context
                 }
 
-                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_Processor' {
+                It 'Should not call the mock function Get-CimInstance with ClassName equal to Win32_Processor' {
                     Assert-MockCalled Get-CimInstance -Exactly -Times 0 -ParameterFilter {
                         $ClassName -eq 'Win32_Processor'
                     } -Scope Context
                 }
 
-                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_operatingsystem' {
+                It 'Should not call the mock function Get-CimInstance with ClassName equal to Win32_operatingsystem' {
                     Assert-MockCalled Get-CimInstance -Exactly -Times 0 -ParameterFilter {
                         $ClassName -eq 'Win32_operatingsystem'
                     } -Scope Context
