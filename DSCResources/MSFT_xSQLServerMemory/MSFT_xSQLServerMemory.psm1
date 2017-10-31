@@ -2,13 +2,13 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
 
 <#
     .SYNOPSIS
-    This function gets the value of the min and max memory server configuration option.
+        This function gets the value of the min and max memory server configuration option.
 
     .PARAMETER SQLServer
-    The host name of the SQL Server to be configured.
+        The host name of the SQL Server to be configured.
 
     .PARAMETER SQLInstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 #>
 
 function Get-TargetResource
@@ -35,6 +35,9 @@ function Get-TargetResource
         Write-Verbose -Message 'Getting the value for minimum and maximum SQL server memory.'
         $minMemory = $sqlServerObject.Configuration.MinServerMemory.ConfigValue
         $maxMemory = $sqlServerObject.Configuration.MaxServerMemory.ConfigValue
+
+        # Is this node actively hosting the SQL instance?
+        $isActiveNode = Test-ActiveNode -ServerObject $sqlServerObject
     }
 
     $returnValue = @{
@@ -42,6 +45,7 @@ function Get-TargetResource
         SQLServer       = $SQLServer
         MinMemory       = $minMemory
         MaxMemory       = $maxMemory
+        IsActiveNode    = $isActiveNode
     }
 
     $returnValue
@@ -49,27 +53,31 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-    This function sets the value for the min and max memory server configuration option.
+        This function sets the value for the min and max memory server configuration option.
 
     .PARAMETER SQLServer
-    The host name of the SQL Server to be configured.
+        The host name of the SQL Server to be configured.
 
     .PARAMETER SQLInstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 
     .PARAMETER Ensure
-    When set to 'Present' then min and max memory will be set to either the value in parameter MinMemory and MaxMemory or dynamically configured when parameter DynamicAlloc is set to $true.
-    When set to 'Absent' min and max memory will be set to default values.
+        When set to 'Present' then min and max memory will be set to either the value in parameter MinMemory and MaxMemory or dynamically configured when parameter DynamicAlloc is set to $true.
+        When set to 'Absent' min and max memory will be set to default values.
 
     .PARAMETER DynamicAlloc
-    If set to $true then max memory will be dynamically configured.
-    When this is set parameter is set to $true, the parameter MaxMemory must be set to $null or not be configured.
+        If set to $true then max memory will be dynamically configured.
+        When this is set parameter is set to $true, the parameter MaxMemory must be set to $null or not be configured.
 
     .PARAMETER MinMemory
-    This is the minimum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
+        This is the minimum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
 
     .PARAMETER MaxMemory
-    This is the maximum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
+        This is the maximum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
+
+    .PARAMETER ProcessOnlyOnActiveNode
+        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server instance.
+        Not used in Set-TargetResource.
 #>
 function Set-TargetResource
 {
@@ -101,7 +109,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Int32]
-        $MaxMemory
+        $MaxMemory,
+
+        [Parameter()]
+        [Boolean]
+        $ProcessOnlyOnActiveNode
     )
 
     $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
@@ -170,27 +182,30 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-    This function tests the value of the min and max memory server configuration option.
+        This function tests the value of the min and max memory server configuration option.
 
     .PARAMETER SQLServer
-    The host name of the SQL Server to be configured.
+        The host name of the SQL Server to be configured.
 
     .PARAMETER SQLInstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 
     .PARAMETER Ensure
-    When set to 'Present' then min and max memory will be set to either the value in parameter MinMemory and MaxMemory or dynamically configured when parameter DynamicAlloc is set to $true.
-    When set to 'Absent' min and max memory will be set to default values.
+        When set to 'Present' then min and max memory will be set to either the value in parameter MinMemory and MaxMemory or dynamically configured when parameter DynamicAlloc is set to $true.
+        When set to 'Absent' min and max memory will be set to default values.
 
     .PARAMETER DynamicAlloc
-    If set to $true then max memory will be dynamically configured.
-    When this is set parameter is set to $true, the parameter MaxMemory must be set to $null or not be configured.
+        If set to $true then max memory will be dynamically configured.
+        When this is set parameter is set to $true, the parameter MaxMemory must be set to $null or not be configured.
 
     .PARAMETER MinMemory
-    This is the minimum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
+        This is the minimum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
 
     .PARAMETER MaxMemory
-    This is the maximum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
+        This is the maximum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
+
+    .PARAMETER ProcessOnlyOnActiveNode
+        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server instance.
 #>
 function Test-TargetResource
 {
@@ -223,7 +238,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Int32]
-        $MaxMemory
+        $MaxMemory,
+
+        [Parameter()]
+        [Boolean]
+        $ProcessOnlyOnActiveNode
     )
 
     Write-Verbose -Message 'Testing the values of the minimum and maximum memory server configuration option set to be used by the instance.'
@@ -238,6 +257,17 @@ function Test-TargetResource
     $currentMinMemory = $getTargetResourceResult.MinMemory
     $currentMaxMemory = $getTargetResourceResult.MaxMemory
     $isServerMemoryInDesiredState = $true
+
+    <#
+        If this is supposed to process only the active node, and this is not the
+        active node, don't bother evaluating the test.
+    #>
+    if ( $ProcessOnlyOnActiveNode -and -not $getTargetResourceResult.IsActiveNode )
+    {
+        # Use localization if the resource has been converted
+        New-VerboseMessage -Message ( 'The node "{0}" is not actively hosting the instance "{1}". Exiting the test.' -f $env:COMPUTERNAME,$SQLInstanceName )
+        return $isServerMemoryInDesiredState
+    }
 
     switch ($Ensure)
     {

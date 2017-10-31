@@ -1002,6 +1002,14 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
   pool used by the instance of SQL Server.
 * **`[Sint32]` MaxMemory** _(Write)_: Maximum amount of memory, in MB, in the buffer
   pool used by the instance of SQL Server.
+* **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
+  will only determine if a change is needed if the target node is the active
+  host of the SQL Server instance.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
+  actively hosting the SQL Server instance.
 
 #### Examples
 
