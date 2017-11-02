@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Significant rename to reduce length of Resource names
+  - BREAKING CHANGE
+  - Impact to all resources
+
 ## 9.0.0.0
 
 - Changes to xSQLServer
