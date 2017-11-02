@@ -1,4 +1,4 @@
-# Swedish localized resources for helper module SqlServerDscHelper.
+# Swedish localized resources for helper module SqlServerDSCHelper.
 
 ConvertFrom-StringData @'
     ConnectedToDatabaseEngineInstance = Ansluten till SQL instans '{0}'.

@@ -93,7 +93,11 @@ try
 
         #endregion Pester Test Initialization
 
+<<<<<<< HEAD:Tests/Unit/MSFT_SqlAGListener.Tests.ps1
         Describe 'SqlServerAGListener\Get-TargetResource' {
+=======
+        Describe 'SqlServerDSCAvailabilityGroupListener\Get-TargetResource' {
+>>>>>>> first pass at complete rename:Tests/Unit/MSFT_SqlAGListener.Tests.ps1
             BeforeEach {
                 $testParameters = $defaultParameters.Clone()
 
@@ -224,7 +228,11 @@ try
             Assert-VerifiableMock
         }
 
+<<<<<<< HEAD:Tests/Unit/MSFT_SqlAGListener.Tests.ps1
         Describe 'SqlServerAGListener\Test-TargetResource' {
+=======
+        Describe 'SqlServerDSCAvailabilityGroupListener\Test-TargetResource' {
+>>>>>>> first pass at complete rename:Tests/Unit/MSFT_SqlAGListener.Tests.ps1
             BeforeEach {
                 $testParameters = $defaultParameters.Clone()
             }
@@ -509,7 +517,11 @@ try
             Assert-VerifiableMock
         }
 
+<<<<<<< HEAD:Tests/Unit/MSFT_SqlAGListener.Tests.ps1
         Describe 'SqlServerAGListener\Set-TargetResource' {
+=======
+        Describe 'SqlServerDSCAvailabilityGroupListener\Set-TargetResource' {
+>>>>>>> first pass at complete rename:Tests/Unit/MSFT_SqlAGListener.Tests.ps1
             BeforeEach {
                 $testParameters = $defaultParameters.Clone()
 

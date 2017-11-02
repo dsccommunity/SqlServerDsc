@@ -1,6 +1,6 @@
 @{
 # Version number of this module.
-ModuleVersion = '8.2.0.0'
+ModuleVersion = '9.0.0.0'
 
 # ID used to uniquely identify this module
 GUID = '74e9ddb5-4cbc-4fa2-a222-2bcfb533fd66'
@@ -108,7 +108,48 @@ PrivateData = @{
   - Made the resource cluster aware. When ProcessOnlyOnActiveNode is specified,
     the resource will only determine if a change is needed if the target node
     is the active host of the SQL Server instance ([issue 882](https://github.com/PowerShell/xSQLServer/issues/882)).
-
+  - Fixed the formatting for the AvailabilityGroupNotFound error.
+  - Added the following read-only properties to the schema ([issue 477](https://github.com/PowerShell/xSQLServer/issues/477))
+    - EndpointPort
+    - EndpointURL
+  - Use the new helper function "Test-ClusterPermissions".
+  - Use the Get-PrimaryReplicaServerObject helper function
+- Changes to xSQLServerHelper
+  - Fixed Connect-SQL by ensuring the Status property returns "Online" prior to
+    returning the SQL Server object ([issue 333](https://github.com/PowerShell/xSQLServer/issues/333)).
+- Changes to xSQLServerRole
+  - Running Get-DscConfiguration no longer throws an error saying property
+    Members is not an array ([issue 790](https://github.com/PowerShell/xSQLServer/issues/790)).
+- Changes to xSQLServerMaxDop
+  - Fixed error where Measure-Object cmdlet would fail claiming it could not
+    find the specified property ([issue 801](https://github.com/PowerShell/xSQLServer/issues/801))
+- Changes to xSQLServerAlwaysOnService
+  - Added integration test ([issue 736](https://github.com/PowerShell/xSQLServer/issues/736)).
+    - Added ErrorAction "Stop" to the cmdlet Start-DscConfiguration
+      ([issue 824](https://github.com/PowerShell/xSQLServer/issues/824)).
+- Changes to SMO.cs
+  - Added default properties to the Server class
+    - AvailabilityGroups
+    - Databases
+    - EndpointCollection
+  - Added a new overload to the Login class
+  - Added default properties to the AvailabilityReplicas class
+    - AvailabilityDatabases
+    - AvailabilityReplicas
+- Added new resource xSQLServerAccount ([issue 706](https://github.com/PowerShell/xSQLServer/issues/706))
+  - Added localization support for all strings
+  - Added examples for usage
+- Changes to SqlRS
+  - No longer returns a null value from Test-TargetResource when Reporting
+    Services has not been initialized ([issue 822](https://github.com/PowerShell/xSQLServer/issues/822)).
+  - Fixed so that when two Reporting Services are installed for the same major
+    version the resource does not throw an error ([issue 819](https://github.com/PowerShell/xSQLServer/issues/819)).
+  - Now the resource will restart the Reporting Services service after
+    initializing ([issue 592](https://github.com/PowerShell/xSQLServer/issues/592)).
+    This will enable the Reports site to work.
+  - Added integration test ([issue 753](https://github.com/PowerShell/xSQLServer/issues/753)).
+  - Added support for configuring URL reservations and virtual directory names
+    ([issue 570](https://github.com/PowerShell/xSQLServer/issues/570))
 '
 
     } # End of PSData hashtable
