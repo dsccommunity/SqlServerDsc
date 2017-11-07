@@ -13,6 +13,9 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 
+# Loading mocked classes
+Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SMO.cs )
+
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:DSCModuleName `
     -DSCResourceName $script:DSCResourceName `
@@ -40,6 +43,7 @@ try
         $mockInvalidOperationForAlterMethod = $false
         $mockNumberOfLogicalProcessors      = 4
         $mockNumberOfCores                  = 4
+        $mockProcessOnlyOnActiveNode        = $true
 
         # Default parameters that are used for the It-blocks
         $mockDefaultParameters = @{
@@ -52,9 +56,9 @@ try
         $mockConnectSQL = {
             return @(
                 (
-                    New-Object Object |
-                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSQLServerInstanceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSQLServerName -PassThru |
+                    New-Object Object -TypeName Microsoft.SqlServer.Management.Smo.Server |
+                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSQLServerInstanceName -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSQLServerName -PassThru -Force |
                         Add-Member -MemberType ScriptProperty -Name Configuration -Value {
                             return @( ( New-Object Object |
                                 Add-Member -MemberType ScriptProperty -Name MaxDegreeOfParallelism -Value {
@@ -122,6 +126,10 @@ try
         Describe "MSFT_xSQLServerMaxDop\Test-TargetResource" -Tag 'Test'{
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+
+                Mock -CommandName Test-ActiveNode -MockWith {
+                    $mockProcessOnlyOnActiveNode
+                } -Verifiable
 
                 Mock -CommandName Get-CimInstance -MockWith $mockCimInstance_Win32Processor -ParameterFilter {
                     $ClassName -eq 'Win32_Processor'
@@ -334,6 +342,45 @@ try
 
                 It 'Should not throw an error' {
                     { Test-TargetResource @testParameters } | Should -Not -Throw
+                }
+            }
+
+            Context 'When the ProcessOnlyOnActiveNode parameter is passed' {
+                AfterAll {
+                    $mockProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNodeOriginal
+                }
+
+                BeforeAll {
+                    $mockProcessOnlyOnActiveNodeOriginal = $mockProcessOnlyOnActiveNode
+                    $mockProcessOnlyOnActiveNode = $false
+                }
+
+                It 'Should be "true" when ProcessOnlyOnActiveNode is <mockProcessOnlyOnActiveNode>.' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Ensure = 'Absent'
+                        ProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNode
+                    }
+
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $true
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
+                }
+
+                It 'Should be "true" when ProcessOnlyOnActiveNode is <mockProcessOnlyOnActiveNodeOriginal>.' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Ensure = 'Absent'
+                        ProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNodeOriginal
+                    }
+
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $true
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
                 }
             }
 
