@@ -26,11 +26,7 @@ Configuration MSFT_SqlAlwaysOnService_EnableAlwaysOn_Config
     )
 
     Import-DscResource -ModuleName 'PSDscResources'
-<<<<<<< HEAD:Tests/Integration/MSFT_SqlAlwaysOnService.config.ps1
     Import-DscResource -ModuleName 'SqlServerDsc'
-=======
-    Import-DscResource -ModuleName 'SqlServerDSC'
->>>>>>> first pass at complete rename:Tests/Integration/MSFT_SqlAlwaysOnService.config.ps1
 
     node localhost {
         WindowsFeature 'AddFeatureFailoverClustering'
@@ -155,11 +151,7 @@ Configuration MSFT_SqlAlwaysOnService_DisableAlwaysOn_Config
         $SqlInstallCredential
     )
 
-<<<<<<< HEAD:Tests/Integration/MSFT_SqlAlwaysOnService.config.ps1
     Import-DscResource -ModuleName 'SqlServerDsc'
-=======
-    Import-DscResource -ModuleName 'SqlServerDSC'
->>>>>>> first pass at complete rename:Tests/Integration/MSFT_SqlAlwaysOnService.config.ps1
 
     node localhost {
         SqlAlwaysOnService 'Integration_Test'

@@ -68,11 +68,7 @@ Configuration MSFT_SqlDatabaseDefaultLocation_Log_Config
     )
 
     Import-DscResource -ModuleName 'PSDesiredStateConfiguration'
-<<<<<<< HEAD:Tests/Integration/MSFT_SqlDatabaseDefaultLocation.config.ps1
     Import-DscResource -ModuleName 'SqlServerDsc'
-=======
-    Import-DscResource -ModuleName 'SqlServerDSC'
->>>>>>> first pass at complete rename:Tests/Integration/MSFT_SqlDatabaseDefaultLocation.config.ps1
 
     node localhost {
         File 'SQLLogPath'
@@ -110,11 +106,7 @@ Configuration MSFT_SqlDatabaseDefaultLocation_Backup_Config
     )
 
     Import-DscResource -ModuleName 'PSDesiredStateConfiguration'
-<<<<<<< HEAD:Tests/Integration/MSFT_SqlDatabaseDefaultLocation.config.ps1
     Import-DscResource -ModuleName 'SqlServerDsc'
-=======
-    Import-DscResource -ModuleName 'SqlServerDSC'
->>>>>>> first pass at complete rename:Tests/Integration/MSFT_SqlDatabaseDefaultLocation.config.ps1
 
     node localhost {
         File 'SQLBackupPath'
