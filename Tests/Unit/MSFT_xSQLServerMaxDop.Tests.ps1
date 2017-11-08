@@ -303,7 +303,7 @@ try
                 }
             }
 
-            Context 'When the system is not in the desired state and Ensure is set to absent and ProcessOnlyOnActiveNode is set to true' {
+            Context 'When the ProcessOnlyOnActiveNode parameter is passed' {
                 AfterAll {
                     $mockProcessOnlyOnActiveNode = $true
                 }
@@ -318,7 +318,7 @@ try
                     $mockProcessOnlyOnActiveNode = $false
                 }
 
-                It 'Should return the state as true' {
+                It 'Should return $true when ProcessOnlyOnActiveNode is "$true" and the current node is not actively hosting the instance' {
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
                 }
