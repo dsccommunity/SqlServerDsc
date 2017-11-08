@@ -100,6 +100,7 @@ try
 
         Describe "MSFT_xSQLServerMaxDop\Get-TargetResource" -Tag 'Get'{
             Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+            Mock -CommandName Test-ActiveNode -MockWith { return $mockProcessOnlyOnActiveNode } -Verifiable
 
             Context 'When the system is either in the desired state or not in the desired state' {
                 $testParameters = $mockDefaultParameters
@@ -117,6 +118,10 @@ try
 
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+
+                It 'Should call the mock function Test-ActiveNode' {
+                    Assert-MockCalled Test-ActiveNode -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -298,6 +303,31 @@ try
                 }
             }
 
+            Context 'When the system is not in the desired state and Ensure is set to absent and ProcessOnlyOnActiveNode is set to true' {
+                AfterAll {
+                    $mockProcessOnlyOnActiveNode = $true
+                }
+
+                BeforeAll {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Ensure = 'Absent'
+                        ProcessOnlyOnActiveNode = $true
+                    }
+
+                    $mockProcessOnlyOnActiveNode = $false
+                }
+
+                It 'Should return the state as true' {
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $true
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
             $mockMaxDegreeOfParallelism = 0
 
             Context 'When the system is in the desired state and Ensure is set to absent' {
@@ -342,45 +372,6 @@ try
 
                 It 'Should not throw an error' {
                     { Test-TargetResource @testParameters } | Should -Not -Throw
-                }
-            }
-
-            Context 'When the ProcessOnlyOnActiveNode parameter is passed' {
-                AfterAll {
-                    $mockProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNodeOriginal
-                }
-
-                BeforeAll {
-                    $mockProcessOnlyOnActiveNodeOriginal = $mockProcessOnlyOnActiveNode
-                    $mockProcessOnlyOnActiveNode = $false
-                }
-
-                It 'Should be "true" when ProcessOnlyOnActiveNode is <mockProcessOnlyOnActiveNode>.' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        Ensure = 'Absent'
-                        ProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNode
-                    }
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-                }
-
-                It 'Should be "true" when ProcessOnlyOnActiveNode is <mockProcessOnlyOnActiveNodeOriginal>.' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        Ensure = 'Absent'
-                        ProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNodeOriginal
-                    }
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
                 }
             }
 
