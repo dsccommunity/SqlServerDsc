@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 9.0.0.0
+
 - Changes to xSQLServer
   - Updated Pester syntax to v4
   - Fixes broken links to issues in the CHANGELOG.md.
