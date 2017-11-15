@@ -15,7 +15,7 @@ Describe 'CommonResourceHelper Unit Tests' {
             }
 
             $mockImportLocalizedData = {
-                $BaseDirectory | Should Be $mockExpectedLanguagePath
+                $BaseDirectory | Should -Be $mockExpectedLanguagePath
             }
 
             BeforeEach {
@@ -32,7 +32,7 @@ Describe 'CommonResourceHelper Unit Tests' {
                         return 'sv-SE'
                     } -Verifiable
 
-                    { Get-LocalizedData -ResourceName 'DummyResource' } | Should Not Throw
+                    { Get-LocalizedData -ResourceName 'DummyResource' } | Should -Not -Throw
 
                     Assert-MockCalled -CommandName Join-Path -Exactly -Times 2 -Scope It
                     Assert-MockCalled -CommandName Test-Path -Exactly -Times 1 -Scope It
@@ -47,7 +47,7 @@ Describe 'CommonResourceHelper Unit Tests' {
                         return $ChildPath
                     } -Verifiable
 
-                    { Get-LocalizedData -ResourceName 'DummyResource' } | Should Not Throw
+                    { Get-LocalizedData -ResourceName 'DummyResource' } | Should -Not -Throw
 
                     Assert-MockCalled -CommandName Join-Path -Exactly -Times 3 -Scope It
                     Assert-MockCalled -CommandName Test-Path -Exactly -Times 1 -Scope It
@@ -63,7 +63,7 @@ Describe 'CommonResourceHelper Unit Tests' {
                             return 'sv-SE'
                         } -Verifiable
 
-                        { Get-LocalizedData -ResourceName 'DummyResource' -ScriptRoot '.' } | Should Not Throw
+                        { Get-LocalizedData -ResourceName 'DummyResource' -ScriptRoot '.' } | Should -Not -Throw
 
                         Assert-MockCalled -CommandName Join-Path -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Test-Path -Exactly -Times 1 -Scope It
@@ -78,7 +78,7 @@ Describe 'CommonResourceHelper Unit Tests' {
                             return $ChildPath
                         } -Verifiable
 
-                        { Get-LocalizedData -ResourceName 'DummyResource' -ScriptRoot '.' } | Should Not Throw
+                        { Get-LocalizedData -ResourceName 'DummyResource' -ScriptRoot '.' } | Should -Not -Throw
 
                         Assert-MockCalled -CommandName Join-Path -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Test-Path -Exactly -Times 1 -Scope It
@@ -96,7 +96,7 @@ Describe 'CommonResourceHelper Unit Tests' {
                 $mockTestPathReturnValue = $true
 
                 It 'Should call Import-LocalizedData with en-US language' {
-                    { Get-LocalizedData -ResourceName 'DummyResource' } | Should Not Throw
+                    { Get-LocalizedData -ResourceName 'DummyResource' } | Should -Not -Throw
                 }
             }
 
@@ -108,7 +108,7 @@ Describe 'CommonResourceHelper Unit Tests' {
                 It 'Should throw the correct error' {
                     $mockErrorMessage = 'Mocked error'
 
-                    { New-InvalidResultException -Message $mockErrorMessage } | Should Throw $mockErrorMessage
+                    { New-InvalidResultException -Message $mockErrorMessage } | Should -Throw $mockErrorMessage
                 }
             }
 
@@ -120,7 +120,7 @@ Describe 'CommonResourceHelper Unit Tests' {
                     $mockException = New-Object System.Exception $mockExceptionErrorMessage
                     $mockErrorRecord = New-Object System.Management.Automation.ErrorRecord $mockException, $null, 'InvalidResult', $null
 
-                    { New-InvalidResultException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should Throw ('System.Exception: {0} ---> System.Exception: {1}' -f $mockErrorMessage, $mockExceptionErrorMessage)
+                    { New-InvalidResultException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should -Throw ('System.Exception: {0} ---> System.Exception: {1}' -f $mockErrorMessage, $mockExceptionErrorMessage)
                 }
             }
 
@@ -132,7 +132,7 @@ Describe 'CommonResourceHelper Unit Tests' {
                 It 'Should throw the correct error' {
                     $mockErrorMessage = 'Mocked error'
 
-                    { New-ObjectNotFoundException -Message $mockErrorMessage } | Should Throw $mockErrorMessage
+                    { New-ObjectNotFoundException -Message $mockErrorMessage } | Should -Throw $mockErrorMessage
                 }
             }
 
@@ -144,7 +144,7 @@ Describe 'CommonResourceHelper Unit Tests' {
                     $mockException = New-Object System.Exception $mockExceptionErrorMessage
                     $mockErrorRecord = New-Object System.Management.Automation.ErrorRecord $mockException, $null, 'InvalidResult', $null
 
-                    { New-ObjectNotFoundException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should Throw ('System.Exception: {0} ---> System.Exception: {1}' -f $mockErrorMessage, $mockExceptionErrorMessage)
+                    { New-ObjectNotFoundException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should -Throw ('System.Exception: {0} ---> System.Exception: {1}' -f $mockErrorMessage, $mockExceptionErrorMessage)
                 }
             }
 
@@ -156,7 +156,7 @@ Describe 'CommonResourceHelper Unit Tests' {
                 It 'Should throw the correct error' {
                     $mockErrorMessage = 'Mocked error'
 
-                    { New-InvalidOperationException -Message $mockErrorMessage } | Should Throw $mockErrorMessage
+                    { New-InvalidOperationException -Message $mockErrorMessage } | Should -Throw $mockErrorMessage
                 }
             }
 
@@ -168,7 +168,7 @@ Describe 'CommonResourceHelper Unit Tests' {
                     $mockException = New-Object System.Exception $mockExceptionErrorMessage
                     $mockErrorRecord = New-Object System.Management.Automation.ErrorRecord $mockException, $null, 'InvalidResult', $null
 
-                    { New-InvalidOperationException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should Throw ('System.InvalidOperationException: {0} ---> System.Exception: {1}' -f $mockErrorMessage, $mockExceptionErrorMessage)
+                    { New-InvalidOperationException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should -Throw ('System.InvalidOperationException: {0} ---> System.Exception: {1}' -f $mockErrorMessage, $mockExceptionErrorMessage)
                 }
             }
 
@@ -181,7 +181,7 @@ Describe 'CommonResourceHelper Unit Tests' {
                     $mockErrorMessage = 'Mocked error'
                     $mockArgumentName = 'MockArgument'
 
-                    { New-InvalidArgumentException -Message $mockErrorMessage -ArgumentName $mockArgumentName } | Should Throw ('Parameter name: {0}' -f $mockArgumentName)
+                    { New-InvalidArgumentException -Message $mockErrorMessage -ArgumentName $mockArgumentName } | Should -Throw ('Parameter name: {0}' -f $mockArgumentName)
                 }
             }
 

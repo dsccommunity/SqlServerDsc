@@ -127,7 +127,7 @@ try
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should Not Throw
+            } | Should -Not -Throw
         } -ErrorVariable itBlockError
 
         # Check if previous It-block failed. If so output the SQL Server setup log file.
@@ -158,7 +158,7 @@ try
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not Throw
+            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -170,48 +170,48 @@ try
                 $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Action                     | Should BeNullOrEmpty
-            $resourceCurrentState.AgtSvcAccount              | Should BeNullOrEmpty
-            $resourceCurrentState.AgtSvcAccountUsername      | Should Be ('.\{0}' -f (Split-Path -Path $mockSqlAgentServiceAccountUserName -Leaf))
-            $resourceCurrentState.ASBackupDir                | Should BeNullOrEmpty
-            $resourceCurrentState.ASCollation                | Should BeNullOrEmpty
-            $resourceCurrentState.ASConfigDir                | Should BeNullOrEmpty
-            $resourceCurrentState.ASDataDir                  | Should BeNullOrEmpty
-            $resourceCurrentState.ASLogDir                   | Should BeNullOrEmpty
-            $resourceCurrentState.ASSvcAccount               | Should BeNullOrEmpty
-            $resourceCurrentState.ASSvcAccountUsername       | Should BeNullOrEmpty
-            $resourceCurrentState.ASSysAdminAccounts         | Should BeNullOrEmpty
-            $resourceCurrentState.ASTempDir                  | Should BeNullOrEmpty
-            $resourceCurrentState.BrowserSvcStartupType      | Should BeNullOrEmpty
-            $resourceCurrentState.ErrorReporting             | Should BeNullOrEmpty
-            $resourceCurrentState.FailoverClusterGroupName   | Should BeNullOrEmpty
-            $resourceCurrentState.FailoverClusterIPAddress   | Should BeNullOrEmpty
-            $resourceCurrentState.FailoverClusterNetworkName | Should BeNullOrEmpty
-            $resourceCurrentState.Features                   | Should Be $mockFeatures
-            $resourceCurrentState.ForceReboot                | Should BeNullOrEmpty
-            $resourceCurrentState.FTSvcAccount               | Should BeNullOrEmpty
-            $resourceCurrentState.FTSvcAccountUsername       | Should BeNullOrEmpty
-            $resourceCurrentState.InstallSharedDir           | Should Be $mockInstallSharedDir
-            $resourceCurrentState.InstallSharedWOWDir        | Should Be $mockInstallSharedWOWDir
-            $resourceCurrentState.InstallSQLDataDir          | Should Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockInstanceName\MSSQL")
-            $resourceCurrentState.InstanceDir                | Should Be $mockInstallSharedDir
-            $resourceCurrentState.InstanceID                 | Should Be $mockInstanceName
-            $resourceCurrentState.InstanceName               | Should Be $mockInstanceName
-            $resourceCurrentState.ISSvcAccount               | Should BeNullOrEmpty
-            $resourceCurrentState.ISSvcAccountUsername       | Should BeNullOrEmpty
-            $resourceCurrentState.ProductKey                 | Should BeNullOrEmpty
-            $resourceCurrentState.RSSvcAccount               | Should BeNullOrEmpty
-            $resourceCurrentState.RSSvcAccountUsername       | Should BeNullOrEmpty
-            $resourceCurrentState.SAPwd                      | Should BeNullOrEmpty
-            $resourceCurrentState.SecurityMode               | Should Be 'Windows'
-            $resourceCurrentState.SetupProcessTimeout        | Should BeNullOrEmpty
-            $resourceCurrentState.SourceCredential           | Should BeNullOrEmpty
-            $resourceCurrentState.SourcePath                 | Should Be "$($mockIsoMediaDriveLetter):\"
-            $resourceCurrentState.SQLBackupDir               | Should Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockInstanceName\MSSQL\Backup")
-            $resourceCurrentState.SQLCollation               | Should Be $mockSqlCollation
-            $resourceCurrentState.SQLSvcAccount              | Should BeNullOrEmpty
-            $resourceCurrentState.SQLSvcAccountUsername      | Should Be ('.\{0}' -f (Split-Path -Path $mockSqlServiceAccountUserName -Leaf))
-            $resourceCurrentState.SQLSysAdminAccounts        | Should Be @(
+            $resourceCurrentState.Action                     | Should -BeNullOrEmpty
+            $resourceCurrentState.AgtSvcAccount              | Should -BeNullOrEmpty
+            $resourceCurrentState.AgtSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlAgentServiceAccountUserName -Leaf))
+            $resourceCurrentState.ASBackupDir                | Should -BeNullOrEmpty
+            $resourceCurrentState.ASCollation                | Should -BeNullOrEmpty
+            $resourceCurrentState.ASConfigDir                | Should -BeNullOrEmpty
+            $resourceCurrentState.ASDataDir                  | Should -BeNullOrEmpty
+            $resourceCurrentState.ASLogDir                   | Should -BeNullOrEmpty
+            $resourceCurrentState.ASSvcAccount               | Should -BeNullOrEmpty
+            $resourceCurrentState.ASSvcAccountUsername       | Should -BeNullOrEmpty
+            $resourceCurrentState.ASSysAdminAccounts         | Should -BeNullOrEmpty
+            $resourceCurrentState.ASTempDir                  | Should -BeNullOrEmpty
+            $resourceCurrentState.BrowserSvcStartupType      | Should -BeNullOrEmpty
+            $resourceCurrentState.ErrorReporting             | Should -BeNullOrEmpty
+            $resourceCurrentState.FailoverClusterGroupName   | Should -BeNullOrEmpty
+            $resourceCurrentState.FailoverClusterIPAddress   | Should -BeNullOrEmpty
+            $resourceCurrentState.FailoverClusterNetworkName | Should -BeNullOrEmpty
+            $resourceCurrentState.Features                   | Should -Be $mockFeatures
+            $resourceCurrentState.ForceReboot                | Should -BeNullOrEmpty
+            $resourceCurrentState.FTSvcAccount               | Should -BeNullOrEmpty
+            $resourceCurrentState.FTSvcAccountUsername       | Should -BeNullOrEmpty
+            $resourceCurrentState.InstallSharedDir           | Should -Be $mockInstallSharedDir
+            $resourceCurrentState.InstallSharedWOWDir        | Should -Be $mockInstallSharedWOWDir
+            $resourceCurrentState.InstallSQLDataDir          | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockInstanceName\MSSQL")
+            $resourceCurrentState.InstanceDir                | Should -Be $mockInstallSharedDir
+            $resourceCurrentState.InstanceID                 | Should -Be $mockInstanceName
+            $resourceCurrentState.InstanceName               | Should -Be $mockInstanceName
+            $resourceCurrentState.ISSvcAccount               | Should -BeNullOrEmpty
+            $resourceCurrentState.ISSvcAccountUsername       | Should -BeNullOrEmpty
+            $resourceCurrentState.ProductKey                 | Should -BeNullOrEmpty
+            $resourceCurrentState.RSSvcAccount               | Should -BeNullOrEmpty
+            $resourceCurrentState.RSSvcAccountUsername       | Should -BeNullOrEmpty
+            $resourceCurrentState.SAPwd                      | Should -BeNullOrEmpty
+            $resourceCurrentState.SecurityMode               | Should -Be 'Windows'
+            $resourceCurrentState.SetupProcessTimeout        | Should -BeNullOrEmpty
+            $resourceCurrentState.SourceCredential           | Should -BeNullOrEmpty
+            $resourceCurrentState.SourcePath                 | Should -Be "$($mockIsoMediaDriveLetter):\"
+            $resourceCurrentState.SQLBackupDir               | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockInstanceName\MSSQL\Backup")
+            $resourceCurrentState.SQLCollation               | Should -Be $mockSqlCollation
+            $resourceCurrentState.SQLSvcAccount              | Should -BeNullOrEmpty
+            $resourceCurrentState.SQLSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlServiceAccountUserName -Leaf))
+            $resourceCurrentState.SQLSysAdminAccounts        | Should -Be @(
                 $mockSqlAdminAccountUserName,
                 $mockSqlInstallAccountUserName,
                 "NT SERVICE\MSSQL`$$mockInstanceName",
@@ -220,14 +220,14 @@ try
                 'NT SERVICE\Winmgmt',
                 'sa'
             )
-            $resourceCurrentState.SQLTempDBDir               | Should BeNullOrEmpty
-            $resourceCurrentState.SQLTempDBLogDir            | Should BeNullOrEmpty
-            $resourceCurrentState.SQLUserDBDir               | Should Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockInstanceName\MSSQL\DATA\")
-            $resourceCurrentState.SQLUserDBLogDir            | Should Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockInstanceName\MSSQL\DATA\")
-            $resourceCurrentState.SQMReporting               | Should BeNullOrEmpty
-            $resourceCurrentState.SuppressReboot             | Should BeNullOrEmpty
-            $resourceCurrentState.UpdateEnabled              | Should BeNullOrEmpty
-            $resourceCurrentState.UpdateSource               | Should BeNullOrEmpty
+            $resourceCurrentState.SQLTempDBDir               | Should -BeNullOrEmpty
+            $resourceCurrentState.SQLTempDBLogDir            | Should -BeNullOrEmpty
+            $resourceCurrentState.SQLUserDBDir               | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockInstanceName\MSSQL\DATA\")
+            $resourceCurrentState.SQLUserDBLogDir            | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockInstanceName\MSSQL\DATA\")
+            $resourceCurrentState.SQMReporting               | Should -BeNullOrEmpty
+            $resourceCurrentState.SuppressReboot             | Should -BeNullOrEmpty
+            $resourceCurrentState.UpdateEnabled              | Should -BeNullOrEmpty
+            $resourceCurrentState.UpdateSource               | Should -BeNullOrEmpty
 
         }
     }

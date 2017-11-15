@@ -93,7 +93,7 @@ try
 
         Describe 'MSFT_xSQLServerEndpointPermission\Get-TargetResource' -Tag 'Get' {
             BeforeEach {
-                $testParameters = $defaultParameters
+                $testParameters = $defaultParameters.Clone()
 
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
             }
@@ -103,20 +103,20 @@ try
             Context 'When the system is not in the desired state' {
                 It 'Should return the desired state as absent' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.NodeName | Should Be $testParameters.NodeName
-                    $result.InstanceName | Should Be $testParameters.InstanceName
-                    $result.Name | Should Be $testParameters.Name
-                    $result.Principal | Should Be $testParameters.Principal
+                    $result.NodeName | Should -Be $testParameters.NodeName
+                    $result.InstanceName | Should -Be $testParameters.InstanceName
+                    $result.Name | Should -Be $testParameters.Name
+                    $result.Principal | Should -Be $testParameters.Principal
                 }
 
                 It 'Should not return any permissions' {
                     $result = Get-TargetResource @testParameters
-                    $result.Permission | Should Be ''
+                    $result.Permission | Should -Be ''
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -128,7 +128,7 @@ try
 
                 Context 'When endpoint is missing' {
                     It 'Should throw the correct error message' {
-                        { Get-TargetResource @testParameters } | Should Throw 'Got unexpected result from Get-TargetResource. No change is made. InnerException: Endpoint 'DefaultEndpointMirror' does not exist'
+                        { Get-TargetResource @testParameters } | Should -Throw 'Got unexpected result from Get-TargetResource. No change is made. InnerException: Endpoint ''DefaultEndpointMirror'' does not exist'
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -142,20 +142,20 @@ try
             Context 'When the system is in the desired state' {
                 It 'Should return the desired state as present' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Present'
+                    $result.Ensure | Should -Be 'Present'
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.NodeName | Should Be $testParameters.NodeName
-                    $result.InstanceName | Should Be $testParameters.InstanceName
-                    $result.Name | Should Be $testParameters.Name
-                    $result.Principal | Should Be $testParameters.Principal
+                    $result.NodeName | Should -Be $testParameters.NodeName
+                    $result.InstanceName | Should -Be $testParameters.InstanceName
+                    $result.Name | Should -Be $testParameters.Name
+                    $result.Principal | Should -Be $testParameters.Principal
                 }
 
                 It 'Should return the permissions passed as parameter' {
                     $result = Get-TargetResource @testParameters
-                    $result.Permission | Should Be 'CONNECT'
+                    $result.Permission | Should -Be 'CONNECT'
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -169,7 +169,7 @@ try
 
         Describe 'MSFT_xSQLServerEndpointPermission\Test-TargetResource' -Tag 'Test' {
             BeforeEach {
-                $testParameters = $defaultParameters
+                $testParameters = $defaultParameters.Clone()
 
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
             }
@@ -178,13 +178,11 @@ try
                 $mockDynamicPrincipal = $mockOtherPrincipal
 
                 It 'Should return that desired state is absent when wanted desired state is to be Present' {
-                    $testParameters += @{
-                        Ensure = 'Present'
-                        Permission = 'CONNECT'
-                    }
+                    $testParameters['Ensure'] = 'Present'
+                    $testParameters['Permission'] = 'CONNECT'
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -192,13 +190,11 @@ try
                 $mockDynamicPrincipal = $mockPrincipal
 
                 It 'Should return that desired state is absent when wanted desired state is to be Absent' {
-                    $testParameters += @{
-                        Ensure = 'Absent'
-                        Permission = 'CONNECT'
-                    }
+                    $testParameters['Ensure'] = 'Absent'
+                    $testParameters['Permission'] = 'CONNECT'
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -208,13 +204,11 @@ try
                 $mockDynamicPrincipal = $mockPrincipal
 
                 It 'Should return that desired state is present when wanted desired state is to be Present' {
-                    $testParameters += @{
-                        Ensure = 'Present'
-                        Permission = 'CONNECT'
-                    }
+                    $testParameters['Ensure'] = 'Present'
+                    $testParameters['Permission'] = 'CONNECT'
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -222,13 +216,11 @@ try
                 $mockDynamicPrincipal = $mockOtherPrincipal
 
                 It 'Should return that desired state is present when wanted desired state is to be Absent' {
-                    $testParameters += @{
-                        Ensure = 'Absent'
-                        Permission = 'CONNECT'
-                    }
+                    $testParameters['Ensure'] = 'Absent'
+                    $testParameters['Permission'] = 'CONNECT'
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -239,7 +231,7 @@ try
 
         Describe 'MSFT_xSQLServerEndpointPermission\Set-TargetResource' -Tag 'Set' {
             BeforeEach {
-                $testParameters = $defaultParameters
+                $testParameters = $defaultParameters.Clone()
 
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
             }
@@ -250,14 +242,12 @@ try
                 $script:mockMethodRevokeRan = $false
 
                 It 'Should call the the method Grant when desired state is to be Present' {
-                    $testParameters += @{
-                        Ensure = 'Present'
-                        Permission = 'CONNECT'
-                    }
+                    $testParameters['Ensure'] = 'Present'
+                    $testParameters['Permission'] = 'CONNECT'
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
-                    $script:mockMethodGrantRan | Should Be $true
-                    $script:mockMethodRevokeRan | Should Be $false
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodGrantRan | Should -Be $true
+                    $script:mockMethodRevokeRan | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
                 }
@@ -267,14 +257,12 @@ try
                 $script:mockMethodRevokeRan = $false
 
                 It 'Should call the the method Revoke when desired state is to be Absent' {
-                    $testParameters += @{
-                        Ensure = 'Absent'
-                        Permission = 'CONNECT'
-                    }
+                    $testParameters['Ensure'] = 'Absent'
+                    $testParameters['Permission'] = 'CONNECT'
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
-                    $script:mockMethodGrantRan | Should Be $false
-                    $script:mockMethodRevokeRan | Should Be $true
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodGrantRan | Should -Be $false
+                    $script:mockMethodRevokeRan | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
                 }
@@ -289,7 +277,7 @@ try
                             }
                         } -Verifiable
 
-                        { Set-TargetResource @testParameters } | Should Throw 'Endpoint 'DefaultEndpointMirror' does not exist'
+                        { Set-TargetResource @testParameters } | Should -Throw 'Endpoint ''DefaultEndpointMirror'' does not exist'
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -304,14 +292,12 @@ try
                 $script:mockMethodRevokeRan = $false
 
                 It 'Should not call Grant() or Revoke() method when desired state is already Present' {
-                    $testParameters += @{
-                        Ensure = 'Present'
-                        Permission = 'CONNECT'
-                    }
+                    $testParameters['Ensure'] = 'Present'
+                    $testParameters['Permission'] = 'CONNECT'
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
-                    $script:mockMethodGrantRan | Should Be $false
-                    $script:mockMethodRevokeRan | Should Be $false
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodGrantRan | Should -Be $false
+                    $script:mockMethodRevokeRan | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -321,14 +307,12 @@ try
                 $script:mockMethodRevokeRan = $false
 
                 It 'Should not call Grant() or Revoke() method when desired state is already Absent' {
-                    $testParameters += @{
-                        Ensure = 'Absent'
-                        Permission = 'CONNECT'
-                    }
+                    $testParameters['Ensure'] = 'Absent'
+                    $testParameters['Permission'] = 'CONNECT'
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
-                    $script:mockMethodGrantRan | Should Be $false
-                    $script:mockMethodRevokeRan | Should Be $false
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodGrantRan | Should -Be $false
+                    $script:mockMethodRevokeRan | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }

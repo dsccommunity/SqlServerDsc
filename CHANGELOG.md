@@ -2,6 +2,68 @@
 
 ## Unreleased
 
+## 9.0.0.0
+
+- Changes to xSQLServer
+  - Updated Pester syntax to v4
+  - Fixes broken links to issues in the CHANGELOG.md.
+- Changes to xSQLServerDatabase
+  - Added parameter to specify collation for a database to be different from server
+    collation ([issue #767](https://github.com/PowerShell/xSQLServer/issues/767)).
+  - Fixed unit tests for Get-TargetResource to ensure correctly testing return
+    values ([issue #849](https://github.com/PowerShell/xSQLServer/issues/849))
+- Changes to xSQLServerAlwaysOnAvailabilityGroup
+  - Refactored the unit tests to allow them to be more user friendly and to test
+    additional SQLServer variations.
+    - Each test will utilize the Import-SQLModuleStub to ensure the correct
+      module is loaded ([issue #784](https://github.com/PowerShell/xSQLServer/issues/784)).
+  - Fixed an issue when setting the SQLServer parameter to a Fully Qualified
+    Domain Name (FQDN) ([issue #468](https://github.com/PowerShell/xSQLServer/issues/468)).
+  - Fixed the logic so that if a parameter is not supplied to the resource, the
+    resource will not attempt to apply the defaults on subsequent checks
+    ([issue #517](https://github.com/PowerShell/xSQLServer/issues/517)).
+  - Made the resource cluster aware. When ProcessOnlyOnActiveNode is specified,
+    the resource will only determine if a change is needed if the target node
+    is the active host of the SQL Server instance ([issue #868](https://github.com/PowerShell/xSQLServer/issues/868)).
+- Changes to xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
+  - Made the resource cluster aware. When ProcessOnlyOnActiveNode is specified,
+    the resource will only determine if a change is needed if the target node
+    is the active host of the SQL Server instance ([issue #869](https://github.com/PowerShell/xSQLServer/issues/869)).
+- Changes to xSQLServerAlwaysOnAvailabilityGroupReplica
+  - Made the resource cluster aware. When ProcessOnlyOnActiveNode is specified,
+    the resource will only determine if a change is needed if the target node is
+    the active host of the SQL Server instance ([issue #870](https://github.com/PowerShell/xSQLServer/issues/870)).
+- Added the CommonTestHelper.psm1 to store common testing functions.
+  - Added the Import-SQLModuleStub function to ensure the correct version of the
+    module stubs are loaded ([issue #784](https://github.com/PowerShell/xSQLServer/issues/784)).
+- Changes to xSQLServerMemory
+  - Made the resource cluster aware. When ProcessOnlyOnActiveNode is specified,
+    the resource will only determine if a change is needed if the target node
+    is the active host of the SQL Server instance ([issue #867](https://github.com/PowerShell/xSQLServer/issues/867)).
+- Changes to xSQLServerNetwork
+  - BREAKING CHANGE: Renamed parameter TcpDynamicPorts to TcpDynamicPort and
+    changed type to Boolean ([issue #534](https://github.com/PowerShell/xSQLServer/issues/534)).
+  - Resolved issue when switching from dynamic to static port.
+    configuration ([issue #534](https://github.com/PowerShell/xSQLServer/issues/534)).
+  - Added localization (en-US) for all strings in resource and unit tests
+    ([issue #618](https://github.com/PowerShell/xSQLServer/issues/618)).
+  - Updated examples to reflect new parameters.
+- Changes to xSQLServerRSConfig
+  - Added examples
+- Added resource
+  - xSQLServerDatabaseDefaultLocation
+    ([issue #656](https://github.com/PowerShell/xSQLServer/issues/656))
+- Changes to xSQLServerEndpointPermission
+  - Fixed a problem when running the tests locally in a PowerShell console it
+    would ask for parameters ([issue #897](https://github.com/PowerShell/xSQLServer/issues/897)).
+- Changes to xSQLServerAvailabilityGroupListener
+  - Fixed a problem when running the tests locally in a PowerShell console it
+    would ask for parameters ([issue #897](https://github.com/PowerShell/xSQLServer/issues/897)).
+- Changes to xSQLServerMaxDop
+  - Made the resource cluster aware. When ProcessOnlyOnActiveNode is specified,
+    the resource will only determine if a change is needed if the target node
+    is the active host of the SQL Server instance ([issue #882](https://github.com/PowerShell/xSQLServer/issues/882)).
+
 ## 8.2.0.0
 
 - Changes to xSQLServer
@@ -9,17 +71,17 @@
     the SQLPS module folders are renamed to not disturb the units test, but
     can be renamed back by the integration tests xSQLServerSetup so that the
     integration tests can run successfully
-    ([issue #774](https://github.com/PowerShell/xFailOverCluster/issues/774)).
+    ([issue #774](https://github.com/PowerShell/xSQLServer/issues/774)).
   - Changed so the maximum version to be installed is 4.0.6.0, when running unit
     tests in AppVeyor. Quick fix until we can resolve the unit tests (see
-    [issue #807](https://github.com/PowerShell/xFailOverCluster/issues/807)).
+    [issue #807](https://github.com/PowerShell/xSQLServer/issues/807)).
   - Moved the code block, that contains workarounds in appveyor.yml, so it is run
     during the install phase instead of the test phase.
-  - Fix problem with tests breaking with Pester 4.0.7 ([issue #807](https://github.com/PowerShell/xFailOverCluster/issues/807)).
+  - Fix problem with tests breaking with Pester 4.0.7 ([issue #807](https://github.com/PowerShell/xSQLServer/issues/807)).
 - Changes to xSQLServerHelper
   - Changes to Connect-SQL and Import-SQLPSModule
     - Now it correctly loads the correct assemblies when SqlServer module is
-      present ([issue #649](https://github.com/PowerShell/xFailOverCluster/issues/649)).
+      present ([issue #649](https://github.com/PowerShell/xSQLServer/issues/649)).
     - Now SQLPS module will be correctly loaded (discovered) after installation
       of SQL Server. Previously resources depending on SQLPS module could fail
       because SQLPS was not found after installation because the PSModulePath
@@ -31,9 +93,9 @@
     ([issue #720](https://github.com/PowerShell/xSQLServer/issues/720)).
   - Fixed so that the integration test renames back the SQLPS module folders if
     they was renamed by AppVeyor (in the appveyor.yml file)
-    ([issue #774](https://github.com/PowerShell/xFailOverCluster/issues/774)).
+    ([issue #774](https://github.com/PowerShell/xSQLServer/issues/774)).
   - Fixed so integration test does not write warnings when SQLPS module is loaded
-    ([issue #798](https://github.com/PowerShell/xFailOverCluster/issues/798)).
+    ([issue #798](https://github.com/PowerShell/xSQLServer/issues/798)).
   - Changes to integration tests.
     - Moved the configuration block from the MSFT\_xSQLServerSetup.Integration.Tests.ps1
       to the MSFT\_xSQLServerSetup.config.ps1 to align with the other integration
@@ -46,7 +108,7 @@
     - Changed so that only one of the Modules-folder for the SQLPS PowerShell module
       for SQL Server 2016 is renamed back so it can be used with the integration
       tests. There was an issue when more than one SQLPS module was present (see
-      more information in [issue #806](https://github.com/PowerShell/xFailOverCluster/issues/806)).
+      more information in [issue #806](https://github.com/PowerShell/xSQLServer/issues/806)).
     - Fixed wrong variable name for SQL service credential. It was using the
       integration test variable name instead of the parameter name.
     - Added ErrorAction 'Stop' to the cmdlet Start-DscConfiguration
@@ -62,12 +124,12 @@
     Group is created.
   - Use the new helper function "Test-ClusterPermissions".
   - Refactored the unit tests to allow them to be more user friendly.
-    Added the following read-only properties to the schema ([issue #476](https://github.com/PowerShell/xSQLServer/issues/476))
+  - Added the following read-only properties to the schema ([issue #476](https://github.com/PowerShell/xSQLServer/issues/476))
     - EndpointPort
     - EndpointURL
     - SQLServerNetName
     - Version
-  - Use the Get-PrimaryReplicaServerObject helper function
+  - Use the Get-PrimaryReplicaServerObject helper function.
 - Changes to xSQLServerAlwaysOnAvailabilityGroupReplica
   - Fixed the formatting for the AvailabilityGroupNotFound error.
   - Added the following read-only properties to the schema ([issue #477](https://github.com/PowerShell/xSQLServer/issues/477))
@@ -111,6 +173,9 @@
   - Added integration test ([issue #753](https://github.com/PowerShell/xSQLServer/issues/753)).
   - Added support for configuring URL reservations and virtual directory names
     ([issue #570](https://github.com/PowerShell/xSQLServer/issues/570))
+- Added resource
+  - xSQLServerDatabaseDefaultLocation
+    ([issue #656](https://github.com/PowerShell/xSQLServer/issues/656))
 
 ## 8.1.0.0
 
@@ -123,14 +188,14 @@
   - Minor style changes to the unit tests for CommonResourceHelper.
   - Changes to xSQLServerHelper
     - Added Swedish localization ([issue #695](https://github.com/PowerShell/xSQLServer/issues/695)).
-  - Opt-in for module files common tests ([issue #702](https://github.com/PowerShell/xFailOverCluster/issues/702)).
+  - Opt-in for module files common tests ([issue #702](https://github.com/PowerShell/xSQLServer/issues/702)).
     - Removed Byte Order Mark (BOM) from the files; CommonResourceHelper.psm1,
       MSFT\_xSQLServerAvailabilityGroupListener.psm1, MSFT\_xSQLServerConfiguration.psm1,
       MSFT\_xSQLServerEndpointPermission.psm1, MSFT\_xSQLServerEndpointState.psm1,
       MSFT\_xSQLServerNetwork.psm1, MSFT\_xSQLServerPermission.psm1,
       MSFT\_xSQLServerReplication.psm1, MSFT\_xSQLServerScript.psm1,
       SQLPSStub.psm1, SQLServerStub.psm1.
-  - Opt-in for script files common tests ([issue #707](https://github.com/PowerShell/xFailOverCluster/issues/707)).
+  - Opt-in for script files common tests ([issue #707](https://github.com/PowerShell/xSQLServer/issues/707)).
     - Removed Byte Order Mark (BOM) from the files; DSCClusterSqlBuild.ps1,
       DSCFCISqlBuild.ps1, DSCSqlBuild.ps1, DSCSQLBuildEncrypted.ps1,
       SQLPush_SingleServer.ps1, 1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1,
@@ -149,10 +214,10 @@
       1-AddServerPermissionForLogin.ps1, 2-RemoveServerPermissionForLogin.ps1,
       1-ConfigureInstanceAsDistributor.ps1, 2-ConfigureInstanceAsPublisher.ps1,
       1-WaitForASingleClusterGroup.ps1, 2-WaitForMultipleClusterGroups.ps1.
-  - Updated year to 2017 in license file ([issue #711](https://github.com/PowerShell/xFailOverCluster/issues/711)).
+  - Updated year to 2017 in license file ([issue #711](https://github.com/PowerShell/xSQLServer/issues/711)).
   - Code style clean-up throughout the module to align against the Style Guideline.
   - Fixed typos and the use of wrong parameters in unit tests which was found
-    after release of new version of Pester ([issue #773](https://github.com/PowerShell/xFailOverCluster/issues/773)).
+    after release of new version of Pester ([issue #773](https://github.com/PowerShell/xSQLServer/issues/773)).
 - Changes to xSQLServerAlwaysOnService
   - Added resource description in README.md.
   - Updated parameters descriptions in comment-based help, schema.mof and README.md.
@@ -167,7 +232,7 @@
     - 2-DisableAlwaysOn.ps1
   - Fixed PS Script Analyzer errors ([issue #724](https://github.com/PowerShell/xSQLServer/issues/724))
   - Casting the result of the property IsHadrEnabled to [System.Boolean] so that
-    $null is never returned, which resulted in an exception ([issue #763](https://github.com/PowerShell/xFailOverCluster/issues/763)).
+    $null is never returned, which resulted in an exception ([issue #763](https://github.com/PowerShell/xSQLServer/issues/763)).
 - Changes to xSQLServerDatabasePermission
   - Fixed PS Script Analyzer errors ([issue #725](https://github.com/PowerShell/xSQLServer/issues/725))
 - Changes to xSQLServerScript

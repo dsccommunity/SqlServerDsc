@@ -60,7 +60,7 @@ Describe 'xSQLServer module common tests' {
                         {
                             throw "The example '$exampleDescriptiveName' does not contain a function 'Example'."
                         }
-                    } | Should Not Throw
+                    } | Should -Not -Throw
                 }
         }
 

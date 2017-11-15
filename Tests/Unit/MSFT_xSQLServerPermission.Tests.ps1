@@ -72,19 +72,19 @@ try
 
                     It 'Should return the desired state as absent' {
                         $result = Get-TargetResource @testParameters
-                        $result.Ensure | Should Be 'Absent'
+                        $result.Ensure | Should -Be 'Absent'
                     }
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.NodeName | Should Be $mockNodeName
-                        $result.InstanceName | Should Be $mockInstanceName
-                        $result.Principal | Should Be $mockPrincipal
+                        $result.NodeName | Should -Be $mockNodeName
+                        $result.InstanceName | Should -Be $mockInstanceName
+                        $result.Principal | Should -Be $mockPrincipal
                     }
 
                     It 'Should not return any permissions' {
                         $result = Get-TargetResource @testParameters
-                        $result.Permission | Should Be ''
+                        $result.Permission | Should -Be ''
                     }
 
                     It 'Should call the mock function Connect-SQL' {
@@ -102,19 +102,19 @@ try
 
                     It 'Should return the desired state as absent' {
                         $result = Get-TargetResource @testParameters
-                        $result.Ensure | Should Be 'Absent'
+                        $result.Ensure | Should -Be 'Absent'
                     }
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.NodeName | Should Be $mockNodeName
-                        $result.InstanceName | Should Be $mockInstanceName
-                        $result.Principal | Should Be $mockPrincipal
+                        $result.NodeName | Should -Be $mockNodeName
+                        $result.InstanceName | Should -Be $mockInstanceName
+                        $result.Principal | Should -Be $mockPrincipal
                     }
 
                     It 'Should not return any permissions' {
                         $result = Get-TargetResource @testParameters
-                        $result.Permission | Should Be @('AlterAnyAvailabilityGroup','ConnectSql', 'ViewServerState')
+                        $result.Permission | Should -Be @('AlterAnyAvailabilityGroup','ConnectSql', 'ViewServerState')
                     }
 
                     It 'Should call the mock function Connect-SQL' {
@@ -129,7 +129,7 @@ try
                             throw 'Mocked error.'
                         }
 
-                        { Get-TargetResource @testParameters } | Should Throw 'Unexpected result when trying to get permissions for ''COMPANY\SqlServiceAcct''. InnerException: Mocked error.'
+                        { Get-TargetResource @testParameters } | Should -Throw 'Unexpected result when trying to get permissions for ''COMPANY\SqlServiceAcct''. InnerException: Mocked error.'
                     }
                 }
             }
@@ -139,14 +139,14 @@ try
 
                 It 'Should return the desired state as present' {
                     $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should Be 'Present'
+                    $result.Ensure | Should -Be 'Present'
                 }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
-                    $result.NodeName | Should Be $mockNodeName
-                    $result.InstanceName | Should Be $mockInstanceName
-                    $result.Principal | Should Be $mockPrincipal
+                    $result.NodeName | Should -Be $mockNodeName
+                    $result.InstanceName | Should -Be $mockInstanceName
+                    $result.Principal | Should -Be $mockPrincipal
                 }
 
                 It 'Should return the permissions passed as parameter' {
@@ -160,7 +160,7 @@ try
                         }
                     }
 
-                    $permissionState | Should Be $true
+                    $permissionState | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -195,7 +195,7 @@ try
                     $testParameters.Add('Ensure', 'Present')
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -207,7 +207,7 @@ try
 
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -220,7 +220,7 @@ try
                     $testParameters.Add('Ensure', 'Present')
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -231,7 +231,7 @@ try
                     $testParameters.Add('Ensure', 'Absent')
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -262,7 +262,7 @@ try
 
                     $testParameters.Add('Ensure', 'Present')
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
                 }
@@ -272,7 +272,7 @@ try
 
                     $testParameters.Add('Ensure', 'Absent')
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
                 }
@@ -284,7 +284,7 @@ try
 
                     $testParameters.Add('Ensure', 'Present')
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -294,7 +294,7 @@ try
 
                     $testParameters.Add('Ensure', 'Absent')
 
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -313,7 +313,7 @@ try
                             return $mockObjectSmoServer
                         } -Verifiable
 
-                        { Set-TargetResource @testParameters } | Should Throw 'Changing permission for principal ''COMPANY\SqlServiceAcct'' failed. InnerException: Exception calling "Grant" with "2" argument(s): "Expected to get granteeName == ''COMPANY\OtherAccount''. But got ''COMPANY\SqlServiceAcct'''
+                        { Set-TargetResource @testParameters } | Should -Throw 'Changing permission for principal ''COMPANY\SqlServiceAcct'' failed. InnerException: Exception calling "Grant" with "2" argument(s): "Expected to get granteeName == ''COMPANY\OtherAccount''. But got ''COMPANY\SqlServiceAcct'''
                     }
                 }
             }

@@ -50,27 +50,34 @@ function Get-TargetResource
     # Get the Availability Group
     $availabilityGroup = $serverObject.AvailabilityGroups[$Name]
 
+    # Is this node actively hosting the SQL instance?
+    $isActiveNode = Test-ActiveNode -ServerObject $serverObject
+
+    # Create the return object. Default ensure to Absent.
+    $alwaysOnAvailabilityGroupResource = @{
+        Name            = $Name
+        SQLServer       = $SQLServer
+        SQLInstanceName = $SQLInstanceName
+        Ensure          = 'Absent'
+        IsActiveNode    = $isActiveNode
+    }
+
     if ( $availabilityGroup )
     {
         # Get all of the properties that can be set using this resource
-        $alwaysOnAvailabilityGroupResource = @{
-            Name                          = $Name
-            SQLServer                     = $SQLServer
-            SQLInstanceName               = $SQLInstanceName
-            Ensure                        = 'Present'
-            AutomatedBackupPreference     = $availabilityGroup.AutomatedBackupPreference
-            AvailabilityMode              = $availabilityGroup.AvailabilityReplicas[$serverObject.Name].AvailabilityMode
-            BackupPriority                = $availabilityGroup.AvailabilityReplicas[$serverObject.Name].BackupPriority
-            ConnectionModeInPrimaryRole   = $availabilityGroup.AvailabilityReplicas[$serverObject.Name].ConnectionModeInPrimaryRole
-            ConnectionModeInSecondaryRole = $availabilityGroup.AvailabilityReplicas[$serverObject.Name].ConnectionModeInSecondaryRole
-            FailureConditionLevel         = $availabilityGroup.FailureConditionLevel
-            FailoverMode                  = $availabilityGroup.AvailabilityReplicas[$serverObject.Name].FailoverMode
-            HealthCheckTimeout            = $availabilityGroup.HealthCheckTimeout
-            EndpointURL                   = $availabilityGroup.AvailabilityReplicas[$serverObject.Name].EndpointUrl
-            EndpointPort                  = $endpointPort
-            SQLServerNetName              = $serverObject.NetName
-            Version                       = $sqlMajorVersion
-        }
+        $alwaysOnAvailabilityGroupResource.Ensure = 'Present'
+        $alwaysOnAvailabilityGroupResource.AutomatedBackupPreference = $availabilityGroup.AutomatedBackupPreference
+        $alwaysOnAvailabilityGroupResource.AvailabilityMode = $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].AvailabilityMode
+        $alwaysOnAvailabilityGroupResource.BackupPriority = $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].BackupPriority
+        $alwaysOnAvailabilityGroupResource.ConnectionModeInPrimaryRole = $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].ConnectionModeInPrimaryRole
+        $alwaysOnAvailabilityGroupResource.ConnectionModeInSecondaryRole = $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].ConnectionModeInSecondaryRole
+        $alwaysOnAvailabilityGroupResource.FailureConditionLevel = $availabilityGroup.FailureConditionLevel
+        $alwaysOnAvailabilityGroupResource.FailoverMode = $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].FailoverMode
+        $alwaysOnAvailabilityGroupResource.HealthCheckTimeout = $availabilityGroup.HealthCheckTimeout
+        $alwaysOnAvailabilityGroupResource.EndpointURL = $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].EndpointUrl
+        $alwaysOnAvailabilityGroupResource.EndpointPort = $endpointPort
+        $alwaysOnAvailabilityGroupResource.SQLServerNetName = $serverObject.NetName
+        $alwaysOnAvailabilityGroupResource.Version = $sqlMajorVersion
 
         # Add properties that are only present in SQL 2016 or newer
         if ( $sqlMajorVersion -ge 13 )
@@ -78,16 +85,6 @@ function Get-TargetResource
             $alwaysOnAvailabilityGroupResource.Add('BasicAvailabilityGroup', $availabilityGroup.BasicAvailabilityGroup)
             $alwaysOnAvailabilityGroupResource.Add('DatabaseHealthTrigger', $availabilityGroup.DatabaseHealthTrigger)
             $alwaysOnAvailabilityGroupResource.Add('DtcSupportEnabled', $availabilityGroup.DtcSupportEnabled)
-        }
-    }
-    else
-    {
-        # Return the minimum amount of properties showing that the Availability Group is absent
-        $alwaysOnAvailabilityGroupResource = @{
-            Name            = $Name
-            SQLServer       = $SQLServer
-            SQLInstanceName = $SQLInstanceName
-            Ensure          = 'Absent'
         }
     }
 
@@ -142,6 +139,10 @@ function Get-TargetResource
 
     .PARAMETER HealthCheckTimeout
         Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. Default is 30,000.
+
+    .PARAMETER ProcessOnlyOnActiveNode
+        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+        Not used in Set-TargetResource.
 #>
 function Set-TargetResource
 {
@@ -224,7 +225,11 @@ function Set-TargetResource
 
         [Parameter()]
         [UInt32]
-        $HealthCheckTimeout = 30000
+        $HealthCheckTimeout = 30000,
+
+        [Parameter()]
+        [Boolean]
+        $ProcessOnlyOnActiveNode
     )
 
     Import-SQLPSModule
@@ -252,7 +257,7 @@ function Set-TargetResource
             if ( $availabilityGroup )
             {
                 # If the primary replica is currently on this instance
-                if ( $availabilityGroup.PrimaryReplicaServerName -eq $serverObject.Name )
+                if ( $availabilityGroup.PrimaryReplicaServerName -eq $serverObject.DomainInstanceName )
                 {
                     try
                     {
@@ -292,7 +297,7 @@ function Set-TargetResource
             {
                 # Set up the parameters to create the AG Replica
                 $newReplicaParams = @{
-                    Name             = $serverObject.Name
+                    Name             = $serverObject.DomainInstanceName
                     Version          = $sqlMajorVersion
                     AsTemplate       = $true
                     AvailabilityMode = $AvailabilityMode
@@ -367,92 +372,95 @@ function Set-TargetResource
             # Otherwise let's check each of the parameters passed and update the Availability Group accordingly
             else
             {
+                # Get the parameters that were submitted to the function
+                [System.Array] $submittedParameters = $PSBoundParameters.Keys
+
                 # Make sure we're communicating with the primary replica
                 $primaryServerObject = Get-PrimaryReplicaServerObject -ServerObject $serverObject -AvailabilityGroup $availabilityGroup
                 $availabilityGroup = $primaryServerObject.AvailabilityGroups[$Name]
 
-                if ( $AutomatedBackupPreference -ne $availabilityGroup.AutomatedBackupPreference )
+                if ( ( $submittedParameters -contains 'AutomatedBackupPreference' ) -and ( $AutomatedBackupPreference -ne $availabilityGroup.AutomatedBackupPreference ) )
                 {
                     $availabilityGroup.AutomatedBackupPreference = $AutomatedBackupPreference
                     Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
                 }
 
-                if ( $AvailabilityMode -ne $availabilityGroup.AvailabilityReplicas[$serverObject.Name].AvailabilityMode )
+                if ( ( $submittedParameters -contains 'AvailabilityMode' ) -and ( $AvailabilityMode -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].AvailabilityMode ) )
                 {
-                    $availabilityGroup.AvailabilityReplicas[$serverObject.Name].AvailabilityMode = $AvailabilityMode
-                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.Name]
+                    $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].AvailabilityMode = $AvailabilityMode
+                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName]
                 }
 
-                if ( $BackupPriority -ne $availabilityGroup.AvailabilityReplicas[$serverObject.Name].BackupPriority )
+                if ( ( $submittedParameters -contains 'BackupPriority' ) -and ( $BackupPriority -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].BackupPriority ) )
                 {
-                    $availabilityGroup.AvailabilityReplicas[$serverObject.Name].BackupPriority = $BackupPriority
-                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.Name]
+                    $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].BackupPriority = $BackupPriority
+                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName]
                 }
 
-                if ( ( $sqlMajorVersion -ge 13 ) -and ( $BasicAvailabilityGroup -ne $availabilityGroup.BasicAvailabilityGroup ) )
+                if ( ( $submittedParameters -contains 'BasicAvailabilityGroup' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $BasicAvailabilityGroup -ne $availabilityGroup.BasicAvailabilityGroup ) )
                 {
                     $availabilityGroup.BasicAvailabilityGroup = $BasicAvailabilityGroup
                     Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
                 }
 
-                if ( ( $sqlMajorVersion -ge 13 ) -and ( $DatabaseHealthTrigger -ne $availabilityGroup.DatabaseHealthTrigger ) )
+                if ( ( $submittedParameters -contains 'DatabaseHealthTrigger' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $DatabaseHealthTrigger -ne $availabilityGroup.DatabaseHealthTrigger ) )
                 {
                     $availabilityGroup.DatabaseHealthTrigger = $DatabaseHealthTrigger
                     Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
                 }
 
                 # Make sure ConnectionModeInPrimaryRole has a value in order to avoid false positive matches when the parameter is not defined
-                if ( ( -not [string]::IsNullOrEmpty($ConnectionModeInPrimaryRole) ) -and ( $ConnectionModeInPrimaryRole -ne $availabilityGroup.AvailabilityReplicas[$serverObject.Name].ConnectionModeInPrimaryRole ) )
+                if ( ( $submittedParameters -contains 'ConnectionModeInPrimaryRole' ) -and ( -not [string]::IsNullOrEmpty($ConnectionModeInPrimaryRole) ) -and ( $ConnectionModeInPrimaryRole -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].ConnectionModeInPrimaryRole ) )
                 {
-                    $availabilityGroup.AvailabilityReplicas[$serverObject.Name].ConnectionModeInPrimaryRole = $ConnectionModeInPrimaryRole
-                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.Name]
+                    $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].ConnectionModeInPrimaryRole = $ConnectionModeInPrimaryRole
+                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName]
                 }
 
                 # Make sure ConnectionModeInSecondaryRole has a value in order to avoid false positive matches when the parameter is not defined
-                if ( ( -not [string]::IsNullOrEmpty($ConnectionModeInSecondaryRole) ) -and ( $ConnectionModeInSecondaryRole -ne $availabilityGroup.AvailabilityReplicas[$serverObject.Name].ConnectionModeInSecondaryRole ) )
+                if ( ( $submittedParameters -contains 'ConnectionModeInSecondaryRole' ) -and ( -not [string]::IsNullOrEmpty($ConnectionModeInSecondaryRole) ) -and ( $ConnectionModeInSecondaryRole -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].ConnectionModeInSecondaryRole ) )
                 {
-                    $availabilityGroup.AvailabilityReplicas[$serverObject.Name].ConnectionModeInSecondaryRole = $ConnectionModeInSecondaryRole
-                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.Name]
+                    $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].ConnectionModeInSecondaryRole = $ConnectionModeInSecondaryRole
+                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName]
                 }
 
                 # Break out the EndpointUrl properties
-                $currentEndpointProtocol, $currentEndpointHostName, $currentEndpointPort = $availabilityGroup.AvailabilityReplicas[$serverObject.Name].EndpointUrl.Replace('//', '').Split(':')
+                $currentEndpointProtocol, $currentEndpointHostName, $currentEndpointPort = $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].EndpointUrl.Replace('//', '').Split(':')
 
                 if ( $endpoint.Protocol.Tcp.ListenerPort -ne $currentEndpointPort )
                 {
-                    $newEndpointUrl = $availabilityGroup.AvailabilityReplicas[$serverObject.Name].EndpointUrl.Replace($currentEndpointPort, $endpoint.Protocol.Tcp.ListenerPort)
-                    $availabilityGroup.AvailabilityReplicas[$serverObject.Name].EndpointUrl = $newEndpointUrl
-                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.Name]
+                    $newEndpointUrl = $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].EndpointUrl.Replace($currentEndpointPort, $endpoint.Protocol.Tcp.ListenerPort)
+                    $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].EndpointUrl = $newEndpointUrl
+                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName]
                 }
 
-                if ( $EndpointHostName -ne $currentEndpointHostName )
+                if ( ( $submittedParameters -contains 'EndpointHostName' ) -and ( $EndpointHostName -ne $currentEndpointHostName ) )
                 {
-                    $newEndpointUrl = $availabilityGroup.AvailabilityReplicas[$serverObject.Name].EndpointUrl.Replace($currentEndpointHostName, $EndpointHostName)
-                    $availabilityGroup.AvailabilityReplicas[$serverObject.Name].EndpointUrl = $newEndpointUrl
-                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.Name]
+                    $newEndpointUrl = $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].EndpointUrl.Replace($currentEndpointHostName, $EndpointHostName)
+                    $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].EndpointUrl = $newEndpointUrl
+                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName]
                 }
 
                 if ( $currentEndpointProtocol -ne 'TCP' )
                 {
-                    $newEndpointUrl = $availabilityGroup.AvailabilityReplicas[$serverObject.Name].EndpointUrl.Replace($currentEndpointProtocol, 'TCP')
-                    $availabilityGroup.AvailabilityReplicas[$serverObject.Name].EndpointUrl = $newEndpointUrl
-                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.Name]
+                    $newEndpointUrl = $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].EndpointUrl.Replace($currentEndpointProtocol, 'TCP')
+                    $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].EndpointUrl = $newEndpointUrl
+                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName]
                 }
 
                 # Make sure FailureConditionLevel has a value in order to avoid false positive matches when the parameter is not defined
-                if ( ( -not [string]::IsNullOrEmpty($FailureConditionLevel) ) -and ( $FailureConditionLevel -ne $availabilityGroup.FailureConditionLevel ) )
+                if ( ( $submittedParameters -contains 'FailureConditionLevel' ) -and ( -not [string]::IsNullOrEmpty($FailureConditionLevel) ) -and ( $FailureConditionLevel -ne $availabilityGroup.FailureConditionLevel ) )
                 {
                     $availabilityGroup.FailureConditionLevel = $FailureConditionLevel
                     Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
                 }
 
-                if ( $FailoverMode -ne $availabilityGroup.AvailabilityReplicas[$serverObject.Name].FailoverMode )
+                if ( ( $submittedParameters -contains 'FailoverMode' ) -and ( $FailoverMode -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].FailoverMode ) )
                 {
-                    $availabilityGroup.AvailabilityReplicas[$serverObject.Name].FailoverMode = $FailoverMode
-                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.Name]
+                    $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].FailoverMode = $FailoverMode
+                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName]
                 }
 
-                if ( $HealthCheckTimeout -ne $availabilityGroup.HealthCheckTimeout )
+                if ( ( $submittedParameters -contains 'HealthCheckTimeout' ) -and ( $HealthCheckTimeout -ne $availabilityGroup.HealthCheckTimeout ) )
                 {
                     $availabilityGroup.HealthCheckTimeout = $HealthCheckTimeout
                     Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
@@ -510,6 +518,9 @@ function Set-TargetResource
 
     .PARAMETER HealthCheckTimeout
         Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. Default is 30,000.
+
+    .PARAMETER ProcessOnlyOnActiveNode
+        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
 #>
 function Test-TargetResource
 {
@@ -587,7 +598,11 @@ function Test-TargetResource
 
         [Parameter()]
         [UInt32]
-        $HealthCheckTimeout = 30000
+        $HealthCheckTimeout = 30000,
+
+        [Parameter()]
+        [Boolean]
+        $ProcessOnlyOnActiveNode
     )
 
     $getTargetResourceParameters = @{
@@ -600,6 +615,16 @@ function Test-TargetResource
     $result = $true
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
+    <#
+        If this is supposed to process only the active node, and this is not the
+        active node, don't bother evaluating the test.
+    #>
+    if ( $ProcessOnlyOnActiveNode -and -not $getTargetResourceResult.IsActiveNode )
+    {
+        New-VerboseMessage -Message ( 'The node "{0}" is not actively hosting the instance "{1}". Exiting the test.' -f $env:COMPUTERNAME,$SQLInstanceName )
+        return $result
+    }
 
     # Define current version for check compatibility
     $sqlMajorVersion = $getTargetResourceResult.Version
@@ -647,8 +672,11 @@ function Test-TargetResource
 
             if ( $getTargetResourceResult.Ensure -eq 'Present' )
             {
-                # PsBoundParameters won't work here because it doesn't account for default values
-                foreach ( $parameter in $MyInvocation.MyCommand.Parameters.GetEnumerator() )
+                # Use $PSBoundParameters rather than $MyInvocation.MyCommand.Parameters.GetEnumerator()
+                # This allows us to only validate the supplied parameters
+                # If the parameter is not defined by the configuration, we don't care what
+                # it gets set to.
+                foreach ( $parameter in $PSBoundParameters.GetEnumerator() )
                 {
                     $parameterName = $parameter.Key
                     $parameterValue = Get-Variable -Name $parameterName -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Value

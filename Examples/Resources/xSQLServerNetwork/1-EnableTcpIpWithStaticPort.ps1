@@ -19,12 +19,12 @@ Configuration Example
     {
         xSQLServerNetwork 'ChangeTcpIpOnDefaultInstance'
         {
-            InstanceName    = 'MSSQLSERVER'
-            ProtocolName    = 'Tcp'
-            IsEnabled       = $true
-            TCPDynamicPorts = ''
-            TCPPort         = 4509
-            RestartService  = $true
+            InstanceName   = 'MSSQLSERVER'
+            ProtocolName   = 'Tcp'
+            IsEnabled      = $true
+            TCPDynamicPort = $false
+            TCPPort        = 4509
+            RestartService = $true
         }
     }
 }

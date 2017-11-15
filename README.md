@@ -117,6 +117,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx).
 * [**xSQLServerDatabase**](#xsqlserverdatabase) resource to manage ensure database
   is present or absent.
+* [**xSQLServerDatabaseDefaultLocation**](#xsqlserverdatabasedefaultlocation) resource
+  to manage default locations for Data, Logs, and Backups for SQL Server
 * [**xSQLServerDatabaseOwner**](#xsqlserverdatabaseowner) resource to manage SQL
   database owners.
 * [**xSQLServerDatabasePermission**](#xsqlserverdatabasepermission) resource to
@@ -243,6 +245,9 @@ It will also manage the Availability Group replica on the specified node.
 * **`[Uint32]` HealthCheckTimeout** _(Write)_: Specifies the length of time, in
   milliseconds, after which AlwaysOn availability groups declare an unresponsive
   server to be unhealthy. Default is 30000.
+* **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
+  will only determine if a change is needed if the target node is the active
+  host of the SQL Server Instance.
 
 #### Read-Only Properties from Get-TargetResource
 
@@ -254,6 +259,8 @@ It will also manage the Availability Group replica on the specified node.
   instance is listening on.
 * **`[Uint32]` Version** _(Read)_: Gets the major version of the SQL Server
   instance.
+* **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
+  actively hosting the SQL Server instance.
 
 #### Examples
 
@@ -307,6 +314,14 @@ group.
   login on all replicas and that the PSDscRunAsAccount has impersonate permissions.
   If set to $false, the owner of the database will be the PSDscRunAsAccount.
   The default is '$true'.
+* **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
+  will only determine if a change is needed if the target node is the active
+  host of the SQL Server Instance.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
+  actively hosting the SQL Server instance.
 
 ### xSQLServerAlwaysOnAvailabilityGroupReplica
 
@@ -359,6 +374,9 @@ Always On Availability Group Replica.
   when redirecting read-only connections through this availability replica. This
   parameter applies if the availability replica is the current primary replica of
   the availability group.
+* **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
+  will only determine if a change is needed if the target node is the active
+  host of the SQL Server instance.
 
 #### Read-Only Properties from Get-TargetResource
 
@@ -368,6 +386,8 @@ Always On Availability Group Replica.
   Availability Group Replica. Used by Get-TargetResource.
 * **`[String]` SQLServerNetName** _(Read)_: Output the NetName property from the
   SQL Server object.
+* **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
+  actively hosting the SQL Server instance.
 
 #### Examples
 
@@ -496,6 +516,8 @@ database, please read:
 * **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
 * **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
 * **`[String]` Name** _(Key)_: The name of database to be created or dropped.
+* **`[String]` Collation** _(Write)_: The name of the SQL collation to use
+  for the new database. Defaults to server collation.
 * **`[String]` Ensure** _(Write)_: When set to 'Present', the database will be created.
   When set to 'Absent', the database will be dropped. { *Present* | Absent }.
 
@@ -503,6 +525,42 @@ database, please read:
 
 * [Create a Database](/Examples/Resources/xSQLServerDatabase/1-CreateDatabase.ps1)
 * [Delete a database](/Examples/Resources/xSQLServerDatabase/2-DeleteDatabase.ps1)
+
+### xSQLServerDatabaseDefaultLocation
+
+This resource is used to configure default locations for user databases. The
+types of default locations that can be changed are Data, Log, and Backup. For
+more information about database default locations, please read the article
+[Changing the Database Default Locations](https://technet.microsoft.com/en-us/library/dd206993.aspx).
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2008 or later.
+
+#### Parameters
+
+* **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
+* **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to
+  be configured.
+* **`[String]` Type** _(Key)_: The type of database default location to be
+  configured. { Data | Log | Backup }
+* **`[String]` Path** _(Required)_: The path to the default directory to be configured.
+* **`[Boolean]` RestartService** _(Write)_: If set to $true then SQL Server and
+  dependent services will be restarted if a change to the configuration is made.
+  The default value is $false.
+* **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
+  will only determine if a change is needed if the target node is the active
+  host of the SQL Server Instance.
+
+#### Read-Only Property from Get-TargetResource
+
+* **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
+  actively hosting the SQL Server instance.
+
+#### Examples
+
+* [Set database default locations](/Examples/Resources/xSQLServerDatabaseDefaultLocation/1-SetDatabaseDefaultLocation.ps1)
 
 ### xSQLServerDatabaseOwner
 
@@ -877,6 +935,14 @@ Read more about max degree of parallelism in this article
   parameter MaxDop must be set to $null or not be configured.
 * **`[Sint32]` MaxDop** _(Write)_: A numeric value to limit the number of processors
   used in parallel plan execution.
+* **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
+  will only determine if a change is needed if the target node is the active
+  host of the SQL Server instance.
+
+#### Read-Only Property from Get-TargetResource
+
+* **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
+  actively hosting the SQL Server instance.
 
 #### Examples
 
@@ -944,6 +1010,14 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
   pool used by the instance of SQL Server.
 * **`[Sint32]` MaxMemory** _(Write)_: Maximum amount of memory, in MB, in the buffer
   pool used by the instance of SQL Server.
+* **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
+  will only determine if a change is needed if the target node is the active
+  host of the SQL Server instance.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
+  actively hosting the SQL Server instance.
 
 #### Examples
 
@@ -974,13 +1048,13 @@ Read more about the network settings in the article
 * **`[String]` SQLServer** _(Write)_: The host name of the SQL Server to be configured.
   Default value is $env:COMPUTERNAME.
 * **`[Boolean]` IsEnabled** _(Write)_: Enables or disables the network protocol.
-* **`[String]` TcpDynamicPorts** _(Write)_: Set the value to '0' if dynamic ports
-  should be used. If static port should be used set this to a empty string value.
-  Value can not be set to '0' if TcpPort is also set to a value. { '0','' }.
+* **`[Boolean]` TcpDynamicPort** _(Write)_: Specifies whether the SQL Server
+  instance should use a dynamic port. Value cannot be set to $true if TcpPort
+  is set to a non-empty string.
 * **`[String]` TcpPort** _(Write)_: The TCP port(s) that SQL Server should be listening
   on. If the IP address should listen on more than one port, list all ports separated
-  with a comma ('1433,1500,1501'). To use this parameter set TcpDynamicPorts to
-  the value '' (empty string).
+  with a comma ('1433,1500,1501'). To use this parameter set TcpDynamicPort to
+  $false.
 * **`[Boolean]` RestartService** _(Write)_: If set to $true then SQL Server and
   dependent services will be restarted if a change to the configuration is made.
   The default value is $false.
@@ -1138,7 +1212,8 @@ Initializes and configures SQL Reporting Services server.
 
 #### Examples
 
-None.
+* [Default configuration](Examples/Resources/xSQLServerRSConfig/1-DefaultConfiguration.ps1)
+* [Custom virtual directories and reserved URLs](Examples/Resources/xSQLServerRSConfig/2-CustomConfiguration.ps1)
 
 ### xSQLServerRSSecureConnectionLevel
 

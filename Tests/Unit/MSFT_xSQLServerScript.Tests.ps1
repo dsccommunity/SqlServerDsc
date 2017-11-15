@@ -70,7 +70,7 @@ try
                 }
 
                 It 'Should throw the correct error from Import-Module' {
-                    { Get-TargetResource @testParameters } | Should Throw $throwMessage
+                    { Get-TargetResource @testParameters } | Should -Throw $throwMessage
                 }
             }
 
@@ -82,11 +82,11 @@ try
 
                 It 'Should return the expected results' {
                     $result = Get-TargetResource @testParameters
-                    $result.ServerInstance | Should Be $testParameters.ServerInstance
-                    $result.SetFilePath | Should Be $testParameters.SetFilePath
-                    $result.GetFilePath | Should Be $testParameters.GetFilePath
-                    $result.TestFilePath | Should Be $testParameters.TestFilePath
-                    $result | Should BeOfType Hashtable
+                    $result.ServerInstance | Should -Be $testParameters.ServerInstance
+                    $result.SetFilePath | Should -Be $testParameters.SetFilePath
+                    $result.GetFilePath | Should -Be $testParameters.GetFilePath
+                    $result.TestFilePath | Should -Be $testParameters.TestFilePath
+                    $result | Should -BeOfType Hashtable
                 }
             }
 
@@ -98,11 +98,11 @@ try
 
                 It 'Should return the expected results' {
                     $result = Get-TargetResource @testParametersTimeout
-                    $result.ServerInstance | Should Be $testParametersTimeout.ServerInstance
-                    $result.SetFilePath | Should Be $testParametersTimeout.SetFilePath
-                    $result.GetFilePath | Should Be $testParametersTimeout.GetFilePath
-                    $result.TestFilePath | Should Be $testParametersTimeout.TestFilePath
-                    $result | Should BeOfType Hashtable
+                    $result.ServerInstance | Should -Be $testParametersTimeout.ServerInstance
+                    $result.SetFilePath | Should -Be $testParametersTimeout.SetFilePath
+                    $result.GetFilePath | Should -Be $testParametersTimeout.GetFilePath
+                    $result.TestFilePath | Should -Be $testParametersTimeout.TestFilePath
+                    $result | Should -BeOfType Hashtable
                 }
             }
 
@@ -115,7 +115,7 @@ try
                 }
 
                 It 'Should throw the correct error from Invoke-Sqlcmd' {
-                    { Get-TargetResource @testParameters } | Should Throw $errorMessage
+                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
             }
         }
@@ -128,7 +128,7 @@ try
                 Mock -CommandName Import-SQLPSModule -MockWith { throw $throwMessage }
 
                 It 'Should throw the correct error from Import-Module' {
-                    { Set-TargetResource @testParameters } | Should Throw $throwMessage
+                    { Set-TargetResource @testParameters } | Should -Throw $throwMessage
                 }
             }
 
@@ -140,7 +140,7 @@ try
 
                 It 'Should return the expected results' {
                     $result = Set-TargetResource @testParameters
-                    $result | Should Be ''
+                    $result | Should -Be ''
                 }
             }
 
@@ -152,7 +152,7 @@ try
 
                 It 'Should return the expected results' {
                     $result = Set-TargetResource @testParametersTimeout
-                    $result | Should Be ''
+                    $result | Should -Be ''
                 }
             }
 
@@ -165,7 +165,7 @@ try
                 }
 
                 It 'Should throw the correct error from Invoke-Sqlcmd' {
-                    { Set-TargetResource @testParameters } | Should Throw $errorMessage
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
             }
         }
@@ -179,7 +179,7 @@ try
                 }
 
                 It 'Should throw the correct error from Import-Module' {
-                    { Set-TargetResource @testParameters } | Should Throw $throwMessage
+                    { Set-TargetResource @testParameters } | Should -Throw $throwMessage
                 }
             }
 
@@ -189,7 +189,7 @@ try
 
                 It 'Should return true' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
             }
 
@@ -199,7 +199,7 @@ try
 
                 It 'Should return true' {
                     $result = Test-TargetResource @testParametersTimeout
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
             }
 
@@ -211,7 +211,7 @@ try
 
                 It 'Should return false' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
             }
 
@@ -224,7 +224,7 @@ try
                 }
 
                 It 'Should throw the correct error from Invoke-Sqlcmd' {
-                    { Test-TargetResource @testParameters } | Should Throw $errorMessage
+                    { Test-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
             }
         }
@@ -243,7 +243,7 @@ try
                 }
 
                 It 'Should throw the correct error from Import-Module' {
-                    { Invoke-SqlScript @invokeScriptParameters } | Should Throw $throwMessage
+                    { Invoke-SqlScript @invokeScriptParameters } | Should -Throw $throwMessage
                 }
             }
 
@@ -278,7 +278,7 @@ try
                 }
 
                 It 'Should throw the correct error from Invoke-Sqlcmd' {
-                    { Invoke-SqlScript @invokeScriptParameters } | Should Throw $errorMessage
+                    { Invoke-SqlScript @invokeScriptParameters } | Should -Throw $errorMessage
                 }
             }
         }

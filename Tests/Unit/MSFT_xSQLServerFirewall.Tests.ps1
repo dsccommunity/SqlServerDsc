@@ -469,7 +469,7 @@ try
                 Context "When SQL Server version is $mockCurrentSqlMajorVersion. Testing helper function Get-SqlRootPath" {
                     It 'Should return the the correct path for Database Engine' {
                         $result = Get-SQLPath -Feature 'SQLEngine' -InstanceName $mockDefaultInstance_InstanceName
-                        $result | Should Be $mockCurrentDatabaseEngineSqlBinDirectory
+                        $result | Should -Be $mockCurrentDatabaseEngineSqlBinDirectory
 
                         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
@@ -480,7 +480,7 @@ try
 
                     It 'Should return the the correct path for Analysis Services' {
                         $result = Get-SQLPath -Feature 'As' -InstanceName $mockDefaultInstance_InstanceName
-                        $result | Should Be $mockCurrentAnalysisServicesSqlBinDirectory
+                        $result | Should -Be $mockCurrentAnalysisServicesSqlBinDirectory
 
                         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 1 -Scope It
@@ -491,7 +491,7 @@ try
 
                     It 'Should return the the correct path for Integration Services' {
                         $result = Get-SQLPath -Feature 'Is' -InstanceName $mockDefaultInstance_InstanceName -SQLVersion $mockCurrentSqlMajorVersion
-                        $result | Should Be $mockCurrentIntegrationServicesSqlPathDirectory
+                        $result | Should -Be $mockCurrentIntegrationServicesSqlPathDirectory
 
                         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
@@ -516,23 +516,23 @@ try
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.InstanceName | Should Be $testParameters.InstanceName
-                        $result.SourcePath | Should Be $testParameters.SourcePath
+                        $result.InstanceName | Should -Be $testParameters.InstanceName
+                        $result.SourcePath | Should -Be $testParameters.SourcePath
                     }
 
                     It 'Should not return any values in the read parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.DatabaseEngineFirewall | Should BeNullOrEmpty
-                        $result.BrowserFirewall | Should BeNullOrEmpty
-                        $result.ReportingServicesFirewall | Should BeNullOrEmpty
-                        $result.AnalysisServicesFirewall | Should BeNullOrEmpty
-                        $result.IntegrationServicesFirewall | Should BeNullOrEmpty
+                        $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
+                        $result.BrowserFirewall | Should -BeNullOrEmpty
+                        $result.ReportingServicesFirewall | Should -BeNullOrEmpty
+                        $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
+                        $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
                     }
 
                     It 'Should return state as absent' {
                         $result = Get-TargetResource @testParameters
-                        $result.Ensure | Should Be 'Absent'
-                        $result.Features | Should BeNullOrEmpty
+                        $result.Ensure | Should -Be 'Absent'
+                        $result.Features | Should -BeNullOrEmpty
                     }
 
                     It 'Should call the correct functions exact number of times' {
@@ -568,39 +568,39 @@ try
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.InstanceName | Should Be $testParameters.InstanceName
-                        $result.SourcePath | Should Be $testParameters.SourcePath
-                        $result.Features | Should Be $testParameters.Features
+                        $result.InstanceName | Should -Be $testParameters.InstanceName
+                        $result.SourcePath | Should -Be $testParameters.SourcePath
+                        $result.Features | Should -Be $testParameters.Features
                     }
 
                     It 'Should return $false for the read parameter DatabaseEngineFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.DatabaseEngineFirewall | Should Be $false
+                        $result.DatabaseEngineFirewall | Should -Be $false
                     }
 
                     It 'Should return $false for the read parameter BrowserFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.BrowserFirewall | Should Be $false
+                        $result.BrowserFirewall | Should -Be $false
                     }
 
                     It 'Should return $false for the read parameter ReportingServicesFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.ReportingServicesFirewall | Should Be $false
+                        $result.ReportingServicesFirewall | Should -Be $false
                     }
 
                     It 'Should return $false for the read parameter AnalysisServicesFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.AnalysisServicesFirewall | Should Be $false
+                        $result.AnalysisServicesFirewall | Should -Be $false
                     }
 
                     It 'Should return $false for the read parameter IntegrationServicesFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.IntegrationServicesFirewall | Should Be $false
+                        $result.IntegrationServicesFirewall | Should -Be $false
                     }
 
                     It 'Should return state as absent' {
                         $result = Get-TargetResource @testParameters
-                        $result.Ensure | Should Be 'Absent'
+                        $result.Ensure | Should -Be 'Absent'
                     }
 
                     It 'Should call the correct functions exact number of times' {
@@ -637,39 +637,39 @@ try
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.InstanceName | Should Be $testParameters.InstanceName
-                        $result.SourcePath | Should Be $testParameters.SourcePath
+                        $result.InstanceName | Should -Be $testParameters.InstanceName
+                        $result.SourcePath | Should -Be $testParameters.SourcePath
                     }
 
                     It 'Should return $true for the read parameter DatabaseEngineFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.DatabaseEngineFirewall | Should Be $true
+                        $result.DatabaseEngineFirewall | Should -Be $true
                     }
 
                     It 'Should return $true for the read parameter BrowserFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.BrowserFirewall | Should Be $true
+                        $result.BrowserFirewall | Should -Be $true
                     }
 
                     It 'Should return $true for the read parameter ReportingServicesFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.ReportingServicesFirewall | Should Be $true
+                        $result.ReportingServicesFirewall | Should -Be $true
                     }
 
                     It 'Should return $true for the read parameter AnalysisServicesFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.AnalysisServicesFirewall | Should Be $true
+                        $result.AnalysisServicesFirewall | Should -Be $true
                     }
 
                     It 'Should return $true for the read parameter IntegrationServicesFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.IntegrationServicesFirewall | Should Be $true
+                        $result.IntegrationServicesFirewall | Should -Be $true
                     }
 
                     It 'Should return state as absent' {
                         $result = Get-TargetResource @testParameters
-                        $result.Ensure | Should Be 'Present'
-                        $result.Features | Should Be $testParameters.Features
+                        $result.Ensure | Should -Be 'Present'
+                        $result.Features | Should -Be $testParameters.Features
                     }
 
                     It 'Should call the correct functions exact number of times' {
@@ -716,39 +716,39 @@ try
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.InstanceName | Should Be $testParameters.InstanceName
-                        $result.SourcePath | Should Be $testParameters.SourcePath
-                        $result.Features | Should Be $testParameters.Features
+                        $result.InstanceName | Should -Be $testParameters.InstanceName
+                        $result.SourcePath | Should -Be $testParameters.SourcePath
+                        $result.Features | Should -Be $testParameters.Features
                     }
 
                     It 'Should return $false for the read parameter DatabaseEngineFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.DatabaseEngineFirewall | Should Be $false
+                        $result.DatabaseEngineFirewall | Should -Be $false
                     }
 
                     It 'Should return $false for the read parameter BrowserFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.BrowserFirewall | Should Be $false
+                        $result.BrowserFirewall | Should -Be $false
                     }
 
                     It 'Should return $false for the read parameter ReportingServicesFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.ReportingServicesFirewall | Should Be $false
+                        $result.ReportingServicesFirewall | Should -Be $false
                     }
 
                     It 'Should return $false for the read parameter AnalysisServicesFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.AnalysisServicesFirewall | Should Be $false
+                        $result.AnalysisServicesFirewall | Should -Be $false
                     }
 
                     It 'Should return $false for the read parameter IntegrationServicesFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.IntegrationServicesFirewall | Should Be $false
+                        $result.IntegrationServicesFirewall | Should -Be $false
                     }
 
                     It 'Should return state as absent' {
                         $result = Get-TargetResource @testParameters
-                        $result.Ensure | Should Be 'Absent'
+                        $result.Ensure | Should -Be 'Absent'
                     }
 
                     It 'Should call the correct functions exact number of times' {
@@ -792,24 +792,24 @@ try
                     Context 'SQLBrowser rule is present, but missing SQLEngine rule' {
                         It 'Should return the same values as passed as parameters' {
                             $result = Get-TargetResource @testParameters
-                            $result.InstanceName | Should Be $testParameters.InstanceName
-                            $result.SourcePath | Should Be $testParameters.SourcePath
+                            $result.InstanceName | Should -Be $testParameters.InstanceName
+                            $result.SourcePath | Should -Be $testParameters.SourcePath
                         }
 
                         It 'Should return $false for the read parameter DatabaseEngineFirewall' {
                             $result = Get-TargetResource @testParameters
-                            $result.DatabaseEngineFirewall | Should Be $false
+                            $result.DatabaseEngineFirewall | Should -Be $false
                         }
 
                         It 'Should return $true for the read parameter BrowserFirewall' {
                             $result = Get-TargetResource @testParameters
-                            $result.BrowserFirewall | Should Be $true
+                            $result.BrowserFirewall | Should -Be $true
                         }
 
                         It 'Should return state as absent' {
                             $result = Get-TargetResource @testParameters
-                            $result.Ensure | Should Be 'Absent'
-                            $result.Features | Should Be $testParameters.Features
+                            $result.Ensure | Should -Be 'Absent'
+                            $result.Features | Should -Be $testParameters.Features
                         }
 
                         It 'Should call the correct functions exact number of times' {
@@ -837,24 +837,24 @@ try
                     Context 'SQLBrowser rule is present, but missing Analysis Services rule' {
                         It 'Should return the same values as passed as parameters' {
                             $result = Get-TargetResource @testParameters
-                            $result.InstanceName | Should Be $testParameters.InstanceName
-                            $result.SourcePath | Should Be $testParameters.SourcePath
+                            $result.InstanceName | Should -Be $testParameters.InstanceName
+                            $result.SourcePath | Should -Be $testParameters.SourcePath
                         }
 
                         It 'Should return $false for the read parameter AnalysisServicesFirewall' {
                             $result = Get-TargetResource @testParameters
-                            $result.AnalysisServicesFirewall | Should Be $false
+                            $result.AnalysisServicesFirewall | Should -Be $false
                         }
 
                         It 'Should return $true for the read parameter BrowserFirewall' {
                             $result = Get-TargetResource @testParameters
-                            $result.BrowserFirewall | Should Be $true
+                            $result.BrowserFirewall | Should -Be $true
                         }
 
                         It 'Should return state as absent' {
                             $result = Get-TargetResource @testParameters
-                            $result.Ensure | Should Be 'Absent'
-                            $result.Features | Should Be $testParameters.Features
+                            $result.Ensure | Should -Be 'Absent'
+                            $result.Features | Should -Be $testParameters.Features
                         }
 
                         It 'Should call the correct functions exact number of times' {
@@ -898,39 +898,39 @@ try
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @testParameters
-                        $result.InstanceName | Should Be $testParameters.InstanceName
-                        $result.SourcePath | Should Be $testParameters.SourcePath
+                        $result.InstanceName | Should -Be $testParameters.InstanceName
+                        $result.SourcePath | Should -Be $testParameters.SourcePath
                     }
 
                     It 'Should return $true for the read parameter DatabaseEngineFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.DatabaseEngineFirewall | Should Be $true
+                        $result.DatabaseEngineFirewall | Should -Be $true
                     }
 
                     It 'Should return $true for the read parameter BrowserFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.BrowserFirewall | Should Be $true
+                        $result.BrowserFirewall | Should -Be $true
                     }
 
                     It 'Should return $true for the read parameter ReportingServicesFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.ReportingServicesFirewall | Should Be $true
+                        $result.ReportingServicesFirewall | Should -Be $true
                     }
 
                     It 'Should return $true for the read parameter AnalysisServicesFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.AnalysisServicesFirewall | Should Be $true
+                        $result.AnalysisServicesFirewall | Should -Be $true
                     }
 
                     It 'Should return $true for the read parameter IntegrationServicesFirewall' {
                         $result = Get-TargetResource @testParameters
-                        $result.IntegrationServicesFirewall | Should Be $true
+                        $result.IntegrationServicesFirewall | Should -Be $true
                     }
 
                     It 'Should return state as absent' {
                         $result = Get-TargetResource @testParameters
-                        $result.Ensure | Should Be 'Present'
-                        $result.Features | Should Be $testParameters.Features
+                        $result.Ensure | Should -Be 'Present'
+                        $result.Features | Should -Be $testParameters.Features
                     }
 
                     It 'Should call the correct functions exact number of times' {
@@ -1034,7 +1034,7 @@ try
                     }
 
                     It 'Should throw the correct error when Set-TargetResource verifies result with Test-TargetResource' {
-                        { Set-TargetResource @testParameters } | Should Throw TestFailedAfterSet
+                        { Set-TargetResource @testParameters } | Should -Throw TestFailedAfterSet
 
                         Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 1 -Scope It
@@ -1068,7 +1068,7 @@ try
                     }
 
                     It 'Should create all firewall rules without throwing' {
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
 
                         Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 8 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -1100,7 +1100,7 @@ try
                     }
 
                     It 'Should not call mock New-NetFirewallRule' {
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
 
                         Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -1142,7 +1142,7 @@ try
                     }
 
                     It 'Should create all firewall rules without throwing' {
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
 
                         Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 8 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -1174,7 +1174,7 @@ try
                     }
 
                     It 'Should not call mock New-NetFirewallRule' {
-                        { Set-TargetResource @testParameters } | Should Not Throw
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
 
                         Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -1269,7 +1269,7 @@ try
 
                 It 'Should return $false from Test-TargetResource' {
                     $resultTestTargetResource = Test-TargetResource @testParameters
-                    $resultTestTargetResource | Should Be $false
+                    $resultTestTargetResource | Should -Be $false
                 }
             }
 
@@ -1290,7 +1290,7 @@ try
 
                 It 'Should return $true from Test-TargetResource' {
                     $resultTestTargetResource = Test-TargetResource @testParameters
-                    $resultTestTargetResource | Should Be $true
+                    $resultTestTargetResource | Should -Be $true
                 }
             }
         }

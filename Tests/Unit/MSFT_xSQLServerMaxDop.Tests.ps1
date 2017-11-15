@@ -13,6 +13,9 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 
+# Loading mocked classes
+Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SMO.cs )
+
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:DSCModuleName `
     -DSCResourceName $script:DSCResourceName `
@@ -40,6 +43,7 @@ try
         $mockInvalidOperationForAlterMethod = $false
         $mockNumberOfLogicalProcessors      = 4
         $mockNumberOfCores                  = 4
+        $mockProcessOnlyOnActiveNode        = $true
 
         # Default parameters that are used for the It-blocks
         $mockDefaultParameters = @{
@@ -52,9 +56,9 @@ try
         $mockConnectSQL = {
             return @(
                 (
-                    New-Object Object |
-                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSQLServerInstanceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSQLServerName -PassThru |
+                    New-Object Object -TypeName Microsoft.SqlServer.Management.Smo.Server |
+                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSQLServerInstanceName -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSQLServerName -PassThru -Force |
                         Add-Member -MemberType ScriptProperty -Name Configuration -Value {
                             return @( ( New-Object Object |
                                 Add-Member -MemberType ScriptProperty -Name MaxDegreeOfParallelism -Value {
@@ -96,6 +100,7 @@ try
 
         Describe "MSFT_xSQLServerMaxDop\Get-TargetResource" -Tag 'Get'{
             Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+            Mock -CommandName Test-ActiveNode -MockWith { return $mockProcessOnlyOnActiveNode } -Verifiable
 
             Context 'When the system is either in the desired state or not in the desired state' {
                 $testParameters = $mockDefaultParameters
@@ -103,16 +108,20 @@ try
                 $result = Get-TargetResource @testParameters
 
                 It 'Should return the current value for MaxDop' {
-                    $result.MaxDop | Should Be $mockMaxDegreeOfParallelism
+                    $result.MaxDop | Should -Be $mockMaxDegreeOfParallelism
                 }
 
                 It 'Should return the same values as passed as parameters' {
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
                 }
 
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+
+                It 'Should call the mock function Test-ActiveNode' {
+                    Assert-MockCalled Test-ActiveNode -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -122,6 +131,10 @@ try
         Describe "MSFT_xSQLServerMaxDop\Test-TargetResource" -Tag 'Test'{
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+
+                Mock -CommandName Test-ActiveNode -MockWith {
+                    $mockProcessOnlyOnActiveNode
+                } -Verifiable
 
                 Mock -CommandName Get-CimInstance -MockWith $mockCimInstance_Win32Processor -ParameterFilter {
                     $ClassName -eq 'Win32_Processor'
@@ -142,7 +155,7 @@ try
 
                 It 'Should return the state as false when desired MaxDop is the wrong value' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -165,7 +178,7 @@ try
 
                 It 'Should return the state as true when desired MaxDop is the correct value' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -187,7 +200,7 @@ try
 
                 It 'Should return the state as true when desired MaxDop is present' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -211,7 +224,7 @@ try
 
                 It 'Should return the state as false when desired MaxDop is the wrong value' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -235,7 +248,7 @@ try
 
                 It 'Should return the state as false when desired MaxDop is the wrong value' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -260,7 +273,7 @@ try
 
                 It 'Should return the state as false when desired MaxDop is the wrong value' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -282,7 +295,32 @@ try
 
                 It 'Should return the state as false when desired MaxDop is the wrong value' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the ProcessOnlyOnActiveNode parameter is passed' {
+                AfterAll {
+                    $mockProcessOnlyOnActiveNode = $true
+                }
+
+                BeforeAll {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Ensure = 'Absent'
+                        ProcessOnlyOnActiveNode = $true
+                    }
+
+                    $mockProcessOnlyOnActiveNode = $false
+                }
+
+                It 'Should return $true when ProcessOnlyOnActiveNode is "$true" and the current node is not actively hosting the instance' {
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -300,7 +338,7 @@ try
 
                 It 'Should return the state as true when desired MaxDop is the correct value' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -316,7 +354,7 @@ try
                 }
 
                 It 'Should throw the correct error' {
-                    { Test-TargetResource @testParameters } | Should Throw 'MaxDop parameter must be set to $null or not assigned if DynamicAlloc parameter is set to $true.'
+                    { Test-TargetResource @testParameters } | Should -Throw 'MaxDop parameter must be set to $null or not assigned if DynamicAlloc parameter is set to $true.'
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -333,7 +371,7 @@ try
                 }
 
                 It 'Should not throw an error' {
-                    { Test-TargetResource @testParameters } | Should Not Throw
+                    { Test-TargetResource @testParameters } | Should -Not -Throw
                 }
             }
 
@@ -362,7 +400,7 @@ try
                 }
 
                 It 'Should throw the correct error' {
-                    { Set-TargetResource @testParameters } | Should Throw 'MaxDop parameter must be set to $null or not assigned if DynamicAlloc parameter is set to $true.'
+                    { Set-TargetResource @testParameters } | Should -Throw 'MaxDop parameter must be set to $null or not assigned if DynamicAlloc parameter is set to $true.'
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -380,7 +418,7 @@ try
                 }
 
                 It 'Should Not Throw when Ensure parameter is set to Absent' {
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -400,7 +438,7 @@ try
                 }
 
                 It 'Should Not Throw when MaxDop parameter is not null and DynamicAlloc set to false' {
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -421,7 +459,7 @@ try
                 }
 
                 It 'Should Not Throw when MaxDop parameter is not null and DynamicAlloc set to false' {
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -450,7 +488,7 @@ try
                                               'server configuration option. InnerException: Exception calling "Alter" ' + `
                                               'with "0" argument(s): "Mock Alter Method was called with invalid operation."')
 
-                    { Set-TargetResource @testParameters } | Should Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {

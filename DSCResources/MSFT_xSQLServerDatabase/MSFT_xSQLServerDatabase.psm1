@@ -17,6 +17,10 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
 
     .PARAMETER SQLInstanceName
     The name of the SQL instance to be configured.
+
+    .PARAMETER Collation
+    The name of the SQL collation to use for the new database.
+    Defaults to server collation.
 #>
 
 function Get-TargetResource
@@ -44,13 +48,19 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLInstanceName
+        $SQLInstanceName,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $Collation
     )
 
     $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
     if ($sqlServerObject)
     {
+        $sqlDatabaseCollation = $sqlServerObject.Collation
         Write-Verbose -Message 'Getting SQL Databases'
         # Check database exists
         $sqlDatabaseObject = $sqlServerObject.Databases[$Name]
@@ -59,6 +69,7 @@ function Get-TargetResource
         {
             Write-Verbose -Message "SQL Database name $Name is present"
             $Ensure = 'Present'
+            $sqlDatabaseCollation = $sqlDatabaseObject.Collation
         }
         else
         {
@@ -72,6 +83,7 @@ function Get-TargetResource
         Ensure          = $Ensure
         SQLServer       = $SQLServer
         SQLInstanceName = $SQLInstanceName
+        Collation       = $sqlDatabaseCollation
     }
 
     $returnValue
@@ -93,6 +105,10 @@ function Get-TargetResource
 
     .PARAMETER SQLInstanceName
     The name of the SQL instance to be configured.
+
+    .PARAMETER Collation
+    The name of the SQL collation to use for the new database.
+    Defaults to server collation.
 #>
 function Set-TargetResource
 {
@@ -118,31 +134,71 @@ function Set-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLInstanceName
+        $SQLInstanceName,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $Collation
     )
 
     $sqlServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
     if ($sqlServerObject)
     {
+
         if ($Ensure -eq 'Present')
         {
-            try
+            if (-not $PSBoundParameters.ContainsKey('Collation'))
             {
-                $sqlDatabaseObjectToCreate = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $sqlServerObject, $Name
-                if ($sqlDatabaseObjectToCreate)
+                $Collation = $sqlServerObject.Collation
+            }
+            elseif ($Collation -notin $sqlServerObject.EnumCollations().Name)
+            {
+                throw New-TerminatingError -ErrorType InvalidCollationError `
+                    -FormatArgs @($SQLServer, $SQLInstanceName, $Name, $Collation) `
+                    -ErrorCategory InvalidOperation
+            }
+
+            $sqlDatabaseObject = $sqlServerObject.Databases[$Name]
+
+            if ($sqlDatabaseObject)
+            {
+                try
                 {
-                    Write-Verbose -Message "Adding to SQL the database $Name"
-                    $sqlDatabaseObjectToCreate.Create()
-                    New-VerboseMessage -Message "Created Database $Name"
+                    Write-Verbose -Message "Updating the database $Name with specified settings."
+                    $sqlDatabaseObject.Collation = $Collation
+                    $sqlDatabaseObject.Alter()
+                    New-VerboseMessage -Message "Updated Database $Name."
+                }
+                catch
+                {
+                    throw New-TerminatingError -ErrorType UpdateDatabaseSetError `
+                        -FormatArgs @($SQLServer, $SQLInstanceName, $Name) `
+                        -ErrorCategory InvalidOperation `
+                        -InnerException $_.Exception
                 }
             }
-            catch
+            else
             {
-                throw New-TerminatingError -ErrorType CreateDatabaseSetError `
-                    -FormatArgs @($SQLServer, $SQLInstanceName, $Name) `
-                    -ErrorCategory InvalidOperation `
-                    -InnerException $_.Exception
+                try
+                {
+                    $sqlDatabaseObjectToCreate = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $sqlServerObject, $Name
+                    if ($sqlDatabaseObjectToCreate)
+                    {
+                        Write-Verbose -Message "Adding to SQL the database $Name."
+                        $sqlDatabaseObjectToCreate.Collation = $Collation
+                        $sqlDatabaseObjectToCreate.Create()
+                        New-VerboseMessage -Message "Created Database $Name."
+                    }
+                }
+                catch
+                {
+                    throw New-TerminatingError -ErrorType CreateDatabaseSetError `
+                        -FormatArgs @($SQLServer, $SQLInstanceName, $Name) `
+                        -ErrorCategory InvalidOperation `
+                        -InnerException $_.Exception
+                }
             }
         }
         else
@@ -152,9 +208,9 @@ function Set-TargetResource
                 $sqlDatabaseObjectToDrop = $sqlServerObject.Databases[$Name]
                 if ($sqlDatabaseObjectToDrop)
                 {
-                    Write-Verbose -Message "Deleting to SQL the database $Name"
+                    Write-Verbose -Message "Deleting to SQL the database $Name."
                     $sqlDatabaseObjectToDrop.Drop()
-                    New-VerboseMessage -Message "Dropped Database $Name"
+                    New-VerboseMessage -Message "Dropped Database $Name."
                 }
             }
             catch
@@ -184,6 +240,10 @@ function Set-TargetResource
 
     .PARAMETER SQLInstanceName
     The name of the SQL instance to be configured.
+
+    .PARAMETER Collation
+    The name of the SQL collation to use for the new database.
+    Defaults to server collation.
 #>
 function Test-TargetResource
 {
@@ -210,13 +270,23 @@ function Test-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLInstanceName
+        $SQLInstanceName,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $Collation
     )
 
     Write-Verbose -Message "Checking if database named $Name is present or absent"
 
     $getTargetResourceResult = Get-TargetResource @PSBoundParameters
     $isDatabaseInDesiredState = $true
+
+    if (-not $PSBoundParameters.ContainsKey('Collation'))
+    {
+        $Collation = $getTargetResourceResult.Collation
+    }
 
     switch ($Ensure)
     {
@@ -234,6 +304,11 @@ function Test-TargetResource
             if ($getTargetResourceResult.Ensure -ne 'Present')
             {
                 New-VerboseMessage -Message "Ensure is set to Present. The database $Name should be created"
+                $isDatabaseInDesiredState = $false
+            }
+            elseif ($getTargetResourceResult.Collation -ne $Collation)
+            {
+                New-VerboseMessage -Message 'Database exist but has the wrong collation.'
                 $isDatabaseInDesiredState = $false
             }
         }

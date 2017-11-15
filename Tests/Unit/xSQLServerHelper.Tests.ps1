@@ -195,7 +195,7 @@ InModuleScope $script:moduleName {
             Mock -CommandName Start-Service {} -Verifiable
 
             It 'Should restart SQL Service and running SQL Agent service' {
-                { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'MSSQLSERVER' } | Should Not Throw
+                { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'MSSQLSERVER' } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
@@ -204,7 +204,7 @@ InModuleScope $script:moduleName {
             }
 
             It 'Should restart SQL Service and not try to restart missing SQL Agent service' {
-                { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'NOAGENT' } | Should Not Throw
+                { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'NOAGENT' } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
@@ -213,7 +213,7 @@ InModuleScope $script:moduleName {
             }
 
             It 'Should restart SQL Service and not try to restart stopped SQL Agent service' {
-                { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'STOPPEDAGENT' } | Should Not Throw
+                { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'STOPPEDAGENT' } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
@@ -277,7 +277,7 @@ InModuleScope $script:moduleName {
             Mock -CommandName Invoke-CimMethod -MockWith {} -Verifiable -ParameterFilter { $MethodName -eq 'BringOnline' }
 
             It 'Should restart SQL Server and SQL Agent resources for a clustered default instance' {
-                { Restart-SqlService -SQLServer 'CLU01' } | Should Not Throw
+                { Restart-SqlService -SQLServer 'CLU01' } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 1
@@ -287,7 +287,7 @@ InModuleScope $script:moduleName {
             }
 
             It 'Should restart SQL Server and SQL Agent resources for a clustered named instance' {
-                { Restart-SqlService -SQLServer 'CLU01' -SQLInstanceName 'NAMEDINSTANCE' } | Should Not Throw
+                { Restart-SqlService -SQLServer 'CLU01' -SQLInstanceName 'NAMEDINSTANCE' } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 1
@@ -297,7 +297,7 @@ InModuleScope $script:moduleName {
             }
 
             It 'Should not try to restart a SQL Agent resource that is not online' {
-                { Restart-SqlService -SQLServer 'CLU01' -SQLInstanceName 'STOPPEDAGENT' } | Should Not Throw
+                { Restart-SqlService -SQLServer 'CLU01' -SQLInstanceName 'STOPPEDAGENT' } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 1
@@ -467,7 +467,7 @@ InModuleScope $script:moduleName {
                 $queryParams.Query = "EXEC sp_configure 'show advanced option', '1'"
                 $mockExpectedQuery = $queryParams.Query.Clone()
 
-                { Invoke-Query @queryParams } | Should Not Throw
+                { Invoke-Query @queryParams } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
@@ -475,7 +475,7 @@ InModuleScope $script:moduleName {
             It 'Should throw the correct error, ExecuteNonQueryFailed, when executing the query fails' {
                 $queryParams.Query = 'BadQuery'
 
-                { Invoke-Query @queryParams } | Should Throw ($script:localizedData.ExecuteNonQueryFailed -f $queryParams.Database)
+                { Invoke-Query @queryParams } | Should -Throw ($script:localizedData.ExecuteNonQueryFailed -f $queryParams.Database)
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
@@ -486,7 +486,7 @@ InModuleScope $script:moduleName {
                 $queryParams.Query = 'SELECT name FROM sys.databases'
                 $mockExpectedQuery = $queryParams.Query.Clone()
 
-                Invoke-Query @queryParams -WithResults | Should Not BeNullOrEmpty
+                Invoke-Query @queryParams -WithResults | Should -Not -BeNullOrEmpty
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
@@ -494,7 +494,7 @@ InModuleScope $script:moduleName {
             It 'Should throw the correct error, ExecuteQueryWithResultsFailed, when executing the query fails' {
                 $queryParams.Query = 'BadQuery'
 
-                { Invoke-Query @queryParams -WithResults } | Should Throw ($script:localizedData.ExecuteQueryWithResultsFailed -f $queryParams.Database)
+                { Invoke-Query @queryParams -WithResults } | Should -Throw ($script:localizedData.ExecuteQueryWithResultsFailed -f $queryParams.Database)
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
@@ -506,7 +506,7 @@ InModuleScope $script:moduleName {
             It 'Should silently alter the Availability Group Replica' {
                 $availabilityReplica = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityReplica
 
-                { Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityReplica } | Should Not Throw
+                { Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityReplica } | Should -Not -Throw
 
             }
 
@@ -514,7 +514,7 @@ InModuleScope $script:moduleName {
                 $availabilityReplica = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityReplica
                 $availabilityReplica.Name = 'AlterFailed'
 
-                { Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityReplica } | Should Throw ($script:localizedData.AlterAvailabilityGroupReplicaFailed -f $availabilityReplica.Name)
+                { Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityReplica } | Should -Throw ($script:localizedData.AlterAvailabilityGroupReplicaFailed -f $availabilityReplica.Name)
             }
         }
     }
@@ -561,7 +561,7 @@ InModuleScope $script:moduleName {
                 $mockInvokeQueryClusterServicePermissionsSet = $mockAllPermissionsPresent.Clone()
                 $testLoginEffectivePermissionsParams.Permissions = $mockAllPermissionsPresent.Clone()
 
-                Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams | Should Be $true
+                Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams | Should -Be $true
 
                 Assert-MockCalled -CommandName Invoke-Query -Times 1 -Exactly
             }
@@ -573,7 +573,7 @@ InModuleScope $script:moduleName {
                 $mockInvokeQueryClusterServicePermissionsSet = $mockPermissionsMissing.Clone()
                 $testLoginEffectivePermissionsParams.Permissions = $mockAllPermissionsPresent.Clone()
 
-                Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams | Should Be $false
+                Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams | Should -Be $false
 
                 Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
             }
@@ -582,7 +582,7 @@ InModuleScope $script:moduleName {
                 $mockInvokeQueryClusterServicePermissionsSet = @()
                 $testLoginEffectivePermissionsParams.Permissions = $mockAllPermissionsPresent.Clone()
 
-                Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams | Should Be $false
+                Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams | Should -Be $false
 
                 Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
             }
@@ -929,8 +929,8 @@ InModuleScope $script:moduleName {
             It 'Should return the same server object that was supplied' {
                 $result = Get-PrimaryReplicaServerObject -ServerObject $mockServerObject -AvailabilityGroup $mockAvailabilityGroup
 
-                $result.DomainInstanceName | Should Be $mockServerObject.DomainInstanceName
-                $result.DomainInstanceName | Should Be $mockAvailabilityGroup.PrimaryReplicaServerName
+                $result.DomainInstanceName | Should -Be $mockServerObject.DomainInstanceName
+                $result.DomainInstanceName | Should -Be $mockAvailabilityGroup.PrimaryReplicaServerName
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 0 -Exactly
             }
@@ -940,8 +940,8 @@ InModuleScope $script:moduleName {
 
                 $result = Get-PrimaryReplicaServerObject -ServerObject $mockServerObject -AvailabilityGroup $mockAvailabilityGroup
 
-                $result.DomainInstanceName | Should Be $mockServerObject.DomainInstanceName
-                $result.DomainInstanceName | Should Not Be $mockAvailabilityGroup.PrimaryReplicaServerName
+                $result.DomainInstanceName | Should -Be $mockServerObject.DomainInstanceName
+                $result.DomainInstanceName | Should -Not -Be $mockAvailabilityGroup.PrimaryReplicaServerName
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 0 -Exactly
             }
@@ -953,8 +953,8 @@ InModuleScope $script:moduleName {
 
                 $result = Get-PrimaryReplicaServerObject -ServerObject $mockServerObject -AvailabilityGroup $mockAvailabilityGroup
 
-                $result.DomainInstanceName | Should Not Be $mockServerObject.DomainInstanceName
-                $result.DomainInstanceName | Should Be $mockAvailabilityGroup.PrimaryReplicaServerName
+                $result.DomainInstanceName | Should -Not -Be $mockServerObject.DomainInstanceName
+                $result.DomainInstanceName | Should -Be $mockAvailabilityGroup.PrimaryReplicaServerName
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
@@ -1019,7 +1019,7 @@ InModuleScope $script:moduleName {
                 It ( 'Should return $false when the instance version is {0}' -f $instanceVersion ) {
                     $mockSqlVersion = $instanceVersion
 
-                    Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should Be $false
+                    Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should -Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly
@@ -1032,7 +1032,7 @@ InModuleScope $script:moduleName {
                 It ( 'Should return $false when the instance version is {0} and the replica seeding mode is manual' -f $instanceVersion ) {
                     $mockSqlVersion = $instanceVersion
 
-                    Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should Be $false
+                    Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should -Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
@@ -1048,7 +1048,7 @@ InModuleScope $script:moduleName {
                     $mockSqlVersion = $instanceVersion
                     $mockSeedingMode = 'Automatic'
 
-                    Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should Be $true
+                    Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should -Be $true
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
@@ -1070,7 +1070,7 @@ InModuleScope $script:moduleName {
             Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true }
 
             It 'Should return true when the impersonate permissions are present for the login'{
-                Test-ImpersonatePermissions -ServerObject $mockServerObject | Should Be $true
+                Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $true
 
                 Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly
             }
@@ -1080,7 +1080,7 @@ InModuleScope $script:moduleName {
             Mock -CommandName Test-LoginEffectivePermissions -MockWith { $false } -Verifiable
 
             It 'Should return false when the impersonate permissions are missing for the login'{
-                Test-ImpersonatePermissions -ServerObject $mockServerObject | Should Be $false
+                Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $false
 
                 Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly
             }
@@ -1189,7 +1189,7 @@ InModuleScope $script:moduleName {
                     DesiredValues = $mockDesiredValues
                 }
 
-                Test-SQLDscParameterState @testParameters | Should Be $true
+                Test-SQLDscParameterState @testParameters | Should -Be $true
             }
 
             It 'Should return false when a value is different for [String]' {
@@ -1201,7 +1201,7 @@ InModuleScope $script:moduleName {
                     DesiredValues = $mockDesiredValues
                 }
 
-                Test-SQLDscParameterState @testParameters | Should Be $false
+                Test-SQLDscParameterState @testParameters | Should -Be $false
             }
 
             It 'Should return false when a value is different for [Int32]' {
@@ -1213,7 +1213,7 @@ InModuleScope $script:moduleName {
                     DesiredValues = $mockDesiredValues
                 }
 
-                Test-SQLDscParameterState @testParameters | Should Be $false
+                Test-SQLDscParameterState @testParameters | Should -Be $false
             }
 
             It 'Should return false when a value is different for [Int16]' {
@@ -1225,7 +1225,7 @@ InModuleScope $script:moduleName {
                     DesiredValues = $mockDesiredValues
                 }
 
-                Test-SQLDscParameterState @testParameters | Should Be $false
+                Test-SQLDscParameterState @testParameters | Should -Be $false
             }
 
             It 'Should return false when a value is missing' {
@@ -1237,7 +1237,7 @@ InModuleScope $script:moduleName {
                     DesiredValues = $mockDesiredValues
                 }
 
-                Test-SQLDscParameterState @testParameters | Should Be $false
+                Test-SQLDscParameterState @testParameters | Should -Be $false
             }
 
             It 'Should return true when only a specified value matches, but other non-listed values do not' {
@@ -1250,7 +1250,7 @@ InModuleScope $script:moduleName {
                     ValuesToCheck = @('Example')
                 }
 
-                Test-SQLDscParameterState @testParameters | Should Be $true
+                Test-SQLDscParameterState @testParameters | Should -Be $true
             }
 
             It 'Should return false when only specified values do not match, but other non-listed values do ' {
@@ -1263,7 +1263,7 @@ InModuleScope $script:moduleName {
                     ValuesToCheck = @('SecondExample')
                 }
 
-                Test-SQLDscParameterState @testParameters | Should Be $false
+                Test-SQLDscParameterState @testParameters | Should -Be $false
             }
 
             It 'Should return false when an empty hash table is used in the current values' {
@@ -1275,7 +1275,7 @@ InModuleScope $script:moduleName {
                     DesiredValues = $mockDesiredValues
                 }
 
-                Test-SQLDscParameterState @testParameters | Should Be $false
+                Test-SQLDscParameterState @testParameters | Should -Be $false
             }
 
             It 'Should return true when evaluating a table against a CimInstance' {
@@ -1301,7 +1301,7 @@ InModuleScope $script:moduleName {
                     ValuesToCheck = @('Handle','ProcessId')
                 }
 
-                Test-SQLDscParameterState @testParameters | Should Be $true
+                Test-SQLDscParameterState @testParameters | Should -Be $true
             }
 
             It 'Should return false when evaluating a table against a CimInstance and a value is wrong' {
@@ -1327,7 +1327,7 @@ InModuleScope $script:moduleName {
                     ValuesToCheck = @('Handle','ProcessId')
                 }
 
-                Test-SQLDscParameterState @testParameters | Should Be $false
+                Test-SQLDscParameterState @testParameters | Should -Be $false
             }
 
             It 'Should return true when evaluating a hash table containing an array' {
@@ -1339,7 +1339,7 @@ InModuleScope $script:moduleName {
                     DesiredValues = $mockDesiredValues
                 }
 
-                Test-SQLDscParameterState @testParameters | Should Be $true
+                Test-SQLDscParameterState @testParameters | Should -Be $true
             }
 
             It 'Should return false when evaluating a hash table containing an array with wrong values' {
@@ -1351,7 +1351,7 @@ InModuleScope $script:moduleName {
                     DesiredValues = $mockDesiredValues
                 }
 
-                Test-SQLDscParameterState @testParameters | Should Be $false
+                Test-SQLDscParameterState @testParameters | Should -Be $false
             }
 
             It 'Should return false when evaluating a hash table containing an array, but the CurrentValues are missing an array' {
@@ -1363,7 +1363,7 @@ InModuleScope $script:moduleName {
                     DesiredValues = $mockDesiredValues
                 }
 
-                Test-SQLDscParameterState @testParameters | Should Be $false
+                Test-SQLDscParameterState @testParameters | Should -Be $false
             }
 
             It 'Should return false when evaluating a hash table containing an array, but the property i CurrentValues is $null' {
@@ -1375,7 +1375,7 @@ InModuleScope $script:moduleName {
                     DesiredValues = $mockDesiredValues
                 }
 
-                Test-SQLDscParameterState @testParameters | Should Be $false
+                Test-SQLDscParameterState @testParameters | Should -Be $false
             }
         }
 
@@ -1390,7 +1390,7 @@ InModuleScope $script:moduleName {
                 }
 
                 $mockCorrectErrorMessage = ($script:localizedData.PropertyTypeInvalidForDesiredValues -f $testParameters.DesiredValues.GetType().Name)
-                { Test-SQLDscParameterState @testParameters } | Should Throw $mockCorrectErrorMessage
+                { Test-SQLDscParameterState @testParameters } | Should -Throw $mockCorrectErrorMessage
             }
 
             It 'Should write a warning when DesiredValues contain an unsupported type' {
@@ -1420,7 +1420,7 @@ InModuleScope $script:moduleName {
                     DesiredValues = $mockDesiredValues
                 }
 
-                Test-SQLDscParameterState @testParameters | Should Be $false
+                Test-SQLDscParameterState @testParameters | Should -Be $false
 
                 Assert-MockCalled -CommandName Write-Warning -Exactly -Times 1
             }
@@ -1451,7 +1451,7 @@ InModuleScope $script:moduleName {
                 }
 
                 $mockCorrectErrorMessage = $script:localizedData.PropertyTypeInvalidForValuesToCheck
-                { Test-SQLDscParameterState @testParameters } | Should Throw $mockCorrectErrorMessage
+                { Test-SQLDscParameterState @testParameters } | Should -Throw $mockCorrectErrorMessage
             }
         }
 
@@ -1487,14 +1487,14 @@ InModuleScope $script:moduleName {
             It 'Should return the correct error record with the correct error message' {
 
                 $errorRecord = New-TerminatingError -ErrorType 'NoKeyFound' -FormatArgs 'Dummy error'
-                $errorRecord.Exception.Message | Should Be 'No Localization key found for ErrorType: ''Dummy error''.'
+                $errorRecord.Exception.Message | Should -Be 'No Localization key found for ErrorType: ''Dummy error''.'
             }
         }
 
         Context -Name 'When building a localized error message that does not exists' -Fixture {
             It 'Should return the correct error record with the correct error message' {
                 $errorRecord = New-TerminatingError -ErrorType 'UnknownDummyMessage' -FormatArgs 'Dummy error'
-                $errorRecord.Exception.Message | Should Be 'No Localization key found for ErrorType: ''UnknownDummyMessage''.'
+                $errorRecord.Exception.Message | Should -Be 'No Localization key found for ErrorType: ''UnknownDummyMessage''.'
             }
         }
 
@@ -1504,11 +1504,11 @@ InModuleScope $script:moduleName {
     Describe 'Testing Split-FullSQLInstanceName' {
         Context 'When the "FullSQLInstanceName" parameter is not supplied' {
             It 'Should throw when the "FullSQLInstanceName" parameter is $null' {
-                { Split-FullSQLInstanceName -FullSQLInstanceName $null } | Should throw
+                { Split-FullSQLInstanceName -FullSQLInstanceName $null } | Should -Throw
             }
 
             It 'Should throw when the "FullSQLInstanceName" parameter is an empty string' {
-                { Split-FullSQLInstanceName -FullSQLInstanceName '' } | Should throw
+                { Split-FullSQLInstanceName -FullSQLInstanceName '' } | Should -Throw
             }
         }
 
@@ -1516,17 +1516,17 @@ InModuleScope $script:moduleName {
             It 'Should throw when the "FullSQLInstanceName" parameter is "ServerName"' {
                 $result = Split-FullSQLInstanceName -FullSQLInstanceName 'ServerName'
 
-                $result.Count | Should Be 2
-                $result.SQLServer | Should Be 'ServerName'
-                $result.SQLInstanceName | Should Be 'MSSQLSERVER'
+                $result.Count | Should -Be 2
+                $result.SQLServer | Should -Be 'ServerName'
+                $result.SQLInstanceName | Should -Be 'MSSQLSERVER'
             }
 
             It 'Should throw when the "FullSQLInstanceName" parameter is "ServerName\InstanceName"' {
                 $result = Split-FullSQLInstanceName -FullSQLInstanceName 'ServerName\InstanceName'
 
-                $result.Count | Should Be 2
-                $result.SQLServer | Should Be 'ServerName'
-                $result.SQLInstanceName | Should Be 'InstanceName'
+                $result.Count | Should -Be 2
+                $result.SQLServer | Should -Be 'ServerName'
+                $result.SQLInstanceName | Should -Be 'InstanceName'
             }
         }
     }
@@ -1569,7 +1569,7 @@ InModuleScope $script:moduleName {
             It "Should throw the correct error when the logins '$($clusterServiceName)' or '$($systemAccountName)' are absent" {
                 $mockServerObject.Logins = @{}
 
-                { Test-ClusterPermissions -ServerObject $mockServerObject } | Should Throw ( "The cluster does not have permissions to manage the Availability Group on '{0}\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either '$($clusterServiceName)' or '$($systemAccountName)'." -f $mockServerObject.NetName,$mockServerObject.ServiceName )
+                { Test-ClusterPermissions -ServerObject $mockServerObject } | Should -Throw ( "The cluster does not have permissions to manage the Availability Group on '{0}\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either '$($clusterServiceName)' or '$($systemAccountName)'." -f $mockServerObject.NetName,$mockServerObject.ServiceName )
 
                 Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter {
                     $LoginName -eq $clusterServiceName
@@ -1580,7 +1580,7 @@ InModuleScope $script:moduleName {
             }
 
             It "Should throw the correct error when the logins '$($clusterServiceName)' and '$($systemAccountName)' do not have permissions to manage availability groups" {
-                { Test-ClusterPermissions -ServerObject $mockServerObject } | Should Throw ( "The cluster does not have permissions to manage the Availability Group on '{0}\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either '$($clusterServiceName)' or '$($systemAccountName)'." -f $mockServerObject.NetName,$mockServerObject.ServiceName )
+                { Test-ClusterPermissions -ServerObject $mockServerObject } | Should -Throw ( "The cluster does not have permissions to manage the Availability Group on '{0}\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either '$($clusterServiceName)' or '$($systemAccountName)'." -f $mockServerObject.NetName,$mockServerObject.ServiceName )
 
                 Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
                     $LoginName -eq $clusterServiceName
@@ -1595,7 +1595,7 @@ InModuleScope $script:moduleName {
             It "Should return NullOrEmpty when '$($clusterServiceName)' is present and has the permissions to manage availability groups" {
                 $mockClusterServicePermissionsPresent = $true
 
-                Test-ClusterPermissions -ServerObject $mockServerObject | Should Be $true
+                Test-ClusterPermissions -ServerObject $mockServerObject | Should -Be $true
 
                 Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
                     $LoginName -eq $clusterServiceName
@@ -1608,7 +1608,7 @@ InModuleScope $script:moduleName {
             It "Should return NullOrEmpty when '$($systemAccountName)' is present and has the permissions to manage availability groups" {
                 $mockSystemPermissionsPresent = $true
 
-                Test-ClusterPermissions -ServerObject $mockServerObject | Should Be $true
+                Test-ClusterPermissions -ServerObject $mockServerObject | Should -Be $true
 
                 Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
                     $LoginName -eq $clusterServiceName
@@ -1642,7 +1642,7 @@ InModuleScope $script:moduleName {
             }
 
             It 'Should restart the service and dependent service' {
-                { Restart-ReportingServicesService -SQLInstanceName 'MSSQLSERVER' } | Should Not Throw
+                { Restart-ReportingServicesService -SQLInstanceName 'MSSQLSERVER' } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Get-Service -ParameterFilter {
                     $Name -eq $mockServiceName
@@ -1673,13 +1673,58 @@ InModuleScope $script:moduleName {
             }
 
             It 'Should restart the service and dependent service' {
-                { Restart-ReportingServicesService -SQLInstanceName 'TEST' } | Should Not Throw
+                { Restart-ReportingServicesService -SQLInstanceName 'TEST' } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Get-Service -ParameterFilter {
                     $Name -eq $mockServiceName
                 } -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
+            }
+        }
+    }
+
+    Describe 'Testing Test-ActiveNode' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+
+            $failoverClusterInstanceTestCases = @(
+                @{
+                    ComputerNamePhysicalNetBIOS = $env:COMPUTERNAME
+                    Result = $true
+                },
+                @{
+                    ComputerNamePhysicalNetBIOS = 'AnotherNode'
+                    Result = $false
+                }
+            )
+        }
+
+        Context 'When function is executed on a standalone instance' {
+            BeforeAll {
+                $mockServerObject.IsMemberOfWsfcCluster = $false
+            }
+
+            It 'Should return "$true"' {
+                Test-ActiveNode -ServerObject $mockServerObject | Should Be $true
+            }
+        }
+
+        Context 'When function is executed on a failover cluster instance (FCI)' {
+            BeforeAll {
+                $mockServerObject.IsMemberOfWsfcCluster = $true
+            }
+
+            It 'Should return "<Result>" when the node name is "<ComputerNamePhysicalNetBIOS>"' -TestCases $failoverClusterInstanceTestCases {
+                param
+                (
+                    $ComputerNamePhysicalNetBIOS,
+                    $Result
+                )
+
+                $mockServerObject.ComputerNamePhysicalNetBIOS = $ComputerNamePhysicalNetBIOS
+
+                Test-ActiveNode -ServerObject $mockServerObject | Should Be $Result
             }
         }
     }

@@ -68,10 +68,14 @@ function Get-TargetResource
         Ensure                = ''
         Force                 = $false
         MatchDatabaseOwner    = $false
+        IsActiveNode          = $false
     }
 
     # Connect to the instance
     $serverObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+
+    # Is this node actively hosting the SQL instance?
+    $currentConfiguration.IsActiveNode = Test-ActiveNode -ServerObject $serverObject
 
     # Get the Availability group object
     $availabilityGroup = $serverObject.AvailabilityGroups[$AvailabilityGroupName]
@@ -139,6 +143,10 @@ function Get-TargetResource
         If set to $false, the owner of the database will be the PSDscRunAsCredential.
 
         The default is '$true'.
+
+    .PARAMETER ProcessOnlyOnActiveNode
+        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+        Not used in Set-TargetResource.
 #>
 function Set-TargetResource
 {
@@ -176,7 +184,11 @@ function Set-TargetResource
 
         [Parameter()]
         [Boolean]
-        $MatchDatabaseOwner
+        $MatchDatabaseOwner,
+
+        [Parameter()]
+        [Boolean]
+        $ProcessOnlyOnActiveNode
     )
 
     Import-SQLPSModule
@@ -597,6 +609,9 @@ function Set-TargetResource
         If set to $false, the owner of the database will be the PSDscRunAsCredential.
 
         The default is '$true'.
+
+    .PARAMETER ProcessOnlyOnActiveNode
+        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
 #>
 function Test-TargetResource
 {
@@ -635,7 +650,11 @@ function Test-TargetResource
 
         [Parameter()]
         [Boolean]
-        $MatchDatabaseOwner
+        $MatchDatabaseOwner,
+
+        [Parameter()]
+        [Boolean]
+        $ProcessOnlyOnActiveNode
     )
 
     $configurationInDesiredState = $true
@@ -648,6 +667,16 @@ function Test-TargetResource
         BackupPath            = $BackupPath
     }
     $currentConfiguration = Get-TargetResource @getTargetResourceParameters
+
+    <#
+        If this is supposed to process only the active node, and this is not the
+        active node, don't bother evaluating the test.
+    #>
+    if ( $ProcessOnlyOnActiveNode -and -not $currentConfiguration.IsActiveNode )
+    {
+        Write-Verbose -Message ( $script:localizedData.NotActiveNode -f $env:COMPUTERNAME,$SQLInstanceName )
+        return $configurationInDesiredState
+    }
 
     # Connect to the defined instance
     $serverObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName

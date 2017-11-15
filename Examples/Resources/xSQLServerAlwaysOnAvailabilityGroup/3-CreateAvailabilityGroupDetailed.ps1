@@ -1,6 +1,11 @@
 <#
 .EXAMPLE
     This example shows how to ensure that the Availability Group 'TestAG' exists.
+
+    In the event this is applied to a Failover Cluster Instance (FCI), the
+    ProcessOnlyOnActiveNode property will tell the Test-TargetResource function
+    to evaluate if any changes are needed if the node is actively hosting the
+    SQL Server Instance.
 #>
 
 $ConfigurationData = @{
@@ -8,6 +13,7 @@ $ConfigurationData = @{
         @{
             NodeName                      = '*'
             SQLInstanceName               = 'MSSQLSERVER'
+            ProcessOnlyOnActiveNode       = $true
 
             AutomatedBackupPreference     = 'Primary'
             AvailabilityMode              = 'SynchronousCommit'
@@ -16,7 +22,7 @@ $ConfigurationData = @{
             ConnectionModeInSecondaryRole = 'AllowNoConnections'
             FailoverMode                  = 'Automatic'
             HealthCheckTimeout            = 15000
-            
+
             BasicAvailabilityGroup        = $False
             DatabaseHealthTrigger         = $True
             DtcSupportEnabled             = $True
@@ -83,7 +89,8 @@ Configuration Example
                 Name                          = 'TestAG'
                 SQLInstanceName               = $Node.SQLInstanceName
                 SQLServer                     = $Node.NodeName
-                
+                ProcessOnlyOnActiveNode       = $Node.ProcessOnlyOnActiveNode
+
                 AutomatedBackupPreference     = $Node.AutomatedBackupPreference
                 AvailabilityMode              = $Node.AvailabilityMode
                 BackupPriority                = $Node.BackupPriority
@@ -91,7 +98,7 @@ Configuration Example
                 ConnectionModeInSecondaryRole = $Node.ConnectionModeInSecondaryRole
                 FailoverMode                  = $Node.FailoverMode
                 HealthCheckTimeout            = $Node.HealthCheckTimeout
-                
+
                 # sql server 2016 or later only
                 BasicAvailabilityGroup        = $Node.BasicAvailabilityGroup
                 DatabaseHealthTrigger         = $Node.DatabaseHealthTrigger

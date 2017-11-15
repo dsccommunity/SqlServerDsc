@@ -13,6 +13,9 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 
+# Loading mocked classes
+Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SMO.cs )
+
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:DSCModuleName `
     -DSCResourceName $script:DSCResourceName `
@@ -40,6 +43,7 @@ try
         $mockPhysicalMemoryCapacity = 8589934592
         $mockExpectedMinMemoryForAlterMethod = 0
         $mockExpectedMaxMemoryForAlterMethod = 2147483647
+        $mockTestActiveNode = $true
 
         # Default parameters that are used for the It-blocks
         $mockDefaultParameters = @{
@@ -52,9 +56,10 @@ try
         $mockConnectSQL = {
             return @(
                 (
-                    New-Object Object |
-                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSQLServerInstanceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSQLServerName -PassThru |
+                    # New-Object Object |
+                    New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server |
+                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockSQLServerInstanceName -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockSQLServerName -PassThru -Force |
                         Add-Member -MemberType ScriptProperty -Name Configuration -Value {
                             return @( ( New-Object Object |
                                 Add-Member -MemberType ScriptProperty -Name MinServerMemory -Value {
@@ -74,7 +79,7 @@ try
                                     ) )
                                 } -PassThru -Force
                             ) )
-                        } -PassThru |
+                        } -PassThru -Force |
                         Add-Member -MemberType ScriptMethod -Name Alter -Value {
                             if ( $this.Configuration.MinServerMemory.ConfigValue -ne $mockExpectedMinMemoryForAlterMethod )
                             {
@@ -93,6 +98,7 @@ try
 
         Describe "MSFT_xSQLServerMemory\Get-TargetResource" -Tag 'Get'{
             Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+            Mock -CommandName Test-ActiveNode -MockWith { return $mockTestActiveNode } -Verifiable
 
             Context 'When the system is either in the desired state or not in the desired state' {
                 $testParameters = $mockDefaultParameters
@@ -100,20 +106,24 @@ try
                 $result = Get-TargetResource @testParameters
 
                 It 'Should return the current value for MinMemory' {
-                    $result.MinMemory | Should Be 2048
+                    $result.MinMemory | Should -Be 2048
                 }
 
                 It 'Should return the current value for MaxMemory' {
-                    $result.MaxMemory | Should Be 10300
+                    $result.MaxMemory | Should -Be 10300
                 }
 
                 It 'Should return the same values as passed as parameters' {
-                    $result.SQLServer | Should Be $testParameters.SQLServer
-                    $result.SQLInstanceName | Should Be $testParameters.SQLInstanceName
+                    $result.SQLServer | Should -Be $testParameters.SQLServer
+                    $result.SQLInstanceName | Should -Be $testParameters.SQLInstanceName
                 }
 
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+
+                It 'Should call the mock function Test-ActiveNode' {
+                    Assert-MockCalled Test-ActiveNode -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -161,6 +171,8 @@ try
                 $mockGetCimInstanceOS
             } -ParameterFilter { $ClassName -eq 'Win32_operatingsystem' } -Verifiable
 
+            Mock -CommandName Test-ActiveNode -MockWith { return $mockTestActiveNode } -Verifiable
+
             Context 'When the system is not in the desired state and DynamicAlloc is set to false' {
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
@@ -172,7 +184,7 @@ try
 
                 It 'Should return the state as false when desired MinMemory and MaxMemory are not present' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -194,7 +206,7 @@ try
 
                 It 'Should return the state as false when desired MaxMemory is not present' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -217,7 +229,7 @@ try
 
                 It 'Should return the state as true when desired MinMemory and MaxMemory are present' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -238,7 +250,7 @@ try
                 }
 
                 It 'Should throw the correct error' {
-                    { Test-TargetResource @testParameters } | Should Throw 'The parameter MaxMemory must be null when DynamicAlloc is set to true.'
+                    { Test-TargetResource @testParameters } | Should -Throw 'The parameter MaxMemory must be null when DynamicAlloc is set to true.'
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -258,7 +270,7 @@ try
                 }
 
                 It 'Should throw the correct error' {
-                    {Test-TargetResource @testParameters } | Should Throw 'The parameter MaxMemory must not be null when DynamicAlloc is set to false.'
+                    {Test-TargetResource @testParameters } | Should -Throw 'The parameter MaxMemory must not be null when DynamicAlloc is set to false.'
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -279,7 +291,7 @@ try
 
                 It 'Should return the state as false when desired MinMemory and MaxMemory are not present' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -305,6 +317,50 @@ try
                 }
             }
 
+            Context 'When the system is not in the desired state, DynamicAlloc is set to true and ProcessOnlyOnActiveNode is set to true' {
+                AfterAll {
+                    $mockTestActiveNode = $true
+                }
+
+                BeforeAll {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Ensure                  = 'Present'
+                        DynamicAlloc            = $true
+                        ProcessOnlyOnActiveNode = $true
+                    }
+
+                    $mockTestActiveNode = $false
+                }
+
+                It 'Should return the state as true' {
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $true
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+
+                It 'Should not call the mock function Get-CimInstance with ClassName equal to Win32_PhysicalMemory' {
+                    Assert-MockCalled Get-CimInstance -Exactly -Times 0 -ParameterFilter {
+                        $ClassName -eq 'Win32_PhysicalMemory'
+                    } -Scope Context
+                }
+
+                It 'Should not call the mock function Get-CimInstance with ClassName equal to Win32_Processor' {
+                    Assert-MockCalled Get-CimInstance -Exactly -Times 0 -ParameterFilter {
+                        $ClassName -eq 'Win32_Processor'
+                    } -Scope Context
+                }
+
+                It 'Should not call the mock function Get-CimInstance with ClassName equal to Win32_operatingsystem' {
+                    Assert-MockCalled Get-CimInstance -Exactly -Times 0 -ParameterFilter {
+                        $ClassName -eq 'Win32_operatingsystem'
+                    } -Scope Context
+                }
+            }
+
             $mockMinServerMemory = 0
             $mockMaxServerMemory = 12083
 
@@ -319,7 +375,7 @@ try
 
                 It 'Should return the state as true when desired MinMemory and MaxMemory are present' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -358,7 +414,7 @@ try
 
                 It 'Should return the state as false when desired MinMemory and MaxMemory are not set to the default values' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -383,7 +439,7 @@ try
 
                 It 'Should return the state as true when desired MinMemory and MaxMemory are present' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -404,7 +460,7 @@ try
                 }
 
                 It 'Should not throw an error' {
-                    { Test-TargetResource @testParameters } | Should Not Throw
+                    { Test-TargetResource @testParameters } | Should -Not -Throw
                 }
             }
 
@@ -464,7 +520,7 @@ try
                 }
 
                 It 'Should throw the correct error' {
-                    { Set-TargetResource @testParameters } | Should Throw 'The parameter MaxMemory must be null when DynamicAlloc is set to true.'
+                    { Set-TargetResource @testParameters } | Should -Throw 'The parameter MaxMemory must be null when DynamicAlloc is set to true.'
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -484,7 +540,7 @@ try
                 }
 
                 It 'Should throw the correct error' {
-                    { Set-TargetResource @testParameters } | Should Throw 'The parameter MaxMemory must not be null when DynamicAlloc is set to false.'
+                    { Set-TargetResource @testParameters } | Should -Throw 'The parameter MaxMemory must not be null when DynamicAlloc is set to false.'
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -504,7 +560,7 @@ try
                 }
 
                 It 'Should set the MinMemory and MaxMemory to the default values' {
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -533,7 +589,7 @@ try
                 }
 
                 It 'Should set the MinMemory and MaxMemory to the correct values when Ensure parameter is set to Present and DynamicAlloc is set to false' {
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -554,7 +610,7 @@ try
                 }
 
                 It 'Should set the MaxMemory to the correct values when Ensure parameter is set to Present and DynamicAlloc is set to true' {
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -596,7 +652,7 @@ try
                 }
 
                 It 'Should set the MaxMemory to the correct values when Ensure parameter is set to Present and DynamicAlloc is set to true' {
-                    { Set-TargetResource @testParameters } | Should Not Throw
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -660,7 +716,7 @@ try
                 }
 
                 It 'Should throw the correct error' {
-                    { Set-TargetResource @testParameters } | Should Throw ("Failed to alter the server configuration memory for $($env:COMPUTERNAME)" + "\" +`
+                    { Set-TargetResource @testParameters } | Should -Throw ("Failed to alter the server configuration memory for $($env:COMPUTERNAME)" + "\" +`
                                                                         "$mockSQLServerInstanceName. InnerException: Exception calling ""Alter"" with ""0"" argument(s): " + `
                                                                         """Mock Alter Method was called with invalid operation.""")
                 }
@@ -686,7 +742,7 @@ try
                 }
 
                 It 'Should throw the correct error' {
-                    { Set-TargetResource @testParameters } | Should Throw 'Failed to calculate dynamically the maximum memory.'
+                    { Set-TargetResource @testParameters } | Should -Throw 'Failed to calculate dynamically the maximum memory.'
                 }
 
                 It 'Should call the mock function Connect-SQL' {
