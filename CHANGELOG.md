@@ -47,6 +47,9 @@
 - Changes to SqlDatabaseRole
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
     to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+- Changes to SqlServerConfiguration
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
 - Changes to SqlServerEndpoint
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
     to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
