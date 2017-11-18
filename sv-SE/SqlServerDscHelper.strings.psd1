@@ -41,7 +41,7 @@ ConvertFrom-StringData @'
 
     # - NOTE!
     # - Below strings are used by helper functions New-TerminatingError and New-WarningMessage.
-    # - These strings were merged from old xSQLServer.strings.psd1. These will be moved to it's individual
+    # - These strings were merged from old SqlServerDsc.strings.psd1. These will be moved to it's individual
     # - resource when that resources get moved over to the new localization.
     # - NOTE!
 

@@ -93,7 +93,7 @@ try
 
         #endregion Pester Test Initialization
 
-        Describe 'SqlServerAGListener\Get-TargetResource' {
+        Describe 'SqlAGListener\Get-TargetResource' {
             BeforeEach {
                 $testParameters = $defaultParameters.Clone()
 
@@ -224,7 +224,7 @@ try
             Assert-VerifiableMock
         }
 
-        Describe 'SqlServerAGListener\Test-TargetResource' {
+        Describe 'SqlAGListener\Test-TargetResource' {
             BeforeEach {
                 $testParameters = $defaultParameters.Clone()
             }
@@ -509,7 +509,7 @@ try
             Assert-VerifiableMock
         }
 
-        Describe 'SqlServerAGListener\Set-TargetResource' {
+        Describe 'SqlAGListener\Set-TargetResource' {
             BeforeEach {
                 $testParameters = $defaultParameters.Clone()
 

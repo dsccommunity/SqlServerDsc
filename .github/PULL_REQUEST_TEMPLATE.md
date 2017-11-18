@@ -3,7 +3,7 @@ Thanks for submitting a Pull Request (PR) to this project.
 Your contribution to this project is greatly appreciated!
 
 Please make sure you have read the contributing section
-at https://github.com/PowerShell/xSQLServer#contributing.
+at https://github.com/PowerShell/SqlServerDsc#contributing.
 
 Please prefix the PR title with the resource name,
 i.e. 'SqlSetup: My short description'

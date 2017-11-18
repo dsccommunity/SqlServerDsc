@@ -342,8 +342,8 @@ function Get-SqlInstanceMajorVersion
         Returns a localized error message.
 
         This helper function is obsolete, should use new helper functions.
-        https://github.com/PowerShell/xSQLServer/blob/dev/CONTRIBUTING.md#localization
-        https://github.com/PowerShell/xSQLServer/blob/dev/DSCResources/CommonResourceHelper.psm1
+        https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#localization
+        https://github.com/PowerShell/SqlServerDsc/blob/dev/DSCResources/CommonResourceHelper.psm1
 
         Strings in this function has not been localized since this helper function should be removed
         when all resources has moved over to the new localization,
@@ -441,7 +441,7 @@ function New-TerminatingError
 
         This helper function is obsolete, should use Write-Warning together with individual resource
         localization strings.
-        https://github.com/PowerShell/xSQLServer/blob/dev/CONTRIBUTING.md#localization
+        https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#localization
 
         Strings in this function has not been localized since this helper function should be removed
         when all resources has moved over to the new localization,
@@ -496,7 +496,7 @@ function New-WarningMessage
 
     This helper function is obsolete, should use Write-Verbose together with individual resource
     localization strings.
-    https://github.com/PowerShell/xSQLServer/blob/dev/CONTRIBUTING.md#localization
+    https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#localization
 
     Strings in this function has not been localized since this helper function should be removed
     when all resources has moved over to the new localization,

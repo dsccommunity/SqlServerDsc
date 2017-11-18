@@ -55,7 +55,7 @@ Configuration MSFT_SqlSetup_InstallSqlEngineAsSystem_Config
 
     Import-DscResource -ModuleName 'PSDscResources'
     Import-DscResource -ModuleName 'xStorage'
-    Import-DscResource -ModuleName 'SqlServerDSC'
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost {
         xMountImage 'MountIsoMedia'
