@@ -111,13 +111,13 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 
 * [**SqlAG**](#sqlag)
   resource to ensure an availability group is present or absent.
-* [**SqlAGDatabase**](#SqlAGDatabase)
+* [**SqlAGDatabase**](#sqlagdatabase)
   to manage the database membership in Availability Groups.
+* [**SqlAGListener**](#sqlaglistener)
+  Create or remove an availability group listener.
 * [**SqlAGReplica**](#sqlagreplica)
   resource to ensure an availability group replica is present or absent.
 * [**SqlAlias**](#sqlalias) resource to manage SQL Server client Aliases.
-* [**SqlAGListener**](#sqlaglistener)
-  Create or remove an availability group listener.
 * [**SqlAlwaysOnService**](#sqlalwaysonservice) resource to enable
   always on on a SQL Server.
 * [**SqlDatabase**](#sqldatabase) resource to manage ensure database
@@ -132,6 +132,10 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   to manage database recovery model.
 * [**SqlDatabaseRole**](#sqldatabaserole) resource to manage SQL
   database roles.
+* [**SqlRS**](#sqlrs) configures SQL Server Reporting
+  Services to use a database engine in another instance.
+* [**SqlRSSecureConnectionLevel**](#sqlrssecureconnectionlevel) sets
+  the secure connection level for SQL Server Reporting Services.
 * [**SqlScript**](#sqlscript) resource to extend DSC Get/Set/Test
   functionality to T-SQL.
 * [**SqlServerConfiguration**](#sqlserverconfiguration) resource to manage
@@ -155,10 +159,6 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * [**SqlServiceAccount**](#sqlserviceaccount) Manage the service account
   for SQL Server services.
 * [**SqlSetup**](#sqlsetup) installs a standalone SQL Server instance.
-* [**SqlRS**](#sqlrs) configures SQL Server Reporting
-  Services to use a database engine in another instance.
-* [**SqlRSSecureConnectionLevel**](#sqlrssecureconnectionlevel) sets
-  the secure connection level for SQL Server Reporting Services.
 * [**SqlWaitForAG**](#sqlwaitforag) resource to
   wait until availability group is created on primary server.
 * [**SqlWindowsFirewall**](#sqlwindowsfirewall) configures firewall settings to
