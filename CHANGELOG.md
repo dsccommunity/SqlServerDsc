@@ -1,6 +1,11 @@
-# Change log for xSQLServer
+# Change log for SqlServerDsc
 
 ## Unreleased
+
+- BREAKING CHANGE: Significant rename to reduce length of Resource names
+  - See [issue #851](https://github.com/PowerShell/xSQLServer/issues/851) for a
+  complete table mapping rename changes.
+  - Impact to all resources
 
 ## 9.0.0.0
 

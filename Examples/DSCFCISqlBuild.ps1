@@ -5,7 +5,7 @@ $OutputPath = 'F:\DSCConfig'
 Configuration FCISQL
 {
     Import-DscResource –Module PSDesiredStateConfiguration
-    Import-DscResource -Module xSQLServer
+    Import-DscResource -Module SqlServerDSC
     Import-DscResource -Module xFailoverCluster
 
     Node $AllNodes.NodeName
@@ -64,7 +64,7 @@ Configuration FCISQL
             SQLSvcAccount = $Node.InstallerServiceAccount
         }
 
-        xSqlServerFirewall "FirewallMSSQLSERVER"
+        SqlWindowsFirewall "FirewallMSSQLSERVER"
         {
             DependsOn = "[xSQLServerFailoverClusterSetup]PrepareMSSQLSERVER"
             SourcePath = $Node.SourcePath
@@ -212,4 +212,3 @@ Workflow StartConfigs
 }
 
 StartConfigs -Computers $computers -Path $OutputPath
-

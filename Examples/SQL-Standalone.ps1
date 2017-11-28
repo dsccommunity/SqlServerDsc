@@ -5,7 +5,7 @@ param ()
 
 Configuration SQLSA
 {
-    Import-DscResource -Module xSQLServer
+    Import-DscResource -Module SqlServerDSC
 
     # Set role and instance variables
     $Roles = $AllNodes.Roles | Sort-Object -Unique
@@ -20,7 +20,7 @@ Configuration SQLSA
                 $Role.Contains("Database") -or
                 $Role.Contains("Datawarehouse") -or
                 $Role.Contains("Reporting") -or
-                $Role.Contains("Analysis") -or 
+                $Role.Contains("Analysis") -or
                 $Role.Contains("Integration")
             )
             {
@@ -28,7 +28,7 @@ Configuration SQLSA
                 Set-Variable -Name ($Role.Replace(" ","").Replace(".","").Replace("Server","Instance")) -Value $Instance
             }
         }
-    }    
+    }
 
     Node $AllNodes.NodeName
     {
@@ -79,7 +79,7 @@ Configuration SQLSA
                     ASConfigDir = "O:\Program Files\Microsoft SQL Server\MSAS11.MSSQLSERVER\OLAP\Config"
                 }
 
-                xSqlServerFirewall ($Node.NodeName + $SQLInstanceName)
+                SqlWindowsFirewall ($Node.NodeName + $SQLInstanceName)
                 {
                     DependsOn = ("[xSqlServerSetup]" + $Node.NodeName + $SQLInstanceName)
                     SourcePath = $Node.SourcePath
@@ -146,4 +146,3 @@ foreach($Node in $ConfigurationData.AllNodes)
 SQLSA -ConfigurationData $ConfigurationData
 Set-DscLocalConfigurationManager -Path .\SQLSA -Verbose
 Start-DscConfiguration -Path .\SQLSA -Verbose -Wait -Force
-

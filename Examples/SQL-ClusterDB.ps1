@@ -5,7 +5,7 @@ param ()
 
 Configuration SQL
 {
-    Import-DscResource -Module xSQLServer
+    Import-DscResource -Module SqlServerDSC
     Import-DscResource -Module xFailoverCluster
 
     Node $AllNodes.NodeName
@@ -104,7 +104,7 @@ Configuration SQL
             SQLSvcAccount = $Node.SQLServiceAccount
         }
 
-        xSqlServerFirewall "FirewallMSSQLSERVER"
+        SqlWindowsFirewall "FirewallMSSQLSERVER"
         {
             DependsOn = "[xSQLServerFailoverClusterSetup]PrepareMSSQLSERVER"
             SourcePath = $Node.SourcePath
@@ -126,8 +126,8 @@ Configuration SQL
                 RetryIntervalSec = 5
                 RetryCount = 720
             }
-            
-            xSQLServerFailoverClusterSetup "CompleteMSSQLSERVER"
+
+            SqlServerDSCFailoverClusterSetup "CompleteMSSQLSERVER"
             {
                 DependsOn = @(
                     "[WaitForAll]Cluster",
@@ -200,4 +200,3 @@ foreach($Node in $ConfigurationData.AllNodes)
 SQL -ConfigurationData $ConfigurationData
 Set-DscLocalConfigurationManager -Path .\SQL -Verbose
 Start-DscConfiguration -Path .\SQL -Verbose -Wait -Force
-
