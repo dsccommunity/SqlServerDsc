@@ -40,6 +40,10 @@ The DSC resources contained in SqlServerDsc use the following naming convention:
 <Module Identifier>[<Component>][<Action>]<Scope>{<Feature>|<Property>}
 ```
 
+The following list describes the components that make up a resource name and
+lists possible names used for each of the components. The component names are
+not limited to the names in this list.
+
 - **Module Identifier**
   - **Sql**
 - **Component**
@@ -82,7 +86,7 @@ The DSC resources contained in SqlServerDsc use the following naming convention:
   - **Service**
   - **State**
 
-#### Example
+#### Example of Resource Naming
 
 The `SqlServerEndpointPermission` resource name is built using the defined
 naming structure using the following components.
@@ -97,7 +101,7 @@ naming structure using the following components.
 #### mof-based resource
 
 All mof-based resource (with Get/Set/Test-TargetResource) should be prefixed with
-'MSFT\_SqlServer'. I.e. MSFT\_SqlServerConfiguration
+'MSFT\_Sql'. I.e. MSFT\_SqlDatabase
 
 Please note that not all places should contain the prefix 'MSFT\_'.
 
