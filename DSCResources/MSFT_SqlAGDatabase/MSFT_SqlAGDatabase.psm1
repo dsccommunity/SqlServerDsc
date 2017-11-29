@@ -930,7 +930,9 @@ function Get-MatchingDatabaseNames
 
     foreach ( $dbName in $DatabaseName )
     {
-        $matchingDatabaseNames += $ServerObject.Databases | Where-Object -FilterScript { $_.Name -like $dbName } | Select-Object -ExpandProperty Name
+        $matchingDatabaseNames += $ServerObject.Databases |
+            Where-Object -FilterScript { $_.Name -ilike $dbName } |
+            Select-Object -ExpandProperty Name
     }
 
     return $matchingDatabaseNames

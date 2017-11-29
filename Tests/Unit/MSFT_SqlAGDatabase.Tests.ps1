@@ -1476,6 +1476,17 @@ WITH NORECOVERY'
                          $mockPresentDatabaseNames -contains $result | Should -Be $true
                      }
                 }
+
+                It 'Should return an array of database names that match the defined databases when the case does not match' {
+                    $getMatchingDatabaseNamesParameters.DatabaseName = $getMatchingDatabaseNamesParameters.DatabaseName | ForEach-Object -Process { $_.ToLower() }
+
+                    $results = Get-MatchingDatabaseNames @getMatchingDatabaseNamesParameters
+
+                    foreach ( $result in $results )
+                    {
+                        $mockPresentDatabaseNames -contains $result | Should -Be $true
+                    }
+               }
             }
         }
 
