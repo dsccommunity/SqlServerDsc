@@ -8,6 +8,9 @@
   - Impact to all resources
 - Changes to CONTRIBUTING.md
   - Added details to the naming convention used in SqlServerDsc.
+- Changes to SqlAGDatabase
+  - Changed the Get-MatchingDatabaseNames function to be case insensitive when
+  matching database names. ([issue #912](https://github.com/PowerShell/SqlServerDsc/issues/912))
 
 ## 9.0.0.0
 
