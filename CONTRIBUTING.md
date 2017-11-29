@@ -34,14 +34,74 @@ Those SQL Server products that are still supported can be listed at the
 
 ### Naming convention
 
+The DSC resources contained in SqlServerDsc use the following naming convention:
+
 ```naming
-<Module Identifier>[<Component>][<Action>]<Scope>{<Feature> | <Property>}
+<Module Identifier>[<Component>][<Action>]<Scope>{<Feature>|<Property>}
 ```
+
+The following list describes the components that make up a resource name and
+lists possible names used for each of the components. The component names are
+not limited to the names in this list.
+
+- **Module Identifier**
+  - **Sql**
+- **Component**
+  - **\<none\>** - Database Engine _(No component abbreviation)_
+  - **AS** - Analysis Services
+  - **IS** - Integration Services
+  - **RS** - Reporting Services
+- **Action** _(not required)_
+  - **Setup**
+  - **WaitFor**
+- **Scope** - Where the action, feature, or property is being applied.
+  - **AG** (AvailabilityGroup)
+  - **Database**
+  - **Server**
+  - **ServiceAccount**
+  - **Windows**
+- **Feature**
+  - **AlwaysOn** - This is for the overall AlwaysOn feature
+  - **Endpoint**
+  - **Firewall**
+  - **Network**
+  - **Script**
+- **Property** _(not required)_
+  - **Alias**
+  - **Configuration**
+  - **Database**
+  - **DatabaseMembership**
+  - **DefaultLocation**
+  - **Listener**
+  - **Login**
+  - **MaxDop**
+  - **Memory**
+  - **Owner**
+  - **Permission**
+  - **RecoveryModel**
+  - **Replica**
+  - **Replication**
+  - **Role**
+  - **SecureConnectionLevel**
+  - **Service**
+  - **State**
+
+#### Example of Resource Naming
+
+The `SqlServerEndpointPermission` resource name is built using the defined
+naming structure using the following components.
+
+- **Module Identifier**: Sql
+- **Component**: \<blank\>
+- **Action**: \<none\>
+- **Scope**: Server
+- **Feature**: Endpoint
+- **Property**: Permission
 
 #### mof-based resource
 
 All mof-based resource (with Get/Set/Test-TargetResource) should be prefixed with
-'MSFT\_SqlServer'. I.e. MSFT\_SqlServerConfiguration
+'MSFT\_Sql'. I.e. MSFT\_SqlDatabase
 
 Please note that not all places should contain the prefix 'MSFT\_'.
 

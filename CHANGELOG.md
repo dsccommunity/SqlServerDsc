@@ -6,6 +6,8 @@
   - See [issue #851](https://github.com/PowerShell/xSQLServer/issues/851) for a
   complete table mapping rename changes.
   - Impact to all resources
+- Changes to CONTRIBUTING.md
+  - Added details to the naming convention used in SqlServerDsc.
 
 ## 9.0.0.0
 
