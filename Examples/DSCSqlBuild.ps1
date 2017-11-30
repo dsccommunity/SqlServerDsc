@@ -1,11 +1,10 @@
 <#
     .NOTES
-        THIS EXAMPLE IS OBSOLETE. Due to major changes to the resource modules
-        (this and other modules) over the last few months this example has not
-        been updated to reflect those changes.
-        Please refer to the examples in each individual resource example folder
-        for updated examples.
-        https://github.com/PowerShell/SqlServerDsc/tree/dev/Examples/Resources
+        THIS EXAMPLE IS OBSOLETE. Due to major changes in the resource modules
+        over the last several versions, this example has not been updated to reflect
+        those changes.
+        Please refer to the resource example folder for updated examples.
+        https://github.com/PowerShell/SqlServerDsc/tree/master/Examples/Resources
 
         There is an issue open to replace this example, please see issue
         https://github.com/PowerShell/SqlServerDsc/issues/462
