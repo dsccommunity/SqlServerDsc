@@ -10,9 +10,14 @@
   - Impact to all resources
 - Changes to CONTRIBUTING.md
   - Added details to the naming convention used in SqlServerDsc.
+- Changes to SqlServerDsc
+  - The examples in the root of the Examples folder are obsolete. A note was
+    added to the comment-based help in each example stating it is obsolete.
+    This is a temporary measure until they are replaced.
+    ([issue #904](https://github.com/PowerShell/SqlServerDsc/issues/904)).
 - Changes to SqlAGDatabase
   - Changed the Get-MatchingDatabaseNames function to be case insensitive when
-  matching database names. ([issue #912](https://github.com/PowerShell/SqlServerDsc/issues/912))
+    matching database names. ([issue #912](https://github.com/PowerShell/SqlServerDsc/issues/912))
 
 ## 9.0.0.0
 

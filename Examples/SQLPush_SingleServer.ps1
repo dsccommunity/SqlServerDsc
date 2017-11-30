@@ -1,4 +1,14 @@
-#requires -Version 5
+<#
+    .NOTES
+        THIS EXAMPLE IS OBSOLETE. Due to major changes in the resource modules
+        over the last several versions, this example has not been updated to reflect
+        those changes.
+        Please refer to the resource example folder for updated examples.
+        https://github.com/PowerShell/SqlServerDsc/tree/master/Examples/Resources
+
+        There is an issue open to replace this example, please see issue
+        https://github.com/PowerShell/SqlServerDsc/issues/462
+#>
 $computers = 'OHSQL1016'
 $OutputPath = 'D:\DSCLocal'
 $cim = New-CimSession -ComputerName $computers
