@@ -5,7 +5,7 @@
 - BREAKING CHANGE: Resource module has been renamed to SqlServerDsc
   ([issue #916](https://github.com/PowerShell/SqlServerDsc/issues/916)).
 - BREAKING CHANGE: Significant rename to reduce length of resource names
-  - See [issue #851](https://github.com/PowerShell/xSQLServer/issues/851) for a
+  - See [issue #851](https://github.com/PowerShell/SqlServerDsc/issues/851) for a
     complete table mapping rename changes.
   - Impact to all resources.
 - Changes to CONTRIBUTING.md
