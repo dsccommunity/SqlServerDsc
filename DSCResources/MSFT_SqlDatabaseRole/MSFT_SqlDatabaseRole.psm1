@@ -123,12 +123,12 @@ function Get-TargetResource
     }
 
     $returnValue = @{
-        Ensure          = $ensure
-        Name            = $Name
-        ServerName      = $ServerName
+        Ensure       = $ensure
+        Name         = $Name
+        ServerName   = $ServerName
         InstanceName = $InstanceName
-        Database        = $Database
-        Role            = $grantedRole
+        Database     = $Database
+        Role         = $grantedRole
     }
 
     $returnValue
@@ -340,10 +340,10 @@ function Test-TargetResource
 
     $getTargetResourceParameters = @{
         InstanceName = $PSBoundParameters.InstanceName
-        ServerName      = $PSBoundParameters.ServerName
-        Role            = $PSBoundParameters.Role
-        Database        = $PSBoundParameters.Database
-        Name            = $PSBoundParameters.Name
+        ServerName   = $PSBoundParameters.ServerName
+        Role         = $PSBoundParameters.Role
+        Database     = $PSBoundParameters.Database
+        Name         = $PSBoundParameters.Name
     }
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
