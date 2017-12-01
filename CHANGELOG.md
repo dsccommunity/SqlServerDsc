@@ -17,72 +17,72 @@
     ([issue #904](https://github.com/PowerShell/SqlServerDsc/issues/904)).
 - Changes to SqlAG
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlAGDatabase
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
   - Changed the Get-MatchingDatabaseNames function to be case insensitive when
     matching database names. ([issue #912](https://github.com/PowerShell/SqlServerDsc/issues/912))
 - Changes to SqlAGListener
   - BREAKING CHANGE: Parameter NodeName has been renamed to ServerName
-    ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlAGReplica
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlAlwaysOnService
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlDatabase
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes SqlDatabaseDefaultLocation
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlDatabasePermission
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlDatabaseRecoveryModel
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlDatabaseRole
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlServerConfiguration
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlServerEndpoint
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlServerEndpointPermission
   - BREAKING CHANGE: Parameter NodeName has been renamed to ServerName
-    ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlServerEndpointState
   - BREAKING CHANGE: Parameter NodeName has been renamed to ServerName
-    ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlServerLogin
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlServerMaxDop
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlServerMemory
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlServerNetwork
   - BREAKING CHANGE: Parameters SQLServer has been renamed to ServerName
-    ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlServerOwner
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlServerPermission
   - BREAKING CHANGE: Parameter NodeName has been renamed to ServerName
-    ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlServerRole
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 - Changes to SqlServerServiceAccount
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/xSQLServer/issues/)).
+    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
 
 ## 9.0.0.0
 
