@@ -1,7 +1,7 @@
 <#
 .EXAMPLE
     This example shows how to ensure that the server role named
-    AdminSqlforBI is present on instance SQLServer\DSC and only logins
+    AdminSqlforBI is present on instance sqltest.company.local\DSC and only logins
     CONTOSO\SQLAdmin and CONTOSO\SQLAdminBI are members of this role.
 #>
 
@@ -20,9 +20,9 @@ Configuration Example
         {
             Ensure               = 'Present'
             ServerRoleName       = 'AdminSqlforBI'
-            Members              = "CONTOSO\SQLAdmin", "CONTOSO\SQLAdminBI"
-            SQLServer            = 'SQLServer'
-            SQLInstanceName      = 'DSC'
+            Members              = 'CONTOSO\SQLAdmin', 'CONTOSO\SQLAdminBI'
+            ServerName           = 'sqltest.company.local'
+            InstanceName         = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount
         }
     }

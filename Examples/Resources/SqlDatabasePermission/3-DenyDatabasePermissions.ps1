@@ -20,8 +20,8 @@ Configuration Example
             Ensure               = 'Present'
             Name                 = 'CONTOSO\SQLAdmin'
             LoginType            = 'WindowsUser'
-            SQLServer            = 'SQLServer'
-            SQLInstanceName      = 'DSC'
+            ServerName           = 'sqltest.company.local'
+            InstanceName         = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount
         }
 
@@ -30,8 +30,8 @@ Configuration Example
             Ensure               = 'Present'
             Name                 = 'CONTOSO\SQLUser'
             LoginType            = 'WindowsUser'
-            SQLServer            = 'SQLServer'
-            SQLInstanceName      = 'DSC'
+            ServerName           = 'sqltest.company.local'
+            InstanceName         = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount
         }
 
@@ -42,8 +42,8 @@ Configuration Example
             Database             = 'AdventureWorks'
             PermissionState      = 'Deny'
             Permissions          = 'Select', 'Create Table'
-            SQLServer            = 'SQLServer'
-            SQLInstanceName      = 'DSC'
+            ServerName           = 'sqltest.company.local'
+            InstanceName         = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount
         }
 
@@ -54,8 +54,8 @@ Configuration Example
             Database             = 'AdventureWorks'
             PermissionState      = 'Deny'
             Permissions          = 'Select', 'Create Table'
-            SQLServer            = 'SQLServer'
-            SQLInstanceName      = 'DSC'
+            ServerName           = 'sqltest.company.local'
+            InstanceName         = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount
         }
 
@@ -66,8 +66,8 @@ Configuration Example
             Database             = 'AdventureWorksLT'
             PermissionState      = 'Deny'
             Permissions          = 'Select', 'Create Table'
-            SQLServer            = 'SQLServer'
-            SQLInstanceName      = 'DSC'
+            ServerName           = 'sqltest.company.local'
+            InstanceName         = 'DSC'
             PsDscRunAsCredential = $SysAdminAccount
         }
     }
