@@ -1198,8 +1198,8 @@ Initializes and configures SQL Reporting Services server.
 
 * **`[String]` InstanceName** _(Key)_: Name of the SQL Server Reporting Services
   instance to be configured.
-* **`[String]` DatabaseServerName** _(Required)_: Name of the SQL Server to host the
-  Reporting Service database.
+* **`[String]` DatabaseServerName** _(Required)_: Name of the SQL Server to host
+  the Reporting Service database.
 * **`[String]` DatabaseInstanceName** _(Required)_: Name of the SQL Server instance
   to host the Reporting Service database.
 * **`[String]` ReportServerVirtualDir** _(Write)_: Report Server Web Service virtual
