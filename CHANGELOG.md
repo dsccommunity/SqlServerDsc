@@ -32,6 +32,9 @@
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
     to ServerName and InstanceName respectively
     ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+  - BREAKING CHANGE: Parameters PrimaryReplicaSQLServer and PrimaryReplicaSQLInstanceName
+    has been renamed to PrimaryReplicaServerName and PrimaryReplicaInstanceName
+    respectively ([issue #922](https://github.com/PowerShell/SqlServerDsc/issues/922)).
 - Changes to SqlAlwaysOnService
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
     to ServerName and InstanceName respectively

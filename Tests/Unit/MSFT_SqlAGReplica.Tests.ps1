@@ -39,8 +39,8 @@ try
 
         $mockServerName = 'Server1'
         $mockInstanceName = 'MSSQLSERVER'
-        $mockPrimaryReplicaSQLServer = 'Server2'
-        $mockPrimaryReplicaSQLInstanceName = 'MSSQLSERVER'
+        $mockPrimaryReplicaServerName = 'Server2'
+        $mockPrimaryReplicaInstanceName = 'MSSQLSERVER'
         $mockAvailabilityGroupName = 'AG_AllServers'
         $mockAvailabilityGroupReplicaName = $mockServerName
         $mockEnsure = 'Present'
@@ -737,8 +737,8 @@ try
                         AvailabilityGroupName         = $mockAvailabilityGroup2Name
                         ServerName                    = $mockServerName
                         InstanceName                  = $mockInstanceName
-                        PrimaryReplicaSQLServer       = $mockPrimaryReplicaSQLServer
-                        PrimaryReplicaSQLInstanceName = $mockPrimaryReplicaSQLInstanceName
+                        PrimaryReplicaServerName      = $mockPrimaryReplicaServerName
+                        PrimaryReplicaInstanceName    = $mockPrimaryReplicaInstanceName
                         Ensure                        = $mockEnsure
                         AvailabilityMode              = $mockAvailabilityMode
                         BackupPriority                = $mockBackupPriority
@@ -918,7 +918,7 @@ try
 
                 It 'Should create the availability group replica when primary replica server is incorrectly supplied and the availability group exists' {
 
-                    $setTargetResourceParameters.PrimaryReplicaSQLServer = $mockServer3Name
+                    $setTargetResourceParameters.PrimaryReplicaServerName = $mockServer3Name
 
                     { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
 
@@ -1076,8 +1076,8 @@ try
                         AvailabilityGroupName         = $mockAvailabilityGroupName
                         ServerName                    = $mockServerName
                         InstanceName                  = $mockInstanceName
-                        PrimaryReplicaSQLServer       = $mockPrimaryReplicaSQLServer
-                        PrimaryReplicaSQLInstanceName = $mockPrimaryReplicaSQLInstanceName
+                        PrimaryReplicaServerName      = $mockPrimaryReplicaServerName
+                        PrimaryReplicaInstanceName    = $mockPrimaryReplicaInstanceName
                         Ensure                        = $mockEnsure
                         AvailabilityMode              = $mockAvailabilityMode
                         BackupPriority                = $mockBackupPriority
@@ -1278,8 +1278,8 @@ try
                     AvailabilityGroupName         = $mockAvailabilityGroupName
                     ServerName                    = $mockServerName
                     InstanceName                  = $mockInstanceName
-                    PrimaryReplicaSQLServer       = $mockPrimaryReplicaSQLServer
-                    PrimaryReplicaSQLInstanceName = $mockPrimaryReplicaSQLInstanceName
+                    PrimaryReplicaServerName      = $mockPrimaryReplicaServerName
+                    PrimaryReplicaInstanceName    = $mockPrimaryReplicaInstanceName
                     Ensure                        = $mockEnsure
                     AvailabilityMode              = $mockAvailabilityMode
                     BackupPriority                = $mockBackupPriority

@@ -120,10 +120,10 @@ function Get-TargetResource
     .PARAMETER InstanceName
         Name of the SQL instance to be configued.
 
-    .PARAMETER PrimaryReplicaSQLServer
+    .PARAMETER PrimaryReplicaServerName
         Hostname of the SQL Server where the primary replica is expected to be active. If the primary replica is not found here, the resource will attempt to find the host that holds the primary replica and connect to it.
 
-    .PARAMETER PrimaryReplicaSQLInstanceName
+    .PARAMETER PrimaryReplicaInstanceName
         Name of the SQL instance where the primary replica lives.
 
     .PARAMETER Ensure
@@ -180,11 +180,11 @@ function Set-TargetResource
 
         [Parameter()]
         [String]
-        $PrimaryReplicaSQLServer,
+        $PrimaryReplicaServerName,
 
         [Parameter()]
         [String]
-        $PrimaryReplicaSQLInstanceName,
+        $PrimaryReplicaInstanceName,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -383,7 +383,7 @@ function Set-TargetResource
             else
             {
                 # Connect to the instance that is supposed to house the primary replica
-                $primaryReplicaServerObject = Connect-SQL -SQLServer $PrimaryReplicaSQLServer -SQLInstanceName $PrimaryReplicaSQLInstanceName
+                $primaryReplicaServerObject = Connect-SQL -SQLServer $PrimaryReplicaServerName -SQLInstanceName $PrimaryReplicaInstanceName
 
                 # Verify the Availability Group exists on the supplied primary replica
                 $primaryReplicaAvailabilityGroup = $primaryReplicaServerObject.AvailabilityGroups[$AvailabilityGroupName]
@@ -453,7 +453,7 @@ function Set-TargetResource
                 # The Availability Group doesn't exist on the primary replica
                 else
                 {
-                    throw New-TerminatingError -ErrorType AvailabilityGroupNotFound -FormatArgs $AvailabilityGroupName, $PrimaryReplicaSQLInstanceName -ErrorCategory ResourceUnavailable
+                    throw New-TerminatingError -ErrorType AvailabilityGroupNotFound -FormatArgs $AvailabilityGroupName, $PrimaryReplicaInstanceName -ErrorCategory ResourceUnavailable
                 }
             }
         }
@@ -476,10 +476,10 @@ function Set-TargetResource
     .PARAMETER InstanceName
         Name of the SQL instance to be configued.
 
-    .PARAMETER PrimaryReplicaSQLServer
+    .PARAMETER PrimaryReplicaServerName
         Hostname of the SQL Server where the primary replica is expected to be active. If the primary replica is not found here, the resource will attempt to find the host that holds the primary replica and connect to it.
 
-    .PARAMETER PrimaryReplicaSQLInstanceName
+    .PARAMETER PrimaryReplicaInstanceName
         Name of the SQL instance where the primary replica lives.
 
     .PARAMETER Ensure
@@ -536,11 +536,11 @@ function Test-TargetResource
 
         [Parameter()]
         [String]
-        $PrimaryReplicaSQLServer,
+        $PrimaryReplicaServerName,
 
         [Parameter()]
         [String]
-        $PrimaryReplicaSQLInstanceName,
+        $PrimaryReplicaInstanceName,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
