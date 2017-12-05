@@ -21,10 +21,10 @@ $ConfigurationData = @{
             Features                    = 'RS'
 
             # This is values used for the Database Engine instance.
-            RSServer                 = $env:COMPUTERNAME
-            RSInstanceName           = 'RSDB'
-            RSFeatures               = 'SQLENGINE'
-            RSCollation              = 'Finnish_Swedish_CI_AS'
+            DatabaseServerName          = $env:COMPUTERNAME
+            DatabaseServerInstanceName  = 'RSDB'
+            DatabaseServerFeatures      = 'SQLENGINE'
+            DatabaseServerCollation     = 'Finnish_Swedish_CI_AS'
 
             # This is values used for both instances.
             MediaPath                   = 'Z:\Sql2016Media'
@@ -79,13 +79,13 @@ Configuration Example
             Ensure = 'Present'
         }
 
-        xSQLServerSetup 'InstallDatabaseEngine'
+        SqlSetup 'InstallDatabaseEngine'
         {
-            InstanceName          = $Node.RSInstanceName
-            Features              = $Node.RSFeatures
+            InstanceName          = $Node.DatabaseServerInstanceName
+            Features              = $Node.DatabaseServerFeatures
             SourcePath            = $Node.MediaPath
             BrowserSvcStartupType = $Node.BrowserSvcStartupType
-            SQLCollation          = $Node.RSCollation
+            SQLCollation          = $Node.DatabaseServerCollation
             SQLSvcAccount         = $SqlServiceCredential
             AgtSvcAccount         = $SqlAgentServiceCredential
             InstallSharedDir      = $Node.InstallSharedDir
@@ -103,7 +103,7 @@ Configuration Example
             PsDscRunAsCredential  = $SqlInstallCredential
         }
 
-        xSQLServerSetup 'InstallReportingServicesInstance'
+        SqlSetup 'InstallReportingServicesInstance'
         {
             InstanceName          = $Node.InstanceName
             Features              = $Node.Features
@@ -126,14 +126,14 @@ Configuration Example
             PsDscRunAsCredential  = $SqlInstallCredential
         }
 
-        xSQLServerRSConfig 'ConfigureReportingServiceInstance'
+        SqlRS 'ConfigureReportingServiceInstance'
         {
             # Instance name for the Reporting Services.
             InstanceName         = $Node.InstanceName
 
             # Instance for Reporting Services databases.
-            RSSQLServer          = $Node.RSServer
-            RSSQLInstanceName    = $Node.RSInstanceName
+            DatabaseServerName   = $Node.DatabaseServerName
+            DatabaseInstanceName = $Node.DatabaseServerInstanceName
 
             PsDscRunAsCredential = $SqlInstallCredential
 
