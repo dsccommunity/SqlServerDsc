@@ -747,10 +747,10 @@ This resource is used to give connect permission to an endpoint for a user (logi
 * [Add connect permission to an Endpoint](/Examples/Resources/SqlServerEndpointPermission/1-AddConnectPermission.ps1)
 * [Remove the connect permission for an Endpoint](/Examples/Resources/SqlServerEndpointPermission/2-RemoveConnectPermission.ps1)
 * [Add connect permission to both an Always On primary replica and an Always On
-  secondary replica, and where each replica has a different SQL service account](/Examples/Resources/SqlServerEndpointPermission/3-AddConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1)
+  secondary replica, and where each replica has a different SQL service account](/Examples/Resources/SqlServerEndpointPermission/3-AddConnectPermissionToTwoReplicasEachWithDifferentServiceAccount.ps1)
 * [Remove connect permission to both an Always On primary replica and an
   Always On secondary replica, and where each replica has a different SQL service
-  account](/Examples/Resources/SqlServerEndpointPermission/4-RemoveConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1)
+  account](/Examples/Resources/SqlServerEndpointPermission/4-RemoveConnectPermissionForTwoReplicasEachWithDifferentServiceAccount.ps1)
 
 ### SqlServerEndpointState
 
