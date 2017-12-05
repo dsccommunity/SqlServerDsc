@@ -19,13 +19,13 @@ Configuration Example
     node localhost {
         SqlRS DefaultConfiguration
         {
-            InstanceName = 'MSSQLSERVER'
-            RSSQLServer = 'localhost'
-            RSSQLInstanceName = 'MSSQLSERVER'
+            InstanceName                 = 'MSSQLSERVER'
+            DatabaseServerName           = 'localhost'
+            DatabaseInstanceName         = 'MSSQLSERVER'
             ReportServerVirtualDirectory = 'MyReportServer'
-            ReportsVirtualDirectory = 'MyReports'
-            ReportServerReservedUrl = @('http://+:80', 'https://+:443')
-            ReportsReservedUrl = @('http://+:80', 'https://+:443')
+            ReportsVirtualDirectory      = 'MyReports'
+            ReportServerReservedUrl      = @('http://+:80', 'https://+:443')
+            ReportsReservedUrl           = @('http://+:80', 'https://+:443')
         }
     }
 }

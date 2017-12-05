@@ -13,76 +13,97 @@
 - Changes to SqlServerDsc
   - The examples in the root of the Examples folder are obsolete. A note was
     added to the comment-based help in each example stating it is obsolete.
-    This is a temporary measure until they are replaced.
+    This is a temporary measure until they are replaced
     ([issue #904](https://github.com/PowerShell/SqlServerDsc/issues/904)).
 - Changes to SqlAG
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlAGDatabase
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
   - Changed the Get-MatchingDatabaseNames function to be case insensitive when
-    matching database names. ([issue #912](https://github.com/PowerShell/SqlServerDsc/issues/912))
+    matching database names ([issue #912](https://github.com/PowerShell/SqlServerDsc/issues/912)).
 - Changes to SqlAGListener
   - BREAKING CHANGE: Parameter NodeName has been renamed to ServerName
-    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlAGReplica
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlAlwaysOnService
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlDatabase
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes SqlDatabaseDefaultLocation
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlDatabasePermission
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlDatabaseRecoveryModel
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlDatabaseRole
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlRS
+  - BREAKING CHANGE: Parameters RSSQLServer and RSSQLInstanceName has been renamed
+    to DatabaseServerName and DatabaseInstanceName respectively
+    ([issue #923](https://github.com/PowerShell/SqlServerDsc/issues/923)).
 - Changes to SqlServerConfiguration
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlServerEndpoint
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlServerEndpointPermission
   - BREAKING CHANGE: Parameter NodeName has been renamed to ServerName
-    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlServerEndpointState
   - BREAKING CHANGE: Parameter NodeName has been renamed to ServerName
-    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlServerLogin
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlServerMaxDop
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlServerMemory
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlServerNetwork
   - BREAKING CHANGE: Parameters SQLServer has been renamed to ServerName
-    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlServerOwner
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlServerPermission
   - BREAKING CHANGE: Parameter NodeName has been renamed to ServerName
-    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlServerRole
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlServerServiceAccount
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 
 ## 9.0.0.0
 

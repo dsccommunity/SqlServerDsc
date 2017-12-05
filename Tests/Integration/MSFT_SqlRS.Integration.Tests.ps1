@@ -43,8 +43,8 @@ try
     . $configFile
 
     $mockInstanceName = $ConfigurationData.AllNodes.InstanceName
-    $mockRSSQLServer = $ConfigurationData.AllNodes.RSSQLServer
-    $mockRSSQLInstanceName = $ConfigurationData.AllNodes.RSSQLInstanceName
+    $mockDatabaseServerName = $ConfigurationData.AllNodes.DatabaseServerName
+    $mockDatabaseInstanceName = $ConfigurationData.AllNodes.DatabaseInstanceName
 
     Describe "$($script:DSCResourceName)_Integration" {
         BeforeAll {
@@ -94,8 +94,8 @@ try
                 }
 
                 $resourceCurrentState.InstanceName | Should -Be $mockInstanceName
-                $resourceCurrentState.RSSQLServer | Should -Be $mockRSSQLServer
-                $resourceCurrentState.RSSQLInstanceName | Should -Be $mockRSSQLInstanceName
+                $resourceCurrentState.DatabaseServerName | Should -Be $mockDatabaseServerName
+                $resourceCurrentState.DatabaseInstanceName | Should -Be $mockDatabaseInstanceName
                 $resourceCurrentState.IsInitialized | Should -Be $true
             }
 

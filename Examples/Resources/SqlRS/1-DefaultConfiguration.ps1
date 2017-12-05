@@ -14,9 +14,9 @@ Configuration Example
     node localhost {
         SqlRS DefaultConfiguration
         {
-            InstanceName = 'MSSQLSERVER'
-            RSSQLServer = 'localhost'
-            RSSQLInstanceName = 'MSSQLSERVER'
+            InstanceName         = 'MSSQLSERVER'
+            DatabaseServerName   = 'localhost'
+            DatabaseInstanceName = 'MSSQLSERVER'
         }
     }
 }
