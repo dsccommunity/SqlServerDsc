@@ -15,6 +15,8 @@
     added to the comment-based help in each example stating it is obsolete.
     This is a temporary measure until they are replaced.
     ([issue #904](https://github.com/PowerShell/SqlServerDsc/issues/904)).
+  - Added new common test (regression test) for validating the long path
+    issue for compiling resources in Azure Automation.
 - Changes to SqlAG
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
     to ServerName and InstanceName respectivly ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/)).
