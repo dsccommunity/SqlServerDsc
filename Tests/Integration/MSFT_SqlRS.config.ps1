@@ -22,8 +22,8 @@ $ConfigurationData = @{
             ImagePath                   = "$env:TEMP\SQL2016.iso"
             DriveLetter                 = $mockIsoMediaDriveLetter
 
-            RSSQLServer                 = $env:COMPUTERNAME
-            RSSQLInstanceName           = 'DSCSQL2016'
+            DatabaseServerName          = $env:COMPUTERNAME
+            DatabaseInstanceName        = 'DSCSQL2016'
 
             PSDscAllowPlainTextPassword = $true
         }
@@ -118,8 +118,8 @@ Configuration MSFT_SqlRS_InstallReportingServices_Config
                 Instance for Reporting Services databases.
                 Note: This instance is created in a prior integration test.
             #>
-            RSSQLServer          = $Node.RSSQLServer
-            RSSQLInstanceName    = $Node.RSSQLInstanceName
+            DatabaseServerName   = $Node.DatabaseServerName
+            DatabaseInstanceName = $Node.DatabaseInstanceName
 
             PsDscRunAsCredential = $SqlInstallCredential
 

@@ -197,9 +197,9 @@ try
                 Mock -CommandName Get-ItemProperty -MockWith $mockGetItemProperty -Verifiable
 
                 $defaultParameters = @{
-                    InstanceName      = $mockNamedInstanceName
-                    RSSQLServer       = $mockReportingServicesDatabaseServerName
-                    RSSQLInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                    InstanceName         = $mockNamedInstanceName
+                    DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                    DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
                 }
             }
 
@@ -225,8 +225,8 @@ try
                 It 'Should return the same values as passed as parameters' {
                     $resultGetTargetResource = Get-TargetResource @defaultParameters
                     $resultGetTargetResource.InstanceName | Should -Be $mockNamedInstanceName
-                    $resultGetTargetResource.RSSQLServer | Should -Be $mockReportingServicesDatabaseServerName
-                    $resultGetTargetResource.RSSQLInstanceName | Should -Be $mockReportingServicesDatabaseNamedInstanceName
+                    $resultGetTargetResource.DatabaseServerName | Should -Be $mockReportingServicesDatabaseServerName
+                    $resultGetTargetResource.DatabaseInstanceName | Should -Be $mockReportingServicesDatabaseNamedInstanceName
                     $resultGetTargetResource | Should -BeOfType [System.Collections.Hashtable]
                 }
 
@@ -260,8 +260,8 @@ try
                 It 'Should return the same values as passed as parameters' {
                     $resultGetTargetResource = Get-TargetResource @testParameters
                     $resultGetTargetResource.InstanceName | Should -Be $mockDefaultInstanceName
-                    $resultGetTargetResource.RSSQLServer | Should -Be $mockReportingServicesDatabaseServerName
-                    $resultGetTargetResource.RSSQLInstanceName | Should -Be $mockReportingServicesDatabaseDefaultInstanceName
+                    $resultGetTargetResource.DatabaseServerName | Should -Be $mockReportingServicesDatabaseServerName
+                    $resultGetTargetResource.DatabaseInstanceName | Should -Be $mockReportingServicesDatabaseDefaultInstanceName
                     $resultGetTargetResource | Should -BeOfType [System.Collections.Hashtable]
                 }
 
@@ -327,9 +327,9 @@ try
                         }
 
                         $defaultParameters = @{
-                            InstanceName      = $mockNamedInstanceName
-                            RSSQLServer       = $mockReportingServicesDatabaseServerName
-                            RSSQLInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                            InstanceName         = $mockNamedInstanceName
+                            DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
                         }
                     }
 
@@ -410,8 +410,8 @@ try
 
                         $testParameters = @{
                             InstanceName                 = $mockNamedInstanceName
-                            RSSQLServer                  = $mockReportingServicesDatabaseServerName
-                            RSSQLInstanceName            = $mockReportingServicesDatabaseNamedInstanceName
+                            DatabaseServerName           = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName         = $mockReportingServicesDatabaseNamedInstanceName
                             ReportServerVirtualDirectory = 'ReportServer_NewName'
                             ReportsVirtualDirectory      = 'Reports_NewName'
                             ReportServerReservedUrl      = 'https://+:4443'
@@ -465,9 +465,9 @@ try
                         } -Verifiable
 
                         $defaultParameters = @{
-                            InstanceName      = $mockDefaultInstanceName
-                            RSSQLServer       = $mockReportingServicesDatabaseServerName
-                            RSSQLInstanceName = $mockReportingServicesDatabaseDefaultInstanceName
+                            InstanceName         = $mockDefaultInstanceName
+                            DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName = $mockReportingServicesDatabaseDefaultInstanceName
                         }
                     }
 
@@ -515,9 +515,9 @@ try
                         } -Verifiable
 
                         $testParameters = @{
-                            InstanceName      = $mockNamedInstanceName
-                            RSSQLServer       = $mockReportingServicesDatabaseServerName
-                            RSSQLInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                            InstanceName         = $mockNamedInstanceName
+                            DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
                         }
                     }
 
@@ -539,8 +539,8 @@ try
 
                         $testParameters = @{
                             InstanceName                 = $mockNamedInstanceName
-                            RSSQLServer                  = $mockReportingServicesDatabaseServerName
-                            RSSQLInstanceName            = $mockReportingServicesDatabaseNamedInstanceName
+                            DatabaseServerName           = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName         = $mockReportingServicesDatabaseNamedInstanceName
                             ReportsVirtualDirectory      = $mockVirtualDirectoryReportsName
                             ReportServerVirtualDirectory = 'ReportServer_NewName'
                         }
@@ -564,8 +564,8 @@ try
 
                         $testParameters = @{
                             InstanceName                 = $mockNamedInstanceName
-                            RSSQLServer                  = $mockReportingServicesDatabaseServerName
-                            RSSQLInstanceName            = $mockReportingServicesDatabaseNamedInstanceName
+                            DatabaseServerName           = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName         = $mockReportingServicesDatabaseNamedInstanceName
                             ReportServerVirtualDirectory = $mockVirtualDirectoryReportServerName
                             ReportsVirtualDirectory      = 'Reports_NewName'
                         }
@@ -588,8 +588,8 @@ try
 
                         $testParameters = @{
                             InstanceName            = $mockNamedInstanceName
-                            RSSQLServer             = $mockReportingServicesDatabaseServerName
-                            RSSQLInstanceName       = $mockReportingServicesDatabaseNamedInstanceName
+                            DatabaseServerName      = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName    = $mockReportingServicesDatabaseNamedInstanceName
                             ReportServerReservedUrl = 'https://+:443'
                         }
                     }
@@ -610,10 +610,10 @@ try
                         } -Verifiable
 
                         $testParameters = @{
-                            InstanceName       = $mockNamedInstanceName
-                            RSSQLServer        = $mockReportingServicesDatabaseServerName
-                            RSSQLInstanceName  = $mockReportingServicesDatabaseNamedInstanceName
-                            ReportsReservedUrl = 'https://+:443'
+                            InstanceName         = $mockNamedInstanceName
+                            DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                            ReportsReservedUrl   = 'https://+:443'
                         }
                     }
 
@@ -633,9 +633,9 @@ try
                     } -Verifiable
 
                     $defaultParameters = @{
-                        InstanceName      = $mockNamedInstanceName
-                        RSSQLServer       = $mockReportingServicesDatabaseServerName
-                        RSSQLInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                        InstanceName         = $mockNamedInstanceName
+                        DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                        DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
                     }
                 }
 

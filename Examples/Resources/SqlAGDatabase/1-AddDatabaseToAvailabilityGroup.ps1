@@ -92,13 +92,13 @@ Configuration Example
             # Add the availability group replica to the availability group
             SqlAGReplica AddReplica
             {
-                Ensure                        = 'Present'
-                Name                          = $Node.NodeName
-                AvailabilityGroupName         = $Node.AvailabilityGroupName
-                ServerName                    = $Node.NodeName
-                InstanceName                  = $Node.SQLInstanceName
-                PrimaryReplicaSQLServer       = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).NodeName
-                PrimaryReplicaSQLInstanceName = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).SQLInstanceName
+                Ensure                     = 'Present'
+                Name                       = $Node.NodeName
+                AvailabilityGroupName      = $Node.AvailabilityGroupName
+                ServerName                 = $Node.NodeName
+                InstanceName               = $Node.SQLInstanceName
+                PrimaryReplicaServerName   = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).NodeName
+                PrimaryReplicaInstanceName = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).SQLInstanceName
             }
         }
 

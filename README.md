@@ -349,11 +349,11 @@ Always On Availability Group Replica.
 * **`[String]` AvailabilityGroupName** _(Key)_: The name of the availability group.
 * **`[String]` ServerName** _(Required)_: Hostname of the SQL Server to be configured.
 * **`[String]` InstanceName** _(Key)_: Name of the SQL instance to be configured.
-* **`[String]` PrimaryReplicaSQLServer** _(Write)_: Hostname of the SQL Server where
+* **`[String]` PrimaryReplicaServerName** _(Write)_: Hostname of the SQL Server where
   the primary replica is expected to be active. If the primary replica is not found
   here, the resource will attempt to find the host that holds the primary replica
   and connect to it.
-* **`[String]` PrimaryReplicaSQLInstanceName** _(Write)_: Name of the SQL instance
+* **`[String]` PrimaryReplicaInstanceName** _(Write)_: Name of the SQL instance
   where the primary replica lives.
 * **`[String]` Ensure** _(Write)_: Specifies if the availability group replica should
   be present or absent. Default is Present. { *Present* | Absent }
@@ -1198,9 +1198,9 @@ Initializes and configures SQL Reporting Services server.
 
 * **`[String]` InstanceName** _(Key)_: Name of the SQL Server Reporting Services
   instance to be configured.
-* **`[String]` RSSQLServer** _(Required)_: Name of the SQL Server to host the
-  Reporting Service database.
-* **`[String]` RSSQLInstanceName** _(Required)_: Name of the SQL Server instance
+* **`[String]` DatabaseServerName** _(Required)_: Name of the SQL Server to host
+  the Reporting Service database.
+* **`[String]` DatabaseInstanceName** _(Required)_: Name of the SQL Server instance
   to host the Reporting Service database.
 * **`[String]` ReportServerVirtualDir** _(Write)_: Report Server Web Service virtual
   directory. Optional.

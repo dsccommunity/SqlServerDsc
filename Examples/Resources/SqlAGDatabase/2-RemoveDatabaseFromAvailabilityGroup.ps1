@@ -40,8 +40,8 @@ Configuration Example
             Ensure               = 'Present'
             Name                 = 'NT SERVICE\ClusSvc'
             LoginType            = 'WindowsUser'
-            ServerName            = $Node.NodeName
-            InstanceName      = $Node.SQLInstanceName
+            ServerName           = $Node.NodeName
+            InstanceName         = $Node.SQLInstanceName
             PsDscRunAsCredential = $SysAdminAccount
         }
 
@@ -50,7 +50,7 @@ Configuration Example
         {
             DependsOn            = '[SqlServerLogin]AddNTServiceClusSvc'
             Ensure               = 'Present'
-            ServerName             = $Node.NodeName
+            ServerName           = $Node.NodeName
             InstanceName         = $Node.SqlInstanceName
             Principal            = 'NT SERVICE\ClusSvc'
             Permission           = 'AlterAnyAvailabilityGroup', 'ViewServerState'
@@ -63,8 +63,8 @@ Configuration Example
             EndPointName         = 'HADR'
             Ensure               = 'Present'
             Port                 = 5022
-            ServerName            = $Node.NodeName
-            InstanceName      = $Node.SQLInstanceName
+            ServerName           = $Node.NodeName
+            InstanceName         = $Node.SQLInstanceName
             PsDscRunAsCredential = $SysAdminAccount
         }
 
@@ -75,8 +75,8 @@ Configuration Example
             {
                 Ensure               = 'Present'
                 Name                 = $Node.AvailabilityGroupName
-                InstanceName      = $Node.SQLInstanceName
-                ServerName            = $Node.NodeName
+                InstanceName         = $Node.SQLInstanceName
+                ServerName           = $Node.NodeName
                 DependsOn            = '[SqlServerEndpoint]HADREndpoint', '[SqlServerPermission]AddNTServiceClusSvcPermissions'
                 PsDscRunAsCredential = $SysAdminAccount
             }
@@ -87,13 +87,13 @@ Configuration Example
             # Add the availability group replica to the availability group
             SqlAGReplica AddReplica
             {
-                Ensure                        = 'Present'
-                Name                          = $Node.NodeName
-                AvailabilityGroupName         = $Node.AvailabilityGroupName
-                ServerName                    = $Node.NodeName
-                InstanceName                  = $Node.SQLInstanceName
-                PrimaryReplicaSQLServer       = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).NodeName
-                PrimaryReplicaSQLInstanceName = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).SQLInstanceName
+                Ensure                     = 'Present'
+                Name                       = $Node.NodeName
+                AvailabilityGroupName      = $Node.AvailabilityGroupName
+                ServerName                 = $Node.NodeName
+                InstanceName               = $Node.SQLInstanceName
+                PrimaryReplicaServerName   = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).NodeName
+                PrimaryReplicaInstanceName = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).SQLInstanceName
             }
         }
 
