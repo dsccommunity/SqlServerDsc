@@ -10,6 +10,16 @@
   - Added a README.md under Tests\Integration to help contributors to write
     integration tests.
   - Added 'Integration tests' section in the CONTRIBUTING.md.
+  - The complete examples that no longer was accurate and referenced resources
+    that no longer exist was removed. Accurate examples can be found in each
+    specific resource example folder. Examples for installing Failover Cluster
+    can be found in the resource examples folders in the xFailOverCluster
+    resource module (issue #462).
+  - A README.md was created under the examples folder to be used as reference ho
+    to installed certain scenarios (issue #462).
+  - Removed the local specific common test for compiling examples in this repository
+    and instead opt-in for the common test in the DscResource.Tests repository
+    (issue #669).
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
