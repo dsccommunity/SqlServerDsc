@@ -20,7 +20,6 @@ class MSFT_SqlAG : OMI_BaseResource
     [Write, Description("Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.")] Boolean ProcessOnlyOnActiveNode;
     [Read, Description("Gets the Endpoint URL of the availability group replica endpoint.")] String EndpointUrl;
     [Read, Description("Gets the port the database mirroring endpoint is listening on.")] UInt32 EndpointPort;
-    [Read, Description("Gets the hostname the SQL Server instance is listening on.")] String SQLServerNetName;
     [Read, Description("Gets the major version of the SQL Server instance.")] UInt32 Version;
     [Read, Description("Determines if the current node is actively hosting the SQL Server instance.")] Boolean IsActiveNode;
 };

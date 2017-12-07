@@ -76,7 +76,7 @@ function Get-TargetResource
         $alwaysOnAvailabilityGroupResource.HealthCheckTimeout = $availabilityGroup.HealthCheckTimeout
         $alwaysOnAvailabilityGroupResource.EndpointURL = $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].EndpointUrl
         $alwaysOnAvailabilityGroupResource.EndpointPort = $endpointPort
-        $alwaysOnAvailabilityGroupResource.SQLServerNetName = $serverObject.NetName
+        $alwaysOnAvailabilityGroupResource.EndpointHostName = $serverObject.NetName
         $alwaysOnAvailabilityGroupResource.Version = $sqlMajorVersion
 
         # Add properties that are only present in SQL 2016 or newer
@@ -700,7 +700,7 @@ function Test-TargetResource
 
                 if ( -not $EndpointHostName )
                 {
-                    $EndpointHostName = $getTargetResourceResult.SQLServerNetName
+                    $EndpointHostName = $getTargetResourceResult.EndpointHostName
                 }
 
                 # Verify the hostname in the endpoint URL is correct
