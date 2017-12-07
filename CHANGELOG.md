@@ -41,6 +41,10 @@
   - BREAKING CHANGE: Parameters PrimaryReplicaSQLServer and PrimaryReplicaSQLInstanceName
     has been renamed to PrimaryReplicaServerName and PrimaryReplicaInstanceName
     respectively ([issue #922](https://github.com/PowerShell/SqlServerDsc/issues/922)).
+  - The read-only property SQLServerNetName was removed in favor of EndpointHostName
+    ([issue #924](https://github.com/PowerShell/SqlServerDsc/issues/924)).
+    Get-TargetResource will return the value of property [NetName](https://technet.microsoft.com/en-us/library/microsoft.sqlserver.management.smo.server.netname(v=sql.105).aspx)
+    as the default value if EndpointHostName parameter is not assigned a value.
 - Changes to SqlAlwaysOnService
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
     to ServerName and InstanceName respectively

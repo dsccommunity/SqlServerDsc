@@ -71,7 +71,7 @@ function Get-TargetResource
         ServerName                    = $ServerName
         InstanceName                  = $InstanceName
         EndpointPort                  = $endpointPort
-        SQLServerNetName              = $serverObject.NetName
+        EndpointHostName              = $serverObject.NetName
     }
 
     # Get the availability group
@@ -672,7 +672,7 @@ function Test-TargetResource
 
                 if ( -not $EndpointHostName )
                 {
-                    $EndpointHostName = $getTargetResourceResult.SQLServerNetName
+                    $EndpointHostName = $getTargetResourceResult.EndpointHostName
                 }
 
                 # Verify the hostname in the endpoint URL is correct

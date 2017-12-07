@@ -567,7 +567,7 @@ try
                     $getTargetResourceResult.ReadOnlyRoutingList | Should -BeNullOrEmpty
                     $getTargetResourceResult.ServerName | Should -Be $mockServerName
                     $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
-                    $getTargetResourceResult.SQLServerNetName | Should -Be $mockServerName
+                    $getTargetResourceResult.EndpointHostName | Should -Be $mockServerName
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }
@@ -595,7 +595,7 @@ try
                     $getTargetResourceResult.ReadOnlyRoutingList | Should -Be $mockServerName
                     $getTargetResourceResult.ServerName | Should -Be $mockServerName
                     $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
-                    $getTargetResourceResult.SQLServerNetName | Should -Be $mockServerName
+                    $getTargetResourceResult.EndpointHostName | Should -Be $mockServerName
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }

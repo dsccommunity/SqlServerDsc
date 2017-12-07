@@ -389,8 +389,6 @@ Always On Availability Group Replica.
   listening on. Used by Get-TargetResource.
 * **`[String]` EndpointUrl** _(Read)_: Output the endpoint URL of the
   Availability Group Replica. Used by Get-TargetResource.
-* **`[String]` SQLServerNetName** _(Read)_: Output the NetName property from the
-  SQL Server object.
 * **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
   actively hosting the SQL Server instance.
 
