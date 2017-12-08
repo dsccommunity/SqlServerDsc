@@ -262,8 +262,6 @@ It will also manage the Availability Group replica on the specified node.
   availability group replica endpoint.
 * **`[Uint32]` EndpointPort** _(Read)_: Gets the port the database mirroring
   endpoint is listening on
-* **`[String]` SQLServerNetName** _(Read)_: Gets the hostname the SQL Server
-  instance is listening on.
 * **`[Uint32]` Version** _(Read)_: Gets the major version of the SQL Server
   instance.
 * **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
@@ -391,8 +389,6 @@ Always On Availability Group Replica.
   listening on. Used by Get-TargetResource.
 * **`[String]` EndpointUrl** _(Read)_: Output the endpoint URL of the
   Availability Group Replica. Used by Get-TargetResource.
-* **`[String]` SQLServerNetName** _(Read)_: Output the NetName property from the
-  SQL Server object.
 * **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
   actively hosting the SQL Server instance.
 
