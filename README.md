@@ -164,39 +164,6 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * [**SqlWindowsFirewall**](#sqlwindowsfirewall) configures firewall settings to
   allow remote access to a SQL Server instance.
 
-### SqlAlias
-
-No description.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-
-#### Parameters
-
-* **`[String]` Name** _(Key)_: The name of Alias (e.g. svr01\inst01).
-* **`[String]` ServerName** _(Key)_: The SQL Server you are aliasing (the NetBIOS
-  name or FQDN).
-* **`[String]` Ensure** _(Write)_: Determines whether the alias should be added or
-  removed. Default value is 'Present'. { *Present* | Absent }.
-* **`[String]` Protocol** _(Write)_: Protocol to use when connecting. Valid values
-  are 'TCP' or 'NP' (Named Pipes). Default value is 'TCP'. { *TCP* | NP }.
-* **`[Uint16]` TCPPort** _(Write)_: The TCP port SQL is listening on. Only used when
-  protocol is set to 'TCP'. Default value is port 1433.
-* **`[Boolean]` UseDynamicTcpPort** _(Write)_: The UseDynamicTcpPort specify that
-  the Net-Library will determine the port dynamically. The port specified in Port
-  number will not be used. Default value is '$false'.
-
-#### Read-Only Properties from Get-TargetResource
-
-* **`[String]` PipeName** _(Read)_: Named Pipes path from the Get-TargetResource
-  method.
-
-#### Examples
-
-* [Add an SQL Server alias](/Examples/Resources/SqlAlias/1-AddSqlAlias.ps1)
-* [Remove an SQL Server alias](/Examples/Resources/SqlAlias/2-RemoveSqlAlias.ps1)
-
 ### SqlAG
 
 This resource is used to create, remove, and update an Always On Availability Group.
@@ -328,6 +295,58 @@ group.
 * **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
   actively hosting the SQL Server instance.
 
+#### Examples
+
+* [Add a database to an Availability Group](/Examples/Resources/SqlAGDatabase/1-AddDatabaseToAvailabilityGroup.ps1)
+* [Remove a database from an Availability Group](/Examples/Resources/SqlAGDatabase/2-RemoveDatabaseFromAvailabilityGroup.ps1)
+* [Enforce only specified databases as member in an Availability Group](/Examples/Resources/SqlAGDatabase/3-MatchDefinedDatabaseInAvailabilityGroup.ps1)
+
+### SqlAGListener
+
+No description.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
+* Target machine must have access to the SQLPS PowerShell module or the SqlServer
+  PowerShell module.
+* Requires that the Cluster name Object (CNO) has been delegated the right
+  _Create Computer Object_ in the organizational unit (OU) in which the
+  Cluster Name Object (CNO) resides.
+
+#### Parameters
+
+* **`[String]` InstanceName** _(Key)_: The SQL Server instance name of the primary
+  replica.
+* **`[String]` AvailabilityGroup** _(Key)_: The name of the availability group to
+  which the availability group listener is or will be connected.
+* **`[String]` ServerName** _(Write)_: The host name or FQDN of the primary replica.
+* **`[String]` Ensure** _(Write)_: If the availability group listener should be present
+  or absent. Default value is 'Present'. { *Present* | Absent }.
+* **`[String]` Name** _(Write)_: The name of the availability group listener, max
+  15 characters. This name will be used as the Virtual Computer Object (VCO).
+* **`[String[]]` IpAddress** _(Write)_: The IP address used for the availability
+  group listener, in the format 192.168.10.45/255.255.252.0. If using DHCP, set
+  to the first IP-address of the DHCP subnet, in the format 192.168.8.1/255.255.252.0.
+  Must be valid in the cluster-allowed IP range.
+* **`[Uint16]` Port** _(Write)_: The port used for the availability group listener.
+* **`[Boolean]` DHCP** _(Write)_: If DHCP should be used for the availability group
+  listener instead of static IP address.
+
+#### Examples
+
+* [Adds an Availability Group listener with the same name as the
+  Availability Group VCO](/Examples/Resources/SqlAGListener/1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1)
+* [Adds an Availability Group listener with a different name than the
+  Availability Group VCO](/Examples/Resources/SqlAGListener/2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
+* [Removes an Availability Group listener with the same name as the
+  Availability Group VCO](/Examples/Resources/SqlAGListener/3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1)
+* [Removes an Availability Group listener with a different name than the
+  Availability Group VCO](/Examples/Resources/SqlAGListener/4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
+* [Adds an Availability Group listener using DHCP on the default server subnet](/Examples/Resources/SqlAGListener/5-AddAvailabilityGroupListenerUsingDHCPWithDefaultServerSubnet.ps1)
+* [Adds an Availability Group listener using DHCP with a specific subnet](/Examples/Resources/SqlAGListener/6-AddAvailabilityGroupListenerUsingDHCPWithSpecificSubnet.ps1)
+
 ### SqlAGReplica
 
 This resource is used to create, remove, and update an
@@ -397,6 +416,39 @@ Always On Availability Group Replica.
 * [Add a SQL Server Always On Availability Group Replica](/Examples/Resources/SqlAGReplica/1-CreateAvailabilityGroupReplica.ps1)
 * [Remove a SQL Server Always On Availability Group Replica](/Examples/Resources/SqlAGReplica/2-RemoveAvailabilityGroupReplica.ps1)
 
+### SqlAlias
+
+No description.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+
+#### Parameters
+
+* **`[String]` Name** _(Key)_: The name of Alias (e.g. svr01\inst01).
+* **`[String]` ServerName** _(Key)_: The SQL Server you are aliasing (the NetBIOS
+  name or FQDN).
+* **`[String]` Ensure** _(Write)_: Determines whether the alias should be added or
+  removed. Default value is 'Present'. { *Present* | Absent }.
+* **`[String]` Protocol** _(Write)_: Protocol to use when connecting. Valid values
+  are 'TCP' or 'NP' (Named Pipes). Default value is 'TCP'. { *TCP* | NP }.
+* **`[Uint16]` TCPPort** _(Write)_: The TCP port SQL is listening on. Only used when
+  protocol is set to 'TCP'. Default value is port 1433.
+* **`[Boolean]` UseDynamicTcpPort** _(Write)_: The UseDynamicTcpPort specify that
+  the Net-Library will determine the port dynamically. The port specified in Port
+  number will not be used. Default value is '$false'.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[String]` PipeName** _(Read)_: Named Pipes path from the Get-TargetResource
+  method.
+
+#### Examples
+
+* [Add an SQL Server alias](/Examples/Resources/SqlAlias/1-AddSqlAlias.ps1)
+* [Remove an SQL Server alias](/Examples/Resources/SqlAlias/2-RemoveSqlAlias.ps1)
+
 ### SqlAlwaysOnService
 
 Enables or disabled SQL Server Always On high availability and disaster recovery
@@ -426,80 +478,6 @@ Enables or disabled SQL Server Always On high availability and disaster recovery
 
 * [Enable SQL Server Always On](/Examples/Resources/SqlAlwaysOnService/1-EnableAlwaysOn.ps1)
 * [Disable SQL Server Always On](/Examples/Resources/SqlAlwaysOnService/1-DisableAlwaysOn.ps1)
-
-### SqlAGListener
-
-No description.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2012 or later.
-* Target machine must have access to the SQLPS PowerShell module or the SqlServer
-  PowerShell module.
-* Requires that the Cluster name Object (CNO) has been delegated the right
-  _Create Computer Object_ in the organizational unit (OU) in which the
-  Cluster Name Object (CNO) resides.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: The SQL Server instance name of the primary
-  replica.
-* **`[String]` AvailabilityGroup** _(Key)_: The name of the availability group to
-  which the availability group listener is or will be connected.
-* **`[String]` ServerName** _(Write)_: The host name or FQDN of the primary replica.
-* **`[String]` Ensure** _(Write)_: If the availability group listener should be present
-  or absent. Default value is 'Present'. { *Present* | Absent }.
-* **`[String]` Name** _(Write)_: The name of the availability group listener, max
-  15 characters. This name will be used as the Virtual Computer Object (VCO).
-* **`[String[]]` IpAddress** _(Write)_: The IP address used for the availability
-  group listener, in the format 192.168.10.45/255.255.252.0. If using DHCP, set
-  to the first IP-address of the DHCP subnet, in the format 192.168.8.1/255.255.252.0.
-  Must be valid in the cluster-allowed IP range.
-* **`[Uint16]` Port** _(Write)_: The port used for the availability group listener.
-* **`[Boolean]` DHCP** _(Write)_: If DHCP should be used for the availability group
-  listener instead of static IP address.
-
-#### Examples
-
-* [Adds an Availability Group listener with the same name as the
-  Availability Group VCO](/Examples/Resources/SqlAGListener/1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1)
-* [Adds an Availability Group listener with a different name than the
-  Availability Group VCO](/Examples/Resources/SqlAGListener/2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
-* [Removes an Availability Group listener with the same name as the
-  Availability Group VCO](/Examples/Resources/SqlAGListener/3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1)
-* [Removes an Availability Group listener with a different name than the
-  Availability Group VCO](/Examples/Resources/SqlAGListener/4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
-* [Adds an Availability Group listener using DHCP on the default server subnet](/Examples/Resources/SqlAGListener/5-AddAvailabilityGroupListenerUsingDHCPWithDefaultServerSubnet.ps1)
-* [Adds an Availability Group listener using DHCP with a specific subnet](/Examples/Resources/SqlAGListener/6-AddAvailabilityGroupListenerUsingDHCPWithSpecificSubnet.ps1)
-
-### SqlServerConfiguration
-
-No description.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
-
-#### Parameters
-
-* **`[String]` ServerName** _(Key)_: The hostname of the SQL Server to be configured.
-* **`[String]` InstanceName** _(Key)_: Name of the SQL instance to be configured.
-* **`[String]` OptionName** _(Key)_: The name of the SQL configuration option to
-  be checked. For all possible values reference [MSDN](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
-  or run sp_configure.
-* **`[Sint32]` OptionValue** _(Required)_: The desired value of the SQL configuration
-  option.
-* **`[Boolean]` RestartService** _(Write)_: Determines whether the instance should
-  be restarted after updating the configuration option.
-* **`[Sint32]` RestartTimeout** _(Write)_: The length of time, in seconds, to wait
-  for the service to restart. Default is 120 seconds.
-
-#### Examples
-
-* [Configure two instances on the same server to have CLR enabled](/Examples/Resources/SqlServerConfiguration/1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1)
-* [Configure a instance to have 'Priority Boost' enabled](/Examples/Resources/SqlServerConfiguration/2-ConfigureInstanceToEnablePriorityBoost.ps1)
 
 ### SqlDatabase
 
@@ -681,6 +659,169 @@ Read more about database role in this article [CREATE ROLE (Transact-SQL)](https
 * [Add Role of a database](/Examples/Resources/SqlDatabaseRole/1-AddDatabaseRole.ps1)
 * [Remove Role of a database](/Examples/Resources/SqlDatabaseRole/2-RemoveDatabaseRole.ps1)
 
+### SqlRS
+
+Initializes and configures SQL Reporting Services server.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Reporting Services 2008 or later.
+* If `PsDscRunAsCredential` common parameter is used to run the resource, the
+  specified credential must have permissions to connect to the SQL Server specified
+  in `RSSQLServer` and create Reporting Services databases.
+
+#### Parameters
+
+* **`[String]` InstanceName** _(Key)_: Name of the SQL Server Reporting Services
+  instance to be configured.
+* **`[String]` DatabaseServerName** _(Required)_: Name of the SQL Server to host
+  the Reporting Service database.
+* **`[String]` DatabaseInstanceName** _(Required)_: Name of the SQL Server instance
+  to host the Reporting Service database.
+* **`[String]` ReportServerVirtualDir** _(Write)_: Report Server Web Service virtual
+  directory. Optional.
+* **`[String]` ReportsVirtualDir** _(Write)_: Report Manager/Report Web App virtual
+  directory name. Optional.
+* **`[String[]]` ReportServerReservedUrl** _(Write)_: Report Server URL reservations.
+  Optional. If not specified, 'http://+:80' URL reservation will be used.
+* **`[String[]]` ReportsReservedUrl** _(Write)_: Report Manager/Report Web App URL
+  reservations. Optional. If not specified, 'http://+:80' URL reservation will be
+  used.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[Boolean]` IsInitialized** _(Read)_: Output is the Reporting Services instance
+  initialized.
+
+#### Examples
+
+* [Default configuration](Examples/Resources/SqlRS/1-DefaultConfiguration.ps1)
+* [Custom virtual directories and reserved URLs](Examples/Resources/SqlRS/2-CustomConfiguration.ps1)
+
+### SqlRSSecureConnectionLevel
+
+No description.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Reporting Services 2008 or later.
+
+#### Parameters
+
+* **`[String]` InstanceName** _(Key)_: SQL instance to set secure connection level
+  for.
+* **`[Uint16]` SecureConnectionLevel** _(Key)_: SQL Server Reporting Service secure
+  connection level.
+* **`[PSCredential]` SQLAdminCredential** _(Required)_: Credential with administrative
+  permissions to the SQL instance.
+
+#### Examples
+
+None.
+
+### SqlScript
+
+Provides the means to run a user generated T-SQL script on the SQL Server instance.
+Three scripts are required; Get T-SQL script, Set T-SQL script and the Test T-SQL
+script.
+
+#### Scripts
+
+##### Get T-SQL Script (GetFilePath)
+
+The Get T-SQL script is used to query the status when running the cmdlet
+Get-DscConfiguration, and the result can be found in the property `GetResult`.
+
+##### Test T-SQL Script (TestFilePath)
+
+The Test T-SQL script is used to test if the desired state is met. If Test
+T-SQL raises an error or returns any value other than 'null' the test fails, thus
+the Set T-SQL script is run.
+
+##### Set T-SQL Script (SetFilePath)
+
+The Set T-SQL script performs the actual change when Test T-SQL script fails.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server 2008 or later.
+* Target machine must have access to the SQLPS PowerShell module or the SqlServer
+  PowerShell module.
+
+_Note: There is a known problem running this resource using PowerShell 4.0.
+See [issue #273](https://github.com/PowerShell/SqlServerDsc/issues/273)
+for more information._
+
+#### Parameters
+
+* **`[String]` ServerInstance** _(Key)_: The name of an instance of the Database
+  Engine. For a default instance, only specify the computer name. For a named
+  instances, use the format ComputerName\\InstanceName.
+* **`[String]` SetFilePath** _(Key)_: Path to the T-SQL file that will perform Set
+  action.
+* **`[String]` GetFilePath** _(Key)_: Path to the T-SQL file that will perform Get
+  action. Any values returned by the T-SQL queries will also be returned by the
+  cmdlet Get-DscConfiguration through the `GetResult` property.
+* **`[String]` TestFilePath** _(Key)_: Path to the T-SQL file that will perform Test
+  action. Any script that does not throw an error or returns null is evaluated to
+  true. The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text,
+  and will not cause the test to return false.
+* **`[PSCredential]` Credential** _(Write)_: The credentials to authenticate with,
+  using SQL Authentication. To authenticate using Windows Authentication, assign
+  the credentials to the built-in parameter `PsDscRunAsCredential`. If both parameters
+  `Credential` and `PsDscRunAsCredential` are not assigned, then SYSTEM account will
+  be used to authenticate using Windows Authentication.
+* **`[UInt32]` QueryTimeout** _(Write)_: Specifies, as an integer, the number of
+  seconds after which the T-SQL script execution will time out.  In some SQL Server
+  versions there is a bug in Invoke-Sqlcmd where the normal default value 0 (no
+  timeout) is not respected and the default value is incorrectly set to 30 seconds.
+* **`[String[]]` Variable** _(Write)_: Specifies, as a string array, a scripting
+  variable for use in the sql script, and sets a value for the variable. Use a
+  Windows PowerShell array to specify multiple variables and their values. For more
+  information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx).
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[String]` GetResult** _(Read)_: Contains the values returned from the T-SQL
+  script provided in the parameter `GetFilePath` when cmdlet Get-DscConfiguration
+  is run.
+
+#### Examples
+
+* [Run a script using SQL Authentication](/Examples/Resources/SqlScript/1-RunScriptUsingSQLAuthentication.ps1)
+* [Run a script using Windows Authentication](/Examples/Resources/SqlScript/2-RunScriptUsingWindowsAuthentication.ps1)
+
+### SqlServerConfiguration
+
+No description.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2008 or later.
+
+#### Parameters
+
+* **`[String]` ServerName** _(Key)_: The hostname of the SQL Server to be configured.
+* **`[String]` InstanceName** _(Key)_: Name of the SQL instance to be configured.
+* **`[String]` OptionName** _(Key)_: The name of the SQL configuration option to
+  be checked. For all possible values reference [MSDN](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
+  or run sp_configure.
+* **`[Sint32]` OptionValue** _(Required)_: The desired value of the SQL configuration
+  option.
+* **`[Boolean]` RestartService** _(Write)_: Determines whether the instance should
+  be restarted after updating the configuration option.
+* **`[Sint32]` RestartTimeout** _(Write)_: The length of time, in seconds, to wait
+  for the service to restart. Default is 120 seconds.
+
+#### Examples
+
+* [Configure two instances on the same server to have CLR enabled](/Examples/Resources/SqlServerConfiguration/1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1)
+* [Configure a instance to have 'Priority Boost' enabled](/Examples/Resources/SqlServerConfiguration/2-ConfigureInstanceToEnablePriorityBoost.ps1)
+
 ### SqlServerEndpoint
 
 This resource is used to create an endpoint. Currently it only supports creating
@@ -775,91 +916,6 @@ This resource is used to set the state of an endpoint.
 
 * [Make sure that an endpoint is started](/Examples/Resources/SqlServerEndpointState/1-MakeSureEndpointIsStarted.ps1)
 * [Make sure that an endpoint is stopped](/Examples/Resources/SqlServerEndpointState/2-MakeSureEndpointIsStopped.ps1)
-
-### SqlWindowsFirewall
-
-This will set default firewall rules for the supported features. Currently the
-features supported are Database Engine, Analysis Services, SQL Browser,
-SQL Reporting Services and Integration Services.
-
-#### Firewall rules
-
-##### Database Engine (SQLENGINE) - Default instance
-
-Firewall Rule | Firewall Display Name
---- | ---
-Application: sqlservr.exe | SQL Server Database Engine instance MSSQLSERVER
-Service: SQLBrowser | SQL Server Browser
-
-##### Database Engine (SQLENGINE) - Named instance
-
-Firewall Rule | Firewall Display Name
---- | ---
-Application: sqlservr.exe | SQL Server Database Engine instance \<INSTANCE\>
-Service: SQLBrowser | SQL Server Browser
-
-##### Analysis Services (AS) - Default instance
-
-Firewall Rule | Firewall Display Name
---- | ---
-Service: MSSQLServerOLAPService | SQL Server Analysis Services instance MSSQLSERVER
-Service: SQLBrowser | SQL Server Browser
-
-##### Analysis Services (AS) - Named instance
-
-Firewall Rule | Firewall Display Name
---- | ---
-Service: MSOLAP$\<INSTANCE\> | SQL Server Analysis Services instance \<INSTANCE\>
-Service: SQLBrowser | SQL Server Browser
-
-##### Reporting Services (RS)
-
-Firewall Rule | Firewall Display Name
---- | ---
-Port: tcp/80 | SQL Server Reporting Services 80
-Port: tcp/443 | SQL Server Reporting Services 443
-
-##### Integration Services (IS)
-
-Firewall Rule | Firewall Display Name
---- | ---
-Application: MsDtsSrvr.exe | SQL Server Integration Services Application
-Port: tcp/135 | SQL Server Integration Services Port
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-
-#### Parameters
-
-* **`[String]` Features** _(Key)_: SQL features to enable firewall rules for.
-* **`[String]` InstanceName** _(Key)_: SQL instance to enable firewall rules for.
-* **`[String]` Ensure** _(Write)_: Ensures that SQL firewall rules are **Present**
-  or **Absent** on the machine. { *Present* | Absent }.
-* **`[String]` SourcePath** _(Write)_: UNC path to the root of the source files for
-  installation.
-* **`[String]` SourceCredential** _(Write)_: Credentials used to access the path
-  set in the parameter 'SourcePath'. This parameter is optional either if built-in
-  parameter 'PsDscRunAsCredential' is used, or if the source path can be access
-  using the SYSTEM account.
-
-#### Read-Only Properties from Get-TargetResource
-
-* **`[Boolean]` DatabaseEngineFirewall** _(Read)_: Is the firewall rule for the
-  Database Engine enabled?
-* **`[Boolean]` BrowserFirewall** _(Read)_: Is the firewall rule for the Browser
-  enabled?
-* **`[Boolean]` ReportingServicesFirewall** _(Read)_: Is the firewall rule for
-  Reporting Services enabled?
-* **`[Boolean]` AnalysisServicesFirewall** _(Read)_: Is the firewall rule for
-  Analysis Services enabled?
-* **`[Boolean]` IntegrationServicesFirewall** _(Read)_: Is the firewall rule for
-  the Integration Services enabled?
-
-#### Examples
-
-* [Create inbound firewall rules](/Examples/Resources/SqlWindowsFirewall/1-CreateInboundFirewallRules.ps1)
-* [Remove inbound firewall rules](/Examples/Resources/SqlWindowsFirewall/2-RemoveInboundFirewallRules.ps1)
 
 ### SqlServerLogin
 
@@ -1178,141 +1234,6 @@ server roles, please read the below articles.
 * [Members to include in server role](/Examples/Resources/SqlServerRole/4-MembersToIncludeInServerRole.ps1)
 * [Members to exclude from server role](/Examples/Resources/SqlServerRole/5-MembersToExcludeInServerRole.ps1)
 
-### SqlRS
-
-Initializes and configures SQL Reporting Services server.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Reporting Services 2008 or later.
-* If `PsDscRunAsCredential` common parameter is used to run the resource, the
-  specified credential must have permissions to connect to the SQL Server specified
-  in `RSSQLServer` and create Reporting Services databases.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: Name of the SQL Server Reporting Services
-  instance to be configured.
-* **`[String]` DatabaseServerName** _(Required)_: Name of the SQL Server to host
-  the Reporting Service database.
-* **`[String]` DatabaseInstanceName** _(Required)_: Name of the SQL Server instance
-  to host the Reporting Service database.
-* **`[String]` ReportServerVirtualDir** _(Write)_: Report Server Web Service virtual
-  directory. Optional.
-* **`[String]` ReportsVirtualDir** _(Write)_: Report Manager/Report Web App virtual
-  directory name. Optional.
-* **`[String[]]` ReportServerReservedUrl** _(Write)_: Report Server URL reservations.
-  Optional. If not specified, 'http://+:80' URL reservation will be used.
-* **`[String[]]` ReportsReservedUrl** _(Write)_: Report Manager/Report Web App URL
-  reservations. Optional. If not specified, 'http://+:80' URL reservation will be
-  used.
-
-#### Read-Only Properties from Get-TargetResource
-
-* **`[Boolean]` IsInitialized** _(Read)_: Output is the Reporting Services instance
-  initialized.
-
-#### Examples
-
-* [Default configuration](Examples/Resources/SqlRS/1-DefaultConfiguration.ps1)
-* [Custom virtual directories and reserved URLs](Examples/Resources/SqlRS/2-CustomConfiguration.ps1)
-
-### SqlRSSecureConnectionLevel
-
-No description.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Reporting Services 2008 or later.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: SQL instance to set secure connection level
-  for.
-* **`[Uint16]` SecureConnectionLevel** _(Key)_: SQL Server Reporting Service secure
-  connection level.
-* **`[PSCredential]` SQLAdminCredential** _(Required)_: Credential with administrative
-  permissions to the SQL instance.
-
-#### Examples
-
-None.
-
-### SqlScript
-
-Provides the means to run a user generated T-SQL script on the SQL Server instance.
-Three scripts are required; Get T-SQL script, Set T-SQL script and the Test T-SQL
-script.
-
-#### Scripts
-
-##### Get T-SQL Script (GetFilePath)
-
-The Get T-SQL script is used to query the status when running the cmdlet
-Get-DscConfiguration, and the result can be found in the property `GetResult`.
-
-##### Test T-SQL Script (TestFilePath)
-
-The Test T-SQL script is used to test if the desired state is met. If Test
-T-SQL raises an error or returns any value other than 'null' the test fails, thus
-the Set T-SQL script is run.
-
-##### Set T-SQL Script (SetFilePath)
-
-The Set T-SQL script performs the actual change when Test T-SQL script fails.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server 2008 or later.
-* Target machine must have access to the SQLPS PowerShell module or the SqlServer
-  PowerShell module.
-
-_Note: There is a known problem running this resource using PowerShell 4.0.
-See [issue #273](https://github.com/PowerShell/SqlServerDsc/issues/273)
-for more information._
-
-#### Parameters
-
-* **`[String]` ServerInstance** _(Key)_: The name of an instance of the Database
-  Engine. For a default instance, only specify the computer name. For a named
-  instances, use the format ComputerName\\InstanceName.
-* **`[String]` SetFilePath** _(Key)_: Path to the T-SQL file that will perform Set
-  action.
-* **`[String]` GetFilePath** _(Key)_: Path to the T-SQL file that will perform Get
-  action. Any values returned by the T-SQL queries will also be returned by the
-  cmdlet Get-DscConfiguration through the `GetResult` property.
-* **`[String]` TestFilePath** _(Key)_: Path to the T-SQL file that will perform Test
-  action. Any script that does not throw an error or returns null is evaluated to
-  true. The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text,
-  and will not cause the test to return false.
-* **`[PSCredential]` Credential** _(Write)_: The credentials to authenticate with,
-  using SQL Authentication. To authenticate using Windows Authentication, assign
-  the credentials to the built-in parameter `PsDscRunAsCredential`. If both parameters
-  `Credential` and `PsDscRunAsCredential` are not assigned, then SYSTEM account will
-  be used to authenticate using Windows Authentication.
-* **`[UInt32]` QueryTimeout** _(Write)_: Specifies, as an integer, the number of
-  seconds after which the T-SQL script execution will time out.  In some SQL Server
-  versions there is a bug in Invoke-Sqlcmd where the normal default value 0 (no
-  timeout) is not respected and the default value is incorrectly set to 30 seconds.
-* **`[String[]]` Variable** _(Write)_: Specifies, as a string array, a scripting
-  variable for use in the sql script, and sets a value for the variable. Use a
-  Windows PowerShell array to specify multiple variables and their values. For more
-  information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx).
-
-#### Read-Only Properties from Get-TargetResource
-
-* **`[String]` GetResult** _(Read)_: Contains the values returned from the T-SQL
-  script provided in the parameter `GetFilePath` when cmdlet Get-DscConfiguration
-  is run.
-
-#### Examples
-
-* [Run a script using SQL Authentication](/Examples/Resources/SqlScript/1-RunScriptUsingSQLAuthentication.ps1)
-* [Run a script using Windows Authentication](/Examples/Resources/SqlScript/2-RunScriptUsingWindowsAuthentication.ps1)
-
 ### SqlServiceAccount
 
 Manage the service account for SQL Server services.
@@ -1544,3 +1465,88 @@ or that it has finished creating the Availability Group.
 
 * [Wait for a cluster role/group to be available](/Examples/Resources/SqlWaitForAG/1-WaitForASingleClusterGroup.ps1)
 * [Wait for multiple cluster roles/groups to be available](/Examples/Resources/SqlWaitForAG/2-WaitForMultipleClusterGroups.ps1)
+
+### SqlWindowsFirewall
+
+This will set default firewall rules for the supported features. Currently the
+features supported are Database Engine, Analysis Services, SQL Browser,
+SQL Reporting Services and Integration Services.
+
+#### Firewall rules
+
+##### Database Engine (SQLENGINE) - Default instance
+
+Firewall Rule | Firewall Display Name
+--- | ---
+Application: sqlservr.exe | SQL Server Database Engine instance MSSQLSERVER
+Service: SQLBrowser | SQL Server Browser
+
+##### Database Engine (SQLENGINE) - Named instance
+
+Firewall Rule | Firewall Display Name
+--- | ---
+Application: sqlservr.exe | SQL Server Database Engine instance \<INSTANCE\>
+Service: SQLBrowser | SQL Server Browser
+
+##### Analysis Services (AS) - Default instance
+
+Firewall Rule | Firewall Display Name
+--- | ---
+Service: MSSQLServerOLAPService | SQL Server Analysis Services instance MSSQLSERVER
+Service: SQLBrowser | SQL Server Browser
+
+##### Analysis Services (AS) - Named instance
+
+Firewall Rule | Firewall Display Name
+--- | ---
+Service: MSOLAP$\<INSTANCE\> | SQL Server Analysis Services instance \<INSTANCE\>
+Service: SQLBrowser | SQL Server Browser
+
+##### Reporting Services (RS)
+
+Firewall Rule | Firewall Display Name
+--- | ---
+Port: tcp/80 | SQL Server Reporting Services 80
+Port: tcp/443 | SQL Server Reporting Services 443
+
+##### Integration Services (IS)
+
+Firewall Rule | Firewall Display Name
+--- | ---
+Application: MsDtsSrvr.exe | SQL Server Integration Services Application
+Port: tcp/135 | SQL Server Integration Services Port
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+
+#### Parameters
+
+* **`[String]` Features** _(Key)_: SQL features to enable firewall rules for.
+* **`[String]` InstanceName** _(Key)_: SQL instance to enable firewall rules for.
+* **`[String]` Ensure** _(Write)_: Ensures that SQL firewall rules are **Present**
+  or **Absent** on the machine. { *Present* | Absent }.
+* **`[String]` SourcePath** _(Write)_: UNC path to the root of the source files for
+  installation.
+* **`[String]` SourceCredential** _(Write)_: Credentials used to access the path
+  set in the parameter 'SourcePath'. This parameter is optional either if built-in
+  parameter 'PsDscRunAsCredential' is used, or if the source path can be access
+  using the SYSTEM account.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[Boolean]` DatabaseEngineFirewall** _(Read)_: Is the firewall rule for the
+  Database Engine enabled?
+* **`[Boolean]` BrowserFirewall** _(Read)_: Is the firewall rule for the Browser
+  enabled?
+* **`[Boolean]` ReportingServicesFirewall** _(Read)_: Is the firewall rule for
+  Reporting Services enabled?
+* **`[Boolean]` AnalysisServicesFirewall** _(Read)_: Is the firewall rule for
+  Analysis Services enabled?
+* **`[Boolean]` IntegrationServicesFirewall** _(Read)_: Is the firewall rule for
+  the Integration Services enabled?
+
+#### Examples
+
+* [Create inbound firewall rules](/Examples/Resources/SqlWindowsFirewall/1-CreateInboundFirewallRules.ps1)
+* [Remove inbound firewall rules](/Examples/Resources/SqlWindowsFirewall/2-RemoveInboundFirewallRules.ps1)
