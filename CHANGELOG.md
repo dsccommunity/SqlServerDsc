@@ -57,6 +57,10 @@
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
     to ServerName and InstanceName respectively
     ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlDatabaseOwner
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlDatabasePermission
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
     to ServerName and InstanceName respectively
@@ -73,9 +77,6 @@
   - BREAKING CHANGE: Parameters RSSQLServer and RSSQLInstanceName has been renamed
     to DatabaseServerName and DatabaseInstanceName respectively
     ([issue #923](https://github.com/PowerShell/SqlServerDsc/issues/923)).
-- Changes to SqlServerEndpointPermission
-  - Now the examples files have a shorter name so that resources will not fail
-    to compile in Azure Automation ([issue #934](https://github.com/PowerShell/SqlServerDsc/issues/934)).
 - Changes to SqlServerConfiguration
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
     to ServerName and InstanceName respectively
@@ -87,6 +88,8 @@
 - Changes to SqlServerEndpointPermission
   - BREAKING CHANGE: Parameter NodeName has been renamed to ServerName
     ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+  - Now the examples files have a shorter name so that resources will not fail
+    to compile in Azure Automation ([issue #934](https://github.com/PowerShell/SqlServerDsc/issues/934)).
 - Changes to SqlServerEndpointState
   - BREAKING CHANGE: Parameter NodeName has been renamed to ServerName
     ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
@@ -104,10 +107,6 @@
     ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlServerNetwork
   - BREAKING CHANGE: Parameters SQLServer has been renamed to ServerName
-    ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
-- Changes to SqlServerOwner
-  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
-    to ServerName and InstanceName respectively
     ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 - Changes to SqlServerPermission
   - BREAKING CHANGE: Parameter NodeName has been renamed to ServerName
