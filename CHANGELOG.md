@@ -17,6 +17,7 @@
     ([issue #904](https://github.com/PowerShell/SqlServerDsc/issues/904)).
   - Added new common test (regression test) for validating the long path
     issue for compiling resources in Azure Automation.
+  - Fix resources in alphabetical order in README.md ([issue #908](https://github.com/PowerShell/SqlServerDsc/issues/908)).
 - Changes to SqlAG
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
     to ServerName and InstanceName respectively
