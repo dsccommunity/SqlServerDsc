@@ -124,7 +124,6 @@
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
 
-
 ## 9.0.0.0
 
 - Changes to xSQLServer
