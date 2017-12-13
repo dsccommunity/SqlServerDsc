@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 10.0.0.0
+
 - BREAKING CHANGE: Resource module has been renamed to SqlServerDsc
   ([issue #916](https://github.com/PowerShell/SqlServerDsc/issues/916)).
 - BREAKING CHANGE: Significant rename to reduce length of resource names
