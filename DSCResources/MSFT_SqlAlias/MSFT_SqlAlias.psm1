@@ -149,7 +149,7 @@ function Set-TargetResource
         {
             if (!(Test-Path -Path $registryPath))
             {
-                New-Item -Path $registryPath | Out-Null
+                New-Item -Path $registryPath -Force | Out-Null
             }
 
             Set-ItemProperty -Path $registryPath -Name $Name -Value $itemValue | Out-Null
@@ -162,7 +162,7 @@ function Set-TargetResource
             {
                 if (!(Test-Path -Path $registryPathWow6432Node))
                 {
-                    New-Item -Path $registryPathWow6432Node | Out-Null
+                    New-Item -Path $registryPathWow6432Node -Force | Out-Null
                 }
 
                 Set-ItemProperty -Path $registryPathWow6432Node -Name $Name -Value $itemValue | Out-Null
