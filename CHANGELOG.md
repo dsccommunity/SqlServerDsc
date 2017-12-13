@@ -120,6 +120,10 @@
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
     to ServerName and InstanceName respectively
     ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlAlias
+  - Fixed issue where exception was thrown if reg keys did not exist
+    ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
+
 
 ## 9.0.0.0
 
