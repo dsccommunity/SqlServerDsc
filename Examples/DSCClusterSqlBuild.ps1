@@ -1,4 +1,14 @@
-#requires -Version 5
+<#
+    .NOTES
+        THIS EXAMPLE IS OBSOLETE. Due to major changes in the resource modules
+        over the last several versions, this example has not been updated to reflect
+        those changes.
+        Please refer to the resource example folder for updated examples.
+        https://github.com/PowerShell/SqlServerDsc/tree/master/Examples/Resources
+
+        There is an issue open to replace this example, please see issue
+        https://github.com/PowerShell/SqlServerDsc/issues/462
+#>
 $StartTime = [System.Diagnostics.Stopwatch]::StartNew()
 Function check-even($num){[bool]!($num%2)}
 
@@ -36,7 +46,7 @@ foreach ($computer in $computers)
 Configuration AlwaysOnCluster
 {
     Import-DscResource –Module PSDesiredStateConfiguration
-    Import-DscResource -Module xSQLServer
+    Import-DscResource -Module SqlServerDSC
     Import-DscResource -Module xFailoverCluster
 
    Node $AllNodes.Where{$_.Role -eq "PrimaryClusterNode" }.NodeName
@@ -88,7 +98,7 @@ Configuration AlwaysOnCluster
              DependsOn = '[WindowsFeature]NET'
          }
 
-         xSqlServerFirewall ($Node.NodeName)
+         SqlWindowsFirewall ($Node.NodeName)
           {
              SourcePath = $Node.SourcePath
              InstanceName = $Node.InstanceName
@@ -97,7 +107,7 @@ Configuration AlwaysOnCluster
              DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
          }
 
-         xSQLServerMemory ($Node.Nodename)
+         SqlServerMemory ($Node.Nodename)
          {
              Ensure = "Present"
              DynamicAlloc = $True
@@ -105,7 +115,7 @@ Configuration AlwaysOnCluster
              DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
          }
 
-         xSQLServerMaxDop($Node.Nodename)
+         SqlServerMaxDop($Node.Nodename)
          {
              Ensure = "Present"
              DynamicAlloc = $true
@@ -154,14 +164,14 @@ Configuration AlwaysOnCluster
 
            DependsOn = “[WindowsFeature]RSATClusteringCmdInterface”
        }
-       xSQLServerAlwaysOnService($Node.Nodename)
+       SqlAlwaysOnService($Node.Nodename)
        {
             Ensure = "Present"
 
             DependsOn = ("[xCluster]ensureCreated"),("[xSqlServerSetup]" + $Node.NodeName)
        }
 
-       xSQLServerEndpoint($Node.Nodename)
+       SqlServerEndpoint($Node.Nodename)
        {
            Ensure = "Present"
            Port = 5022
@@ -179,7 +189,7 @@ Configuration AlwaysOnCluster
           AvailabilityGroupSubMask ="255.255.255.0"
           SetupCredential = $Node.InstallerServiceAccount
           PsDscRunAsCredential = $Node.InstallerServiceAccount
-          DependsOn = ("[xSQLServerEndpoint]" + $Node.NodeName),("[xSQLServerAlwaysOnService]" + $Node.NodeName),("[WindowsFeature]ADTools")
+          DependsOn = ("[SqlServerEndpoint]" + $Node.NodeName),("[SqlAlwaysOnService]" + $Node.NodeName),("[WindowsFeature]ADTools")
        }
     }
     Node $AllNodes.Where{$_.Role -eq "ReplicaServerNode" }.NodeName
@@ -224,7 +234,7 @@ Configuration AlwaysOnCluster
              DependsOn = '[WindowsFeature]NET'
          }
 
-         xSqlServerFirewall ($Node.NodeName)
+         SqlWindowsFirewall ($Node.NodeName)
          {
              SourcePath = $Node.SourcePath
              InstanceName = $Node.InstanceName
@@ -233,14 +243,14 @@ Configuration AlwaysOnCluster
              DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
          }
 
-         xSQLServerMemory ($Node.Nodename)
+         SqlServerMemory ($Node.Nodename)
          {
              Ensure = "Present"
              DynamicAlloc = $True
 
              DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
          }
-         xSQLServerMaxDop($Node.Nodename)
+         SqlServerMaxDop($Node.Nodename)
          {
              Ensure = "Present"
              DynamicAlloc = $true
@@ -299,13 +309,13 @@ Configuration AlwaysOnCluster
 
            DependsOn = "[xWaitForCluster]waitForCluster"
        }
-       xSQLServerAlwaysOnService($Node.Nodename)
+       SqlAlwaysOnService($Node.Nodename)
        {
             Ensure = "Present"
 
             DependsOn = ("[xCluster]joinCluster"),("[xSqlServerSetup]" + $Node.NodeName)
        }
-       xSQLServerEndpoint($Node.Nodename)
+       SqlServerEndpoint($Node.Nodename)
        {
            Ensure = "Present"
            Port = 5022
@@ -314,13 +324,13 @@ Configuration AlwaysOnCluster
            DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
        }
 
-       xWaitForAvailabilityGroup waitforAG
+       SqlWaitForAG waitforAG
        {
            Name = "MyAG"
            RetryIntervalSec = 20
            RetryCount = 6
 
-           DependsOn = (“[xSQLServerEndpoint]" +$Node.Nodename),(“[xSQLServerAlwaysOnService]" +$Node.Nodename)
+           DependsOn = (“[SqlServerEndpoint]" +$Node.Nodename),(“[SqlServerAlwaysOnService]" +$Node.Nodename)
        }
 
        xSQLAOGroupJoin ($Node.Nodename)
@@ -330,7 +340,7 @@ Configuration AlwaysOnCluster
           SetupCredential = $Node.InstallerServiceAccount
           PsDscRunAsCredential = $Node.InstallerServiceAccount
 
-          DependsOn = ("[xWaitForAvailabilityGroup]waitforAG")
+          DependsOn = ("[SqlWaitForAG]waitforAG")
        }
 
     }
@@ -412,4 +422,3 @@ Workflow TestConfigs
 
 TestConfigs -computers $computers
 #>
-

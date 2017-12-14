@@ -1,7 +1,7 @@
-# xSQLServer
+# SqlServerDsc
 
-The **xSQLServer** module contains DSC resources for deployment and configuration
-of SQL Server.
+The **SqlServerDsc** module contains DSC resources
+for deployment and configuration of SQL Server.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/)
@@ -12,89 +12,96 @@ questions or comments.
 
 ### master
 
-[![Build status](https://ci.appveyor.com/api/projects/status/mxn453y284eab8li/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xsqlserver/branch/master)
-[![codecov](https://codecov.io/gh/PowerShell/xSQLServer/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/xSQLServer/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/mxn453y284eab8li/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/SqlServerDsc/branch/master)
+[![codecov](https://codecov.io/gh/PowerShell/SqlServerDsc/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/SqlServerDsc/branch/master)
 
-This is the branch containing the latest release - no contributions should be made
-directly to this branch.
+This is the branch containing the latest release -
+no contributions should be made directly to this branch.
 
 ### dev
 
-[![Build status](https://ci.appveyor.com/api/projects/status/mxn453y284eab8li/branch/dev?svg=true)](https://ci.appveyor.com/project/PowerShell/xsqlserver/branch/dev)
-[![codecov](https://codecov.io/gh/PowerShell/xSQLServer/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/xSQLServer/branch/dev)
+[![Build status](https://ci.appveyor.com/api/projects/status/mxn453y284eab8li/branch/dev?svg=true)](https://ci.appveyor.com/project/PowerShell/SqlServerDsc/branch/dev)
+[![codecov](https://codecov.io/gh/PowerShell/SqlServerDsc/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/SqlServerDsc/branch/dev)
 
-This is the development branch to which contributions should be proposed by contributors
-as pull requests. This development branch will periodically be merged to the master
-branch, and be released to [PowerShell Gallery](https://www.powershellgallery.com/).
+This is the development branch
+to which contributions should be proposed by contributors as pull requests.
+This development branch will periodically be merged to the master branch,
+and be released to [PowerShell Gallery](https://www.powershellgallery.com/).
 
 ## Contributing
 
-Regardless of the way you want to contribute we are tremendously happy to have you
-here.
+Regardless of the way you want to contribute
+we are tremendously happy to have you here.
 
-There are several ways you can contribute. You can submit an issue to report a bug.
-You can submit an issue to request an improvement. You can take part in discussions
-for issues. You can review pull requests and comment on other contributors changes.
-You can also improve the resources and tests, or even create new resources, by
-sending in pull requests yourself.
+There are several ways you can contribute.
+You can submit an issue to report a bug.
+You can submit an issue to request an improvement.
+You can take part in discussions for issues.
+You can review pull requests and comment on other contributors changes.
+You can also improve the resources and tests,
+or even create new resources,
+by sending in pull requests yourself.
 
-* If you want to submit an issue or take part in discussions, please browse the
-  list of [issues](https://github.com/PowerShell/xSQLServer/issues). Please check
-  out [Contributing to the DSC Resource Kit](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md)
+* If you want to submit an issue or take part in discussions,
+  please browse the list of [issues](https://github.com/PowerShell/SqlServerDsc/issues).
+  Please check out [Contributing to the DSC Resource Kit](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md)
   on how to work with issues.
-* If you want to review pull requests, please first check out the
-  [Review Pull Request guidelines](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md#reviewing-pull-requests),
-  and the browse the list of [pull requests](https://github.com/PowerShell/xSQLServer/pulls)
+* If you want to review pull requests,
+  please first check out the [Review Pull Request guidelines](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md#reviewing-pull-requests),
+  and the browse the list of [pull requests](https://github.com/PowerShell/SqlServerDsc/pulls)
   and look for those pull requests with label 'needs review'.
-* If you want to improve the resources or tests, or create a new resource, then
-  please check out the following guidelines.
+* If you want to improve the resources or tests,
+  or create a new resource,
+  then please check out the following guidelines.
   * The [Contributing to the DSC Resource Kit](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md)
     guidelines.
-  * The specific [Contributing to xSQLServer](https://github.com/PowerShell/xSQLServer/blob/dev/CONTRIBUTING.md)
+  * The specific [Contributing to SqlServerDsc](https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md)
     guidelines.
   * The common [Style Guidelines](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md).
   * The common [Best Practices](https://github.com/PowerShell/DscResources/blob/master/BestPractices.md)
     guidelines.
   * The common [Testing Guidelines](https://github.com/PowerShell/DscResources/blob/master/TestsGuidelines.md).
-  * If you are new to GitHub (and git), then please check out
-    [Getting Started with GitHub](https://github.com/PowerShell/DscResources/blob/master/GettingStartedWithGitHub.md).
+  * If you are new to GitHub (and git),
+    then please check out [Getting Started with GitHub](https://github.com/PowerShell/DscResources/blob/master/GettingStartedWithGitHub.md).
   * If you are new to Pester and writing test, then please check out
     [Getting started with Pester](https://github.com/PowerShell/DscResources/blob/master/GettingStartedWithPester.md).
 
-If you need any help along the way, don't be afraid to ask. We are here for each
-other.
+If you need any help along the way,
+don't be afraid to ask.
+We are here for each other.
 
 ## Installation
 
-To manually install the module, download the source code and unzip the contents
-of the '\Modules\xSQLServer' directory to the
+To manually install the module,
+download the source code and unzip the contents
+of the '\Modules\SqlServerDsc' directory to the
 '$env:ProgramFiles\WindowsPowerShell\Modules' folder.
 
-To install from the PowerShell gallery using PowerShellGet (in PowerShell 5.0) run
-the following command:
+To install from the PowerShell gallery using PowerShellGet (in PowerShell 5.0)
+run the following command:
 
 ```powershell
-Find-Module -Name xSQLServer -Repository PSGallery | Install-Module
+Find-Module -Name SqlServerDsc -Repository PSGallery | Install-Module
 ```
 
 To confirm installation, run the below command and ensure you see the SQL Server
 DSC resources available:
 
 ```powershell
-Get-DscResource -Module xSQLServer
+Get-DscResource -Module SqlServerDsc
 ```
 
 ## Requirements
 
-The minimum Windows Management Framework (PowerShell) version required is 5.0 or
-higher, which ships with Windows 10 or Windows Server 2016, but can also be
-installed on Windows 7 SP1, Windows 8.1, Windows Server 2008 R2 SP1,
-Windows Server 2012 and Windows Server 2012 R2.
+The minimum Windows Management Framework (PowerShell) version required is 5.0
+or higher, which ships with Windows 10 or Windows Server 2016,
+but can also be installed on Windows 7 SP1, Windows 8.1,
+Windows Server 2008 R2 SP1, Windows Server 2012 and Windows Server 2012 R2.
 
 ## Examples
 
-You can review the [Examples](/Examples) directory in the xSQLServer module for
-some general use scenarios for all of the resources that are in the module.
+You can review the [Examples](/Examples) directory in the SqlServerDsc module
+for some general use scenarios for all of the resources that are in the module.
 
 ## Change log
 
@@ -102,95 +109,62 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 
 ## Resources
 
-* [**xSQLServerAlias**](#xsqlserveralias) resource to manage SQL Server client Aliases.
-* [**xSQLServerAlwaysOnAvailabilityGroup**](#xsqlserveralwaysonavailabilitygroup)
+* [**SqlAG**](#sqlag)
   resource to ensure an availability group is present or absent.
-* [**xSQLServerAlwayOnAvailabilityGroupDatabaseMembership**](#xsqlserveralwaysonavailabilitygroupdatabasemembership)
+* [**SqlAGDatabase**](#sqlagdatabase)
   to manage the database membership in Availability Groups.
-* [**xSQLServerAlwaysOnAvailabilityGroupReplica**](#xsqlserveralwaysonavailabilitygroupreplica)
-  resource to ensure an availability group replica is present or absent.
-* [**xSQLServerAlwaysOnService**](#xsqlserveralwaysonservice) resource to enable
-  always on on a SQL Server.
-* [**xSQLServerAvailabilityGroupListener**](#xsqlserveravailabilitygrouplistener)
+* [**SqlAGListener**](#sqlaglistener)
   Create or remove an availability group listener.
-* [**xSQLServerConfiguration**](#xsqlserverconfiguration) resource to manage
-  [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx).
-* [**xSQLServerDatabase**](#xsqlserverdatabase) resource to manage ensure database
+* [**SqlAGReplica**](#sqlagreplica)
+  resource to ensure an availability group replica is present or absent.
+* [**SqlAlias**](#sqlalias) resource to manage SQL Server client Aliases.
+* [**SqlAlwaysOnService**](#sqlalwaysonservice) resource to enable
+  always on on a SQL Server.
+* [**SqlDatabase**](#sqldatabase) resource to manage ensure database
   is present or absent.
-* [**xSQLServerDatabaseDefaultLocation**](#xsqlserverdatabasedefaultlocation) resource
+* [**SqlDatabaseDefaultLocation**](#sqldatabasedefaultlocation) resource
   to manage default locations for Data, Logs, and Backups for SQL Server
-* [**xSQLServerDatabaseOwner**](#xsqlserverdatabaseowner) resource to manage SQL
+* [**SqlDatabaseOwner**](#sqldatabaseowner) resource to manage SQL
   database owners.
-* [**xSQLServerDatabasePermission**](#xsqlserverdatabasepermission) resource to
+* [**SqlDatabasePermission**](#sqldatabasepermission) resource to
   manage SQL database permissions.
-* [**xSQLServerDatabaseRecoveryModel**](#xsqlserverdatabaserecoverymodel) resource
+* [**SqlDatabaseRecoveryModel**](#sqldatabaserecoverymodel) resource
   to manage database recovery model.
-* [**xSQLServerDatabaseRole**](#xsqlserverdatabaserole) resource to manage SQL
+* [**SqlDatabaseRole**](#sqldatabaserole) resource to manage SQL
   database roles.
-* [**xSQLServerEndpoint**](#xsqlserverendpoint) resource to ensure database endpoint
-  is present or absent.
-* [**xSQLServerEndpointPermission**](#xsqlserverendpointpermission) Grant or revoke
-  permission on the endpoint.
-* [**xSQLServerEndpointState**](#xsqlserverendpointstate) Change state of the endpoint.
-* [**xSQLServerFirewall**](#xsqlserverfirewall) configures firewall settings to
-  allow remote access to a SQL Server instance.
-* [**xSQLServerLogin**](#xsqlserverlogin) resource to manage SQL logins.
-* [**xSQLServerMaxDop**](#xsqlservermaxdop) resource to manage MaxDegree of Parallelism
-  for SQL Server.
-* [**xSQLServerMemory**](#xsqlservermemory) resource to manage Memory for SQL Server.
-* [**xSQLServerNetwork**](#xsqlservernetwork) resource to manage SQL Server Network
-  Protocols.
-* [**xSQLServerPermission**](#xsqlserverpermission) Grant or revoke permission on
-  the SQL Server.
-* [**xSQLServerRole**](#xsqlserverrole) resource to manage SQL server roles.
-* [**xSQLServerReplication**](#xsqlserverreplication) resource to manage SQL Replication
-  distribution and publishing.
-* [**xSQLServerRSConfig**](#xsqlserverrsconfig) configures SQL Server Reporting
+* [**SqlRS**](#sqlrs) configures SQL Server Reporting
   Services to use a database engine in another instance.
-* [**xSQLServerRSSecureConnectionLevel**](#xsqlserverrssecureconnectionlevel) sets
+* [**SqlRSSecureConnectionLevel**](#sqlrssecureconnectionlevel) sets
   the secure connection level for SQL Server Reporting Services.
-* [**xSQLServerScript**](#xsqlserverscript) resource to extend DSC Get/Set/Test
+* [**SqlScript**](#sqlscript) resource to extend DSC Get/Set/Test
   functionality to T-SQL.
-* [**xSQLServerServiceAccount**](#xsqlserverserviceaccount) Manage the service account
+* [**SqlServerConfiguration**](#sqlserverconfiguration) resource to manage
+  [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx).
+* [**SqlServerEndpoint**](#sqlserverendpoint) resource to ensure database endpoint
+  is present or absent.
+* [**SqlServerEndpointPermission**](#sqlserverendpointpermission) Grant or revoke
+  permission on the endpoint.
+* [**SqlServerEndpointState**](#sqlserverendpointstate) Change state of the endpoint.
+* [**SqlServerLogin**](#sqlserverlogin) resource to manage SQL logins.
+* [**SqlServerMaxDop**](#sqlservermaxdop) resource to manage MaxDegree of Parallelism
+  for SQL Server.
+* [**SqlServerMemory**](#sqlservermemory) resource to manage Memory for SQL Server.
+* [**SqlServerNetwork**](#sqlservernetwork) resource to manage SQL Server Network
+  Protocols.
+* [**SqlServerPermission**](#sqlserverpermission) Grant or revoke permission on
+  the SQL Server.
+* [**SqlServerReplication**](#sqlserverreplication) resource to manage SQL Replication
+  distribution and publishing.
+* [**SqlServerRole**](#sqlserverrole) resource to manage SQL server roles.
+* [**SqlServiceAccount**](#sqlserviceaccount) Manage the service account
   for SQL Server services.
-* [**xSQLServerSetup**](#xsqlserversetup) installs a standalone SQL Server instance.
-* [**xWaitForAvailabilityGroup**](#xwaitforavailabilitygroup) resource to wait until
-  availability group is created on primary server.
+* [**SqlSetup**](#sqlsetup) installs a standalone SQL Server instance.
+* [**SqlWaitForAG**](#sqlwaitforag) resource to
+  wait until availability group is created on primary server.
+* [**SqlWindowsFirewall**](#sqlwindowsfirewall) configures firewall settings to
+  allow remote access to a SQL Server instance.
 
-### xSQLServerAlias
-
-No description.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-
-#### Parameters
-
-* **`[String]` Name** _(Key)_: The name of Alias (e.g. svr01\inst01).
-* **`[String]` ServerName** _(Key)_: The SQL Server you are aliasing (the NetBIOS
-  name or FQDN).
-* **`[String]` Ensure** _(Write)_: Determines whether the alias should be added or
-  removed. Default value is 'Present'. { *Present* | Absent }.
-* **`[String]` Protocol** _(Write)_: Protocol to use when connecting. Valid values
-  are 'TCP' or 'NP' (Named Pipes). Default value is 'TCP'. { *TCP* | NP }.
-* **`[Uint16]` TCPPort** _(Write)_: The TCP port SQL is listening on. Only used when
-  protocol is set to 'TCP'. Default value is port 1433.
-* **`[Boolean]` UseDynamicTcpPort** _(Write)_: The UseDynamicTcpPort specify that
-  the Net-Library will determine the port dynamically. The port specified in Port
-  number will not be used. Default value is '$false'.
-
-#### Read-Only Properties from Get-TargetResource
-
-* **`[String]` PipeName** _(Read)_: Named Pipes path from the Get-TargetResource
-  method.
-
-#### Examples
-
-* [Add an SQL Server alias](/Examples/Resources/xSQLServerAlias/1-AddSQLServerAlias.ps1)
-* [Remove an SQL Server alias](/Examples/Resources/xSQLServerAlias/2-RemoveSQLServerAlias.ps1)
-
-### xSQLServerAlwaysOnAvailabilityGroup
+### SqlAG
 
 This resource is used to create, remove, and update an Always On Availability Group.
 It will also manage the Availability Group replica on the specified node.
@@ -205,8 +179,8 @@ It will also manage the Availability Group replica on the specified node.
 #### Parameters
 
 * **`[String]` Name** _(Key)_: The name of the availability group.
-* **`[String]` SQLServer** _(Required)_: Hostname of the SQL Server to be configured.
-* **`[String]` SQLInstanceName** _(Key)_: Name of the SQL instance to be configured.
+* **`[String]` ServerName** _(Required)_: Hostname of the SQL Server to be configured.
+* **`[String]` InstanceName** _(Key)_: Name of the SQL instance to be configured.
 * **`[String]` Ensure** _(Write)_: Specifies if the availability group should be
   present or absent. Default is Present. { *Present* | Absent }
 * **`[String]` AutomatedBackupPreference** _(Write)_: Specifies the automated backup
@@ -255,8 +229,6 @@ It will also manage the Availability Group replica on the specified node.
   availability group replica endpoint.
 * **`[Uint32]` EndpointPort** _(Read)_: Gets the port the database mirroring
   endpoint is listening on
-* **`[String]` SQLServerNetName** _(Read)_: Gets the hostname the SQL Server
-  instance is listening on.
 * **`[Uint32]` Version** _(Read)_: Gets the major version of the SQL Server
   instance.
 * **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
@@ -264,11 +236,11 @@ It will also manage the Availability Group replica on the specified node.
 
 #### Examples
 
-* [Add a SQL Server Always On Availability Group](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroup/1-CreateAvailabilityGroup.ps1)
-* [Add a SQL Server Always On Availability Group and explicitly defines its properties](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroup/3-CreateAvailabilityGroupDetailed.ps1)
-* [Remove a SQL Server Always On Availability Group](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroup/2-RemoveAvailabilityGroup.ps1)
+* [Add a SQL Server Always On Availability Group](/Examples/Resources/SqlAG/1-CreateAvailabilityGroup.ps1)
+* [Add a SQL Server Always On Availability Group and explicitly defines its properties](/Examples/Resources/SqlAG/3-CreateAvailabilityGroupDetailed.ps1)
+* [Remove a SQL Server Always On Availability Group](/Examples/Resources/SqlAG/2-RemoveAvailabilityGroup.ps1)
 
-### xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
+### SqlAGDatabase
 
 This resource is used to add and/or remove databases to a specified availability
 group.
@@ -283,11 +255,11 @@ group.
 
 * **`[String]` DatabaseName** _(Required)_: The name of the database(s) to add to
   the availability group. This accepts wildcards.
-* **`[String]` SQLServer** _(Key)_: Hostname of the SQL Server where the primary
+* **`[String]` ServerName** _(Key)_: Hostname of the SQL Server where the primary
   replica of the availability group lives. If the availability group is not
   currently on this server, the resource will attempt to connect to the server
   where the primary replica lives.
-* **`[String]` SQLInstanceName** _(Key)_: Name of the SQL instance where the primary
+* **`[String]` InstanceName** _(Key)_: Name of the SQL instance where the primary
   replica of the availability group lives. If the availability group is not currently
   on this instance, the resource will attempt to connect to the instance where the
   primary replica lives.
@@ -323,7 +295,59 @@ group.
 * **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
   actively hosting the SQL Server instance.
 
-### xSQLServerAlwaysOnAvailabilityGroupReplica
+#### Examples
+
+* [Add a database to an Availability Group](/Examples/Resources/SqlAGDatabase/1-AddDatabaseToAvailabilityGroup.ps1)
+* [Remove a database from an Availability Group](/Examples/Resources/SqlAGDatabase/2-RemoveDatabaseFromAvailabilityGroup.ps1)
+* [Enforce only specified databases as member in an Availability Group](/Examples/Resources/SqlAGDatabase/3-MatchDefinedDatabaseInAvailabilityGroup.ps1)
+
+### SqlAGListener
+
+No description.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
+* Target machine must have access to the SQLPS PowerShell module or the SqlServer
+  PowerShell module.
+* Requires that the Cluster name Object (CNO) has been delegated the right
+  _Create Computer Object_ in the organizational unit (OU) in which the
+  Cluster Name Object (CNO) resides.
+
+#### Parameters
+
+* **`[String]` InstanceName** _(Key)_: The SQL Server instance name of the primary
+  replica.
+* **`[String]` AvailabilityGroup** _(Key)_: The name of the availability group to
+  which the availability group listener is or will be connected.
+* **`[String]` ServerName** _(Write)_: The host name or FQDN of the primary replica.
+* **`[String]` Ensure** _(Write)_: If the availability group listener should be present
+  or absent. Default value is 'Present'. { *Present* | Absent }.
+* **`[String]` Name** _(Write)_: The name of the availability group listener, max
+  15 characters. This name will be used as the Virtual Computer Object (VCO).
+* **`[String[]]` IpAddress** _(Write)_: The IP address used for the availability
+  group listener, in the format 192.168.10.45/255.255.252.0. If using DHCP, set
+  to the first IP-address of the DHCP subnet, in the format 192.168.8.1/255.255.252.0.
+  Must be valid in the cluster-allowed IP range.
+* **`[Uint16]` Port** _(Write)_: The port used for the availability group listener.
+* **`[Boolean]` DHCP** _(Write)_: If DHCP should be used for the availability group
+  listener instead of static IP address.
+
+#### Examples
+
+* [Adds an Availability Group listener with the same name as the
+  Availability Group VCO](/Examples/Resources/SqlAGListener/1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1)
+* [Adds an Availability Group listener with a different name than the
+  Availability Group VCO](/Examples/Resources/SqlAGListener/2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
+* [Removes an Availability Group listener with the same name as the
+  Availability Group VCO](/Examples/Resources/SqlAGListener/3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1)
+* [Removes an Availability Group listener with a different name than the
+  Availability Group VCO](/Examples/Resources/SqlAGListener/4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
+* [Adds an Availability Group listener using DHCP on the default server subnet](/Examples/Resources/SqlAGListener/5-AddAvailabilityGroupListenerUsingDHCPWithDefaultServerSubnet.ps1)
+* [Adds an Availability Group listener using DHCP with a specific subnet](/Examples/Resources/SqlAGListener/6-AddAvailabilityGroupListenerUsingDHCPWithSpecificSubnet.ps1)
+
+### SqlAGReplica
 
 This resource is used to create, remove, and update an
 Always On Availability Group Replica.
@@ -340,13 +364,13 @@ Always On Availability Group Replica.
 * **`[String]` Name** _(Key)_: The name of the availability group replica. For named
   instances this must be in the following format SQLServer\InstanceName.
 * **`[String]` AvailabilityGroupName** _(Key)_: The name of the availability group.
-* **`[String]` SQLServer** _(Required)_: Hostname of the SQL Server to be configured.
-* **`[String]` SQLInstanceName** _(Key)_: Name of the SQL instance to be configured.
-* **`[String]` PrimaryReplicaSQLServer** _(Write)_: Hostname of the SQL Server where
+* **`[String]` ServerName** _(Required)_: Hostname of the SQL Server to be configured.
+* **`[String]` InstanceName** _(Key)_: Name of the SQL instance to be configured.
+* **`[String]` PrimaryReplicaServerName** _(Write)_: Hostname of the SQL Server where
   the primary replica is expected to be active. If the primary replica is not found
   here, the resource will attempt to find the host that holds the primary replica
   and connect to it.
-* **`[String]` PrimaryReplicaSQLInstanceName** _(Write)_: Name of the SQL instance
+* **`[String]` PrimaryReplicaInstanceName** _(Write)_: Name of the SQL instance
   where the primary replica lives.
 * **`[String]` Ensure** _(Write)_: Specifies if the availability group replica should
   be present or absent. Default is Present. { *Present* | Absent }
@@ -384,17 +408,48 @@ Always On Availability Group Replica.
   listening on. Used by Get-TargetResource.
 * **`[String]` EndpointUrl** _(Read)_: Output the endpoint URL of the
   Availability Group Replica. Used by Get-TargetResource.
-* **`[String]` SQLServerNetName** _(Read)_: Output the NetName property from the
-  SQL Server object.
 * **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
   actively hosting the SQL Server instance.
 
 #### Examples
 
-* [Add a SQL Server Always On Availability Group Replica](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroupReplica/1-CreateAvailabilityGroupReplica.ps1)
-* [Remove a SQL Server Always On Availability Group Replica](/Examples/Resources/xSQLServerAlwaysOnAvailabilityGroupReplica/2-RemoveAvailabilityGroupReplica.ps1)
+* [Add a SQL Server Always On Availability Group Replica](/Examples/Resources/SqlAGReplica/1-CreateAvailabilityGroupReplica.ps1)
+* [Remove a SQL Server Always On Availability Group Replica](/Examples/Resources/SqlAGReplica/2-RemoveAvailabilityGroupReplica.ps1)
 
-### xSQLServerAlwaysOnService
+### SqlAlias
+
+No description.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+
+#### Parameters
+
+* **`[String]` Name** _(Key)_: The name of Alias (e.g. svr01\inst01).
+* **`[String]` ServerName** _(Key)_: The SQL Server you are aliasing (the NetBIOS
+  name or FQDN).
+* **`[String]` Ensure** _(Write)_: Determines whether the alias should be added or
+  removed. Default value is 'Present'. { *Present* | Absent }.
+* **`[String]` Protocol** _(Write)_: Protocol to use when connecting. Valid values
+  are 'TCP' or 'NP' (Named Pipes). Default value is 'TCP'. { *TCP* | NP }.
+* **`[Uint16]` TCPPort** _(Write)_: The TCP port SQL is listening on. Only used when
+  protocol is set to 'TCP'. Default value is port 1433.
+* **`[Boolean]` UseDynamicTcpPort** _(Write)_: The UseDynamicTcpPort specify that
+  the Net-Library will determine the port dynamically. The port specified in Port
+  number will not be used. Default value is '$false'.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[String]` PipeName** _(Read)_: Named Pipes path from the Get-TargetResource
+  method.
+
+#### Examples
+
+* [Add an SQL Server alias](/Examples/Resources/SqlAlias/1-AddSqlAlias.ps1)
+* [Remove an SQL Server alias](/Examples/Resources/SqlAlias/2-RemoveSqlAlias.ps1)
+
+### SqlAlwaysOnService
 
 Enables or disabled SQL Server Always On high availability and disaster recovery
 (Always On HADR).
@@ -406,8 +461,8 @@ Enables or disabled SQL Server Always On high availability and disaster recovery
 
 #### Parameters
 
-* **`[String]` SQLServer** _(Key)_: The hostname of the SQL Server to be configured.
-* **`[String]` SQLInstance** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` ServerName** _(Key)_: The hostname of the SQL Server to be configured.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
 * **`[String]` Ensure** _(Required)_: An enumerated value that describes if the SQL
   Server should have Always On high availability and disaster recovery (HADR)
   property enabled ('Present') or disabled ('Absent'). { Present | Absent }.
@@ -421,84 +476,10 @@ Enables or disabled SQL Server Always On high availability and disaster recovery
 
 #### Examples
 
-* [Enable SQL Server Always On](/Examples/Resources/xSQLServerAlwaysOnService/1-EnableAlwaysOn.ps1)
-* [Disable SQL Server Always On](/Examples/Resources/xSQLServerAlwaysOnService/1-DisableAlwaysOn.ps1)
+* [Enable SQL Server Always On](/Examples/Resources/SqlAlwaysOnService/1-EnableAlwaysOn.ps1)
+* [Disable SQL Server Always On](/Examples/Resources/SqlAlwaysOnService/1-DisableAlwaysOn.ps1)
 
-### xSQLServerAvailabilityGroupListener
-
-No description.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2012 or later.
-* Target machine must have access to the SQLPS PowerShell module or the SqlServer
-  PowerShell module.
-* Requires that the Cluster name Object (CNO) has been delegated the right
-  _Create Computer Object_ in the organizational unit (OU) in which the
-  Cluster Name Object (CNO) resides.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: The SQL Server instance name of the primary
-  replica.
-* **`[String]` AvailabilityGroup** _(Key)_: The name of the availability group to
-  which the availability group listener is or will be connected.
-* **`[String]` NodeName** _(Write)_: The host name or FQDN of the primary replica.
-* **`[String]` Ensure** _(Write)_: If the availability group listener should be present
-  or absent. Default value is 'Present'. { *Present* | Absent }.
-* **`[String]` Name** _(Write)_: The name of the availability group listener, max
-  15 characters. This name will be used as the Virtual Computer Object (VCO).
-* **`[String[]]` IpAddress** _(Write)_: The IP address used for the availability
-  group listener, in the format 192.168.10.45/255.255.252.0. If using DHCP, set
-  to the first IP-address of the DHCP subnet, in the format 192.168.8.1/255.255.252.0.
-  Must be valid in the cluster-allowed IP range.
-* **`[Uint16]` Port** _(Write)_: The port used for the availability group listener.
-* **`[Boolean]` DHCP** _(Write)_: If DHCP should be used for the availability group
-  listener instead of static IP address.
-
-#### Examples
-
-* [Adds an Availability Group listener with the same name as the
-  Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1)
-* [Adds an Availability Group listener with a different name than the
-  Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
-* [Removes an Availability Group listener with the same name as the
-  Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1)
-* [Removes an Availability Group listener with a different name than the
-  Availability Group VCO](/Examples/Resources/xSQLServerAvailabilityGroupListener/4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
-* [Adds an Availability Group listener using DHCP on the default server subnet](/Examples/Resources/xSQLServerAvailabilityGroupListener/5-AddAvailabilityGroupListenerUsingDHCPWithDefaultServerSubnet.ps1)
-* [Adds an Availability Group listener using DHCP with a specific subnet](/Examples/Resources/xSQLServerAvailabilityGroupListener/6-AddAvailabilityGroupListenerUsingDHCPWithSpecificSubnet.ps1)
-
-### xSQLServerConfiguration
-
-No description.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
-
-#### Parameters
-
-* **`[String]` SQLServer** _(Key)_: The hostname of the SQL Server to be configured.
-* **`[String]` SQLInstanceName** _(Key)_: Name of the SQL instance to be configured.
-* **`[String]` OptionName** _(Key)_: The name of the SQL configuration option to
-  be checked. For all possible values reference [MSDN](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
-  or run sp_configure.
-* **`[Sint32]` OptionValue** _(Required)_: The desired value of the SQL configuration
-  option.
-* **`[Boolean]` RestartService** _(Write)_: Determines whether the instance should
-  be restarted after updating the configuration option.
-* **`[Sint32]` RestartTimeout** _(Write)_: The length of time, in seconds, to wait
-  for the service to restart. Default is 120 seconds.
-
-#### Examples
-
-* [Configure two instances on the same server to have CLR enabled](/Examples/Resources/xSQLServerConfiguration/1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1)
-* [Configure a instance to have 'Priority Boost' enabled](/Examples/Resources/xSQLServerConfiguration/2-ConfigureInstanceToEnablePriorityBoost.ps1)
-
-### xSQLServerDatabase
+### SqlDatabase
 
 This resource is used to create or delete a database. For more information about
 database, please read:
@@ -513,8 +494,8 @@ database, please read:
 
 #### Parameters
 
-* **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
-* **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` ServerName** _(Key)_: The host name of the SQL Server to be configured.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
 * **`[String]` Name** _(Key)_: The name of database to be created or dropped.
 * **`[String]` Collation** _(Write)_: The name of the SQL collation to use
   for the new database. Defaults to server collation.
@@ -523,10 +504,10 @@ database, please read:
 
 #### Examples
 
-* [Create a Database](/Examples/Resources/xSQLServerDatabase/1-CreateDatabase.ps1)
-* [Delete a database](/Examples/Resources/xSQLServerDatabase/2-DeleteDatabase.ps1)
+* [Create a Database](/Examples/Resources/SqlDatabase/1-CreateDatabase.ps1)
+* [Delete a database](/Examples/Resources/SqlDatabase/2-DeleteDatabase.ps1)
 
-### xSQLServerDatabaseDefaultLocation
+### SqlDatabaseDefaultLocation
 
 This resource is used to configure default locations for user databases. The
 types of default locations that can be changed are Data, Log, and Backup. For
@@ -540,8 +521,8 @@ more information about database default locations, please read the article
 
 #### Parameters
 
-* **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
-* **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to
+* **`[String]` ServerName** _(Key)_: The host name of the SQL Server to be configured.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to
   be configured.
 * **`[String]` Type** _(Key)_: The type of database default location to be
   configured. { Data | Log | Backup }
@@ -560,9 +541,9 @@ more information about database default locations, please read the article
 
 #### Examples
 
-* [Set database default locations](/Examples/Resources/xSQLServerDatabaseDefaultLocation/1-SetDatabaseDefaultLocation.ps1)
+* [Set database default locations](/Examples/Resources/SqlDatabaseDefaultLocation/1-SetDatabaseDefaultLocation.ps1)
 
-### xSQLServerDatabaseOwner
+### SqlDatabaseOwner
 
 This resource is used to configure the owner of a database.
 For more information about database owner, please read the article
@@ -578,14 +559,14 @@ For more information about database owner, please read the article
 * **`[String]` Database** _(Key)_: The name of database to be configured.
 * **`[String]` Name** _(Required)_: The name of the login that will become a owner
   of the desired sql database.
-* **`[String]` SQLServer** _(Write)_: The host name of the SQL Server to be configured.
-* **`[String]` SQLInstance** _(Write)_: The name of the SQL instance to be configured.
+* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
+* **`[String]` InstanceName** _(Write)_: The name of the SQL instance to be configured.
 
 #### Examples
 
-* [Set database owner](/Examples/Resources/xSQLServerDatabaseOwner/1-SetDatabaseOwner.ps1)
+* [Set database owner](/Examples/Resources/SqlDatabaseOwner/1-SetDatabaseOwner.ps1)
 
-### xSQLServerDatabasePermission
+### SqlDatabasePermission
 
 This resource is used to grant, deny or revoke permissions for a user in a database.
 For more information about permissions, please read the article
@@ -602,9 +583,9 @@ will also get their permission revoked.
 
 #### Parameters
 
-* **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
+* **`[String]` ServerName** _(Key)_: The host name of the SQL Server to be configured.
   Default values is '$env:COMPUTERNAME'.
-* **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
   Default value is 'MSSQLSERVER'.
 * **`[String]` Database** _(Key)_: The name of the database.
 * **`[String]` Name** _(Key)_: The name of the user that should be granted or denied
@@ -619,11 +600,11 @@ will also get their permission revoked.
 
 #### Examples
 
-* [Grant Database Permission](/Examples/Resources/xSQLServerDatabasePermission/1-GrantDatabasePermissions.ps1)
-* [Revoke Database Permission](/Examples/Resources/xSQLServerDatabasePermission/2-RevokeDatabasePermissions.ps1)
-* [Deny Database Permission](/Examples/Resources/xSQLServerDatabasePermission/3-DenyDatabasePermissions.ps1)
+* [Grant Database Permission](/Examples/Resources/SqlDatabasePermission/1-GrantDatabasePermissions.ps1)
+* [Revoke Database Permission](/Examples/Resources/SqlDatabasePermission/2-RevokeDatabasePermissions.ps1)
+* [Deny Database Permission](/Examples/Resources/SqlDatabasePermission/3-DenyDatabasePermissions.ps1)
 
-### xSQLServerDatabaseRecoveryModel
+### SqlDatabaseRecoveryModel
 
 This resource set the recovery model for a database. The recovery model controls
 how transactions are logged, whether the transaction log requires (and allows)
@@ -640,16 +621,16 @@ Read more about recovery model in this article
 #### Parameters
 
 * **`[String]` Name** _(Key)_: The SQL database name.
-* **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
-* **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` ServerName** _(Key)_: The host name of the SQL Server to be configured.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
 * **`[String]` RecoveryModel** _(Required)_: The recovery model to use for the database.
   { Full | Simple | BulkLogged }.
 
 #### Examples
 
-* [Set the RecoveryModel of a database](/Examples/Resources/xSQLServerDatabaseRecoveryModel/1-SetDatabaseRecoveryModel.ps1)
+* [Set the RecoveryModel of a database](/Examples/Resources/SqlDatabaseRecoveryModel/1-SetDatabaseRecoveryModel.ps1)
 
-### xSQLServerDatabaseRole
+### SqlDatabaseRole
 
 This resource is used to add or remove role for a login in a database.
 Read more about database role in this article [CREATE ROLE (Transact-SQL)](https://msdn.microsoft.com/en-us/library/ms187936.aspx)
@@ -663,8 +644,8 @@ Read more about database role in this article [CREATE ROLE (Transact-SQL)](https
 
 * **`[String]` Name** _(Key)_: The name of the login that will become a member, or
   removed as a member, of the role(s).
-* **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
-* **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` ServerName** _(Key)_: The host name of the SQL Server to be configured.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
 * **`[String]` Database** _(Key)_: The database in which the login (user) and role(s)
   exist.
 * **`[String]` Ensure** _(Write)_: If 'Present' (the default value) then the login
@@ -675,18 +656,181 @@ Read more about database role in this article [CREATE ROLE (Transact-SQL)](https
 
 #### Examples
 
-* [Add Role of a database](/Examples/Resources/xSQLServerDatabaseRole/1-AddDatabaseRole.ps1)
-* [Remove Role of a database](/Examples/Resources/xSQLServerDatabaseRole/2-RemoveDatabaseRole.ps1)
+* [Add Role of a database](/Examples/Resources/SqlDatabaseRole/1-AddDatabaseRole.ps1)
+* [Remove Role of a database](/Examples/Resources/SqlDatabaseRole/2-RemoveDatabaseRole.ps1)
 
-### xSQLServerEndpoint
+### SqlRS
+
+Initializes and configures SQL Reporting Services server.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Reporting Services 2008 or later.
+* If `PsDscRunAsCredential` common parameter is used to run the resource, the
+  specified credential must have permissions to connect to the SQL Server specified
+  in `RSSQLServer` and create Reporting Services databases.
+
+#### Parameters
+
+* **`[String]` InstanceName** _(Key)_: Name of the SQL Server Reporting Services
+  instance to be configured.
+* **`[String]` DatabaseServerName** _(Required)_: Name of the SQL Server to host
+  the Reporting Service database.
+* **`[String]` DatabaseInstanceName** _(Required)_: Name of the SQL Server instance
+  to host the Reporting Service database.
+* **`[String]` ReportServerVirtualDir** _(Write)_: Report Server Web Service virtual
+  directory. Optional.
+* **`[String]` ReportsVirtualDir** _(Write)_: Report Manager/Report Web App virtual
+  directory name. Optional.
+* **`[String[]]` ReportServerReservedUrl** _(Write)_: Report Server URL reservations.
+  Optional. If not specified, 'http://+:80' URL reservation will be used.
+* **`[String[]]` ReportsReservedUrl** _(Write)_: Report Manager/Report Web App URL
+  reservations. Optional. If not specified, 'http://+:80' URL reservation will be
+  used.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[Boolean]` IsInitialized** _(Read)_: Output is the Reporting Services instance
+  initialized.
+
+#### Examples
+
+* [Default configuration](Examples/Resources/SqlRS/1-DefaultConfiguration.ps1)
+* [Custom virtual directories and reserved URLs](Examples/Resources/SqlRS/2-CustomConfiguration.ps1)
+
+### SqlRSSecureConnectionLevel
+
+No description.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Reporting Services 2008 or later.
+
+#### Parameters
+
+* **`[String]` InstanceName** _(Key)_: SQL instance to set secure connection level
+  for.
+* **`[Uint16]` SecureConnectionLevel** _(Key)_: SQL Server Reporting Service secure
+  connection level.
+* **`[PSCredential]` SQLAdminCredential** _(Required)_: Credential with administrative
+  permissions to the SQL instance.
+
+#### Examples
+
+None.
+
+### SqlScript
+
+Provides the means to run a user generated T-SQL script on the SQL Server instance.
+Three scripts are required; Get T-SQL script, Set T-SQL script and the Test T-SQL
+script.
+
+#### Scripts
+
+##### Get T-SQL Script (GetFilePath)
+
+The Get T-SQL script is used to query the status when running the cmdlet
+Get-DscConfiguration, and the result can be found in the property `GetResult`.
+
+##### Test T-SQL Script (TestFilePath)
+
+The Test T-SQL script is used to test if the desired state is met. If Test
+T-SQL raises an error or returns any value other than 'null' the test fails, thus
+the Set T-SQL script is run.
+
+##### Set T-SQL Script (SetFilePath)
+
+The Set T-SQL script performs the actual change when Test T-SQL script fails.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server 2008 or later.
+* Target machine must have access to the SQLPS PowerShell module or the SqlServer
+  PowerShell module.
+
+_Note: There is a known problem running this resource using PowerShell 4.0.
+See [issue #273](https://github.com/PowerShell/SqlServerDsc/issues/273)
+for more information._
+
+#### Parameters
+
+* **`[String]` ServerInstance** _(Key)_: The name of an instance of the Database
+  Engine. For a default instance, only specify the computer name. For a named
+  instances, use the format ComputerName\\InstanceName.
+* **`[String]` SetFilePath** _(Key)_: Path to the T-SQL file that will perform Set
+  action.
+* **`[String]` GetFilePath** _(Key)_: Path to the T-SQL file that will perform Get
+  action. Any values returned by the T-SQL queries will also be returned by the
+  cmdlet Get-DscConfiguration through the `GetResult` property.
+* **`[String]` TestFilePath** _(Key)_: Path to the T-SQL file that will perform Test
+  action. Any script that does not throw an error or returns null is evaluated to
+  true. The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text,
+  and will not cause the test to return false.
+* **`[PSCredential]` Credential** _(Write)_: The credentials to authenticate with,
+  using SQL Authentication. To authenticate using Windows Authentication, assign
+  the credentials to the built-in parameter `PsDscRunAsCredential`. If both parameters
+  `Credential` and `PsDscRunAsCredential` are not assigned, then SYSTEM account will
+  be used to authenticate using Windows Authentication.
+* **`[UInt32]` QueryTimeout** _(Write)_: Specifies, as an integer, the number of
+  seconds after which the T-SQL script execution will time out.  In some SQL Server
+  versions there is a bug in Invoke-Sqlcmd where the normal default value 0 (no
+  timeout) is not respected and the default value is incorrectly set to 30 seconds.
+* **`[String[]]` Variable** _(Write)_: Specifies, as a string array, a scripting
+  variable for use in the sql script, and sets a value for the variable. Use a
+  Windows PowerShell array to specify multiple variables and their values. For more
+  information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx).
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[String]` GetResult** _(Read)_: Contains the values returned from the T-SQL
+  script provided in the parameter `GetFilePath` when cmdlet Get-DscConfiguration
+  is run.
+
+#### Examples
+
+* [Run a script using SQL Authentication](/Examples/Resources/SqlScript/1-RunScriptUsingSQLAuthentication.ps1)
+* [Run a script using Windows Authentication](/Examples/Resources/SqlScript/2-RunScriptUsingWindowsAuthentication.ps1)
+
+### SqlServerConfiguration
+
+No description.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2008 or later.
+
+#### Parameters
+
+* **`[String]` ServerName** _(Key)_: The hostname of the SQL Server to be configured.
+* **`[String]` InstanceName** _(Key)_: Name of the SQL instance to be configured.
+* **`[String]` OptionName** _(Key)_: The name of the SQL configuration option to
+  be checked. For all possible values reference [MSDN](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
+  or run sp_configure.
+* **`[Sint32]` OptionValue** _(Required)_: The desired value of the SQL configuration
+  option.
+* **`[Boolean]` RestartService** _(Write)_: Determines whether the instance should
+  be restarted after updating the configuration option.
+* **`[Sint32]` RestartTimeout** _(Write)_: The length of time, in seconds, to wait
+  for the service to restart. Default is 120 seconds.
+
+#### Examples
+
+* [Configure two instances on the same server to have CLR enabled](/Examples/Resources/SqlServerConfiguration/1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1)
+* [Configure a instance to have 'Priority Boost' enabled](/Examples/Resources/SqlServerConfiguration/2-ConfigureInstanceToEnablePriorityBoost.ps1)
+
+### SqlServerEndpoint
 
 This resource is used to create an endpoint. Currently it only supports creating
 a database mirror endpoint which can be used by, for example, AlwaysOn.
 
 >Note: The endpoint will be started after creation, but will not be enforced. Please
-use [**xSQLServerEndpointState**](#xsqlserverendpointstate) to make sure the endpoint
+use [**SqlServerEndpointState**](#xsqlserverendpointstate) to make sure the endpoint
 remains in started state. To set connect permission to the endpoint, please use
-the resource [**xSQLServerEndpointPermission**](#xsqlserverendpointpermission).
+the resource [**SqlServerEndpointPermission**](#xsqlserverendpointpermission).
 
 #### Requirements
 
@@ -705,9 +849,9 @@ the resource [**xSQLServerEndpointPermission**](#xsqlserverendpointpermission).
   Default values is 'Present'. { *Present* | Absent }.
 * **`[Uint16]` Port** _(Write)_: The network port the endpoint is listening on.
   Default value is 5022.
-* **`[String]` SQLServer** _(Write)_: The host name of the SQL Server to be configured.
+* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
   Default value is $env:COMPUTERNAME.
-* **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
 * **`[String]` IpAddress** _(Write)_: The network IP address the endpoint is listening
   on. Defaults to '0.0.0.0' which means listen on any valid IP address.
 
@@ -715,7 +859,7 @@ the resource [**xSQLServerEndpointPermission**](#xsqlserverendpointpermission).
 
 None.
 
-### xSQLServerEndpointPermission
+### SqlServerEndpointPermission
 
 This resource is used to give connect permission to an endpoint for a user (login).
 
@@ -727,7 +871,7 @@ This resource is used to give connect permission to an endpoint for a user (logi
 #### Parameters
 
 * **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **`[String]` NodeName** _(Required)_: The host name of the SQL Server to be configured.
+* **`[String]` ServerName** _(Required)_: The host name of the SQL Server to be configured.
 * **`[String]` Ensure** _(Write)_: If the permission should be present or absent.
   Default value is 'Present'. { *Present* | Absent }.
 * **`[String]` Name** _(Required)_: The name of the endpoint.
@@ -737,15 +881,15 @@ This resource is used to give connect permission to an endpoint for a user (logi
 
 #### Examples
 
-* [Add connect permission to an Endpoint](/Examples/Resources/xSQLServerEndpointPermission/1-AddConnectPermission.ps1)
-* [Remove the connect permission for an Endpoint](/Examples/Resources/xSQLServerEndpointPermission/2-RemoveConnectPermission.ps1)
+* [Add connect permission to an Endpoint](/Examples/Resources/SqlServerEndpointPermission/1-AddConnectPermission.ps1)
+* [Remove the connect permission for an Endpoint](/Examples/Resources/SqlServerEndpointPermission/2-RemoveConnectPermission.ps1)
 * [Add connect permission to both an Always On primary replica and an Always On
-  secondary replica, and where each replica has a different SQL service account](/Examples/Resources/xSQLServerEndpointPermission/3-AddConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1)
+  secondary replica, and where each replica has a different SQL service account](/Examples/Resources/SqlServerEndpointPermission/3-AddConnectPermissionToTwoReplicasEachWithDifferentServiceAccount.ps1)
 * [Remove connect permission to both an Always On primary replica and an
   Always On secondary replica, and where each replica has a different SQL service
-  account](/Examples/Resources/xSQLServerEndpointPermission/4-RemoveConnectPermissionToAlwaysOnPrimaryAndSecondaryReplicaEachWithDifferentSqlServiceAccounts.ps1)
+  account](/Examples/Resources/SqlServerEndpointPermission/4-RemoveConnectPermissionForTwoReplicasEachWithDifferentServiceAccount.ps1)
 
-### xSQLServerEndpointState
+### SqlServerEndpointState
 
 This resource is used to set the state of an endpoint.
 
@@ -761,7 +905,7 @@ This resource is used to set the state of an endpoint.
 #### Parameters
 
 * **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **`[String]` NodeName** _(Write)_: The host name of the SQL Server to be configured.
+* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
   Default value is $env:COMPUTERNAME.
 * **`[String]` Name** _(Key)_: The name of the endpoint.
 * **`[String]` State** _(Write)_: The state of the endpoint. Valid states are Started,
@@ -770,95 +914,10 @@ This resource is used to set the state of an endpoint.
 
 #### Examples
 
-* [Make sure that an endpoint is started](/Examples/Resources/xSQLServerEndpointState/1-MakeSureEndpointIsStarted.ps1)
-* [Make sure that an endpoint is stopped](/Examples/Resources/xSQLServerEndpointState/2-MakeSureEndpointIsStopped.ps1)
+* [Make sure that an endpoint is started](/Examples/Resources/SqlServerEndpointState/1-MakeSureEndpointIsStarted.ps1)
+* [Make sure that an endpoint is stopped](/Examples/Resources/SqlServerEndpointState/2-MakeSureEndpointIsStopped.ps1)
 
-### xSQLServerFirewall
-
-This will set default firewall rules for the supported features. Currently the
-features supported are Database Engine, Analysis Services, SQL Browser,
-SQL Reporting Services and Integration Services.
-
-#### Firewall rules
-
-##### Database Engine (SQLENGINE) - Default instance
-
-Firewall Rule | Firewall Display Name
---- | ---
-Application: sqlservr.exe | SQL Server Database Engine instance MSSQLSERVER
-Service: SQLBrowser | SQL Server Browser
-
-##### Database Engine (SQLENGINE) - Named instance
-
-Firewall Rule | Firewall Display Name
---- | ---
-Application: sqlservr.exe | SQL Server Database Engine instance \<INSTANCE\>
-Service: SQLBrowser | SQL Server Browser
-
-##### Analysis Services (AS) - Default instance
-
-Firewall Rule | Firewall Display Name
---- | ---
-Service: MSSQLServerOLAPService | SQL Server Analysis Services instance MSSQLSERVER
-Service: SQLBrowser | SQL Server Browser
-
-##### Analysis Services (AS) - Named instance
-
-Firewall Rule | Firewall Display Name
---- | ---
-Service: MSOLAP$\<INSTANCE\> | SQL Server Analysis Services instance \<INSTANCE\>
-Service: SQLBrowser | SQL Server Browser
-
-##### Reporting Services (RS)
-
-Firewall Rule | Firewall Display Name
---- | ---
-Port: tcp/80 | SQL Server Reporting Services 80
-Port: tcp/443 | SQL Server Reporting Services 443
-
-##### Integration Services (IS)
-
-Firewall Rule | Firewall Display Name
---- | ---
-Application: MsDtsSrvr.exe | SQL Server Integration Services Application
-Port: tcp/135 | SQL Server Integration Services Port
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-
-#### Parameters
-
-* **`[String]` Features** _(Key)_: SQL features to enable firewall rules for.
-* **`[String]` InstanceName** _(Key)_: SQL instance to enable firewall rules for.
-* **`[String]` Ensure** _(Write)_: Ensures that SQL firewall rules are **Present**
-  or **Absent** on the machine. { *Present* | Absent }.
-* **`[String]` SourcePath** _(Write)_: UNC path to the root of the source files for
-  installation.
-* **`[String]` SourceCredential** _(Write)_: Credentials used to access the path
-  set in the parameter 'SourcePath'. This parameter is optional either if built-in
-  parameter 'PsDscRunAsCredential' is used, or if the source path can be access
-  using the SYSTEM account.
-
-#### Read-Only Properties from Get-TargetResource
-
-* **`[Boolean]` DatabaseEngineFirewall** _(Read)_: Is the firewall rule for the
-  Database Engine enabled?
-* **`[Boolean]` BrowserFirewall** _(Read)_: Is the firewall rule for the Browser
-  enabled?
-* **`[Boolean]` ReportingServicesFirewall** _(Read)_: Is the firewall rule for
-  Reporting Services enabled?
-* **`[Boolean]` AnalysisServicesFirewall** _(Read)_: Is the firewall rule for
-  Analysis Services enabled?
-* **`[Boolean]` IntegrationServicesFirewall** _(Read)_: Is the firewall rule for
-  the Integration Services enabled?
-
-#### Examples
-
-* [Create inbound firewall rules](/Examples/Resources/xSQLServerFirewall/1-CreateInboundFirewallRules.ps1)
-* [Remove inbound firewall rules](/Examples/Resources/xSQLServerFirewall/2-RemoveInboundFirewallRules.ps1)
-
-### xSQLServerLogin
+### SqlServerLogin
 
 No description.
 
@@ -869,8 +928,8 @@ No description.
 
 #### Parameters
 
-* **`[String]` SQLServer** _(Key)_:The hostname of the SQL Server to be configured.
-* **`[String]` SQLInstanceName** _(Key)_: Name of the SQL instance to be configured.
+* **`[String]` ServerName** _(Key)_:The hostname of the SQL Server to be configured.
+* **`[String]` InstanceName** _(Key)_: Name of the SQL instance to be configured.
 * **`[String]` Name** _(Key)_: The name of the login.
 * **`[String]` Ensure** _(Write)_: The specified login is Present or Absent.
   { *Present* | Absent }.
@@ -896,7 +955,7 @@ No description.
 
 None.
 
-### xSQLServerMaxDop
+### SqlServerMaxDop
 
 This resource set the max degree of parallelism server configuration option.
 The max degree of parallelism option is used to limit the number of processors to
@@ -922,8 +981,8 @@ Read more about max degree of parallelism in this article
 
 #### Parameters
 
-* **`[String]` SQLInstance** (Key): The name of the SQL instance to be configured.
-* **`[String]` SQLServer** _(Write)_: The host name of the SQL Server to be configured.
+* **`[String]` InstanceName** (Key): The name of the SQL instance to be configured.
+* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
   Default value is $env:COMPUTERNAME.
 * **`[String]` Ensure** _(Write)_: When set to 'Present' then max degree of parallelism
   will be set to either the value in parameter MaxDop or dynamically configured
@@ -946,11 +1005,11 @@ Read more about max degree of parallelism in this article
 
 #### Examples
 
-* [Set SQLServerMaxDop to 1](/Examples/Resources/xSQLServerMaxDop/1-SetMaxDopToOne.ps1)
-* [Set SQLServerMaxDop to Auto](/Examples/Resources/xSQLServerMaxDop/2-SetMaxDopToAuto.ps1)
-* [Set SQLServerMaxDop to Default](/Examples/Resources/xSQLServerMaxDop/3-SetMaxDopToDefault.ps1)
+* [Set SQLServerMaxDop to 1](/Examples/Resources/SqlServerMaxDop/1-SetMaxDopToOne.ps1)
+* [Set SQLServerMaxDop to Auto](/Examples/Resources/SqlServerMaxDop/2-SetMaxDopToAuto.ps1)
+* [Set SQLServerMaxDop to Default](/Examples/Resources/SqlServerMaxDop/3-SetMaxDopToDefault.ps1)
 
-### xSQLServerMemory
+### SqlServerMemory
 
 This resource sets the minimum server memory and maximum server memory configuration
 option.
@@ -996,8 +1055,8 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
 
 #### Parameters
 
-* **`[String]` SQLInstance** _(Key)_: The name of the SQL instance to be configured.
-* **`[String]` SQLServer** _(Write)_: The host name of the SQL Server to be configured.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
   Default value is $env:COMPUTERNAME.
 * **`[Boolean]` DynamicAlloc** _(Write)_: If set to $true then max memory will be
   dynamically configured. When this is set parameter is set to $true, the parameter
@@ -1021,12 +1080,12 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
 
 #### Examples
 
-* [Set SQLServerMaxMemory to 12GB](/Examples/Resources/xSQLServerMemory/1-SetMaxMemoryTo12GB.ps1)
-* [Set SQLServerMaxMemory to Auto](/Examples/Resources/xSQLServerMemory/2-SetMaxMemoryToAuto.ps1)
-* [Set SQLServerMinMemory to 2GB and SQLServerMaxMemory to Auto](/Examples/Resources/xSQLServerMemory/3-SetMinMemoryToFixedValueAndMaxMemoryToAuto.ps1)
-* [Set SQLServerMaxMemory to Default](/Examples/Resources/xSQLServerMemory/3-SetMaxMemoryToDefault.ps1)
+* [Set SQLServerMaxMemory to 12GB](/Examples/Resources/SqlServerMemory/1-SetMaxMemoryTo12GB.ps1)
+* [Set SQLServerMaxMemory to Auto](/Examples/Resources/SqlServerMemory/2-SetMaxMemoryToAuto.ps1)
+* [Set SQLServerMinMemory to 2GB and SQLServerMaxMemory to Auto](/Examples/Resources/SqlServerMemory/3-SetMinMemoryToFixedValueAndMaxMemoryToAuto.ps1)
+* [Set SQLServerMaxMemory to Default](/Examples/Resources/SqlServerMemory/3-SetMaxMemoryToDefault.ps1)
 
-### xSQLServerNetwork
+### SqlServerNetwork
 
 This resource is used to change the network settings for the instance.
 
@@ -1045,7 +1104,7 @@ Read more about the network settings in the article
 * **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
 * **`[String]` ProtocolName** _(Required)_: The name of network protocol to be configured.
   Only tcp is currently supported. { tcp }.
-* **`[String]` SQLServer** _(Write)_: The host name of the SQL Server to be configured.
+* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
   Default value is $env:COMPUTERNAME.
 * **`[Boolean]` IsEnabled** _(Write)_: Enables or disables the network protocol.
 * **`[Boolean]` TcpDynamicPort** _(Write)_: Specifies whether the SQL Server
@@ -1063,10 +1122,10 @@ Read more about the network settings in the article
 
 #### Examples
 
-* [Enable TCP/IP with static port and restart SQL Server](/Examples/Resources/xSQLServerNetwork/1-EnableTcpIpWithStaticPort.ps1)
-* [Enable TCP/IP with dynamic port](/Examples/Resources/xSQLServerNetwork/2-EnableTcpIpWithDynamicPort.ps1)
+* [Enable TCP/IP with static port and restart SQL Server](/Examples/Resources/SqlServerNetwork/1-EnableTcpIpWithStaticPort.ps1)
+* [Enable TCP/IP with dynamic port](/Examples/Resources/SqlServerNetwork/2-EnableTcpIpWithDynamicPort.ps1)
 
-### xSQLServerPermission
+### SqlServerPermission
 
 This resource sets server permissions to a user (login).
 
@@ -1086,7 +1145,7 @@ AlterAnyEndPoint and ViewServerState.
 * **`[String]` Principal** _(Key)_: The login to which permission will be set.
 * **`[String]` Ensure** _(Write)_: If the permission should be present or absent.
   Default value is 'Present'. { Present | Absent }.
-* **`[String]` NodeName** _(Write)_: The host name of the SQL Server to be configured.
+* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
   Default value is $env:COMPUTERNAME.
 * **`[String[]]` Permission** _(Write)_: The permission to set for the login. Valid
   values are ConnectSql, AlterAnyAvailabilityGroup, ViewServerState or AlterAnyEndPoint.
@@ -1094,10 +1153,10 @@ AlterAnyEndPoint and ViewServerState.
 
 #### Examples
 
-* [Add server permission for a login](/Examples/Resources/xSQLServerPermission/1-AddServerPermissionForLogin.ps1)
-* [Remove server permission for a login](/Examples/Resources/xSQLServerPermission/2-RemoveServerPermissionForLogin.ps1)
+* [Add server permission for a login](/Examples/Resources/SqlServerPermission/1-AddServerPermissionForLogin.ps1)
+* [Remove server permission for a login](/Examples/Resources/SqlServerPermission/2-RemoveServerPermissionForLogin.ps1)
 
-### xSQLServerReplication
+### SqlServerReplication
 
 No description.
 
@@ -1130,10 +1189,10 @@ No description.
 
 #### Examples
 
-* [Configure a instance as the distributor](/Examples/Resources/xSQLServerReplication/1-ConfigureInstanceAsDistributor.ps1)
-* [Configure a instance as the publisher](/Examples/Resources/xSQLServerReplication/2-ConfigureInstanceAsPublisher.ps1)
+* [Configure a instance as the distributor](/Examples/Resources/SqlServerReplication/1-ConfigureInstanceAsDistributor.ps1)
+* [Configure a instance as the publisher](/Examples/Resources/SqlServerReplication/2-ConfigureInstanceAsPublisher.ps1)
 
-### xSQLServerRole
+### SqlServerRole
 
 This resource is used to create a server role, when Ensure is set to 'Present'.
 Or remove a server role, when Ensure is set to 'Absent'. The resource also manages
@@ -1151,8 +1210,8 @@ server roles, please read the below articles.
 #### Parameters
 
 * **`[String]` ServerRoleName** _(Key)_: The name of of SQL role to add or remove.
-* **`[String]` SQLServer** _(Key)_: The host name of the SQL Server to be configured.
-* **`[String]` SQLInstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` ServerName** _(Key)_: The host name of the SQL Server to be configured.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
 * **`[String]` Ensure** _(Write)_: An enumerated value that describes if the server
   role is added (Present) or dropped (Absent). Default value is 'Present'.
   { *Present* | Absent }.
@@ -1169,147 +1228,13 @@ server roles, please read the below articles.
 
 #### Examples
 
-* [Add server role](/Examples/Resources/xSQLServerRole/1-AddServerRole.ps1)
-* [Remove server role](/Examples/Resources/xSQLServerRole/2-RemoveServerRole.ps1)
-* [Add members to server role](/Examples/Resources/xSQLServerRole/3-AddMembersToServerRole.ps1)
-* [Members to include in server role](/Examples/Resources/xSQLServerRole/4-MembersToIncludeInServerRole.ps1)
-* [Members to exclude from server role](/Examples/Resources/xSQLServerRole/5-MembersToExcludeInServerRole.ps1)
+* [Add server role](/Examples/Resources/SqlServerRole/1-AddServerRole.ps1)
+* [Remove server role](/Examples/Resources/SqlServerRole/2-RemoveServerRole.ps1)
+* [Add members to server role](/Examples/Resources/SqlServerRole/3-AddMembersToServerRole.ps1)
+* [Members to include in server role](/Examples/Resources/SqlServerRole/4-MembersToIncludeInServerRole.ps1)
+* [Members to exclude from server role](/Examples/Resources/SqlServerRole/5-MembersToExcludeInServerRole.ps1)
 
-### xSQLServerRSConfig
-
-Initializes and configures SQL Reporting Services server.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Reporting Services 2008 or later.
-* If `PsDscRunAsCredential` common parameter is used to run the resource, the
-  specified credential must have permissions to connect to the SQL Server specified
-  in `RSSQLServer` and create Reporting Services databases.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: Name of the SQL Server Reporting Services
-  instance to be configured.
-* **`[String]` RSSQLServer** _(Required)_: Name of the SQL Server to host the
-  Reporting Service database.
-* **`[String]` RSSQLInstanceName** _(Required)_: Name of the SQL Server instance
-  to host the Reporting Service database.
-* **`[String]` ReportServerVirtualDir** _(Write)_: Report Server Web Service virtual
-  directory. Optional.
-* **`[String]` ReportsVirtualDir** _(Write)_: Report Manager/Report Web App virtual
-  directory name. Optional.
-* **`[String[]]` ReportServerReservedUrl** _(Write)_: Report Server URL reservations.
-  Optional. If not specified, 'http://+:80' URL reservation will be used.
-* **`[String[]]` ReportsReservedUrl** _(Write)_: Report Manager/Report Web App URL
-  reservations. Optional. If not specified, 'http://+:80' URL reservation will be
-  used.
-
-#### Read-Only Properties from Get-TargetResource
-
-* **`[Boolean]` IsInitialized** _(Read)_: Output is the Reporting Services instance
-  initialized.
-
-#### Examples
-
-* [Default configuration](Examples/Resources/xSQLServerRSConfig/1-DefaultConfiguration.ps1)
-* [Custom virtual directories and reserved URLs](Examples/Resources/xSQLServerRSConfig/2-CustomConfiguration.ps1)
-
-### xSQLServerRSSecureConnectionLevel
-
-No description.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Reporting Services 2008 or later.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: SQL instance to set secure connection level
-  for.
-* **`[Uint16]` SecureConnectionLevel** _(Key)_: SQL Server Reporting Service secure
-  connection level.
-* **`[PSCredential]` SQLAdminCredential** _(Required)_: Credential with administrative
-  permissions to the SQL instance.
-
-#### Examples
-
-None.
-
-### xSQLServerScript
-
-Provides the means to run a user generated T-SQL script on the SQL Server instance.
-Three scripts are required; Get T-SQL script, Set T-SQL script and the Test T-SQL
-script.
-
-#### Scripts
-
-##### Get T-SQL Script (GetFilePath)
-
-The Get T-SQL script is used to query the status when running the cmdlet
-Get-DscConfiguration, and the result can be found in the property `GetResult`.
-
-##### Test T-SQL Script (TestFilePath)
-
-The Test T-SQL script is used to test if the desired state is met. If Test
-T-SQL raises an error or returns any value other than 'null' the test fails, thus
-the Set T-SQL script is run.
-
-##### Set T-SQL Script (SetFilePath)
-
-The Set T-SQL script performs the actual change when Test T-SQL script fails.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server 2008 or later.
-* Target machine must have access to the SQLPS PowerShell module or the SqlServer
-  PowerShell module.
-
-_Note: There is a known problem running this resource using PowerShell 4.0.
-See [issue #273](https://github.com/PowerShell/xSQLServer/issues/273) for more information._
-
-#### Parameters
-
-* **`[String]` ServerInstance** _(Key)_: The name of an instance of the Database
-  Engine. For a default instance, only specify the computer name. For a named
-  instances, use the format ComputerName\\InstanceName.
-* **`[String]` SetFilePath** _(Key)_: Path to the T-SQL file that will perform Set
-  action.
-* **`[String]` GetFilePath** _(Key)_: Path to the T-SQL file that will perform Get
-  action. Any values returned by the T-SQL queries will also be returned by the
-  cmdlet Get-DscConfiguration through the `GetResult` property.
-* **`[String]` TestFilePath** _(Key)_: Path to the T-SQL file that will perform Test
-  action. Any script that does not throw an error or returns null is evaluated to
-  true. The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text,
-  and will not cause the test to return false.
-* **`[PSCredential]` Credential** _(Write)_: The credentials to authenticate with,
-  using SQL Authentication. To authenticate using Windows Authentication, assign
-  the credentials to the built-in parameter `PsDscRunAsCredential`. If both parameters
-  `Credential` and `PsDscRunAsCredential` are not assigned, then SYSTEM account will
-  be used to authenticate using Windows Authentication.
-* **`[UInt32]` QueryTimeout** _(Write)_: Specifies, as an integer, the number of
-  seconds after which the T-SQL script execution will time out.  In some SQL Server
-  versions there is a bug in Invoke-Sqlcmd where the normal default value 0 (no
-  timeout) is not respected and the default value is incorrectly set to 30 seconds.
-* **`[String[]]` Variable** _(Write)_: Specifies, as a string array, a scripting
-  variable for use in the sql script, and sets a value for the variable. Use a
-  Windows PowerShell array to specify multiple variables and their values. For more
-  information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx).
-
-#### Read-Only Properties from Get-TargetResource
-
-* **`[String]` GetResult** _(Read)_: Contains the values returned from the T-SQL
-  script provided in the parameter `GetFilePath` when cmdlet Get-DscConfiguration
-  is run.
-
-#### Examples
-
-* [Run a script using SQL Authentication](/Examples/Resources/xSQLServerScript/1-RunScriptUsingSQLAuthentication.ps1)
-* [Run a script using Windows Authentication](/Examples/Resources/xSQLServerScript/2-RunScriptUsingWindowsAuthentication.ps1)
-
-### xSQLServerServiceAccount
+### SqlServiceAccount
 
 Manage the service account for SQL Server services.
 
@@ -1320,9 +1245,9 @@ Manage the service account for SQL Server services.
 
 #### Parameters
 
-* **`[String]` SQLServer** (Key): The host name of the SQL Server to be configured.
-* **`[String]` SQLInstanceName** (Key): The name of the SQL instance to be configured.
-* **`[String]` ServiceType** (Key): The service type for **SQLInstanceName**.
+* **`[String]` ServerName** (Key): The host name of the SQL Server to be configured.
+* **`[String]` InstanceName** (Key): The name of the SQL instance to be configured.
+* **`[String]` ServiceType** (Key): The service type for **InstanceName**.
   { DatabaseEngine | SQLServerAgent | Search | IntegrationServices
   | AnalysisServices | ReportingServices | SQLServerBrowser
   | NotificationServices }
@@ -1336,10 +1261,10 @@ Manage the service account for SQL Server services.
 
 #### Examples
 
-* [Run service under a user account](/Examples/Resources/xSQLServerServiceAccount/1-ConfigureServiceAccount-UserAccount.ps1)
-* [Run service with a virtual account](/Examples/Resources/xSQLServerServiceAccount/2-ConfigureServiceAccount-VirtualAccount.ps1)
+* [Run service under a user account](/Examples/Resources/SqlServiceAccount/1-ConfigureServiceAccount-UserAccount.ps1)
+* [Run service with a virtual account](/Examples/Resources/SqlServiceAccount/2-ConfigureServiceAccount-VirtualAccount.ps1)
 
-### xSQLServerSetup
+### SqlSetup
 
 Installs SQL Server on the target node.
 
@@ -1483,15 +1408,15 @@ installing feature Database Engine and Analysis Services respectively.
 
 #### Examples
 
-* [Install a default instance on a single server](/Examples/Resources/xSQLServerSetup/1-InstallDefaultInstanceSingleServer.ps1)
-* [Install a named instance on a single server](/Examples/Resources/xSQLServerSetup/2-InstallNamedInstanceSingleServer.ps1)
-* [Install a named instance on a single server from an UNC path using SourceCredential](/Examples/Resources/xSQLServerSetup/3-InstallNamedInstanceSingleServerFromUncPathUsingSourceCredential.ps1)
-* [Install a named instance as the first node in SQL Server Failover Cluster](/Examples/Resources/xSQLServerSetup/4-InstallNamedInstanceInFailoverClusterFirstNode.ps1)
-* [Install a named instance as the second node in SQL Server Failover Cluster](/Examples/Resources/xSQLServerSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1)
+* [Install a default instance on a single server](/Examples/Resources/SqlSetup/1-InstallDefaultInstanceSingleServer.ps1)
+* [Install a named instance on a single server](/Examples/Resources/SqlSetup/2-InstallNamedInstanceSingleServer.ps1)
+* [Install a named instance on a single server from an UNC path using SourceCredential](/Examples/Resources/SqlSetup/3-InstallNamedInstanceSingleServerFromUncPathUsingSourceCredential.ps1)
+* [Install a named instance as the first node in SQL Server Failover Cluster](/Examples/Resources/SqlSetup/4-InstallNamedInstanceInFailoverClusterFirstNode.ps1)
+* [Install a named instance as the second node in SQL Server Failover Cluster](/Examples/Resources/SqlSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/xSQLServer/issues?q=is%3Aissue%20is%3Aopen%20xSQLServerSetup).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlSetup).
 
 ##### Severe known issues
 
@@ -1499,7 +1424,7 @@ This is a list of known issues that severely impact the use of the resource.
 
 There are currently no known severe issues.
 
-### xWaitForAvailabilityGroup
+### SqlWaitForAG
 
 This resource will wait for a cluster role/group to be created. This is used to
 wait for an Availability Group to create the cluster role/group in the cluster.
@@ -1538,5 +1463,90 @@ or that it has finished creating the Availability Group.
 
 #### Examples
 
-* [Wait for a cluster role/group to be available](/Examples/Resources/xWaitForAvailabilityGroup/1-WaitForASingleClusterGroup.ps1)
-* [Wait for multiple cluster roles/groups to be available](/Examples/Resources/xWaitForAvailabilityGroup/2-WaitForMultipleClusterGroups.ps1)
+* [Wait for a cluster role/group to be available](/Examples/Resources/SqlWaitForAG/1-WaitForASingleClusterGroup.ps1)
+* [Wait for multiple cluster roles/groups to be available](/Examples/Resources/SqlWaitForAG/2-WaitForMultipleClusterGroups.ps1)
+
+### SqlWindowsFirewall
+
+This will set default firewall rules for the supported features. Currently the
+features supported are Database Engine, Analysis Services, SQL Browser,
+SQL Reporting Services and Integration Services.
+
+#### Firewall rules
+
+##### Database Engine (SQLENGINE) - Default instance
+
+Firewall Rule | Firewall Display Name
+--- | ---
+Application: sqlservr.exe | SQL Server Database Engine instance MSSQLSERVER
+Service: SQLBrowser | SQL Server Browser
+
+##### Database Engine (SQLENGINE) - Named instance
+
+Firewall Rule | Firewall Display Name
+--- | ---
+Application: sqlservr.exe | SQL Server Database Engine instance \<INSTANCE\>
+Service: SQLBrowser | SQL Server Browser
+
+##### Analysis Services (AS) - Default instance
+
+Firewall Rule | Firewall Display Name
+--- | ---
+Service: MSSQLServerOLAPService | SQL Server Analysis Services instance MSSQLSERVER
+Service: SQLBrowser | SQL Server Browser
+
+##### Analysis Services (AS) - Named instance
+
+Firewall Rule | Firewall Display Name
+--- | ---
+Service: MSOLAP$\<INSTANCE\> | SQL Server Analysis Services instance \<INSTANCE\>
+Service: SQLBrowser | SQL Server Browser
+
+##### Reporting Services (RS)
+
+Firewall Rule | Firewall Display Name
+--- | ---
+Port: tcp/80 | SQL Server Reporting Services 80
+Port: tcp/443 | SQL Server Reporting Services 443
+
+##### Integration Services (IS)
+
+Firewall Rule | Firewall Display Name
+--- | ---
+Application: MsDtsSrvr.exe | SQL Server Integration Services Application
+Port: tcp/135 | SQL Server Integration Services Port
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+
+#### Parameters
+
+* **`[String]` Features** _(Key)_: SQL features to enable firewall rules for.
+* **`[String]` InstanceName** _(Key)_: SQL instance to enable firewall rules for.
+* **`[String]` Ensure** _(Write)_: Ensures that SQL firewall rules are **Present**
+  or **Absent** on the machine. { *Present* | Absent }.
+* **`[String]` SourcePath** _(Write)_: UNC path to the root of the source files for
+  installation.
+* **`[String]` SourceCredential** _(Write)_: Credentials used to access the path
+  set in the parameter 'SourcePath'. This parameter is optional either if built-in
+  parameter 'PsDscRunAsCredential' is used, or if the source path can be access
+  using the SYSTEM account.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[Boolean]` DatabaseEngineFirewall** _(Read)_: Is the firewall rule for the
+  Database Engine enabled?
+* **`[Boolean]` BrowserFirewall** _(Read)_: Is the firewall rule for the Browser
+  enabled?
+* **`[Boolean]` ReportingServicesFirewall** _(Read)_: Is the firewall rule for
+  Reporting Services enabled?
+* **`[Boolean]` AnalysisServicesFirewall** _(Read)_: Is the firewall rule for
+  Analysis Services enabled?
+* **`[Boolean]` IntegrationServicesFirewall** _(Read)_: Is the firewall rule for
+  the Integration Services enabled?
+
+#### Examples
+
+* [Create inbound firewall rules](/Examples/Resources/SqlWindowsFirewall/1-CreateInboundFirewallRules.ps1)
+* [Remove inbound firewall rules](/Examples/Resources/SqlWindowsFirewall/2-RemoveInboundFirewallRules.ps1)

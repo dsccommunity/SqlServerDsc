@@ -1,4 +1,14 @@
-#requires -Version 5
+<#
+    .NOTES
+        THIS EXAMPLE IS OBSOLETE. Due to major changes in the resource modules
+        over the last several versions, this example has not been updated to reflect
+        those changes.
+        Please refer to the resource example folder for updated examples.
+        https://github.com/PowerShell/SqlServerDsc/tree/master/Examples/Resources
+
+        There is an issue open to replace this example, please see issue
+        https://github.com/PowerShell/SqlServerDsc/issues/462
+#>
 $StartTime = [System.Diagnostics.Stopwatch]::StartNew()
 
 $computers = 'OHSQL9015'
@@ -35,7 +45,7 @@ foreach ($computer in $computers)
 Configuration SQLBuild
 {
     Import-DscResource –ModuleName PSDesiredStateConfiguration
-    Import-DscResource -ModuleName xSQLServer
+    Import-DscResource -ModuleName SqlServerDSC
 
 
    Node $AllNodes.NodeName
@@ -88,7 +98,7 @@ Configuration SQLBuild
              DependsOn = '[WindowsFeature]NET'
          }
 
-         xSqlServerFirewall ($Node.NodeName)
+         SqlWindowsFirewall ($Node.NodeName)
          {
              SourcePath = $Node.SourcePath
              InstanceName = $Node.InstanceName
@@ -97,14 +107,14 @@ Configuration SQLBuild
              DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
          }
 
-         xSQLServerMemory ($Node.Nodename)
+         SqlServerMemory ($Node.Nodename)
          {
              Ensure = "Present"
              DynamicAlloc = $True
 
              DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
          }
-         xSQLServerMaxDop($Node.Nodename)
+         SqlServerMaxDop($Node.Nodename)
          {
              Ensure = "Present"
              DynamicAlloc = $true
@@ -113,7 +123,7 @@ Configuration SQLBuild
          }
        }
 
-       xSQLServerEndpoint($Node.Nodename)
+       SqlServerEndpoint($Node.Nodename)
        {
            Ensure = "Present"
            Port = 5022

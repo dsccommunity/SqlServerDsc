@@ -1,4 +1,14 @@
-#requires -Version 5
+<#
+    .NOTES
+        THIS EXAMPLE IS OBSOLETE. Due to major changes in the resource modules
+        over the last several versions, this example has not been updated to reflect
+        those changes.
+        Please refer to the resource example folder for updated examples.
+        https://github.com/PowerShell/SqlServerDsc/tree/master/Examples/Resources
+
+        There is an issue open to replace this example, please see issue
+        https://github.com/PowerShell/SqlServerDsc/issues/462
+#>
 $StartTime = [System.Diagnostics.Stopwatch]::StartNew()
 
 $computers = 'OHSQL9012'
@@ -70,7 +80,7 @@ foreach ($computer in $computers)
 Configuration SQLBuild
 {
     Import-DscResource –Module PSDesiredStateConfiguration
-    Import-DscResource -Module xSQLServer
+    Import-DscResource -Module SqlServerDSC
 
     Node $AllNodes.NodeName
     {
@@ -106,7 +116,7 @@ Configuration SQLBuild
                SQLTempDBLogDir = "L:\MSSQL\Data"
                SQLBackupDir = "G:\MSSQL\Backup"
            }
-           xSqlServerFirewall ($Node.NodeName)
+           SqlWindowsFirewall ($Node.NodeName)
            {
               SourcePath = $Node.SourcePath
               InstanceName = $Node.InstanceName
@@ -115,14 +125,14 @@ Configuration SQLBuild
               DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
            }
 
-           xSQLServerMemory ($Node.Nodename)
+           SqlServerMemory ($Node.Nodename)
            {
                Ensure = "Present"
                DynamicAlloc = $True
 
                DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
            }
-           xSQLServerMaxDop($Node.Nodename)
+           SqlServerMaxDop($Node.Nodename)
            {
                Ensure = "Present"
                DynamicAlloc = $true

@@ -1,11 +1,20 @@
-#requires -Version 5
+<#
+    .NOTES
+        THIS EXAMPLE IS OBSOLETE. Due to major changes in the resource modules
+        over the last several versions, this example has not been updated to reflect
+        those changes.
+        Please refer to the resource example folder for updated examples.
+        https://github.com/PowerShell/SqlServerDsc/tree/master/Examples/Resources
 
+        There is an issue open to replace this example, please see issue
+        https://github.com/PowerShell/SqlServerDsc/issues/462
+#>
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
 param ()
 
 Configuration SQL
 {
-    Import-DscResource -Module xSQLServer
+    Import-DscResource -Module SqlServerDSC
     Import-DscResource -Module xFailoverCluster
 
     Node $AllNodes.NodeName
@@ -104,7 +113,7 @@ Configuration SQL
             SQLSvcAccount = $Node.SQLServiceAccount
         }
 
-        xSqlServerFirewall "FirewallMSSQLSERVER"
+        SqlWindowsFirewall "FirewallMSSQLSERVER"
         {
             DependsOn = "[xSQLServerFailoverClusterSetup]PrepareMSSQLSERVER"
             SourcePath = $Node.SourcePath
@@ -126,8 +135,8 @@ Configuration SQL
                 RetryIntervalSec = 5
                 RetryCount = 720
             }
-            
-            xSQLServerFailoverClusterSetup "CompleteMSSQLSERVER"
+
+            SqlServerDSCFailoverClusterSetup "CompleteMSSQLSERVER"
             {
                 DependsOn = @(
                     "[WaitForAll]Cluster",
@@ -200,4 +209,3 @@ foreach($Node in $ConfigurationData.AllNodes)
 SQL -ConfigurationData $ConfigurationData
 Set-DscLocalConfigurationManager -Path .\SQL -Verbose
 Start-DscConfiguration -Path .\SQL -Verbose -Wait -Force
-

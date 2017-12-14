@@ -1,4 +1,14 @@
-#requires -Version 5
+<#
+    .NOTES
+        THIS EXAMPLE IS OBSOLETE. Due to major changes in the resource modules
+        over the last several versions, this example has not been updated to reflect
+        those changes.
+        Please refer to the resource example folder for updated examples.
+        https://github.com/PowerShell/SqlServerDsc/tree/master/Examples/Resources
+
+        There is an issue open to replace this example, please see issue
+        https://github.com/PowerShell/SqlServerDsc/issues/462
+#>
 $computers = 'OHSQL1016'
 $OutputPath = 'D:\DSCLocal'
 $cim = New-CimSession -ComputerName $computers
@@ -33,7 +43,7 @@ foreach ($computer in $computers)
 Configuration SQLSA
 {
     Import-DscResource –Module PSDesiredStateConfiguration
-    Import-DscResource -Module xSQLServer
+    Import-DscResource -Module SqlServerDSC
 
     Node $AllNodes.NodeName
     {
@@ -71,7 +81,7 @@ Configuration SQLSA
                SQLBackupDir = "G:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER\MSSQL\Data"
            }
 
-           xSqlServerFirewall ($Node.NodeName)
+           SqlWindowsFirewall ($Node.NodeName)
            {
                DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
                SourcePath = $Node.SourcePath
@@ -79,7 +89,7 @@ Configuration SQLSA
                Features = $Node.Features
            }
 
-           xSQLServerMemory ($Node.Nodename)
+           SqlServerMemory ($Node.Nodename)
            {
                DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
                Ensure = "Present"
@@ -87,13 +97,13 @@ Configuration SQLSA
                MinMemory = "256"
                MaxMemory ="1024"
            }
-           xSQLServerMaxDop($Node.Nodename)
+           SqlServerMaxDop($Node.Nodename)
            {
                DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
                Ensure = "Present"
                DynamicAlloc = $true
            }
-           xSQLServerLogin($Node.Nodename+"TestUser2")
+           SqlServerLogin($Node.Nodename+"TestUser2")
            {
                 DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
                 Ensure = "Present"
@@ -101,7 +111,7 @@ Configuration SQLSA
                 LoginCredential = $Node.InstallerServiceAccount
                 LoginType = "SQLLogin"
            }
-           xSQLServerLogin($Node.Nodename+"TestUser1")
+           SqlServerLogin($Node.Nodename+"TestUser1")
            {
                 DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
                 Ensure = "Present"
@@ -109,7 +119,7 @@ Configuration SQLSA
                 LoginCredential = $Node.InstallerServiceAccount
                 LoginType = "SQLLogin"
            }
-           xSQLServerDatabaseRole($Node.Nodename)
+           SqlDatabaseRole($Node.Nodename)
            {
                 DependsOn = ("[xSqlServerSetup]" + $Node.NodeName)
                 Ensure = "Present"
@@ -123,18 +133,18 @@ Configuration SQLSA
                 RecoveryModel = "Full"
                 SqlServerInstance ="$($Node.NodeName)\$($Node.SQLInstanceName)"
            }
-           xSQLServerDatabaseOwner($Node.Nodename)
+           SqlDatabaseOwner($Node.Nodename)
            {
                 Database = "TestDB"
                 Name = "TestUser2"
            }
-           xSQLServerDatabasePermission($Node.Nodename)
+           SqlDatabasePermission($Node.Nodename)
            {
                 Database = "Model"
                 Name = "TestUser1"
                 Permissions ="SELECT","DELETE"
            }
-           xSQLServerDatabase($Node.Nodename)
+           SqlDatabase($Node.Nodename)
            {
                 Database = "Test3"
                 Ensure = "Present"
@@ -165,7 +175,7 @@ ForEach ($computer in $computers) {
 
     }
    $Destination = "\\"+$computer+"\\c$\Program Files\WindowsPowerShell\Modules"
-   Copy-Item 'C:\Program Files\WindowsPowerShell\Modules\xSQLServer' -Destination $Destination -Recurse -Force
+   Copy-Item 'C:\Program Files\WindowsPowerShell\Modules\SqlServerDSC' -Destination $Destination -Recurse -Force
 }
 
 SQLSA -ConfigurationData $ConfigurationData -OutputPath $OutputPath
@@ -182,4 +192,3 @@ foreach($Computer in $Computers)
 {
     test-dscconfiguration -ComputerName $Computer
 }
-

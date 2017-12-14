@@ -1,11 +1,21 @@
-#requires -Version 5
+<#
+    .NOTES
+        THIS EXAMPLE IS OBSOLETE. Due to major changes in the resource modules
+        over the last several versions, this example has not been updated to reflect
+        those changes.
+        Please refer to the resource example folder for updated examples.
+        https://github.com/PowerShell/SqlServerDsc/tree/master/Examples/Resources
+
+        There is an issue open to replace this example, please see issue
+        https://github.com/PowerShell/SqlServerDsc/issues/462
+#>
 $computers = 'OHSQL9034N1','OHSQL9034N2','OHSQL9034N3'
 $OutputPath = 'F:\DSCConfig'
 
 Configuration FCISQL
 {
     Import-DscResource –Module PSDesiredStateConfiguration
-    Import-DscResource -Module xSQLServer
+    Import-DscResource -Module SqlServerDSC
     Import-DscResource -Module xFailoverCluster
 
     Node $AllNodes.NodeName
@@ -64,7 +74,7 @@ Configuration FCISQL
             SQLSvcAccount = $Node.InstallerServiceAccount
         }
 
-        xSqlServerFirewall "FirewallMSSQLSERVER"
+        SqlWindowsFirewall "FirewallMSSQLSERVER"
         {
             DependsOn = "[xSQLServerFailoverClusterSetup]PrepareMSSQLSERVER"
             SourcePath = $Node.SourcePath
@@ -212,4 +222,3 @@ Workflow StartConfigs
 }
 
 StartConfigs -Computers $computers -Path $OutputPath
-
