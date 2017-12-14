@@ -3,7 +3,7 @@
   ModuleVersion = '10.0.0.0'
 
   # ID used to uniquely identify this module
-  GUID = '74e9ddb5-4cbc-4fa2-a222-2bcfb533fd66'
+  GUID = '693ee082-ed36-45a7-b490-88b07c86b42f'
 
   # Author of this module
   Author = 'Microsoft Corporation'
