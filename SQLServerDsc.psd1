@@ -1,9 +1,9 @@
 @{
   # Version number of this module.
-  ModuleVersion = '9.0.0.0'
+  ModuleVersion = '10.0.0.0'
 
   # ID used to uniquely identify this module
-  GUID = '74e9ddb5-4cbc-4fa2-a222-2bcfb533fd66'
+  GUID = '693ee082-ed36-45a7-b490-88b07c86b42f'
 
   # Author of this module
   Author = 'Microsoft Corporation'
@@ -49,72 +49,132 @@
           # IconUri = ''
 
           # ReleaseNotes of this module
-          ReleaseNotes = '- Changes to xSQLServer
-    - Updated Pester syntax to v4
-    - Fixes broken links to issues in the CHANGELOG.md.
-  - Changes to xSQLServerDatabase
-    - Added parameter to specify collation for a database to be different from server
-      collation ([issue 767](https://github.com/PowerShell/xSQLServer/issues/767)).
-    - Fixed unit tests for Get-TargetResource to ensure correctly testing return
-      values ([issue 849](https://github.com/PowerShell/xSQLServer/issues/849))
-  - Changes to xSQLServerAlwaysOnAvailabilityGroup
-    - Refactored the unit tests to allow them to be more user friendly and to test
-      additional SQLServer variations.
-      - Each test will utilize the Import-SQLModuleStub to ensure the correct
-        module is loaded ([issue 784](https://github.com/PowerShell/xSQLServer/issues/784)).
-    - Fixed an issue when setting the SQLServer parameter to a Fully Qualified
-      Domain Name (FQDN) ([issue 468](https://github.com/PowerShell/xSQLServer/issues/468)).
-    - Fixed the logic so that if a parameter is not supplied to the resource, the
-      resource will not attempt to apply the defaults on subsequent checks
-      ([issue 517](https://github.com/PowerShell/xSQLServer/issues/517)).
-    - Made the resource cluster aware. When ProcessOnlyOnActiveNode is specified,
-      the resource will only determine if a change is needed if the target node
-      is the active host of the SQL Server instance ([issue 868](https://github.com/PowerShell/xSQLServer/issues/868)).
-  - Changes to xSQLServerAlwaysOnAvailabilityGroupDatabaseMembership
-    - Made the resource cluster aware. When ProcessOnlyOnActiveNode is specified,
-      the resource will only determine if a change is needed if the target node
-      is the active host of the SQL Server instance ([issue 869](https://github.com/PowerShell/xSQLServer/issues/869)).
-  - Changes to xSQLServerAlwaysOnAvailabilityGroupReplica
-    - Made the resource cluster aware. When ProcessOnlyOnActiveNode is specified,
-      the resource will only determine if a change is needed if the target node is
-      the active host of the SQL Server instance ([issue 870](https://github.com/PowerShell/xSQLServer/issues/870)).
-  - Added the CommonTestHelper.psm1 to store common testing functions.
-    - Added the Import-SQLModuleStub function to ensure the correct version of the
-      module stubs are loaded ([issue 784](https://github.com/PowerShell/xSQLServer/issues/784)).
-  - Changes to xSQLServerMemory
-    - Made the resource cluster aware. When ProcessOnlyOnActiveNode is specified,
-      the resource will only determine if a change is needed if the target node
-      is the active host of the SQL Server instance ([issue 867](https://github.com/PowerShell/xSQLServer/issues/867)).
-  - Changes to xSQLServerNetwork
-    - BREAKING CHANGE: Renamed parameter TcpDynamicPorts to TcpDynamicPort and
-      changed type to Boolean ([issue 534](https://github.com/PowerShell/xSQLServer/issues/534)).
-    - Resolved issue when switching from dynamic to static port.
-      configuration ([issue 534](https://github.com/PowerShell/xSQLServer/issues/534)).
-    - Added localization (en-US) for all strings in resource and unit tests
-      ([issue 618](https://github.com/PowerShell/xSQLServer/issues/618)).
-    - Updated examples to reflect new parameters.
-  - Changes to xSQLServerRSConfig
-    - Added examples
-  - Added resource
-    - xSQLServerDatabaseDefaultLocation
-      ([issue 656](https://github.com/PowerShell/xSQLServer/issues/656))
-  - Changes to xSQLServerEndpointPermission
-    - Fixed a problem when running the tests locally in a PowerShell console it
-      would ask for parameters ([issue 897](https://github.com/PowerShell/xSQLServer/issues/897)).
-  - Changes to xSQLServerAvailabilityGroupListener
-    - Fixed a problem when running the tests locally in a PowerShell console it
-      would ask for parameters ([issue 897](https://github.com/PowerShell/xSQLServer/issues/897)).
-  - Changes to xSQLServerMaxDop
-    - Made the resource cluster aware. When ProcessOnlyOnActiveNode is specified,
-      the resource will only determine if a change is needed if the target node
-      is the active host of the SQL Server instance ([issue 882](https://github.com/PowerShell/xSQLServer/issues/882)).
+        ReleaseNotes = '- BREAKING CHANGE: Resource module has been renamed to SqlServerDsc
+  ([issue 916](https://github.com/PowerShell/SqlServerDsc/issues/916)).
+- BREAKING CHANGE: Significant rename to reduce length of resource names
+  - See [issue 851](https://github.com/PowerShell/SqlServerDsc/issues/851) for a
+    complete table mapping rename changes.
+  - Impact to all resources.
+- Changes to CONTRIBUTING.md
+  - Added details to the naming convention used in SqlServerDsc.
+- Changes to SqlServerDsc
+  - The examples in the root of the Examples folder are obsolete. A note was
+    added to the comment-based help in each example stating it is obsolete.
+    This is a temporary measure until they are replaced
+    ([issue 904](https://github.com/PowerShell/SqlServerDsc/issues/904)).
+  - Added new common test (regression test) for validating the long path
+    issue for compiling resources in Azure Automation.
+  - Fix resources in alphabetical order in README.md ([issue 908](https://github.com/PowerShell/SqlServerDsc/issues/908)).
+- Changes to SqlAG
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+  - BREAKING CHANGE: The read-only property SQLServerNetName was removed in favor
+    of EndpointHostName ([issue 924](https://github.com/PowerShell/SqlServerDsc/issues/924)).
+    Get-TargetResource will now return the value of property [NetName](https://technet.microsoft.com/en-us/library/microsoft.sqlserver.management.smo.server.netname(v=sql.105).aspx)
+    for the property EndpointHostName.
+- Changes to SqlAGDatabase
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+  - Changed the Get-MatchingDatabaseNames function to be case insensitive when
+    matching database names ([issue 912](https://github.com/PowerShell/SqlServerDsc/issues/912)).
+- Changes to SqlAGListener
+  - BREAKING CHANGE: Parameter NodeName has been renamed to ServerName
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlAGReplica
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+  - BREAKING CHANGE: Parameters PrimaryReplicaSQLServer and PrimaryReplicaSQLInstanceName
+    has been renamed to PrimaryReplicaServerName and PrimaryReplicaInstanceName
+    respectively ([issue 922](https://github.com/PowerShell/SqlServerDsc/issues/922)).
+  - BREAKING CHANGE: The read-only property SQLServerNetName was removed in favor
+    of EndpointHostName ([issue 924](https://github.com/PowerShell/SqlServerDsc/issues/924)).
+    Get-TargetResource will now return the value of property [NetName](https://technet.microsoft.com/en-us/library/microsoft.sqlserver.management.smo.server.netname(v=sql.105).aspx)
+    for the property EndpointHostName.
+- Changes to SqlAlwaysOnService
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlDatabase
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes SqlDatabaseDefaultLocation
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlDatabaseOwner
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlDatabasePermission
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlDatabaseRecoveryModel
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlDatabaseRole
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlRS
+  - BREAKING CHANGE: Parameters RSSQLServer and RSSQLInstanceName has been renamed
+    to DatabaseServerName and DatabaseInstanceName respectively
+    ([issue 923](https://github.com/PowerShell/SqlServerDsc/issues/923)).
+- Changes to SqlServerConfiguration
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlServerEndpoint
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlServerEndpointPermission
+  - BREAKING CHANGE: Parameter NodeName has been renamed to ServerName
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+  - Now the examples files have a shorter name so that resources will not fail
+    to compile in Azure Automation ([issue 934](https://github.com/PowerShell/SqlServerDsc/issues/934)).
+- Changes to SqlServerEndpointState
+  - BREAKING CHANGE: Parameter NodeName has been renamed to ServerName
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlServerLogin
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlServerMaxDop
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlServerMemory
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlServerNetwork
+  - BREAKING CHANGE: Parameters SQLServer has been renamed to ServerName
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlServerPermission
+  - BREAKING CHANGE: Parameter NodeName has been renamed to ServerName
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlServerRole
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
+- Changes to SqlServerServiceAccount
+  - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
+    to ServerName and InstanceName respectively
+    ([issue 308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 
-  '
+'
 
       } # End of PSData hashtable
 
   } # End of PrivateData hashtable
   }
+
 
 
 
