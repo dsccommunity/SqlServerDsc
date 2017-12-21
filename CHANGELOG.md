@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Changes to SqlAlias
+  - Fixed issue where exception was thrown if reg keys did not exist
+    ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
+
 ## 10.0.0.0
 
 - BREAKING CHANGE: Resource module has been renamed to SqlServerDsc
