@@ -5,6 +5,9 @@
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
+- Changes to SqlServiceAccount
+  - Default services are now properly detected
+    ([issue #930](https://github.com/PowerShell/SqlServerDsc/issues/930)).
 
 ## 10.0.0.0
 
