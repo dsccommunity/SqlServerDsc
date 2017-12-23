@@ -14,7 +14,7 @@
     ([issue #960](https://github.com/PowerShell/SqlServerDsc/issues/960)).
 - Changes to SqlSetup
   - Added parameter `ASServerMode` to support installing Analysis Services in
-    tabular mode.
+    Multidimmensional and Data Mining mode, Tabular mode and PowerPivot mode.
 
 ## 10.0.0.0
 
