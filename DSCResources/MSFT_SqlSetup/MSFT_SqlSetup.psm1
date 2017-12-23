@@ -293,6 +293,24 @@ function Get-TargetResource
         $analysisLogDirectory = $analysisServer.ServerProperties['LogDir'].Value
         $analysisBackupDirectory = $analysisServer.ServerProperties['BackupDir'].Value
 
+        $analysisServerMode = switch ($analysisServer.ServerProperties['DeploymentMode'].Value)
+        {
+            0
+            {
+                'MULTIDIMENSIONAL'
+            }
+
+            1
+            {
+                'POWERPIVOT'
+            }
+
+            2
+            {
+                'TABULAR'
+            }
+        }
+
         $analysisSystemAdminAccounts = [System.String[]] $analysisServer.Roles['Administrators'].Members.Name
 
         $analysisConfigDirectory = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$analysisServiceName" -Name 'ImagePath').ImagePath.Replace(' -s ',',').Split(',')[1].Trim('"')
@@ -487,6 +505,7 @@ function Get-TargetResource
         ASBackupDir = $analysisBackupDirectory
         ASTempDir = $analysisTempDirectory
         ASConfigDir = $analysisConfigDirectory
+        ASServerMode = $analysisServerMode
         ISSvcAccountUsername = $integrationServiceAccountUsername
         FailoverClusterGroupName = $clusteredSqlGroupName
         FailoverClusterNetworkName = $clusteredSqlHostname
@@ -618,6 +637,12 @@ function Get-TargetResource
 
     .PARAMETER ASConfigDir
         Path for Analysis Services config.
+
+    .PARAMETER ASServerMode
+        The server mode for SQL Server Analysis Services instance. Valid values
+        in a cluster scenario are MULTIDIMENSIONAL or TABULAR.
+        Parameter ASServerMode is case-sensitive. All values must be expressed
+        in upper case. { MULTIDIMENSIONAL | TABULAR | POWERPIVOT }.
 
     .PARAMETER ISSvcAccount
        Service account for Integration Services service.
@@ -1550,6 +1575,12 @@ function Set-TargetResource
 
     .PARAMETER ASConfigDir
         Path for Analysis Services config.
+
+    .PARAMETER ASServerMode
+        The server mode for SQL Server Analysis Services instance. Valid values
+        in a cluster scenario are MULTIDIMENSIONAL or TABULAR.
+        Parameter ASServerMode is case-sensitive. All values must be expressed
+        in upper case. { MULTIDIMENSIONAL | TABULAR | POWERPIVOT }.
 
     .PARAMETER ISSvcAccount
        Service account for Integration Services service.
