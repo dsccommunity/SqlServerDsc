@@ -1277,7 +1277,7 @@ function Set-TargetResource
 
         if ($PSBoundParameters.ContainsKey('ASServerMode'))
         {
-            $setupArguments['ASServerMode'] = "$ASServerMode"
+            $setupArguments['ASServerMode'] = $ASServerMode
         }
 
         if ($PSBoundParameters.ContainsKey('ASSvcAccount'))
