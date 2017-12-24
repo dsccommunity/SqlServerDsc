@@ -92,7 +92,8 @@ function Get-TargetResource
         Credential of the service account that should be used.
 
     .PARAMETER RestartService
-        Determines whether the service is automatically restarted.
+        Determines whether the service is automatically restarted when a change
+        to the configuration was needed.
 
     .PARAMETER Force
         Forces the service account to be updated.
@@ -164,7 +165,8 @@ function Test-TargetResource
         Credential of the service account that should be used.
 
     .PARAMETER RestartService
-        Determines whether the service is automatically restarted.
+        Determines whether the service is automatically restarted when a change
+        to the configuration was needed.
 
     .PARAMETER Force
         Forces the service account to be updated.

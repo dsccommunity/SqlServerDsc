@@ -1254,7 +1254,7 @@ Manage the service account for SQL Server services.
 * **`[PSCredential]` ServiceAccount** (Required): The service account that should
   be used when running the service.
 * **`[Boolean]` RestartService** (Write): Determines whether the service is
-  automatically restarted.
+  automatically restarted when a change to the configuration was needed.
 * **`[Boolean]` Force** (Write): Forces the service account to be updated.
   Useful for password changes. This will cause `Set-TargetResource` to be run on
   each consecutive run.
