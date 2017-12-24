@@ -639,10 +639,11 @@ function Get-TargetResource
         Path for Analysis Services config.
 
     .PARAMETER ASServerMode
-        The server mode for SQL Server Analysis Services instance. Valid values
-        in a cluster scenario are MULTIDIMENSIONAL or TABULAR.
-        Parameter ASServerMode is case-sensitive. All values must be expressed
-        in upper case. { MULTIDIMENSIONAL | TABULAR | POWERPIVOT }.
+        The server mode for SQL Server Analysis Services instance. Default it
+        will install in Multidimensional mode. Valid values in a cluster scenario
+        are MULTIDIMENSIONAL or TABULAR. Parameter ASServerMode is case-sensitive.
+        All values must be expressed in upper case.
+        { MULTIDIMENSIONAL | TABULAR | POWERPIVOT }.
 
     .PARAMETER ISSvcAccount
        Service account for Integration Services service.
@@ -1577,10 +1578,11 @@ function Set-TargetResource
         Path for Analysis Services config.
 
     .PARAMETER ASServerMode
-        The server mode for SQL Server Analysis Services instance. Valid values
-        in a cluster scenario are MULTIDIMENSIONAL or TABULAR.
-        Parameter ASServerMode is case-sensitive. All values must be expressed
-        in upper case. { MULTIDIMENSIONAL | TABULAR | POWERPIVOT }.
+        The server mode for SQL Server Analysis Services instance. Default it
+        will install in Multidimensional mode. Valid values in a cluster scenario
+        are MULTIDIMENSIONAL or TABULAR. Parameter ASServerMode is case-sensitive.
+        All values must be expressed in upper case.
+        { MULTIDIMENSIONAL | TABULAR | POWERPIVOT }.
 
     .PARAMETER ISSvcAccount
        Service account for Integration Services service.

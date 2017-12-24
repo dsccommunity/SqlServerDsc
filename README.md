@@ -1375,9 +1375,10 @@ installing feature Database Engine and Analysis Services respectively.
 * **`[String]` ASTempDir** _(Write)_: Path for Analysis Services temp files.
 * **`[String]` ASConfigDir** _(Write)_: Path for Analysis Services config.
 * **`[String]` ASServerMode** _(Write)_: The server mode for SQL Server Analysis
-  Services instance. Valid values in a cluster scenario are MULTIDIMENSIONAL or
-  TABULAR. Parameter ASServerMode is case-sensitive. All values must be expressed
-  in upper case. { MULTIDIMENSIONAL | TABULAR | POWERPIVOT }.
+  Services instance. Default it will install in Multidimensional mode. Valid
+  values in a cluster scenario are MULTIDIMENSIONAL or TABULAR. Parameter
+  ASServerMode is case-sensitive. All values must be expressed in upper case.
+  { MULTIDIMENSIONAL | TABULAR | POWERPIVOT }.
 * **`[PSCredential]` ISSvcAccount** _(Write)_: Service account for Integration
   Services service.
 * **`[String]` BrowserSvcStartupType** _(Write)_: Specifies the startup mode for
