@@ -633,6 +633,7 @@ try
                                 'TempDir' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisTempDirectory -PassThru -Force )
                                 'LogDir' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisLogDirectory -PassThru -Force )
                                 'BackupDir' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisBackupDirectory -PassThru -Force )
+                                'DeploymentMode' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockDynamicAnalysisServerMode -PassThru -Force )
                             }
                         } -PassThru |
                         Add-Member ScriptProperty Roles  {
@@ -1130,6 +1131,7 @@ try
                         $result.ASBackupDir | Should -BeNullOrEmpty
                         $result.ASTempDir | Should -BeNullOrEmpty
                         $result.ASConfigDir | Should -BeNullOrEmpty
+                        $result.ASServerMode | Should -BeNullOrEmpty
                         $result.ISSvcAccountUsername | Should -BeNullOrEmpty
                     }
                 }
@@ -1558,6 +1560,8 @@ try
                         }
                     }
 
+                    $mockDynamicAnalysisServerMode = 0  # MULTIDIMENSIONAL
+
                     It 'Should return the correct values in the hash table' {
                         $result = Get-TargetResource @testParameters
                         $result.SourcePath | Should -Be $mockSourcePath
@@ -1584,8 +1588,26 @@ try
                         $result.ASBackupDir | Should -Be $mockSqlAnalysisBackupDirectory
                         $result.ASTempDir | Should -Be $mockSqlAnalysisTempDirectory
                         $result.ASConfigDir | Should -Be $mockSqlAnalysisConfigDirectory
+                        $result.ASServerMode | Should -Be 'MULTIDIMENSIONAL'
                         $result.ISSvcAccountUsername | Should -Be $mockSqlServiceAccount
                     }
+
+                    $mockDynamicAnalysisServerMode = 1  # POWERPIVOT
+
+                    It 'Should return the correct values in the hash table' {
+                        $result = Get-TargetResource @testParameters
+                        $result.ASServerMode | Should -Be 'POWERPIVOT'
+                    }
+
+                    $mockDynamicAnalysisServerMode = 2  # TABULAR
+
+                    It 'Should return the correct values in the hash table' {
+                        $result = Get-TargetResource @testParameters
+                        $result.ASServerMode | Should -Be 'TABULAR'
+                    }
+
+                    # Return the state to the default for all other tests.
+                    $mockDynamicAnalysisServerMode = 0  # MULTIDIMENSIONAL
 
                     <#
                         This is a regression test for issue #691.
@@ -3068,6 +3090,7 @@ try
                             InstallSharedWOWDir = 'C:\Program Files (x86)\Microsoft SQL Server'
                             UpdateEnabled = 'True'
                             UpdateSource = 'C:\Updates\' # Regression test for issue #720
+                            ASServerMode = 'TABULAR'
                         }
 
                         if ( $mockSqlMajorVersion -in (13,14) )
@@ -3091,6 +3114,7 @@ try
                             InstallSharedWOWDir = 'C:\Program Files (x86)\Microsoft SQL Server'
                             UpdateEnabled = 'True'
                             UpdateSource = 'C:\Updates' # Regression test for issue #720
+                            ASServerMode = 'TABULAR'
                         }
 
                         { Set-TargetResource @testParameters } | Should -Not -Throw
