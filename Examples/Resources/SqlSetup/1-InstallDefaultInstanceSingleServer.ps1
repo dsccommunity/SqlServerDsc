@@ -1,6 +1,7 @@
 <#
     .EXAMPLE
-        This example shows how to install a default instance of SQL Server on a single server.
+        This example shows how to install a default instance of SQL Server, and
+        Analysis Services in Tabular mode, on a single server.
     .NOTES
         SQL Server setup is run using the SYSTEM account. Even if SetupCredential is provided
         it is not used to install SQL Server at this time (see issue #139).
@@ -74,6 +75,7 @@ Configuration Example
             SQLTempDBDir         = 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\Data'
             SQLTempDBLogDir      = 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\Data'
             SQLBackupDir         = 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\Backup'
+            ASServerMode         = 'TABULAR'
             ASConfigDir          = 'C:\MSOLAP\Config'
             ASDataDir            = 'C:\MSOLAP\Data'
             ASLogDir             = 'C:\MSOLAP\Log'
