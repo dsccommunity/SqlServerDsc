@@ -626,26 +626,27 @@ try
             return @(
                 (
                     New-Object Object |
-                        Add-Member ScriptProperty ServerProperties  {
+                        Add-Member -MemberType ScriptProperty ServerProperties  {
                             return @{
-                                'CollationName' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisCollation -PassThru -Force )
-                                'DataDir' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisDataDirectory -PassThru -Force )
-                                'TempDir' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisTempDirectory -PassThru -Force )
-                                'LogDir' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisLogDirectory -PassThru -Force )
-                                'BackupDir' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisBackupDirectory -PassThru -Force )
+                                'CollationName' = @( New-Object Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisCollation -PassThru -Force )
+                                'DataDir' = @( New-Object Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisDataDirectory -PassThru -Force )
+                                'TempDir' = @( New-Object Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisTempDirectory -PassThru -Force )
+                                'LogDir' = @( New-Object Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisLogDirectory -PassThru -Force )
+                                'BackupDir' = @( New-Object Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisBackupDirectory -PassThru -Force )
                             }
                         } -PassThru |
-                        Add-Member ScriptProperty Roles  {
+                        Add-Member -MemberType ScriptProperty Roles  {
                             return @{
                                 'Administrators' = @( New-Object Object |
                                     Add-Member ScriptProperty Members {
                                         return New-Object Object |
-                                            Add-Member ScriptProperty Name {
+                                            Add-Member -MemberType ScriptProperty Name {
                                                 return $mockDynamicSqlAnalysisAdmins
                                             } -PassThru -Force
                                     } -PassThru -Force
                                 ) }
-                        } -PassThru -Force
+                        } -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'ServerMode' -Value $mockDynamicAnalysisServerMode -PassThru -Force
                 )
             )
         }
@@ -985,6 +986,13 @@ try
                 Mock -CommandName Get-ItemProperty -ParameterFilter {
                     $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
                 } -MockWith $mockGetItemProperty_ClientComponentsFull_FeatureList -Verifiable
+
+                <#
+                    This make sure the mock for Connect-SQLAnalysis get the correct
+                    value for ServerMode property for the tests. It's dynamically
+                    changed in other tests for testing different server modes.
+                #>
+                $mockDynamicAnalysisServerMode = 'MULTIDIMENSIONAL'
             }
 
             BeforeEach {
@@ -1130,6 +1138,7 @@ try
                         $result.ASBackupDir | Should -BeNullOrEmpty
                         $result.ASTempDir | Should -BeNullOrEmpty
                         $result.ASConfigDir | Should -BeNullOrEmpty
+                        $result.ASServerMode | Should -BeNullOrEmpty
                         $result.ISSvcAccountUsername | Should -BeNullOrEmpty
                     }
                 }
@@ -1584,8 +1593,26 @@ try
                         $result.ASBackupDir | Should -Be $mockSqlAnalysisBackupDirectory
                         $result.ASTempDir | Should -Be $mockSqlAnalysisTempDirectory
                         $result.ASConfigDir | Should -Be $mockSqlAnalysisConfigDirectory
+                        $result.ASServerMode | Should -Be 'MULTIDIMENSIONAL'
                         $result.ISSvcAccountUsername | Should -Be $mockSqlServiceAccount
                     }
+
+                    $mockDynamicAnalysisServerMode = 'POWERPIVOT'
+
+                    It 'Should return the correct values in the hash table' {
+                        $result = Get-TargetResource @testParameters
+                        $result.ASServerMode | Should -Be 'POWERPIVOT'
+                    }
+
+                    $mockDynamicAnalysisServerMode = 'TABULAR'
+
+                    It 'Should return the correct values in the hash table' {
+                        $result = Get-TargetResource @testParameters
+                        $result.ASServerMode | Should -Be 'TABULAR'
+                    }
+
+                    # Return the state to the default for all other tests.
+                    $mockDynamicAnalysisServerMode = 'MULTIDIMENSIONAL'
 
                     <#
                         This is a regression test for issue #691.
@@ -3068,6 +3095,7 @@ try
                             InstallSharedWOWDir = 'C:\Program Files (x86)\Microsoft SQL Server'
                             UpdateEnabled = 'True'
                             UpdateSource = 'C:\Updates\' # Regression test for issue #720
+                            ASServerMode = 'TABULAR'
                         }
 
                         if ( $mockSqlMajorVersion -in (13,14) )
@@ -3091,6 +3119,7 @@ try
                             InstallSharedWOWDir = 'C:\Program Files (x86)\Microsoft SQL Server'
                             UpdateEnabled = 'True'
                             UpdateSource = 'C:\Updates' # Regression test for issue #720
+                            ASServerMode = 'TABULAR'
                         }
 
                         { Set-TargetResource @testParameters } | Should -Not -Throw

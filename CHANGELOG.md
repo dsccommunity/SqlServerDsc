@@ -12,6 +12,12 @@
     ([issue #930](https://github.com/PowerShell/SqlServerDsc/issues/930)).
   - Made the description of parameter RestartService more descriptive
     ([issue #960](https://github.com/PowerShell/SqlServerDsc/issues/960)).
+- Changes to SqlSetup
+  - Added parameter `ASServerMode` to support installing Analysis Services in
+    Multidimensional mode, Tabular mode and PowerPivot mode
+    ([issue #388](https://github.com/PowerShell/SqlServerDsc/issues/388)).
+  - Added integration tests for testing Analysis Services Multidimensional mode
+    and Tabular mode.
 
 ## 10.0.0.0
 
