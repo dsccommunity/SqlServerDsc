@@ -626,27 +626,27 @@ try
             return @(
                 (
                     New-Object Object |
-                        Add-Member ScriptProperty ServerProperties  {
+                        Add-Member -MemberType ScriptProperty ServerProperties  {
                             return @{
-                                'CollationName' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisCollation -PassThru -Force )
-                                'DataDir' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisDataDirectory -PassThru -Force )
-                                'TempDir' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisTempDirectory -PassThru -Force )
-                                'LogDir' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisLogDirectory -PassThru -Force )
-                                'BackupDir' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisBackupDirectory -PassThru -Force )
-                                'DeploymentMode' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockDynamicAnalysisServerMode -PassThru -Force )
+                                'CollationName' = @( New-Object Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisCollation -PassThru -Force )
+                                'DataDir' = @( New-Object Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisDataDirectory -PassThru -Force )
+                                'TempDir' = @( New-Object Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisTempDirectory -PassThru -Force )
+                                'LogDir' = @( New-Object Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisLogDirectory -PassThru -Force )
+                                'BackupDir' = @( New-Object Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisBackupDirectory -PassThru -Force )
                             }
                         } -PassThru |
-                        Add-Member ScriptProperty Roles  {
+                        Add-Member -MemberType ScriptProperty Roles  {
                             return @{
                                 'Administrators' = @( New-Object Object |
                                     Add-Member ScriptProperty Members {
                                         return New-Object Object |
-                                            Add-Member ScriptProperty Name {
+                                            Add-Member -MemberType ScriptProperty Name {
                                                 return $mockDynamicSqlAnalysisAdmins
                                             } -PassThru -Force
                                     } -PassThru -Force
                                 ) }
-                        } -PassThru -Force
+                        } -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'ServerMode' -Value $mockDynamicAnalysisServerMode -PassThru -Force
                 )
             )
         }
@@ -986,6 +986,13 @@ try
                 Mock -CommandName Get-ItemProperty -ParameterFilter {
                     $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
                 } -MockWith $mockGetItemProperty_ClientComponentsFull_FeatureList -Verifiable
+
+                <#
+                    This make sure the mock for Connect-SQLAnalysis get the correct
+                    value for ServerMode property for the tests. It's dynamically
+                    changed in other tests for testing different server modes.
+                #>
+                $mockDynamicAnalysisServerMode = 'MULTIDIMENSIONAL'
             }
 
             BeforeEach {
@@ -1560,8 +1567,6 @@ try
                         }
                     }
 
-                    $mockDynamicAnalysisServerMode = 0  # MULTIDIMENSIONAL
-
                     It 'Should return the correct values in the hash table' {
                         $result = Get-TargetResource @testParameters
                         $result.SourcePath | Should -Be $mockSourcePath
@@ -1592,14 +1597,14 @@ try
                         $result.ISSvcAccountUsername | Should -Be $mockSqlServiceAccount
                     }
 
-                    $mockDynamicAnalysisServerMode = 1  # POWERPIVOT
+                    $mockDynamicAnalysisServerMode = 'POWERPIVOT'
 
                     It 'Should return the correct values in the hash table' {
                         $result = Get-TargetResource @testParameters
                         $result.ASServerMode | Should -Be 'POWERPIVOT'
                     }
 
-                    $mockDynamicAnalysisServerMode = 2  # TABULAR
+                    $mockDynamicAnalysisServerMode = 'TABULAR'
 
                     It 'Should return the correct values in the hash table' {
                         $result = Get-TargetResource @testParameters
@@ -1607,7 +1612,7 @@ try
                     }
 
                     # Return the state to the default for all other tests.
-                    $mockDynamicAnalysisServerMode = 0  # MULTIDIMENSIONAL
+                    $mockDynamicAnalysisServerMode = 'MULTIDIMENSIONAL'
 
                     <#
                         This is a regression test for issue #691.

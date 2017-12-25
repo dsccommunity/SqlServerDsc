@@ -293,23 +293,16 @@ function Get-TargetResource
         $analysisLogDirectory = $analysisServer.ServerProperties['LogDir'].Value
         $analysisBackupDirectory = $analysisServer.ServerProperties['BackupDir'].Value
 
-        $analysisServerMode = switch ($analysisServer.ServerProperties['DeploymentMode'].Value)
-        {
-            0
-            {
-                'MULTIDIMENSIONAL'
-            }
+        <#
+            The property $analysisServer.ServerMode.value__ contains the
+            server mode (aka deployment mode) value 0, 1 or 2. See DeploymentMode
+            here https://docs.microsoft.com/en-us/sql/analysis-services/server-properties/general-properties.
 
-            1
-            {
-                'POWERPIVOT'
-            }
-
-            2
-            {
-                'TABULAR'
-            }
-        }
+            The property $analysisServer.ServerMode contains the display name of
+            the property value__. See more information here
+            https://msdn.microsoft.com/en-us/library/microsoft.analysisservices.core.server.servermode.aspx.
+        #>
+        $analysisServerMode = $analysisServer.ServerMode.ToString().ToUpper()
 
         $analysisSystemAdminAccounts = [System.String[]] $analysisServer.Roles['Administrators'].Members.Name
 
