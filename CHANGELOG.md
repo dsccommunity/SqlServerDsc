@@ -15,6 +15,8 @@
 - Changes to SqlSetup
   - Added parameter `ASServerMode` to support installing Analysis Services in
     Multidimensional mode, Tabular mode and PowerPivot mode.
+  - Added integration tests for testing Analysis Services Multidimensional mode
+    and Tabular mode.
 
 ## 10.0.0.0
 

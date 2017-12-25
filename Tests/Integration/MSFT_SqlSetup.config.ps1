@@ -9,21 +9,40 @@ $mockIsoMediaDriveLetter = [char](([int][char]$mockLastDrive) + 1)
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                    = 'localhost'
+            NodeName                            = 'localhost'
 
-            InstanceName                = 'DSCSQL2016'
-            Features                    = 'SQLENGINE,CONN,BC,SDK'
-            SQLCollation                = 'Finnish_Swedish_CI_AS'
-            InstallSharedDir            = 'C:\Program Files\Microsoft SQL Server'
-            InstallSharedWOWDir         = 'C:\Program Files (x86)\Microsoft SQL Server'
-            UpdateEnabled               = 'False'
-            SuppressReboot              = $true # Make sure we don't reboot during testing.
-            ForceReboot                 = $false
+            # SQL Engine properties
+            SqlEngineInstanceName               = 'DSCSQL2016'
+            SqlEngineFeatures                   = 'SQLENGINE,AS,CONN,BC,SDK'
+            AnalysisServicesMultiServerMode     = 'MULTIDIMENSIONAL'
 
-            ImagePath                   = "$env:TEMP\SQL2016.iso"
-            DriveLetter                 = $mockIsoMediaDriveLetter
+            # Analysis Services Tabular properties
+            AnalysisServicesTabularInstanceName = 'DSCTABULAR'
+            <#
+                CONN,BC,SDK is installed with the DSCSQL2016 so those feature
+                will found for DSCTABULAR instance as well.
+            #>
+            AnalysisServicesTabularFeatures     = 'AS,CONN,BC,SDK'
+            AnalysisServicesTabularServerMode   = 'TABULAR'
 
-            PSDscAllowPlainTextPassword = $true
+            # General SqlSetup properties
+            Collation                           = 'Finnish_Swedish_CI_AS'
+            InstallSharedDir                    = 'C:\Program Files\Microsoft SQL Server'
+            InstallSharedWOWDir                 = 'C:\Program Files (x86)\Microsoft SQL Server'
+            UpdateEnabled                       = 'False'
+            SuppressReboot                      = $true # Make sure we don't reboot during testing.
+            ForceReboot                         = $false
+
+            # Properties for mounting media
+            ImagePath                           = "$env:TEMP\SQL2016.iso"
+            DriveLetter                         = $mockIsoMediaDriveLetter
+
+            <#
+                We must compile the configuration using plain text since the
+                common integration test framework does not use certificates.
+                This should not be used in production.
+            #>
+            PSDscAllowPlainTextPassword         = $true
         }
     )
 }
@@ -95,8 +114,8 @@ Configuration MSFT_SqlSetup_InstallSqlEngineAsSystem_Config
 
         Group 'AddSqlInstallAsAdministrator'
         {
-            Ensure = 'Present'
-            GroupName = 'Administrators'
+            Ensure           = 'Present'
+            GroupName        = 'Administrators'
             MembersToInclude = $SqlInstallCredential.UserName
         }
 
@@ -115,13 +134,15 @@ Configuration MSFT_SqlSetup_InstallSqlEngineAsSystem_Config
 
         SqlSetup 'Integration_Test'
         {
-            InstanceName          = $Node.InstanceName
-            Features              = $Node.Features
+            InstanceName          = $Node.SqlEngineInstanceName
+            Features              = $Node.SqlEngineFeatures
             SourcePath            = "$($Node.DriveLetter):\"
             BrowserSvcStartupType = 'Automatic'
-            SQLCollation          = $Node.SQLCollation
+            SQLCollation          = $Node.Collation
             SQLSvcAccount         = $SqlServiceCredential
             AgtSvcAccount         = $SqlAgentServiceCredential
+            ASServerMode          = $Node.AnalysisServicesMultiServerMode
+            ASCollation           = $Node.Collation
             ASSvcAccount          = $SqlServiceCredential
             InstallSharedDir      = $Node.InstallSharedDir
             InstallSharedWOWDir   = $Node.InstallSharedWOWDir
@@ -139,6 +160,12 @@ Configuration MSFT_SqlSetup_InstallSqlEngineAsSystem_Config
                 $SqlInstallCredential.UserName
             )
 
+            # This must be set if using SYSTEM account to install.
+            ASSysAdminAccounts  = @(
+                $SqlAdministratorCredential.UserName
+                $SqlInstallCredential.UserName
+            )
+
             DependsOn             = @(
                 '[xMountImage]MountIsoMedia'
                 '[User]CreateSqlServiceAccount'
@@ -151,3 +178,50 @@ Configuration MSFT_SqlSetup_InstallSqlEngineAsSystem_Config
         }
     }
 }
+
+Configuration MSFT_SqlSetup_InstallAnalysisServicesAsSystem_Config
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlInstallCredential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlServiceCredential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlAdministratorCredential
+    )
+
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node localhost {
+        SqlSetup 'Integration_Test'
+        {
+            InstanceName        = $Node.AnalysisServicesTabularInstanceName
+            Features            = $Node.AnalysisServicesTabularFeatures
+            SourcePath          = "$($Node.DriveLetter):\"
+            ASServerMode        = $Node.AnalysisServicesTabularServerMode
+            ASCollation         = $Node.Collation
+            ASSvcAccount        = $SqlServiceCredential
+            InstallSharedDir    = $Node.InstallSharedDir
+            InstallSharedWOWDir = $Node.InstallSharedWOWDir
+            UpdateEnabled       = $Node.UpdateEnabled
+            SuppressReboot      = $Node.SuppressReboot
+            ForceReboot         = $Node.ForceReboot
+
+            # This must be set if using SYSTEM account to install.
+            ASSysAdminAccounts  = @(
+                $SqlAdministratorCredential.UserName
+                $SqlInstallCredential.UserName
+            )
+        }
+    }
+}
+
