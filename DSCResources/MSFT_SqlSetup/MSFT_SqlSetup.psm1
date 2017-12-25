@@ -632,8 +632,8 @@ function Get-TargetResource
         Path for Analysis Services config.
 
     .PARAMETER ASServerMode
-        The server mode for SQL Server Analysis Services instance. Default it
-        will install in Multidimensional mode. Valid values in a cluster scenario
+        The server mode for SQL Server Analysis Services instance. The default is
+        to install in Multidimensional mode. Valid values in a cluster scenario
         are MULTIDIMENSIONAL or TABULAR. Parameter ASServerMode is case-sensitive.
         All values must be expressed in upper case.
         { MULTIDIMENSIONAL | TABULAR | POWERPIVOT }.
@@ -1571,8 +1571,8 @@ function Set-TargetResource
         Path for Analysis Services config.
 
     .PARAMETER ASServerMode
-        The server mode for SQL Server Analysis Services instance. Default it
-        will install in Multidimensional mode. Valid values in a cluster scenario
+        The server mode for SQL Server Analysis Services instance. The default is
+        to install in Multidimensional mode. Valid values in a cluster scenario
         are MULTIDIMENSIONAL or TABULAR. Parameter ASServerMode is case-sensitive.
         All values must be expressed in upper case.
         { MULTIDIMENSIONAL | TABULAR | POWERPIVOT }.
