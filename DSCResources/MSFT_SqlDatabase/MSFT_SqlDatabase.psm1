@@ -146,7 +146,6 @@ function Set-TargetResource
 
     if ($sqlServerObject)
     {
-
         if ($Ensure -eq 'Present')
         {
             if (-not $PSBoundParameters.ContainsKey('Collation'))

@@ -447,7 +447,7 @@ function Register-DistributorPublisher
 function Get-ConnectionInfoAssembly
 {
     [CmdletBinding()]
-    [OutputType([System.Object])]
+    [OutputType([System.Reflection.Assembly])]
     param(
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -463,7 +463,7 @@ function Get-ConnectionInfoAssembly
 function Get-RmoAssembly
 {
     [CmdletBinding()]
-    [OutputType([System.Object])]
+    [OutputType([System.Reflection.Assembly])]
     param(
         [Parameter(Mandatory = $true)]
         [System.String]
