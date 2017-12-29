@@ -50,7 +50,7 @@ try
 
         $mockConnectSql = {
             return New-Object -TypeName Object |
-                Add-Member -MemberType ScriptProperty -Name 'Endpoints' {
+                Add-Member -MemberType ScriptProperty -Name 'Endpoints' -Value {
                 return @(
                     @{
                         # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint

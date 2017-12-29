@@ -56,26 +56,26 @@ try
 
         $mockConnectSql = {
             return New-Object -TypeName Object |
-                Add-Member ScriptProperty AvailabilityGroups {
+                Add-Member -MemberType ScriptProperty -Name AvailabilityGroups -Value {
                 return @(
                     @{
                         $mockDynamicAvailabilityGroup = New-Object -TypeName Object |
-                            Add-Member ScriptProperty AvailabilityGroupListeners {
+                            Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListeners -Value {
                             @(
                                 @{
                                     $mockDynamicListenerName = New-Object -TypeName Object |
-                                        Add-Member NoteProperty PortNumber $mockDynamicPortNumber -PassThru |
-                                        Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
+                                        Add-Member -MemberType NoteProperty -Name PortNumber -Value $mockDynamicPortNumber -PassThru |
+                                        Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListenerIPAddresses -Value {
                                         return @(
                                             # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
                                             (New-Object -TypeName Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-                                                    Add-Member NoteProperty IsDHCP $mockDynamicIsDhcp -PassThru |
-                                                    Add-Member NoteProperty IPAddress '192.168.0.1' -PassThru |
-                                                    Add-Member NoteProperty SubnetMask '255.255.255.0' -PassThru
+                                                    Add-Member -MemberType NoteProperty -Name IsDHCP -Value $mockDynamicIsDhcp -PassThru |
+                                                    Add-Member -MemberType NoteProperty -Name IPAddress -Value '192.168.0.1' -PassThru |
+                                                    Add-Member -MemberType NoteProperty -Name SubnetMask -Value '255.255.255.0' -PassThru
                                             )
                                         )
                                     } -PassThru |
-                                        Add-Member ScriptMethod Drop {
+                                        Add-Member -MemberType ScriptMethod -Name Drop -Value {
                                         $script:mockMethodDropRan = $true
                                     } -PassThru -Force
                                 }
@@ -249,14 +249,14 @@ try
                 Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
                     # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListener
                     return New-Object -TypeName Object |
-                        Add-Member NoteProperty PortNumber 5030 -PassThru |
-                        Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
+                        Add-Member -MemberType NoteProperty -Name PortNumber -Value 5030 -PassThru |
+                        Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListenerIPAddresses -Value {
                         return @(
                             # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
                             (New-Object -TypeName Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-                                    Add-Member NoteProperty IsDHCP $false -PassThru |
-                                    Add-Member NoteProperty IPAddress '192.168.0.1' -PassThru |
-                                    Add-Member NoteProperty SubnetMask '255.255.255.0' -PassThru
+                                    Add-Member -MemberType NoteProperty -Name IsDHCP -Value $false -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name IPAddress -Value '192.168.0.1' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name SubnetMask -Value '255.255.255.0' -PassThru
                             )
                         )
                     } -PassThru -Force
@@ -307,14 +307,14 @@ try
                 Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
                     # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListener
                     return New-Object -TypeName Object |
-                        Add-Member NoteProperty PortNumber 5555 -PassThru |
-                        Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
+                        Add-Member -MemberType NoteProperty -Name PortNumber -Value 5555 -PassThru |
+                        Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListenerIPAddresses -Value {
                         return @(
                             # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
                             (New-Object -TypeName Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-                                    Add-Member NoteProperty IsDHCP $false -PassThru |
-                                    Add-Member NoteProperty IPAddress '192.168.0.1' -PassThru |
-                                    Add-Member NoteProperty SubnetMask '255.255.255.0' -PassThru
+                                    Add-Member -MemberType NoteProperty -Name IsDHCP -Value $false -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name IPAddress -Value '192.168.0.1' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name SubnetMask -Value '255.255.255.0' -PassThru
                             )
                         )
                     } -PassThru -Force
@@ -337,14 +337,14 @@ try
                 Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
                     # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListener
                     return New-Object -TypeName Object |
-                        Add-Member NoteProperty PortNumber 5030 -PassThru |
-                        Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
+                        Add-Member -MemberType NoteProperty -Name PortNumber -Value 5030 -PassThru |
+                        Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListenerIPAddresses -Value {
                         return @(
                             # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
                             (New-Object -TypeName Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-                                    Add-Member NoteProperty IsDHCP $true -PassThru |
-                                    Add-Member NoteProperty IPAddress '192.168.0.1' -PassThru |
-                                    Add-Member NoteProperty SubnetMask '255.255.255.0' -PassThru
+                                    Add-Member -MemberType NoteProperty -Name IsDHCP -Value $true -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name IPAddress -Value '192.168.0.1' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name SubnetMask -Value '255.255.255.0' -PassThru
                             )
                         )
                     } -PassThru -Force
@@ -374,14 +374,14 @@ try
                 Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
                     # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListener
                     return New-Object -TypeName Object |
-                        Add-Member NoteProperty PortNumber 5555 -PassThru |
-                        Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
+                        Add-Member -MemberType NoteProperty -Name PortNumber -Value 5555 -PassThru |
+                        Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListenerIPAddresses -Value {
                         return @(
                             # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
                             (New-Object -TypeName Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-                                    Add-Member NoteProperty IsDHCP $true -PassThru |
-                                    Add-Member NoteProperty IPAddress '192.168.0.1' -PassThru |
-                                    Add-Member NoteProperty SubnetMask '255.255.255.0' -PassThru
+                                    Add-Member -MemberType NoteProperty -Name IsDHCP -Value $true -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name IPAddress -Value '192.168.0.1' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name SubnetMask -Value '255.255.255.0' -PassThru
                             )
                         )
                     } -PassThru -Force
@@ -415,14 +415,14 @@ try
                 Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
                     # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListener
                     return New-Object -TypeName Object |
-                        Add-Member NoteProperty PortNumber 5030 -PassThru |
-                        Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
+                        Add-Member -MemberType NoteProperty -Name PortNumber -Value 5030 -PassThru |
+                        Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListenerIPAddresses -Value {
                         return @(
                             # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
                             (New-Object -TypeName Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-                                    Add-Member NoteProperty IsDHCP $false -PassThru |
-                                    Add-Member NoteProperty IPAddress '192.168.0.1' -PassThru |
-                                    Add-Member NoteProperty SubnetMask '255.255.255.0' -PassThru
+                                    Add-Member -MemberType NoteProperty -Name IsDHCP -Value $false -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name IPAddress -Value '192.168.0.1' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name SubnetMask -Value '255.255.255.0' -PassThru
                             )
                         )
                     } -PassThru -Force
@@ -463,14 +463,14 @@ try
                 Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
                     # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListener
                     return New-Object -TypeName Object |
-                        Add-Member NoteProperty PortNumber 5030 -PassThru |
-                        Add-Member ScriptProperty AvailabilityGroupListenerIPAddresses {
+                        Add-Member -MemberType NoteProperty -Name PortNumber -Value 5030 -PassThru |
+                        Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListenerIPAddresses -Value {
                         return @(
                             # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
                             (New-Object -TypeName Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-                                    Add-Member NoteProperty IsDHCP $true -PassThru |
-                                    Add-Member NoteProperty IPAddress '192.168.0.1' -PassThru |
-                                    Add-Member NoteProperty SubnetMask '255.255.255.0' -PassThru
+                                    Add-Member -MemberType NoteProperty -Name IsDHCP -Value $true -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name IPAddress -Value '192.168.0.1' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name SubnetMask -Value '255.255.255.0' -PassThru
                             )
                         )
                     } -PassThru -Force

@@ -23,7 +23,7 @@ Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stub
 InModuleScope $script:moduleName {
     $mockNewObject_MicrosoftAnalysisServicesServer = {
         return New-Object -TypeName Object |
-                    Add-Member -MemberType ScriptMethod -Name Connect {
+                    Add-Member -MemberType ScriptMethod -Name Connect -Value {
                         param(
                             [Parameter(Mandatory = $true)]
                             [ValidateNotNullOrEmpty()]
@@ -84,7 +84,7 @@ InModuleScope $script:moduleName {
                     Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
                     Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
                     Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
-                    Add-Member -MemberType ScriptMethod -Name Connect {
+                    Add-Member -MemberType ScriptMethod -Name Connect -Value {
                         if ($mockExpectedDatabaseEngineInstance -eq 'MSSQLSERVER')
                         {
                             $mockExpectedServiceInstance = $mockExpectedDatabaseEngineServer

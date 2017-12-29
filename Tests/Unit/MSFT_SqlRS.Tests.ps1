@@ -66,56 +66,56 @@ try
                         Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name SetVirtualDirectory {
+                        Add-Member -MemberType ScriptMethod -Name SetVirtualDirectory -Value {
                         $script:mockIsMethodCalled_SetVirtualDirectory = $true
 
                         return $null
                     } -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name ReserveURL {
+                        Add-Member -MemberType ScriptMethod -Name ReserveURL -Value {
                         $script:mockIsMethodCalled_ReserveURL = $true
 
                         return $null
                     } -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name GenerateDatabaseCreationScript {
+                        Add-Member -MemberType ScriptMethod -Name GenerateDatabaseCreationScript -Value {
                         $script:mockIsMethodCalled_GenerateDatabaseCreationScript = $true
 
                         return @{
                             Script = 'select * from something'
                         }
                     } -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name GenerateDatabaseRightsScript {
+                        Add-Member -MemberType ScriptMethod -Name GenerateDatabaseRightsScript -Value {
                         $script:mockIsMethodCalled_GenerateDatabaseRightsScript = $true
 
                         return @{
                             Script = 'select * from something'
                         }
                     } -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name SetDatabaseConnection {
+                        Add-Member -MemberType ScriptMethod -Name SetDatabaseConnection -Value {
                         $script:mockIsMethodCalled_SetDatabaseConnection = $true
 
                         return $null
                     } -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name InitializeReportServer {
+                        Add-Member -MemberType ScriptMethod -Name InitializeReportServer -Value {
                         $script:mockIsMethodCalled_InitializeReportServer = $true
 
                         return $null
                     } -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name RemoveURL {
+                        Add-Member -MemberType ScriptMethod -Name RemoveURL -Value {
                         $script:mockIsMethodCalled_RemoveURL = $true
 
                         return $null
                     } -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name ListReservedUrls {
+                        Add-Member -MemberType ScriptMethod -Name ListReservedUrls -Value {
                         $script:mockIsMethodCalled_ListReservedUrls = $true
 
                         return New-Object -TypeName Object |
-                            Add-Member -MemberType ScriptProperty -Name 'Application' {
+                            Add-Member -MemberType ScriptProperty -Name 'Application' -Value {
                             return @(
                                 $mockDynamicReportServerApplicationName,
                                 $mockDynamicReportsApplicationName
                             )
                         } -PassThru |
-                            Add-Member -MemberType ScriptProperty -Name 'UrlString' {
+                            Add-Member -MemberType ScriptProperty -Name 'UrlString' -Value {
                             return @(
                                 $mockDynamicReportsApplicationUrlString,
                                 $mockDynamicReportServerApplicationUrlString
@@ -140,36 +140,36 @@ try
                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockDefaultInstanceName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru |
-                Add-Member -MemberType ScriptMethod -Name SetVirtualDirectory {
+                Add-Member -MemberType ScriptMethod -Name SetVirtualDirectory -Value {
                 $script:mockIsMethodCalled_SetVirtualDirectory = $true
 
                 return $null
             } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name ReserveURL {
+                Add-Member -MemberType ScriptMethod -Name ReserveURL -Value {
                 $script:mockIsMethodCalled_ReserveURL = $true
 
                 return $null
             } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name GenerateDatabaseCreationScript {
+                Add-Member -MemberType ScriptMethod -Name GenerateDatabaseCreationScript -Value {
                 $script:mockIsMethodCalled_GenerateDatabaseCreationScript = $true
 
                 return @{
                     Script = 'select * from something'
                 }
             } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name GenerateDatabaseRightsScript {
+                Add-Member -MemberType ScriptMethod -Name GenerateDatabaseRightsScript -Value {
                 $script:mockIsMethodCalled_GenerateDatabaseRightsScript = $true
 
                 return @{
                     Script = 'select * from something'
                 }
             } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name SetDatabaseConnection {
+                Add-Member -MemberType ScriptMethod -Name SetDatabaseConnection -Value {
                 $script:mockIsMethodCalled_SetDatabaseConnection = $true
 
                 return $null
             } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name InitializeReportServer {
+                Add-Member -MemberType ScriptMethod -Name InitializeReportServer -Value {
                 $script:mockIsMethodCalled_InitializeReportServer = $true
 
                 return $null

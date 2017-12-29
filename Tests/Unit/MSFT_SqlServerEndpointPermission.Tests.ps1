@@ -50,13 +50,13 @@ try
 
         $mockConnectSql = {
             return New-Object -TypeName Object |
-                Add-Member -MemberType ScriptProperty -Name 'Endpoints' {
+                Add-Member -MemberType ScriptProperty -Name 'Endpoints' -Value {
                 return @(
                     @{
                         # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
                         $mockDynamicEndpointName = New-Object -TypeName Object |
                             Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockEndpointName -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name 'EnumObjectPermissions' {
+                            Add-Member -MemberType ScriptMethod -Name 'EnumObjectPermissions' -Value {
                             param($permissionSet)
                             return @(
                                 (New-Object -TypeName Object |
@@ -65,7 +65,7 @@ try
                                 )
                             )
                         } -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name 'Grant' {
+                            Add-Member -MemberType ScriptMethod -Name 'Grant' -Value {
                             param(
                                 $permissionSet,
                                 $mockPrincipal
@@ -73,7 +73,7 @@ try
 
                             $script:mockMethodGrantRan = $true
                         } -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name 'Revoke' {
+                            Add-Member -MemberType ScriptMethod -Name 'Revoke' -Value {
                             param(
                                 $permissionSet,
                                 $mockPrincipal

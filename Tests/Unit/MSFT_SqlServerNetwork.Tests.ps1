@@ -42,17 +42,17 @@ try
 
         $mockFunction_NewObject_ManagedComputer = {
                 return New-Object -TypeName Object |
-                    Add-Member -MemberType ScriptProperty -Name 'ServerInstances' {
+                    Add-Member -MemberType ScriptProperty -Name 'ServerInstances' -Value {
                         return @{
                             $mockInstanceName = New-Object -TypeName Object |
-                                Add-Member -MemberType ScriptProperty -Name 'ServerProtocols' {
+                                Add-Member -MemberType ScriptProperty -Name 'ServerProtocols' -Value {
                                     return @{
                                         $mockDynamicValue_TcpProtocolName = New-Object -TypeName Object |
                                             Add-Member -MemberType NoteProperty -Name 'IsEnabled' -Value $mockDynamicValue_IsEnabled -PassThru |
-                                            Add-Member -MemberType ScriptProperty -Name 'IPAddresses' {
+                                            Add-Member -MemberType ScriptProperty -Name 'IPAddresses' -Value {
                                                 return @{
                                                     'IPAll' = New-Object -TypeName Object |
-                                                        Add-Member -MemberType ScriptProperty -Name 'IPAddressProperties' {
+                                                        Add-Member -MemberType ScriptProperty -Name 'IPAddressProperties' -Value {
                                                             return @{
                                                                 'TcpDynamicPorts' = New-Object -TypeName Object |
                                                                     Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockDynamicValue_TcpDynamicPort -PassThru -Force
@@ -62,7 +62,7 @@ try
                                                         } -PassThru -Force
                                                 }
                                             } -PassThru |
-                                            Add-Member -MemberType ScriptMethod -Name 'Alter' {
+                                            Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
                                                 <#
                                                     It is not possible to verify that the correct value was set here for TcpDynamicPorts and
                                                     TcpPort with the current implementation.

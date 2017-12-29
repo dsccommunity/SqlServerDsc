@@ -585,10 +585,10 @@ try
                         Add-Member -MemberType NoteProperty -Name 'SQLTempDBLogDir' -Value $mockDynamicSqlTempDatabaseLogPath -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'DefaultFile' -Value $mockSqlDefaultDatabaseFilePath -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'DefaultLog' -Value $mockSqlDefaultDatabaseLogPath -PassThru |
-                        Add-Member ScriptProperty Logins {
+                        Add-Member -MemberType ScriptProperty -Name Logins -Value {
                             return @( ( New-Object -TypeName Object |
                                     Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockSqlSystemAdministrator -PassThru |
-                                    Add-Member ScriptMethod ListMembers {
+                                    Add-Member -MemberType ScriptMethod -Name ListMembers -Value {
                                         return @('sysadmin')
                                     } -PassThru -Force
                                 ) )
@@ -610,10 +610,10 @@ try
                         Add-Member -MemberType NoteProperty -Name 'DefaultFile' -Value $mockSqlDefaultDatabaseFilePath -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'DefaultLog' -Value $mockSqlDefaultDatabaseLogPath -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'IsClustered' -Value $true -PassThru |
-                        Add-Member ScriptProperty Logins {
+                        Add-Member -MemberType ScriptProperty -Name Logins -Value {
                             return @( ( New-Object -TypeName Object |
                                     Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockSqlSystemAdministrator -PassThru |
-                                    Add-Member ScriptMethod ListMembers {
+                                    Add-Member -MemberType ScriptMethod -Name ListMembers -Value {
                                         return @('sysadmin')
                                     } -PassThru -Force
                                 ) )
@@ -626,7 +626,7 @@ try
             return @(
                 (
                     New-Object -TypeName Object |
-                        Add-Member -MemberType ScriptProperty ServerProperties  {
+                        Add-Member -MemberType ScriptProperty -Name ServerProperties -Value {
                             return @{
                                 'CollationName' = @( New-Object -TypeName Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisCollation -PassThru -Force )
                                 'DataDir' = @( New-Object -TypeName Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisDataDirectory -PassThru -Force )
@@ -635,12 +635,12 @@ try
                                 'BackupDir' = @( New-Object -TypeName Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisBackupDirectory -PassThru -Force )
                             }
                         } -PassThru |
-                        Add-Member -MemberType ScriptProperty Roles  {
+                        Add-Member -MemberType ScriptProperty -Name Roles -Value {
                             return @{
                                 'Administrators' = @( New-Object -TypeName Object |
-                                    Add-Member ScriptProperty Members {
+                                    Add-Member -MemberType ScriptProperty -Name Members -Value {
                                         return New-Object -TypeName Object |
-                                            Add-Member -MemberType ScriptProperty Name {
+                                            Add-Member -MemberType ScriptProperty -Name Name -Value {
                                                 return $mockDynamicSqlAnalysisAdmins
                                             } -PassThru -Force
                                     } -PassThru -Force
@@ -667,7 +667,7 @@ try
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockRobocopyExecutableName -PassThru |
-                        Add-Member ScriptProperty FileVersionInfo {
+                        Add-Member -MemberType ScriptProperty -Name FileVersionInfo -Value {
                             return @( ( New-Object -TypeName Object |
                                     Add-Member -MemberType NoteProperty -Name 'ProductVersion' -Value $mockRobocopyExecutableVersion -PassThru -Force
                                 ) )

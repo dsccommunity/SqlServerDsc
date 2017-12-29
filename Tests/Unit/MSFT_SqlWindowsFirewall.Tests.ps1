@@ -386,7 +386,7 @@ try
 
         $mockGetItem_SqlMajorVersion = {
             return New-Object -TypeName Object |
-                        Add-Member ScriptProperty VersionInfo {
+                        Add-Member -MemberType ScriptProperty -Name VersionInfo -Value {
                             return New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name 'ProductVersion' -Value ('{0}.0.0000.00000' -f $mockCurrentSqlMajorVersion) -PassThru -Force
                         } -PassThru -Force
