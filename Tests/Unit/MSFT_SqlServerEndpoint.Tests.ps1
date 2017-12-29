@@ -61,22 +61,22 @@ try
 
         $mockEndpointObject = {
             # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDynamicEndpointName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'EndpointType' -Value $mockDynamicEndpointType -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'ProtocolType' -Value $null -PassThru |
                 Add-Member -MemberType ScriptProperty -Name 'Protocol' {
-                    return New-Object Object |
+                    return New-Object -TypeName Object |
                         Add-Member -MemberType ScriptProperty -Name 'Tcp' {
-                            return New-Object Object |
+                            return New-Object -TypeName Object |
                                 Add-Member -MemberType NoteProperty -Name 'ListenerPort' -Value $mockDynamicEndpointListenerPort -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'ListenerIPAddress' -Value $mockDynamicEndpointListenerIpAddress -PassThru -Force
                         } -PassThru -Force
                 } -PassThru |
                 Add-Member -MemberType ScriptProperty -Name 'Payload' {
-                    return New-Object Object |
+                    return New-Object -TypeName Object |
                         Add-Member -MemberType ScriptProperty -Name 'DatabaseMirroring' {
-                            return New-Object Object |
+                            return New-Object -TypeName Object |
                                 Add-Member -MemberType NoteProperty -Name 'ServerMirroringRole' -Value $null -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'EndpointEncryption' -Value $null -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'EndpointEncryptionAlgorithm' -Value $null -PassThru -Force
@@ -115,7 +115,7 @@ try
         }
 
         $mockConnectSql = {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member ScriptProperty Endpoints {
                     return @(
                         @{

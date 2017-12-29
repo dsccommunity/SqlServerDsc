@@ -49,12 +49,12 @@ try
         $mockDynamicEndpointState = $mockEndpointStateStarted
 
         $mockConnectSql = {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType ScriptProperty -Name 'Endpoints' {
                 return @(
                     @{
                         # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
-                        $mockDynamicEndpointName = New-Object Object |
+                        $mockDynamicEndpointName = New-Object -TypeName Object |
                             Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDynamicEndpointName -PassThru |
                             Add-Member -MemberType NoteProperty -Name 'EndpointState' -Value $mockDynamicEndpointState -PassThru -Force
                     }

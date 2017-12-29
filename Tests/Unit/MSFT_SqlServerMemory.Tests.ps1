@@ -58,14 +58,14 @@ try
         $mockConnectSQL = {
             return @(
                 (
-                    # New-Object Object |
+                    # New-Object -TypeName Object |
                     New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server |
                         Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru -Force |
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru -Force |
                         Add-Member -MemberType ScriptProperty -Name Configuration -Value {
-                        return @( ( New-Object Object |
+                        return @( ( New-Object -TypeName Object |
                                     Add-Member -MemberType ScriptProperty -Name MinServerMemory -Value {
-                                    return @( ( New-Object Object |
+                                    return @( ( New-Object -TypeName Object |
                                                 Add-Member -MemberType NoteProperty -Name DisplayName -Value 'min server memory (MB)' -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name Description -Value 'Minimum size of server memory (MB)' -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name RunValue -Value $mockMinServerMemory -PassThru |
@@ -73,7 +73,7 @@ try
                                         ) )
                                 } -PassThru |
                                     Add-Member -MemberType ScriptProperty -Name MaxServerMemory -Value {
-                                    return @( ( New-Object Object |
+                                    return @( ( New-Object -TypeName Object |
                                                 Add-Member -MemberType NoteProperty -Name DisplayName -Value 'max server memory (MB)' -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name Description -Value 'Maximum size of server memory (MB)' -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name RunValue -Value $mockMaxServerMemory -PassThru |

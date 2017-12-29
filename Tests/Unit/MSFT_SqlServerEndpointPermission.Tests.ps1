@@ -49,17 +49,17 @@ try
         $script:mockMethodRevokeRan = $false
 
         $mockConnectSql = {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType ScriptProperty -Name 'Endpoints' {
                 return @(
                     @{
                         # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
-                        $mockDynamicEndpointName = New-Object Object |
+                        $mockDynamicEndpointName = New-Object -TypeName Object |
                             Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockEndpointName -PassThru |
                             Add-Member -MemberType ScriptMethod -Name 'EnumObjectPermissions' {
                             param($permissionSet)
                             return @(
-                                (New-Object Object |
+                                (New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty Grantee $mockDynamicPrincipal -PassThru |
                                         Add-Member -MemberType NoteProperty PermissionState 'Grant' -PassThru
                                 )

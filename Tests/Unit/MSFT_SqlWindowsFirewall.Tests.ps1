@@ -105,27 +105,27 @@ try
         $mockGetService_DefaultInstance = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_DatabaseServiceName -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_AgentServiceName -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_FullTextServiceName -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_ReportingServiceName -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value ($mockDefaultInstance_IntegrationServiceName -f $mockCurrentSqlMajorVersion) -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_AnalysisServiceName -PassThru -Force
                 )
             )
@@ -135,27 +135,27 @@ try
         $mockGetService_NamedInstance = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_DatabaseServiceName -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_AgentServiceName -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_FullTextServiceName -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_ReportingServiceName -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value ($mockNamedInstance_IntegrationServiceName -f $mockCurrentSqlMajorVersion) -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_AnalysisServiceName -PassThru -Force
                 )
             )
@@ -170,7 +170,7 @@ try
         $mockGetItemProperty_SqlInstanceId = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name $mockCurrentInstanceName -Value $mockCurrentDatabaseEngineInstanceId -PassThru -Force
                 )
             )
@@ -184,7 +184,7 @@ try
         $mockGetItemProperty_AnalysisServicesInstanceId = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name $mockCurrentInstanceName -Value $mockCurrentAnalysisServiceInstanceId -PassThru -Force
                 )
             )
@@ -198,7 +198,7 @@ try
         $mockGetItemProperty_DatabaseEngineSqlBinRoot = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'SQLBinRoot' -Value $mockCurrentDatabaseEngineSqlBinDirectory -PassThru -Force
                 )
             )
@@ -212,7 +212,7 @@ try
         $mockGetItemProperty_AnalysisServicesSqlBinRoot = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'SQLBinRoot' -Value $mockCurrentAnalysisServicesSqlBinDirectory -PassThru -Force
                 )
             )
@@ -226,7 +226,7 @@ try
         $mockGetItemProperty_IntegrationsServicesSqlPath = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'SQLPath' -Value $mockCurrentIntegrationServicesSqlPathDirectory -PassThru -Force
                 )
             )
@@ -255,7 +255,7 @@ try
             {
                 return @(
                     (
-                        New-Object Object |
+                        New-Object -TypeName Object |
                             Add-Member -MemberType NoteProperty -Name 'Program' -Value (Join-Path $mockCurrentDatabaseEngineSqlBinDirectory -ChildPath $mockDatabaseEngineExecutableName) -PassThru -Force
                     )
                 )
@@ -264,7 +264,7 @@ try
             {
                 return @(
                     (
-                        New-Object Object |
+                        New-Object -TypeName Object |
                             Add-Member -MemberType NoteProperty -Name 'Program' -Value (Join-Path -Path (Join-Path $mockCurrentIntegrationServicesSqlPathDirectory -ChildPath 'Binn') -ChildPath $mockIntegrationServicesExecutableName) -PassThru -Force
                     )
                 )
@@ -281,7 +281,7 @@ try
             {
                 return @(
                     (
-                        New-Object Object |
+                        New-Object -TypeName Object |
                             Add-Member -MemberType NoteProperty -Name 'Service' -Value $mockCurrentSqlAnalysisServiceName -PassThru -Force
                     )
                 )
@@ -290,7 +290,7 @@ try
             {
                 return @(
                     (
-                        New-Object Object |
+                        New-Object -TypeName Object |
                             Add-Member -MemberType NoteProperty -Name 'Service' -Value $mockSQLBrowserServiceName -PassThru -Force
                     )
                 )
@@ -306,7 +306,7 @@ try
             {
                 return @(
                     (
-                        New-Object Object |
+                        New-Object -TypeName Object |
                             Add-Member -MemberType NoteProperty -Name 'Protocol' -Value $mockFirewallRulePort_ReportingServicesNoSslProtocol -PassThru |
                             Add-Member -MemberType NoteProperty -Name 'LocalPort' -Value $mockFirewallRulePort_ReportingServicesNoSslLocalPort -PassThru -Force
                     )
@@ -316,7 +316,7 @@ try
             {
                 return @(
                     (
-                        New-Object Object |
+                        New-Object -TypeName Object |
                             Add-Member -MemberType NoteProperty -Name 'Protocol' -Value $mockFirewallRulePort_ReportingServicesSslProtocol -PassThru |
                             Add-Member -MemberType NoteProperty -Name 'LocalPort' -Value $mockFirewallRulePort_ReportingServicesSslLocalPort -PassThru -Force
                     )
@@ -326,7 +326,7 @@ try
             {
                 return @(
                     (
-                        New-Object Object |
+                        New-Object -TypeName Object |
                             Add-Member -MemberType NoteProperty -Name 'Protocol' -Value $mockFirewallRulePort_IntegrationServicesProtocol -PassThru |
                             Add-Member -MemberType NoteProperty -Name 'LocalPort' -Value $mockFirewallRulePort_IntegrationServicesLocalPort -PassThru -Force
                     )
@@ -385,9 +385,9 @@ try
         }
 
         $mockGetItem_SqlMajorVersion = {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                         Add-Member ScriptProperty VersionInfo {
-                            return New-Object Object |
+                            return New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name 'ProductVersion' -Value ('{0}.0.0000.00000' -f $mockCurrentSqlMajorVersion) -PassThru -Force
                         } -PassThru -Force
         }

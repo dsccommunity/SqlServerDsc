@@ -98,7 +98,7 @@ try
 
         # Mocking 64-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -290,7 +290,7 @@ try
 
             # Mocking 64-bit OS
             Mock -CommandName Get-CimInstance -MockWith {
-                return New-Object Object |
+                return New-Object -TypeName Object |
                     Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
             } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -335,7 +335,7 @@ try
 
         # Mocking 32-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '32-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -518,7 +518,7 @@ try
 
         # Mocking 64-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -647,7 +647,7 @@ try
 
         # Mocking 32-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '32-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -696,7 +696,7 @@ try
 
         # Mocking 64-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -760,7 +760,7 @@ try
 
         # Mocking 32-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '32-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -839,7 +839,7 @@ try
 
         # Mocking 64-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -941,7 +941,7 @@ try
 
         # Mocking 32-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '32-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -1063,7 +1063,7 @@ try
 
         # Mocking 64-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 

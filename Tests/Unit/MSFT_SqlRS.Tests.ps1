@@ -60,7 +60,7 @@ try
         $mockGetWmiObject_ConfigurationSetting_NamedInstance = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $mockDynamicIsInitialized -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
@@ -108,7 +108,7 @@ try
                         Add-Member -MemberType ScriptMethod -Name ListReservedUrls {
                         $script:mockIsMethodCalled_ListReservedUrls = $true
 
-                        return New-Object Object |
+                        return New-Object -TypeName Object |
                             Add-Member -MemberType ScriptProperty -Name 'Application' {
                             return @(
                                 $mockDynamicReportServerApplicationName,
@@ -125,7 +125,7 @@ try
                 ),
                 (
                     # Array is a regression test for issue #819.
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $true -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value 'DummyInstance' -PassThru -Force
@@ -134,7 +134,7 @@ try
         }
 
         $mockGetWmiObject_ConfigurationSetting_DefaultInstance = {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName" -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $false -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockDefaultInstanceName -PassThru |

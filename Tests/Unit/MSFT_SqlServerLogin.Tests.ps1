@@ -193,7 +193,7 @@ try
                 $script:mockWasLoginClassMethodEnableCalled = $true
             } -PassThru -Force
 
-            $mock = New-Object PSObject -Property @{
+            $mock = New-Object -TypeName PSObject -Property @{
                 LoginMode = 'Mixed'
                 Logins = @{
                     $windowsUser.Name = $windowsUser
@@ -862,16 +862,16 @@ try
 
                 It 'Should throw the correct error when creating a SQL Login if the LoginMode is not Mixed' {
                     $mockConnectSQL_LoginModeNormal = {
-                        return New-Object Object |
+                        return New-Object -TypeName Object |
                             Add-Member ScriptProperty Logins {
                             return @{
-                                'Windows\User1' = ( New-Object Object |
+                                'Windows\User1' = ( New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Windows\User1' -PassThru |
                                         Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'WindowsUser' -PassThru |
                                         Add-Member -MemberType ScriptMethod -Name Alter -Value {} -PassThru |
                                         Add-Member -MemberType ScriptMethod -Name Drop -Value {} -PassThru -Force
                                 )
-                                'SqlLogin1' = ( New-Object Object |
+                                'SqlLogin1' = ( New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SqlLogin1' -PassThru |
                                         Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'SqlLogin' -PassThru |
                                         Add-Member -MemberType NoteProperty -Name 'MustChangePassword' -Value $false -PassThru |
@@ -880,7 +880,7 @@ try
                                         Add-Member -MemberType ScriptMethod -Name Alter -Value {} -PassThru |
                                         Add-Member -MemberType ScriptMethod -Name Drop -Value {} -PassThru -Force
                                 )
-                                'Windows\Group1' = ( New-Object Object |
+                                'Windows\Group1' = ( New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Windows\Group1' -PassThru |
                                         Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'WindowsGroup' -PassThru |
                                         Add-Member -MemberType ScriptMethod -Name Alter -Value {} -PassThru |
