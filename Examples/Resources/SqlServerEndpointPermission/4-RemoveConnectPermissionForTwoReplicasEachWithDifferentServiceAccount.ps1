@@ -68,8 +68,6 @@ Configuration Example
             Permission           = 'CONNECT'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
-
-            DependsOn            = '[SqlServerEndpointPermission]SQLConfigureEndpointPermissionPrimary'
         }
 
         SqlServerEndpointPermission RemoveSQLConfigureEndpointPermissionSecondary
@@ -82,8 +80,6 @@ Configuration Example
             Permission           = 'CONNECT'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
-
-            DependsOn            = '[SqlServerEndpointPermission]SQLConfigureEndpointPermissionSecondary'
         }
     }
 
@@ -99,8 +95,6 @@ Configuration Example
             Permission           = 'CONNECT'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
-
-            DependsOn            = '[SqlServerEndpointPermission]SQLConfigureEndpointPermissionPrimary'
         }
 
         SqlServerEndpointPermission RemoveSQLConfigureEndpointPermissionSecondary
@@ -113,8 +107,6 @@ Configuration Example
             Permission           = 'CONNECT'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
-
-            DependsOn            = '[SqlServerEndpointPermission]SQLConfigureEndpointPermissionSecondary'
         }
     }
 }
