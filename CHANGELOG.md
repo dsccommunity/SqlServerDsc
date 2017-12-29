@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Changes to SqlServer
+  - Updated so that named parameters are used for New-Object cmdlet. This was
+    done to follow the style guideline.
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
