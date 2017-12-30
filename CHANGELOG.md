@@ -9,6 +9,7 @@
     ([issue #965](https://github.com/PowerShell/SqlServerDsc/issues/965)).
   - Added a README.md under Tests\Integration to help contributors to write
     integration tests.
+  - Added 'Integration tests' section in the CONTRIBUTING.md.
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
