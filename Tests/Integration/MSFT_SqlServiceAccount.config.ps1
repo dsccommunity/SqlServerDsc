@@ -44,7 +44,7 @@ Configuration MSFT_SqlServiceAccount_DatabaseEngine_DefaultInstance_Config
             ServerName     = $Node.ServerName
             InstanceName   = $Node.DefaultInstanceName
             ServiceType    = $Node.ServiceTypeDatabaseEngine
-            ServiceAccount = $ServiceAccountCredential
+            ServiceAccount = $SqlServiceSecondaryCredential
             RestartService = $true
         }
     }

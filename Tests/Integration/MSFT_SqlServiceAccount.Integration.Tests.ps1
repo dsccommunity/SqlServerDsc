@@ -51,7 +51,11 @@ try
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
     . $configFile
 
-    $mockServiceTypeDatabaseEngine = $ConfigurationData.AllNodes.ServiceTypeDatabaseEngine
+    <#
+        This should have used $ConfigurationData.AllNodes.ServiceTypeDatabaseEngine
+        but due to a bug (see issue #981) we have to set this to 'SqlServer'.
+    #>
+    $mockServiceTypeDatabaseEngine = 'SqlServer'
     $mockServiceTypeSqlServerAgent = $ConfigurationData.AllNodes.ServiceTypeSqlServerAgent
 
     Describe "$($script:DSCResourceName)_Integration" {
@@ -100,8 +104,9 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.ServiceType    | Should -Be $mockServiceTypeDatabaseEngine
-                $resourceCurrentState.ServiceAccount | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlAgentServiceSecondaryAccountUserName -Leaf))
+                $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeDatabaseEngine
+                $resourceCurrentState.ServiceAccount.UserName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlServiceSecondaryAccountUserName -Leaf))
+                $resourceCurrentState.ServiceAccount | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlServiceSecondaryAccountUserName -Leaf))
             }
         }
     }
