@@ -33,6 +33,8 @@
     ([issue #388](https://github.com/PowerShell/SqlServerDsc/issues/388)).
   - Added integration tests for testing Analysis Services Multidimensional mode
     and Tabular mode.
+  - Cleaned up integration tests.
+  - Added integration tests for installing a default instance of Database Engine.
 
 ## 10.0.0.0
 

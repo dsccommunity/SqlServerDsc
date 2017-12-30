@@ -24,6 +24,8 @@ DSCSQL2016 | SQLENGINE,AS,CONN,BC,SDK | MULTIDIMENSIONAL
 DSCTABULAR | AS,CONN,BC,SDK | TABULAR
 MSSQLSERVER | SQLENGINE,CONN,BC,SDK | -
 
+All instances have a SQL Server Agent that is started.
+
 ### Properties for all instances
 
 - **Collation:** Finnish\_Swedish\_CI\_AS
@@ -37,10 +39,14 @@ be used by other integration tests.
 
 User | Password | Permission | Description
 --- | --- | --- | ---
-.\SqlInstall | P@ssw0rd1 | Local administrator | Runs Setup for the default instance
+.\SqlInstall | P@ssw0rd1 | Local administrator. Administrator on Database Engine instance DSCSQL2016*. | Runs Setup for the default instance
 .\SqlAdmin | P@ssw0rd1 | Administrator on all SQL Server instances |
 .\svc-Sql | yig-C^Equ3 | Local user | Runs the SQL Server service.
 .\svc-SqlAgent | yig-C^Equ3 | Local user | Runs the SQL Server Agent service.
+
+*\* This is due to that the integration tests runs the resource SqlAlwaysOnService
+with this user and that means that this user must have permission to access the
+properties `IsClustered` and `IsHadrEnable`.*
 
 ## SqlRS
 
