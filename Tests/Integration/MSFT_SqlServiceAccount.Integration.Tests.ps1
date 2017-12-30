@@ -53,10 +53,12 @@ try
 
     <#
         This should have used $ConfigurationData.AllNodes.ServiceTypeDatabaseEngine
-        but due to a bug (see issue #981) we have to set this to 'SqlServer'.
+        and $ConfigurationData.AllNodes.ServiceTypeSqlServerAgent, but due to a
+        bug (see issue #981) we have to set this to 'SqlServer' and 'SqlAgent'
+        respectively.
     #>
     $mockServiceTypeDatabaseEngine = 'SqlServer'
-    $mockServiceTypeSqlServerAgent = $ConfigurationData.AllNodes.ServiceTypeSqlServerAgent
+    $mockServiceTypeSqlServerAgent = 'SqlAgent'
 
     Describe "$($script:DSCResourceName)_Integration" {
         BeforeAll {
@@ -69,11 +71,11 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlInstallCredential               = $mockSqlInstallCredential
-                        SqlServiceSecondaryCredential      = $mockSqlServiceSecondaryCredential
-                        OutputPath           = $TestDrive
+                        SqlInstallCredential          = $mockSqlInstallCredential
+                        SqlServiceSecondaryCredential = $mockSqlServiceSecondaryCredential
+                        OutputPath                    = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData    = $ConfigurationData
+                        ConfigurationData             = $ConfigurationData
                     }
 
                     & $configurationName @configurationParameters
@@ -105,8 +107,329 @@ try
                 }
 
                 $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeDatabaseEngine
-                $resourceCurrentState.ServiceAccount.UserName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlServiceSecondaryAccountUserName -Leaf))
-                $resourceCurrentState.ServiceAccount | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlServiceSecondaryAccountUserName -Leaf))
+                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlServiceSecondaryAccountUserName -Leaf))
+            }
+        }
+
+        $configurationName = "$($script:DSCResourceName)_SqlServerAgent_DefaultInstance_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        SqlInstallCredential               = $mockSqlInstallCredential
+                        SqlAgentServiceSecondaryCredential = $mockSqlAgentServiceSecondaryCredential
+                        OutputPath                         = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData                  = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $currentConfiguration = Get-DscConfiguration
+
+                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName
+                } | Where-Object -FilterScript {
+                    $_.ResourceId -eq $resourceId
+                }
+
+                $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeSqlServerAgent
+                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlAgentServiceSecondaryAccountUserName -Leaf))
+            }
+        }
+
+        $configurationName = "$($script:DSCResourceName)_DatabaseEngine_DefaultInstance_Restore_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        SqlInstallCredential          = $mockSqlInstallCredential
+                        SqlServicePrimaryCredential = $mockSqlServicePrimaryCredential
+                        OutputPath                    = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData             = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $currentConfiguration = Get-DscConfiguration
+
+                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName
+                } | Where-Object -FilterScript {
+                    $_.ResourceId -eq $resourceId
+                }
+
+                $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeDatabaseEngine
+                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlServicePrimaryAccountUserName -Leaf))
+            }
+        }
+
+        $configurationName = "$($script:DSCResourceName)_SqlServerAgent_DefaultInstance_Restore_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        SqlInstallCredential             = $mockSqlInstallCredential
+                        SqlAgentServicePrimaryCredential = $mockSqlAgentServicePrimaryCredential
+                        OutputPath                       = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData                = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $currentConfiguration = Get-DscConfiguration
+
+                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName
+                } | Where-Object -FilterScript {
+                    $_.ResourceId -eq $resourceId
+                }
+
+                $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeSqlServerAgent
+                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlAgentServicePrimaryAccountUserName -Leaf))
+            }
+        }
+
+        $configurationName = "$($script:DSCResourceName)_DatabaseEngine_NamedInstance_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        SqlInstallCredential          = $mockSqlInstallCredential
+                        SqlServiceSecondaryCredential = $mockSqlServiceSecondaryCredential
+                        OutputPath                    = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData             = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $currentConfiguration = Get-DscConfiguration
+
+                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName
+                } | Where-Object -FilterScript {
+                    $_.ResourceId -eq $resourceId
+                }
+
+                $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeDatabaseEngine
+                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlServiceSecondaryAccountUserName -Leaf))
+            }
+        }
+
+        $configurationName = "$($script:DSCResourceName)_SqlServerAgent_NamedInstance_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        SqlInstallCredential               = $mockSqlInstallCredential
+                        SqlAgentServiceSecondaryCredential = $mockSqlAgentServiceSecondaryCredential
+                        OutputPath                         = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData                  = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $currentConfiguration = Get-DscConfiguration
+
+                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName
+                } | Where-Object -FilterScript {
+                    $_.ResourceId -eq $resourceId
+                }
+
+                $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeSqlServerAgent
+                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlAgentServiceSecondaryAccountUserName -Leaf))
+            }
+        }
+
+        $configurationName = "$($script:DSCResourceName)_DatabaseEngine_NamedInstance_Restore_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        SqlInstallCredential          = $mockSqlInstallCredential
+                        SqlServicePrimaryCredential = $mockSqlServicePrimaryCredential
+                        OutputPath                    = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData             = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $currentConfiguration = Get-DscConfiguration
+
+                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName
+                } | Where-Object -FilterScript {
+                    $_.ResourceId -eq $resourceId
+                }
+
+                $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeDatabaseEngine
+                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlServicePrimaryAccountUserName -Leaf))
+            }
+        }
+
+        $configurationName = "$($script:DSCResourceName)_SqlServerAgent_NamedInstance_Restore_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        SqlInstallCredential             = $mockSqlInstallCredential
+                        SqlAgentServicePrimaryCredential = $mockSqlAgentServicePrimaryCredential
+                        OutputPath                       = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData                = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $currentConfiguration = Get-DscConfiguration
+
+                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName
+                } | Where-Object -FilterScript {
+                    $_.ResourceId -eq $resourceId
+                }
+
+                $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeSqlServerAgent
+                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlAgentServicePrimaryAccountUserName -Leaf))
             }
         }
     }
