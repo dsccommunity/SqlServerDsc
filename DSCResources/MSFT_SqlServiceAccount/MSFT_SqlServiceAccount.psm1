@@ -65,12 +65,12 @@ function Get-TargetResource
     # Replace a domain of '.' with the value for $ServerName
     $serviceAccountName = $serviceObject.ServiceAccount -ireplace '^([\.])\\(.*)$', "$ServerName\`$2"
 
-    # Return a hashtable with the service information
+    # Return a hash table with the service information
     return @{
-        ServerName     = $ServerName
-        InstanceName   = $InstanceName
-        ServiceType    = $serviceObject.Type
-        ServiceAccount = $serviceAccountName
+        ServerName         = $ServerName
+        InstanceName       = $InstanceName
+        ServiceType        = $serviceObject.Type
+        ServiceAccountName = $serviceAccountName
     }
 }
 
@@ -99,7 +99,7 @@ function Get-TargetResource
         Forces the service account to be updated.
 
     .EXAMPLE
-        Test-TargetResource -ServerName $env:COMPUTERNAME -SQLInstaneName MSSQLSERVER -ServiceType DatabaseEngine -ServiceAccount $account
+        Test-TargetResource -ServerName $env:COMPUTERNAME -InstanceName MSSQLSERVER -ServiceType DatabaseEngine -ServiceAccount $account
 
 #>
 function Test-TargetResource
@@ -172,7 +172,7 @@ function Test-TargetResource
         Forces the service account to be updated.
 
     .EXAMPLE
-        Set-TargetResource -ServerName $env:COMPUTERNAME -SQLInstaneName MSSQLSERVER -ServiceType DatabaseEngine -ServiceAccount $account
+        Set-TargetResource -ServerName $env:COMPUTERNAME -InstanceName MSSQLSERVER -ServiceType DatabaseEngine -ServiceAccount $account
 #>
 function Set-TargetResource
 {

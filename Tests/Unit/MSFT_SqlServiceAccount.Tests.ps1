@@ -668,7 +668,7 @@ try
                     $testServiceInformation.ServerName | Should -Be $mockSqlServer
                     $testServiceInformation.InstanceName | Should -Be $mockNamedInstance
                     $testServiceInformation.ServiceType | Should -Be 'SqlServer'
-                    $testServiceInformation.ServiceAccount | Should -Be $mockDesiredServiceAccountName
+                    $testServiceInformation.ServiceAccountName | Should -Be $mockDesiredServiceAccountName
 
                     # Ensure mocks were properly used
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Exactly -Times 1
@@ -705,7 +705,7 @@ try
                     $currentState = Get-TargetResource @defaultGetTargetResourceParameters
 
                     # Validate the service account
-                    $currentState.ServiceAccount | Should -Be $mockLocalServiceAccountName
+                    $currentState.ServiceAccountName | Should -Be $mockLocalServiceAccountName
 
                     # Ensure mocks were properly used
                     Assert-MockCalled -CommandName New-Object -ParameterFilter $mockNewObject_ParameterFilter -Scope It -Exactly -Times 1
@@ -900,10 +900,10 @@ try
                 }
 
                 It 'Should throw the correct exception if SetServiceAccount call fails' {
-                    $newObjectParms = $mockNewObjectParameters_DefaultInstance.Clone()
-                    $newObjectParms.MockWith = $mockNewObject_ManagedComputer_DefaultInstance_SetServiceAccountException
+                    $newObjectParameters = $mockNewObjectParameters_DefaultInstance.Clone()
+                    $newObjectParameters.MockWith = $mockNewObject_ManagedComputer_DefaultInstance_SetServiceAccountException
 
-                    Mock @newObjectParms
+                    Mock @newObjectParameters
 
                     $setTargetResourceParameters = $defaultSetTargetResourceParameters.Clone()
 
@@ -984,10 +984,10 @@ try
                 }
 
                 It 'Should throw the correct exception if SetServiceAccount call fails' {
-                    $newObjectParms = $mockNewObjectParameters_NamedInstance.Clone()
-                    $newObjectParms.MockWith = $mockNewObject_ManagedComputer_NamedInstance_SetServiceAccountException
+                    $newObjectParameters = $mockNewObjectParameters_NamedInstance.Clone()
+                    $newObjectParameters.MockWith = $mockNewObject_ManagedComputer_NamedInstance_SetServiceAccountException
 
-                    Mock @newObjectParms
+                    Mock @newObjectParameters
 
                     $setTargetResourceParameters = $defaultSetTargetResourceParameters.Clone()
 
