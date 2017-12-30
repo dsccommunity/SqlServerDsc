@@ -97,13 +97,21 @@ try
     $mockSqlAdminAccountUserName = "$env:COMPUTERNAME\SqlAdmin"
     $mockSqlAdminCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAdminAccountUserName, $mockSqlAdminAccountPassword
 
-    $mockSqlServiceAccountPassword = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
-    $mockSqlServiceAccountUserName = "$env:COMPUTERNAME\svc-Sql"
-    $mockSqlServiceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlServiceAccountUserName, $mockSqlServiceAccountPassword
+    $mockSqlServicePrimaryAccountPassword = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+    $mockSqlServicePrimaryAccountUserName = "$env:COMPUTERNAME\svc-SqlPrimary"
+    $mockSqlServicePrimaryCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlServicePrimaryAccountUserName, $mockSqlServicePrimaryAccountPassword
 
-    $mockSqlAgentServiceAccountPassword = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
-    $mockSqlAgentServiceAccountUserName = "$env:COMPUTERNAME\svc-SqlAgent"
-    $mockSqlAgentServiceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAgentServiceAccountUserName, $mockSqlAgentServiceAccountPassword
+    $mockSqlAgentServicePrimaryAccountPassword = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+    $mockSqlAgentServicePrimaryAccountUserName = "$env:COMPUTERNAME\svc-SqlAgentPri"
+    $mockSqlAgentServicePrimaryCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAgentServicePrimaryAccountUserName, $mockSqlAgentServicePrimaryAccountPassword
+
+    $mockSqlServiceSecondaryAccountPassword = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+    $mockSqlServiceSecondaryAccountUserName = "$env:COMPUTERNAME\svc-SqlSecondary"
+    $mockSqlServiceSecondaryCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlServiceSecondaryAccountUserName, $mockSqlServiceSecondaryAccountPassword
+
+    $mockSqlAgentServiceSecondaryAccountPassword = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+    $mockSqlAgentServiceSecondaryAccountUserName = "$env:COMPUTERNAME\svc-SqlAgentSec"
+    $mockSqlAgentServiceSecondaryCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAgentServiceSecondaryAccountUserName, $mockSqlAgentServiceSecondaryAccountPassword
 
     Describe "$($script:DSCResourceName)_InstallDatabaseEngineNamedInstanceAsSystem_Integration" {
         BeforeAll {
@@ -116,13 +124,15 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlInstallCredential       = $mockSqlInstallCredential
-                        SqlAdministratorCredential = $mockSqlAdminCredential
-                        SqlServiceCredential       = $mockSqlServiceCredential
-                        SqlAgentServiceCredential  = $mockSqlAgentServiceCredential
-                        OutputPath                 = $TestDrive
+                        SqlInstallCredential               = $mockSqlInstallCredential
+                        SqlAdministratorCredential         = $mockSqlAdminCredential
+                        SqlServicePrimaryCredential        = $mockSqlServicePrimaryCredential
+                        SqlAgentServicePrimaryCredential   = $mockSqlAgentServicePrimaryCredential
+                        SqlServiceSecondaryCredential      = $mockSqlServiceSecondaryCredential
+                        SqlAgentServiceSecondaryCredential = $mockSqlAgentServiceSecondaryCredential
+                        OutputPath                         = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData          = $ConfigurationData
+                        ConfigurationData                  = $ConfigurationData
                     }
 
                     & $configurationName @configurationParameters
@@ -182,7 +192,7 @@ try
 
                 $resourceCurrentState.Action                     | Should -BeNullOrEmpty
                 $resourceCurrentState.AgtSvcAccount              | Should -BeNullOrEmpty
-                $resourceCurrentState.AgtSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlAgentServiceAccountUserName -Leaf))
+                $resourceCurrentState.AgtSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlAgentServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.ASServerMode               | Should -Be $mockAnalysisServicesMultiServerMode
                 $resourceCurrentState.ASBackupDir                | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS13.$mockDatabaseEngineNamedInstanceName\OLAP\Backup")
                 $resourceCurrentState.ASCollation                | Should -Be $mockCollation
@@ -191,10 +201,9 @@ try
                 $resourceCurrentState.ASLogDir                   | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS13.$mockDatabaseEngineNamedInstanceName\OLAP\Log")
                 $resourceCurrentState.ASTempDir                  | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS13.$mockDatabaseEngineNamedInstanceName\OLAP\Temp")
                 $resourceCurrentState.ASSvcAccount               | Should -BeNullOrEmpty
-                $resourceCurrentState.ASSvcAccountUsername       | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlServiceAccountUserName -Leaf))
+                $resourceCurrentState.ASSvcAccountUsername       | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.ASSysAdminAccounts         | Should -Be @(
                     $mockSqlAdminAccountUserName,
-                    $mockSqlInstallAccountUserName,
                     "NT SERVICE\SSASTELEMETRY`$$mockDatabaseEngineNamedInstanceName"
                 )
                 $resourceCurrentState.BrowserSvcStartupType      | Should -BeNullOrEmpty
@@ -225,7 +234,7 @@ try
                 $resourceCurrentState.SQLBackupDir               | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineNamedInstanceName\MSSQL\Backup")
                 $resourceCurrentState.SQLCollation               | Should -Be $mockCollation
                 $resourceCurrentState.SQLSvcAccount              | Should -BeNullOrEmpty
-                $resourceCurrentState.SQLSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlServiceAccountUserName -Leaf))
+                $resourceCurrentState.SQLSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.SQLSysAdminAccounts        | Should -Be @(
                     $mockSqlAdminAccountUserName,
                     $mockSqlInstallAccountUserName,
@@ -253,13 +262,13 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlInstallCredential       = $mockSqlInstallCredential
-                        SqlAdministratorCredential = $mockSqlAdminCredential
-                        SqlServiceCredential       = $mockSqlServiceCredential
-                        SqlAgentServiceCredential  = $mockSqlAgentServiceCredential
-                        OutputPath                 = $TestDrive
+                        SqlInstallCredential             = $mockSqlInstallCredential
+                        SqlAdministratorCredential       = $mockSqlAdminCredential
+                        SqlServicePrimaryCredential      = $mockSqlServicePrimaryCredential
+                        SqlAgentServicePrimaryCredential = $mockSqlAgentServicePrimaryCredential
+                        OutputPath                       = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData          = $ConfigurationData
+                        ConfigurationData                = $ConfigurationData
                     }
 
                     & $configurationName @configurationParameters
@@ -319,7 +328,7 @@ try
 
                 $resourceCurrentState.Action                     | Should -BeNullOrEmpty
                 $resourceCurrentState.AgtSvcAccount              | Should -BeNullOrEmpty
-                $resourceCurrentState.AgtSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlAgentServiceAccountUserName -Leaf))
+                $resourceCurrentState.AgtSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlAgentServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.ASServerMode               | Should -BeNullOrEmpty
                 $resourceCurrentState.ASBackupDir                | Should -BeNullOrEmpty
                 $resourceCurrentState.ASCollation                | Should -BeNullOrEmpty
@@ -358,20 +367,20 @@ try
                 $resourceCurrentState.SQLBackupDir               | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineDefaultInstanceName\MSSQL\Backup")
                 $resourceCurrentState.SQLCollation               | Should -Be $mockCollation
                 $resourceCurrentState.SQLSvcAccount              | Should -BeNullOrEmpty
-                $resourceCurrentState.SQLSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlServiceAccountUserName -Leaf))
+                $resourceCurrentState.SQLSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.SQLSysAdminAccounts        | Should -Be @(
                     $mockSqlAdminAccountUserName,
                     $mockSqlInstallAccountUserName,
-                    "NT SERVICE\MSSQL`$$mockDatabaseEngineDefaultInstanceName",
-                    "NT SERVICE\SQLAgent`$$mockDatabaseEngineDefaultInstanceName",
+                    "NT SERVICE\$mockDatabaseEngineDefaultInstanceName",
+                    "NT SERVICE\SQLSERVERAGENT",
                     'NT SERVICE\SQLWriter',
                     'NT SERVICE\Winmgmt',
                     'sa'
                 )
                 $resourceCurrentState.SQLTempDBDir               | Should -BeNullOrEmpty
                 $resourceCurrentState.SQLTempDBLogDir            | Should -BeNullOrEmpty
-                $resourceCurrentState.SQLUserDBDir               | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineNamedInstanceName\MSSQL\DATA\")
-                $resourceCurrentState.SQLUserDBLogDir            | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineNamedInstanceName\MSSQL\DATA\")
+                $resourceCurrentState.SQLUserDBDir               | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineDefaultInstanceName\MSSQL\DATA\")
+                $resourceCurrentState.SQLUserDBLogDir            | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineDefaultInstanceName\MSSQL\DATA\")
                 $resourceCurrentState.SQMReporting               | Should -BeNullOrEmpty
                 $resourceCurrentState.SuppressReboot             | Should -BeNullOrEmpty
                 $resourceCurrentState.UpdateEnabled              | Should -BeNullOrEmpty
@@ -386,12 +395,12 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlInstallCredential       = $mockSqlInstallCredential
-                        SqlAdministratorCredential = $mockSqlAdminCredential
-                        SqlServiceCredential       = $mockSqlServiceCredential
-                        OutputPath                 = $TestDrive
+                        SqlInstallCredential        = $mockSqlInstallCredential
+                        SqlAdministratorCredential  = $mockSqlAdminCredential
+                        SqlServicePrimaryCredential = $mockSqlServicePrimaryCredential
+                        OutputPath                  = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData          = $ConfigurationData
+                        ConfigurationData           = $ConfigurationData
                     }
 
                     & $configurationName @configurationParameters
@@ -460,10 +469,9 @@ try
                 $resourceCurrentState.ASLogDir                   | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS13.$mockAnalysisServicesTabularInstanceName\OLAP\Log")
                 $resourceCurrentState.ASTempDir                  | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS13.$mockAnalysisServicesTabularInstanceName\OLAP\Temp")
                 $resourceCurrentState.ASSvcAccount               | Should -BeNullOrEmpty
-                $resourceCurrentState.ASSvcAccountUsername       | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlServiceAccountUserName -Leaf))
+                $resourceCurrentState.ASSvcAccountUsername       | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.ASSysAdminAccounts         | Should -Be @(
                     $mockSqlAdminAccountUserName,
-                    $mockSqlInstallAccountUserName,
                     "NT SERVICE\SSASTELEMETRY`$$mockAnalysisServicesTabularInstanceName"
                 )
                 $resourceCurrentState.BrowserSvcStartupType      | Should -BeNullOrEmpty

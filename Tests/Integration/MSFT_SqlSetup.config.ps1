@@ -71,17 +71,27 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
-        $SqlServiceCredential,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
         $SqlAdministratorCredential,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
-        $SqlAgentServiceCredential
+        $SqlServicePrimaryCredential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlAgentServicePrimaryCredential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlServiceSecondaryCredential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlAgentServiceSecondaryCredential
     )
 
     Import-DscResource -ModuleName 'PSDscResources'
@@ -103,18 +113,32 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
             RetryCount       = 10
         }
 
-        User 'CreateSqlServiceAccount'
+        User 'CreateSqlServicePrimaryAccount'
         {
             Ensure   = 'Present'
-            UserName = Split-Path -Path $SqlServiceCredential.UserName -Leaf
-            Password = $SqlServiceCredential
+            UserName = Split-Path -Path $SqlServicePrimaryCredential.UserName -Leaf
+            Password = $SqlServicePrimaryCredential
         }
 
-        User 'CreateSqlAgentServiceAccount'
+        User 'CreateSqlAgentServicePrimaryAccount'
         {
             Ensure   = 'Present'
-            UserName = Split-Path -Path $SqlAgentServiceCredential.UserName -Leaf
-            Password = $SqlAgentServiceCredential
+            UserName = Split-Path -Path $SqlAgentServicePrimaryCredential.UserName -Leaf
+            Password = $SqlAgentServicePrimaryCredential
+        }
+
+        User 'CreateSqlServiceSecondaryAccount'
+        {
+            Ensure   = 'Present'
+            UserName = Split-Path -Path $SqlServiceSecondaryCredential.UserName -Leaf
+            Password = $SqlServicePrimaryCredential
+        }
+
+        User 'CreateSqlAgentServiceSecondaryAccount'
+        {
+            Ensure   = 'Present'
+            UserName = Split-Path -Path $SqlAgentServiceSecondaryCredential.UserName -Leaf
+            Password = $SqlAgentServicePrimaryCredential
         }
 
         User 'CreateSqlInstallAccount'
@@ -151,11 +175,11 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
             SourcePath            = "$($Node.DriveLetter):\"
             BrowserSvcStartupType = 'Automatic'
             SQLCollation          = $Node.Collation
-            SQLSvcAccount         = $SqlServiceCredential
-            AgtSvcAccount         = $SqlAgentServiceCredential
+            SQLSvcAccount         = $SqlServicePrimaryCredential
+            AgtSvcAccount         = $SqlAgentServicePrimaryCredential
             ASServerMode          = $Node.AnalysisServicesMultiServerMode
             ASCollation           = $Node.Collation
-            ASSvcAccount          = $SqlServiceCredential
+            ASSvcAccount          = $SqlServicePrimaryCredential
             InstallSharedDir      = $Node.InstallSharedDir
             InstallSharedWOWDir   = $Node.InstallSharedWOWDir
             UpdateEnabled         = $Node.UpdateEnabled
@@ -179,8 +203,10 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
 
             DependsOn             = @(
                 '[xMountImage]MountIsoMedia'
-                '[User]CreateSqlServiceAccount'
-                '[User]CreateSqlAgentServiceAccount'
+                '[User]CreateSqlServicePrimaryAccount'
+                '[User]CreateSqlAgentServicePrimaryAccount'
+                '[User]CreateSqlServiceSecondaryAccount'
+                '[User]CreateSqlAgentServiceSecondaryAccount'
                 '[User]CreateSqlInstallAccount'
                 '[Group]AddSqlInstallAsAdministrator'
                 '[User]CreateSqlAdminAccount'
@@ -202,17 +228,17 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineDefaultInstanceAsUser_Config
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
-        $SqlServiceCredential,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
         $SqlAdministratorCredential,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
-        $SqlAgentServiceCredential
+        $SqlServicePrimaryCredential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlAgentServicePrimaryCredential
     )
 
     Import-DscResource -ModuleName 'SqlServerDsc'
@@ -220,20 +246,20 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineDefaultInstanceAsUser_Config
     node localhost {
         SqlSetup 'Integration_Test'
         {
-            InstanceName          = $Node.DatabaseEngineDefaultInstanceName
-            Features              = $Node.DatabaseEngineDefaultInstanceFeatures
-            SourcePath            = "$($Node.DriveLetter):\"
-            SQLCollation          = $Node.Collation
-            SQLSvcAccount         = $SqlServiceCredential
-            AgtSvcAccount         = $SqlAgentServiceCredential
-            InstallSharedDir      = $Node.InstallSharedDir
-            InstallSharedWOWDir   = $Node.InstallSharedWOWDir
-            UpdateEnabled         = $Node.UpdateEnabled
-            SuppressReboot        = $Node.SuppressReboot
-            ForceReboot           = $Node.ForceReboot
-            # SQLSysAdminAccounts   = @(
-            #     $SqlAdministratorCredential.UserName
-            # )
+            InstanceName         = $Node.DatabaseEngineDefaultInstanceName
+            Features             = $Node.DatabaseEngineDefaultInstanceFeatures
+            SourcePath           = "$($Node.DriveLetter):\"
+            SQLCollation         = $Node.Collation
+            SQLSvcAccount        = $SqlServicePrimaryCredential
+            AgtSvcAccount        = $SqlAgentServicePrimaryCredential
+            InstallSharedDir     = $Node.InstallSharedDir
+            InstallSharedWOWDir  = $Node.InstallSharedWOWDir
+            UpdateEnabled        = $Node.UpdateEnabled
+            SuppressReboot       = $Node.SuppressReboot
+            ForceReboot          = $Node.ForceReboot
+            SQLSysAdminAccounts  = @(
+                $SqlAdministratorCredential.UserName
+            )
 
             PsDscRunAsCredential = $SqlInstallCredential
         }
@@ -252,12 +278,13 @@ Configuration MSFT_SqlSetup_InstallAnalysisServicesAsSystem_Config
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
-        $SqlServiceCredential,
+        $SqlAdministratorCredential,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential
+        $SqlServicePrimaryCredential
+
     )
 
     Import-DscResource -ModuleName 'SqlServerDsc'
@@ -270,7 +297,7 @@ Configuration MSFT_SqlSetup_InstallAnalysisServicesAsSystem_Config
             SourcePath          = "$($Node.DriveLetter):\"
             ASServerMode        = $Node.AnalysisServicesTabularServerMode
             ASCollation         = $Node.Collation
-            ASSvcAccount        = $SqlServiceCredential
+            ASSvcAccount        = $SqlServicePrimaryCredential
             InstallSharedDir    = $Node.InstallSharedDir
             InstallSharedWOWDir = $Node.InstallSharedWOWDir
             UpdateEnabled       = $Node.UpdateEnabled
