@@ -629,7 +629,7 @@ try
                     $testServiceInformation.ServerName | Should -Be $mockSqlServer
                     $testServiceInformation.InstanceName | Should -Be $mockDefaultInstanceName
                     $testServiceInformation.ServiceType | Should -Be 'SqlServer'
-                    $testServiceInformation.ServiceAccount | Should -Be $mockDefaultServiceAccountName
+                    $testServiceInformation.ServiceAccountName | Should -Be $mockDefaultServiceAccountName
 
                     # Ensure mocks were properly used
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Exactly -Times 1
