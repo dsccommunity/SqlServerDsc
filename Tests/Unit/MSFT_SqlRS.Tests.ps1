@@ -57,7 +57,7 @@ try
             }
         }
 
-        $mockGetWmiObject_ConfigurationSetting_NamedInstance = {
+        $mockGetCimInstance_ConfigurationSetting_NamedInstance = {
             return @(
                 (
                     New-Object -TypeName Object |
@@ -133,7 +133,7 @@ try
             )
         }
 
-        $mockGetWmiObject_ConfigurationSetting_DefaultInstance = {
+        $mockGetCimInstance_ConfigurationSetting_DefaultInstance = {
             return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName" -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $false -PassThru |
@@ -176,18 +176,18 @@ try
             } -PassThru -Force
         }
 
-        $mockGetWmiObject_ConfigurationSetting_ParameterFilter = {
-            $Class -eq 'MSReportServer_ConfigurationSetting'
+        $mockGetCimInstance_ConfigurationSetting_ParameterFilter = {
+            $ClassName -eq 'MSReportServer_ConfigurationSetting'
         }
 
-        $mockGetWmiObject_Language = {
+        $mockGetCimInstance_Language = {
             return @{
                 Language = '1033'
             }
         }
 
-        $mockGetWmiObject_OperatingSystem_ParameterFilter = {
-            $Class -eq 'Win32_OperatingSystem'
+        $mockGetCimInstance_OperatingSystem_ParameterFilter = {
+            $ClassName -eq 'Win32_OperatingSystem'
         }
 
         Describe "SqlRS\Get-TargetResource" -Tag 'Get' {
@@ -214,9 +214,9 @@ try
                 }
 
                 BeforeEach {
-                    Mock -CommandName Get-WmiObject `
-                        -MockWith $mockGetWmiObject_ConfigurationSetting_NamedInstance `
-                        -ParameterFilter $mockGetWmiObject_ConfigurationSetting_ParameterFilter `
+                    Mock -CommandName Get-CimInstance `
+                        -MockWith $mockGetCimInstance_ConfigurationSetting_NamedInstance `
+                        -ParameterFilter $mockGetCimInstance_ConfigurationSetting_ParameterFilter `
                         -Verifiable
                 }
 
@@ -246,9 +246,9 @@ try
                 }
 
                 BeforeEach {
-                    Mock -CommandName Get-WmiObject `
-                        -MockWith $mockGetWmiObject_ConfigurationSetting_DefaultInstance `
-                        -ParameterFilter $mockGetWmiObject_ConfigurationSetting_ParameterFilter `
+                    Mock -CommandName Get-CimInstance `
+                        -MockWith $mockGetCimInstance_ConfigurationSetting_DefaultInstance `
+                        -ParameterFilter $mockGetCimInstance_ConfigurationSetting_ParameterFilter `
                         -Verifiable
 
                     $testParameters = $defaultParameters.Clone()
@@ -334,14 +334,14 @@ try
                     }
 
                     BeforeEach {
-                        Mock -CommandName Get-WmiObject `
-                            -MockWith $mockGetWmiObject_ConfigurationSetting_NamedInstance `
-                            -ParameterFilter $mockGetWmiObject_ConfigurationSetting_ParameterFilter `
+                        Mock -CommandName Get-CimInstance `
+                            -MockWith $mockGetCimInstance_ConfigurationSetting_NamedInstance `
+                            -ParameterFilter $mockGetCimInstance_ConfigurationSetting_ParameterFilter `
                             -Verifiable
 
-                        Mock -CommandName Get-WmiObject `
-                            -MockWith $mockGetWmiObject_Language `
-                            -ParameterFilter $mockGetWmiObject_OperatingSystem_ParameterFilter `
+                        Mock -CommandName Get-CimInstance `
+                            -MockWith $mockGetCimInstance_Language `
+                            -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter `
                             -Verifiable
 
                         # Start each test with each method in correct state.
@@ -364,7 +364,7 @@ try
                         $script:mockIsMethodCalled_SetDatabaseConnection | Should -Be $true
                         $script:mockIsMethodCalled_InitializeReportServer | Should -Be $true
 
-                        Assert-MockCalled -CommandName Get-WmiObject -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
                     }
@@ -382,9 +382,9 @@ try
 
                     Context 'When it is not possible to evaluate OSLanguage' {
                         BeforeEach {
-                            Mock -CommandName Get-WmiObject -MockWith {
+                            Mock -CommandName Get-CimInstance -MockWith {
                                 return $null
-                            } -ParameterFilter $mockGetWmiObject_OperatingSystem_ParameterFilter -Verifiable                        }
+                            } -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter -Verifiable                        }
 
                         It 'Should throw the correct error message' {
                             { Set-TargetResource @defaultParameters } | Should -Throw 'Unable to find WMI object Win32_OperatingSystem.'
@@ -420,14 +420,14 @@ try
                     }
 
                     BeforeEach {
-                        Mock -CommandName Get-WmiObject `
-                            -MockWith $mockGetWmiObject_ConfigurationSetting_NamedInstance `
-                            -ParameterFilter $mockGetWmiObject_ConfigurationSetting_ParameterFilter `
+                        Mock -CommandName Get-CimInstance `
+                            -MockWith $mockGetCimInstance_ConfigurationSetting_NamedInstance `
+                            -ParameterFilter $mockGetCimInstance_ConfigurationSetting_ParameterFilter `
                             -Verifiable
 
-                        Mock -CommandName Get-WmiObject `
-                            -MockWith $mockGetWmiObject_Language `
-                            -ParameterFilter $mockGetWmiObject_OperatingSystem_ParameterFilter `
+                        Mock -CommandName Get-CimInstance `
+                            -MockWith $mockGetCimInstance_Language `
+                            -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter `
                             -Verifiable
 
                         # Start each test with each method in correct state.
@@ -450,7 +450,7 @@ try
                         $script:mockIsMethodCalled_SetDatabaseConnection | Should -Be $false
                         $script:mockIsMethodCalled_InitializeReportServer | Should -Be $false
 
-                        Assert-MockCalled -CommandName Get-WmiObject -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 0 -Scope It
                     }
                 }
@@ -472,14 +472,14 @@ try
                     }
 
                     BeforeEach {
-                        Mock -CommandName Get-WmiObject `
-                            -MockWith $mockGetWmiObject_ConfigurationSetting_DefaultInstance `
-                            -ParameterFilter $mockGetWmiObject_ConfigurationSetting_ParameterFilter `
+                        Mock -CommandName Get-CimInstance `
+                            -MockWith $mockGetCimInstance_ConfigurationSetting_DefaultInstance `
+                            -ParameterFilter $mockGetCimInstance_ConfigurationSetting_ParameterFilter `
                             -Verifiable
 
-                        Mock -CommandName Get-WmiObject `
-                            -MockWith $mockGetWmiObject_Language `
-                            -ParameterFilter $mockGetWmiObject_OperatingSystem_ParameterFilter `
+                        Mock -CommandName Get-CimInstance `
+                            -MockWith $mockGetCimInstance_Language `
+                            -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter `
                             -Verifiable
                     }
 
@@ -494,7 +494,7 @@ try
                         $script:mockIsMethodCalled_SetDatabaseConnection | Should -Be $true
                         $script:mockIsMethodCalled_InitializeReportServer | Should -Be $true
 
-                        Assert-MockCalled -CommandName Get-WmiObject -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
                     }

@@ -10,6 +10,9 @@
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
 - Changes to SqlDatabase
   - Fix minor Script Analyzer warning.
+- Changes to SqlRS
+  - Replaced Get-WmiObject with Get-CimInstance to fix Script Analyzer warnings
+    ([issue #264](https://github.com/PowerShell/SqlServerDsc/issues/264)).
 - Changes to SqlServerNetwork
   - Added sysadmin account parameter usage to the examples.
 - Changes to SqlServerReplication
