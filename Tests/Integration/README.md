@@ -37,12 +37,16 @@ All instances have a SQL Server Agent that is started.
 The following local users are created on the AppVeyor build worker and can
 be used by other integration tests.
 
+> Note: User account names was kept to a maximum of 15 characters.
+
 User | Password | Permission | Description
 --- | --- | --- | ---
-.\SqlInstall | P@ssw0rd1 | Local administrator. Administrator on Database Engine instance DSCSQL2016*. | Runs Setup for the default instance
-.\SqlAdmin | P@ssw0rd1 | Administrator on all SQL Server instances |
-.\svc-Sql | yig-C^Equ3 | Local user | Runs the SQL Server service.
-.\svc-SqlAgent | yig-C^Equ3 | Local user | Runs the SQL Server Agent service.
+.\SqlInstall | P@ssw0rd1 | Local administrator. Administrator of Database Engine instance DSCSQL2016\*. | Runs Setup for the default instance.
+.\SqlAdmin | P@ssw0rd1 | Administrator of all SQL Server instances. |
+.\svc-SqlPrimary | yig-C^Equ3 | Local user. | Runs the SQL Server Agent service.
+.\svc-SqlAgentPri | yig-C^Equ3 | Local user. | Runs the SQL Server Agent service.
+.\svc-SqlSecondary | yig-C^Equ3 | Local user. | Used by other tests, but created here.
+.\svc-SqlAgentSec | yig-C^Equ3 | Local user. | Used by other tests.
 
 *\* This is due to that the integration tests runs the resource SqlAlwaysOnService
 with this user and that means that this user must have permission to access the
@@ -57,7 +61,7 @@ AppVeyor build worker for other integration tests to use.
 
 Instance | Feature | Description
 --- | --- | ---
-DSCRS2016 | RS | The Reporting Services is left initialized, and in working state.
+DSCRS2016 | RS | The Reporting Services is left initialized, and in a working state.
 
 ### Properties for the instance
 
@@ -72,7 +76,7 @@ DSCRS2016 | RS | The Reporting Services is left initialized, and in working stat
 **Run order:** 2
 
 The integration test will change the data, log and backup path of instance
-DSCSQL2016 to the following.
+**DSCSQL2016** to the following.
 
 Data | Log | Backup
 --- | --- | ---
