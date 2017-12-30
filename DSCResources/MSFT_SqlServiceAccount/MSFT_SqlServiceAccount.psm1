@@ -142,9 +142,9 @@ function Test-TargetResource
 
     # Get the current state
     $currentState = Get-TargetResource -ServerName $ServerName -InstanceName $InstanceName -ServiceType $ServiceType -ServiceAccount $ServiceAccount
-    New-VerboseMessage -Message ($script:localizedData.CurrentServiceAccount -f $currentState.ServiceAccount, $ServerName, $InstanceName)
+    New-VerboseMessage -Message ($script:localizedData.CurrentServiceAccount -f $currentState.ServiceAccountName, $ServerName, $InstanceName)
 
-    return ($currentState.ServiceAccount -ieq $ServiceAccount.UserName)
+    return ($currentState.ServiceAccountName -ieq $ServiceAccount.UserName)
 }
 
 <#
