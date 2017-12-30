@@ -372,7 +372,7 @@ one resource, then the functions can also be placed in the common
 [SqlServerDscHelper.psm1](https://github.com/PowerShell/SqlServerDsc/blob/dev/SqlServerDscHelper.psm1)
 module file.
 
-### Tests
+### Unit tests
 
 For a review of a Pull Request (PR) to start, all tests must pass without error.
 If you need help to figure why some test don't pass, just write a comment in the
@@ -386,7 +386,7 @@ cd '<path to cloned repository>\Tests'
 Invoke-Pester
 ```
 
-#### Tests for style check of Markdown files
+#### Unit tests for style check of Markdown files
 
 When sending in a Pull Request (PR) a style check will be performed on all Markdown
 files, and if the tests find any error the build will fail.
@@ -398,7 +398,7 @@ To have npm available you need to install [node.js](https://nodejs.org/en/downlo
 If 'npm' is not available, a warning text will print and the rest of the tests
 will continue run.
 
-#### Tests for examples files
+#### Unit tests for examples files
 
 When sending in a Pull Request (PR) all example files will be tested so they can
 be compiled to a .mof file. If the tests find any errors the build will fail.
@@ -407,6 +407,17 @@ Before the test runs in AppVeyor the module will be copied to the first path of
 To run this test locally, make sure you have the SqlServerDsc module
 deployed to a path where it can be used.
 See `$env:PSModulePath` to view the existing paths.
+
+### Integration tests
+
+Integration tests should be written for resources so they can be validated by
+the automated test framework which is run in AppVeyour when commits are pushed
+to a Pull Request (PR).
+Please see the [Testing Guidelines](https://github.com/PowerShell/DscResources/blob/master/TestsGuidelines.md)
+for common DSC Resource Kit testing guidelines.
+There is also configuration made by existing integration tests that can be reused
+to write integration tests for other resources. That is documented in
+[Integration tests for SqlServerDsc](https://github.com/PowerShell/SqlServerDsc/blob/dev/Tests/Integration/README.md).
 
 #### Using SMO stub classes
 
