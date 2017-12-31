@@ -353,7 +353,6 @@ function Set-TargetResource
                     UserName = $reportingServicesServiceAccountUserName
                     IsRemote = $false
                     IsWindowsUser = $true
-                    Lcid = $language
                 }
             }
 
