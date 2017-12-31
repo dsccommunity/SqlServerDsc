@@ -56,7 +56,14 @@ function Get-TargetResource
             $reportServerVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportServer
             $reportsVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportManager
 
-            $reservedUrls = $reportingServicesData.Configuration.ListReservedUrls()
+            #$reservedUrls = $reportingServicesData.Configuration.ListReservedUrls()
+
+            $invokeRsCimMethodParameters = @{
+                CimInstance = $reportingServicesData.Configuration
+                MethodName = 'ListReservedUrls'
+            }
+
+            $reservedUrls = Invoke-RsCimMethod @invokeRsCimMethodParameters
 
             $reportServerReservedUrl = @()
             $reportsReservedUrl = @()
@@ -120,10 +127,38 @@ function Get-TargetResource
         Report Manager/Report Web App virtual directory name. Optional.
 
     .PARAMETER ReportServerReservedUrl
-        Report Server URL reservations. Optional. If not specified, 'http://+:80' URL reservation will be used.
+        Report Server URL reservations. Optional. If not specified,
+        'http://+:80' URL reservation will be used.
 
     .PARAMETER ReportsReservedUrl
-        Report Manager/Report Web App URL reservations. Optional. If not specified, 'http://+:80' URL reservation will be used.
+        Report Manager/Report Web App URL reservations. Optional.
+        If not specified, 'http://+:80' URL reservation will be used.
+
+    .NOTES
+        To find out the parameter names for the methods in the class
+        MSReportServer_ConfigurationSetting it's easy to list them using the
+        following code. Example for listing
+
+        ```
+        $methodName = 'ReserveUrl'
+        $instanceName = 'SQL2016'
+        $sqlMajorVersion = '13'
+        $getCimClassParameters = @{
+            ClassName = 'MSReportServer_ConfigurationSetting'
+            Namespace = "root\Microsoft\SQLServer\ReportServer\RS_$instanceName\v$sqlMajorVersion\Admin"
+        }
+        (Get-CimClass @getCimClassParameters).CimClassMethods[$methodName].Parameters
+        ```
+
+        Or run the following using the helper function in this code. Make sure
+        to have the helper function loaded in the session.
+
+        ```
+        $methodName = 'ReserveUrl'
+        $instanceName = 'SQL2016'
+        $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
+        $reportingServicesData.Configuration.CimClass.CimClassMethods[$methodName].Parameters
+        ```
 #>
 function Set-TargetResource
 {
@@ -230,30 +265,99 @@ function Set-TargetResource
             if ( $reportingServicesData.Configuration.VirtualDirectoryReportServer -ne $ReportServerVirtualDirectory )
             {
                 New-VerboseMessage -Message "Setting report server virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
-                $null = $reportingServicesData.Configuration.SetVirtualDirectory('ReportServerWebService', $ReportServerVirtualDirectory, $language)
+
+                $invokeRsCimMethodParameters = @{
+                    CimInstance = $reportingServicesData.Configuration
+                    MethodName = 'SetVirtualDirectory'
+                    Arguments = @{
+                        Application = 'ReportServerWebService'
+                        VirtualDirectory = $ReportServerVirtualDirectory
+                        Lcid = $language
+                    }
+                }
+
+                Invoke-RsCimMethod @invokeRsCimMethodParameters
+
                 $ReportServerReservedUrl | ForEach-Object -Process {
                     New-VerboseMessage -Message "Adding report server URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
-                    $null = $reportingServicesData.Configuration.ReserveURL('ReportServerWebService', $_, $language)
+
+                    $invokeRsCimMethodParameters = @{
+                        CimInstance = $reportingServicesData.Configuration
+                        MethodName = 'ReserveUrl'
+                        Arguments = @{
+                            Application = 'ReportServerWebService'
+                            UrlString = $_
+                            Lcid = $language
+                        }
+                    }
+
+                    Invoke-RsCimMethod @invokeRsCimMethodParameters
                 }
             }
 
             if ( $reportingServicesData.Configuration.VirtualDirectoryReportManager -ne $ReportsVirtualDirectory )
             {
                 New-VerboseMessage -Message "Setting reports virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
-                $null = $reportingServicesData.Configuration.SetVirtualDirectory($reportingServicesData.ReportsApplicationName, $ReportsVirtualDirectory, $language)
+
+                $invokeRsCimMethodParameters = @{
+                    CimInstance = $reportingServicesData.Configuration
+                    MethodName = 'SetVirtualDirectory'
+                    Arguments = @{
+                        Application = $reportingServicesData.ReportsApplicationName
+                        VirtualDirectory = $ReportsVirtualDirectory
+                        Lcid = $language
+                    }
+                }
+
+                Invoke-RsCimMethod @invokeRsCimMethodParameters
+
                 $ReportsReservedUrl | ForEach-Object -Process {
                     New-VerboseMessage -Message "Adding reports URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
-                    $null = $reportingServicesData.Configuration.ReserveURL($reportingServicesData.ReportsApplicationName, $_, $language)
+
+                    $invokeRsCimMethodParameters = @{
+                        CimInstance = $reportingServicesData.Configuration
+                        MethodName = 'ReserveUrl'
+                        Arguments = @{
+                            Application = $reportingServicesData.ReportsApplicationName
+                            UrlString = $_
+                            Lcid = $language
+                        }
+                    }
+
+                    Invoke-RsCimMethod @invokeRsCimMethodParameters
                 }
             }
 
-            $reportingServicesDatabaseScript = $reportingServicesData.Configuration.GenerateDatabaseCreationScript($reportingServicesDatabaseName, $language, $false)
+            $invokeRsCimMethodParameters = @{
+                CimInstance = $reportingServicesData.Configuration
+                MethodName = 'GenerateDatabaseCreationScript'
+                Arguments = @{
+                    DatabaseName = $reportingServicesDatabaseName
+                    IsSharePointMode = $false
+                    Lcid = $language
+                }
+            }
+
+            $reportingServicesDatabaseScript = Invoke-RsCimMethod @invokeRsCimMethodParameters
 
             # Determine RS service account
             $reportingServicesServiceAccountUserName = (Get-CimInstance -ClassName Win32_Service | Where-Object -FilterScript {
                     $_.Name -eq $reportingServicesServiceName
                 }).StartName
-            $reportingServicesDatabaseRightsScript = $reportingServicesData.Configuration.GenerateDatabaseRightsScript($reportingServicesServiceAccountUserName, $reportingServicesDatabaseName, $false, $true)
+
+            $invokeRsCimMethodParameters = @{
+                CimInstance = $reportingServicesData.Configuration
+                MethodName = 'GenerateDatabaseRightsScript'
+                Arguments = @{
+                    DatabaseName = $reportingServicesDatabaseName
+                    UserName = $reportingServicesServiceAccountUserName
+                    IsRemote = $false
+                    IsWindowsUser = $true
+                    Lcid = $language
+                }
+            }
+
+            $reportingServicesDatabaseRightsScript = Invoke-RsCimMethod @invokeRsCimMethodParameters
 
             <#
                 Import-SQLPSModule cmdlet will import SQLPS (SQL 2012/14) or SqlServer module (SQL 2016),
@@ -264,8 +368,45 @@ function Set-TargetResource
             Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseScript.Script
             Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseRightsScript.Script
 
-            $null = $reportingServicesData.Configuration.SetDatabaseConnection($reportingServicesConnection, $reportingServicesDatabaseName, 2, '', '')
-            $null = $reportingServicesData.Configuration.InitializeReportServer($reportingServicesData.Configuration.InstallationID)
+            $invokeRsCimMethodParameters = @{
+                CimInstance = $reportingServicesData.Configuration
+                MethodName = 'SetDatabaseConnection'
+                Arguments = @{
+                    Server = $reportingServicesConnection
+                    DatabaseName = $reportingServicesDatabaseName
+                    Username = ''
+                    Password = ''
+
+                    <#
+                        Can be set to either:
+                        0 = Windows
+                        1 = Sql Server
+                        2 = Windows Service (Integrated Security)
+
+                        When set to 2 the Reporting Server Web service will use
+                        either the ASP.NET account or an application pool’s account
+                        and the Windows service account to access the report server
+                        database.
+
+                        See more in the article
+                        https://docs.microsoft.com/en-us/sql/reporting-services/wmi-provider-library-reference/configurationsetting-method-setdatabaseconnection#remarks
+
+                    #>
+                    CredentialsType = 2
+                }
+            }
+
+            Invoke-RsCimMethod @invokeRsCimMethodParameters
+
+            $invokeRsCimMethodParameters = @{
+                CimInstance = $reportingServicesData.Configuration
+                MethodName = 'InitializeReportServer'
+                Arguments = @{
+                    InstallationId = $reportingServicesData.Configuration.InstallationID
+                }
+            }
+
+            Invoke-RsCimMethod @invokeRsCimMethodParameters
 
             Restart-ReportingServicesService -SQLInstanceName $InstanceName
         }
@@ -303,13 +444,43 @@ function Set-TargetResource
                 New-VerboseMessage -Message "Setting report server virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
 
                 $currentConfig.ReportServerReservedUrl | ForEach-Object -Process {
-                    $null = $reportingServicesData.Configuration.RemoveURL('ReportServerWebService', $_, $language)
+                    $invokeRsCimMethodParameters = @{
+                        CimInstance = $reportingServicesData.Configuration
+                        MethodName = 'RemoveURL'
+                        Arguments = @{
+                            Application = 'ReportServerWebService'
+                            UrlString = $_
+                            Lcid = $language
+                        }
+                    }
+
+                    Invoke-RsCimMethod @invokeRsCimMethodParameters
                 }
 
-                $reportingServicesData.Configuration.SetVirtualDirectory('ReportServerWebService', $ReportServerVirtualDirectory, $language)
+                $invokeRsCimMethodParameters = @{
+                    CimInstance = $reportingServicesData.Configuration
+                    MethodName = 'SetVirtualDirectory'
+                    Arguments = @{
+                        Application = 'ReportServerWebService'
+                        VirtualDirectory = $ReportServerVirtualDirectory
+                        Lcid = $language
+                    }
+                }
+
+                Invoke-RsCimMethod @invokeRsCimMethodParameters
 
                 $currentConfig.ReportServerReservedUrl | ForEach-Object -Process {
-                    $null = $reportingServicesData.Configuration.ReserveURL('ReportServerWebService', $_, $language)
+                    $invokeRsCimMethodParameters = @{
+                        CimInstance = $reportingServicesData.Configuration
+                        MethodName = 'ReserveUrl'
+                        Arguments = @{
+                            Application = 'ReportServerWebService'
+                            UrlString = $_
+                            Lcid = $language
+                        }
+                    }
+
+                    Invoke-RsCimMethod @invokeRsCimMethodParameters
                 }
             }
 
@@ -318,13 +489,43 @@ function Set-TargetResource
                 New-VerboseMessage -Message "Setting reports virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
 
                 $currentConfig.ReportsReservedUrl | ForEach-Object -Process {
-                    $null = $reportingServicesData.Configuration.RemoveURL($reportingServicesData.ReportsApplicationName, $_, $language)
+                    $invokeRsCimMethodParameters = @{
+                        CimInstance = $reportingServicesData.Configuration
+                        MethodName = 'RemoveURL'
+                        Arguments = @{
+                            Application = $reportingServicesData.ReportsApplicationName
+                            UrlString = $_
+                            Lcid = $language
+                        }
+                    }
+
+                    Invoke-RsCimMethod @invokeRsCimMethodParameters
                 }
 
-                $reportingServicesData.Configuration.SetVirtualDirectory($reportingServicesData.ReportsApplicationName, $ReportsVirtualDirectory, $language)
+                $invokeRsCimMethodParameters = @{
+                    CimInstance = $reportingServicesData.Configuration
+                    MethodName = 'SetVirtualDirectory'
+                    Arguments = @{
+                        Application = $reportingServicesData.ReportsApplicationName
+                        VirtualDirectory = $ReportsVirtualDirectory
+                        Lcid = $language
+                    }
+                }
+
+                Invoke-RsCimMethod @invokeRsCimMethodParameters
 
                 $currentConfig.ReportsReservedUrl | ForEach-Object -Process {
-                    $null = $reportingServicesData.Configuration.ReserveURL($reportingServicesData.ReportsApplicationName, $_, $language)
+                    $invokeRsCimMethodParameters = @{
+                        CimInstance = $reportingServicesData.Configuration
+                        MethodName = 'ReserveUrl'
+                        Arguments = @{
+                            Application = $reportingServicesData.ReportsApplicationName
+                            UrlString = $_
+                            Lcid = $language
+                        }
+                    }
+
+                    Invoke-RsCimMethod @invokeRsCimMethodParameters
                 }
             }
 
@@ -336,12 +537,32 @@ function Set-TargetResource
             if ( ($null -ne $ReportServerReservedUrl) -and ($null -ne (Compare-Object @compareParameters)) )
             {
                 $currentConfig.ReportServerReservedUrl | ForEach-Object -Process {
-                    $null = $reportingServicesData.Configuration.RemoveURL('ReportServerWebService', $_, $language)
+                    $invokeRsCimMethodParameters = @{
+                        CimInstance = $reportingServicesData.Configuration
+                        MethodName = 'RemoveURL'
+                        Arguments = @{
+                            Application = 'ReportServerWebService'
+                            UrlString = $_
+                            Lcid = $language
+                        }
+                    }
+
+                    Invoke-RsCimMethod @invokeRsCimMethodParameters
                 }
 
                 $ReportServerReservedUrl | ForEach-Object -Process {
                     New-VerboseMessage -Message "Adding report server URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
-                    $null = $reportingServicesData.Configuration.ReserveURL('ReportServerWebService', $_, $language)
+                    $invokeRsCimMethodParameters = @{
+                        CimInstance = $reportingServicesData.Configuration
+                        MethodName = 'ReserveUrl'
+                        Arguments = @{
+                            Application = 'ReportServerWebService'
+                            UrlString = $_
+                            Lcid = $language
+                        }
+                    }
+
+                    Invoke-RsCimMethod @invokeRsCimMethodParameters
                 }
             }
 
@@ -353,12 +574,33 @@ function Set-TargetResource
             if ( ($null -ne $ReportsReservedUrl) -and ($null -ne (Compare-Object @compareParameters)) )
             {
                 $currentConfig.ReportsReservedUrl | ForEach-Object -Process {
-                    $null = $reportingServicesData.Configuration.RemoveURL($reportingServicesData.ReportsApplicationName, $_, $language)
+                    $invokeRsCimMethodParameters = @{
+                        CimInstance = $reportingServicesData.Configuration
+                        MethodName = 'RemoveURL'
+                        Arguments = @{
+                            Application = $reportingServicesData.ReportsApplicationName
+                            UrlString = $_
+                            Lcid = $language
+                        }
+                    }
+
+                    Invoke-RsCimMethod @invokeRsCimMethodParameters
                 }
 
                 $ReportsReservedUrl | ForEach-Object -Process {
                     New-VerboseMessage -Message "Adding reports URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
-                    $null = $reportingServicesData.Configuration.ReserveURL($reportingServicesData.ReportsApplicationName, $_, $language)
+
+                    $invokeRsCimMethodParameters = @{
+                        CimInstance = $reportingServicesData.Configuration
+                        MethodName = 'ReserveUrl'
+                        Arguments = @{
+                            Application = $reportingServicesData.ReportsApplicationName
+                            UrlString = $_
+                            Lcid = $language
+                        }
+                    }
+
+                    Invoke-RsCimMethod @invokeRsCimMethodParameters
                 }
             }
         }
@@ -390,10 +632,12 @@ function Set-TargetResource
         Report Manager/Report Web App virtual directory name. Optional.
 
     .PARAMETER ReportServerReservedUrl
-        Report Server URL reservations. Optional. If not specified, 'http://+:80' URL reservation will be used.
+        Report Server URL reservations. Optional. If not specified,
+        http://+:80' URL reservation will be used.
 
     .PARAMETER ReportsReservedUrl
-        Report Manager/Report Web App URL reservations. Optional. If not specified, 'http://+:80' URL reservation will be used.
+        Report Manager/Report Web App URL reservations. Optional.
+        If not specified, 'http://+:80' URL reservation will be used.
 #>
 function Test-TargetResource
 {
@@ -513,7 +757,8 @@ function Get-ReportingServicesData
             $_.InstanceName -eq $InstanceName
         }
         <#
-            SSRS Web Portal application name changed in SQL Server 2016
+            SQL Server Reporting Services Web Portal application name changed
+            in SQL Server 2016.
             https://docs.microsoft.com/en-us/sql/reporting-services/breaking-changes-in-sql-server-reporting-services-in-sql-server-2016
         #>
         if ( $sqlVersion -ge 13 )
@@ -530,6 +775,106 @@ function Get-ReportingServicesData
         Configuration          = $reportingServicesConfiguration
         ReportsApplicationName = $reportsApplicationName
     }
+}
+
+<#
+    .SYNOPSIS
+        A wrapper for Invoke-CimMethod to be able to handle errors in one place.
+
+    .PARAMETER CimInstance
+        The CIM instance object that contains the method to call.
+
+    .PARAMETER MethodName
+        The method to call in the CIM Instance object.
+
+    .PARAMETER Arguments
+        The arguments that should be
+#>
+function Invoke-RsCimMethod
+{
+    [CmdletBinding()]
+    [OutputType([Microsoft.Management.Infrastructure.CimMethodResult])]
+    param
+    (
+
+        [Parameter(Mandatory = $true)]
+        [Microsoft.Management.Infrastructure.CimInstance]
+        $CimInstance,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $MethodName,
+
+        [Parameter()]
+        [System.Collections.Hashtable]
+        $Arguments
+    )
+
+    $invokeCimMethodParameters = @{
+        MethodName = $MethodName
+        ErrorAction = 'Stop'
+    }
+
+    if ($PSBoundParameters.ContainsKey('Arguments'))
+    {
+        $invokeCimMethodParameters['Arguments'] = $Arguments
+    }
+
+    $invokeCimMethodResult = $CimInstance | Invoke-CimMethod @invokeCimMethodParameters
+    <#
+        Successfully calling the method returns $invokeCimMethodResult.HRESULT -eq 0.
+        If an general error occur in the Invoke-CimMethod, like calling a method
+        that does not exist, returns $null in $invokeCimMethodResult.
+    #>
+    if ($invokeCimMethodResult -and $invokeCimMethodResult.HRESULT -ne 0)
+    {
+        <#
+            Errors that was found during development (and kept here for reference):
+
+            -------------------------------------------------------------------
+            Invoke-CimMethod
+            -------------------------------------------------------------------
+            Error: The parameter is incorrect.
+            Cause: Calling a method without one or more parameters.
+            -------------------------------------------------------------------
+
+            -------------------------------------------------------------------
+            ReserveUrl()
+            -------------------------------------------------------------------
+            Error: The parameter is incorrect. (HRESULT:-2147024809)
+            Cause: For example trying to URL with wrong format ( 'htp://+:80').
+
+            Error: The Url has already been reserved. (HRESULT:-2147220932)
+            Cause: When 'http://+:80' already exist.
+
+            Error: Cannot create a file when that file already exists.
+                   (HRESULT:-2147024713)
+            Cause: Trying to add 'http://+:443' (resulted in error since port 80
+                   is already using http).
+            -------------------------------------------------------------------
+        #>
+
+        if ($invokeCimMethodResult | Get-Member -Name 'ExtendedErrors')
+        {
+            <#
+                The returned object property ExtendedErrors is an array
+                so that needs to be concatenated.
+            #>
+            $errorMessage = $invokeCimMethodResult.ExtendedErrors -join ';'
+        }
+        else
+        {
+            $errorMessage = $invokeCimMethodResult.Error
+        }
+
+        throw 'Method {0}() failed with an error. Error: {1} (HRESULT:{2})' -f @(
+            $MethodName
+            $errorMessage
+            $invokeCimMethodResult.HRESULT
+        )
+    }
+
+    return $invokeCimMethodResult
 }
 
 Export-ModuleMember -Function *-TargetResource
