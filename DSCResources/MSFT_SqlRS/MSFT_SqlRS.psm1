@@ -172,6 +172,17 @@ function Get-TargetResource
         $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
         $reportingServicesData.Configuration.CimClass.CimClassMethods[$methodName].Parameters
         ```
+
+        SecureConnectionLevel:
+        The SecureConnectionLevel value can be 0,1,2 or 3, but since
+        SQL Server 2008 R2 this was changed. So we are just setting it to 0 (off)
+        and 1 (on).
+
+        "In SQL Server 2008 R2, SecureConnectionLevel is made an on/off
+        switch, default value is 0. For any value greater than or equal
+        to 1 passed through SetSecureConnectionLevel method API, SSL
+        is considered on..."
+        https://docs.microsoft.com/en-us/sql/reporting-services/wmi-provider-library-reference/configurationsetting-method-setsecureconnectionlevel
 #>
 function Set-TargetResource
 {
@@ -428,16 +439,6 @@ function Set-TargetResource
             {
                 New-VerboseMessage -Message "Changing value for using SSL to '$UseSsl'."
 
-                <#
-                    The value can be 0,1,2 or 3, but since SQL Server 2008 R2 this
-                    was changed. So we are just setting it to 0 (off) and 1 (on).
-
-                    "In SQL Server 2008 R2, SecureConnectionLevel is made an on/off
-                    switch, default value is 0. For any value greater than or equal
-                    to 1 passed through SetSecureConnectionLevel method API, SSL
-                    is considered on..."
-                    https://docs.microsoft.com/en-us/sql/reporting-services/wmi-provider-library-reference/configurationsetting-method-setsecureconnectionlevel
-                #>
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
                     MethodName = 'SetSecureConnectionLevel'
@@ -649,16 +650,6 @@ function Set-TargetResource
             {
                 New-VerboseMessage -Message "Changing value for using SSL to '$UseSsl'."
 
-                <#
-                    The value can be 0,1,2 or 3, but since SQL Server 2008 R2 this
-                    was changed. So we are just setting it to 0 (off) and 1 (on).
-
-                    "In SQL Server 2008 R2, SecureConnectionLevel is made an on/off
-                    switch, default value is 0. For any value greater than or equal
-                    to 1 passed through SetSecureConnectionLevel method API, SSL
-                    is considered on..."
-                    https://docs.microsoft.com/en-us/sql/reporting-services/wmi-provider-library-reference/configurationsetting-method-setsecureconnectionlevel
-                #>
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
                     MethodName = 'SetSecureConnectionLevel'
