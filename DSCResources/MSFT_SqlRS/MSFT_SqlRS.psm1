@@ -827,32 +827,6 @@ function Invoke-RsCimMethod
     #>
     if ($invokeCimMethodResult -and $invokeCimMethodResult.HRESULT -ne 0)
     {
-        <#
-            Errors that was found during development (and kept here for reference):
-
-            -------------------------------------------------------------------
-            Invoke-CimMethod
-            -------------------------------------------------------------------
-            Error: The parameter is incorrect.
-            Cause: Calling a method without one or more parameters.
-            -------------------------------------------------------------------
-
-            -------------------------------------------------------------------
-            ReserveUrl()
-            -------------------------------------------------------------------
-            Error: The parameter is incorrect. (HRESULT:-2147024809)
-            Cause: For example trying to URL with wrong format ( 'htp://+:80').
-
-            Error: The Url has already been reserved. (HRESULT:-2147220932)
-            Cause: When 'http://+:80' already exist.
-
-            Error: Cannot create a file when that file already exists.
-                   (HRESULT:-2147024713)
-            Cause: Trying to add 'http://+:443' (resulted in error since port 80
-                   is already using http).
-            -------------------------------------------------------------------
-        #>
-
         if ($invokeCimMethodResult | Get-Member -Name 'ExtendedErrors')
         {
             <#

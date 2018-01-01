@@ -699,6 +699,23 @@ Initializes and configures SQL Reporting Services server.
 * [Default configuration](Examples/Resources/SqlRS/1-DefaultConfiguration.ps1)
 * [Custom virtual directories and reserved URLs](Examples/Resources/SqlRS/2-CustomConfiguration.ps1)
 
+#### Error messages
+
+##### Error: The parameter is incorrect (HRESULT:-2147024809)
+
+This is caused for example when trying to add an URL with the wrong format
+i.e. 'htp://+:80'.
+
+##### Error: The Url has already been reserved (HRESULT:-2147220932)
+
+This is caused when the URL is already reserved. For example 'http://+:80'
+already exist.
+
+##### Error: Cannot create a file when that file already exists (HRESULT:-2147024713)
+
+This is caused when trying to add another URL using the same protocol. For example
+trying to add 'http://+:443' when 'http://+:80' already exist.
+
 ### SqlRSSecureConnectionLevel
 
 No description.
