@@ -53,10 +53,17 @@ function Get-TargetResource
 
         if ( $isInitialized )
         {
+            if ( $reportingServicesData.Configuration.SecureConnectionLevel )
+            {
+                $isUsingSsl = $true
+            }
+            else
+            {
+                $isUsingSsl = $false
+            }
+
             $reportServerVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportServer
             $reportsVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportManager
-
-            #$reservedUrls = $reportingServicesData.Configuration.ListReservedUrls()
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
@@ -103,6 +110,7 @@ function Get-TargetResource
         ReportsVirtualDirectory      = $reportsVirtualDirectory
         ReportServerReservedUrl      = $reportServerReservedUrl
         ReportsReservedUrl           = $reportsReservedUrl
+        UseSsl                       = $isUsingSsl
         IsInitialized                = $isInitialized
     }
 }
@@ -133,6 +141,11 @@ function Get-TargetResource
     .PARAMETER ReportsReservedUrl
         Report Manager/Report Web App URL reservations. Optional.
         If not specified, 'http://+:80' URL reservation will be used.
+
+    .PARAMETER ReportsReservedUrl
+        If connections to the Reporting Services must use SSL. If this
+        parameter is not assigned a value, the default is that Reporting
+        Services does not use SSL.
 
     .NOTES
         To find out the parameter names for the methods in the class
@@ -191,7 +204,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String[]]
-        $ReportsReservedUrl
+        $ReportsReservedUrl,
+
+        [Parameter()]
+        [System.Boolean]
+        $UseSsl
     )
 
     $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
@@ -407,6 +424,31 @@ function Set-TargetResource
 
             Invoke-RsCimMethod @invokeRsCimMethodParameters
 
+            if ( $PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl )
+            {
+                New-VerboseMessage -Message "Changing value for using SSL to '$UseSsl'."
+
+                <#
+                    The value can be 0,1,2 or 3, but since SQL Server 2008 R2 this
+                    was changed. So we are just setting it to 0 (off) and 1 (on).
+
+                    "In SQL Server 2008 R2, SecureConnectionLevel is made an on/off
+                    switch, default value is 0. For any value greater than or equal
+                    to 1 passed through SetSecureConnectionLevel method API, SSL
+                    is considered on..."
+                    https://docs.microsoft.com/en-us/sql/reporting-services/wmi-provider-library-reference/configurationsetting-method-setsecureconnectionlevel
+                #>
+                $invokeRsCimMethodParameters = @{
+                    CimInstance = $reportingServicesData.Configuration
+                    MethodName = 'SetSecureConnectionLevel'
+                    Arguments = @{
+                        Level = @(0,1)[$UseSsl]
+                    }
+                }
+
+                Invoke-RsCimMethod @invokeRsCimMethodParameters
+            }
+
             Restart-ReportingServicesService -SQLInstanceName $InstanceName
         }
         else
@@ -602,6 +644,31 @@ function Set-TargetResource
                     Invoke-RsCimMethod @invokeRsCimMethodParameters
                 }
             }
+
+            if ( $PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl )
+            {
+                New-VerboseMessage -Message "Changing value for using SSL to '$UseSsl'."
+
+                <#
+                    The value can be 0,1,2 or 3, but since SQL Server 2008 R2 this
+                    was changed. So we are just setting it to 0 (off) and 1 (on).
+
+                    "In SQL Server 2008 R2, SecureConnectionLevel is made an on/off
+                    switch, default value is 0. For any value greater than or equal
+                    to 1 passed through SetSecureConnectionLevel method API, SSL
+                    is considered on..."
+                    https://docs.microsoft.com/en-us/sql/reporting-services/wmi-provider-library-reference/configurationsetting-method-setsecureconnectionlevel
+                #>
+                $invokeRsCimMethodParameters = @{
+                    CimInstance = $reportingServicesData.Configuration
+                    MethodName = 'SetSecureConnectionLevel'
+                    Arguments = @{
+                        Level = @(0,1)[$UseSsl]
+                    }
+                }
+
+                Invoke-RsCimMethod @invokeRsCimMethodParameters
+            }
         }
     }
 
@@ -637,6 +704,11 @@ function Set-TargetResource
     .PARAMETER ReportsReservedUrl
         Report Manager/Report Web App URL reservations. Optional.
         If not specified, 'http://+:80' URL reservation will be used.
+
+    .PARAMETER ReportsReservedUrl
+        If connections to the Reporting Services must use SSL. If this
+        parameter is not assigned a value, the default is that Reporting
+        Services does not use SSL.
 #>
 function Test-TargetResource
 {
@@ -670,7 +742,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String[]]
-        $ReportsReservedUrl
+        $ReportsReservedUrl,
+
+        [Parameter()]
+        [System.Boolean]
+        $UseSsl
     )
 
     $result = $true
@@ -720,6 +796,12 @@ function Test-TargetResource
     if ( ($null -ne $ReportsReservedUrl) -and ($null -ne (Compare-Object @compareParameters)) )
     {
         New-VerboseMessage -Message "Reports reserved URLs on $DatabaseServerName\$DatabaseInstanceName are $($currentConfig.ReportsReservedUrl -join ', ')), should be $($ReportsReservedUrl -join ', ')."
+        $result = $false
+    }
+
+    if ( $PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl )
+    {
+        New-VerboseMessage -Message "The value for using SSL are not in desired state. Should be '$UseSsl', but was '$($currentConfig.UseSsl)'."
         $result = $false
     }
 

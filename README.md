@@ -140,6 +140,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   functionality to T-SQL.
 * [**SqlServerConfiguration**](#sqlserverconfiguration) resource to manage
   [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx).
+* [**SqlServerDatabaseMail**](#sqlserverdatabasemail) resource
+  to manage SQL Server Database Mail.
 * [**SqlServerEndpoint**](#sqlserverendpoint) resource to ensure database endpoint
   is present or absent.
 * [**SqlServerEndpointPermission**](#sqlserverendpointpermission) Grant or revoke
@@ -667,9 +669,12 @@ Initializes and configures SQL Reporting Services server.
 
 * Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Reporting Services 2008 or later.
+* To use parameter `UseSSL` target machine must be running SQL Server Reporting
+  Services 2008 R2 or later.
 * If `PsDscRunAsCredential` common parameter is used to run the resource, the
-  specified credential must have permissions to connect to the SQL Server specified
-  in `RSSQLServer` and create Reporting Services databases.
+  specified credential must have permissions to connect to the SQL Server instance
+  specified in `DatabaseServerName` and `DatabaseInstanceName`, and have permission
+  to create the Reporting Services databases.
 
 #### Parameters
 
@@ -688,6 +693,9 @@ Initializes and configures SQL Reporting Services server.
 * **`[String[]]` ReportsReservedUrl** _(Write)_: Report Manager/Report Web App URL
   reservations. Optional. If not specified, 'http://+:80' URL reservation will be
   used.
+* **`[Boolean]` UseSsl** _(Write)_: If connections to the Reporting Services must
+  use SSL. If this parameter is not assigned a value, the default is that Reporting
+  Services does not use SSL.
 
 #### Read-Only Properties from Get-TargetResource
 
@@ -819,6 +827,7 @@ No description.
 
 * Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running SQL Server Agent.
 
 #### Parameters
 
@@ -838,6 +847,45 @@ No description.
 
 * [Configure two instances on the same server to have CLR enabled](/Examples/Resources/SqlServerConfiguration/1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1)
 * [Configure a instance to have 'Priority Boost' enabled](/Examples/Resources/SqlServerConfiguration/2-ConfigureInstanceToEnablePriorityBoost.ps1)
+
+### SqlServerDatabaseMail
+
+Resource to manage SQL Server Database Mail.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2008 or later.
+
+#### Parameters
+
+* **`[String]` AccountName** _(Key)_: The name of the Database Mail account.
+* **`[String]` InstanceName** _(Key)_: Name of the SQL instance to be configured.
+* **`[String]` EmailAddress** _(Required)_: The e-mail address from which mail
+  will originate.
+* **`[String]` MailServerName** _(Required)_: The fully qualified domain name of
+  the mail server name to which e-mail are sent.
+* **`[String]` ProfileName** _(Required)_: The profile name of the Database Mail.
+* **`[String]` Ensure** _(Write)_: Specifies the desired state of the Database Mail.
+  When set to 'Present', the Database Mail will be created. When set to 'Absent',
+  the Database Mail will be removed. Default value is 'Present'.
+* **`[String]` ServerName** _(Write)_: The hostname of the SQL Server to be configured.
+  Defaults to $env:COMPUTERNAME.
+* **`[String]` DisplayName** _(Write)_: The display name of the outgoing mail server.
+  Default value is the same value assigned to parameter MailServerName.
+* **`[String]` ReplyToAddress** _(Write)_: The e-mail address to which the receiver
+  of e-mails will reply to. Default value is the same e-mail address assigned to
+  parameter EmailAddress.
+* **`[String]` Description** _(Write)_: The description of the Database Mail.
+* **`[String]` LoggingLevel** _(Write)_: The logging level that the Database Mail
+  will use. If not specified the default logging level is 'Extended'.
+  { Normal | *Extended* | Verbose }.
+* **`[UInt16]` TcpPort** _(Write)_: The TCP port used for communication. Default
+  value is port 25.
+
+#### Examples
+
+None.
 
 ### SqlServerEndpoint
 

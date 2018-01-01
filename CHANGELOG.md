@@ -19,6 +19,8 @@
   - Replaced Get-WmiObject with Get-CimInstance to fix Script Analyzer warnings
     ([issue #264](https://github.com/PowerShell/SqlServerDsc/issues/264)).
   - Refactored the resource to use Invoke-CimMethod.
+  - Added parameter UseSsl which when set to $true forces connections to the
+    Reporting Services to use SSL when connecting.
 - Changes to SqlServerNetwork
   - Added sysadmin account parameter usage to the examples.
 - Changes to SqlServerReplication
