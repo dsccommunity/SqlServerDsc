@@ -703,18 +703,18 @@ Initializes and configures SQL Reporting Services server.
 
 ##### Error: The parameter is incorrect (HRESULT:-2147024809)
 
-This is caused for example when trying to add an URL with the wrong format
+This is for example caused by trying to add an URL with the wrong format
 i.e. 'htp://+:80'.
 
 ##### Error: The Url has already been reserved (HRESULT:-2147220932)
 
-This is caused when the URL is already reserved. For example 'http://+:80'
+This is caused when the URL is already reserved. For example when 'http://+:80'
 already exist.
 
 ##### Error: Cannot create a file when that file already exists (HRESULT:-2147024713)
 
 This is caused when trying to add another URL using the same protocol. For example
-trying to add 'http://+:443' when 'http://+:80' already exist.
+when trying to add 'http://+:443' when 'http://+:80' already exist.
 
 ### SqlRSSecureConnectionLevel
 
