@@ -134,8 +134,6 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   database roles.
 * [**SqlRS**](#sqlrs) configures SQL Server Reporting
   Services to use a database engine in another instance.
-* [**SqlRSSecureConnectionLevel**](#sqlrssecureconnectionlevel) sets
-  the secure connection level for SQL Server Reporting Services.
 * [**SqlScript**](#sqlscript) resource to extend DSC Get/Set/Test
   functionality to T-SQL.
 * [**SqlServerConfiguration**](#sqlserverconfiguration) resource to manage
@@ -723,28 +721,6 @@ already exist.
 
 This is caused when trying to add another URL using the same protocol. For example
 when trying to add 'http://+:443' when 'http://+:80' already exist.
-
-### SqlRSSecureConnectionLevel
-
-No description.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Reporting Services 2008 or later.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: SQL instance to set secure connection level
-  for.
-* **`[Uint16]` SecureConnectionLevel** _(Key)_: SQL Server Reporting Service secure
-  connection level.
-* **`[PSCredential]` SQLAdminCredential** _(Required)_: Credential with administrative
-  permissions to the SQL instance.
-
-#### Examples
-
-None.
 
 ### SqlScript
 
