@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Changes to SqlServer
+- Changes to SqlServerDsc
   - Updated so that named parameters are used for New-Object cmdlet. This was
     done to follow the style guideline.
   - Updated manifest and license to reflect the new year
