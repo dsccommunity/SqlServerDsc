@@ -57,12 +57,12 @@ try
         $mockConnectSQL = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru |
                         Add-Member -MemberType ScriptProperty -Name Roles -Value {
                         return @{
-                            $mockSqlServerRole = ( New-Object Object |
+                            $mockSqlServerRole = ( New-Object -TypeName Object |
                                     Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlServerRole -PassThru |
                                     Add-Member -MemberType ScriptMethod -Name EnumMemberNames -Value {
                                     if ($mockInvalidOperationForEnumMethod)
@@ -116,19 +116,19 @@ try
                         Add-Member -MemberType ScriptProperty -Name Logins -Value {
                         return @{
                             $mockSqlServerLoginOne  = @((
-                                    New-Object Object |
+                                    New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru
                                 ))
                             $mockSqlServerLoginTwo  = @((
-                                    New-Object Object |
+                                    New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru
                                 ))
                             $mockSqlServerLoginTree = @((
-                                    New-Object Object |
+                                    New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru
                                 ))
                             $mockSqlServerLoginFour = @((
-                                    New-Object Object |
+                                    New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru
                                 ))
                         }
@@ -140,7 +140,7 @@ try
         $mockNewObjectServerRole = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlServerRoleAdd -PassThru |
                         Add-Member -MemberType ScriptMethod -Name Create -Value {
                         if ($mockInvalidOperationForCreateMethod)

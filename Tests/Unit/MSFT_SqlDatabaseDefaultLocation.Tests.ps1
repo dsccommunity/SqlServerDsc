@@ -64,7 +64,7 @@ try
         }
 
         $mockConnectSQL = {
-            return New-Object Object -TypeName Microsoft.SqlServer.Management.Smo.Server |
+            return New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server |
                 Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru -Force |
                 Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru -Force |
                 Add-Member -MemberType NoteProperty -Name DefaultFile -Value $mockSqlDataPath -PassThru -Force |

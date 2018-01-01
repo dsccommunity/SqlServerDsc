@@ -74,7 +74,7 @@ try
         Context 'The system is not in the desired state' {
 
             Mock -CommandName Connect-SQL -MockWith {
-                $mock = New-Object PSObject -Property @{
+                $mock = New-Object -TypeName PSObject -Property @{
                     Configuration = @{
                         Properties = @(
                             @{
@@ -111,7 +111,7 @@ try
         Context 'The system is in the desired state' {
 
             Mock -CommandName Connect-SQL -MockWith {
-                $mock = New-Object PSObject -Property @{
+                $mock = New-Object -TypeName PSObject -Property @{
                     Configuration = @{
                         Properties = @(
                             @{
@@ -148,7 +148,7 @@ try
         Context 'Invalid data is supplied' {
 
             Mock -CommandName Connect-SQL -MockWith {
-                $mock = New-Object PSObject -Property @{
+                $mock = New-Object -TypeName PSObject -Property @{
                     Configuration = @{
                         Properties = @(
                             @{
@@ -178,7 +178,7 @@ try
         Mock -CommandName New-VerboseMessage -MockWith {} -ModuleName $script:DSCResourceName
 
         Mock -CommandName Connect-SQL -MockWith {
-            $mock = New-Object PSObject -Property @{
+            $mock = New-Object -TypeName PSObject -Property @{
                 Configuration = @{
                     Properties = @(
                         @{
@@ -210,7 +210,7 @@ try
         Mock -CommandName New-TerminatingError -MockWith {} -ModuleName $script:DSCResourceName
 
         Mock -CommandName Connect-SQL -MockWith {
-            $mock = New-Object PSObject -Property @{
+            $mock = New-Object -TypeName PSObject -Property @{
                 Configuration = @{
                     Properties = @(
                         @{
@@ -229,7 +229,7 @@ try
         } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { $SQLServer -eq 'CLU01' }
 
         Mock -CommandName Connect-SQL -MockWith {
-            $mock = New-Object PSObject -Property @{
+            $mock = New-Object -TypeName PSObject -Property @{
                 Configuration = @{
                     Properties = @(
                         @{

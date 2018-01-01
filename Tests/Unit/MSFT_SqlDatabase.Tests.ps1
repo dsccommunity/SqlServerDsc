@@ -57,26 +57,26 @@ try
         $mockConnectSQL = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name Collation -Value $mockSqlDatabaseCollation -PassThru |
                         Add-Member -MemberType ScriptMethod -Name EnumCollations -Value {
                         return @(
-                            ( New-Object Object |
+                            ( New-Object -TypeName Object |
                                     Add-Member -MemberType NoteProperty Name -Value $mockSqlDatabaseCollation -PassThru
                             ),
-                            ( New-Object Object |
+                            ( New-Object -TypeName Object |
                                     Add-Member -MemberType NoteProperty Name -Value 'SQL_Latin1_General_CP1_CS_AS' -PassThru
                             ),
-                            ( New-Object Object |
+                            ( New-Object -TypeName Object |
                                     Add-Member -MemberType NoteProperty Name -Value 'SQL_Latin1_General_Pref_CP850_CI_AS' -PassThru
                             )
                         )
                     } -PassThru -Force |
                         Add-Member -MemberType ScriptProperty -Name Databases -Value {
                         return @{
-                            $mockSqlDatabaseName = ( New-Object Object |
+                            $mockSqlDatabaseName = ( New-Object -TypeName Object |
                                     Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
                                     Add-Member -MemberType NoteProperty -Name Collation -Value $mockSqlDatabaseCollation -PassThru |
                                     Add-Member -MemberType ScriptMethod -Name Drop -Value {
@@ -107,7 +107,7 @@ try
         $mockNewObjectDatabase = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
                         Add-Member -MemberType NoteProperty -Name Collation -Value '' -PassThru |
                         Add-Member -MemberType ScriptMethod -Name Create -Value {

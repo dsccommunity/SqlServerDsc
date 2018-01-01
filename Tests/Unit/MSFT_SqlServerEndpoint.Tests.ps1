@@ -61,28 +61,28 @@ try
 
         $mockEndpointObject = {
             # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDynamicEndpointName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'EndpointType' -Value $mockDynamicEndpointType -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'ProtocolType' -Value $null -PassThru |
-                Add-Member -MemberType ScriptProperty -Name 'Protocol' {
-                    return New-Object Object |
-                        Add-Member -MemberType ScriptProperty -Name 'Tcp' {
-                            return New-Object Object |
+                Add-Member -MemberType ScriptProperty -Name 'Protocol' -Value {
+                    return New-Object -TypeName Object |
+                        Add-Member -MemberType ScriptProperty -Name 'Tcp' -Value {
+                            return New-Object -TypeName Object |
                                 Add-Member -MemberType NoteProperty -Name 'ListenerPort' -Value $mockDynamicEndpointListenerPort -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'ListenerIPAddress' -Value $mockDynamicEndpointListenerIpAddress -PassThru -Force
                         } -PassThru -Force
                 } -PassThru |
-                Add-Member -MemberType ScriptProperty -Name 'Payload' {
-                    return New-Object Object |
-                        Add-Member -MemberType ScriptProperty -Name 'DatabaseMirroring' {
-                            return New-Object Object |
+                Add-Member -MemberType ScriptProperty -Name 'Payload' -Value {
+                    return New-Object -TypeName Object |
+                        Add-Member -MemberType ScriptProperty -Name 'DatabaseMirroring' -Value {
+                            return New-Object -TypeName Object |
                                 Add-Member -MemberType NoteProperty -Name 'ServerMirroringRole' -Value $null -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'EndpointEncryption' -Value $null -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'EndpointEncryptionAlgorithm' -Value $null -PassThru -Force
                         } -PassThru -Force
                 } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name 'Alter' {
+                Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
                     $script:mockMethodAlterRan = $true
 
                     if ( $this.Name -ne $mockExpectedNameWhenCallingMethod )
@@ -91,7 +91,7 @@ try
                                 -f $mockExpectedNameWhenCallingMethod, $this.Name
                     }
                 } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name 'Drop' {
+                Add-Member -MemberType ScriptMethod -Name 'Drop' -Value {
                     $script:mockMethodDropRan = $true
 
                     if ( $this.Name -ne $mockExpectedNameWhenCallingMethod )
@@ -100,10 +100,10 @@ try
                                 -f $mockExpectedNameWhenCallingMethod, $this.Name
                     }
                 } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name 'Start' {
+                Add-Member -MemberType ScriptMethod -Name 'Start' -Value {
                     $script:mockMethodStartRan = $true
                 } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name 'Create' {
+                Add-Member -MemberType ScriptMethod -Name 'Create' -Value {
                     $script:mockMethodCreateRan = $true
 
                     if ( $this.Name -ne $mockExpectedNameWhenCallingMethod )
@@ -115,8 +115,8 @@ try
         }
 
         $mockConnectSql = {
-            return New-Object Object |
-                Add-Member ScriptProperty Endpoints {
+            return New-Object -TypeName Object |
+                Add-Member -MemberType ScriptProperty -Name Endpoints -Value {
                     return @(
                         @{
                             # This executes the script block $mockEndpointObject and returns a mocked Microsoft.SqlServer.Management.Smo.Endpoint

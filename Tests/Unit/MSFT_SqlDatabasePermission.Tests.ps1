@@ -66,18 +66,18 @@ try
         $mockConnectSQL = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru |
                         Add-Member -MemberType ScriptProperty -Name Databases -Value {
                         return @{
                             $mockSqlDatabaseName = @((
-                                    New-Object Object |
+                                    New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
                                         Add-Member -MemberType ScriptProperty -Name Users -Value {
                                         return @{
                                             $mockSqlServerLogin = @((
-                                                    New-Object Object |
+                                                    New-Object -TypeName Object |
                                                         Add-Member -MemberType ScriptMethod -Name IsMember -Value {
                                                         return $true
                                                     } -PassThru
@@ -99,14 +99,14 @@ try
                                         if ( $SqlServerLogin -eq $mockExpectedSqlServerLogin )
                                         {
                                             $mockEnumDatabasePermissions = @()
-                                            $mockEnumDatabasePermissions += New-Object Object |
+                                            $mockEnumDatabasePermissions += New-Object -TypeName Object |
                                                 Add-Member -MemberType NoteProperty -Name PermissionType -Value $mockSqlPermissionType01 -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name PermissionState -Value $mockSqlPermissionState -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name Grantee -Value $mockExpectedSqlServerLogin -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'Database' -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name ObjectName -Value $mockSqlDatabaseName -PassThru
-                                            $mockEnumDatabasePermissions += New-Object Object |
+                                            $mockEnumDatabasePermissions += New-Object -TypeName Object |
                                                 Add-Member -MemberType NoteProperty -Name PermissionType -Value $mockSqlPermissionType02 -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name PermissionState -Value $mockSqlPermissionState -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name Grantee -Value $mockExpectedSqlServerLogin -PassThru |
@@ -187,11 +187,11 @@ try
                         Add-Member -MemberType ScriptProperty -Name Logins -Value {
                         return @{
                             $mockSqlServerLogin        = @((
-                                    New-Object Object |
+                                    New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name LoginType -Value $mockLoginType -PassThru
                                 ))
                             $mockSqlServerLoginUnknown = @((
-                                    New-Object Object |
+                                    New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name LoginType -Value $mockLoginType -PassThru
                                 ))
                         }
@@ -203,7 +203,7 @@ try
         $mockNewObjectUser = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlServerLoginUnknown -PassThru |
                         Add-Member -MemberType NoteProperty -Name Login -Value $mockSqlServerLoginUnknown -PassThru |
                         Add-Member -MemberType ScriptMethod -Name Create -Value {

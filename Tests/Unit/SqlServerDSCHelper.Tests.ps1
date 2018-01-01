@@ -22,8 +22,8 @@ Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stub
 # Begin Testing
 InModuleScope $script:moduleName {
     $mockNewObject_MicrosoftAnalysisServicesServer = {
-        return New-Object Object |
-                    Add-Member -MemberType ScriptMethod -Name Connect {
+        return New-Object -TypeName Object |
+                    Add-Member -MemberType ScriptMethod -Name Connect -Value {
                         param(
                             [Parameter(Mandatory = $true)]
                             [ValidateNotNullOrEmpty()]
@@ -58,7 +58,7 @@ InModuleScope $script:moduleName {
             $serverInstance = $ArgumentList[0]
         }
 
-        return New-Object Object |
+        return New-Object -TypeName Object |
             Add-Member -MemberType ScriptProperty -Name Status -Value {
                 if ($mockExpectedDatabaseEngineInstance -eq 'MSSQLSERVER')
                 {
@@ -79,12 +79,12 @@ InModuleScope $script:moduleName {
                 }
             } -PassThru |
             Add-Member -MemberType NoteProperty -Name ConnectionContext -Value (
-                New-Object Object |
+                New-Object -TypeName Object |
                     Add-Member -MemberType NoteProperty -Name ServerInstance -Value $serverInstance -PassThru |
                     Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
                     Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
                     Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
-                    Add-Member -MemberType ScriptMethod -Name Connect {
+                    Add-Member -MemberType ScriptMethod -Name Connect -Value {
                         if ($mockExpectedDatabaseEngineInstance -eq 'MSSQLSERVER')
                         {
                             $mockExpectedServiceInstance = $mockExpectedDatabaseEngineServer
@@ -535,7 +535,7 @@ InModuleScope $script:moduleName {
         $mockInvokeQueryClusterServicePermissionsSet = @() # Will be set dynamically in the check
 
         $mockInvokeQueryClusterServicePermissionsResult = {
-            return New-Object PSObject -Property @{
+            return New-Object -TypeName PSObject -Property @{
                 Tables = @{
                     Rows = @{
                         permission_name = $mockInvokeQueryClusterServicePermissionsSet
@@ -597,7 +597,7 @@ InModuleScope $script:moduleName {
     }
 
     $mockGetModule = {
-        return New-Object PSObject -Property @{
+        return New-Object -TypeName PSObject -Property @{
             Name = $mockModuleNameToImport
         }
     }
@@ -713,7 +713,7 @@ InModuleScope $script:moduleName {
     $mockGetItemProperty_MicrosoftSQLServer_InstanceNames_SQL = {
         return @(
             (
-                New-Object Object |
+                New-Object -TypeName Object |
                     Add-Member -MemberType NoteProperty -Name $mockInstanceName -Value $mockInstance_InstanceId -PassThru -Force
             )
         )
@@ -722,7 +722,7 @@ InModuleScope $script:moduleName {
     $mockGetItemProperty_MicrosoftSQLServer_FullInstanceId_Setup = {
         return @(
             (
-                New-Object Object |
+                New-Object -TypeName Object |
                     Add-Member -MemberType NoteProperty -Name 'Version' -Value "$($mockSqlMajorVersion).0.4001.0" -PassThru -Force
             )
         )
@@ -769,7 +769,7 @@ InModuleScope $script:moduleName {
                 Mock -CommandName Get-ItemProperty `
                     -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_FullInstanceId_Setup `
                     -MockWith {
-                        return New-Object Object
+                        return New-Object -TypeName Object
                     } -Verifiable
 
                 $mockCorrectErrorMessage = ($script:localizedData.SqlServerVersionIsInvalid -f $mockInstanceName)
@@ -912,7 +912,7 @@ InModuleScope $script:moduleName {
 
             $mock = @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'DomainInstanceName' -Value $SQLServer -PassThru
                 )
             )
@@ -979,7 +979,7 @@ InModuleScope $script:moduleName {
 
                 $mock = @(
                     (
-                        New-Object Object |
+                        New-Object -TypeName Object |
                             Add-Member -MemberType NoteProperty -Name 'Version' -Value $mockSqlVersion -PassThru
                     )
                 )
