@@ -50,6 +50,38 @@ try
         $mockVirtualDirectoryReportManagerName = 'Reports_SQL2016'
         $mockVirtualDirectoryReportServerName = 'ReportServer_SQL2016'
 
+        $mockInvokeCimMethod = {
+            throw 'Should not call Invoke-CimMethod directly, should call the wrapper Invoke-RsCimMethod.'
+        }
+
+        $mockInvokeRsCimMethod_ListReservedUrls = {
+            return New-Object -TypeName Object |
+                Add-Member -MemberType ScriptProperty -Name 'Application' -Value {
+                return @(
+                    $mockDynamicReportServerApplicationName,
+                    $mockDynamicReportsApplicationName
+                )
+            } -PassThru |
+                Add-Member -MemberType ScriptProperty -Name 'UrlString' -Value {
+                return @(
+                    $mockDynamicReportsApplicationUrlString,
+                    $mockDynamicReportServerApplicationUrlString
+                )
+            } -PassThru -Force
+        }
+
+        $mockInvokeRsCimMethod_GenerateDatabaseCreationScript = {
+            return @{
+                Script = 'select * from something'
+            }
+        }
+
+        $mockInvokeRsCimMethod_GenerateDatabaseRightsScript = {
+            return @{
+                Script = 'select * from something'
+            }
+        }
+
         $mockGetItemProperty = {
             return @{
                 InstanceName = $mockInstanceName
@@ -57,71 +89,17 @@ try
             }
         }
 
-        $mockGetWmiObject_ConfigurationSetting_NamedInstance = {
+        $mockGetCimInstance_ConfigurationSetting_NamedInstance = {
             return @(
                 (
-                    New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList @(
+                        'MSReportServer_ConfigurationSetting'
+                        'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v13/Admin'
+                    ) | Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $mockDynamicIsInitialized -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name SetVirtualDirectory -Value {
-                        $script:mockIsMethodCalled_SetVirtualDirectory = $true
-
-                        return $null
-                    } -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name ReserveURL -Value {
-                        $script:mockIsMethodCalled_ReserveURL = $true
-
-                        return $null
-                    } -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name GenerateDatabaseCreationScript -Value {
-                        $script:mockIsMethodCalled_GenerateDatabaseCreationScript = $true
-
-                        return @{
-                            Script = 'select * from something'
-                        }
-                    } -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name GenerateDatabaseRightsScript -Value {
-                        $script:mockIsMethodCalled_GenerateDatabaseRightsScript = $true
-
-                        return @{
-                            Script = 'select * from something'
-                        }
-                    } -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name SetDatabaseConnection -Value {
-                        $script:mockIsMethodCalled_SetDatabaseConnection = $true
-
-                        return $null
-                    } -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name InitializeReportServer -Value {
-                        $script:mockIsMethodCalled_InitializeReportServer = $true
-
-                        return $null
-                    } -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name RemoveURL -Value {
-                        $script:mockIsMethodCalled_RemoveURL = $true
-
-                        return $null
-                    } -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name ListReservedUrls -Value {
-                        $script:mockIsMethodCalled_ListReservedUrls = $true
-
-                        return New-Object -TypeName Object |
-                            Add-Member -MemberType ScriptProperty -Name 'Application' -Value {
-                            return @(
-                                $mockDynamicReportServerApplicationName,
-                                $mockDynamicReportsApplicationName
-                            )
-                        } -PassThru |
-                            Add-Member -MemberType ScriptProperty -Name 'UrlString' -Value {
-                            return @(
-                                $mockDynamicReportsApplicationUrlString,
-                                $mockDynamicReportServerApplicationUrlString
-                            )
-                        } -PassThru -Force
-                    } -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru -Force
                 ),
                 (
                     # Array is a regression test for issue #819.
@@ -133,61 +111,29 @@ try
             )
         }
 
-        $mockGetWmiObject_ConfigurationSetting_DefaultInstance = {
-            return New-Object -TypeName Object |
-                Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName" -PassThru |
+        $mockGetCimInstance_ConfigurationSetting_DefaultInstance = {
+            return New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList @(
+                'MSReportServer_ConfigurationSetting'
+                'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v13/Admin'
+            ) | Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName" -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $false -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockDefaultInstanceName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
-                Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru |
-                Add-Member -MemberType ScriptMethod -Name SetVirtualDirectory -Value {
-                $script:mockIsMethodCalled_SetVirtualDirectory = $true
-
-                return $null
-            } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name ReserveURL -Value {
-                $script:mockIsMethodCalled_ReserveURL = $true
-
-                return $null
-            } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name GenerateDatabaseCreationScript -Value {
-                $script:mockIsMethodCalled_GenerateDatabaseCreationScript = $true
-
-                return @{
-                    Script = 'select * from something'
-                }
-            } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name GenerateDatabaseRightsScript -Value {
-                $script:mockIsMethodCalled_GenerateDatabaseRightsScript = $true
-
-                return @{
-                    Script = 'select * from something'
-                }
-            } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name SetDatabaseConnection -Value {
-                $script:mockIsMethodCalled_SetDatabaseConnection = $true
-
-                return $null
-            } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name InitializeReportServer -Value {
-                $script:mockIsMethodCalled_InitializeReportServer = $true
-
-                return $null
-            } -PassThru -Force
+                Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru -Force
         }
 
-        $mockGetWmiObject_ConfigurationSetting_ParameterFilter = {
-            $Class -eq 'MSReportServer_ConfigurationSetting'
+        $mockGetCimInstance_ConfigurationSetting_ParameterFilter = {
+            $ClassName -eq 'MSReportServer_ConfigurationSetting'
         }
 
-        $mockGetWmiObject_Language = {
+        $mockGetCimInstance_Language = {
             return @{
                 Language = '1033'
             }
         }
 
-        $mockGetWmiObject_OperatingSystem_ParameterFilter = {
-            $Class -eq 'Win32_OperatingSystem'
+        $mockGetCimInstance_OperatingSystem_ParameterFilter = {
+            $ClassName -eq 'Win32_OperatingSystem'
         }
 
         Describe "SqlRS\Get-TargetResource" -Tag 'Get' {
@@ -195,6 +141,15 @@ try
                 $mockDynamic_SqlBuildVersion = '13.0.4001.0'
 
                 Mock -CommandName Get-ItemProperty -MockWith $mockGetItemProperty -Verifiable
+                Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_ListReservedUrls -ParameterFilter {
+                    $MethodName -eq 'ListReservedUrls'
+                } -Verifiable
+
+                <#
+                    This is mocked here so that no calls are made to it directly,
+                    or if any mock of Invoke-RsCimMethod are wrong.
+                #>
+                Mock -CommandName Invoke-CimMethod -MockWith $mockInvokeCimMethod
 
                 $defaultParameters = @{
                     InstanceName         = $mockNamedInstanceName
@@ -214,9 +169,9 @@ try
                 }
 
                 BeforeEach {
-                    Mock -CommandName Get-WmiObject `
-                        -MockWith $mockGetWmiObject_ConfigurationSetting_NamedInstance `
-                        -ParameterFilter $mockGetWmiObject_ConfigurationSetting_ParameterFilter `
+                    Mock -CommandName Get-CimInstance `
+                        -MockWith $mockGetCimInstance_ConfigurationSetting_NamedInstance `
+                        -ParameterFilter $mockGetCimInstance_ConfigurationSetting_ParameterFilter `
                         -Verifiable
                 }
 
@@ -237,6 +192,10 @@ try
                     $resultGetTargetResource.ReportsVirtualDirectory | Should -Be $mockVirtualDirectoryReportManagerName
                     $resultGetTargetResource.ReportServerReservedUrl | Should -Be $mockReportServerApplicationUrl
                     $resultGetTargetResource.ReportsReservedUrl | Should -Be $mockReportsApplicationUrl
+
+                    Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                        $MethodName -eq 'ListReservedUrls'
+                    } -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -246,9 +205,9 @@ try
                 }
 
                 BeforeEach {
-                    Mock -CommandName Get-WmiObject `
-                        -MockWith $mockGetWmiObject_ConfigurationSetting_DefaultInstance `
-                        -ParameterFilter $mockGetWmiObject_ConfigurationSetting_ParameterFilter `
+                    Mock -CommandName Get-CimInstance `
+                        -MockWith $mockGetCimInstance_ConfigurationSetting_DefaultInstance `
+                        -ParameterFilter $mockGetCimInstance_ConfigurationSetting_ParameterFilter `
                         -Verifiable
 
                     $testParameters = $defaultParameters.Clone()
@@ -272,6 +231,10 @@ try
                     $resultGetTargetResource.ReportsVirtualDirectory | Should -BeNullOrEmpty
                     $resultGetTargetResource.ReportServerReservedUrl | Should -BeNullOrEmpty
                     $resultGetTargetResource.ReportsReservedUrl | Should -BeNullOrEmpty
+
+                    Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                        $MethodName -eq 'ListReservedUrls'
+                    } -Exactly -Times 0 -Scope It
                 }
 
                 # Regression test for issue #822.
@@ -314,6 +277,25 @@ try
                 Mock -CommandName Invoke-Sqlcmd -Verifiable
                 Mock -CommandName Get-ItemProperty -MockWith $mockGetItemProperty -Verifiable
                 Mock -CommandName Restart-ReportingServicesService -Verifiable
+                Mock -CommandName Invoke-RsCimMethod -Verifiable
+                Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_GenerateDatabaseCreationScript -ParameterFilter {
+                    $MethodName -eq 'GenerateDatabaseCreationScript'
+                }
+
+                Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_GenerateDatabaseRightsScript -ParameterFilter {
+                    $MethodName -eq 'GenerateDatabaseRightsScript'
+                }
+
+                <#
+                    This is mocked here so that no calls are made to it directly,
+                    or if any mock of Invoke-RsCimMethod are wrong.
+                #>
+                Mock -CommandName Invoke-CimMethod -MockWith $mockInvokeCimMethod
+
+                $mockDynamicReportServerApplicationName = $mockReportServerApplicationName
+                $mockDynamicReportsApplicationName = $mockReportsApplicationName
+                $mockDynamicReportsApplicationUrlString = $mockReportsApplicationUrl
+                $mockDynamicReportServerApplicationUrlString = $mockReportServerApplicationUrl
             }
 
             Context 'When the system is not in the desired state' {
@@ -334,37 +316,57 @@ try
                     }
 
                     BeforeEach {
-                        Mock -CommandName Get-WmiObject `
-                            -MockWith $mockGetWmiObject_ConfigurationSetting_NamedInstance `
-                            -ParameterFilter $mockGetWmiObject_ConfigurationSetting_ParameterFilter `
+                        Mock -CommandName Get-CimInstance `
+                            -MockWith $mockGetCimInstance_ConfigurationSetting_NamedInstance `
+                            -ParameterFilter $mockGetCimInstance_ConfigurationSetting_ParameterFilter `
                             -Verifiable
 
-                        Mock -CommandName Get-WmiObject `
-                            -MockWith $mockGetWmiObject_Language `
-                            -ParameterFilter $mockGetWmiObject_OperatingSystem_ParameterFilter `
+                        Mock -CommandName Get-CimInstance `
+                            -MockWith $mockGetCimInstance_Language `
+                            -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter `
                             -Verifiable
-
-                        # Start each test with each method in correct state.
-                        $script:mockIsMethodCalled_GenerateDatabaseCreationScript = $false
-                        $script:mockIsMethodCalled_GenerateDatabaseRightsScript = $false
-                        $script:mockIsMethodCalled_SetVirtualDirectory = $false
-                        $script:mockIsMethodCalled_ReserveURL = $false
-                        $script:mockIsMethodCalled_SetDatabaseConnection = $false
-                        $script:mockIsMethodCalled_InitializeReportServer = $false
                     }
 
                     It 'Should configure Reporting Service without throwing an error' {
                         { Set-TargetResource @defaultParameters } | Should -Not -Throw
 
-                        # Test so each mock of methods was called.
-                        $script:mockIsMethodCalled_GenerateDatabaseRightsScript | Should -Be $true
-                        $script:mockIsMethodCalled_GenerateDatabaseCreationScript | Should -Be $true
-                        $script:mockIsMethodCalled_SetVirtualDirectory | Should -Be $true
-                        $script:mockIsMethodCalled_ReserveURL | Should -Be $true
-                        $script:mockIsMethodCalled_SetDatabaseConnection | Should -Be $true
-                        $script:mockIsMethodCalled_InitializeReportServer | Should -Be $true
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'RemoveURL'
+                        } -Exactly -Times 0 -Scope It
 
-                        Assert-MockCalled -CommandName Get-WmiObject -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'InitializeReportServer'
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'SetDatabaseConnection'
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'GenerateDatabaseRightsScript'
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'GenerateDatabaseCreationScript'
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportServerApplicationName
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportsApplicationName
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
                     }
@@ -382,9 +384,9 @@ try
 
                     Context 'When it is not possible to evaluate OSLanguage' {
                         BeforeEach {
-                            Mock -CommandName Get-WmiObject -MockWith {
+                            Mock -CommandName Get-CimInstance -MockWith {
                                 return $null
-                            } -ParameterFilter $mockGetWmiObject_OperatingSystem_ParameterFilter -Verifiable                        }
+                            } -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter -Verifiable                        }
 
                         It 'Should throw the correct error message' {
                             { Set-TargetResource @defaultParameters } | Should -Throw 'Unable to find WMI object Win32_OperatingSystem.'
@@ -420,37 +422,61 @@ try
                     }
 
                     BeforeEach {
-                        Mock -CommandName Get-WmiObject `
-                            -MockWith $mockGetWmiObject_ConfigurationSetting_NamedInstance `
-                            -ParameterFilter $mockGetWmiObject_ConfigurationSetting_ParameterFilter `
+                        Mock -CommandName Get-CimInstance `
+                            -MockWith $mockGetCimInstance_ConfigurationSetting_NamedInstance `
+                            -ParameterFilter $mockGetCimInstance_ConfigurationSetting_ParameterFilter `
                             -Verifiable
 
-                        Mock -CommandName Get-WmiObject `
-                            -MockWith $mockGetWmiObject_Language `
-                            -ParameterFilter $mockGetWmiObject_OperatingSystem_ParameterFilter `
+                        Mock -CommandName Get-CimInstance `
+                            -MockWith $mockGetCimInstance_Language `
+                            -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter `
                             -Verifiable
-
-                        # Start each test with each method in correct state.
-                        $script:mockIsMethodCalled_GenerateDatabaseCreationScript = $false
-                        $script:mockIsMethodCalled_GenerateDatabaseRightsScript = $false
-                        $script:mockIsMethodCalled_SetVirtualDirectory = $false
-                        $script:mockIsMethodCalled_ReserveURL = $false
-                        $script:mockIsMethodCalled_SetDatabaseConnection = $false
-                        $script:mockIsMethodCalled_InitializeReportServer = $false
                     }
 
                     It 'Should configure Reporting Service without throwing an error' {
                         { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                        # Test so each mock of methods was called.
-                        $script:mockIsMethodCalled_GenerateDatabaseRightsScript | Should -Be $false
-                        $script:mockIsMethodCalled_GenerateDatabaseCreationScript | Should -Be $false
-                        $script:mockIsMethodCalled_SetVirtualDirectory | Should -Be $true
-                        $script:mockIsMethodCalled_ReserveURL | Should -Be $true
-                        $script:mockIsMethodCalled_SetDatabaseConnection | Should -Be $false
-                        $script:mockIsMethodCalled_InitializeReportServer | Should -Be $false
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportServerApplicationName
+                        } -Exactly -Times 2 -Scope It
 
-                        Assert-MockCalled -CommandName Get-WmiObject -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportsApplicationName
+                        } -Exactly -Times 2 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'InitializeReportServer'
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'SetDatabaseConnection'
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'GenerateDatabaseRightsScript'
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'GenerateDatabaseCreationScript'
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportServerApplicationName
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportsApplicationName
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
+                        } -Exactly -Times 2 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
+                        } -Exactly -Times 2 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 0 -Scope It
                     }
                 }
@@ -472,29 +498,57 @@ try
                     }
 
                     BeforeEach {
-                        Mock -CommandName Get-WmiObject `
-                            -MockWith $mockGetWmiObject_ConfigurationSetting_DefaultInstance `
-                            -ParameterFilter $mockGetWmiObject_ConfigurationSetting_ParameterFilter `
+                        Mock -CommandName Get-CimInstance `
+                            -MockWith $mockGetCimInstance_ConfigurationSetting_DefaultInstance `
+                            -ParameterFilter $mockGetCimInstance_ConfigurationSetting_ParameterFilter `
                             -Verifiable
 
-                        Mock -CommandName Get-WmiObject `
-                            -MockWith $mockGetWmiObject_Language `
-                            -ParameterFilter $mockGetWmiObject_OperatingSystem_ParameterFilter `
+                        Mock -CommandName Get-CimInstance `
+                            -MockWith $mockGetCimInstance_Language `
+                            -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter `
                             -Verifiable
                     }
 
                     It 'Should configure Reporting Service without throwing an error' {
                         { Set-TargetResource @defaultParameters } | Should -Not -Throw
 
-                        # Test so each mock of methods was called.
-                        $script:mockIsMethodCalled_GenerateDatabaseRightsScript | Should -Be $true
-                        $script:mockIsMethodCalled_GenerateDatabaseCreationScript | Should -Be $true
-                        $script:mockIsMethodCalled_SetVirtualDirectory | Should -Be $true
-                        $script:mockIsMethodCalled_ReserveURL | Should -Be $true
-                        $script:mockIsMethodCalled_SetDatabaseConnection | Should -Be $true
-                        $script:mockIsMethodCalled_InitializeReportServer | Should -Be $true
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'RemoveURL'
+                        } -Exactly -Times 0 -Scope It
 
-                        Assert-MockCalled -CommandName Get-WmiObject -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'InitializeReportServer'
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'SetDatabaseConnection'
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'GenerateDatabaseRightsScript'
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'GenerateDatabaseCreationScript'
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportServerApplicationName
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportsApplicationNameLegacy
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationNameLegacy
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
                     }
@@ -642,6 +696,111 @@ try
                 It 'Should return state as in desired state' {
                     $resultTestTargetResource = Test-TargetResource @defaultParameters
                     $resultTestTargetResource | Should -Be $true
+                }
+            }
+
+            Assert-VerifiableMock
+        }
+
+        Describe "SqlRS\Invoke-RsCimMethod" -Tag 'Helper' {
+            BeforeAll {
+                $cimInstance = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList @(
+                    'MSReportServer_ConfigurationSetting'
+                    'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v13/Admin'
+                )
+            }
+
+            Context 'When calling a method that execute successfully' {
+                BeforeAll {
+                    Mock -CommandName Invoke-CimMethod -MockWith {
+                        return @{
+                            HRESULT = 0
+                        }
+                    } -Verifiable
+                }
+
+                Context 'When calling Invoke-CimMethod without arguments' {
+                    It 'Should call Invoke-CimMethod without throwing an error' {
+                        $invokeRsCimMethodParameters = @{
+                            CimInstance = $cimInstance
+                            MethodName  = 'AnyMethod'
+                        }
+
+                        $resultTestTargetResource = Invoke-RsCimMethod @invokeRsCimMethodParameters
+                        $resultTestTargetResource.HRESULT | Should -Be 0
+
+                        Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                            $MethodName -eq 'AnyMethod' -and $Arguments -eq $null
+                        } -Exactly -Times 1
+                    }
+                }
+
+                Context 'When calling Invoke-CimMethod with arguments' {
+                    It 'Should call Invoke-CimMethod without throwing an error' {
+                        $invokeRsCimMethodParameters = @{
+                            CimInstance = $cimInstance
+                            MethodName  = 'AnyMethod'
+                            Arguments   = @{
+                                Argument1 = 'ArgumentValue1'
+                            }
+                        }
+
+                        $resultTestTargetResource = Invoke-RsCimMethod @invokeRsCimMethodParameters
+                        $resultTestTargetResource.HRESULT | Should -Be 0
+
+                        Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                            $MethodName -eq 'AnyMethod' -and $Arguments.Argument1 -eq 'ArgumentValue1'
+                        } -Exactly -Times 1
+                    }
+                }
+            }
+
+            Context 'When calling a method that fails with an error' {
+                Context 'When Invoke-CimMethod fails and returns an object with a Error property' {
+                    BeforeAll {
+                        Mock -CommandName Invoke-CimMethod -MockWith {
+                            return @{
+                                HRESULT = 1
+                                Error   = 'Something went wrong'
+                            }
+                        } -Verifiable
+                    }
+
+                    It 'Should call Invoke-CimMethod and throw the correct error' {
+                        $invokeRsCimMethodParameters = @{
+                            CimInstance = $cimInstance
+                            MethodName  = 'AnyMethod'
+                        }
+
+                        { Invoke-RsCimMethod @invokeRsCimMethodParameters } | Should -Throw 'Method AnyMethod() failed with an error. Error: Something went wrong (HRESULT:1)'
+
+                        Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                            $MethodName -eq 'AnyMethod'
+                        } -Exactly -Times 1
+                    }
+                }
+
+                Context 'When Invoke-CimMethod fails and returns an object with a ExtendedErrors property' {
+                    BeforeAll {
+                        Mock -CommandName Invoke-CimMethod -MockWith {
+                            return New-Object -TypeName Object |
+                                Add-Member -MemberType NoteProperty -Name 'HRESULT' -Value 1 -PassThru |
+                                Add-Member -MemberType NoteProperty -Name 'ExtendedErrors' -Value @('Something went wrong', 'Another thing went wrong') -PassThru -Force
+                        } -Verifiable
+                    }
+
+                    It 'Should call Invoke-CimMethod and throw the correct error' {
+                        $invokeRsCimMethodParameters = @{
+                            CimInstance = $cimInstance
+                            MethodName  = 'AnyMethod'
+                        }
+
+                        { Invoke-RsCimMethod @invokeRsCimMethodParameters } | Should -Throw 'Method AnyMethod() failed with an error. Error: Something went wrong;Another thing went wrong (HRESULT:1)'
+
+                        Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                            $MethodName -eq 'AnyMethod'
+                        } -Exactly -Times 1
+                    }
                 }
             }
 
