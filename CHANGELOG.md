@@ -2,9 +2,11 @@
 
 ## Unreleased
 
-- Changes to SqlServer
+- Changes to SqlServerDsc
   - Updated so that named parameters are used for New-Object cmdlet. This was
     done to follow the style guideline.
+  - Updated manifest and license to reflect the new year
+    ([issue #965](https://github.com/PowerShell/SqlServerDsc/issues/965)).
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
