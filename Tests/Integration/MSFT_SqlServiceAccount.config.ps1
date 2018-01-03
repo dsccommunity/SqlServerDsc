@@ -18,15 +18,18 @@ $ConfigurationData = @{
     )
 }
 
+<#
+    .SYNOPSIS
+        Changes the SQL Server service account of the default instance to a
+        different account that was initially used during installation.
+
+    .NOTES
+        This test was intentionally meant to run as SYSTEM.
+#>
 Configuration MSFT_SqlServiceAccount_DatabaseEngine_DefaultInstance_Config
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential,
-
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
@@ -36,9 +39,6 @@ Configuration MSFT_SqlServiceAccount_DatabaseEngine_DefaultInstance_Config
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost {
-        <#
-            Run this test as SYSTEM.
-        #>
         SqlServiceAccount Integration_Test
         {
             ServerName     = $Node.ServerName
@@ -50,6 +50,15 @@ Configuration MSFT_SqlServiceAccount_DatabaseEngine_DefaultInstance_Config
     }
 }
 
+<#
+    .SYNOPSIS
+        Changes the SQL Server Agent service account of the default instance to
+        a different account that was initially used during installation.
+
+    .NOTES
+        This test is intentionally meant to run using the credentials in
+        $SqlInstallCredential.
+#>
 Configuration MSFT_SqlServiceAccount_SqlServerAgent_DefaultInstance_Config
 {
     param
@@ -68,9 +77,6 @@ Configuration MSFT_SqlServiceAccount_SqlServerAgent_DefaultInstance_Config
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost {
-        <#
-            Run this test as $SqlInstallCredential.
-        #>
         SqlServiceAccount Integration_Test
         {
             ServerName           = $Node.ServerName
@@ -84,15 +90,18 @@ Configuration MSFT_SqlServiceAccount_SqlServerAgent_DefaultInstance_Config
     }
 }
 
+<#
+    .SYNOPSIS
+        Reverts the SQL Server service account of the default instance to the
+        original account that was initially used during installation.
+
+    .NOTES
+        This test was intentionally meant to run as SYSTEM.
+#>
 Configuration MSFT_SqlServiceAccount_DatabaseEngine_DefaultInstance_Restore_Config
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential,
-
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
@@ -102,9 +111,6 @@ Configuration MSFT_SqlServiceAccount_DatabaseEngine_DefaultInstance_Restore_Conf
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost {
-        <#
-            Run this test as SYSTEM.
-        #>
         SqlServiceAccount Integration_Test
         {
             ServerName     = $Node.ServerName
@@ -116,6 +122,15 @@ Configuration MSFT_SqlServiceAccount_DatabaseEngine_DefaultInstance_Restore_Conf
     }
 }
 
+<#
+    .SYNOPSIS
+        Reverts the SQL Server Agent service account of the default instance to
+        the original account that was initially used during installation.
+
+    .NOTES
+        This test is intentionally meant to run using the credentials in
+        $SqlInstallCredential.
+#>
 Configuration MSFT_SqlServiceAccount_SqlServerAgent_DefaultInstance_Restore_Config
 {
     param
@@ -134,9 +149,6 @@ Configuration MSFT_SqlServiceAccount_SqlServerAgent_DefaultInstance_Restore_Conf
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost {
-        <#
-            Run this test as $SqlInstallCredential.
-        #>
         SqlServiceAccount Integration_Test
         {
             ServerName           = $Node.ServerName
@@ -150,15 +162,18 @@ Configuration MSFT_SqlServiceAccount_SqlServerAgent_DefaultInstance_Restore_Conf
     }
 }
 
+<#
+    .SYNOPSIS
+        Changes the SQL Server service account of the named instance to a
+        different account that was initially used during installation.
+
+    .NOTES
+        This test was intentionally meant to run as SYSTEM.
+#>
 Configuration MSFT_SqlServiceAccount_DatabaseEngine_NamedInstance_Config
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential,
-
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
@@ -168,9 +183,6 @@ Configuration MSFT_SqlServiceAccount_DatabaseEngine_NamedInstance_Config
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost {
-        <#
-            Run this test as SYSTEM.
-        #>
         SqlServiceAccount Integration_Test
         {
             ServerName     = $Node.ServerName
@@ -182,6 +194,15 @@ Configuration MSFT_SqlServiceAccount_DatabaseEngine_NamedInstance_Config
     }
 }
 
+<#
+    .SYNOPSIS
+        Changes the SQL Server Agent service account of the named instance to
+        a different account that was initially used during installation.
+
+    .NOTES
+        This test is intentionally meant to run using the credentials in
+        $SqlInstallCredential.
+#>
 Configuration MSFT_SqlServiceAccount_SqlServerAgent_NamedInstance_Config
 {
     param
@@ -200,9 +221,6 @@ Configuration MSFT_SqlServiceAccount_SqlServerAgent_NamedInstance_Config
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost {
-        <#
-            Run this test as $SqlInstallCredential.
-        #>
         SqlServiceAccount Integration_Test
         {
             ServerName           = $Node.ServerName
@@ -216,15 +234,18 @@ Configuration MSFT_SqlServiceAccount_SqlServerAgent_NamedInstance_Config
     }
 }
 
+<#
+    .SYNOPSIS
+        Reverts the SQL Server service account of the named instance to the
+        original account that was initially used during installation.
+
+    .NOTES
+        This test was intentionally meant to run as SYSTEM.
+#>
 Configuration MSFT_SqlServiceAccount_DatabaseEngine_NamedInstance_Restore_Config
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential,
-
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
@@ -234,9 +255,6 @@ Configuration MSFT_SqlServiceAccount_DatabaseEngine_NamedInstance_Restore_Config
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost {
-        <#
-            Run this test as SYSTEM.
-        #>
         SqlServiceAccount Integration_Test
         {
             ServerName     = $Node.ServerName
@@ -248,6 +266,15 @@ Configuration MSFT_SqlServiceAccount_DatabaseEngine_NamedInstance_Restore_Config
     }
 }
 
+<#
+    .SYNOPSIS
+        Reverts the SQL Server Agent service account of the named instance to
+        the original account that was initially used during installation.
+
+    .NOTES
+        This test is intentionally meant to run using the credentials in
+        $SqlInstallCredential.
+#>
 Configuration MSFT_SqlServiceAccount_SqlServerAgent_NamedInstance_Restore_Config
 {
     param
@@ -266,9 +293,6 @@ Configuration MSFT_SqlServiceAccount_SqlServerAgent_NamedInstance_Restore_Config
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost {
-        <#
-            Run this test as $SqlInstallCredential.
-        #>
         SqlServiceAccount Integration_Test
         {
             ServerName           = $Node.ServerName

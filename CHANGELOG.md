@@ -28,8 +28,8 @@
     ([issue #930](https://github.com/PowerShell/SqlServerDsc/issues/930)).
   - Made the description of parameter RestartService more descriptive
     ([issue #960](https://github.com/PowerShell/SqlServerDsc/issues/960)).
-  - Added a read-only parameter ServiceAccountName so correctly returns the
-    service account name as a string ([issue #982](https://github.com/PowerShell/SqlServerDsc/issues/982)).
+  - Added a read-only parameter ServiceAccountName so that the service account
+    name is correctly returned as a string ([issue #982](https://github.com/PowerShell/SqlServerDsc/issues/982)).
   - Added integration tests ([issue #980](https://github.com/PowerShell/SqlServerDsc/issues/980)).
 - Changes to SqlSetup
   - Added parameter `ASServerMode` to support installing Analysis Services in

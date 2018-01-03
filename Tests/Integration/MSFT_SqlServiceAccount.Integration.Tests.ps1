@@ -71,7 +71,6 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlInstallCredential          = $mockSqlInstallCredential
                         SqlServiceSecondaryCredential = $mockSqlServiceSecondaryCredential
                         OutputPath                    = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
@@ -163,7 +162,6 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlInstallCredential          = $mockSqlInstallCredential
                         SqlServicePrimaryCredential = $mockSqlServicePrimaryCredential
                         OutputPath                    = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
@@ -255,7 +253,6 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlInstallCredential          = $mockSqlInstallCredential
                         SqlServiceSecondaryCredential = $mockSqlServiceSecondaryCredential
                         OutputPath                    = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
@@ -347,7 +344,6 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlInstallCredential          = $mockSqlInstallCredential
                         SqlServicePrimaryCredential = $mockSqlServicePrimaryCredential
                         OutputPath                    = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
