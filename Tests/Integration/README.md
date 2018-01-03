@@ -3,11 +3,11 @@
 For it to be easier to write integration tests for a resource that depends on
 other resources, this will list the run order of the integration tests that keep
 their configuration on the AppVeyor build worker. For example, the integration
-tests for SqlAlwaysOnService enables and then disables the AlwaysOn functionality,
-so that integration test is not listed here.
+test for SqlAlwaysOnService enables and then disables the AlwaysOn functionality,
+so that integration test are not listed.
 
-If a integration test should use one or more of these previous integration test
-configurations then the run order for the new integration test should be set to
+If an integration test should use one or more of these previous integration test
+configurations then the run order for the new integration tests should be set to
 a higher run order number than the highest run order of the dependent integration
 tests.
 

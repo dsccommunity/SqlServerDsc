@@ -411,12 +411,12 @@ See `$env:PSModulePath` to view the existing paths.
 ### Integration tests
 
 Integration tests should be written for resources so they can be validated by
-the automated test framework which is run in AppVeyour when commits are pushed
+the automated test framework which is run in AppVeyor when commits are pushed
 to a Pull Request (PR).
 Please see the [Testing Guidelines](https://github.com/PowerShell/DscResources/blob/master/TestsGuidelines.md)
 for common DSC Resource Kit testing guidelines.
-There is also configuration made by existing integration tests that can be reused
-to write integration tests for other resources. That is documented in
+There are also configuration made by existing integration tests that can be reused
+to write integration tests for other resources. This is documented in
 [Integration tests for SqlServerDsc](https://github.com/PowerShell/SqlServerDsc/blob/dev/Tests/Integration/README.md).
 
 #### Using SMO stub classes
