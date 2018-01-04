@@ -63,7 +63,7 @@ There could be one Active Directory Organizational Unit (OU) where the Cluster
 Named Object (CNO) computer object resides. This is so that permission can be given
 to the CNO to allow the creation of a Virtual Computer Object (VCO).
 Preferably the CNO should be added to an Active Directory security group and that
-group have the permission to create computer objects inside the OU. This way, more
+group has the permission to create computer objects inside the OU. This way, more
 than one CNO computer object can use the same OU.
 
 There are currently no examples in xActiveDirectory to link to, so here are some
