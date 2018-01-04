@@ -40,7 +40,7 @@ namespace Microsoft.SqlServer.Management.Smo
 
     // TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityReplicaFailoverMode
     // Used by:
-    //  MSFT_xSQLAOGroupEnsure.Tests
+    //  -
     public enum AvailabilityReplicaFailoverMode
     {
         Automatic,
@@ -50,7 +50,7 @@ namespace Microsoft.SqlServer.Management.Smo
 
     // TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityReplicaAvailabilityMode
     // Used by:
-    //  MSFT_xSQLAOGroupEnsure.Tests
+    //  -
     public enum AvailabilityReplicaAvailabilityMode
     {
         AsynchronousCommit,
@@ -658,7 +658,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.SqlServerManagementException
     // BaseType: System.Exception
     // Used by:
-    //  xSqlServerLogin.Tests.ps1
+    //  SqlServerLogin.Tests.ps1
     public class SqlServerManagementException : Exception
     {
         public SqlServerManagementException () : base () {}
@@ -671,7 +671,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.SmoException
     // BaseType: Microsoft.SqlServer.Management.Smo.SqlServerManagementException
     // Used by:
-    //  xSqlServerLogin.Tests.ps1
+    //  SqlServerLogin.Tests.ps1
     public class SmoException : SqlServerManagementException
     {
         public SmoException () : base () {}
@@ -684,7 +684,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.FailedOperationException
     // BaseType: Microsoft.SqlServer.Management.Smo.SmoException
     // Used by:
-    //  xSqlServerLogin.Tests.ps1
+    //  SqlServerLogin.Tests.ps1
     public class FailedOperationException : SmoException
     {
         public FailedOperationException () : base () {}
