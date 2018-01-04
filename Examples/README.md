@@ -153,7 +153,7 @@ And this example shows how to
 
 This will reference examples that show how to setup high availability using
 AlwaysOn Availability Group.
-It assumes that a working domain exist with at least one Domain Controller,
+It assumes that a working domain exists with at least one Domain Controller,
 and both servers that should contain the SQL Server nodes are domain joined.
 
 ### Prepare Active Directory
