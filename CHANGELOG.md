@@ -28,7 +28,8 @@
     ([issue #669](https://github.com/PowerShell/SqlServerDsc/issues/669)).
   - Added new resource SqlServerDatabaseMail for configuring SQL Server
     Database Mail.
-  - Updated Test-SQLDscParameterState to handle the type data type UInt16.
+  - Updated the helper function Test-SQLDscParameterState to handle the
+    data type UInt16.
   - Fixed typo in SqlServerDscCommon.Tests.
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist

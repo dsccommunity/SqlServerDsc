@@ -181,9 +181,6 @@ function Get-TargetResource
     .SYNOPSIS
         Creates or removes the Database Mail configuration.
 
-        Information about the different properties can be found here
-        https://docs.microsoft.com/en-us/sql/relational-databases/database-mail/configure-database-mail.
-
     .PARAMETER Ensure
         Specifies the desired state of the Database Mail.
         When set to 'Present', the Database Mail will be created.
@@ -227,6 +224,11 @@ function Get-TargetResource
 
     .PARAMETER TcpPort
         The TCP port used for communication. Default value is port 25.
+
+    .NOTES
+        Information about the different properties can be found here
+        https://docs.microsoft.com/en-us/sql/relational-databases/database-mail/configure-database-mail.
+
 #>
 function Set-TargetResource
 {
