@@ -1,6 +1,7 @@
 # Examples
 
-This will help to understand how to setup certain scenarios with xSQLServer resource module.
+This will help to understand how to setup certain scenarios with SqlServerDsc
+resource module.
 
 ## Resource examples
 
@@ -40,12 +41,12 @@ These are the links to the examples for each individual resource.
 
 This will reference examples that show how to setup high availability SQL Server
 using a Failover Cluster.
-It assumes that a working domain exist with at least one Domain Controller, and
+It assumes that a working domain exists with at least one Domain Controller, and
 and both servers that should contain the SQL Server nodes are domain joined.
 
 ### Prepare Active Directory
 
-If the user who creates the failover cluster have the **Create Computer Objects**
+If the user who creates the failover cluster has the **Create Computer Objects**
 permission to the organizational unit (OU) where the servers that will form the
 cluster reside, then there is no need to prestage the Cluster Named Object (CNO)
 computer object.
@@ -59,17 +60,17 @@ Read more about it here
 #### Prestage the Cluster Named Object (CNO) computer object
 
 There could be one Active Directory Organizational Unit (OU) where the Cluster
-Named Object (CNO) computer object reside. This is so that permission can be given
-to the CNO to allow the creation of Virtual Computer Object (VCO).
-Preferably the CNO should be added to a Active Directory security group and that
-group have the permission to create computer objects inside the OU. This way more
+Named Object (CNO) computer object resides. This is so that permission can be given
+to the CNO to allow the creation of a Virtual Computer Object (VCO).
+Preferably the CNO should be added to an Active Directory security group and that
+group have the permission to create computer objects inside the OU. This way, more
 than one CNO computer object can use the same OU.
 
 There are currently no examples in xActiveDirectory to link to, so here are some
 examples how this can be done.
 
 Please note that the prestaged CNO computer object must be disabled before creating
-the failover cluster, and the the security group must be given the permission
+the failover cluster, and that the security group must be given the permission
 **Create Computer Objects** on the OU where the CNO computer object was created.
 Also the user creating the failover cluster must have the permission **Full Control**
 on the CNO computer object.
@@ -152,7 +153,7 @@ And this example shows how to
 
 This will reference examples that show how to setup high availability using
 AlwaysOn Availability Group.
-It assumes that a working domain exist with at least one Domain Controller, and
+It assumes that a working domain exist with at least one Domain Controller,
 and both servers that should contain the SQL Server nodes are domain joined.
 
 ### Prepare Active Directory

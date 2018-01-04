@@ -845,9 +845,9 @@ This resource is used to create an endpoint. Currently it only supports creating
 a database mirror endpoint which can be used by, for example, AlwaysOn.
 
 >Note: The endpoint will be started after creation, but will not be enforced. Please
-use [**SqlServerEndpointState**](#xsqlserverendpointstate) to make sure the endpoint
+use [**SqlServerEndpointState**](#sqlserverendpointstate) to make sure the endpoint
 remains in started state. To set connect permission to the endpoint, please use
-the resource [**SqlServerEndpointPermission**](#xsqlserverendpointpermission).
+the resource [**SqlServerEndpointPermission**](#sqlserverendpointpermission).
 
 #### Requirements
 
