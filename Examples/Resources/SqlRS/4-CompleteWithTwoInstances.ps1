@@ -7,8 +7,8 @@
     initialize SQL Server Reporting Services and register the default
     Report Server Web Service and Report Manager URLs:
 
-    http://localhost:80/ReportServer (Report Server Web Service)
-    http://localhost:80/Reports (Report Manager)
+    Report Manager: http://localhost:80/Reports_RS
+    Report Server Web Service: http://localhost:80/ReportServer_RS
 #>
 
 $ConfigurationData = @{
@@ -33,6 +33,15 @@ $ConfigurationData = @{
             UpdateEnabled               = 'False'
             BrowserSvcStartupType       = 'Automatic'
 
+            <#
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                This is added so that AppVeyor automatic tests can pass, otherwise
+                the tests will fail on passwords being in plain text and not being
+                encrypted. Because it is not possible to have a certificate in
+                AppVeyor to encrypt the passwords we need to add the parameter
+                'PSDscAllowPlainTextPassword'.
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+            #>
             PSDscAllowPlainTextPassword = $true
         }
     )
@@ -96,11 +105,11 @@ Configuration Example
                 $SqlAdministratorCredential.UserName
             )
 
+            PsDscRunAsCredential  = $SqlInstallCredential
+
             DependsOn             = @(
                 '[WindowsFeature]NetFramework45'
             )
-
-            PsDscRunAsCredential  = $SqlInstallCredential
         }
 
         SqlSetup 'InstallReportingServicesInstance'
@@ -114,16 +123,12 @@ Configuration Example
             InstallSharedWOWDir   = $Node.InstallSharedWOWDir
             UpdateEnabled         = $Node.UpdateEnabled
 
-            SQLSysAdminAccounts   = @(
-                $SqlAdministratorCredential.UserName
-            )
+            PsDscRunAsCredential  = $SqlInstallCredential
 
             DependsOn             = @(
                 '[WindowsFeature]NetFramework45'
                 '[SqlSetup]InstallDatabaseEngine'
             )
-
-            PsDscRunAsCredential  = $SqlInstallCredential
         }
 
         SqlRS 'ConfigureReportingServiceInstance'
