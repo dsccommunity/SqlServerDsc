@@ -22,6 +22,7 @@ These are the links to the examples for each individual resource.
 - [SqlRS](/Examples/Resources/SqlRS)
 - [SqlScript](/Examples/Resources/SqlScript)
 - [SqlServerConfiguration](/Examples/Resources/SqlServerConfiguration)
+- [SqlServerDatabaseMail](/Examples/Resources/SqlServerDatabaseMail)
 - [SqlServerEndpoint](/Examples/Resources/SqlServerEndpoint)
 - [SqlServerEndpointPermission](/Examples/Resources/SqlServerEndpointPermission)
 - [SqlServerEndpointState](/Examples/Resources/SqlServerEndpointState)

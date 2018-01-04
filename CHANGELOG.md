@@ -26,6 +26,11 @@
   - Removed the local specific common test for compiling examples in this repository
     and instead opted-in for the common test in the 'DscResource.Tests' repository
     ([issue #669](https://github.com/PowerShell/SqlServerDsc/issues/669)).
+  - Added new resource SqlServerDatabaseMail for configuring SQL Server
+    Database Mail.
+  - Updated the helper function Test-SQLDscParameterState to handle the
+    data type UInt16.
+  - Fixed typo in SqlServerDscCommon.Tests.
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
