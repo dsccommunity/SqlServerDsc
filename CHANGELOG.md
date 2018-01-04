@@ -7,6 +7,9 @@
     done to follow the style guideline.
   - Updated manifest and license to reflect the new year
     ([issue #965](https://github.com/PowerShell/SqlServerDsc/issues/965)).
+  - Added a README.md under Tests\Integration to help contributors to write
+    integration tests.
+  - Added 'Integration tests' section in the CONTRIBUTING.md.
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
@@ -25,12 +28,17 @@
     ([issue #930](https://github.com/PowerShell/SqlServerDsc/issues/930)).
   - Made the description of parameter RestartService more descriptive
     ([issue #960](https://github.com/PowerShell/SqlServerDsc/issues/960)).
+  - Added a read-only parameter ServiceAccountName so that the service account
+    name is correctly returned as a string ([issue #982](https://github.com/PowerShell/SqlServerDsc/issues/982)).
+  - Added integration tests ([issue #980](https://github.com/PowerShell/SqlServerDsc/issues/980)).
 - Changes to SqlSetup
   - Added parameter `ASServerMode` to support installing Analysis Services in
     Multidimensional mode, Tabular mode and PowerPivot mode
     ([issue #388](https://github.com/PowerShell/SqlServerDsc/issues/388)).
   - Added integration tests for testing Analysis Services Multidimensional mode
     and Tabular mode.
+  - Cleaned up integration tests.
+  - Added integration tests for installing a default instance of Database Engine.
 
 ## 10.0.0.0
 

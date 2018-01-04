@@ -9,45 +9,57 @@ $mockIsoMediaDriveLetter = [char](([int][char]$mockLastDrive) + 1)
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                            = 'localhost'
+            NodeName                              = 'localhost'
 
-            # SQL Engine properties
-            SqlEngineInstanceName               = 'DSCSQL2016'
-            SqlEngineFeatures                   = 'SQLENGINE,AS,CONN,BC,SDK'
-            AnalysisServicesMultiServerMode     = 'MULTIDIMENSIONAL'
+            # Database Engine properties.
+            DatabaseEngineNamedInstanceName       = 'DSCSQL2016'
+            DatabaseEngineNamedInstanceFeatures   = 'SQLENGINE,AS,CONN,BC,SDK'
+            AnalysisServicesMultiServerMode       = 'MULTIDIMENSIONAL'
 
-            # Analysis Services Tabular properties
-            AnalysisServicesTabularInstanceName = 'DSCTABULAR'
             <#
-                CONN,BC,SDK is installed with the DSCSQL2016 so those feature
-                will found for DSCTABULAR instance as well.
+                Analysis Services Tabular properties.
+                The features CONN,BC,SDK is installed with the DSCSQL2016 so those
+                features will found for DSCTABULAR instance as well.
+                The features is added here so the same property can be used to
+                evaluate the result in the test.
             #>
-            AnalysisServicesTabularFeatures     = 'AS,CONN,BC,SDK'
-            AnalysisServicesTabularServerMode   = 'TABULAR'
+            AnalysisServicesTabularInstanceName   = 'DSCTABULAR'
+            AnalysisServicesTabularFeatures       = 'AS,CONN,BC,SDK'
+            AnalysisServicesTabularServerMode     = 'TABULAR'
+
+            <#
+                Database Engine default instance properties.
+                The features CONN,BC,SDK is installed with the DSCSQL2016 so those
+                features will found for DSCTABULAR instance as well.
+                The features is added here so the same property can be used to
+                evaluate the result in the test.
+            #>
+            DatabaseEngineDefaultInstanceName     = 'MSSQLSERVER'
+            DatabaseEngineDefaultInstanceFeatures = 'SQLENGINE,CONN,BC,SDK'
 
             # General SqlSetup properties
-            Collation                           = 'Finnish_Swedish_CI_AS'
-            InstallSharedDir                    = 'C:\Program Files\Microsoft SQL Server'
-            InstallSharedWOWDir                 = 'C:\Program Files (x86)\Microsoft SQL Server'
-            UpdateEnabled                       = 'False'
-            SuppressReboot                      = $true # Make sure we don't reboot during testing.
-            ForceReboot                         = $false
+            Collation                             = 'Finnish_Swedish_CI_AS'
+            InstallSharedDir                      = 'C:\Program Files\Microsoft SQL Server'
+            InstallSharedWOWDir                   = 'C:\Program Files (x86)\Microsoft SQL Server'
+            UpdateEnabled                         = 'False'
+            SuppressReboot                        = $true # Make sure we don't reboot during testing.
+            ForceReboot                           = $false
 
             # Properties for mounting media
-            ImagePath                           = "$env:TEMP\SQL2016.iso"
-            DriveLetter                         = $mockIsoMediaDriveLetter
+            ImagePath                             = "$env:TEMP\SQL2016.iso"
+            DriveLetter                           = $mockIsoMediaDriveLetter
 
             <#
                 We must compile the configuration using plain text since the
                 common integration test framework does not use certificates.
                 This should not be used in production.
             #>
-            PSDscAllowPlainTextPassword         = $true
+            PSDscAllowPlainTextPassword           = $true
         }
     )
 }
 
-Configuration MSFT_SqlSetup_InstallSqlEngineAsSystem_Config
+Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
 {
     param
     (
@@ -59,17 +71,27 @@ Configuration MSFT_SqlSetup_InstallSqlEngineAsSystem_Config
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
-        $SqlServiceCredential,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
         $SqlAdministratorCredential,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
-        $SqlAgentServiceCredential
+        $SqlServicePrimaryCredential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlAgentServicePrimaryCredential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlServiceSecondaryCredential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlAgentServiceSecondaryCredential
     )
 
     Import-DscResource -ModuleName 'PSDscResources'
@@ -91,18 +113,32 @@ Configuration MSFT_SqlSetup_InstallSqlEngineAsSystem_Config
             RetryCount       = 10
         }
 
-        User 'CreateSqlServiceAccount'
+        User 'CreateSqlServicePrimaryAccount'
         {
             Ensure   = 'Present'
-            UserName = Split-Path -Path $SqlServiceCredential.UserName -Leaf
-            Password = $SqlServiceCredential
+            UserName = Split-Path -Path $SqlServicePrimaryCredential.UserName -Leaf
+            Password = $SqlServicePrimaryCredential
         }
 
-        User 'CreateSqlAgentServiceAccount'
+        User 'CreateSqlAgentServicePrimaryAccount'
         {
             Ensure   = 'Present'
-            UserName = Split-Path -Path $SqlAgentServiceCredential.UserName -Leaf
-            Password = $SqlAgentServiceCredential
+            UserName = Split-Path -Path $SqlAgentServicePrimaryCredential.UserName -Leaf
+            Password = $SqlAgentServicePrimaryCredential
+        }
+
+        User 'CreateSqlServiceSecondaryAccount'
+        {
+            Ensure   = 'Present'
+            UserName = Split-Path -Path $SqlServiceSecondaryCredential.UserName -Leaf
+            Password = $SqlServicePrimaryCredential
+        }
+
+        User 'CreateSqlAgentServiceSecondaryAccount'
+        {
+            Ensure   = 'Present'
+            UserName = Split-Path -Path $SqlAgentServiceSecondaryCredential.UserName -Leaf
+            Password = $SqlAgentServicePrimaryCredential
         }
 
         User 'CreateSqlInstallAccount'
@@ -134,16 +170,16 @@ Configuration MSFT_SqlSetup_InstallSqlEngineAsSystem_Config
 
         SqlSetup 'Integration_Test'
         {
-            InstanceName          = $Node.SqlEngineInstanceName
-            Features              = $Node.SqlEngineFeatures
+            InstanceName          = $Node.DatabaseEngineNamedInstanceName
+            Features              = $Node.DatabaseEngineNamedInstanceFeatures
             SourcePath            = "$($Node.DriveLetter):\"
             BrowserSvcStartupType = 'Automatic'
             SQLCollation          = $Node.Collation
-            SQLSvcAccount         = $SqlServiceCredential
-            AgtSvcAccount         = $SqlAgentServiceCredential
+            SQLSvcAccount         = $SqlServicePrimaryCredential
+            AgtSvcAccount         = $SqlAgentServicePrimaryCredential
             ASServerMode          = $Node.AnalysisServicesMultiServerMode
             ASCollation           = $Node.Collation
-            ASSvcAccount          = $SqlServiceCredential
+            ASSvcAccount          = $SqlServicePrimaryCredential
             InstallSharedDir      = $Node.InstallSharedDir
             InstallSharedWOWDir   = $Node.InstallSharedWOWDir
             UpdateEnabled         = $Node.UpdateEnabled
@@ -161,20 +197,71 @@ Configuration MSFT_SqlSetup_InstallSqlEngineAsSystem_Config
             )
 
             # This must be set if using SYSTEM account to install.
-            ASSysAdminAccounts  = @(
+            ASSysAdminAccounts    = @(
                 $SqlAdministratorCredential.UserName
-                $SqlInstallCredential.UserName
             )
 
             DependsOn             = @(
                 '[xMountImage]MountIsoMedia'
-                '[User]CreateSqlServiceAccount'
-                '[User]CreateSqlAgentServiceAccount'
+                '[User]CreateSqlServicePrimaryAccount'
+                '[User]CreateSqlAgentServicePrimaryAccount'
+                '[User]CreateSqlServiceSecondaryAccount'
+                '[User]CreateSqlAgentServiceSecondaryAccount'
                 '[User]CreateSqlInstallAccount'
                 '[Group]AddSqlInstallAsAdministrator'
                 '[User]CreateSqlAdminAccount'
                 '[WindowsFeature]NetFramework45'
             )
+        }
+    }
+}
+
+Configuration MSFT_SqlSetup_InstallDatabaseEngineDefaultInstanceAsUser_Config
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlInstallCredential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlAdministratorCredential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlServicePrimaryCredential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlAgentServicePrimaryCredential
+    )
+
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node localhost {
+        SqlSetup 'Integration_Test'
+        {
+            InstanceName         = $Node.DatabaseEngineDefaultInstanceName
+            Features             = $Node.DatabaseEngineDefaultInstanceFeatures
+            SourcePath           = "$($Node.DriveLetter):\"
+            SQLCollation         = $Node.Collation
+            SQLSvcAccount        = $SqlServicePrimaryCredential
+            AgtSvcAccount        = $SqlAgentServicePrimaryCredential
+            InstallSharedDir     = $Node.InstallSharedDir
+            InstallSharedWOWDir  = $Node.InstallSharedWOWDir
+            UpdateEnabled        = $Node.UpdateEnabled
+            SuppressReboot       = $Node.SuppressReboot
+            ForceReboot          = $Node.ForceReboot
+            SQLSysAdminAccounts  = @(
+                $SqlAdministratorCredential.UserName
+            )
+
+            PsDscRunAsCredential = $SqlInstallCredential
         }
     }
 }
@@ -191,12 +278,13 @@ Configuration MSFT_SqlSetup_InstallAnalysisServicesAsSystem_Config
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
-        $SqlServiceCredential,
+        $SqlAdministratorCredential,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential
+        $SqlServicePrimaryCredential
+
     )
 
     Import-DscResource -ModuleName 'SqlServerDsc'
@@ -209,7 +297,7 @@ Configuration MSFT_SqlSetup_InstallAnalysisServicesAsSystem_Config
             SourcePath          = "$($Node.DriveLetter):\"
             ASServerMode        = $Node.AnalysisServicesTabularServerMode
             ASCollation         = $Node.Collation
-            ASSvcAccount        = $SqlServiceCredential
+            ASSvcAccount        = $SqlServicePrimaryCredential
             InstallSharedDir    = $Node.InstallSharedDir
             InstallSharedWOWDir = $Node.InstallSharedWOWDir
             UpdateEnabled       = $Node.UpdateEnabled
@@ -219,7 +307,6 @@ Configuration MSFT_SqlSetup_InstallAnalysisServicesAsSystem_Config
             # This must be set if using SYSTEM account to install.
             ASSysAdminAccounts  = @(
                 $SqlAdministratorCredential.UserName
-                $SqlInstallCredential.UserName
             )
         }
     }

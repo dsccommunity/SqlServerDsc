@@ -1276,6 +1276,11 @@ Manage the service account for SQL Server services.
   Useful for password changes. This will cause `Set-TargetResource` to be run on
   each consecutive run.
 
+#### Read-Only Properties from Get-TargetResource
+
+* **`[String]` ServiceAccountName** _(Read)_: Returns the service account username
+  for the service.
+
 #### Examples
 
 * [Run service under a user account](/Examples/Resources/SqlServiceAccount/1-ConfigureServiceAccount-UserAccount.ps1)
