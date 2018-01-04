@@ -70,7 +70,7 @@ Configuration Example
     )
 
     Import-DscResource -ModuleName PSDscResources
-    Import-DscResource -ModuleName xSQLServer
+    Import-DscResource -ModuleName SqlServerDsc
 
     Node localhost {
         WindowsFeature 'NetFramework45'
