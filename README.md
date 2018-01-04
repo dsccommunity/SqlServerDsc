@@ -705,6 +705,7 @@ Initializes and configures SQL Reporting Services server.
 * [Default configuration](Examples/Resources/SqlRS/1-DefaultConfiguration.ps1)
 * [Custom virtual directories and reserved URLs](Examples/Resources/SqlRS/2-CustomConfiguration.ps1)
 * [Custom virtual directory and using SSL](Examples/Resources/SqlRS/3-CustomConfigurationUsingSsl.ps1)
+* [Complete example with two instances in default configuration](/Examples/Resources/SqlRS/4-CompleteWithTwoInstances.ps1)
 
 #### Known issues
 

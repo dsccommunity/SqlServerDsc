@@ -42,6 +42,8 @@
   - Refactored the resource to use Invoke-CimMethod.
   - Added parameter UseSsl which when set to $true forces connections to the
     Reporting Services to use SSL when connecting ([issue #990](https://github.com/PowerShell/SqlServerDsc/issues/990)).
+  - Added complete example for SqlRS (based on the integration tests)
+    ([issue #634](https://github.com/PowerShell/SqlServerDsc/issues/634)).
 - Changes to SqlServerNetwork
   - Added sysadmin account parameter usage to the examples.
 - Changes to SqlServerReplication
