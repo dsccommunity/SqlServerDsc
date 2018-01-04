@@ -31,11 +31,18 @@
   - Updated the helper function Test-SQLDscParameterState to handle the
     data type UInt16.
   - Fixed typo in SqlServerDscCommon.Tests.
+  - Updated README.md with known issue section for each resource.
+  - Resources that did not have a description in the README.md now has one.
+  - Resources that missed links to the examples in the README.md now has those
+    links.
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
 - Changes to SqlDatabase
   - Fix minor Script Analyzer warning.
+- Changes to SqlServerEndpoint
+  - Updated README.md with links to the examples
+    ([issue #504](https://github.com/PowerShell/SqlServerDsc/issues/504)).
 - Changes to SqlRS
   - Replaced Get-WmiObject with Get-CimInstance to fix Script Analyzer warnings
     ([issue #264](https://github.com/PowerShell/SqlServerDsc/issues/264)).
