@@ -99,7 +99,8 @@ try
                         Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $mockDynamicIsInitialized -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force
                 ),
                 (
                     # Array is a regression test for issue #819.
@@ -120,6 +121,7 @@ try
                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockDefaultInstanceName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru -Force
+                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force
         }
 
         $mockGetCimInstance_ConfigurationSetting_ParameterFilter = {
@@ -164,8 +166,6 @@ try
                     $mockDynamicReportsApplicationName = $mockReportsApplicationName
                     $mockDynamicReportsApplicationUrlString = $mockReportsApplicationUrl
                     $mockDynamicReportServerApplicationUrlString = $mockReportServerApplicationUrl
-
-                    $mockDynamicIsInitialized = $true
                 }
 
                 BeforeEach {
@@ -176,7 +176,6 @@ try
                 }
 
                 $mockDynamicIsInitialized = $true
-
                 It 'Should return the same values as passed as parameters' {
                     $resultGetTargetResource = Get-TargetResource @defaultParameters
                     $resultGetTargetResource.InstanceName | Should -Be $mockNamedInstanceName
@@ -192,18 +191,36 @@ try
                     $resultGetTargetResource.ReportsVirtualDirectory | Should -Be $mockVirtualDirectoryReportManagerName
                     $resultGetTargetResource.ReportServerReservedUrl | Should -Be $mockReportServerApplicationUrl
                     $resultGetTargetResource.ReportsReservedUrl | Should -Be $mockReportsApplicationUrl
+                    $resultGetTargetResource.UseSsl | Should -Be $false
 
                     Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
                         $MethodName -eq 'ListReservedUrls'
                     } -Exactly -Times 1 -Scope It
                 }
+
+                $mockDynamicSecureConnectionLevel = 0 # Do not use SSL
+
+                Context 'When SSL is not used' {
+                    It 'Should return the the state as initialized' {
+                        $resultGetTargetResource = Get-TargetResource @defaultParameters
+                        $resultGetTargetResource.UseSsl | Should -Be $false
+                    }
+                }
+
+                $mockDynamicSecureConnectionLevel = 1 # Use SSL
+
+                Context 'When SSL is used' {
+                    It 'Should return the the state as initialized' {
+                        $resultGetTargetResource = Get-TargetResource @defaultParameters
+                        $resultGetTargetResource.UseSsl | Should -Be $true
+                    }
+                }
+
+                # Setting the value back to the default.
+                $mockDynamicSecureConnectionLevel = 0
             }
 
             Context 'When the system is not in the desired state' {
-                BeforeAll {
-                    $mockDynamicIsInitialized = $false
-                }
-
                 BeforeEach {
                     Mock -CommandName Get-CimInstance `
                         -MockWith $mockGetCimInstance_ConfigurationSetting_DefaultInstance `
@@ -312,6 +329,7 @@ try
                             InstanceName         = $mockNamedInstanceName
                             DatabaseServerName   = $mockReportingServicesDatabaseServerName
                             DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                            UseSsl               = $true
                         }
                     }
 
@@ -329,6 +347,10 @@ try
 
                     It 'Should configure Reporting Service without throwing an error' {
                         { Set-TargetResource @defaultParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'SetSecureConnectionLevel'
+                        } -Exactly -Times 1 -Scope It
 
                         Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
                             $MethodName -eq 'RemoveURL'
@@ -418,6 +440,7 @@ try
                             ReportsVirtualDirectory      = 'Reports_NewName'
                             ReportServerReservedUrl      = 'https://+:4443'
                             ReportsReservedUrl           = 'https://+:4443'
+                            UseSsl                       = $true
                         }
                     }
 
@@ -435,6 +458,10 @@ try
 
                     It 'Should configure Reporting Service without throwing an error' {
                         { Set-TargetResource @testParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'SetSecureConnectionLevel'
+                        } -Exactly -Times 1 -Scope It
 
                         Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
                             $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportServerApplicationName
@@ -668,6 +695,31 @@ try
                             DatabaseServerName   = $mockReportingServicesDatabaseServerName
                             DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
                             ReportsReservedUrl   = 'https://+:443'
+                        }
+                    }
+
+                    It 'Should return state as not in desired state' {
+                        $resultTestTargetResource = Test-TargetResource @testParameters
+                        $resultTestTargetResource | Should -Be $false
+                    }
+                }
+
+                $mockDynamicSecureConnectionLevel = 0 # Do not use SSL
+
+                Context 'When SSL is not used' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                IsInitialized      = $true
+                                UseSsl             = $false
+                            }
+                        } -Verifiable
+
+                        $testParameters = @{
+                            InstanceName         = $mockNamedInstanceName
+                            DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                            UseSsl               = $true
                         }
                     }
 

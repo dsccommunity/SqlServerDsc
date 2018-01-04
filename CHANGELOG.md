@@ -3,6 +3,12 @@
 ## Unreleased
 
 - Changes to SqlServerDsc
+  - BREAKING CHANGE: Resource SqlRSSecureConnectionLevel was remove
+    ([issue #990](https://github.com/PowerShell/SqlServerDsc/issues/990)).
+    The parameter that was set using that resource has been merged into resource
+    SqlRS as the parameter UseSsl. The UseSsl parameter is of type boolean. This
+    change was made because from SQL Server 2008 R2 this value is made an on/off
+    switch. Read more in the article [ConfigurationSetting Method - SetSecureConnectionLevel](https://docs.microsoft.com/en-us/sql/reporting-services/wmi-provider-library-reference/configurationsetting-method-setsecureconnectionlevel).
   - Updated so that named parameters are used for New-Object cmdlet. This was
     done to follow the style guideline.
   - Updated manifest and license to reflect the new year
@@ -29,6 +35,8 @@
   - Replaced Get-WmiObject with Get-CimInstance to fix Script Analyzer warnings
     ([issue #264](https://github.com/PowerShell/SqlServerDsc/issues/264)).
   - Refactored the resource to use Invoke-CimMethod.
+  - Added parameter UseSsl which when set to $true forces connections to the
+    Reporting Services to use SSL when connecting ([issue #990](https://github.com/PowerShell/SqlServerDsc/issues/990)).
 - Changes to SqlServerNetwork
   - Added sysadmin account parameter usage to the examples.
 - Changes to SqlServerReplication

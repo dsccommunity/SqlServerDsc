@@ -134,8 +134,6 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   database roles.
 * [**SqlRS**](#sqlrs) configures SQL Server Reporting
   Services to use a database engine in another instance.
-* [**SqlRSSecureConnectionLevel**](#sqlrssecureconnectionlevel) sets
-  the secure connection level for SQL Server Reporting Services.
 * [**SqlScript**](#sqlscript) resource to extend DSC Get/Set/Test
   functionality to T-SQL.
 * [**SqlServerConfiguration**](#sqlserverconfiguration) resource to manage
@@ -667,9 +665,12 @@ Initializes and configures SQL Reporting Services server.
 
 * Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Reporting Services 2008 or later.
+* To use parameter `UseSSL` target machine must be running SQL Server Reporting
+  Services 2008 R2 or later.
 * If `PsDscRunAsCredential` common parameter is used to run the resource, the
-  specified credential must have permissions to connect to the SQL Server specified
-  in `RSSQLServer` and create Reporting Services databases.
+  specified credential must have permissions to connect to the SQL Server instance
+  specified in `DatabaseServerName` and `DatabaseInstanceName`, and have permission
+  to create the Reporting Services databases.
 
 #### Parameters
 
@@ -688,6 +689,9 @@ Initializes and configures SQL Reporting Services server.
 * **`[String[]]` ReportsReservedUrl** _(Write)_: Report Manager/Report Web App URL
   reservations. Optional. If not specified, 'http://+:80' URL reservation will be
   used.
+* **`[Boolean]` UseSsl** _(Write)_: If connections to the Reporting Services must
+  use SSL. If this parameter is not assigned a value, the default is that Reporting
+  Services does not use SSL.
 
 #### Read-Only Properties from Get-TargetResource
 
@@ -698,6 +702,15 @@ Initializes and configures SQL Reporting Services server.
 
 * [Default configuration](Examples/Resources/SqlRS/1-DefaultConfiguration.ps1)
 * [Custom virtual directories and reserved URLs](Examples/Resources/SqlRS/2-CustomConfiguration.ps1)
+* [Custom virtual directory and using SSL](Examples/Resources/SqlRS/3-CustomConfigurationUsingSsl.ps1)
+
+#### Known issues
+
+* This resource does not currently have full SSL support, please see
+  [issue #587](https://github.com/PowerShell/SqlServerDsc/issues/587) for more
+  information.
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlRS).
 
 #### Error messages
 
@@ -715,28 +728,6 @@ already exist.
 
 This is caused when trying to add another URL using the same protocol. For example
 when trying to add 'http://+:443' when 'http://+:80' already exist.
-
-### SqlRSSecureConnectionLevel
-
-No description.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Reporting Services 2008 or later.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: SQL instance to set secure connection level
-  for.
-* **`[Uint16]` SecureConnectionLevel** _(Key)_: SQL Server Reporting Service secure
-  connection level.
-* **`[PSCredential]` SQLAdminCredential** _(Required)_: Credential with administrative
-  permissions to the SQL instance.
-
-#### Examples
-
-None.
 
 ### SqlScript
 
