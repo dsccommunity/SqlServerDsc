@@ -142,7 +142,7 @@ function Get-TargetResource
         Report Manager/Report Web App URL reservations. Optional.
         If not specified, 'http://+:80' URL reservation will be used.
 
-    .PARAMETER ReportsReservedUrl
+    .PARAMETER UseSsl
         If connections to the Reporting Services must use SSL. If this
         parameter is not assigned a value, the default is that Reporting
         Services does not use SSL.
@@ -173,7 +173,7 @@ function Get-TargetResource
         $reportingServicesData.Configuration.CimClass.CimClassMethods[$methodName].Parameters
         ```
 
-        SecureConnectionLevel:
+        SecureConnectionLevel (the parameter UseSsl):
         The SecureConnectionLevel value can be 0,1,2 or 3, but since
         SQL Server 2008 R2 this was changed. So we are just setting it to 0 (off)
         and 1 (on).
@@ -696,7 +696,7 @@ function Set-TargetResource
         Report Manager/Report Web App URL reservations. Optional.
         If not specified, 'http://+:80' URL reservation will be used.
 
-    .PARAMETER ReportsReservedUrl
+    .PARAMETER UseSsl
         If connections to the Reporting Services must use SSL. If this
         parameter is not assigned a value, the default is that Reporting
         Services does not use SSL.

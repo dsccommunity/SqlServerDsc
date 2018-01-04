@@ -702,6 +702,15 @@ Initializes and configures SQL Reporting Services server.
 
 * [Default configuration](Examples/Resources/SqlRS/1-DefaultConfiguration.ps1)
 * [Custom virtual directories and reserved URLs](Examples/Resources/SqlRS/2-CustomConfiguration.ps1)
+* [Custom virtual directory and using SSL](Examples/Resources/SqlRS/3-CustomConfigurationUsingSsl.ps1)
+
+#### Known issues
+
+* This resource does not currently have full SSL support, please see
+  [issue #587](https://github.com/PowerShell/SqlServerDsc/issues/587) for more
+  information.
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlRS).
 
 #### Error messages
 
