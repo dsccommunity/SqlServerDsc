@@ -242,7 +242,7 @@ It will also manage the Availability Group replica on the specified node.
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlAG).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAG).
 
 ### SqlAGDatabase
 
@@ -307,7 +307,7 @@ group.
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlAGDatabase).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAGDatabase).
 
 ### SqlAGListener
 
@@ -353,7 +353,7 @@ No description.
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlAGListener).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAGListener).
 
 ### SqlAGReplica
 
@@ -426,7 +426,7 @@ Always On Availability Group Replica.
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlAGReplica).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAGReplica).
 
 ### SqlAlias
 
@@ -463,7 +463,7 @@ No description.
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlAlias).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAlias).
 
 ### SqlAlwaysOnService
 
@@ -497,7 +497,7 @@ Enables or disabled SQL Server Always On high availability and disaster recovery
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlAlwaysOnService).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAlwaysOnService).
 
 ### SqlDatabase
 
@@ -529,7 +529,7 @@ database, please read:
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlDatabase).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabase).
 
 ### SqlDatabaseDefaultLocation
 
@@ -569,7 +569,7 @@ more information about database default locations, please read the article
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlDatabaseDefaultLocation).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseDefaultLocation).
 
 ### SqlDatabaseOwner
 
@@ -596,7 +596,7 @@ For more information about database owner, please read the article
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlDatabaseOwner).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseOwner).
 
 ### SqlDatabasePermission
 
@@ -638,7 +638,7 @@ will also get their permission revoked.
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlDatabasePermission).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabasePermission).
 
 ### SqlDatabaseRecoveryModel
 
@@ -668,7 +668,7 @@ Read more about recovery model in this article
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlDatabaseRecoveryModel).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseRecoveryModel).
 
 ### SqlDatabaseRole
 
@@ -701,7 +701,7 @@ Read more about database role in this article [CREATE ROLE (Transact-SQL)](https
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlDatabaseRole).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseRole).
 
 ### SqlRS
 
@@ -757,7 +757,7 @@ Initializes and configures SQL Reporting Services server.
   [issue #587](https://github.com/PowerShell/SqlServerDsc/issues/587) for more
   information.
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlRS).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlRS).
 
 #### Error messages
 
@@ -851,7 +851,7 @@ for more information._
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlScript).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlScript).
 
 ### SqlServerConfiguration
 
@@ -884,7 +884,7 @@ on a SQL Server instance.
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlServerConfiguration).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerConfiguration).
 
 ### SqlServerDatabaseMail
 
@@ -929,7 +929,7 @@ Resource to manage SQL Server Database Mail.
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlServerDatabaseMail).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerDatabaseMail).
 
 ### SqlServerEndpoint
 
@@ -972,7 +972,7 @@ the resource [**SqlServerEndpointPermission**](#sqlserverendpointpermission).
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlServerEndpoint).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpoint).
 
 ### SqlServerEndpointPermission
 
@@ -1003,7 +1003,7 @@ This resource is used to give connect permission to an endpoint for a user (logi
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlServerEndpointPermission).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpointPermission).
 
 ### SqlServerEndpointState
 
@@ -1035,7 +1035,7 @@ This resource is used to set the state of an endpoint.
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlServerEndpointState).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpointState).
 
 ### SqlServerLogin
 
@@ -1078,7 +1078,7 @@ No description.
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlServerLogin).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerLogin).
 
 ### SqlServerMaxDop
 
@@ -1136,7 +1136,7 @@ Read more about max degree of parallelism in this article
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlServerMaxDop).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerMaxDop).
 
 ### SqlServerMemory
 
@@ -1216,7 +1216,7 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlServerMemory).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerMemory).
 
 ### SqlServerNetwork
 
@@ -1260,7 +1260,7 @@ Read more about the network settings in the article
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlServerNetwork).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerNetwork).
 
 ### SqlServerPermission
 
@@ -1295,7 +1295,7 @@ AlterAnyEndPoint and ViewServerState.
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlServerPermission).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerPermission).
 
 ### SqlServerReplication
 
@@ -1335,7 +1335,7 @@ This resource manage SQL Replication distribution and publishing.
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlServerReplication).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerReplication).
 
 ### SqlServerRole
 
@@ -1381,7 +1381,7 @@ server roles, please read the below articles.
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlServerRole).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerRole).
 
 ### SqlServiceAccount
 
@@ -1420,7 +1420,7 @@ Manage the service account for SQL Server services.
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlServiceAccount).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServiceAccount).
 
 ### SqlSetup
 
@@ -1579,7 +1579,7 @@ installing feature Database Engine and Analysis Services respectively.
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlSetup).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlSetup).
 
 ### SqlWaitForAG
 
@@ -1625,7 +1625,7 @@ or that it has finished creating the Availability Group.
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlWaitForAG).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlWaitForAG).
 
 ### SqlWindowsFirewall
 
@@ -1714,4 +1714,4 @@ Port: tcp/135 | SQL Server Integration Services Port
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlWindowsFirewall).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlWindowsFirewall).
