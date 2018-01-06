@@ -59,7 +59,7 @@
   - Fix Script Analyzer warning ([issue #263](https://github.com/PowerShell/SqlServerDsc/issues/263)).
 - Changes to SqlServerRole
   - Added localization ([issue #621](https://github.com/PowerShell/SqlServerDsc/issues/621)).
-  - Added an outline of integration tests.
+  - Added integration tests ([issue #756](https://github.com/PowerShell/SqlServerDsc/issues/756)).
 - Changes to SqlServiceAccount
   - Default services are now properly detected
     ([issue #930](https://github.com/PowerShell/SqlServerDsc/issues/930)).
