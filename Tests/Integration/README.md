@@ -81,3 +81,36 @@ The integration test will change the data, log and backup path of instance
 Data | Log | Backup
 --- | --- | ---
 C:\SQLData | C:\SQLLog | C:\Backups
+
+## SqlServerLogin
+
+**Run order:** 2
+**Depends on:** SqlSetup
+
+The integration tests will leave the following local Windows users on the build
+worker.
+
+Username | Password | Permission
+--- | --- | ---
+DscUser1 | P@ssw0rd1 | Local user
+DscUser2 | P@ssw0rd1 | Local user
+DscUser3 | P@ssw0rd1 | Local user
+
+The integration tests will leave the following local Windows groups on the build
+worker.
+
+Username | Members | Member of | Permission
+--- | --- | --- | ---
+DscSqlUsers1 | DscUser1, DscUser2 | *None* | *None*
+
+The integration tests will leave the following logins on the SQL Server instance
+**DSCSQL2016**.
+
+Login | Type | Password | Permission
+--- | --- | --- | ---
+DscUser1 | Windows | P@ssw0rd1 | *None*
+DscUser2 | Windows | P@ssw0rd1 | *None*
+DscUser4 | SQL | P@ssw0rd1 | *None*
+
+> **Note:** Login DscUser3 was create disabled and was used to test removal of
+> a login.
