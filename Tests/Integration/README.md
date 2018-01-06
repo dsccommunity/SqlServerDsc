@@ -55,6 +55,7 @@ properties `IsClustered` and `IsHadrEnable`.*
 ## SqlRS
 
 **Run order:** 2
+**Depends on:** SqlSetup
 
 The integration tests will install the following instances and leave it on the
 AppVeyor build worker for other integration tests to use.
@@ -74,6 +75,7 @@ DSCRS2016 | RS | The Reporting Services is left initialized, and in a working st
 ## SqlDatabaseDefaultLocation
 
 **Run order:** 2
+**Depends on:** SqlSetup
 
 The integration test will change the data, log and backup path of instance
 **DSCSQL2016** to the following.
@@ -114,3 +116,16 @@ DscUser4 | SQL | P@ssw0rd1 | *None*
 
 > **Note:** Login DscUser3 was create disabled and was used to test removal of
 > a login.
+
+## SqlServerRole
+
+**Run order:** 3
+**Depends on:** SqlSetup, SqlServerLogin
+
+The integration test will keep the following server roles on the SQL Server instance
+**DSCSQL2016**.
+
+Server Role | Members
+--- | ---
+DscServerRole1 | DscUser1, DscUser2
+DscServerRole2 | DscUser4

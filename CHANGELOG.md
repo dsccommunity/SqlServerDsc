@@ -57,6 +57,9 @@
   - Added sysadmin account parameter usage to the examples.
 - Changes to SqlServerReplication
   - Fix Script Analyzer warning ([issue #263](https://github.com/PowerShell/SqlServerDsc/issues/263)).
+- Changes to SqlServerRole
+  - Added localization ([issue #621](https://github.com/PowerShell/SqlServerDsc/issues/621)).
+  - Added an outline of integration tests.
 - Changes to SqlServiceAccount
   - Default services are now properly detected
     ([issue #930](https://github.com/PowerShell/SqlServerDsc/issues/930)).
