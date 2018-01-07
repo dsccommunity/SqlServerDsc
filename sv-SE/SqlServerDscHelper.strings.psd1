@@ -138,14 +138,6 @@ ConvertFrom-StringData @'
     FailedToSetPermissionDatabase = Failed to set permission for login named {0} of the database named {1} on {2}\\{3}.
     FailedToEnumDatabasePermissions = Failed to get permission for login named {0} of the database named {1} on {2}\\{3}.
 
-    # SQLServerRole
-    EnumMemberNamesServerRoleGetError = Failed to enumerate members of the server role named {2} on {0}\\{1}.
-    MembersToIncludeAndExcludeParamMustBeNull = The parameter MembersToInclude and/or MembersToExclude must not be set, or be set to $null, when parameter Members are used.
-    CreateServerRoleSetError = Failed to create the server role named {2} on {0}\\{1}.
-    DropServerRoleSetError = Failed to drop the server role named {2} on {0}\\{1}.
-    AddMemberServerRoleSetError = Failed to add member {3} to the server role named {2} on {0}\\{1}.
-    DropMemberServerRoleSetError = Failed to drop member {3} to the server role named {2} on {0}\\{1}.
-
     # SQLServerNetwork
     UnableToUseBothDynamicAndStaticPort = Unable to set both TCP dynamic port and TCP static port. Only one can be set.
 

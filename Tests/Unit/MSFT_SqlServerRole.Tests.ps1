@@ -240,12 +240,10 @@ try
                         ServerRoleName = $mockSqlServerRole
                     }
 
-                    $throwInvalidOperation = ('Failed to enumerate members of the server role ' + `
-                            'named AdminSqlforBI on localhost\MSSQLSERVER. InnerException: ' + `
-                            'Exception calling "EnumMemberNames" with "0" argument(s): ' + `
-                            '"Mock EnumMemberNames Method was called with invalid operation."')
+                    $errorMessage = $script:localizedData.EnumMemberNamesServerRoleGetError `
+                        -f $mockServerName, $mockInstanceName, $mockSqlServerRole
 
-                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -366,11 +364,9 @@ try
                         MembersToInclude = $mockSqlServerLoginTree
                     }
 
-                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `
-                            'MembersToExclude must not be set, or be set ' + `
-                            'to $null, when parameter Members are used.')
+                    $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
 
-                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -388,11 +384,9 @@ try
                         MembersToExclude = $mockSqlServerLoginTree
                     }
 
-                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `
-                            'MembersToExclude must not be set, or be set ' + `
-                            'to $null, when parameter Members are used.')
+                    $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
 
-                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -613,11 +607,9 @@ try
                         MembersToInclude = $mockSqlServerLoginTree
                     }
 
-                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `
-                            'MembersToExclude must not be set, or be set ' + `
-                            'to $null, when parameter Members are used.')
+                    $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
 
-                    { Test-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Test-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -665,11 +657,9 @@ try
                         MembersToExclude = $mockSqlServerLoginTwo
                     }
 
-                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `
-                            'MembersToExclude must not be set, or be set ' + `
-                            'to $null, when parameter Members are used.')
+                    $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
 
-                    { Test-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Test-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -743,12 +733,10 @@ try
                         ServerRoleName = $mockSqlServerRole
                     }
 
-                    $throwInvalidOperation = ('Failed to drop the server role named AdminSqlforBI on ' + `
-                            'localhost\MSSQLSERVER. InnerException: Exception calling ' + `
-                            '"Drop" with "0" argument(s): "Mock Drop Method ' + `
-                            'was called with invalid operation."')
+                    $errorMessage = $script:localizedData.DropServerRoleSetError `
+                        -f $mockServerName, $mockInstanceName, $mockSqlServerRole
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -787,12 +775,10 @@ try
                         ServerRoleName = $mockSqlServerRoleAdd
                     }
 
-                    $throwInvalidOperation = ('Failed to create the server role named ServerRoleToAdd on ' + `
-                            'localhost\MSSQLSERVER. InnerException: Exception calling ' + `
-                            '"Create" with "0" argument(s): "Mock Create Method ' + `
-                            'was called with invalid operation."')
+                    $errorMessage = $script:localizedData.CreateServerRoleSetError `
+                        -f $mockServerName, $mockInstanceName, $mockSqlServerRoleAdd
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -814,11 +800,9 @@ try
                         MembersToInclude = $mockSqlServerLoginTree
                     }
 
-                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `
-                            'MembersToExclude must not be set, or be set ' + `
-                            'to $null, when parameter Members are used.')
+                    $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -834,11 +818,9 @@ try
                         MembersToExclude = $mockSqlServerLoginTwo
                     }
 
-                    $throwInvalidOperation = ('The parameter MembersToInclude and/or ' + `
-                            'MembersToExclude must not be set, or be set ' + `
-                            'to $null, when parameter Members are used.')
+                    $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -873,11 +855,10 @@ try
                         MembersToInclude = $mockSqlServerLoginTree
                     }
 
-                    $throwInvalidOperation = ('Failed to add member CONTOSO\Lucy to the server role named AdminSqlforBI ' + `
-                            'on localhost\MSSQLSERVER. InnerException: Exception calling "AddMember" ' + `
-                            'with "1" argument(s): "Mock AddMember Method was called with invalid operation."')
+                    $errorMessage = $script:localizedData.AddMemberServerRoleSetError `
+                        -f $mockServerName, $mockInstanceName, $mockSqlServerRole, $mockSqlServerLoginTree
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -894,9 +875,10 @@ try
                         MembersToInclude = 'KingJulian'
                     }
 
-                    $throwInvalidOperation = ("Login 'KingJulian' does not exist on SQL server 'localhost\MSSQLSERVER'.")
+                    $errorMessage = $script:localizedData.LoginNotFound `
+                        -f 'KingJulian', $mockServerName, $mockInstanceName
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -931,11 +913,10 @@ try
                         MembersToExclude = $mockSqlServerLoginTwo
                     }
 
-                    $throwInvalidOperation = ('Failed to drop member CONTOSO\Kelly to the server role named AdminSqlforBI ' + `
-                            'on localhost\MSSQLSERVER. InnerException: Exception calling "DropMember" ' + `
-                            'with "1" argument(s): "Mock DropMember Method was called with invalid operation."')
+                    $errorMessage = $script:localizedData.DropMemberServerRoleSetError `
+                        -f $mockServerName, $mockInstanceName, $mockSqlServerRole, $mockSqlServerLoginTwo
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -953,9 +934,10 @@ try
                         MembersToExclude = 'KingJulian'
                     }
 
-                    $throwInvalidOperation = ("Login 'KingJulian' does not exist on SQL server 'localhost\MSSQLSERVER'.")
+                    $errorMessage = $script:localizedData.LoginNotFound `
+                        -f 'KingJulian', $mockServerName, $mockInstanceName
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -972,9 +954,10 @@ try
                         Members        = @('KingJulian', $mockSqlServerLoginOne, $mockSqlServerLoginTree)
                     }
 
-                    $throwInvalidOperation = ("Login 'KingJulian' does not exist on SQL server 'localhost\MSSQLSERVER'.")
+                    $errorMessage = $script:localizedData.LoginNotFound `
+                     -f 'KingJulian', $mockServerName, $mockInstanceName
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
