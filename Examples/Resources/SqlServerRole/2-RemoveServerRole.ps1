@@ -9,7 +9,7 @@ Configuration Example
     param(
         [Parameter(Mandatory = $true)]
         [PSCredential]
-        $SysAdminAccount
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
@@ -21,7 +21,7 @@ Configuration Example
             ServerRoleName       = 'serverRoleToDelete'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
 }

@@ -14,7 +14,7 @@ Configuration Example
     param(
         [Parameter(Mandatory = $true)]
         [PSCredential]
-        $SysAdminAccount,
+        $SqlAdministratorCredential,
 
         [Parameter(Mandatory = $true)]
         [PSCredential]
@@ -31,7 +31,7 @@ Configuration Example
             LoginType            = 'WindowsUser'
             ServerName           = 'TestServer.company.local'
             InstanceName         = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlServerLogin Add_DisabledWindowsUser
@@ -41,7 +41,7 @@ Configuration Example
             LoginType            = 'WindowsUser'
             ServerName           = 'TestServer.company.local'
             InstanceName         = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
             Disabled             = $true
         }
 
@@ -52,7 +52,7 @@ Configuration Example
             LoginType            = 'WindowsGroup'
             ServerName           = 'TestServer.company.local'
             InstanceName         = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlServerLogin Add_SqlLogin
@@ -66,7 +66,7 @@ Configuration Example
             LoginMustChangePassword        = $false
             LoginPasswordExpirationEnabled = $true
             LoginPasswordPolicyEnforced    = $true
-            PsDscRunAsCredential           = $SysAdminAccount
+            PsDscRunAsCredential           = $SqlAdministratorCredential
         }
     }
 }

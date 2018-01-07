@@ -14,8 +14,7 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $SysAdminAccount
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
@@ -28,7 +27,7 @@ Configuration Example
             DynamicAlloc            = $true
             ServerName              = 'sqltest.company.local'
             InstanceName            = 'DSC'
-            PsDscRunAsCredential    = $SysAdminAccount
+            PsDscRunAsCredential    = $SqlAdministratorCredential
             ProcessOnlyOnActiveNode = $true
         }
     }

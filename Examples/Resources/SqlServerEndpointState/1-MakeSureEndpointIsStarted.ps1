@@ -17,8 +17,7 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $SysAdminAccount
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
@@ -33,7 +32,7 @@ Configuration Example
             Name                 = 'DefaultMirrorEndpoint'
             State                = 'Started'
 
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         # Start the HADR in the default instance
@@ -44,7 +43,7 @@ Configuration Example
             Name                 = 'HADR'
             State                = 'Started'
 
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         # Start the DefaultMirrorEndpoint in the named instance INSTANCE1
@@ -55,7 +54,7 @@ Configuration Example
             Name                 = 'DefaultMirrorEndpoint'
             State                = 'Started'
 
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
 }

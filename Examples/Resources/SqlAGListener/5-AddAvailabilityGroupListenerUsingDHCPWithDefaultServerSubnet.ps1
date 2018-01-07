@@ -8,8 +8,7 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $SysAdminAccount
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
@@ -26,7 +25,7 @@ Configuration Example
             DHCP                 = $true    # Also not specifying parameter DHCP will default to using DHCP with the default server subnet.
             Port                 = 5301
 
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
 }

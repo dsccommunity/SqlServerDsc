@@ -17,25 +17,21 @@ Configuration Example
         [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
         $SqlInstallCredential,
 
         [Parameter()]
         [ValidateNotNullorEmpty()]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
         $SqlAdministratorCredential = $SqlInstallCredential,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
         $SqlServiceCredential,
 
         [Parameter()]
         [ValidateNotNullorEmpty()]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
         $SqlAgentServiceCredential = $SqlServiceCredential
     )
 

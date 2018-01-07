@@ -10,7 +10,6 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
         $SystemAdministratorAccount
     )
 

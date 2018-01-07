@@ -9,7 +9,7 @@ Configuration Example
     param(
         [Parameter(Mandatory = $true)]
         [PSCredential]
-        $SysAdminAccount
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
@@ -22,7 +22,7 @@ Configuration Example
             ServerName           = 'sqltest.company.local\DSC'
             Protocol             = 'TCP'
             TcpPort              = 1777
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlAlias Add_SqlAlias_TCPUseDynamicTcpPort
@@ -32,7 +32,7 @@ Configuration Example
             ServerName           = 'sqltest.company.local\DSC'
             Protocol             = 'TCP'
             UseDynamicTcpPort    = $true
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlAlias Add_SqlAlias_NP
@@ -41,7 +41,7 @@ Configuration Example
             Name                 = 'SQLDSC-NP'
             ServerName           = '\\sqlnode\PIPE\sql\query'
             Protocol             = 'NP'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
 }

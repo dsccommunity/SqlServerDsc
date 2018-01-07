@@ -9,7 +9,7 @@ Configuration Example
     param(
         [Parameter(Mandatory = $true)]
         [PSCredential]
-        $SysAdminAccount
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
@@ -24,7 +24,7 @@ Configuration Example
             Permissions          = 'Connect', 'Update'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlDatabasePermission RevokeDeny_SqlDatabasePermissions_SQLAdmin
@@ -36,7 +36,7 @@ Configuration Example
             Permissions          = 'Select', 'Create Table'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
 }
