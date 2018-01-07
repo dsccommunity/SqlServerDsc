@@ -27,7 +27,7 @@
     and instead opted-in for the common test in the 'DscResource.Tests' repository
     ([issue #669](https://github.com/PowerShell/SqlServerDsc/issues/669)).
   - Added new resource SqlServerDatabaseMail for configuring SQL Server
-    Database Mail.
+    Database Mail ([issue #155](https://github.com/PowerShell/SqlServerDsc/issues/155)).
   - Updated the helper function Test-SQLDscParameterState to handle the
     data type UInt16.
   - Fixed typo in SqlServerDscCommon.Tests.
@@ -38,8 +38,14 @@
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
+- Changes to SqlAlwaysOnService
+  - Refactor integration tests slightly to improve run time performance
+    ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
 - Changes to SqlDatabase
   - Fix minor Script Analyzer warning.
+- Changes to SqlDatabaseDefaultLocation
+  - Refactor integration tests slightly to improve run time performance
+    ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
 - Changes to SqlServerEndpoint
   - Updated README.md with links to the examples
     ([issue #504](https://github.com/PowerShell/SqlServerDsc/issues/504)).
@@ -51,6 +57,8 @@
     Reporting Services to use SSL when connecting ([issue #990](https://github.com/PowerShell/SqlServerDsc/issues/990)).
   - Added complete example for SqlRS (based on the integration tests)
     ([issue #634](https://github.com/PowerShell/SqlServerDsc/issues/634)).
+  - Refactor integration tests slightly to improve run time performance
+    ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
 - Changes to SqlServerLogin
   - Added integration tests ([issue #748](https://github.com/PowerShell/SqlServerDsc/issues/748)).
 - Changes to SqlServerNetwork
@@ -76,6 +84,8 @@
     and Tabular mode.
   - Cleaned up integration tests.
   - Added integration tests for installing a default instance of Database Engine.
+  - Refactor integration tests slightly to improve run time performance
+    ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
 
 ## 10.0.0.0
 
