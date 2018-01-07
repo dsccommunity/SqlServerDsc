@@ -130,7 +130,7 @@ function Get-TargetResource
                         {
                             Write-Verbose -Message (
                                 $script:localizedData.MemberPresent `
-                                    -f $ServerRoleName, $memberToInclude
+                                    -f $ServerRoleName, $memberToExclude
                             )
 
                             $ensure = 'Absent'

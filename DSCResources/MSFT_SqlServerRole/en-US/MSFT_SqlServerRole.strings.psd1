@@ -1,4 +1,4 @@
-# Localized resources for SqlSetup
+# Localized resources for SqlServerRole
 
 ConvertFrom-StringData @'
     GetProperties = Getting properties of the SQL Server role '{0}'.
