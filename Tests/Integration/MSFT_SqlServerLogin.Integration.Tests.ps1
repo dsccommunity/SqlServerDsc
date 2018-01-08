@@ -114,13 +114,13 @@ try
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
-                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+                {
+                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                } | Should -Not -Throw
             }
 
             It 'Should have set the resource and all the parameters should match' {
-                $currentConfiguration = Get-DscConfiguration
-
-                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
                     $_.ConfigurationName -eq $configurationName
                 } | Where-Object -FilterScript {
                     $_.ResourceId -eq $resourceId
@@ -161,13 +161,13 @@ try
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
-                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+                {
+                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                } | Should -Not -Throw
             }
 
             It 'Should have set the resource and all the parameters should match' {
-                $currentConfiguration = Get-DscConfiguration
-
-                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
                     $_.ConfigurationName -eq $configurationName
                 } | Where-Object -FilterScript {
                     $_.ResourceId -eq $resourceId
@@ -208,13 +208,13 @@ try
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
-                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+                {
+                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                } | Should -Not -Throw
             }
 
             It 'Should have set the resource and all the parameters should match' {
-                $currentConfiguration = Get-DscConfiguration
-
-                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
                     $_.ConfigurationName -eq $configurationName
                 } | Where-Object -FilterScript {
                     $_.ResourceId -eq $resourceId
@@ -256,13 +256,13 @@ try
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
-                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+                {
+                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                } | Should -Not -Throw
             }
 
             It 'Should have set the resource and all the parameters should match' {
-                $currentConfiguration = Get-DscConfiguration
-
-                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
                     $_.ConfigurationName -eq $configurationName
                 } | Where-Object -FilterScript {
                     $_.ResourceId -eq $resourceId
@@ -303,13 +303,13 @@ try
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
-                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+                {
+                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                } | Should -Not -Throw
             }
 
             It 'Should have set the resource and all the parameters should match' {
-                $currentConfiguration = Get-DscConfiguration
-
-                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
                     $_.ConfigurationName -eq $configurationName
                 } | Where-Object -FilterScript {
                     $_.ResourceId -eq $resourceId
@@ -350,13 +350,13 @@ try
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
-                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+                {
+                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                } | Should -Not -Throw
             }
 
             It 'Should have set the resource and all the parameters should match' {
-                $currentConfiguration = Get-DscConfiguration
-
-                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
                     $_.ConfigurationName -eq $configurationName
                 } | Where-Object -FilterScript {
                     $_.ResourceId -eq $resourceId

@@ -59,7 +59,7 @@ $ConfigurationData = @{
     )
 }
 
-Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
+Configuration MSFT_SqlSetup_CreateDependencies_Config
 {
     param
     (
@@ -96,7 +96,6 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
 
     Import-DscResource -ModuleName 'PSDscResources'
     Import-DscResource -ModuleName 'xStorage'
-    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost {
         xMountImage 'MountIsoMedia'
@@ -167,7 +166,37 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
             Name   = 'NET-Framework-45-Core'
             Ensure = 'Present'
         }
+    }
+}
 
+Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlInstallCredential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlAdministratorCredential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlServicePrimaryCredential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlAgentServicePrimaryCredential
+    )
+
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node localhost {
         SqlSetup 'Integration_Test'
         {
             InstanceName          = $Node.DatabaseEngineNamedInstanceName
@@ -199,18 +228,6 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
             # This must be set if using SYSTEM account to install.
             ASSysAdminAccounts    = @(
                 $SqlAdministratorCredential.UserName
-            )
-
-            DependsOn             = @(
-                '[xMountImage]MountIsoMedia'
-                '[User]CreateSqlServicePrimaryAccount'
-                '[User]CreateSqlAgentServicePrimaryAccount'
-                '[User]CreateSqlServiceSecondaryAccount'
-                '[User]CreateSqlAgentServiceSecondaryAccount'
-                '[User]CreateSqlInstallAccount'
-                '[Group]AddSqlInstallAsAdministrator'
-                '[User]CreateSqlAdminAccount'
-                '[WindowsFeature]NetFramework45'
             )
         }
     }

@@ -25,6 +25,41 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 #endregion
 
+<#
+    .SYNOPSIS
+        This function will output the Setup Bootstrap Summary.txt log file.
+
+    .DESCRIPTION
+        This function will output the Summary.txt log file, this is to be
+        able to debug any problems that potentially occurred during setup.
+        This will pick up the newest Summary.txt log file, so any
+        other log files will be ignored (AppVeyor build worker has
+        SQL Server instances installed by default).
+        This code is meant to work regardless what SQL Server
+        major version is used for the integration test.
+#>
+function Show-SqlBootstrapLog
+{
+    [CmdletBinding()]
+    param
+    (
+    )
+
+    $summaryLogPath = Get-ChildItem -Path 'C:\Program Files\Microsoft SQL Server\**\Setup Bootstrap\Log\Summary.txt' |
+        Sort-Object -Property LastWriteTime -Descending |
+        Select-Object -First 1
+
+    $summaryLog = Get-Content $summaryLogPath
+
+    Write-Verbose -Message $('-' * 80) -Verbose
+    Write-Verbose -Message 'Summary.txt' -Verbose
+    Write-Verbose -Message $('-' * 80) -Verbose
+    $summaryLog | ForEach-Object {
+        Write-Verbose $_ -Verbose
+    }
+    Write-Verbose -Message $('-' * 80) -Verbose
+}
+
 
 <#
     Workaround for issue #774. In the appveyor.yml file the folder
@@ -113,12 +148,12 @@ try
     $mockSqlAgentServiceSecondaryAccountUserName = "$env:COMPUTERNAME\svc-SqlAgentSec"
     $mockSqlAgentServiceSecondaryCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAgentServiceSecondaryAccountUserName, $mockSqlAgentServiceSecondaryAccountPassword
 
-    Describe "$($script:DSCResourceName)_InstallDatabaseEngineNamedInstanceAsSystem_Integration" {
+    Describe "$($script:DSCResourceName)_Integration" {
         BeforeAll {
             $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
         }
 
-        $configurationName = "$($script:DSCResourceName)_InstallDatabaseEngineNamedInstanceAsSystem_Config"
+        $configurationName = "$($script:DSCResourceName)_CreateDependencies_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -148,43 +183,53 @@ try
 
                     Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
+            }
+        }
+
+        $configurationName = "$($script:DSCResourceName)_InstallDatabaseEngineNamedInstanceAsSystem_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        SqlInstallCredential               = $mockSqlInstallCredential
+                        SqlAdministratorCredential         = $mockSqlAdminCredential
+                        SqlServicePrimaryCredential        = $mockSqlServicePrimaryCredential
+                        SqlAgentServicePrimaryCredential   = $mockSqlAgentServicePrimaryCredential
+                        OutputPath                         = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData                  = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
             } -ErrorVariable itBlockError
 
             # Check if previous It-block failed. If so output the SQL Server setup log file.
             if ( $itBlockError.Count -ne 0 )
             {
-                <#
-                    Below code will output the Summary.txt log file, this is to be
-                    able to debug any problems that potentially occurred during setup.
-                    This will pick up the newest Summary.txt log file, so any
-                    other log files will be ignored (AppVeyor build worker has
-                    SQL Server instances installed by default).
-                    This code is meant to work regardless what SQL Server
-                    major version is used for the integration test.
-                #>
-                $summaryLogPath = Get-ChildItem -Path 'C:\Program Files\Microsoft SQL Server\**\Setup Bootstrap\Log\Summary.txt' |
-                    Sort-Object -Property LastWriteTime -Descending |
-                    Select-Object -First 1
-
-                $summaryLog = Get-Content $summaryLogPath
-
-                Write-Verbose -Message $('-' * 80) -Verbose
-                Write-Verbose -Message 'Summary.txt' -Verbose
-                Write-Verbose -Message $('-' * 80) -Verbose
-                $summaryLog | ForEach-Object {
-                    Write-Verbose $_ -Verbose
-                }
-                Write-Verbose -Message $('-' * 80) -Verbose
+                Show-SqlBootstrapLog
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
-                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+                {
+                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                } | Should -Not -Throw
             }
 
             It 'Should have set the resource and all the parameters should match' {
-                $currentConfiguration = Get-DscConfiguration
-
-                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
                     $_.ConfigurationName -eq $configurationName
                 } | Where-Object -FilterScript {
                     $_.ResourceId -eq $resourceId
@@ -289,38 +334,17 @@ try
             # Check if previous It-block failed. If so output the SQL Server setup log file.
             if ( $itBlockError.Count -ne 0 )
             {
-                <#
-                    Below code will output the Summary.txt log file, this is to be
-                    able to debug any problems that potentially occurred during setup.
-                    This will pick up the newest Summary.txt log file, so any
-                    other log files will be ignored (AppVeyor build worker has
-                    SQL Server instances installed by default).
-                    This code is meant to work regardless what SQL Server
-                    major version is used for the integration test.
-                #>
-                $summaryLogPath = Get-ChildItem -Path 'C:\Program Files\Microsoft SQL Server\**\Setup Bootstrap\Log\Summary.txt' |
-                    Sort-Object -Property LastWriteTime -Descending |
-                    Select-Object -First 1
-
-                $summaryLog = Get-Content $summaryLogPath
-
-                Write-Verbose -Message $('-' * 80) -Verbose
-                Write-Verbose -Message 'Summary.txt' -Verbose
-                Write-Verbose -Message $('-' * 80) -Verbose
-                $summaryLog | ForEach-Object {
-                    Write-Verbose $_ -Verbose
-                }
-                Write-Verbose -Message $('-' * 80) -Verbose
+                Show-SqlBootstrapLog
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
-                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+                {
+                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                } | Should -Not -Throw
             }
 
             It 'Should have set the resource and all the parameters should match' {
-                $currentConfiguration = Get-DscConfiguration
-
-                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
                     $_.ConfigurationName -eq $configurationName
                 } | Where-Object -FilterScript {
                     $_.ResourceId -eq $resourceId
@@ -421,38 +445,17 @@ try
             # Check if previous It-block failed. If so output the SQL Server setup log file.
             if ( $itBlockError.Count -ne 0 )
             {
-                <#
-                    Below code will output the Summary.txt log file, this is to be
-                    able to debug any problems that potentially occurred during setup.
-                    This will pick up the newest Summary.txt log file, so any
-                    other log files will be ignored (AppVeyor build worker has
-                    SQL Server instances installed by default).
-                    This code is meant to work regardless what SQL Server
-                    major version is used for the integration test.
-                #>
-                $summaryLogPath = Get-ChildItem -Path 'C:\Program Files\Microsoft SQL Server\**\Setup Bootstrap\Log\Summary.txt' |
-                    Sort-Object -Property LastWriteTime -Descending |
-                    Select-Object -First 1
-
-                $summaryLog = Get-Content $summaryLogPath
-
-                Write-Verbose -Message $('-' * 80) -Verbose
-                Write-Verbose -Message 'Summary.txt' -Verbose
-                Write-Verbose -Message $('-' * 80) -Verbose
-                $summaryLog | ForEach-Object {
-                    Write-Verbose $_ -Verbose
-                }
-                Write-Verbose -Message $('-' * 80) -Verbose
+                Show-SqlBootstrapLog
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
-                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+                {
+                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                } | Should -Not -Throw
             }
 
             It 'Should have set the resource and all the parameters should match' {
-                $currentConfiguration = Get-DscConfiguration
-
-                $resourceCurrentState = $currentConfiguration | Where-Object -FilterScript {
+                $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
                     $_.ConfigurationName -eq $configurationName
                 } | Where-Object -FilterScript {
                     $_.ResourceId -eq $resourceId

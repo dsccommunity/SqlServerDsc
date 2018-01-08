@@ -30,7 +30,7 @@ $ConfigurationData = @{
     )
 }
 
-Configuration MSFT_SqlRS_InstallReportingServices_Config
+Configuration MSFT_SqlRS_CreateDependencies_Config
 {
     param
     (
@@ -91,14 +91,29 @@ Configuration MSFT_SqlRS_InstallReportingServices_Config
             ForceReboot           = $Node.ForceReboot
 
             DependsOn             = @(
-                '[xMountImage]MountIsoMedia'
+                '[xWaitForVolume]WaitForMountOfIsoMedia'
                 '[User]CreateReportingServicesServiceAccount'
                 '[WindowsFeature]NetFramework45'
             )
 
             PsDscRunAsCredential  = $SqlInstallCredential
         }
+    }
+}
 
+Configuration MSFT_SqlRS_InstallReportingServices_Config
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlInstallCredential
+    )
+
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node localhost {
         SqlRS 'Integration_Test'
         {
             # Instance name for the Reporting Services.
@@ -112,10 +127,6 @@ Configuration MSFT_SqlRS_InstallReportingServices_Config
             DatabaseInstanceName = $Node.DatabaseInstanceName
 
             PsDscRunAsCredential = $SqlInstallCredential
-
-            DependsOn            = @(
-                '[SqlSetup]InstallReportingServicesInstance'
-            )
         }
     }
 }

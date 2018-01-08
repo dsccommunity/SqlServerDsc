@@ -15,18 +15,9 @@ $ConfigurationData = @{
     )
 }
 
-Configuration MSFT_SqlAlwaysOnService_EnableAlwaysOn_Config
+Configuration MSFT_SqlAlwaysOnService_CreateDependencies_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential
-    )
-
     Import-DscResource -ModuleName 'PSDscResources'
-    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost {
         WindowsFeature 'AddFeatureFailoverClustering'
@@ -72,6 +63,9 @@ Configuration MSFT_SqlAlwaysOnService_EnableAlwaysOn_Config
 
                     # Ignoring warnings that cluster might not be able to start correctly.
                     WarningAction             = 'SilentlyContinue'
+
+                    # Make sure to stop on any error.
+                    ErrorAction               = 'Stop'
                 }
 
                 Write-Verbose -Message ('Creating Active Directory-Detached cluster ''{0}'' with IP address ''{1}''.' -f $newClusterParameters.Name, $clusterStaticIpAddress)
@@ -121,8 +115,29 @@ Configuration MSFT_SqlAlwaysOnService_EnableAlwaysOn_Config
                     Result = $clusterName
                 }
             }
-        }
 
+            DependsOn            = @(
+                '[WindowsFeature]AddFeatureFailoverClustering'
+                '[WindowsFeature]AddFeatureFailoverClusteringPowerShellModule'
+            )
+
+        }
+    }
+}
+
+Configuration MSFT_SqlAlwaysOnService_EnableAlwaysOn_Config
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlInstallCredential
+    )
+
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node localhost {
         SqlAlwaysOnService 'Integration_Test'
         {
             Ensure               = 'Present'
@@ -131,12 +146,6 @@ Configuration MSFT_SqlAlwaysOnService_EnableAlwaysOn_Config
             RestartTimeout       = $Node.RestartTimeout
 
             PsDscRunAsCredential = $SqlInstallCredential
-
-            DependsOn            = @(
-                '[WindowsFeature]AddFeatureFailoverClustering'
-                '[WindowsFeature]AddFeatureFailoverClusteringPowerShellModule'
-                '[Script]CreateActiveDirectoryDetachedCluster'
-            )
         }
     }
 }
