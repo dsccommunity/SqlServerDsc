@@ -13,11 +13,11 @@ Configuration Example
 {
     param(
         [Parameter(Mandatory = $true)]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         $SqlAdministratorCredential,
 
         [Parameter(Mandatory = $true)]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         $LoginCredential
     )
 
