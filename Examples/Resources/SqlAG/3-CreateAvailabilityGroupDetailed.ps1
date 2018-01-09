@@ -50,8 +50,8 @@ Configuration Example
 {
     param(
         [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $SysAdminAccount
+        [System.Management.Automation.PSCredential]
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
@@ -65,7 +65,7 @@ Configuration Example
             LoginType            = 'WindowsUser'
             ServerName           = $Node.NodeName
             InstanceName         = $Node.InstanceName
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         # Add the required permissions to the cluster service login
@@ -77,7 +77,7 @@ Configuration Example
             InstanceName         = $Node.InstanceName
             Principal            = 'NT SERVICE\ClusSvc'
             Permission           = 'AlterAnyAvailabilityGroup', 'ViewServerState'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         # Create a DatabaseMirroring endpoint
@@ -88,7 +88,7 @@ Configuration Example
             Port                 = 5022
             ServerName           = $Node.NodeName
             InstanceName         = $Node.InstanceName
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         if ( $Node.Role -eq 'PrimaryReplica' )
@@ -116,7 +116,7 @@ Configuration Example
                 DtcSupportEnabled             = $Node.DtcSupportEnabled
 
                 DependsOn                     = '[SqlServerEndpoint]HADREndpoint', '[SqlServerPermission]AddNTServiceClusSvcPermissions'
-                PsDscRunAsCredential          = $SysAdminAccount
+                PsDscRunAsCredential          = $SqlAdministratorCredential
             }
         }
     }

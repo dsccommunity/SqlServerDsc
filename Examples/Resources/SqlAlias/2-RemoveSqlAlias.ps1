@@ -8,8 +8,8 @@ Configuration Example
 {
     param(
         [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $SysAdminAccount
+        [System.Management.Automation.PSCredential]
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
@@ -22,7 +22,7 @@ Configuration Example
             ServerName           = 'sqltest.company.local\DSC'
             Protocol             = 'TCP'
             TcpPort              = 1777
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlAlias Remove_SqlAlias_NP
@@ -31,7 +31,7 @@ Configuration Example
             Name                 = 'SQLDSC-NP'
             ServerName           = '\\sqlnode\PIPE\sql\query'
             Protocol             = 'NP'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
 }

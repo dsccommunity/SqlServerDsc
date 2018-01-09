@@ -40,17 +40,14 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $SysAdminAccount,
+        $SqlAdministratorCredential,
 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
         $SqlServiceNode1Credential,
 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
         $SqlServiceNode2Credential
     )
 
@@ -67,7 +64,7 @@ Configuration Example
             Principal            = $SqlServiceNode1Credential.UserName
             Permission           = 'CONNECT'
 
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlServerEndpointPermission SQLConfigureEndpointPermissionSecondary
@@ -79,7 +76,7 @@ Configuration Example
             Principal            = $SqlServiceNode2Credential.UserName
             Permission           = 'CONNECT'
 
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
 
@@ -94,7 +91,7 @@ Configuration Example
             Principal            = $SqlServiceNode1Credential.UserName
             Permission           = 'CONNECT'
 
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlServerEndpointPermission SQLConfigureEndpointPermissionSecondary
@@ -106,7 +103,7 @@ Configuration Example
             Principal            = $SqlServiceNode2Credential.UserName
             Permission           = 'CONNECT'
 
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
 }

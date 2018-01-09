@@ -9,12 +9,10 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $SysAdminAccount,
+        $SqlAdministratorCredential,
 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
         $SqlServiceCredential
     )
 
@@ -31,7 +29,7 @@ Configuration Example
             Principal            = $SqlServiceCredential.UserName
             Permission           = 'CONNECT'
 
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
 }

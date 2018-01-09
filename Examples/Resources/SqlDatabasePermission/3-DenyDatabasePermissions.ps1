@@ -8,8 +8,8 @@ Configuration Example
 {
     param(
         [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $SysAdminAccount
+        [System.Management.Automation.PSCredential]
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
@@ -22,7 +22,7 @@ Configuration Example
             LoginType            = 'WindowsUser'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlServerLogin Add_SqlServerLogin_SQLUser
@@ -32,7 +32,7 @@ Configuration Example
             LoginType            = 'WindowsUser'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlDatabasePermission Deny_SqlDatabasePermissions_SQLAdmin_Db01
@@ -44,7 +44,7 @@ Configuration Example
             Permissions          = 'Select', 'Create Table'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlDatabasePermission Deny_SqlDatabasePermissions_SQLUser_Db01
@@ -56,7 +56,7 @@ Configuration Example
             Permissions          = 'Select', 'Create Table'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlDatabasePermission Deny_SqlDatabasePermissions_SQLAdmin_Db02
@@ -68,7 +68,7 @@ Configuration Example
             Permissions          = 'Select', 'Create Table'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
 }

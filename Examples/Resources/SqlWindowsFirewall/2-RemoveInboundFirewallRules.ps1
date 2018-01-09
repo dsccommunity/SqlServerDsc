@@ -8,8 +8,7 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $SysAdminAccount
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
@@ -23,7 +22,7 @@ Configuration Example
             InstanceName         = 'SQL2012'
             SourcePath           = '\\files.company.local\images\SQL2012'
 
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlWindowsFirewall Remove_FirewallRules_For_SQL2016
@@ -33,7 +32,7 @@ Configuration Example
             InstanceName     = 'SQL2016'
             SourcePath       = '\\files.company.local\images\SQL2016'
 
-            SourceCredential = $SysAdminAccount
+            SourceCredential = $SqlAdministratorCredential
         }
     }
 }

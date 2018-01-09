@@ -8,8 +8,7 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $SysAdminAccount
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
@@ -20,11 +19,11 @@ Configuration Example
         {
             Ensure               = 'Present'
             InstanceName         = 'MSSQLSERVER'
-            AdminLinkCredentials = $SysAdminAccount
+            AdminLinkCredentials = $SqlAdministratorCredential
             DistributorMode      = 'Local'
             WorkingDirectory     = 'C:\Temp'
 
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
 }
