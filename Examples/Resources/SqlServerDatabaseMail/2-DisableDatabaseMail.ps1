@@ -1,6 +1,7 @@
 <#
     .EXAMPLE
-        This example will disable Database Mail on a SQL Server instance.
+        This example will remove the mail profile and the mail account and
+        disable Database Mail on a SQL Server instance.
 
 #>
 $ConfigurationData = @{
@@ -56,6 +57,20 @@ Configuration Example
             MailServerName       = $Node.MailServerName
 
             PsDscRunAsCredential = $SqlInstallCredential
+        }
+
+        <#
+            Don't disable the Database Mail XPs if there are still mail accounts
+            left configured.
+        #>
+        SqlServerConfiguration 'DisableDatabaseMailXPs'
+        {
+
+            ServerName     = $Node.ServerName
+            InstanceName   = $Node.InstanceName
+            OptionName     = 'Database Mail XPs'
+            OptionValue    = 0
+            RestartService = $false
         }
     }
 }

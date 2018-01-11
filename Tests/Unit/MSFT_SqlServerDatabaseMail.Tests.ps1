@@ -142,11 +142,7 @@ try
                 return New-Object -TypeName Object |
                     Add-Member -MemberType ScriptProperty -Name 'DatabaseMailEnabled' -Value {
                     return New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name 'RunValue' -Value $mockDynamicDatabaseMailEnabledRunValue -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'ConfigValue' -Value $mockDatabaseMailDisabledConfigValue -PassThru -Force
-                } -PassThru |
-                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                    $script:ConfigurationAlterMethodCallCount += 1
+                        Add-Member -MemberType NoteProperty -Name 'RunValue' -Value $mockDynamicDatabaseMailEnabledRunValue -PassThru -Force
                 } -PassThru -Force
             } -PassThru |
                 Add-Member -MemberType ScriptProperty -Name 'Mail' -Value {
@@ -502,7 +498,6 @@ try
 
                 $setTargetResourceParameters = $mockDefaultParameters.Clone()
 
-                $script:ConfigurationAlterMethodCallCount = 0
                 $script:MailAccountCreateMethodCallCount = 0
                 $script:MailServerRenameMethodCallCount = 0
                 $script:MailServerAlterMethodCallCount = 0
@@ -526,14 +521,24 @@ try
                         $setTargetResourceParameters['AccountName'] = $mockMissingAccountName
                         $setTargetResourceParameters['ProfileName'] = 'MissingProfile'
 
-                        $mockDynamicDatabaseMailEnabledRunValue = $mockDatabaseMailDisabledConfigValue
                         $mockDynamicAgentMailType = $mockAgentMailTypeSqlAgentMail
                         $mockDynamicDatabaseMailProfile = $null
                     }
 
                     It 'Should call the correct methods without throwing' {
                         { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
-                        $script:ConfigurationAlterMethodCallCount | Should -Be 0
+                        $script:MailAccountCreateMethodCallCount | Should -Be 0
+                        $script:MailServerRenameMethodCallCount | Should -Be 0
+                        $script:MailServerAlterMethodCallCount | Should -Be 0
+                        $script:MailAccountAlterMethodCallCount | Should -Be 0
+                        $script:MailProfileCreateMethodCallCount | Should -Be 0
+                        $script:MailProfileAlterMethodCallCount | Should -Be 0
+                        $script:MailProfileAddPrincipalMethodCallCount | Should -Be 0
+                        $script:MailProfileAddAccountMethodCallCount | Should -Be 0
+                        $script:JobServerAlterMethodCallCount | Should -Be 0
+                        $script:LoggingLevelAlterMethodCallCount | Should -Be 0
+                        $script:MailProfileDropMethodCallCount | Should -Be 0
+                        $script:MailAccountDropMethodCallCount | Should -Be 0
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -550,7 +555,18 @@ try
 
                     It 'Should call the correct methods without throwing' {
                         { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
-                        $script:ConfigurationAlterMethodCallCount | Should -Be 0
+                        $script:MailAccountCreateMethodCallCount | Should -Be 0
+                        $script:MailServerRenameMethodCallCount | Should -Be 0
+                        $script:MailServerAlterMethodCallCount | Should -Be 0
+                        $script:MailAccountAlterMethodCallCount | Should -Be 0
+                        $script:MailProfileCreateMethodCallCount | Should -Be 0
+                        $script:MailProfileAlterMethodCallCount | Should -Be 0
+                        $script:MailProfileAddPrincipalMethodCallCount | Should -Be 0
+                        $script:MailProfileAddAccountMethodCallCount | Should -Be 0
+                        $script:JobServerAlterMethodCallCount | Should -Be 0
+                        $script:LoggingLevelAlterMethodCallCount | Should -Be 0
+                        $script:MailProfileDropMethodCallCount | Should -Be 0
+                        $script:MailAccountDropMethodCallCount | Should -Be 0
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -568,7 +584,6 @@ try
                         $script:JobServerAlterMethodCallCount | Should -Be 1
                         $script:MailProfileDropMethodCallCount | Should -Be 1
                         $script:MailAccountDropMethodCallCount | Should -Be 1
-                        $script:ConfigurationAlterMethodCallCount | Should -Be 1
                     }
                 }
 
@@ -576,30 +591,16 @@ try
                     Context 'When Database Mail XPs is enabled but fails evaluation' {
                         $mockDynamicDatabaseMailEnabledRunValue = $mockDatabaseMailDisabledConfigValue
 
-                        <#
-                            Note: This test also tests the code that enables
-                            Database Mail XPs.
-                            Because of how the current code is written it is not
-                            possible to verify that the code works without it
-                            throwing (can't mock the property
-                            $sqlServerObject.Configuration.DatabaseMailEnabled.RunValue
-                            to be both 0 before running and then changing the
-                            mock to 1 during testing to pass evaluation)
-                        #>
                         It 'Should throw the correct error message' {
                             {
                                 Set-TargetResource @setTargetResourceParameters
                             } | Should -Throw $script:localizedData.DatabaseMailDisabled
-
-                            $script:ConfigurationAlterMethodCallCount | Should -Be 1
 
                             Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                         }
                     }
 
                     Context 'When account name is missing' {
-                        #$mockDynamicDatabaseMailEnabledRunValue = $mockDatabaseMailDisabledConfigValue
-
                         It 'Should call the correct methods without throwing' {
                             $setTargetResourceParameters['AccountName'] = $mockMissingAccountName
                             $setTargetResourceParameters['DisplayName'] = $mockDisplayName
@@ -609,7 +610,6 @@ try
                             $setTargetResourceParameters['TcpPort'] = $mockTcpPort
 
                             { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
-                            $script:ConfigurationAlterMethodCallCount | Should -Be 0
                             $script:MailAccountCreateMethodCallCount | Should -Be 1
                             $script:MailServerRenameMethodCallCount | Should -Be 1
                             $script:MailServerAlterMethodCallCount | Should -Be 1
@@ -707,7 +707,6 @@ try
 
                             { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
 
-                            $script:ConfigurationAlterMethodCallCount | Should -Be 0
                             $script:MailAccountCreateMethodCallCount | Should -Be 0
 
                             if ($TestName -like '*MailServerName*')

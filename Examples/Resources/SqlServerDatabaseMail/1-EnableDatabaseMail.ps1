@@ -1,6 +1,7 @@
 <#
     .EXAMPLE
-        This example will enable Database Mail on a SQL Server instance.
+        This example will enable Database Mail on a SQL Server instance and
+        create a mail account with a default public profile.
 
 #>
 $ConfigurationData = @{
@@ -45,6 +46,16 @@ Configuration Example
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost {
+        SqlServerConfiguration 'EnableDatabaseMailXPs'
+        {
+
+            ServerName     = $Node.ServerName
+            InstanceName   = $Node.InstanceName
+            OptionName     = 'Database Mail XPs'
+            OptionValue    = 1
+            RestartService = $false
+        }
+
         SqlServerDatabaseMail 'EnableDatabaseMail'
         {
             Ensure               = 'Present'

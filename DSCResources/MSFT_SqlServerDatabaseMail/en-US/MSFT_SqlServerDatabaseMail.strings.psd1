@@ -1,5 +1,5 @@
 <#
-    Localized resources for MSFT_SqlServerDatabasemail
+    Localized resources for MSFT_SqlServerDatabaseMail
 
     Note: The named text strings MailServerProperty* are used in conjunction with
     UpdatingPropertyOfMailServer to build a complete localized string.
@@ -11,7 +11,6 @@ ConvertFrom-StringData @'
     GetConfiguration = Account name '{0}' was found, returning the current state of the Database Mail configuration.
     DatabaseMailDisabled = SQL Server Database Mail is disabled. Database Mail XPs are disabled.
     AccountIsMissing = Account name '{0}' was not found.
-    EnablingDatabaseMail = Database Mail XPs are set to {0}. Configure the SQL Server instance '{1}\\{2}' to enable Database Mail.
     ChangingLoggingLevel = Changing the SQL Server Database Mail logging level to '{0}' (value '{1}').
     CurrentLoggingLevel = SQL Server Database Mail logging level is '{0}' (value '{1}').
     CreatingMailAccount = Creating the mail account '{0}'.
