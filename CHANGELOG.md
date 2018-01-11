@@ -38,6 +38,9 @@
   - Style changes in all examples, removing type [System.Management.Automation.Credential()]
     from credential parameters ([issue #1003](https://github.com/PowerShell/SqlServerDsc/issues/1003)),
     and renamed the credential parameter so it is not using abbreviation.
+  - Updated the security token for AppVeyor status badge in README.md. When we
+    renamed the repository the security token was changed
+    ([issue #1012](https://github.com/PowerShell/SqlServerDsc/issues/1012)).
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
