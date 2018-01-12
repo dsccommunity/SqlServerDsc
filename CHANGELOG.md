@@ -64,6 +64,8 @@
     ([issue #504](https://github.com/PowerShell/SqlServerDsc/issues/504)).
 - Changes to SqlServerMemory
   - Minor style cleanup of code in tests.
+- Changes to SqlScript
+  - Fixed minor typos in comment-based help.
 - Changes to SqlRS
   - Replaced Get-WmiObject with Get-CimInstance to fix Script Analyzer warnings
     ([issue #264](https://github.com/PowerShell/SqlServerDsc/issues/264)).
