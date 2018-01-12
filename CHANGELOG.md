@@ -44,6 +44,9 @@
   - Fixed typo in comment-base help for helper function Test-AvailabilityReplicaSeedingModeAutomatic.
 - Changes to SqlAGListener
   - Fixed typo in comment-based help.
+- Changes to SqlAGReplica
+  - Minor code style cleanup. Removed unused variable and instead piped the cmdlet
+    Join-SqlAvailabilityGroup to Out-Null.
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).

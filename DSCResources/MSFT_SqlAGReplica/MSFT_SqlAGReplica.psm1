@@ -443,7 +443,7 @@ function Set-TargetResource
                     # Join the Availability Group Replica to the Availability Group
                     try
                     {
-                        $joinAvailabilityGroupResults = Join-SqlAvailabilityGroup -Name $AvailabilityGroupName -InputObject $serverObject
+                        Join-SqlAvailabilityGroup -Name $AvailabilityGroupName -InputObject $serverObject | Out-Null
                     }
                     catch
                     {
