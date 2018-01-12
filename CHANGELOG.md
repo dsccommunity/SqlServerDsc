@@ -66,6 +66,10 @@
 - Changes to SqlServerEndpoint
   - Updated README.md with links to the examples
     ([issue #504](https://github.com/PowerShell/SqlServerDsc/issues/504)).
+- Changes to SqlServerLogin
+  - Minor code style cleanup.
+  - Removed unused variable and instead piped the helper function Connect-SQL to
+    Out-Null.
 - Changes to SqlServerMaxDop
   - Minor style changes in the helper function Get-SqlDscDynamicMaxDop.
 - Changes to SqlServerMemory

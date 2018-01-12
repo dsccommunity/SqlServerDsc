@@ -412,11 +412,11 @@ function Test-TargetResource
             # If testPassed is still true and a login credential was specified, test the password
             if ( $testPassed -and $LoginCredential )
             {
-                $userCred = [System.Management.Automation.PSCredential]::new($Name, $LoginCredential.Password)
+                $userCredential = [System.Management.Automation.PSCredential]::new($Name, $LoginCredential.Password)
 
                 try
                 {
-                    $serverObject = Connect-SQL -SQLServer $ServerName -SQLInstanceName $InstanceName -SetupCredential $userCred
+                    Connect-SQL -SQLServer $ServerName -SQLInstanceName $InstanceName -SetupCredential $userCredential | Out-Null
                 }
                 catch
                 {
