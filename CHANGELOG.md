@@ -93,6 +93,9 @@
   - Added integration tests for installing a default instance of Database Engine.
   - Refactor integration tests slightly to improve run time performance
     ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
+  - Added PSSA rule 'PSUseDeclaredVarsMoreThanAssignments' override in the
+    function Set-TargetResource for the variable $global:DSCMachineStatus.
+  - Style cleanup in helper function ConvertTo-Decimal.
 
 ## 10.0.0.0
 
