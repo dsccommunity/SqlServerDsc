@@ -76,6 +76,8 @@
   - Minor style cleanup of code in tests.
 - Changed to SqlServerPermission
   - Fixed minor typos in comment-based help.
+- Changed to SqlServerReplication
+  - Fixed minor typos in verbose messages.
 - Changes to SqlScript
   - Fixed minor typos in comment-based help.
 - Changes to SqlRS
