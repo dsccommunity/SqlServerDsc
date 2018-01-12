@@ -47,6 +47,7 @@
 - Changes to SqlAGReplica
   - Minor code style cleanup. Removed unused variable and instead piped the cmdlet
     Join-SqlAvailabilityGroup to Out-Null.
+  - Fixed minor typos in comment-based help.
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
@@ -59,6 +60,8 @@
   - Refactor integration tests slightly to improve run time performance
     ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
   - Minor style cleanup of code in tests.
+- Changed to SqlServerConfiguration
+  - Fixed minor typos in comment-based help.
 - Changes to SqlServerEndpoint
   - Updated README.md with links to the examples
     ([issue #504](https://github.com/PowerShell/SqlServerDsc/issues/504)).
