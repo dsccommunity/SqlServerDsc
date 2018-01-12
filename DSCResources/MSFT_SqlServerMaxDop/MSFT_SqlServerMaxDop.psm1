@@ -292,31 +292,31 @@ function Get-SqlDscDynamicMaxDop
     $cimInstanceProc = Get-CimInstance -ClassName Win32_Processor
 
     # init variables
-    $numProcs = 0
-    $numCores = 0
+    $numberOfLogicalProcessors = 0
+    $numberOfCores = 0
 
     # Loop through returned objects
     foreach ($processor in $cimInstanceProc)
     {
         # increment number of processors
-        $numProcs += $processor.NumberOfLogicalProcessors
+        $numberOfLogicalProcessors += $processor.NumberOfLogicalProcessors
 
         # increment number of cores
-        $numCores += $processor.NumberOfCores
+        $numberOfCores += $processor.NumberOfCores
     }
 
 
-    if ($numProcs -eq 1)
+    if ($numberOfLogicalProcessors -eq 1)
     {
-        $dynamicMaxDop = [Math]::Round($numCores / 2, [System.MidpointRounding]::AwayFromZero)
+        $dynamicMaxDop = [Math]::Round($numberOfCores / 2, [System.MidpointRounding]::AwayFromZero)
     }
-    elseif ($numCores -ge 8)
+    elseif ($numberOfCores -ge 8)
     {
         $dynamicMaxDop = 8
     }
     else
     {
-        $dynamicMaxDop = $numCores
+        $dynamicMaxDop = $numberOfCores
     }
 
     $dynamicMaxDop
