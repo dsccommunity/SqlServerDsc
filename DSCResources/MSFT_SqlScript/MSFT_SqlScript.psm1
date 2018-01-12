@@ -270,7 +270,7 @@ function Test-TargetResource
         Path to SQL script file that will be executed.
 
     .PARAMETER Credential
-        The credentials to use to authenticate using SQL Authentication. To authenticate using Windows Authentication, assing the credentials
+        The credentials to use to authenticate using SQL Authentication. To authenticate using Windows Authentication, assign the credentials
         to the built-in parameter 'PsDscRunAsCredential'. If both parameters 'Credential' and 'PsDscRunAsCredential' are not assigned, then
         the SYSTEM account will be used to authenticate using Windows Authentication.
 
