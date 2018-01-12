@@ -71,7 +71,7 @@
     ([issue #634](https://github.com/PowerShell/SqlServerDsc/issues/634)).
   - Refactor integration tests slightly to improve run time performance
     ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
-- Changed to SqlServerConfiguration
+- Changes to SqlServerConfiguration
   - Fixed minor typos in comment-based help.
 - Changes to SqlServerEndpoint
   - Updated README.md with links to the examples
@@ -85,9 +85,9 @@
   - Minor style changes in the helper function Get-SqlDscDynamicMaxDop.
 - Changes to SqlServerMemory
   - Minor style cleanup of code in tests.
-- Changed to SqlServerPermission
+- Changes to SqlServerPermission
   - Fixed minor typos in comment-based help.
-- Changed to SqlServerReplication
+- Changes to SqlServerReplication
   - Fixed minor typos in verbose messages.
 - Changes to SqlScript
   - Fixed minor typos in comment-based help.
