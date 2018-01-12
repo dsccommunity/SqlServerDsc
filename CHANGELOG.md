@@ -41,6 +41,7 @@
   - Updated the security token for AppVeyor status badge in README.md. When we
     renamed the repository the security token was changed
     ([issue #1012](https://github.com/PowerShell/SqlServerDsc/issues/1012)).
+  - Fixed typo in comment-base help for helper function Test-AvailabilityReplicaSeedingModeAutomatic.
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
