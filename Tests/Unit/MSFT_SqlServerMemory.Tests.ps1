@@ -142,13 +142,13 @@ try
             Mock -CommandName Get-CimInstance -MockWith {
                 $mockGetCimInstanceMem = @()
 
-                $mockGetCimInstanceMem += New-Object -TypeName psobject -Property @{
+                $mockGetCimInstanceMem += New-Object -TypeName PSObject -Property @{
                     Name     = 'Physical Memory'
                     Tag      = 'Physical Memory 0'
                     Capacity = 8589934592
                 }
 
-                $mockGetCimInstanceMem += New-Object -TypeName psobject -Property @{
+                $mockGetCimInstanceMem += New-Object -TypeName PSObject -Property @{
                     Name     = 'Physical Memory'
                     Tag      = 'Physical Memory 1'
                     Capacity = 8589934592
@@ -482,13 +482,13 @@ try
             Mock -CommandName Get-CimInstance -MockWith {
                 $mockGetCimInstanceMem = @()
 
-                $mockGetCimInstanceMem += New-Object -TypeName psobject -Property @{
+                $mockGetCimInstanceMem += New-Object -TypeName PSObject -Property @{
                     Name     = 'Physical Memory'
                     Tag      = 'Physical Memory 0'
                     Capacity = 17179869184
                 }
 
-                $mockGetCimInstanceMem += New-Object -TypeName psobject -Property @{
+                $mockGetCimInstanceMem += New-Object -TypeName PSObject -Property @{
                     Name     = 'Physical Memory'
                     Tag      = 'Physical Memory 1'
                     Capacity = 17179869184
