@@ -303,7 +303,7 @@ function Set-TargetResource
             # Determine if the Availability Group exists on the instance
             if ( $availabilityGroup )
             {
-                # Make sure the replia exists on the instance. If the availability group exists, the replica should exist.
+                # Make sure the replica exists on the instance. If the availability group exists, the replica should exist.
                 $availabilityGroupReplica = $availabilityGroup.AvailabilityReplicas[$Name]
                 if ( $availabilityGroupReplica )
                 {
