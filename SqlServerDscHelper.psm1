@@ -842,6 +842,61 @@ function Restart-SqlService
             $_ | Start-Service
         }
     }
+
+    Write-Verbose -Message ($script:localizedData.WaitingInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout) -Verbose
+
+    $startJobScriptBlock = {
+        param
+        (
+            [Parameter()]
+            [System.String]
+            $ServerName,
+
+            [Parameter()]
+            [System.String]
+            $InstanceName,
+
+            [Parameter()]
+            [System.String]
+            $ScriptRoot
+        )
+
+        Import-Module -Name (Join-Path -Path $ScriptRoot -ChildPath 'SqlServerDscHelper.psm1')
+
+        do
+        {
+            # This call, if it fails, will take between ~9-10 seconds to return.
+            $serverObject = Connect-SQL -SQLServer $ServerName -SQLInstanceName $InstanceName -ErrorAction SilentlyContinue
+            if ($serverObject.Status -ne 'Online')
+            {
+                # Waiting 2 seconds to not hammer the SQL Server instance.
+                Start-Sleep -Seconds 2
+            }
+        } until ($serverObject.Status -eq 'Online')
+    }
+
+    $startJobResult = Start-Job -ScriptBlock $startJobScriptBlock -ArgumentList @(
+        $SQLServer
+        $SQLInstanceName
+        $PSScriptRoot
+    )
+
+    Wait-Job -Job $startJobResult -Timeout $Timeout
+
+    if ($startJobResult.JobStateInfo.State -ne 'Completed')
+    {
+        # Output any verbose messages and error messages.
+        Receive-Job -Job $startJobResult
+
+        # Make sure the job is stopped.
+        Stop-Job -Job $startJobResult
+
+        $errorMessage = $script:localizedData.FailedToConnectToInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout
+        New-InvalidOperationException -Message $errorMessage
+    }
+
+    # Make sure the job is removed.
+    Remove-Job -Job $startJobResult -Force
 }
 
 <#
