@@ -16,7 +16,7 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
         Hostname of the SQL Server to be configured.
 
     .PARAMETER InstanceName
-        Name of the SQL instance to be configued.
+        Name of the SQL instance to be configured.
 #>
 function Get-TargetResource
 {
@@ -118,7 +118,7 @@ function Get-TargetResource
         Hostname of the SQL Server to be configured.
 
     .PARAMETER InstanceName
-        Name of the SQL instance to be configued.
+        Name of the SQL instance to be configured.
 
     .PARAMETER PrimaryReplicaServerName
         Hostname of the SQL Server where the primary replica is expected to be active. If the primary replica is not found here, the resource will attempt to find the host that holds the primary replica and connect to it.
@@ -474,7 +474,7 @@ function Set-TargetResource
         Hostname of the SQL Server to be configured.
 
     .PARAMETER InstanceName
-        Name of the SQL instance to be configued.
+        Name of the SQL instance to be configured.
 
     .PARAMETER PrimaryReplicaServerName
         Hostname of the SQL Server where the primary replica is expected to be active. If the primary replica is not found here, the resource will attempt to find the host that holds the primary replica and connect to it.
