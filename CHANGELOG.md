@@ -108,6 +108,7 @@
   - Added a read-only parameter ServiceAccountName so that the service account
     name is correctly returned as a string ([issue #982](https://github.com/PowerShell/SqlServerDsc/issues/982)).
   - Added integration tests ([issue #980](https://github.com/PowerShell/SqlServerDsc/issues/980)).
+  - Minor code style cleanup.
 - Changes to SqlSetup
   - Added parameter `ASServerMode` to support installing Analysis Services in
     Multidimensional mode, Tabular mode and PowerPivot mode
