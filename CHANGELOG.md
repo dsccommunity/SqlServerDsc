@@ -122,6 +122,9 @@
   - Added PSSA rule 'PSUseDeclaredVarsMoreThanAssignments' override in the
     function Set-TargetResource for the variable $global:DSCMachineStatus.
   - Style cleanup in helper function ConvertTo-Decimal.
+- Changes to SqlWindowsFirewall
+  - Fixed minor typos in comment-based help.
+  - Minor code style cleanup.
 
 ## 10.0.0.0
 
