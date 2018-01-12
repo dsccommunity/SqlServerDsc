@@ -61,12 +61,23 @@
   - Refactor integration tests slightly to improve run time performance
     ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
   - Minor style cleanup of code in tests.
+- Changes to SqlRS
+  - Replaced Get-WmiObject with Get-CimInstance to fix Script Analyzer warnings
+    ([issue #264](https://github.com/PowerShell/SqlServerDsc/issues/264)).
+  - Refactored the resource to use Invoke-CimMethod.
+  - Added parameter UseSsl which when set to $true forces connections to the
+    Reporting Services to use SSL when connecting ([issue #990](https://github.com/PowerShell/SqlServerDsc/issues/990)).
+  - Added complete example for SqlRS (based on the integration tests)
+    ([issue #634](https://github.com/PowerShell/SqlServerDsc/issues/634)).
+  - Refactor integration tests slightly to improve run time performance
+    ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
 - Changed to SqlServerConfiguration
   - Fixed minor typos in comment-based help.
 - Changes to SqlServerEndpoint
   - Updated README.md with links to the examples
     ([issue #504](https://github.com/PowerShell/SqlServerDsc/issues/504)).
 - Changes to SqlServerLogin
+  - Added integration tests ([issue #748](https://github.com/PowerShell/SqlServerDsc/issues/748)).
   - Minor code style cleanup.
   - Removed unused variable and instead piped the helper function Connect-SQL to
     Out-Null.
@@ -80,18 +91,6 @@
   - Fixed minor typos in verbose messages.
 - Changes to SqlScript
   - Fixed minor typos in comment-based help.
-- Changes to SqlRS
-  - Replaced Get-WmiObject with Get-CimInstance to fix Script Analyzer warnings
-    ([issue #264](https://github.com/PowerShell/SqlServerDsc/issues/264)).
-  - Refactored the resource to use Invoke-CimMethod.
-  - Added parameter UseSsl which when set to $true forces connections to the
-    Reporting Services to use SSL when connecting ([issue #990](https://github.com/PowerShell/SqlServerDsc/issues/990)).
-  - Added complete example for SqlRS (based on the integration tests)
-    ([issue #634](https://github.com/PowerShell/SqlServerDsc/issues/634)).
-  - Refactor integration tests slightly to improve run time performance
-    ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
-- Changes to SqlServerLogin
-  - Added integration tests ([issue #748](https://github.com/PowerShell/SqlServerDsc/issues/748)).
 - Changes to SqlServerNetwork
   - Added sysadmin account parameter usage to the examples.
 - Changes to SqlServerReplication
