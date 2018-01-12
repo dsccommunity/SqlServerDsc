@@ -74,6 +74,8 @@
   - Minor style changes in the helper function Get-SqlDscDynamicMaxDop.
 - Changes to SqlServerMemory
   - Minor style cleanup of code in tests.
+- Changed to SqlServerPermission
+  - Fixed minor typos in comment-based help.
 - Changes to SqlScript
   - Fixed minor typos in comment-based help.
 - Changes to SqlRS
