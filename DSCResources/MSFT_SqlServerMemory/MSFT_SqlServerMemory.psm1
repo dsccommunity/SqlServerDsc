@@ -365,7 +365,7 @@ function Get-SqlDscDynamicMaxMemory
             $numberOfSqlThreads = 0
         }
 
-        $operatingSystemArchitecture = (Get-CimInstance -ClassName Win32_operatingsystem).OSArchitecture
+        $operatingSystemArchitecture = (Get-CimInstance -ClassName Win32_OperatingSystem).OSArchitecture
 
         # Find threadStackSize 1MB x86/ 2MB x64/ 4MB IA64
         if ($operatingSystemArchitecture -eq '32-bit')
