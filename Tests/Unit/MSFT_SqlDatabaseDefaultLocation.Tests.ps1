@@ -84,21 +84,21 @@ try
                 Type               = 'Data'
                 Path               = $mockSqlDataPath
                 AlterPath          = $mockSqlAlterDataPath
-                ExepectedAlterPath = $mockExpectedAlterDataPath
+                ExpectedAlterPath = $mockExpectedAlterDataPath
                 InvalidPath        = $mockInvalidPathForData
             },
             @{
                 Type               = 'Log'
                 Path               = $mockSqlLogPath
                 AlterPath          = $mockSqlAlterLogPath
-                ExepectedAlterPath = $mockExpectedAlterLogPath
+                ExpectedAlterPath = $mockExpectedAlterLogPath
                 InvalidPath        = $mockInvalidPathForLog
             },
             @{
                 Type               = 'Backup'
                 Path               = $mockSqlBackupPath
                 AlterPath          = $mockSqlAlterBackupPath
-                ExepectedAlterPath = $mockExpectedAlterBackupPath
+                ExpectedAlterPath = $mockExpectedAlterBackupPath
                 InvalidPath        = $mockInvalidPathForBackup
             }
         )
@@ -110,7 +110,7 @@ try
                 Mock -CommandName Test-ActiveNode -Mockwith {
                     param
                     (
-                        [psobject]
+                        [PSObject]
                         $ServerObject
                     )
 
@@ -278,14 +278,14 @@ try
                     $Type,
                     $Path,
                     $AlterPath,
-                    $ExepectedAlterPath
+                    $ExpectedAlterPath
                 )
 
                 $throwInvalidOperation = "Changing the default path failed."
 
                 $setTargetResourceParameters = @{
                     Type           = $Type
-                    Path           = $ExepectedAlterPath
+                    Path           = $ExpectedAlterPath
                     RestartService = $mockRestartService
                 }
 

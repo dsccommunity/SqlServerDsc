@@ -53,6 +53,7 @@
 - Changes to SqlDatabaseDefaultLocation
   - Refactor integration tests slightly to improve run time performance
     ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
+  - Minor style cleanup of code in tests.
 - Changes to SqlServerEndpoint
   - Updated README.md with links to the examples
     ([issue #504](https://github.com/PowerShell/SqlServerDsc/issues/504)).
