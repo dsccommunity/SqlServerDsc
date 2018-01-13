@@ -848,15 +848,15 @@ function Restart-SqlService
     $startJobScriptBlock = {
         param
         (
-            [Parameter()]
+            [Parameter(Mandatory = $true)]
             [System.String]
             $ServerName,
 
-            [Parameter()]
+            [Parameter(Mandatory = $true)]
             [System.String]
             $InstanceName,
 
-            [Parameter()]
+            [Parameter(Mandatory = $true)]
             [System.String]
             $ScriptRoot
         )
@@ -875,28 +875,35 @@ function Restart-SqlService
         } until ($serverObject.Status -eq 'Online')
     }
 
-    $startJobResult = Start-Job -ScriptBlock $startJobScriptBlock -ArgumentList @(
-        $SQLServer
-        $SQLInstanceName
-        $PSScriptRoot
-    )
-
-    Wait-Job -Job $startJobResult -Timeout $Timeout
-
-    if ($startJobResult.JobStateInfo.State -ne 'Completed')
+    try
     {
-        # Output any verbose messages and error messages.
-        Receive-Job -Job $startJobResult
+        $startJobResult = Start-Job -ScriptBlock $startJobScriptBlock -ArgumentList @(
+            $SQLServer
+            $SQLInstanceName
+            $PSScriptRoot
+        )
 
-        # Make sure the job is stopped.
-        Stop-Job -Job $startJobResult
+        Wait-Job -Job $startJobResult -Timeout $Timeout
 
-        $errorMessage = $script:localizedData.FailedToConnectToInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout
-        New-InvalidOperationException -Message $errorMessage
+        if ($startJobResult.JobStateInfo.State -ne 'Completed')
+        {
+            # Output any verbose messages and error messages.
+            Receive-Job -Job $startJobResult
+
+            $errorMessage = $script:localizedData.FailedToConnectToInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout
+            New-InvalidOperationException -Message $errorMessage
+        }
     }
-
-    # Make sure the job is removed.
-    Remove-Job -Job $startJobResult -Force
+    catch
+    {
+        $errorMessage = $script:localizedData.FailedToValidateInstanceOnline
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+    }
+    finally
+    {
+        # Make sure the job is removed.
+        Remove-Job -Job $startJobResult -Force
+    }
 }
 
 <#
