@@ -890,11 +890,14 @@ All issues are not listed here, see [here for all open issues](https://github.co
 
 Resource to manage SQL Server Database Mail.
 
+>**Note:** Database Mail XPs can be enabled using the resource SqlServerConfiguration.
+
 #### Requirements
 
 * Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 * Target machine must be running SQL Server Agent.
+* Target machine must have enabled Database Mail XPs.
 
 #### Parameters
 

@@ -35,6 +35,16 @@ Configuration MSFT_SqlServerDatabaseMail_Add_Config
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost {
+        SqlServerConfiguration 'EnableDatabaseMailXPs'
+        {
+
+            ServerName     = $Node.ServerName
+            InstanceName   = $Node.InstanceName
+            OptionName     = 'Database Mail XPs'
+            OptionValue    = 1
+            RestartService = $false
+        }
+
         SqlServerDatabaseMail 'Integration_Test'
         {
             Ensure               = 'Present'
@@ -79,6 +89,16 @@ Configuration MSFT_SqlServerDatabaseMail_Remove_Config
             MailServerName       = $Node.MailServerName
 
             PsDscRunAsCredential = $SqlInstallCredential
+        }
+
+        SqlServerConfiguration 'DisableDatabaseMailXPs'
+        {
+
+            ServerName     = $Node.ServerName
+            InstanceName   = $Node.InstanceName
+            OptionName     = 'Database Mail XPs'
+            OptionValue    = 0
+            RestartService = $false
         }
     }
 }

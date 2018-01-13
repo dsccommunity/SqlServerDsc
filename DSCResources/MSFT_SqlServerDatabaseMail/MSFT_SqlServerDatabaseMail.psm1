@@ -300,25 +300,6 @@ function Set-TargetResource
         {
 
             $databaseMailEnabledRunValue = $sqlServerObject.Configuration.DatabaseMailEnabled.RunValue
-            if ($databaseMailEnabledRunValue -ne 1)
-            {
-                Write-Verbose -Message (
-                    $script:localizedData.EnablingDatabaseMail `
-                        -f $databaseMailEnabledRunValue, $ServerName, $InstanceName
-                )
-
-                $sqlServerObject.Configuration.DatabaseMailEnabled.ConfigValue = 1
-                $sqlServerObject.Configuration.Alter()
-
-                # Set $databaseMailEnabledRunValue to the updated value.
-                $databaseMailEnabledRunValue = $sqlServerObject.Configuration.DatabaseMailEnabled.RunValue
-
-                Write-Verbose -Message (
-                    $script:localizedData.DatabaseMailEnabled `
-                        -f $databaseMailEnabledRunValue
-                )
-            }
-
             if ($databaseMailEnabledRunValue -eq 1)
             {
                 $databaseMail = $sqlServerObject.Mail
@@ -593,20 +574,6 @@ function Set-TargetResource
                 )
 
                 $databaseMailAccount.Drop()
-            }
-
-            $databaseMailEnabledRunValue = $sqlServerObject.Configuration.DatabaseMailEnabled.RunValue
-            if ($databaseMailEnabledRunValue -eq 1)
-            {
-                $sqlServerObject.Configuration.DatabaseMailEnabled.ConfigValue = 0
-                $sqlServerObject.Configuration.Alter()
-
-                # Set $databaseMailEnabledRunValue to the updated value.
-                $databaseMailEnabledRunValue = $sqlServerObject.Configuration.DatabaseMailEnabled.RunValue
-
-                Write-Verbose -Message (
-                    $script:localizedData.DatabaseMailDisabled
-                )
             }
         }
     }
