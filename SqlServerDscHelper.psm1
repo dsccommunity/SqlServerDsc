@@ -1080,7 +1080,7 @@ function Test-LoginEffectivePermissions
         The name of the availability group to check.
 
     .PARAMETER AvailabilityReplicaName
-        The name of the availabilitiy replica to check.
+        The name of the availability replica to check.
 #>
 function Test-AvailabilityReplicaSeedingModeAutomatic
 {
@@ -1215,7 +1215,7 @@ function Test-ImpersonatePermissions
         The full SQL instance name string to be split.
 
     .OUTPUTS
-        Hashtable with the properties SQLServer and SQLInstanceName.
+        Hash table with the properties SQLServer and SQLInstanceName.
 #>
 function Split-FullSQLInstanceName
 {

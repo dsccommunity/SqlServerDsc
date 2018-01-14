@@ -413,7 +413,7 @@ function Get-SqlServiceName
     # Ensure we got a service definition
     if ($serviceTypeDefinition)
     {
-        # Multiple definitions found (thank you SSRS!)
+        # Multiple definitions found (thank you SQL Server Reporting Services!)
         if ($serviceTypeDefinition.Count -gt 0)
         {
             $serviceNamingScheme = $serviceTypeDefinition | ForEach-Object -Process {

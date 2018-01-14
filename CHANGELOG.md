@@ -41,6 +41,14 @@
   - Updated the security token for AppVeyor status badge in README.md. When we
     renamed the repository the security token was changed
     ([issue #1012](https://github.com/PowerShell/SqlServerDsc/issues/1012)).
+  - Fixed typo in comment-base help for helper function Test-AvailabilityReplicaSeedingModeAutomatic.
+- Changes to SqlAGListener
+  - Fixed typo in comment-based help.
+- Changes to SqlAGReplica
+  - Minor code style cleanup. Removed unused variable and instead piped the cmdlet
+    Join-SqlAvailabilityGroup to Out-Null.
+  - Fixed minor typos in comment-based help.
+  - Fixed minor typos in comment.
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
@@ -52,9 +60,7 @@
 - Changes to SqlDatabaseDefaultLocation
   - Refactor integration tests slightly to improve run time performance
     ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
-- Changes to SqlServerEndpoint
-  - Updated README.md with links to the examples
-    ([issue #504](https://github.com/PowerShell/SqlServerDsc/issues/504)).
+  - Minor style cleanup of code in tests.
 - Changes to SqlRS
   - Replaced Get-WmiObject with Get-CimInstance to fix Script Analyzer warnings
     ([issue #264](https://github.com/PowerShell/SqlServerDsc/issues/264)).
@@ -65,8 +71,26 @@
     ([issue #634](https://github.com/PowerShell/SqlServerDsc/issues/634)).
   - Refactor integration tests slightly to improve run time performance
     ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
+- Changes to SqlServerConfiguration
+  - Fixed minor typos in comment-based help.
+- Changes to SqlServerEndpoint
+  - Updated README.md with links to the examples
+    ([issue #504](https://github.com/PowerShell/SqlServerDsc/issues/504)).
 - Changes to SqlServerLogin
   - Added integration tests ([issue #748](https://github.com/PowerShell/SqlServerDsc/issues/748)).
+  - Minor code style cleanup.
+  - Removed unused variable and instead piped the helper function Connect-SQL to
+    Out-Null.
+- Changes to SqlServerMaxDop
+  - Minor style changes in the helper function Get-SqlDscDynamicMaxDop.
+- Changes to SqlServerMemory
+  - Minor style cleanup of code in tests.
+- Changes to SqlServerPermission
+  - Fixed minor typos in comment-based help.
+- Changes to SqlServerReplication
+  - Fixed minor typos in verbose messages.
+- Changes to SqlScript
+  - Fixed minor typos in comment-based help.
 - Changes to SqlServerNetwork
   - Added sysadmin account parameter usage to the examples.
 - Changes to SqlServerReplication
@@ -83,6 +107,7 @@
   - Added a read-only parameter ServiceAccountName so that the service account
     name is correctly returned as a string ([issue #982](https://github.com/PowerShell/SqlServerDsc/issues/982)).
   - Added integration tests ([issue #980](https://github.com/PowerShell/SqlServerDsc/issues/980)).
+  - Minor code style cleanup.
 - Changes to SqlSetup
   - Added parameter `ASServerMode` to support installing Analysis Services in
     Multidimensional mode, Tabular mode and PowerPivot mode
@@ -93,6 +118,12 @@
   - Added integration tests for installing a default instance of Database Engine.
   - Refactor integration tests slightly to improve run time performance
     ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
+  - Added PSSA rule 'PSUseDeclaredVarsMoreThanAssignments' override in the
+    function Set-TargetResource for the variable $global:DSCMachineStatus.
+  - Style cleanup in helper function ConvertTo-Decimal.
+- Changes to SqlWindowsFirewall
+  - Fixed minor typos in comment-based help.
+  - Minor code style cleanup.
 
 ## 10.0.0.0
 

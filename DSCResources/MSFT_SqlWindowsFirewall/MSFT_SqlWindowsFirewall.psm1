@@ -9,7 +9,7 @@ Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script
         The path to the root of the source files for installation. I.e and UNC path to a shared resource.  Environment variables can be used in the path.
 
     .PARAMETER Features
-        One or more SQL feature to create default firewall rules for. Each feature should be seperated with a comma, i.e. 'SQLEngine,IS,RS'.
+        One or more SQL feature to create default firewall rules for. Each feature should be separated with a comma, i.e. 'SQLEngine,IS,RS'.
 
     .PARAMETER SourceCredential
         Credentials used to access the path set in the parameter `SourcePath`.
@@ -309,7 +309,7 @@ function Get-TargetResource
         The path to the root of the source files for installation. I.e and UNC path to a shared resource.  Environment variables can be used in the path.
 
     .PARAMETER Features
-        One or more SQL feature to create default firewall rules for. Each feature should be seperated with a comma, i.e. 'SQLEngine,IS,RS'.
+        One or more SQL feature to create default firewall rules for. Each feature should be separated with a comma, i.e. 'SQLEngine,IS,RS'.
 
     .PARAMETER SourceCredential
         Credentials used to access the path set in the parameter `SourcePath`.
@@ -567,7 +567,7 @@ function Set-TargetResource
         The path to the root of the source files for installation. I.e and UNC path to a shared resource.  Environment variables can be used in the path.
 
     .PARAMETER Features
-        One or more SQL feature to create default firewall rules for. Each feature should be seperated with a comma, i.e. 'SQLEngine,IS,RS'.
+        One or more SQL feature to create default firewall rules for. Each feature should be separated with a comma, i.e. 'SQLEngine,IS,RS'.
 
     .PARAMETER SourceCredential
         Credentials used to access the path set in the parameter `SourcePath`.
@@ -610,7 +610,7 @@ function Test-TargetResource
 
 <#
     .SYNOPSIS
-        Get the path to SQL Server executables.
+        Get the path to SQL Server executable.
 
     .PARAMETER Feature
         String containing the feature name for which to get the path.
@@ -646,16 +646,16 @@ function Get-SQLPath
         {
             'SQLENGINE'
             {
-                $productinstanceId = 'SQL'
+                $productInstanceId = 'SQL'
             }
 
             'AS'
             {
-                $productinstanceId = 'OLAP'
+                $productInstanceId = 'OLAP'
             }
         }
 
-        $instanceId = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\$($productinstanceId)" -Name $InstanceName).$InstanceName
+        $instanceId = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\$($productInstanceId)" -Name $InstanceName).$InstanceName
         $path = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($instanceId)\setup" -Name 'SQLBinRoot').SQLBinRoot
     }
 
@@ -684,7 +684,7 @@ function Get-SQLPath
         String containing the direction of traffic for the the firewall rule. It can be either 'Inbound' or 'Outbound'.
 
     .PARAMETER Program
-        String containing the path to an executable. This paramater is optional.
+        String containing the path to an executable. This parameter is optional.
 
     .PARAMETER Service
         String containing the name of a service for the firewall rule. This parameter is optional.

@@ -142,13 +142,13 @@ try
             Mock -CommandName Get-CimInstance -MockWith {
                 $mockGetCimInstanceMem = @()
 
-                $mockGetCimInstanceMem += New-Object -TypeName psobject -Property @{
+                $mockGetCimInstanceMem += New-Object -TypeName PSObject -Property @{
                     Name     = 'Physical Memory'
                     Tag      = 'Physical Memory 0'
                     Capacity = 8589934592
                 }
 
-                $mockGetCimInstanceMem += New-Object -TypeName psobject -Property @{
+                $mockGetCimInstanceMem += New-Object -TypeName PSObject -Property @{
                     Name     = 'Physical Memory'
                     Tag      = 'Physical Memory 1'
                     Capacity = 8589934592
@@ -171,7 +171,7 @@ try
                 }
 
                 $mockGetCimInstanceOS
-            } -ParameterFilter { $ClassName -eq 'Win32_operatingsystem' } -Verifiable
+            } -ParameterFilter { $ClassName -eq 'Win32_OperatingSystem' } -Verifiable
 
             Mock -CommandName Test-ActiveNode -MockWith { return $mockTestActiveNode } -Verifiable
 
@@ -312,9 +312,9 @@ try
                     } -Scope Context
                 }
 
-                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_operatingsystem' {
+                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_OperatingSystem' {
                     Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
-                        $ClassName -eq 'Win32_operatingsystem'
+                        $ClassName -eq 'Win32_OperatingSystem'
                     } -Scope Context
                 }
             }
@@ -356,9 +356,9 @@ try
                     } -Scope Context
                 }
 
-                It 'Should not call the mock function Get-CimInstance with ClassName equal to Win32_operatingsystem' {
+                It 'Should not call the mock function Get-CimInstance with ClassName equal to Win32_OperatingSystem' {
                     Assert-MockCalled Get-CimInstance -Exactly -Times 0 -ParameterFilter {
-                        $ClassName -eq 'Win32_operatingsystem'
+                        $ClassName -eq 'Win32_OperatingSystem'
                     } -Scope Context
                 }
             }
@@ -396,9 +396,9 @@ try
                     } -Scope Context
                 }
 
-                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_operatingsystem' {
+                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_OperatingSystem' {
                     Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
-                        $ClassName -eq 'Win32_operatingsystem'
+                        $ClassName -eq 'Win32_OperatingSystem'
                     } -Scope Context
                 }
             }
@@ -482,13 +482,13 @@ try
             Mock -CommandName Get-CimInstance -MockWith {
                 $mockGetCimInstanceMem = @()
 
-                $mockGetCimInstanceMem += New-Object -TypeName psobject -Property @{
+                $mockGetCimInstanceMem += New-Object -TypeName PSObject -Property @{
                     Name     = 'Physical Memory'
                     Tag      = 'Physical Memory 0'
                     Capacity = 17179869184
                 }
 
-                $mockGetCimInstanceMem += New-Object -TypeName psobject -Property @{
+                $mockGetCimInstanceMem += New-Object -TypeName PSObject -Property @{
                     Name     = 'Physical Memory'
                     Tag      = 'Physical Memory 1'
                     Capacity = 17179869184
@@ -511,7 +511,7 @@ try
                 }
 
                 $mockGetCimInstanceOS
-            } -ParameterFilter { $ClassName -eq 'Win32_operatingsystem' } -Verifiable
+            } -ParameterFilter { $ClassName -eq 'Win32_OperatingSystem' } -Verifiable
 
             Context 'When the MaxMemory parameter is not null and DynamicAlloc is set to true' {
                 $testParameters = $mockDefaultParameters
@@ -631,9 +631,9 @@ try
                     } -Scope Context
                 }
 
-                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_operatingsystem' {
+                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_OperatingSystem' {
                     Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
-                        $ClassName -eq 'Win32_operatingsystem'
+                        $ClassName -eq 'Win32_OperatingSystem'
                     } -Scope Context
                 }
             }
@@ -644,7 +644,7 @@ try
                 }
 
                 $mockGetCimInstanceOS
-            } -ParameterFilter { $ClassName -eq 'Win32_operatingsystem' } -Verifiable
+            } -ParameterFilter { $ClassName -eq 'Win32_OperatingSystem' } -Verifiable
 
             Context 'When the system (OS 32-bit) is not in the desired state and Ensure is set to Present, and DynamicAlloc is set to true' {
                 $testParameters = $mockDefaultParameters
@@ -673,9 +673,9 @@ try
                     } -Scope Context
                 }
 
-                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_operatingsystem' {
+                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_OperatingSystem' {
                     Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
-                        $ClassName -eq 'Win32_operatingsystem'
+                        $ClassName -eq 'Win32_OperatingSystem'
                     } -Scope Context
                 }
             }
@@ -734,7 +734,7 @@ try
 
             Mock -CommandName Get-CimInstance -MockWith {
                 throw
-            } -ParameterFilter { $ClassName -eq 'Win32_operatingsystem' } -Verifiable
+            } -ParameterFilter { $ClassName -eq 'Win32_OperatingSystem' } -Verifiable
 
             Context 'When the Get-SqlDscDynamicMaxMemory fails to calculate the MaxMemory' {
                 $testParameters = $mockDefaultParameters
@@ -763,9 +763,9 @@ try
                     } -Scope Context
                 }
 
-                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_operatingsystem' {
+                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_OperatingSystem' {
                     Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
-                        $ClassName -eq 'Win32_operatingsystem'
+                        $ClassName -eq 'Win32_OperatingSystem'
                     } -Scope Context
                 }
             }

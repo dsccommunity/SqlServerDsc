@@ -10,7 +10,7 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
     Hostname of the SQL Server to be configured
 
     .PARAMETER InstanceName
-    Name of the SQL instance to be configued. Default is 'MSSQLSERVER'
+    Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
 
     .PARAMETER OptionName
     The name of the SQL configuration option to be checked
@@ -84,7 +84,7 @@ function Get-TargetResource
     Hostname of the SQL Server to be configured
 
     .PARAMETER InstanceName
-    Name of the SQL instance to be configued. Default is 'MSSQLSERVER'
+    Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
 
     .PARAMETER OptionName
     The name of the SQL configuration option to be set
@@ -163,7 +163,7 @@ function Set-TargetResource
     Hostname of the SQL Server to be configured
 
     .PARAMETER InstanceName
-    Name of the SQL instance to be configued. Default is 'MSSQLSERVER'
+    Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
 
     .PARAMETER OptionName
     The name of the SQL configuration option to be tested

@@ -658,8 +658,16 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
-    # Suppressing this rule because $global:DSCMachineStatus is used to trigger a reboot, either by force or when there are pending changes.
+    <#
+        Suppressing this rule because $global:DSCMachineStatus is used to trigger
+        a reboot, either by force or when there are pending changes.
+    #>
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+    <#
+        Suppressing this rule because $global:DSCMachineStatus is only set,
+        never used (by design of Desired State Configuration).
+    #>
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function', Target='DSCMachineStatus')]
     [CmdletBinding()]
     param
     (
@@ -2004,20 +2012,21 @@ function ConvertTo-Decimal
 {
     [CmdletBinding()]
     [OutputType([System.UInt32])]
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.Net.IPAddress]
         $IPAddress
     )
 
     $i = 3
-    $DecimalIP = 0
+    $decimalIpAddress = 0
     $IPAddress.GetAddressBytes() | ForEach-Object {
-        $DecimalIP += $_ * [Math]::Pow(256,$i)
+        $decimalIpAddress += $_ * [Math]::Pow(256,$i)
         $i--
     }
 
-    return [UInt32]$DecimalIP
+    return [System.UInt32] $decimalIpAddress
 }
 
 <#

@@ -108,7 +108,7 @@ function Get-TargetResource
         The name of the availability group to which the availability group listener is or will be connected.
 
     .PARAMETER IpAddress
-        The IP address used for the availability group listener, in the format 192.168.10.45/255.255.252.0. If using DCHP, set to the first IP-address of the DHCP subnet, in the format 192.168.8.1/255.255.252.0. Must be valid in the cluster-allowed IP range.
+        The IP address used for the availability group listener, in the format 192.168.10.45/255.255.252.0. If using DHCP, set to the first IP-address of the DHCP subnet, in the format 192.168.8.1/255.255.252.0. Must be valid in the cluster-allowed IP range.
 
     .PARAMETER Port
         The port used for the availability group listener.
@@ -362,7 +362,7 @@ function Set-TargetResource
         The name of the availability group to which the availability group listener is or will be connected.
 
     .PARAMETER IpAddress
-        The IP address used for the availability group listener, in the format 192.168.10.45/255.255.252.0. If using DCHP, set to the first IP-address of the DHCP subnet, in the format 192.168.8.1/255.255.252.0. Must be valid in the cluster-allowed IP range.
+        The IP address used for the availability group listener, in the format 192.168.10.45/255.255.252.0. If using DHCP, set to the first IP-address of the DHCP subnet, in the format 192.168.8.1/255.255.252.0. Must be valid in the cluster-allowed IP range.
 
     .PARAMETER Port
         The port used for the availability group listener.
