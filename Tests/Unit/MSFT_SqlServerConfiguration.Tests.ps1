@@ -67,7 +67,7 @@ try
 {
     Describe "$($script:DSCResourceName)\Get-TargetResource" {
 
-        Mock -CommandName New-VerboseMessage -MockWith {} -ModuleName $script:DSCResourceName
+        Mock -CommandName New-VerboseMessage -ModuleName $script:DSCResourceName
 
         Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:DSCResourceName
 
@@ -175,7 +175,7 @@ try
 
     Describe "$($script:DSCResourceName)\Test-TargetResource" {
 
-        Mock -CommandName New-VerboseMessage -MockWith {} -ModuleName $script:DSCResourceName
+        Mock -CommandName New-VerboseMessage -ModuleName $script:DSCResourceName
 
         Mock -CommandName Connect-SQL -MockWith {
             $mock = New-Object -TypeName PSObject -Property @{
@@ -205,9 +205,9 @@ try
     }
 
     Describe "$($script:DSCResourceName)\Set-TargetResource" {
-        Mock -CommandName New-VerboseMessage -MockWith {} -ModuleName $script:DSCResourceName
+        Mock -CommandName New-VerboseMessage -ModuleName $script:DSCResourceName
 
-        Mock -CommandName New-TerminatingError -MockWith {} -ModuleName $script:DSCResourceName
+        Mock -CommandName New-TerminatingError -ModuleName $script:DSCResourceName
 
         Mock -CommandName Connect-SQL -MockWith {
             $mock = New-Object -TypeName PSObject -Property @{
@@ -247,9 +247,9 @@ try
             return $mock
         } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { $SQLServer -eq 'CLU02' }
 
-        Mock -CommandName Restart-SqlService -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
+        Mock -CommandName Restart-SqlService -ModuleName $script:DSCResourceName -Verifiable
 
-        Mock -CommandName New-WarningMessage -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
+        Mock -CommandName New-WarningMessage -ModuleName $script:DSCResourceName -Verifiable
 
         Context 'Change the system to the desired state' {
             It 'Should not restart SQL for a dynamic option' {

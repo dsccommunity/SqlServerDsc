@@ -357,7 +357,7 @@ WITH NORECOVERY'
         Describe 'SqlAGDatabase\Get-TargetResource' {
             BeforeAll {
                 Mock -CommandName Connect-SQL -MockWith { return $mockServerObject } -Verifiable
-                Mock -CommandName Import-SQLPSModule -MockWith {} -Verifiable
+                Mock -CommandName Import-SQLPSModule -Verifiable
             }
 
             BeforeEach {
@@ -426,14 +426,14 @@ WITH NORECOVERY'
             BeforeAll {
                 Mock -CommandName Get-PrimaryReplicaServerObject -MockWith { return $mockServerObject } -Verifiable -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
                 Mock -CommandName Get-PrimaryReplicaServerObject -MockWith { return $mockServer2Object } -Verifiable -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                Mock -CommandName Import-SQLPSModule -MockWith {} -Verifiable
-                Mock -CommandName Invoke-Query -MockWith {} -Verifiable -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                Mock -CommandName Invoke-Query -MockWith {} -Verifiable -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                Mock -CommandName Import-SQLPSModule -Verifiable
+                Mock -CommandName Invoke-Query -Verifiable -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                Mock -CommandName Invoke-Query -Verifiable -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                 Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Full_$(Get-Date -Format 'yyyyMMddhhmmss').bak") } -Verifiable -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                 Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Log_$(Get-Date -Format 'yyyyMMddhhmmss').trn") } -Verifiable -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                 Mock -CommandName New-TerminatingError { $ErrorType } -Verifiable
-                Mock -CommandName Remove-Item -MockWith {} -Verifiable
-                Mock -CommandName Restore-SqlDatabase -MockWith {} -Verifiable
+                Mock -CommandName Remove-Item -Verifiable
+                Mock -CommandName Restore-SqlDatabase -Verifiable
             }
 
             BeforeEach {
@@ -448,17 +448,17 @@ WITH NORECOVERY'
                     MatchDatabaseOwner = $true
                 }
 
-                Mock -CommandName Add-SqlAvailabilityDatabase -MockWith {} -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                Mock -CommandName Add-SqlAvailabilityDatabase -MockWith {} -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                Mock -CommandName Add-SqlAvailabilityDatabase -MockWith {} -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                Mock -CommandName Add-SqlAvailabilityDatabase -MockWith {} -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                Mock -CommandName Backup-SqlDatabase -MockWith {} -Verifiable -ParameterFilter { $BackupAction -eq 'Database' }
-                Mock -CommandName Backup-SqlDatabase -MockWith {} -Verifiable -ParameterFilter { $BackupAction -eq 'Log'}
+                Mock -CommandName Add-SqlAvailabilityDatabase -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                Mock -CommandName Add-SqlAvailabilityDatabase -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                Mock -CommandName Add-SqlAvailabilityDatabase -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                Mock -CommandName Add-SqlAvailabilityDatabase -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                Mock -CommandName Backup-SqlDatabase -Verifiable -ParameterFilter { $BackupAction -eq 'Database' }
+                Mock -CommandName Backup-SqlDatabase -Verifiable -ParameterFilter { $BackupAction -eq 'Log'}
                 Mock -CommandName Connect-SQL -MockWith { return $mockServerObject } -Verifiable -ParameterFilter { $SqlServer -eq 'Server1' -and $SQLInstanceName -eq 'MSSQLSERVER' }
                 Mock -CommandName Connect-SQL -MockWith { return $mockServerObject } -Verifiable -ParameterFilter { $SqlServer -eq 'Server1' }
                 Mock -CommandName Connect-SQL -MockWith { return $mockServer2Object } -Verifiable -ParameterFilter { $SqlServer -eq 'Server2' }
                 Mock -CommandName Invoke-Query -MockWith $mockResultInvokeQueryFileExist -Verifiable -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                Mock -CommandName Remove-SqlAvailabilityDatabase -MockWith {} -Verifiable
+                Mock -CommandName Remove-SqlAvailabilityDatabase -Verifiable
                 Mock -CommandName Test-ImpersonatePermissions -MockWith { $true } -Verifiable
             }
 

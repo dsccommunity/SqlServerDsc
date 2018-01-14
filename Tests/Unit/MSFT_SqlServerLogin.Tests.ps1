@@ -508,10 +508,10 @@ try
 
         Describe 'MSFT_SqlServerLogin\Set-TargetResource' {
             Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:DSCResourceName
-            Mock -CommandName Update-SQLServerLogin -MockWith {} -ModuleName $script:DSCResourceName
-            Mock -CommandName New-SQLServerLogin -MockWith {} -ModuleName $script:DSCResourceName
-            Mock -CommandName Remove-SQLServerLogin -MockWith {} -ModuleName $script:DSCResourceName
-            Mock -CommandName Set-SQLServerLoginPassword -MockWith {} -ModuleName $script:DSCResourceName
+            Mock -CommandName Update-SQLServerLogin -ModuleName $script:DSCResourceName
+            Mock -CommandName New-SQLServerLogin -ModuleName $script:DSCResourceName
+            Mock -CommandName Remove-SQLServerLogin -ModuleName $script:DSCResourceName
+            Mock -CommandName Set-SQLServerLoginPassword -ModuleName $script:DSCResourceName
 
             Context 'When the desired state is Absent' {
                 BeforeEach {

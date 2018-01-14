@@ -252,7 +252,7 @@ try
                 $user = "User"
 
                 Mock -CommandName Import-SQLPSModule -MockWith {}
-                Mock -CommandName Invoke-Sqlcmd -MockWith {} -ParameterFilter {
+                Mock -CommandName Invoke-Sqlcmd -ParameterFilter {
                     ($Username -eq $user) -and ($Password -eq $passwordPlain)
                 }
 
