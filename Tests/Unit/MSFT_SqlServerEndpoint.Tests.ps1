@@ -525,7 +525,7 @@ try
 
                 Context 'When Connect-SQL returns nothing' {
                     It 'Should throw the correct error' {
-                        Mock -CommandName Get-TargetResource -MockWith {} -Verifiable
+                        Mock -CommandName Get-TargetResource -Verifiable
                         Mock -CommandName Connect-SQL -MockWith {
                             return $null
                         }

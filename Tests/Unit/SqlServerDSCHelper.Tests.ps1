@@ -190,9 +190,9 @@ InModuleScope $script:moduleName {
                 }
             } -Verifiable -ParameterFilter { $DisplayName -eq 'SQL Server (STOPPEDAGENT)' }
 
-            Mock -CommandName Restart-Service {} -Verifiable
+            Mock -CommandName Restart-Service -Verifiable
 
-            Mock -CommandName Start-Service {} -Verifiable
+            Mock -CommandName Start-Service -Verifiable
 
             It 'Should restart SQL Service and running SQL Agent service' {
                 { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'MSSQLSERVER' } | Should -Not -Throw
@@ -272,9 +272,9 @@ InModuleScope $script:moduleName {
                 return $mock
             } -Verifiable -ParameterFilter { $ResultClassName -eq 'MSCluster_Resource' }
 
-            Mock -CommandName Invoke-CimMethod -MockWith {} -Verifiable -ParameterFilter { $MethodName -eq 'TakeOffline' }
+            Mock -CommandName Invoke-CimMethod -Verifiable -ParameterFilter { $MethodName -eq 'TakeOffline' }
 
-            Mock -CommandName Invoke-CimMethod -MockWith {} -Verifiable -ParameterFilter { $MethodName -eq 'BringOnline' }
+            Mock -CommandName Invoke-CimMethod -Verifiable -ParameterFilter { $MethodName -eq 'BringOnline' }
 
             It 'Should restart SQL Server and SQL Agent resources for a clustered default instance' {
                 { Restart-SqlService -SQLServer 'CLU01' } | Should -Not -Throw
@@ -387,7 +387,7 @@ InModuleScope $script:moduleName {
         # This test is to test the mock so that it throws correct when data source is not the expected data source
         Context 'When connecting to the named instance using another data source then expected' {
             It 'Should throw the correct error' {
-                $mockExpectedDataSource = "Force wrong datasource"
+                $mockExpectedDataSource = "Force wrong data source"
 
                 $testParameters = @{
                     SQLServer = 'DummyHost'
@@ -1013,7 +1013,7 @@ InModuleScope $script:moduleName {
         }
 
         Context 'When the replica seeding mode is manual' {
-            # Test SQL 2012 and 2014. Not testing earlier versions because Availaiblity Groups were intoduced in SQL 2012.
+            # Test SQL 2012 and 2014. Not testing earlier versions because Availability Groups were introduced in SQL 2012.
             foreach ( $instanceVersion in @(11,12) )
             {
                 It ( 'Should return $false when the instance version is {0}' -f $instanceVersion ) {

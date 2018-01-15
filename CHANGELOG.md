@@ -42,19 +42,29 @@
     renamed the repository the security token was changed
     ([issue #1012](https://github.com/PowerShell/SqlServerDsc/issues/1012)).
   - Fixed typo in comment-base help for helper function Test-AvailabilityReplicaSeedingModeAutomatic.
+  - Style cleanup in helper function tests.
+- Changes to SqlAG
+  - Fixed typos in tests.
+  - Style cleanup in tests.
+- Changes to SqlAGDatabase
+  - Style cleanup in tests.
 - Changes to SqlAGListener
   - Fixed typo in comment-based help.
+  - Style cleanup in tests.
 - Changes to SqlAGReplica
   - Minor code style cleanup. Removed unused variable and instead piped the cmdlet
     Join-SqlAvailabilityGroup to Out-Null.
   - Fixed minor typos in comment-based help.
   - Fixed minor typos in comment.
+  - Style cleanup in tests.
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
+  - Style cleanup in tests.
 - Changes to SqlAlwaysOnService
   - Refactor integration tests slightly to improve run time performance
     ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
+  - Style cleanup in tests.
 - Changes to SqlDatabase
   - Fix minor Script Analyzer warning.
 - Changes to SqlDatabaseDefaultLocation
@@ -71,16 +81,21 @@
     ([issue #634](https://github.com/PowerShell/SqlServerDsc/issues/634)).
   - Refactor integration tests slightly to improve run time performance
     ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
+- Changes to SqlScript
+  - Style cleanup in tests.
 - Changes to SqlServerConfiguration
   - Fixed minor typos in comment-based help.
+  - Style cleanup in tests.
 - Changes to SqlServerEndpoint
   - Updated README.md with links to the examples
     ([issue #504](https://github.com/PowerShell/SqlServerDsc/issues/504)).
+  - Style cleanup in tests.
 - Changes to SqlServerLogin
   - Added integration tests ([issue #748](https://github.com/PowerShell/SqlServerDsc/issues/748)).
   - Minor code style cleanup.
   - Removed unused variable and instead piped the helper function Connect-SQL to
     Out-Null.
+  - Style cleanup in tests.
 - Changes to SqlServerMaxDop
   - Minor style changes in the helper function Get-SqlDscDynamicMaxDop.
 - Changes to SqlServerMemory
@@ -121,6 +136,7 @@
   - Added PSSA rule 'PSUseDeclaredVarsMoreThanAssignments' override in the
     function Set-TargetResource for the variable $global:DSCMachineStatus.
   - Style cleanup in helper function ConvertTo-Decimal.
+  - Style cleanup in tests.
 - Changes to SqlWindowsFirewall
   - Fixed minor typos in comment-based help.
   - Minor code style cleanup.

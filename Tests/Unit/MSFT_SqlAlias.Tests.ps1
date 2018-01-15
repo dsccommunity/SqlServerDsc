@@ -830,9 +830,9 @@ try
 
     #region Set-TargetResource
     Describe "$($script:DSCResourceName)\Set-TargetResource" {
-        Mock -CommandName New-Item -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
-        Mock -CommandName Set-ItemProperty -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
-        Mock -CommandName Remove-ItemProperty -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
+        Mock -CommandName New-Item -ModuleName $script:DSCResourceName -Verifiable
+        Mock -CommandName Set-ItemProperty -ModuleName $script:DSCResourceName -Verifiable
+        Mock -CommandName Remove-ItemProperty -ModuleName $script:DSCResourceName -Verifiable
         Mock -CommandName Test-Path -MockWith {
             return $false
         } -ModuleName $script:DSCResourceName -Verifiable

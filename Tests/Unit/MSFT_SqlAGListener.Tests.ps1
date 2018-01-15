@@ -104,7 +104,7 @@ try
 
             Context 'When the system is not in the desired state' {
 
-                Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {} -Verifiable
+                Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Verifiable
 
                 It 'Should return the desired state as absent' {
                     $result = Get-TargetResource @testParameters
@@ -238,7 +238,7 @@ try
                     $testParameters['Port'] = 5030
                     $testParameters['DHCP'] = $false
 
-                    Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {} -Verifiable
+                    Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Verifiable
 
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
@@ -404,7 +404,7 @@ try
                     $testParameters['Port'] = 5030
                     $testParameters['DHCP'] = $false
 
-                    Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {} -Verifiable
+                    Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Verifiable
 
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
@@ -516,9 +516,9 @@ try
                 $testParameters = $defaultParameters.Clone()
 
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
-                Mock -CommandName New-SqlAvailabilityGroupListener -MockWith {} -Verifiable
-                Mock -CommandName Set-SqlAvailabilityGroupListener -MockWith {} -Verifiable
-                Mock -CommandName Add-SqlAvailabilityGroupListenerStaticIp -MockWith {} -Verifiable
+                Mock -CommandName New-SqlAvailabilityGroupListener -Verifiable
+                Mock -CommandName Set-SqlAvailabilityGroupListener -Verifiable
+                Mock -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Verifiable
             }
 
             Context 'When the system is not in the desired state' {

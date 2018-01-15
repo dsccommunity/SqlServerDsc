@@ -1055,23 +1055,23 @@ try
                         Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable -Verifiable
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\DQ\*"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should return the same values as passed as parameters' {
@@ -1182,23 +1182,23 @@ try
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\DQ\*"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should return the same values as passed as parameters' {
@@ -1238,11 +1238,11 @@ try
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         $result = Get-TargetResource @testParameters
                         $result.Features | Should -Be ''
@@ -1890,23 +1890,23 @@ try
                         Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable -Verifiable
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\DQ\*"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should return the same values as passed as parameters' {
@@ -1943,11 +1943,11 @@ try
                     It 'Should not return any names of installed features' {
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         $result = Get-TargetResource @testParameters
                         $result.Features | Should -Be ''
@@ -2202,9 +2202,9 @@ try
 
                         Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
-                        Mock -CommandName Get-CimInstance -MockWith {} -Verifiable
+                        Mock -CommandName Get-CimInstance -Verifiable
 
-                        Mock -CommandName Get-CimAssociatedInstance -MockWith {} -Verifiable
+                        Mock -CommandName Get-CimAssociatedInstance -Verifiable
 
                         Mock -CommandName Get-ItemProperty -MockWith $mockGetItemProperty_Setup -Verifiable
 
@@ -3308,11 +3308,11 @@ try
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should set the system in the desired state when feature is SQLENGINE' {
@@ -3481,11 +3481,11 @@ try
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should set the system in the desired state when feature is SQLENGINE' {
@@ -3657,11 +3657,11 @@ try
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should set the system in the desired state when feature is SQLENGINE' {
@@ -3839,11 +3839,11 @@ try
                     BeforeEach {
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should pass proper parameters to setup' {
@@ -3931,7 +3931,7 @@ try
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
@@ -3944,7 +3944,7 @@ try
                     BeforeEach {
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should pass proper parameters to setup' {
@@ -4225,7 +4225,7 @@ try
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
@@ -4233,23 +4233,23 @@ try
 
                         Mock -CommandName Start-SqlSetupProcess -MockWith $mockStartSqlSetupProcess -Verifiable
 
-                        Mock -CommandName Get-CimInstance -MockWith {} -ParameterFilter {
+                        Mock -CommandName Get-CimInstance -ParameterFilter {
                             ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_ResourceGroup') -and ($Filter -eq "Name = 'Available Storage'")
                         } -Verifiable
 
-                        Mock -CommandName Get-CimAssociatedInstance -MockWith {} -ParameterFilter {
+                        Mock -CommandName Get-CimAssociatedInstance -ParameterFilter {
                             ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
                         } -Verifiable
 
-                        Mock -CommandName Get-CimAssociatedInstance -MockWith {} -ParameterFilter {
+                        Mock -CommandName Get-CimAssociatedInstance -ParameterFilter {
                             $Association -eq 'MSCluster_ResourceToPossibleOwner'
                         } -Verifiable
 
-                        Mock -CommandName Get-CimAssociatedInstance -MockWith {} -ParameterFilter {
+                        Mock -CommandName Get-CimAssociatedInstance -ParameterFilter {
                             $ResultClass -eq 'MSCluster_DiskPartition'
                         } -Verifiable
 
-                        Mock -CommandName Get-CimInstance -MockWith {} -ParameterFilter {
+                        Mock -CommandName Get-CimInstance -ParameterFilter {
                             ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
                         } -Verifiable
                     }
@@ -4257,7 +4257,7 @@ try
                     BeforeEach {
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should pass correct arguments to the setup process' {
@@ -4332,11 +4332,11 @@ try
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterResourceGroup_AvailableStorage -ParameterFilter {
                             $Filter -eq "Name = 'Available Storage'"
