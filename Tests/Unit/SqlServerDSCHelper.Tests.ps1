@@ -125,46 +125,28 @@ InModuleScope $script:moduleName {
 
     $mockStartJobName = 'RestartSqlServiceUnitTest'
 
+    <#
+        Unable to find a way to mock the class System.Management.Automation.Job
+        without actually starting a job (no public constructor in the type).
+
+        Making sure this job are stopped and removed after the Describe-block
+        has finished running (tried having this in an BeforeAll,AfterAll-block,
+        but when the AfterAll-block was called, it did not remove the jobs as
+        expected).
+    #>
+    $jobObjectCompleted = Start-Job -Name $mockStartJobName -ScriptBlock {
+        Write-Verbose -Message 'Dummy script block for Start-Job mock'
+    }
+
+    $jobObjectRunning = Start-Job -Name $mockStartJobName -ScriptBlock {
+        Start-Sleep -Seconds 30
+    }
+
     Describe 'Testing Restart-SqlService' {
         BeforeAll {
-            # Setting up static variables.
-            $mockJobStateInfoStateCompleted = 'Completed'
-            $mockJobStateInfoStateFailed = 'Failed'
-        }
-
-        BeforeEach {
-            <#
-                Unable to find a way to mock the class System.Management.Automation.Job
-                without actually starting a job.
-                Making sure the jobs are stopped and removed in an AfterEch-block.
-
-                NOTE! We cannot mock Wait-Job, Receive-Job, Stop-Job and Remove-job.
-                We actually run those on this job object we "mock".
-            #>
-            Mock -CommandName Start-Job -MockWith {
-                if ($mockDynamicJobStateInfoState -eq $mockJobStateInfoStateCompleted)
-                {
-                    $startJobScriptBlock = {
-                        Write-Verbose -Message 'Dummy scriptblock for Start-Job mock' -Verbose
-                    }
-                }
-                else
-                {
-                    $startJobScriptBlock = {
-                        Start-Sleep -Seconds 10
-                    }
-                }
-
-                $jobObject = Start-Job -Name $mockStartJobName -ScriptBlock $startJobScriptBlock
-
-                return $jobObject
-            } -Verifiable -ParameterFilter {
-                <#
-                    NOTE! The parameter filter must be here so we are not
-                    mocking ourself (in an endless loop).
-                #>
-                $Name -ne $mockStartJobName
-            }
+            Mock -CommandName Wait-Job -Verifiable
+            Mock -CommandName Receive-Job -Verifiable
+            Mock -CommandName Remove-Job -Verifiable
         }
 
         Context 'Restart-SqlService standalone instance' {
@@ -236,8 +218,12 @@ InModuleScope $script:moduleName {
 
                 Mock -CommandName Restart-Service -Verifiable
                 Mock -CommandName Start-Service -Verifiable
+            }
 
-                $mockDynamicJobStateInfoState = $mockJobStateInfoStateCompleted
+            BeforeEach {
+                Mock -CommandName Start-Job -MockWith {
+                    return $jobObjectCompleted
+                } -Verifiable
             }
 
             It 'Should restart SQL Service and running SQL Agent service' {
@@ -272,7 +258,9 @@ InModuleScope $script:moduleName {
 
             Context 'When it fails to connect to the instance within the timeout period' {
                 BeforeEach {
-                    $mockDynamicJobStateInfoState = $mockJobStateInfoStateFailed
+                    Mock -CommandName Start-Job -MockWith {
+                        return $jobObjectRunning
+                    } -Verifiable
                 }
 
                 It 'Should throw the correct error message' {
@@ -288,8 +276,6 @@ InModuleScope $script:moduleName {
 
         Context 'Restart-SqlService clustered instance' {
             BeforeAll {
-                $mockDynamicJobStateInfoState = $mockJobStateInfoStateCompleted
-
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
                         Name = 'MSSQLSERVER'
@@ -343,6 +329,12 @@ InModuleScope $script:moduleName {
                 Mock -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'BringOnline' } -Verifiable
             }
 
+            BeforeEach {
+                Mock -CommandName Start-Job -MockWith {
+                    return $jobObjectCompleted
+                } -Verifiable
+            }
+
             It 'Should restart SQL Server and SQL Agent resources for a clustered default instance' {
                 { Restart-SqlService -SQLServer 'CLU01' } | Should -Not -Throw
 
@@ -377,6 +369,13 @@ InModuleScope $script:moduleName {
             }
         }
     }
+
+    <#
+        Removes the jobs setup for running unit tests of Restart-SqlService, in the
+        previous Describe-block.
+    #>
+    Remove-Job -Job $jobObjectCompleted -Force
+    Remove-Job -Job $jobObjectRunning -Force
 
     Describe 'Testing Connect-SQLAnalysis' {
         BeforeEach {
