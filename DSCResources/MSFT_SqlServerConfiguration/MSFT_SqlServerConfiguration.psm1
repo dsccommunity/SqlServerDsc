@@ -9,29 +9,29 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerConfigura
 
 <#
     .SYNOPSIS
-    Gets the current value of a SQL configuration option
+        Gets the current value of a SQL configuration option
 
     .PARAMETER ServerName
-    Hostname of the SQL Server to be configured
+        Hostname of the SQL Server to be configured
 
     .PARAMETER InstanceName
-    Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
+        Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
 
     .PARAMETER OptionName
-    The name of the SQL configuration option to be checked
+        The name of the SQL configuration option to be checked
 
     .PARAMETER OptionValue
-    The desired value of the SQL configuration option
+        The desired value of the SQL configuration option
 
     .PARAMETER RestartService
-    *** Not used in this function ***
-    Determines whether the instance should be restarted after updating the
-    configuration option.
+        *** Not used in this function ***
+        Determines whether the instance should be restarted after updating the
+        configuration option.
 
     .PARAMETER RestartTimeout
-    *** Not used in this function ***
-    The length of time, in seconds, to wait for the service to restart. Default
-    is 120 seconds.
+        *** Not used in this function ***
+        The length of time, in seconds, to wait for the service to restart. Default
+        is 120 seconds.
 #>
 function Get-TargetResource
 {
@@ -65,7 +65,7 @@ function Get-TargetResource
 
     $sql = Connect-SQL -SQLServer $ServerName -SQLInstanceName $InstanceName
 
-    ## get the configuration option
+    # Get the current value of the configuration option.
     $option = $sql.Configuration.Properties | Where-Object { $_.DisplayName -eq $OptionName }
 
     if (-not $option)
@@ -91,27 +91,27 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-    Sets the value of a SQL configuration option
+        Sets the value of a SQL configuration option
 
     .PARAMETER ServerName
-    Hostname of the SQL Server to be configured
+        Hostname of the SQL Server to be configured
 
     .PARAMETER InstanceName
-    Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
+        Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
 
     .PARAMETER OptionName
-    The name of the SQL configuration option to be set
+        The name of the SQL configuration option to be set
 
     .PARAMETER OptionValue
-    The desired value of the SQL configuration option
+        The desired value of the SQL configuration option
 
     .PARAMETER RestartService
-    Determines whether the instance should be restarted after updating the
-    configuration option
+        Determines whether the instance should be restarted after updating the
+        configuration option
 
     .PARAMETER RestartTimeout
-    The length of time, in seconds, to wait for the service to restart. Default
-    is 120 seconds.
+        The length of time, in seconds, to wait for the service to restart. Default
+        is 120 seconds.
 #>
 function Set-TargetResource
 {
@@ -144,7 +144,7 @@ function Set-TargetResource
 
     $sql = Connect-SQL -SQLServer $ServerName -SQLInstanceName $InstanceName
 
-    ## get the configuration option
+    # Get the current value of the configuration option.
     $option = $sql.Configuration.Properties | Where-Object { $_.DisplayName -eq $OptionName }
 
     if (-not $option)
@@ -156,12 +156,14 @@ function Set-TargetResource
     $option.ConfigValue = $OptionValue
     $sql.Configuration.Alter()
 
+    Write-Verbose -Message (
+        $script:localizedData.ConfigurationValueUpdated `
+            -f $OptionName, $OptionValue
+    )
+
     if ($option.IsDynamic -eq $true)
     {
-        Write-Verbose -Message (
-            $script:localizedData.ConfigurationValueUpdated `
-                -f $OptionName, $OptionValue
-        )
+        Write-Verbose -Message $script:localizedData.NoRestartNeeded
     }
     elseif (($option.IsDynamic -eq $false) -and ($RestartService -eq $true))
     {
@@ -183,29 +185,29 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-    Determines whether a SQL configuration option value is properly set
+        Determines whether a SQL configuration option value is properly set
 
     .PARAMETER ServerName
-    Hostname of the SQL Server to be configured
+        Hostname of the SQL Server to be configured
 
     .PARAMETER InstanceName
-    Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
+        Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
 
     .PARAMETER OptionName
-    The name of the SQL configuration option to be tested
+        The name of the SQL configuration option to be tested
 
     .PARAMETER OptionValue
-    The desired value of the SQL configuration option
+        The desired value of the SQL configuration option
 
     .PARAMETER RestartService
-    *** Not used in this function ***
-    Determines whether the instance should be restarted after updating the
-    configuration option
+        *** Not used in this function ***
+        Determines whether the instance should be restarted after updating the
+        configuration option
 
     .PARAMETER RestartTimeout
-    *** Not used in this function ***
-    The length of time, in seconds, to wait for the service to restart. Default
-    is 120 seconds.
+        *** Not used in this function ***
+        The length of time, in seconds, to wait for the service to restart. Default
+        is 120 seconds.
 #>
 function Test-TargetResource
 {
@@ -237,7 +239,7 @@ function Test-TargetResource
         $RestartTimeout = 120
     )
 
-    ## Get the current state of the configuration item
+    # Get the current value of the configuration option.
     $getTargetResourceResult = Get-TargetResource @PSBoundParameters
 
     if ($getTargetResourceResult.OptionValue -eq $OptionValue)
@@ -259,7 +261,6 @@ function Test-TargetResource
         $result = $false
     }
 
-    ## return whether the value matches the desired state
     return $result
 }
 

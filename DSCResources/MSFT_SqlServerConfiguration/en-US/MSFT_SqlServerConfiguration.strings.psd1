@@ -8,4 +8,5 @@ ConvertFrom-StringData @'
     ConfigurationRestartRequired = Configuration option '{0}' has been updated to value '{1}', but a manual restart of SQL Server instance {2}//{3} is required for it to take effect.
     NotInDesiredState = Configuration option '{0}' is not in desired state. Expected '{1}', but was '{2}'.
     InDesiredState = Configuration option '{0}' is in desired state.
+    NoRestartNeeded = The option was changed without the need to restart the SQL Server instance.
 '@
