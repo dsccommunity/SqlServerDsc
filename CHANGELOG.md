@@ -88,7 +88,7 @@
   - Style cleanup in tests.
   - Now the verbose message say what option is changing and to what value
     ([issue #1014](https://github.com/PowerShell/SqlServerDsc/issues/1014)).
-  - Change the type of the parameter from SInt32 to UInt32.
+  - Changed the RestartTimeout parameter from type SInt32 to type UInt32.
   - Added localization ([issue #605](https://github.com/PowerShell/SqlServerDsc/issues/605)).
 - Changes to SqlServerEndpoint
   - Updated README.md with links to the examples
