@@ -234,6 +234,8 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Start-Job -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Wait-Job -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Receive-Job -Scope It -Exactly -Times 0
             }
 
             It 'Should restart SQL Service and not try to restart missing SQL Agent service' {
@@ -244,6 +246,8 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 0
                 Assert-MockCalled -CommandName Start-Job -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Wait-Job -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Receive-Job -Scope It -Exactly -Times 0
             }
 
             It 'Should restart SQL Service and not try to restart stopped SQL Agent service' {
@@ -254,6 +258,8 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 0
                 Assert-MockCalled -CommandName Start-Job -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Wait-Job -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Receive-Job -Scope It -Exactly -Times 0
             }
 
             Context 'When it fails to connect to the instance within the timeout period' {
@@ -268,11 +274,13 @@ InModuleScope $script:moduleName {
 
                     {
                         Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'MSSQLSERVER' -Timeout 1
+                        Assert-MockCalled -CommandName Start-Job -Scope It -Exactly -Times 1
+                        Assert-MockCalled -CommandName Wait-Job -Scope It -Exactly -Times 1
+                        Assert-MockCalled -CommandName Receive-Job -Scope It -Exactly -Times 1
                     } | Should -Throw $errorMessage
                 }
             }
         }
-
 
         Context 'Restart-SqlService clustered instance' {
             BeforeAll {
@@ -344,6 +352,8 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'TakeOffline' } -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'BringOnline' } -Scope It -Exactly -Times 2
                 Assert-MockCalled -CommandName Start-Job -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Wait-Job -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Receive-Job -Scope It -Exactly -Times 0
             }
 
             It 'Should restart SQL Server and SQL Agent resources for a clustered named instance' {
@@ -355,6 +365,8 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'TakeOffline' } -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'BringOnline' } -Scope It -Exactly -Times 2
                 Assert-MockCalled -CommandName Start-Job -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Wait-Job -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Receive-Job -Scope It -Exactly -Times 0
             }
 
             It 'Should not try to restart a SQL Agent resource that is not online' {
@@ -366,6 +378,8 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'TakeOffline' } -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'BringOnline' } -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Start-Job -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Wait-Job -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Receive-Job -Scope It -Exactly -Times 0
             }
         }
     }
