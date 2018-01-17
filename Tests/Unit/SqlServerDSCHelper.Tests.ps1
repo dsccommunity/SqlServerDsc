@@ -136,11 +136,11 @@ InModuleScope $script:moduleName {
     #>
     $jobObjectCompleted = Start-Job -Name $mockStartJobName -ScriptBlock {
         Write-Verbose -Message 'Dummy script block for Start-Job mock'
-    }
+    } -ErrorAction Stop
 
     $jobObjectRunning = Start-Job -Name $mockStartJobName -ScriptBlock {
         Start-Sleep -Seconds 30
-    }
+    } -ErrorAction Stop
 
     Describe 'Testing Restart-SqlService' {
         BeforeAll {
