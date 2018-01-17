@@ -870,11 +870,11 @@ on a SQL Server instance.
 * **`[String]` OptionName** _(Key)_: The name of the SQL configuration option to
   be checked. For all possible values reference [MSDN](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
   or run sp_configure.
-* **`[Sint32]` OptionValue** _(Required)_: The desired value of the SQL configuration
+* **`[SInt32]` OptionValue** _(Required)_: The desired value of the SQL configuration
   option.
 * **`[Boolean]` RestartService** _(Write)_: Determines whether the instance should
   be restarted after updating the configuration option.
-* **`[Sint32]` RestartTimeout** _(Write)_: The length of time, in seconds, to wait
+* **`[UInt32]` RestartTimeout** _(Write)_: The length of time, in seconds, to wait
   for the service to restart. Default is 120 seconds.
 
 #### Examples

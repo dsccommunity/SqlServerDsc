@@ -1,30 +1,37 @@
-# Load Common Code
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
         -ChildPath 'SqlServerDscHelper.psm1') `
     -Force
+
+Import-Module -Name (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent) `
+    -ChildPath 'CommonResourceHelper.psm1')
+
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerConfiguration'
+
 <#
     .SYNOPSIS
-    Gets the current value of a SQL configuration option
+        Gets the current value of a SQL configuration option
 
     .PARAMETER ServerName
-    Hostname of the SQL Server to be configured
+        Hostname of the SQL Server to be configured
 
     .PARAMETER InstanceName
-    Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
+        Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
 
     .PARAMETER OptionName
-    The name of the SQL configuration option to be checked
+        The name of the SQL configuration option to be checked
 
     .PARAMETER OptionValue
-    The desired value of the SQL configuration option
+        The desired value of the SQL configuration option
 
     .PARAMETER RestartService
-    *** Not used in this function ***
-    Determines whether the instance should be restarted after updating the configuration option.
+        *** Not used in this function ***
+        Determines whether the instance should be restarted after updating the
+        configuration option.
 
     .PARAMETER RestartTimeout
-    *** Not used in this function ***
-    The length of time, in seconds, to wait for the service to restart. Default is 120 seconds.
+        *** Not used in this function ***
+        The length of time, in seconds, to wait for the service to restart. Default
+        is 120 seconds.
 #>
 function Get-TargetResource
 {
@@ -32,39 +39,45 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param(
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $ServerName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $InstanceName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $OptionName,
 
         [Parameter(Mandatory = $true)]
-        [Int32]
+        [System.Int32]
         $OptionValue,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $RestartService = $false,
 
         [Parameter()]
-        [Int32]
+        [System.UInt32]
         $RestartTimeout = 120
     )
 
     $sql = Connect-SQL -SQLServer $ServerName -SQLInstanceName $InstanceName
 
-    ## get the configuration option
+    # Get the current value of the configuration option.
     $option = $sql.Configuration.Properties | Where-Object { $_.DisplayName -eq $OptionName }
 
-    if (!$option)
+    if (-not $option)
     {
-        throw New-TerminatingError -ErrorType "ConfigurationOptionNotFound" -FormatArgs $OptionName -ErrorCategory InvalidArgument
+        $errorMessage = $script:localizedData.ConfigurationOptionNotFound -f $OptionName
+        New-InvalidArgumentException -ArgumentName 'OptionName' -Message $errorMessage
     }
+
+    Write-Verbose -Message (
+        $script:localizedData.CurrentOptionValue `
+            -f $OptionName, $option.ConfigValue
+    )
 
     return @{
         ServerName     = $ServerName
@@ -78,106 +91,123 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-    Sets the value of a SQL configuration option
+        Sets the value of a SQL configuration option
 
     .PARAMETER ServerName
-    Hostname of the SQL Server to be configured
+        Hostname of the SQL Server to be configured
 
     .PARAMETER InstanceName
-    Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
+        Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
 
     .PARAMETER OptionName
-    The name of the SQL configuration option to be set
+        The name of the SQL configuration option to be set
 
     .PARAMETER OptionValue
-    The desired value of the SQL configuration option
+        The desired value of the SQL configuration option
 
     .PARAMETER RestartService
-    Determines whether the instance should be restarted after updating the configuration option
+        Determines whether the instance should be restarted after updating the
+        configuration option
 
     .PARAMETER RestartTimeout
-    The length of time, in seconds, to wait for the service to restart. Default is 120 seconds.
+        The length of time, in seconds, to wait for the service to restart. Default
+        is 120 seconds.
 #>
 function Set-TargetResource
 {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $ServerName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $InstanceName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $OptionName,
 
         [Parameter(Mandatory = $true)]
-        [Int32]
+        [System.Int32]
         $OptionValue,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $RestartService = $false,
 
         [Parameter()]
-        [Int32]
+        [System.UInt32]
         $RestartTimeout = 120
     )
 
     $sql = Connect-SQL -SQLServer $ServerName -SQLInstanceName $InstanceName
 
-    ## get the configuration option
+    # Get the current value of the configuration option.
     $option = $sql.Configuration.Properties | Where-Object { $_.DisplayName -eq $OptionName }
 
-    if (!$option)
+    if (-not $option)
     {
-        throw New-TerminatingError -ErrorType "ConfigurationOptionNotFound" -FormatArgs $OptionName -ErrorCategory InvalidArgument
+        $errorMessage = $script:localizedData.ConfigurationOptionNotFound -f $OptionName
+        New-InvalidArgumentException -ArgumentName 'OptionName' -Message $errorMessage
     }
 
     $option.ConfigValue = $OptionValue
     $sql.Configuration.Alter()
 
+    Write-Verbose -Message (
+        $script:localizedData.ConfigurationValueUpdated `
+            -f $OptionName, $OptionValue
+    )
+
     if ($option.IsDynamic -eq $true)
     {
-        New-VerboseMessage -Message 'Configuration option has been updated.'
+        Write-Verbose -Message $script:localizedData.NoRestartNeeded
     }
     elseif (($option.IsDynamic -eq $false) -and ($RestartService -eq $true))
     {
-        New-VerboseMessage -Message 'Configuration option has been updated, restarting instance...'
+        Write-Verbose -Message (
+            $script:localizedData.AutomaticRestart `
+                -f $ServerName, $InstanceName
+        )
+
         Restart-SqlService -SQLServer $ServerName -SQLInstanceName $InstanceName -Timeout $RestartTimeout
     }
     else
     {
-        New-WarningMessage -WarningType 'ConfigurationRestartRequired' -FormatArgs $OptionName
+        Write-Warning -Message (
+            $script:localizedData.ConfigurationRestartRequired `
+                -f $OptionName, $OptionValue, $ServerName, $InstanceName
+        )
     }
 }
 
 <#
     .SYNOPSIS
-    Determines whether a SQL configuration option value is properly set
+        Determines whether a SQL configuration option value is properly set
 
     .PARAMETER ServerName
-    Hostname of the SQL Server to be configured
+        Hostname of the SQL Server to be configured
 
     .PARAMETER InstanceName
-    Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
+        Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
 
     .PARAMETER OptionName
-    The name of the SQL configuration option to be tested
+        The name of the SQL configuration option to be tested
 
     .PARAMETER OptionValue
-    The desired value of the SQL configuration option
+        The desired value of the SQL configuration option
 
     .PARAMETER RestartService
-    *** Not used in this function ***
-    Determines whether the instance should be restarted after updating the configuration option
+        *** Not used in this function ***
+        Determines whether the instance should be restarted after updating the
+        configuration option
 
     .PARAMETER RestartTimeout
-    *** Not used in this function ***
-    The length of time, in seconds, to wait for the service to restart.
+        *** Not used in this function ***
+        The length of time, in seconds, to wait for the service to restart. Default
+        is 120 seconds.
 #>
 function Test-TargetResource
 {
@@ -185,35 +215,53 @@ function Test-TargetResource
     [OutputType([Boolean])]
     param(
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $ServerName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $InstanceName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $OptionName,
 
         [Parameter(Mandatory = $true)]
-        [Int32]
+        [System.Int32]
         $OptionValue,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $RestartService = $false,
 
         [Parameter()]
-        [Int32]
+        [System.UInt32]
         $RestartTimeout = 120
     )
 
-    ## Get the current state of the configuration item
-    $state = Get-TargetResource @PSBoundParameters
+    # Get the current value of the configuration option.
+    $getTargetResourceResult = Get-TargetResource @PSBoundParameters
 
-    ## return whether the value matches the desired state
-    return ($state.OptionValue -eq $OptionValue)
+    if ($getTargetResourceResult.OptionValue -eq $OptionValue)
+    {
+        Write-Verbose -Message (
+            $script:localizedData.InDesiredState `
+                -f $OptionName
+        )
+
+        $result = $true
+    }
+    else
+    {
+        Write-Verbose -Message (
+            $script:localizedData.NotInDesiredState `
+                -f $OptionName, $OptionValue, $getTargetResourceResult.OptionValue
+        )
+
+        $result = $false
+    }
+
+    return $result
 }
 
 Export-ModuleMember -Function *-TargetResource
