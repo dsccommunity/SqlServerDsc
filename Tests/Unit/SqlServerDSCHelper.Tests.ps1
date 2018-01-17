@@ -123,39 +123,15 @@ InModuleScope $script:moduleName {
     $mockSetupCredentialSecurePassword = ConvertTo-SecureString -String $mockSetupCredentialPassword -AsPlainText -Force
     $mockSetupCredential = New-Object -TypeName PSCredential -ArgumentList ($mockSetupCredentialUserName, $mockSetupCredentialSecurePassword)
 
-    $mockStartJobName = 'RestartSqlServiceUnitTest'
-
-    <#
-        Unable to find a way to mock the class System.Management.Automation.Job
-        without actually starting a job (no public constructor in the type).
-
-        Making sure this job are stopped and removed after the Describe-block
-        has finished running (tried having this in an BeforeAll,AfterAll-block,
-        but when the AfterAll-block was called, it did not remove the jobs as
-        expected).
-    #>
-    $jobObjectCompleted = Start-Job -Name $mockStartJobName -ScriptBlock {
-        Write-Verbose -Message 'Dummy script block for Start-Job mock'
-    } -ErrorAction Stop
-
-    $jobObjectRunning = Start-Job -Name $mockStartJobName -ScriptBlock {
-        Start-Sleep -Seconds 30
-    } -ErrorAction Stop
-
     Describe 'Testing Restart-SqlService' {
-        BeforeAll {
-            Mock -CommandName Wait-Job -Verifiable
-            Mock -CommandName Receive-Job -Verifiable
-            Mock -CommandName Remove-Job -Verifiable
-        }
-
         Context 'Restart-SqlService standalone instance' {
-            BeforeAll {
+            BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
                         Name = 'MSSQLSERVER'
                         InstanceName = ''
                         ServiceName = 'MSSQLSERVER'
+                        Status = $mockDynamicStatus
                     }
                 } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'MSSQLSERVER' }
 
@@ -164,6 +140,7 @@ InModuleScope $script:moduleName {
                         Name = 'NOAGENT'
                         InstanceName = 'NOAGENT'
                         ServiceName = 'NOAGENT'
+                        Status = $mockDynamicStatus
                     }
                 } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'NOAGENT' }
 
@@ -172,9 +149,12 @@ InModuleScope $script:moduleName {
                         Name = 'STOPPEDAGENT'
                         InstanceName = 'STOPPEDAGENT'
                         ServiceName = 'STOPPEDAGENT'
+                        Status = $mockDynamicStatus
                     }
                 } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'STOPPEDAGENT' }
+            }
 
+            BeforeAll {
                 ## SQL instance with running SQL Agent Service
                 Mock -CommandName Get-Service -MockWith {
                     return @{
@@ -220,29 +200,25 @@ InModuleScope $script:moduleName {
                 Mock -CommandName Start-Service -Verifiable
             }
 
-            BeforeEach {
-                Mock -CommandName Start-Job -MockWith {
-                    return $jobObjectCompleted
-                } -Verifiable
-            }
+            $mockDynamicStatus = 'Online'
 
             It 'Should restart SQL Service and running SQL Agent service' {
                 { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'MSSQLSERVER' } | Should -Not -Throw
 
-                Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Connect-SQL -ParameterFilter {
+                    $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
+                } -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Start-Job -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Wait-Job -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Receive-Job -Scope It -Exactly -Times 0
-                Assert-MockCalled -CommandName Remove-Job -Scope It -Exactly -Times 1
             }
 
             It 'Should restart SQL Service and not try to restart missing SQL Agent service' {
                 { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'NOAGENT' } | Should -Not -Throw
 
-                Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Connect-SQL {
+                    $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
+                } -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 0
@@ -251,7 +227,9 @@ InModuleScope $script:moduleName {
             It 'Should restart SQL Service and not try to restart stopped SQL Agent service' {
                 { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'STOPPEDAGENT' } | Should -Not -Throw
 
-                Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Connect-SQL {
+                    $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
+                } -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 0
@@ -259,33 +237,45 @@ InModuleScope $script:moduleName {
 
             Context 'When it fails to connect to the instance within the timeout period' {
                 BeforeEach {
-                    Mock -CommandName Start-Job -MockWith {
-                        return $jobObjectRunning
-                    } -Verifiable
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return @{
+                            Name = 'MSSQLSERVER'
+                            InstanceName = ''
+                            ServiceName = 'MSSQLSERVER'
+                            Status = $mockDynamicStatus
+                        }
+                    } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'MSSQLSERVER' }
                 }
+
+                $mockDynamicStatus = 'Offline'
 
                 It 'Should throw the correct error message' {
                     $errorMessage = $localizedData.FailedToConnectToInstanceTimeout -f $env:ComputerName, 'MSSQLSERVER', 1
 
                     {
                         Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'MSSQLSERVER' -Timeout 1
-                        Assert-MockCalled -CommandName Start-Job -Scope It -Exactly -Times 1
-                        Assert-MockCalled -CommandName Wait-Job -Scope It -Exactly -Times 1
-                        Assert-MockCalled -CommandName Receive-Job -Scope It -Exactly -Times 1
-                        Assert-MockCalled -CommandName Remove-Job -Scope It -Exactly -Times 1
                     } | Should -Throw $errorMessage
+
+                    Assert-MockCalled -CommandName Connect-SQL -ParameterFilter {
+                        $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
+                    } -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Connect-SQL -ParameterFilter {
+                        $PSBoundParameters.ContainsKey('ErrorAction') -eq $true
+                    } -Scope It -Exactly -Times 1
                 }
             }
         }
 
         Context 'Restart-SqlService clustered instance' {
-            BeforeAll {
+            BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
                         Name = 'MSSQLSERVER'
                         InstanceName = ''
                         ServiceName = 'MSSQLSERVER'
                         IsClustered = $true
+                        Status = $mockDynamicStatus
                     }
                 } -Verifiable -ParameterFilter { ($SQLServer -eq 'CLU01') -and ($SQLInstanceName -eq 'MSSQLSERVER') }
 
@@ -295,6 +285,7 @@ InModuleScope $script:moduleName {
                         InstanceName = 'NAMEDINSTANCE'
                         ServiceName = 'NAMEDINSTANCE'
                         IsClustered = $true
+                        Status = $mockDynamicStatus
                     }
                 } -Verifiable -ParameterFilter { ($SQLServer -eq 'CLU01') -and ($SQLInstanceName -eq 'NAMEDINSTANCE') }
 
@@ -304,9 +295,12 @@ InModuleScope $script:moduleName {
                         InstanceName = 'STOPPEDAGENT'
                         ServiceName = 'STOPPEDAGENT'
                         IsClustered = $true
+                        Status = $mockDynamicStatus
                     }
                 } -Verifiable -ParameterFilter { ($SQLServer -eq 'CLU01') -and ($SQLInstanceName -eq 'STOPPEDAGENT') }
+            }
 
+            BeforeAll {
                 Mock -CommandName Get-CimInstance -MockWith {
                     @('MSSQLSERVER','NAMEDINSTANCE','STOPPEDAGENT') | ForEach-Object {
                         $mock = New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource','root/MSCluster'
@@ -333,30 +327,26 @@ InModuleScope $script:moduleName {
                 Mock -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'BringOnline' } -Verifiable
             }
 
-            BeforeEach {
-                Mock -CommandName Start-Job -MockWith {
-                    return $jobObjectCompleted
-                } -Verifiable
-            }
+            $mockDynamicStatus = 'Online'
 
             It 'Should restart SQL Server and SQL Agent resources for a clustered default instance' {
                 { Restart-SqlService -SQLServer 'CLU01' } | Should -Not -Throw
 
-                Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Connect-SQL {
+                    $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
+                } -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'TakeOffline' } -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'BringOnline' } -Scope It -Exactly -Times 2
-                Assert-MockCalled -CommandName Start-Job -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Wait-Job -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Receive-Job -Scope It -Exactly -Times 0
-                Assert-MockCalled -CommandName Remove-Job -Scope It -Exactly -Times 1
             }
 
             It 'Should restart SQL Server and SQL Agent resources for a clustered named instance' {
                 { Restart-SqlService -SQLServer 'CLU01' -SQLInstanceName 'NAMEDINSTANCE' } | Should -Not -Throw
 
-                Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Connect-SQL {
+                    $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
+                } -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'TakeOffline' } -Scope It -Exactly -Times 1
@@ -366,7 +356,9 @@ InModuleScope $script:moduleName {
             It 'Should not try to restart a SQL Agent resource that is not online' {
                 { Restart-SqlService -SQLServer 'CLU01' -SQLInstanceName 'STOPPEDAGENT' } | Should -Not -Throw
 
-                Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Connect-SQL {
+                    $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
+                } -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'TakeOffline' } -Scope It -Exactly -Times 1
@@ -374,13 +366,6 @@ InModuleScope $script:moduleName {
             }
         }
     }
-
-    <#
-        Removes the jobs setup for running unit tests of Restart-SqlService, in the
-        previous Describe-block.
-    #>
-    Remove-Job -Job $jobObjectCompleted -Force
-    Remove-Job -Job $jobObjectRunning -Force
 
     Describe 'Testing Connect-SQLAnalysis' {
         BeforeEach {

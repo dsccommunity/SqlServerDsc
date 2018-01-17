@@ -845,64 +845,30 @@ function Restart-SqlService
 
     Write-Verbose -Message ($script:localizedData.WaitingInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout) -Verbose
 
-    $startJobScriptBlock = {
-        param
-        (
-            [Parameter(Mandatory = $true)]
-            [System.String]
-            $ServerName,
+    $connectTimer = [System.Diagnostics.StopWatch]::StartNew()
 
-            [Parameter(Mandatory = $true)]
-            [System.String]
-            $InstanceName,
-
-            [Parameter(Mandatory = $true)]
-            [System.String]
-            $ScriptRoot
-        )
-
-        Import-Module -Name (Join-Path -Path $ScriptRoot -ChildPath 'SqlServerDscHelper.psm1')
-
-        do
-        {
-            # This call, if it fails, will take between ~9-10 seconds to return.
-            $serverObject = Connect-SQL -SQLServer $ServerName -SQLInstanceName $InstanceName -ErrorAction SilentlyContinue
-            if ($serverObject.Status -ne 'Online')
-            {
-                # Waiting 2 seconds to not hammer the SQL Server instance.
-                Start-Sleep -Seconds 2
-            }
-        } until ($serverObject.Status -eq 'Online')
-    }
-
-    try
+    do
     {
-        $startJobResult = Start-Job -ScriptBlock $startJobScriptBlock -ArgumentList @(
-            $SQLServer
-            $SQLInstanceName
-            $PSScriptRoot
-        )
-
-        Wait-Job -Job $startJobResult -Timeout $Timeout
-
-        if ($startJobResult.JobStateInfo.State -ne 'Completed')
+        # This call, if it fails, will take between ~9-10 seconds to return.
+        $testConnectionServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -ErrorAction SilentlyContinue
+        if ($testConnectionServerObject -and $testConnectionServerObject.Status -ne 'Online')
         {
-            # Output any verbose messages and error messages.
-            Receive-Job -Job $startJobResult
-
-            $errorMessage = $script:localizedData.FailedToConnectToInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout
-            New-InvalidOperationException -Message $errorMessage
+            # Waiting 2 seconds to not hammer the SQL Server instance.
+            Start-Sleep -Seconds 2
         }
-    }
-    catch
+        else
+        {
+            break
+        }
+    } until ($connectTimer.Elapsed.Seconds -ge $Timeout)
+
+    $connectTimer.Stop()
+
+    # Was the timeout period reach before able to connect to the SQL Server instance?
+    if (-not $testConnectionServerObject -or $testConnectionServerObject.Status -ne 'Online')
     {
-        $errorMessage = $script:localizedData.FailedToValidateInstanceOnline
-        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-    }
-    finally
-    {
-        # Make sure the job is removed.
-        Remove-Job -Job $startJobResult -Force
+        $errorMessage = $script:localizedData.FailedToConnectToInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout
+        New-InvalidOperationException -Message $errorMessage
     }
 }
 
