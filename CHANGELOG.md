@@ -41,6 +41,11 @@
   - Updated the security token for AppVeyor status badge in README.md. When we
     renamed the repository the security token was changed
     ([issue #1012](https://github.com/PowerShell/SqlServerDsc/issues/1012)).
+  - Now the helper function Restart-SqlService, after restarting the SQL Server
+    service, does not return until it can connect to the SQL Server instance, and
+    the instance returns status 'Online' ([issue #1008](https://github.com/PowerShell/SqlServerDsc/issues/1008)).
+    If it fails to connect within the timeout period (defaults to 120 seconds) it
+    throws an error.
   - Fixed typo in comment-base help for helper function Test-AvailabilityReplicaSeedingModeAutomatic.
   - Style cleanup in helper function tests.
 - Changes to SqlAG
@@ -127,6 +132,11 @@
     name is correctly returned as a string ([issue #982](https://github.com/PowerShell/SqlServerDsc/issues/982)).
   - Added integration tests ([issue #980](https://github.com/PowerShell/SqlServerDsc/issues/980)).
   - Minor code style cleanup.
+  - The timing issue that the resource returned before SQL Server service was
+    actually restarted has been solved by a change in the helper function
+    Restart-SqlService ([issue #1008](https://github.com/PowerShell/SqlServerDsc/issues/1008)).
+    Now Restart-SqlService waits for the instance to return status 'Online' or
+    throws an error saying it failed to connect within the timeout period.
 - Changes to SqlSetup
   - Added parameter `ASServerMode` to support installing Analysis Services in
     Multidimensional mode, Tabular mode and PowerPivot mode

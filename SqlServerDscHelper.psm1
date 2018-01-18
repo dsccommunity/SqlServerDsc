@@ -842,6 +842,34 @@ function Restart-SqlService
             $_ | Start-Service
         }
     }
+
+    Write-Verbose -Message ($script:localizedData.WaitingInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout) -Verbose
+
+    $connectTimer = [System.Diagnostics.StopWatch]::StartNew()
+
+    do
+    {
+        # This call, if it fails, will take between ~9-10 seconds to return.
+        $testConnectionServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -ErrorAction SilentlyContinue
+        if ($testConnectionServerObject -and $testConnectionServerObject.Status -ne 'Online')
+        {
+            # Waiting 2 seconds to not hammer the SQL Server instance.
+            Start-Sleep -Seconds 2
+        }
+        else
+        {
+            break
+        }
+    } until ($connectTimer.Elapsed.Seconds -ge $Timeout)
+
+    $connectTimer.Stop()
+
+    # Was the timeout period reach before able to connect to the SQL Server instance?
+    if (-not $testConnectionServerObject -or $testConnectionServerObject.Status -ne 'Online')
+    {
+        $errorMessage = $script:localizedData.FailedToConnectToInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout
+        New-InvalidOperationException -Message $errorMessage
+    }
 }
 
 <#

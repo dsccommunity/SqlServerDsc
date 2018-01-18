@@ -34,6 +34,8 @@ ConvertFrom-StringData @'
     GetServiceInformation = Getting {0} service information.
     RestartService = {0} service restarting.
     StartingDependentService = Starting service {0}
+    WaitingInstanceTimeout = Waiting for instance {0}\\{1} to report status online, with a timeout value of {2} seconds.
+    FailedToConnectToInstanceTimeout = Failed to connect to the instance {0}\\{1} within the timeout period of {2} seconds.
     ExecuteQueryWithResultsFailed = Executing query with results failed on database '{0}'.
     ExecuteNonQueryFailed = Executing non-query failed on database '{0}'.
     AlterAvailabilityGroupReplicaFailed = Failed to alter the availability group replica '{0}'.
