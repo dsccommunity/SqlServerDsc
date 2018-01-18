@@ -65,7 +65,7 @@ try
         }
 
         $secpasswd = ConvertTo-SecureString 'P@$$w0rd1' -AsPlainText -Force
-        $credentials = New-Object System.Management.Automation.PSCredential ('AdminLink', $secpasswd)
+        $credentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('AdminLink', $secpasswd)
 
         Describe 'The system is not in the desired state given Local distribution mode' {
 

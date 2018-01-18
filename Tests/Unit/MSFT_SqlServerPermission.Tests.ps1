@@ -57,7 +57,7 @@ try
                 $testParameters = $defaultParameters.Clone()
 
                 Mock -CommandName Connect-SQL -MockWith {
-                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server
+                    $mockObjectSmoServer = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
                     $mockObjectSmoServer.Name = "$mockServerName\$mockInstanceName"
                     $mockObjectSmoServer.DisplayName = $mockInstanceName
                     $mockObjectSmoServer.InstanceName = $mockInstanceName
@@ -183,7 +183,7 @@ try
                 $testParameters = $defaultParameters.Clone()
 
                 Mock -CommandName Connect-SQL -MockWith {
-                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server
+                    $mockObjectSmoServer = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
                     $mockObjectSmoServer.Name = "$mockServerName\$mockInstanceName"
                     $mockObjectSmoServer.DisplayName = $mockInstanceName
                     $mockObjectSmoServer.InstanceName = $mockInstanceName
@@ -251,7 +251,7 @@ try
                 $testParameters = $defaultParameters.Clone()
 
                 Mock -CommandName Connect-SQL -MockWith {
-                    $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server
+                    $mockObjectSmoServer = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
                     $mockObjectSmoServer.Name = "$mockServerName\$mockInstanceName"
                     $mockObjectSmoServer.DisplayName = $mockInstanceName
                     $mockObjectSmoServer.InstanceName = $mockInstanceName
@@ -308,7 +308,7 @@ try
                 Context 'When the Set-TargetResource throws an error' {
                     It 'Should return the correct error message' {
                         Mock -CommandName Connect-SQL -MockWith {
-                            $mockObjectSmoServer = New-Object Microsoft.SqlServer.Management.Smo.Server
+                            $mockObjectSmoServer = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
                             $mockObjectSmoServer.Name = "$mockServerName\$mockInstanceName"
                             $mockObjectSmoServer.DisplayName = $mockInstanceName
                             $mockObjectSmoServer.InstanceName = $mockInstanceName

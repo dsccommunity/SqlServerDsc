@@ -276,7 +276,7 @@ function Get-ServiceObject
     New-VerboseMessage -Message $verboseMessage
 
     # Connect to SQL WMI
-    $managedComputer = New-Object Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer $ServerName
+    $managedComputer = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer -ArgumentList $ServerName
 
     # Get the service name for the specified instance and type
     $serviceNameFilter = Get-SqlServiceName -InstanceName $InstanceName -ServiceType $ServiceType

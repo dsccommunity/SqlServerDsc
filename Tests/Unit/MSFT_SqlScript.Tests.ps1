@@ -206,7 +206,7 @@ try
             Context 'Test-TargetResource throws the exception SqlPowerShellSqlExecutionException when running the script in the TestFilePath parameter' {
                 Mock -CommandName Import-SQLPSModule -MockWith {}
                 Mock -CommandName Invoke-Sqlcmd -MockWith {
-                    throw New-Object Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException
+                    throw New-Object -TypeName Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException
                 }
 
                 It 'Should return false' {

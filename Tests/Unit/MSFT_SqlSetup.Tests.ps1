@@ -165,17 +165,17 @@ try
         $mockmockSetupCredentialUserName = "COMPANY\sqladmin"
 
         $mockmockSetupCredentialPassword = "dummyPassw0rd" | ConvertTo-SecureString -asPlainText -Force
-        $mockSetupCredential = New-Object System.Management.Automation.PSCredential( $mockmockSetupCredentialUserName, $mockmockSetupCredentialPassword )
+        $mockSetupCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockmockSetupCredentialUserName, $mockmockSetupCredentialPassword)
 
         $mockSqlServiceAccount = 'COMPANY\SqlAccount'
         $mockSqlServicePassword = 'Sqls3v!c3P@ssw0rd'
-        $mockSQLServiceCredential = New-Object System.Management.Automation.PSCredential($mockSqlServiceAccount,($mockSQLServicePassword | ConvertTo-SecureString -AsPlainText -Force))
+        $mockSQLServiceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockSqlServiceAccount,($mockSQLServicePassword | ConvertTo-SecureString -AsPlainText -Force))
         $mockAgentServiceAccount = 'COMPANY\AgentAccount'
         $mockAgentServicePassword = 'Ag3ntP@ssw0rd'
-        $mockSQLAgentCredential = New-Object System.Management.Automation.PSCredential($mockAgentServiceAccount,($mockAgentServicePassword | ConvertTo-SecureString -AsPlainText -Force))
+        $mockSQLAgentCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockAgentServiceAccount,($mockAgentServicePassword | ConvertTo-SecureString -AsPlainText -Force))
         $mockAnalysisServiceAccount = 'COMPANY\AnalysisAccount'
         $mockAnalysisServicePassword = 'Analysiss3v!c3P@ssw0rd'
-        $mockAnalysisServiceCredential = New-Object System.Management.Automation.PSCredential($mockAnalysisServiceAccount,($mockAnalysisServicePassword | ConvertTo-SecureString -AsPlainText -Force))
+        $mockAnalysisServiceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockAnalysisServiceAccount,($mockAnalysisServicePassword | ConvertTo-SecureString -AsPlainText -Force))
 
         $mockClusterNodes = @($env:COMPUTERNAME,'SQL01','SQL02')
 
@@ -708,7 +708,7 @@ try
         $mockGetCimInstance_MSClusterResource = {
             return @(
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource','root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource','root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server ($mockCurrentInstanceName)" -PassThru -Force |
                         Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String' -PassThru -Force |
                         Add-Member -MemberType NoteProperty -Name 'PrivateProperties' -Value @{ InstanceName = $mockCurrentInstanceName } -PassThru -Force
@@ -719,7 +719,7 @@ try
         $mockGetCimInstance_MSClusterResourceGroup_AvailableStorage = {
             return @(
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ResourceGroup', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ResourceGroup', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Available Storage' -PassThru -Force
                 )
             )
@@ -728,27 +728,27 @@ try
         $mockGetCIMInstance_MSCluster_ClusterSharedVolume = {
             return @(
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockCSVClusterDiskMap['SysData'].Path -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockCSVClusterDiskMap['UserData'].Path -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockCSVClusterDiskMap['UserLogs'].Path -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockCSVClusterDiskMap['TempDBData'].Path -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockCSVClusterDiskMap['TempDBLogs'].Path -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockCSVClusterDiskMap['Backup'].Path -PassThru -Force
                 )
             )
@@ -757,32 +757,32 @@ try
         $mockGetCIMInstance_MSCluster_ClusterSharedVolumeToResource = {
             return @(
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['SysData'].Path}) -PassThru -Force |
                         Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['SysData'].Name}) -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['UserData'].Path}) -PassThru -Force |
                         Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['UserData'].Name}) -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['UserLogs'].Path}) -PassThru -Force |
                         Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['UserLogs'].Name}) -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['TempDBData'].Path}) -PassThru -Force |
                         Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['TempDBData'].Name}) -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['TempDBLogs'].Path}) -PassThru -Force |
                         Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['TempDBLogs'].Name}) -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['Backup'].Path}) -PassThru -Force |
                         Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['Backup'].Name}) -PassThru -Force
                 )
@@ -795,7 +795,7 @@ try
                     $mockClusterSites | ForEach-Object {
                         $network = $_
 
-                        New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Network', 'root/MSCluster' |
+                        New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Network', 'root/MSCluster' |
                             Add-Member -MemberType NoteProperty -Name 'Name' -Value "$($network.Name)_Prod" -PassThru -Force |
                             Add-Member -MemberType NoteProperty -Name 'Role' -Value 2 -PassThru -Force |
                             Add-Member -MemberType NoteProperty -Name 'Address' -Value $network.Address -PassThru -Force |
@@ -808,7 +808,7 @@ try
         $mockGetCimAssociatedInstance_MSClusterResourceGroup_DefaultInstance = {
             return @(
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ResourceGroup', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ResourceGroup', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_FailoverClusterGroupName -PassThru -Force
                 )
             )
@@ -839,7 +839,7 @@ try
                             }
                         }
 
-                        return New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource', 'root/MSCluster' |
+                        return New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource', 'root/MSCluster' |
                             Add-Member -MemberType NoteProperty -Name 'Type' -Value $resourceType -PassThru -Force |
                             Add-Member @propertyValue -PassThru -Force
                     }
@@ -854,7 +854,7 @@ try
                     # $mockClusterDiskMap contains variables that are assigned dynamically (during runtime) before each test.
                     (& $mockClusterDiskMap).Keys | ForEach-Object {
                         $diskName = $_
-                        New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource','root/MSCluster' |
+                        New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource','root/MSCluster' |
                             Add-Member -MemberType NoteProperty -Name 'Name' -Value $diskName -PassThru -Force |
                             Add-Member -MemberType NoteProperty -Name 'State' -Value 2 -PassThru -Force |
                             Add-Member -MemberType NoteProperty -Name 'Type' -Value 'Physical Disk' -PassThru -Force
@@ -868,7 +868,7 @@ try
                 (
                     $mockClusterNodes | ForEach-Object {
                         $node = $_
-                        New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Node', 'root/MSCluster' |
+                        New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Node', 'root/MSCluster' |
                             Add-Member -MemberType NoteProperty -Name 'Name' -Value $node -PassThru -Force
                     }
                 )
@@ -883,7 +883,7 @@ try
 
             return @(
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_DiskPartition','root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_DiskPartition','root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Path' -Value $clusterDiskPath -PassThru -Force
                 )
             )
@@ -4684,19 +4684,19 @@ try
                 $mockServiceAccountPassword = ConvertTo-SecureString 'Password' -AsPlainText -Force
 
                 $mockSystemServiceAccount = (
-                    New-Object System.Management.Automation.PSCredential 'NT AUTHORITY\SYSTEM', $mockServiceAccountPassword
+                    New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'NT AUTHORITY\SYSTEM', $mockServiceAccountPassword
                 )
 
                 $mockVirtualServiceAccount = (
-                    New-Object System.Management.Automation.PSCredential 'NT SERVICE\MSSQLSERVER', $mockServiceAccountPassword
+                    New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'NT SERVICE\MSSQLSERVER', $mockServiceAccountPassword
                 )
 
                 $mockManagedServiceAccount = (
-                    New-Object System.Management.Automation.PSCredential 'COMPANY\ManagedAccount$', $mockServiceAccountPassword
+                    New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'COMPANY\ManagedAccount$', $mockServiceAccountPassword
                 )
 
                 $mockDomainServiceAccount = (
-                    New-Object System.Management.Automation.PSCredential 'COMPANY\sql.service', $mockServiceAccountPassword
+                    New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'COMPANY\sql.service', $mockServiceAccountPassword
                 )
             }
 

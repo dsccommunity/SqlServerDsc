@@ -303,7 +303,7 @@ InModuleScope $script:moduleName {
             BeforeAll {
                 Mock -CommandName Get-CimInstance -MockWith {
                     @('MSSQLSERVER','NAMEDINSTANCE','STOPPEDAGENT') | ForEach-Object {
-                        $mock = New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource','root/MSCluster'
+                        $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
 
                         $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server ($($_))" -TypeName 'String'
                         $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String'
@@ -314,7 +314,7 @@ InModuleScope $script:moduleName {
                 } -Verifiable -ParameterFilter { ($ClassName -eq 'MSCluster_Resource') -and ($Filter -eq "Type = 'SQL Server'") }
 
                 Mock -CommandName Get-CimAssociatedInstance -MockWith {
-                    $mock = New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource','root/MSCluster'
+                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
 
                     $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server Agent ($($InputObject.PrivateProperties.InstanceName))" -TypeName 'String'
                     $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server Agent' -TypeName 'String'
@@ -500,7 +500,7 @@ InModuleScope $script:moduleName {
                                             throw
                                         }
 
-                                        return New-Object System.Data.DataSet
+                                        return New-Object -TypeName System.Data.DataSet
                                     } -PassThru
                             )
                         }
@@ -563,14 +563,14 @@ InModuleScope $script:moduleName {
     Describe "Testing Update-AvailabilityGroupReplica" {
         Context 'When the Availability Group Replica is altered' {
             It 'Should silently alter the Availability Group Replica' {
-                $availabilityReplica = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+                $availabilityReplica = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
 
                 { Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityReplica } | Should -Not -Throw
 
             }
 
             It 'Should throw the correct error, AlterAvailabilityGroupReplicaFailed, when altering the Availability Group Replica fails' {
-                $availabilityReplica = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+                $availabilityReplica = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
                 $availabilityReplica.Name = 'AlterFailed'
 
                 { Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityReplica } | Should -Throw ($script:localizedData.AlterAvailabilityGroupReplicaFailed -f $availabilityReplica.Name)
@@ -950,10 +950,10 @@ InModuleScope $script:moduleName {
 
     Describe 'Testing Get-PrimaryReplicaServerObject' {
         BeforeEach {
-            $mockServerObject = New-Object Microsoft.SqlServer.Management.Smo.Server
+            $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
             $mockServerObject.DomainInstanceName = 'Server1'
 
-            $mockAvailabilityGroup = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+            $mockAvailabilityGroup = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
             $mockAvailabilityGroup.PrimaryReplicaServerName = 'Server1'
         }
 
@@ -1117,10 +1117,10 @@ InModuleScope $script:moduleName {
     }
 
     Describe 'Testing Test-ImpersonatePermissions' {
-        $mockConnectionContextObject = New-Object Microsoft.SqlServer.Management.Smo.ConnectionContext
+        $mockConnectionContextObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ConnectionContext
         $mockConnectionContextObject.TrueLogin = 'Login1'
 
-        $mockServerObject = New-Object Microsoft.SqlServer.Management.Smo.Server
+        $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
         $mockServerObject.ComputerNamePhysicalNetBIOS = 'Server1'
         $mockServerObject.ServiceName = 'MSSQLSERVER'
         $mockServerObject.ConnectionContext = $mockConnectionContextObject

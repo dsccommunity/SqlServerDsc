@@ -117,8 +117,8 @@ Describe 'CommonResourceHelper Unit Tests' {
                     $mockErrorMessage = 'Mocked error'
                     $mockExceptionErrorMessage = 'Mocked exception error message'
 
-                    $mockException = New-Object System.Exception $mockExceptionErrorMessage
-                    $mockErrorRecord = New-Object System.Management.Automation.ErrorRecord $mockException, $null, 'InvalidResult', $null
+                    $mockException = New-Object -TypeName System.Exception -ArgumentList $mockExceptionErrorMessage
+                    $mockErrorRecord = New-Object -TypeName System.Management.Automation.ErrorRecord -ArgumentList $mockException, $null, 'InvalidResult', $null
 
                     { New-InvalidResultException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should -Throw ('System.Exception: {0} ---> System.Exception: {1}' -f $mockErrorMessage, $mockExceptionErrorMessage)
                 }
@@ -141,8 +141,8 @@ Describe 'CommonResourceHelper Unit Tests' {
                     $mockErrorMessage = 'Mocked error'
                     $mockExceptionErrorMessage = 'Mocked exception error message'
 
-                    $mockException = New-Object System.Exception $mockExceptionErrorMessage
-                    $mockErrorRecord = New-Object System.Management.Automation.ErrorRecord $mockException, $null, 'InvalidResult', $null
+                    $mockException = New-Object -TypeName System.Exception -ArgumentList $mockExceptionErrorMessage
+                    $mockErrorRecord = New-Object -TypeName System.Management.Automation.ErrorRecord -ArgumentList $mockException, $null, 'InvalidResult', $null
 
                     { New-ObjectNotFoundException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should -Throw ('System.Exception: {0} ---> System.Exception: {1}' -f $mockErrorMessage, $mockExceptionErrorMessage)
                 }
@@ -165,8 +165,8 @@ Describe 'CommonResourceHelper Unit Tests' {
                     $mockErrorMessage = 'Mocked error'
                     $mockExceptionErrorMessage = 'Mocked exception error message'
 
-                    $mockException = New-Object System.Exception $mockExceptionErrorMessage
-                    $mockErrorRecord = New-Object System.Management.Automation.ErrorRecord $mockException, $null, 'InvalidResult', $null
+                    $mockException = New-Object -TypeName System.Exception -ArgumentList $mockExceptionErrorMessage
+                    $mockErrorRecord = New-Object -TypeName System.Management.Automation.ErrorRecord -ArgumentList $mockException, $null, 'InvalidResult', $null
 
                     { New-InvalidOperationException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should -Throw ('System.InvalidOperationException: {0} ---> System.Exception: {1}' -f $mockErrorMessage, $mockExceptionErrorMessage)
                 }
