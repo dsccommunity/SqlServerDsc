@@ -115,7 +115,20 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.GetResult | Select-Object -ExpandProperty Name | Should -Be 'MyScriptDatabase1'
+                <#
+                    This returns an array of string containing the result of the
+                    get script. The output looks like the below.
+
+                    ```
+                    \r
+                    Name             \r
+                    ----             \r
+                    MyScriptDatabase1\r
+                    \r
+                    \r
+                    ```
+                #>
+                $resourceCurrentState.GetResult[3] | Should -Be 'MyScriptDatabase1'
                 $resourceCurrentState.GetFilePath | Should -Be $mockGetSqlScriptPath
                 $resourceCurrentState.TestFilePath | Should -Be $mockTestSqlScriptPath
                 $resourceCurrentState.SetFilePath | Should -Be $mockSetSqlScriptPath
