@@ -10,13 +10,15 @@ $ConfigurationData = @{
             ServerName                  = $env:COMPUTERNAME
             InstanceName                = 'DSCSQL2016'
 
-            GetSqlScriptPath = "$env:TEMP\SqlScriptIntTest-GetSqlScript.sql"
-            GetSqlScript = @'
+            GetSqlScriptPath            = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+            SetSqlScriptPath            = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+            TestSqlScriptPath           = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+
+            GetSqlScript                = @'
 SELECT name FROM sys.databases WHERE name = 'MyScriptDatabase1'
 '@
 
-            TestSqlScriptPath = "$env:TEMP\SqlScriptIntTest-TestSqlScript.sql"
-            TestSqlScript = @'
+            TestSqlScript               = @'
 if (select count(name) from sys.databases where name = 'MyScriptDatabase1') = 0
 BEGIN
     RAISERROR ('Did not find database [MyScriptDatabase1]', 16, 1)
@@ -27,8 +29,7 @@ BEGIN
 END
 '@
 
-            SetSqlScriptPath = "$env:TEMP\SqlScriptIntTest-SetSqlScript.sql"
-            SetSqlScript = @'
+            SetSqlScript                = @'
 CREATE DATABASE [MyScriptDatabase1]
 '@
 
