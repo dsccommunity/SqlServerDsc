@@ -115,7 +115,7 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.GetResult.Name | Should -Be 'MyScriptDatabase1'
+                $resourceCurrentState.GetResult | Select-Object -ExpandProperty Name | Should -Be 'MyScriptDatabase1'
                 $resourceCurrentState.GetFilePath | Should -Be $mockGetSqlScriptPath
                 $resourceCurrentState.TestFilePath | Should -Be $mockTestSqlScriptPath
                 $resourceCurrentState.SetFilePath | Should -Be $mockSetSqlScriptPath
