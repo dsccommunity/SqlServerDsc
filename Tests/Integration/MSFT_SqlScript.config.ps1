@@ -46,14 +46,14 @@ Configuration MSFT_SqlScript_CreateDependencies_Config
         Script CreateFile_GetSqlScript
         {
             SetScript = {
-                $Node.GetSqlScript | Out-File -FilePath $Node.GetSqlScriptPath -Encoding ascii -NoClobber -Force
+                $Using:Node.GetSqlScript | Out-File -FilePath $Using:Node.GetSqlScriptPath -Encoding ascii -NoClobber -Force
             }
 
             TestScript = {
-                if (Test-Path -Path $Node.GetSqlScriptPath)
+                if (Test-Path -Path $Using:Node.GetSqlScriptPath)
                 {
-                    $fileContent = Get-Content -Path $Node.GetSqlScriptPath -Raw
-                    return $fileContent -eq $Node.GetSqlScript
+                    $fileContent = Get-Content -Path $Using:Node.GetSqlScriptPath -Raw
+                    return $fileContent -eq $Using:Node.GetSqlScript
                 }
                 else
                 {
@@ -64,9 +64,9 @@ Configuration MSFT_SqlScript_CreateDependencies_Config
             GetScript = {
                 $fileContent = $null
 
-                if (Test-Path -Path $Node.GetSqlScriptPath)
+                if (Test-Path -Path $Using:Node.GetSqlScriptPath)
                 {
-                    $fileContent = Get-Content -Path $Node.GetSqlScriptPath -Raw
+                    $fileContent = Get-Content -Path $Using:Node.GetSqlScriptPath -Raw
                 }
 
                 return @{
@@ -78,14 +78,14 @@ Configuration MSFT_SqlScript_CreateDependencies_Config
         Script CreateFile_TestSqlScript
         {
             SetScript = {
-                $Node.TestSqlScript | Out-File -FilePath $Node.TestSqlScriptPath -Encoding ascii -NoClobber -Force
+                $Using:Node.TestSqlScript | Out-File -FilePath $Using:Node.TestSqlScriptPath -Encoding ascii -NoClobber -Force
             }
 
             TestScript = {
-                if (Test-Path -Path $Node.TestSqlScriptPath)
+                if (Test-Path -Path $Using:Node.TestSqlScriptPath)
                 {
-                    $fileContent = Get-Content -Path $Node.TestSqlScriptPath -Raw
-                    return $fileContent -eq $Node.TestSqlScript
+                    $fileContent = Get-Content -Path $Using:Node.TestSqlScriptPath -Raw
+                    return $fileContent -eq $Using:Node.TestSqlScript
                 }
                 else
                 {
@@ -96,9 +96,9 @@ Configuration MSFT_SqlScript_CreateDependencies_Config
             GetScript = {
                 $fileContent = $null
 
-                if (Test-Path -Path $Node.TestSqlScriptPath)
+                if (Test-Path -Path $Using:Node.TestSqlScriptPath)
                 {
-                    $fileContent = Get-Content -Path $Node.TestSqlScriptPath -Raw
+                    $fileContent = Get-Content -Path $Using:Node.TestSqlScriptPath -Raw
                 }
 
                 return @{
@@ -110,14 +110,14 @@ Configuration MSFT_SqlScript_CreateDependencies_Config
         Script CreateFile_SetSqlScript
         {
             SetScript = {
-                $Node.SetSqlScript | Out-File -FilePath $Node.SetSqlScriptPath -Encoding ascii -NoClobber -Force
+                $Using:Node.SetSqlScript | Out-File -FilePath $Using:Node.SetSqlScriptPath -Encoding ascii -NoClobber -Force
             }
 
             TestScript = {
-                if (Test-Path -Path $Node.SetSqlScriptPath)
+                if (Test-Path -Path $Using:Node.SetSqlScriptPath)
                 {
-                    $fileContent = Get-Content -Path $Node.SetSqlScriptPath -Raw
-                    return $fileContent -eq $Node.SetSqlScript
+                    $fileContent = Get-Content -Path $Using:Node.SetSqlScriptPath -Raw
+                    return $fileContent -eq $Using:Node.SetSqlScript
                 }
                 else
                 {
@@ -128,9 +128,9 @@ Configuration MSFT_SqlScript_CreateDependencies_Config
             GetScript = {
                 $fileContent = $null
 
-                if (Test-Path -Path $Node.SetSqlScriptPath)
+                if (Test-Path -Path $Using:Node.SetSqlScriptPath)
                 {
-                    $fileContent = Get-Content -Path $Node.SetSqlScriptPath -Raw
+                    $fileContent = Get-Content -Path $Using:Node.SetSqlScriptPath -Raw
                 }
 
                 return @{
