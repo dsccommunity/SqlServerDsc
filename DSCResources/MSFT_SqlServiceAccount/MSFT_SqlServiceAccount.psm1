@@ -431,7 +431,7 @@ function Get-SqlServiceName
         New-InvalidArgumentException -Message $errorMessage -ArgumentName 'ServiceType'
     }
 
-    if ([String]::IsNullOrEmpty($serviceNamingScheme))
+    if ([System.String]::IsNullOrEmpty($serviceNamingScheme))
     {
         $errorMessage = $script:localizedData.NotInstanceAware -f $ServiceType
         New-InvalidResultException -Message $errorMessage

@@ -217,7 +217,7 @@ try
                 # Regression test for issue #790
                 It 'Should return the members as string array' {
                     $result = Get-TargetResource @testParameters
-                    ($result.Members -is [String[]]) | Should -Be $true
+                    ($result.Members -is [System.String[]]) | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -275,7 +275,7 @@ try
                 # Regression test for issue #790
                 It 'Should return the members as string array' {
                     $result = Get-TargetResource @testParameters
-                    ($result.Members -is [String[]]) | Should -Be $true
+                    ($result.Members -is [System.String[]]) | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -314,7 +314,7 @@ try
                 # Regression test for issue #790
                 It 'Should return the members as string array' {
                     $result = Get-TargetResource @testParameters
-                    ($result.Members -is [String[]]) | Should -Be $true
+                    ($result.Members -is [System.String[]]) | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -448,7 +448,7 @@ try
                 # Regression test for issue #790
                 It 'Should return the members as string array' {
                     $result = Get-TargetResource @testParameters
-                    ($result.Members -is [String[]]) | Should -Be $true
+                    ($result.Members -is [System.String[]]) | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -487,7 +487,7 @@ try
                 # Regression test for issue #790
                 It 'Should return the members as string array' {
                     $result = Get-TargetResource @testParameters
-                    ($result.Members -is [String[]]) | Should -Be $true
+                    ($result.Members -is [System.String[]]) | Should -Be $true
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }

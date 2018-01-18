@@ -25,19 +25,19 @@ function Get-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $AvailabilityGroupName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $ServerName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $InstanceName
     )
 
@@ -163,73 +163,73 @@ function Set-TargetResource
     Param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $AvailabilityGroupName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $ServerName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $InstanceName,
 
         [Parameter()]
-        [String]
+        [System.String]
         $PrimaryReplicaServerName,
 
         [Parameter()]
-        [String]
+        [System.String]
         $PrimaryReplicaInstanceName,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
-        [String]
+        [System.String]
         $Ensure = 'Present',
 
         [Parameter()]
         [ValidateSet('AsynchronousCommit', 'SynchronousCommit')]
-        [String]
+        [System.String]
         $AvailabilityMode = 'AsynchronousCommit',
 
         [Parameter()]
         [ValidateRange(0, 100)]
-        [UInt32]
+        [System.UInt32]
         $BackupPriority = 50,
 
         [Parameter()]
         [ValidateSet('AllowAllConnections', 'AllowReadWriteConnections')]
-        [String]
+        [System.String]
         $ConnectionModeInPrimaryRole,
 
         [Parameter()]
         [ValidateSet('AllowNoConnections', 'AllowReadIntentConnectionsOnly', 'AllowAllConnections')]
-        [String]
+        [System.String]
         $ConnectionModeInSecondaryRole,
 
         [Parameter()]
-        [String]
+        [System.String]
         $EndpointHostName,
 
         [Parameter()]
         [ValidateSet('Automatic', 'Manual')]
-        [String]
+        [System.String]
         $FailoverMode = 'Manual',
 
         [Parameter()]
-        [String]
+        [System.String]
         $ReadOnlyRoutingConnectionUrl,
 
         [Parameter()]
-        [String[]]
+        [System.String[]]
         $ReadOnlyRoutingList,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $ProcessOnlyOnActiveNode
     )
 
@@ -320,14 +320,14 @@ function Set-TargetResource
                     }
 
                     # Make sure ConnectionModeInPrimaryRole has a value in order to avoid false positive matches when the parameter is not defined
-                    if ( ( -not [string]::IsNullOrEmpty($ConnectionModeInPrimaryRole) ) -and ( $ConnectionModeInPrimaryRole -ne $availabilityGroupReplica.ConnectionModeInPrimaryRole ) )
+                    if ( ( -not [System.String]::IsNullOrEmpty($ConnectionModeInPrimaryRole) ) -and ( $ConnectionModeInPrimaryRole -ne $availabilityGroupReplica.ConnectionModeInPrimaryRole ) )
                     {
                         $availabilityGroupReplica.ConnectionModeInPrimaryRole = $ConnectionModeInPrimaryRole
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
                     # Make sure ConnectionModeInSecondaryRole has a value in order to avoid false positive matches when the parameter is not defined
-                    if ( ( -not [string]::IsNullOrEmpty($ConnectionModeInSecondaryRole) ) -and ( $ConnectionModeInSecondaryRole -ne $availabilityGroupReplica.ConnectionModeInSecondaryRole ) )
+                    if ( ( -not [System.String]::IsNullOrEmpty($ConnectionModeInSecondaryRole) ) -and ( $ConnectionModeInSecondaryRole -ne $availabilityGroupReplica.ConnectionModeInSecondaryRole ) )
                     {
                         $availabilityGroupReplica.ConnectionModeInSecondaryRole = $ConnectionModeInSecondaryRole
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
@@ -519,73 +519,73 @@ function Test-TargetResource
     Param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $AvailabilityGroupName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $ServerName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $InstanceName,
 
         [Parameter()]
-        [String]
+        [System.String]
         $PrimaryReplicaServerName,
 
         [Parameter()]
-        [String]
+        [System.String]
         $PrimaryReplicaInstanceName,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
-        [String]
+        [System.String]
         $Ensure = 'Present',
 
         [Parameter()]
         [ValidateSet('AsynchronousCommit', 'SynchronousCommit')]
-        [String]
+        [System.String]
         $AvailabilityMode = 'AsynchronousCommit',
 
         [Parameter()]
         [ValidateRange(0, 100)]
-        [UInt32]
+        [System.UInt32]
         $BackupPriority = 50,
 
         [Parameter()]
         [ValidateSet('AllowAllConnections', 'AllowReadWriteConnections')]
-        [String]
+        [System.String]
         $ConnectionModeInPrimaryRole,
 
         [Parameter()]
         [ValidateSet('AllowNoConnections', 'AllowReadIntentConnectionsOnly', 'AllowAllConnections')]
-        [String]
+        [System.String]
         $ConnectionModeInSecondaryRole,
 
         [Parameter()]
-        [String]
+        [System.String]
         $EndpointHostName,
 
         [Parameter()]
         [ValidateSet('Automatic', 'Manual')]
-        [String]
+        [System.String]
         $FailoverMode = 'Manual',
 
         [Parameter()]
-        [String]
+        [System.String]
         $ReadOnlyRoutingConnectionUrl,
 
         [Parameter()]
-        [String[]]
+        [System.String[]]
         $ReadOnlyRoutingList,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $ProcessOnlyOnActiveNode
     )
 
@@ -655,7 +655,7 @@ function Test-TargetResource
                     if ( $parametersToCheck -contains $parameterName )
                     {
                         # If the parameter is Null, a value wasn't provided
-                        if ( -not [string]::IsNullOrEmpty($parameterValue) )
+                        if ( -not [System.String]::IsNullOrEmpty($parameterValue) )
                         {
                             if ( $getTargetResourceResult.($parameterName) -ne $parameterValue )
                             {

@@ -47,21 +47,21 @@
     If it fails to connect within the timeout period (defaults to 120 seconds) it
     throws an error.
   - Fixed typo in comment-base help for helper function Test-AvailabilityReplicaSeedingModeAutomatic.
-  - Style cleanup in helper function tests.
+  - Style cleanup in helper functions and tests.
 - Changes to SqlAG
   - Fixed typos in tests.
-  - Style cleanup in tests.
+  - Style cleanup in code and tests.
 - Changes to SqlAGDatabase
-  - Style cleanup in tests.
+  - Style cleanup in code and tests.
 - Changes to SqlAGListener
   - Fixed typo in comment-based help.
-  - Style cleanup in tests.
+  - Style cleanup in code and tests.
 - Changes to SqlAGReplica
   - Minor code style cleanup. Removed unused variable and instead piped the cmdlet
     Join-SqlAvailabilityGroup to Out-Null.
   - Fixed minor typos in comment-based help.
   - Fixed minor typos in comment.
-  - Style cleanup in tests.
+  - Style cleanup in code and tests.
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).
@@ -69,13 +69,15 @@
 - Changes to SqlAlwaysOnService
   - Refactor integration tests slightly to improve run time performance
     ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
-  - Style cleanup in tests.
+  - Style cleanup in code and tests.
 - Changes to SqlDatabase
   - Fix minor Script Analyzer warning.
 - Changes to SqlDatabaseDefaultLocation
   - Refactor integration tests slightly to improve run time performance
     ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
   - Minor style cleanup of code in tests.
+- Changes to SqlDatabaseRole
+  - Style cleanup in tests.
 - Changes to SqlRS
   - Replaced Get-WmiObject with Get-CimInstance to fix Script Analyzer warnings
     ([issue #264](https://github.com/PowerShell/SqlServerDsc/issues/264)).
@@ -86,15 +88,16 @@
     ([issue #634](https://github.com/PowerShell/SqlServerDsc/issues/634)).
   - Refactor integration tests slightly to improve run time performance
     ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
+  - Style cleanup in code and tests.
 - Changes to SqlScript
   - Style cleanup in tests.
 - Changes to SqlServerConfiguration
   - Fixed minor typos in comment-based help.
-  - Style cleanup in tests.
   - Now the verbose message say what option is changing and to what value
     ([issue #1014](https://github.com/PowerShell/SqlServerDsc/issues/1014)).
   - Changed the RestartTimeout parameter from type SInt32 to type UInt32.
   - Added localization ([issue #605](https://github.com/PowerShell/SqlServerDsc/issues/605)).
+  - Style cleanup in code and tests.
 - Changes to SqlServerEndpoint
   - Updated README.md with links to the examples
     ([issue #504](https://github.com/PowerShell/SqlServerDsc/issues/504)).
@@ -108,11 +111,13 @@
 - Changes to SqlServerMaxDop
   - Minor style changes in the helper function Get-SqlDscDynamicMaxDop.
 - Changes to SqlServerMemory
-  - Minor style cleanup of code in tests.
+  - Style cleanup in code and tests.
 - Changes to SqlServerPermission
   - Fixed minor typos in comment-based help.
+  - Style cleanup in code.
 - Changes to SqlServerReplication
   - Fixed minor typos in verbose messages.
+  - Style cleanup in tests.
 - Changes to SqlScript
   - Fixed minor typos in comment-based help.
 - Changes to SqlServerNetwork
@@ -123,6 +128,7 @@
   - Added localization ([issue #621](https://github.com/PowerShell/SqlServerDsc/issues/621)).
   - Added integration tests ([issue #756](https://github.com/PowerShell/SqlServerDsc/issues/756)).
   - Updated example to add two server roles in the same configuration.
+  - Style cleanup in tests.
 - Changes to SqlServiceAccount
   - Default services are now properly detected
     ([issue #930](https://github.com/PowerShell/SqlServerDsc/issues/930)).
@@ -131,12 +137,12 @@
   - Added a read-only parameter ServiceAccountName so that the service account
     name is correctly returned as a string ([issue #982](https://github.com/PowerShell/SqlServerDsc/issues/982)).
   - Added integration tests ([issue #980](https://github.com/PowerShell/SqlServerDsc/issues/980)).
-  - Minor code style cleanup.
   - The timing issue that the resource returned before SQL Server service was
     actually restarted has been solved by a change in the helper function
     Restart-SqlService ([issue #1008](https://github.com/PowerShell/SqlServerDsc/issues/1008)).
     Now Restart-SqlService waits for the instance to return status 'Online' or
     throws an error saying it failed to connect within the timeout period.
+  - Style cleanup in code and tests.
 - Changes to SqlSetup
   - Added parameter `ASServerMode` to support installing Analysis Services in
     Multidimensional mode, Tabular mode and PowerPivot mode
@@ -149,11 +155,12 @@
     ([issue #1001](https://github.com/PowerShell/SqlServerDsc/issues/1001)).
   - Added PSSA rule 'PSUseDeclaredVarsMoreThanAssignments' override in the
     function Set-TargetResource for the variable $global:DSCMachineStatus.
-  - Style cleanup in helper function ConvertTo-Decimal.
-  - Style cleanup in tests.
+  - Style cleanup in code and tests.
+- Changes to SqlWaitForAG
+  - Style cleanup in code.
 - Changes to SqlWindowsFirewall
   - Fixed minor typos in comment-based help.
-  - Minor code style cleanup.
+  - Style cleanup in code.
 
 ## 10.0.0.0
 
@@ -495,7 +502,7 @@
 - Changes to xSQLServerAlwaysOnService
   - Added resource description in README.md.
   - Updated parameters descriptions in comment-based help, schema.mof and README.md.
-  - Changed the datatype of the parameter to Uint32 so the same datatype is used
+  - Changed the datatype of the parameter to UInt32 so the same datatype is used
     in both the Get-/Test-/Set-TargetResource functions as in the schema.mof
     (issue #688).
   - Added read-only property IsHadrEnabled to schema.mof and the README.md

@@ -257,7 +257,7 @@ try
                 }
 
                 $password = ConvertTo-SecureString -String $passwordPlain -AsPlainText -Force
-                $cred = New-Object pscredential -ArgumentList $user, $password
+                $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $user, $password
 
                 It 'Should call Invoke-Sqlcmd with correct parameters' {
                     $invokeScriptParameters.Add("Credential", $cred)

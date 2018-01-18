@@ -112,7 +112,7 @@ function Set-TargetResource
         $MaxMemory,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $ProcessOnlyOnActiveNode
     )
 
@@ -241,7 +241,7 @@ function Test-TargetResource
         $MaxMemory,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $ProcessOnlyOnActiveNode
     )
 

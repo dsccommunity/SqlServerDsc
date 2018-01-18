@@ -359,7 +359,7 @@ try
                                     } | Select-Object -First 1
 
                                     # If the value is null or empty, set it to something
-                                    if ( [string]::IsNullOrEmpty($testCaseParameterValue) )
+                                    if ( [System.String]::IsNullOrEmpty($testCaseParameterValue) )
                                     {
                                         $testCaseParameterValue = 'AnotherHostName'
                                     }
@@ -459,11 +459,11 @@ try
             param
             (
                 [Parameter()]
-                [string]
+                [System.String]
                 $SQLServer,
 
                 [Parameter()]
-                [string]
+                [System.String]
                 $SQLInstanceName,
 
                 # The following two parameters are used to mock Get-PrimaryReplicaServerObject
@@ -477,21 +477,21 @@ try
             )
 
             # If this mock function is called from the Get-PrimaryReplicaServerObject command mock
-            if ( [string]::IsNullOrEmpty($SQLServer) -and [string]::IsNullOrEmpty($SQLInstanceName) -and $AvailabilityGroup -and $ServerObject )
+            if ( [System.String]::IsNullOrEmpty($SQLServer) -and [System.String]::IsNullOrEmpty($SQLInstanceName) -and $AvailabilityGroup -and $ServerObject )
             {
                 $SQLServer,$SQLInstanceName = $AvailabilityGroup.PrimaryReplicaServerName.Split('\')
             }
 
             # Determine which SQL Server mock data we will use
             $mockSqlServer = ( $mockSqlServerParameters.GetEnumerator() | Where-Object -FilterScript { $_.Value.Values -contains $SQLServer } ).Name
-            if ( [string]::IsNullOrEmpty($mockSqlServer) )
+            if ( [System.String]::IsNullOrEmpty($mockSqlServer) )
             {
                 $mockSqlServer = $SQLServer
             }
             $mockCurrentServerObjectProperties = $mockServerObjectProperties.$mockSqlServer
 
             # Build the domain instance name
-            if ( ( $SQLInstanceName -eq 'MSSQLSERVER' ) -or [string]::IsNullOrEmpty($SQLInstanceName) )
+            if ( ( $SQLInstanceName -eq 'MSSQLSERVER' ) -or [System.String]::IsNullOrEmpty($SQLInstanceName) )
             {
                 $mockDomainInstanceName = $mockCurrentServerObjectProperties.NetName
                 $mockPrimaryReplicaServerName = $mockAvailabilityGroupProperties.PrimaryReplicaServerName

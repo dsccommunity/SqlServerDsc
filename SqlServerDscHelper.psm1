@@ -376,7 +376,7 @@ function New-TerminatingError
         $ErrorType,
 
         [Parameter(Mandatory = $false)]
-        [String[]]
+        [System.String[]]
         $FormatArgs,
 
         [Parameter(Mandatory = $false)]
@@ -384,7 +384,7 @@ function New-TerminatingError
         $ErrorCategory = [System.Management.Automation.ErrorCategory]::OperationStopped,
 
         [Parameter(Mandatory = $false)]
-        [Object]
+        [System.Object]
         $TargetObject = $null,
 
         [Parameter(Mandatory = $false)]
@@ -462,7 +462,8 @@ function New-WarningMessage
         [System.String]
         $WarningType,
 
-        [String[]]
+        [Parameter()]
+        [System.String[]]
         $FormatArgs
     )
 
@@ -511,7 +512,8 @@ function New-VerboseMessage
     [OutputType([System.String])]
     Param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
+        [System.String]
         $Message
     )
     Write-Verbose -Message ((Get-Date -format yyyy-MM-dd_HH-mm-ss) + ": $Message") -Verbose
@@ -541,11 +543,11 @@ function Test-SQLDscParameterState
         $CurrentValues,
 
         [Parameter(Mandatory = $true)]
-        [Object]
+        [System.Object]
         $DesiredValues,
 
         [Parameter()]
-        [Array]
+        [System.Array]
         $ValuesToCheck
     )
 
@@ -692,7 +694,9 @@ function Test-SQLDscParameterState
 function Import-SQLPSModule
 {
     [CmdletBinding()]
-    param()
+    param
+    (
+    )
 
     $module = (Get-Module -FullyQualifiedName 'SqlServer' -ListAvailable).Name
     if ($module)
@@ -785,7 +789,7 @@ function Restart-SqlService
         $SQLInstanceName = 'MSSQLSERVER',
 
         [Parameter()]
-        [Int32]
+        [System.UInt32]
         $Timeout = 120
     )
 
@@ -1053,7 +1057,7 @@ function Test-LoginEffectivePermissions
         $LoginName,
 
         [Parameter(Mandatory = $true)]
-        [string[]]
+        [System.String[]]
         $Permissions
     )
 

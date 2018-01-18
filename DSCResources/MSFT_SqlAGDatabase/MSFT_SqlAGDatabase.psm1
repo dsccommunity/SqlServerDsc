@@ -179,15 +179,15 @@ function Set-TargetResource
         $Ensure = 'Present',
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $Force,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $MatchDatabaseOwner,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $ProcessOnlyOnActiveNode
     )
 
@@ -645,15 +645,15 @@ function Test-TargetResource
         $Ensure = 'Present',
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $Force,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $MatchDatabaseOwner,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $ProcessOnlyOnActiveNode
     )
 
@@ -682,7 +682,7 @@ function Test-TargetResource
     $serverObject = Connect-SQL -SQLServer $ServerName -SQLInstanceName $InstanceName
 
     # Get the Availability Group if it exists
-    if ( -not [string]::IsNullOrEmpty($currentConfiguration.AvailabilityGroupName) )
+    if ( -not [System.String]::IsNullOrEmpty($currentConfiguration.AvailabilityGroupName) )
     {
         $availabilityGroup = $serverObject.AvailabilityGroups[$AvailabilityGroupName]
 
@@ -858,7 +858,7 @@ function Get-DatabasesToRemoveFromAvailabilityGroup
         $Ensure,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $Force,
 
         [Parameter(Mandatory = $true)]

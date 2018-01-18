@@ -167,11 +167,11 @@ try
             Param
             (
                 [Parameter()]
-                [string]
+                [System.String]
                 $SQLServer,
 
                 [Parameter()]
-                [string]
+                [System.String]
                 $SQLInstanceName,
 
                 # The following two parameters are used to mock Get-PrimaryReplicaServerObject
@@ -270,11 +270,11 @@ try
             Param
             (
                 [Parameter()]
-                [string]
+                [System.String]
                 $SQLServer,
 
                 [Parameter()]
-                [string]
+                [System.String]
                 $SQLInstanceName,
 
                 # The following two parameters are used to mock Get-PrimaryReplicaServerObject
@@ -390,11 +390,11 @@ try
             Param
             (
                 [Parameter()]
-                [string]
+                [System.String]
                 $SQLServer,
 
                 [Parameter()]
-                [string]
+                [System.String]
                 $SQLInstanceName,
 
                 # The following two parameters are used to mock Get-PrimaryReplicaServerObject
@@ -517,7 +517,7 @@ try
                 $AvailabilityGroupReplica
             )
 
-            if ( [string]::IsNullOrEmpty($mockAvailabilityGroupReplicaPropertyName) -and [string]::IsNullOrEmpty($mockAvailabilityGroupReplicaPropertyValue) )
+            if ( [System.String]::IsNullOrEmpty($mockAvailabilityGroupReplicaPropertyName) -and [System.String]::IsNullOrEmpty($mockAvailabilityGroupReplicaPropertyValue) )
             {
                 return
             }

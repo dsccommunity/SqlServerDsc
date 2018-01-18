@@ -228,12 +228,12 @@ function Set-TargetResource
     {
         if ( $InstanceName -eq 'MSSQLSERVER' )
         {
-            if ( [string]::IsNullOrEmpty($ReportServerVirtualDirectory) )
+            if ( [System.String]::IsNullOrEmpty($ReportServerVirtualDirectory) )
             {
                 $ReportServerVirtualDirectory = 'ReportServer'
             }
 
-            if ( [string]::IsNullOrEmpty($ReportsVirtualDirectory) )
+            if ( [System.String]::IsNullOrEmpty($ReportsVirtualDirectory) )
             {
                 $ReportsVirtualDirectory = 'Reports'
             }
@@ -243,12 +243,12 @@ function Set-TargetResource
         }
         else
         {
-            if ( [string]::IsNullOrEmpty($ReportServerVirtualDirectory) )
+            if ( [System.String]::IsNullOrEmpty($ReportServerVirtualDirectory) )
             {
                 $ReportServerVirtualDirectory = "ReportServer_$InstanceName"
             }
 
-            if ( [string]::IsNullOrEmpty($ReportsVirtualDirectory) )
+            if ( [System.String]::IsNullOrEmpty($ReportsVirtualDirectory) )
             {
                 $ReportsVirtualDirectory = "Reports_$InstanceName"
             }
@@ -481,7 +481,7 @@ function Set-TargetResource
                 new virtual directory.
             #>
 
-            if ( -not [string]::IsNullOrEmpty($ReportServerVirtualDirectory) -and ($ReportServerVirtualDirectory -ne $currentConfig.ReportServerVirtualDirectory) )
+            if ( -not [System.String]::IsNullOrEmpty($ReportServerVirtualDirectory) -and ($ReportServerVirtualDirectory -ne $currentConfig.ReportServerVirtualDirectory) )
             {
                 New-VerboseMessage -Message "Setting report server virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
 
@@ -526,7 +526,7 @@ function Set-TargetResource
                 }
             }
 
-            if ( -not [string]::IsNullOrEmpty($ReportsVirtualDirectory) -and ($ReportsVirtualDirectory -ne $currentConfig.ReportsVirtualDirectory) )
+            if ( -not [System.String]::IsNullOrEmpty($ReportsVirtualDirectory) -and ($ReportsVirtualDirectory -ne $currentConfig.ReportsVirtualDirectory) )
             {
                 New-VerboseMessage -Message "Setting reports virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
 
@@ -756,13 +756,13 @@ function Test-TargetResource
         $result = $false
     }
 
-    if ( -not [string]::IsNullOrEmpty($ReportServerVirtualDirectory) -and ($ReportServerVirtualDirectory -ne $currentConfig.ReportServerVirtualDirectory) )
+    if ( -not [System.String]::IsNullOrEmpty($ReportServerVirtualDirectory) -and ($ReportServerVirtualDirectory -ne $currentConfig.ReportServerVirtualDirectory) )
     {
         New-VerboseMessage -Message "Report server virtual directory on $DatabaseServerName\$DatabaseInstanceName is $($currentConfig.ReportServerVirtualDir), should be $ReportServerVirtualDirectory."
         $result = $false
     }
 
-    if ( -not [string]::IsNullOrEmpty($ReportsVirtualDirectory) -and ($ReportsVirtualDirectory -ne $currentConfig.ReportsVirtualDirectory) )
+    if ( -not [System.String]::IsNullOrEmpty($ReportsVirtualDirectory) -and ($ReportsVirtualDirectory -ne $currentConfig.ReportsVirtualDirectory) )
     {
         New-VerboseMessage -Message "Reports virtual directory on $DatabaseServerName\$DatabaseInstanceName is $($currentConfig.ReportsVirtualDir), should be $ReportsVirtualDirectory."
         $result = $false
