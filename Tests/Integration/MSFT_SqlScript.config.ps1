@@ -15,7 +15,7 @@ $ConfigurationData = @{
             TestSqlScriptPath           = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
 
             GetSqlScript                = @'
-SELECT name FROM sys.databases WHERE name = 'MyScriptDatabase1'
+SELECT Name FROM sys.databases WHERE Name = 'MyScriptDatabase1'
 '@
 
             TestSqlScript               = @'

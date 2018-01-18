@@ -60,7 +60,12 @@ try
                         Path         = $TestDrive
                         ComputerName = 'localhost'
                         Wait         = $true
-                        Verbose      = $true
+                        <#
+                            The Script resource generate _a lot_ of verbose output
+                            which slows down the build worker. Verbose is turned
+                            off for this particular test.
+                        #>
+                        Verbose      = $false
                         Force        = $true
                         ErrorAction  = 'Stop'
                     }
@@ -110,7 +115,7 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.GetResult | Should -Be 'MyScriptDatabase1'
+                $resourceCurrentState.GetResult.Name | Should -Be 'MyScriptDatabase1'
                 $resourceCurrentState.GetFilePath | Should -Be $mockGetSqlScriptPath
                 $resourceCurrentState.TestFilePath | Should -Be $mockTestSqlScriptPath
                 $resourceCurrentState.SetFilePath | Should -Be $mockSetSqlScriptPath
