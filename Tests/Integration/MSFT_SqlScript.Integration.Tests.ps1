@@ -115,6 +115,12 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
+                Write-Verbose -Message ( 'GetResult: {0}' -f $resourceCurrentState.GetResult) -Verbose
+                Write-Verbose -Message ( 'GetResult, row 1: {0}' -f $resourceCurrentState.GetResult[0]) -Verbose
+                Write-Verbose -Message ( 'GetResult, row 2: {0}' -f $resourceCurrentState.GetResult[1]) -Verbose
+                Write-Verbose -Message ( 'GetResult, row 3: {0}' -f $resourceCurrentState.GetResult[2]) -Verbose
+                Write-Verbose -Message ( 'GetResult, row 4: {0}' -f $resourceCurrentState.GetResult[3]) -Verbose
+                Write-Verbose -Message ( 'GetResult, row 5: {0}' -f $resourceCurrentState.GetResult[4]) -Verbose
                 <#
                     This returns an array of string containing the result of the
                     get script. The output looks like the below.
