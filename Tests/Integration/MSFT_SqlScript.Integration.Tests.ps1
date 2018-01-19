@@ -124,15 +124,20 @@ try
                     -----------------------------------------
                     [{"Name":"MyScriptDatabase1"}]
                     ```
+
+                    This could have been easier by just having this test
+                    $resourceCurrentState.GetResult | Should -Match 'MyScriptDatabase1'
+                    but for making sure the returned data is actually usable, this
+                    parses the returned data to an object.
                 #>
-                if ($resourceCurrentState.GetResult -match '\[.*\]')
+                if ($resourceCurrentState.GetResult -match '(?<DatabaseName>\[.*\])')
                 {
-                    $regularExpressionMatch = $matches[0]
+                    $regularExpressionMatch = $matches.DatabaseName
                 }
                 else
                 {
                     Write-Warning -Message ('Unexpected output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
-                    $regularExpressionMatch = '[]'
+                    $regularExpressionMatch = '[{"Name":""}]'
                 }
 
                 try
