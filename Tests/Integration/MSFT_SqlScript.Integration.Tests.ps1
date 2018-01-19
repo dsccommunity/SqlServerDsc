@@ -127,22 +127,24 @@ try
                 #>
                 if ($resourceCurrentState.GetResult -match '\[.*\]')
                 {
-                    try
-                    {
-                        $regularExpressionMatch = $matches[0]
-                        $resultObject = $regularExpressionMatch | ConvertFrom-Json
-                    }
-                    catch
-                    {
-                        Write-Verbose -Message ('Output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
-                        Write-Verbose -Message ('Result from regex match: {0}' -f $regularExpressionMatch) -Verbose
-                        throw $_
-                    }
+                    $regularExpressionMatch = $matches[0]
                 }
                 else
                 {
+                    Write-Warning -Message ('Unexpected output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
+                    $regularExpressionMatch = '[]'
+                }
+
+                try
+                {
+
+                    $resultObject = $regularExpressionMatch | ConvertFrom-Json
+                }
+                catch
+                {
                     Write-Verbose -Message ('Output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
-                    throw 'Could not parse the output from Get-TargetResource to a JSON object.'
+                    Write-Verbose -Message ('Result from regex match: {0}' -f $regularExpressionMatch) -Verbose
+                    throw $_
                 }
 
                 $resultObject.Name | Should -Be 'MyScriptDatabase1'
