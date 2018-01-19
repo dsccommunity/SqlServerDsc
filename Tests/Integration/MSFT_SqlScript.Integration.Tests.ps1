@@ -147,8 +147,8 @@ try
                 }
                 catch
                 {
-                    Write-Verbose -Message ('Output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
-                    Write-Verbose -Message ('Result from regex match: {0}' -f $regularExpressionMatch) -Verbose
+                    Write-Warning -Message ('Output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
+                    Write-Warning -Message ('Result from regex match: {0}' -f $regularExpressionMatch) -Verbose
                     throw $_
                 }
 
