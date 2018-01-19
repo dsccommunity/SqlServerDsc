@@ -127,11 +127,21 @@ try
                 #>
                 if ($resourceCurrentState.GetResult -match '\[.*\]')
                 {
-                    $resultObject = $matches[0] | ConvertFrom-Json
+                    try
+                    {
+                        $regularExpressionMatch = $matches[0]
+                        $resultObject = $regularExpressionMatch | ConvertFrom-Json
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('Output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
+                        Write-Verbose -Message ('Result from regex match: {0}' -f $regularExpressionMatch) -Verbose
+                        throw $_
+                    }
                 }
                 else
                 {
-                    Write-Verbose -Message ( 'Output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
+                    Write-Verbose -Message ('Output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
                     throw 'Could not parse the output from Get-TargetResource to a JSON object.'
                 }
 
