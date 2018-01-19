@@ -130,13 +130,14 @@ try
                     but for making sure the returned data is actually usable, this
                     parses the returned data to an object.
                 #>
-                if ($resourceCurrentState.GetResult -match '(?<DatabaseName>\[.*\])')
+                $regularExpression = [regex] '\[.*\]'
+                if ($regularExpression.IsMatch($resourceCurrentState.GetResult))
                 {
-                    $regularExpressionMatch = $matches.DatabaseName
+                    $regularExpressionMatch = $regularExpression.Match($resourceCurrentState.GetResult).Value
                 }
                 else
                 {
-                    Write-Warning -Message ('Unexpected output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
+                    Write-Verbose -Message ('Unexpected output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
                     $regularExpressionMatch = '[{"Name":""}]'
                 }
 
@@ -147,8 +148,8 @@ try
                 }
                 catch
                 {
-                    Write-Warning -Message ('Output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
-                    Write-Warning -Message ('Result from regex match: {0}' -f $regularExpressionMatch) -Verbose
+                    Write-Verbose -Message ('Output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
+                    Write-Verbose -Message ('Result from regular expression match: {0}' -f $regularExpressionMatch) -Verbose
                     throw $_
                 }
 
