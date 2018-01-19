@@ -116,11 +116,6 @@ try
                 }
 
                 Write-Verbose -Message ( 'GetResult: {0}' -f $resourceCurrentState.GetResult) -Verbose
-                Write-Verbose -Message ( 'GetResult, row 1: {0}' -f $resourceCurrentState.GetResult[0]) -Verbose
-                Write-Verbose -Message ( 'GetResult, row 2: {0}' -f $resourceCurrentState.GetResult[1]) -Verbose
-                Write-Verbose -Message ( 'GetResult, row 3: {0}' -f $resourceCurrentState.GetResult[2]) -Verbose
-                Write-Verbose -Message ( 'GetResult, row 4: {0}' -f $resourceCurrentState.GetResult[3]) -Verbose
-                Write-Verbose -Message ( 'GetResult, row 5: {0}' -f $resourceCurrentState.GetResult[4]) -Verbose
                 <#
                     This returns an array of string containing the result of the
                     get script. The output looks like the below.
@@ -134,7 +129,9 @@ try
                     \r
                     ```
                 #>
-                $resourceCurrentState.GetResult[3] | Should -Be 'MyScriptDatabase1'
+                $resultObject = $resourceCurrentState.GetResult | ConvertFrom-Json
+                Write-Verbose -Message ( 'Count: {0}' -f $resultObject.Count) -Verbose
+                $resultObject.Name | Should -Be 'MyScriptDatabase1'
                 $resourceCurrentState.GetFilePath | Should -Be $mockGetSqlScriptPath
                 $resourceCurrentState.TestFilePath | Should -Be $mockTestSqlScriptPath
                 $resourceCurrentState.SetFilePath | Should -Be $mockSetSqlScriptPath
