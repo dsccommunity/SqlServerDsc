@@ -115,22 +115,26 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                Write-Verbose -Message ( 'GetResult: {0}' -f $resourceCurrentState.GetResult) -Verbose
                 <#
                     This returns an array of string containing the result of the
-                    get script. The output looks like the below.
+                    get scripts JSON output. The output looks like the below.
 
                     ```
-                    \r
-                    Name             \r
-                    ----             \r
-                    MyScriptDatabase1\r
-                    \r
-                    \r
+                    JSON_F52E2B61-18A1-11d1-B105-00805F49916B
+                    -----------------------------------------
+                    [{"Name":"MyScriptDatabase1"}]
                     ```
                 #>
-                $resultObject = $resourceCurrentState.GetResult | ConvertFrom-Json
-                Write-Verbose -Message ( 'Count: {0}' -f $resultObject.Count) -Verbose
+                if ($resourceCurrentState.GetResult -match '\[.*\]')
+                {
+                    $resultObject = $matches[0] | ConvertFrom-Json
+                }
+                else
+                {
+                    Write-Verbose -Message ( 'Output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
+                    throw 'Could not parse the output from Get-TargetResource to a JSON object.'
+                }
+
                 $resultObject.Name | Should -Be 'MyScriptDatabase1'
                 $resourceCurrentState.GetFilePath | Should -Be $mockGetSqlScriptPath
                 $resourceCurrentState.TestFilePath | Should -Be $mockTestSqlScriptPath
