@@ -3,8 +3,6 @@
 #---------------------------------#
 version: 9.0.{build}.0
 image: Visual Studio 2017
-init:
-  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 install:
     - git clone https://github.com/johlju/DscResource.Tests
@@ -53,8 +51,6 @@ test_script:
 
         Invoke-AppveyorTestScriptTask -CodeCoverage -CodeCovIo -ExcludeTag @() -RunTestInOrder -RunInContainer
 
-on_finish:
-  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 #---------------------------------#
 #      deployment configuration   #
 #---------------------------------#
