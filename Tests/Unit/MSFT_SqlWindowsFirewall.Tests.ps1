@@ -90,7 +90,7 @@ try
 
         $mockmockSourceCredentialUserName = "COMPANY\sqladmin"
         $mockmockSourceCredentialPassword = "dummyPassw0rd" | ConvertTo-SecureString -asPlainText -Force
-        $mockSourceCredential = New-Object System.Management.Automation.PSCredential( $mockmockSourceCredentialUserName, $mockmockSourceCredentialPassword )
+        $mockSourceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockmockSourceCredentialUserName, $mockmockSourceCredentialPassword)
 
         $mockDynamicSQLEngineFirewallRulePresent = $true
         $mockDynamicSQLBrowserFirewallRulePresent = $true

@@ -429,8 +429,8 @@ function New-TerminatingError
 
     Write-Verbose -Message "$($script:localizedData.$ErrorType -f $FormatArgs) | ErrorType: $errorId"
 
-    $exception = New-Object System.Exception $errorMessage, $InnerException
-    $errorRecord = New-Object System.Management.Automation.ErrorRecord $exception, $errorId, $ErrorCategory, $TargetObject
+    $exception = New-Object -TypeName System.Exception -ArgumentList $errorMessage, $InnerException
+    $errorRecord = New-Object -TypeName System.Management.Automation.ErrorRecord -ArgumentList $exception, $errorId, $ErrorCategory, $TargetObject
 
     return $errorRecord
 }
