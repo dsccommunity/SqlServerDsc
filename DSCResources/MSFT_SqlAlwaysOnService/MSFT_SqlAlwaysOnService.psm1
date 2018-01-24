@@ -96,7 +96,7 @@ function Set-TargetResource
         $InstanceName,
 
         [Parameter()]
-        [System.Uint32]
+        [System.UInt32]
         $RestartTimeout = 120
     )
 
@@ -181,7 +181,7 @@ function Test-TargetResource
         $InstanceName,
 
         [Parameter()]
-        [System.Uint32]
+        [System.UInt32]
         $RestartTimeout = 120
     )
 

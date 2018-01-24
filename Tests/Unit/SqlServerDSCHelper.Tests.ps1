@@ -6,7 +6,7 @@ param ()
 
 $script:moduleName = 'SqlServerDscHelper'
 
-[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
@@ -478,7 +478,7 @@ InModuleScope $script:moduleName {
                                         param
                                         (
                                             [Parameter()]
-                                            [string]
+                                            [System.String]
                                             $sqlCommand
                                         )
 
@@ -491,7 +491,7 @@ InModuleScope $script:moduleName {
                                         param
                                         (
                                             [Parameter()]
-                                            [string]
+                                            [System.String]
                                             $sqlCommand
                                         )
 
@@ -961,11 +961,11 @@ InModuleScope $script:moduleName {
             Param
             (
                 [Parameter()]
-                [string]
+                [System.String]
                 $SQLServer,
 
                 [Parameter()]
-                [string]
+                [System.String]
                 $SQLInstanceName
             )
 
@@ -1028,11 +1028,11 @@ InModuleScope $script:moduleName {
                 Param
                 (
                     [Parameter()]
-                    [string]
+                    [System.String]
                     $SQLServer,
 
                     [Parameter()]
-                    [string]
+                    [System.String]
                     $SQLInstanceName
                 )
 
@@ -1251,7 +1251,7 @@ InModuleScope $script:moduleName {
                 Test-SQLDscParameterState @testParameters | Should -Be $true
             }
 
-            It 'Should return false when a value is different for [String]' {
+            It 'Should return false when a value is different for [System.String]' {
                 $mockCurrentValues = @{ Example = [System.String]'something' }
                 $mockDesiredValues = @{ Example = [System.String]'test' }
 
@@ -1263,7 +1263,7 @@ InModuleScope $script:moduleName {
                 Test-SQLDscParameterState @testParameters | Should -Be $false
             }
 
-            It 'Should return false when a value is different for [Int32]' {
+            It 'Should return false when a value is different for [System.Int32]' {
                 $mockCurrentValues = @{ Example = [System.Int32]1 }
                 $mockDesiredValues = @{ Example = [System.Int32]2 }
 

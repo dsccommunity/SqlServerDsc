@@ -1338,12 +1338,12 @@ function Set-TargetResource
         if ($currentSetupArgument.Value -ne '')
         {
             # Arrays are handled specially
-            if ($currentSetupArgument.Value -is [array])
+            if ($currentSetupArgument.Value -is [System.Array])
             {
                 # Sort and format the array
                 $setupArgumentValue = ($currentSetupArgument.Value | Sort-Object | ForEach-Object { '"{0}"' -f $_ }) -join ' '
             }
-            elseif ($currentSetupArgument.Value -is [Boolean])
+            elseif ($currentSetupArgument.Value -is [System.Boolean])
             {
                 $setupArgumentValue = @{ $true = 'True'; $false = 'False' }[$currentSetupArgument.Value]
                 $setupArgumentValue = '"{0}"' -f $setupArgumentValue
@@ -1857,7 +1857,7 @@ function Get-SqlMajorVersion
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Path
     )
 
@@ -1877,7 +1877,7 @@ function Get-FirstItemPropertyValue
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Path
     )
 
@@ -1911,12 +1911,12 @@ function Copy-ItemWithRobocopy
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String]
+        [System.String]
         $Path,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String]
+        [System.String]
         $DestinationPath
     )
 
@@ -2086,12 +2086,12 @@ function Get-ServiceAccountParameters
     param
     (
         [Parameter(Mandatory = $true)]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         $ServiceAccount,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('SQL','AGT','IS','RS','AS','FT')]
-        [String]
+        [System.String]
         $ServiceType
     )
 

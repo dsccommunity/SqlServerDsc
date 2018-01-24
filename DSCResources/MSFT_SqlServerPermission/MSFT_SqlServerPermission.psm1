@@ -287,7 +287,7 @@ function Get-SQLPermission
 function Get-SQLServerPermissionSet
 {
     [CmdletBinding()]
-    [OutputType([Object])]
+    [OutputType([System.Object])]
     param
     (
         [Parameter(Mandatory = $true, ParameterSetName = 'Permission')]

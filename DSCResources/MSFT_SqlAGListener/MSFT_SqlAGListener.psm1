@@ -194,7 +194,7 @@ function Set-TargetResource
                     {
                         New-VerboseMessage -Message "Listener set to DHCP with subnet $IpAddress"
                         $newListenerParams += @{
-                            DhcpSubnet = [string]$IpAddress
+                            DhcpSubnet = [System.String] $IpAddress
                         }
                     }
                     elseif (-not $DHCP -and $IpAddress.Count -gt 0)

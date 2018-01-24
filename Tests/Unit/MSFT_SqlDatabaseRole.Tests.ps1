@@ -78,7 +78,7 @@ try
                                                     New-Object -TypeName Object |
                                                         Add-Member -MemberType ScriptMethod -Name IsMember -Value {
                                                         param(
-                                                            [String]
+                                                            [System.String]
                                                             $mockSqlDatabaseRole
                                                         )
                                                         if ( $mockSqlDatabaseRole -eq $mockExpectedSqlDatabaseRole )
@@ -106,7 +106,7 @@ try
                                                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseRole -PassThru |
                                                         Add-Member -MemberType ScriptMethod -Name AddMember -Value {
                                                         param(
-                                                            [String]
+                                                            [System.String]
                                                             $mockSqlServerLogin
                                                         )
                                                         if ($mockInvalidOperationForAddMemberMethod)
@@ -121,7 +121,7 @@ try
                                                     } -PassThru |
                                                         Add-Member -MemberType ScriptMethod -Name DropMember -Value {
                                                         param(
-                                                            [String]
+                                                            [System.String]
                                                             $mockSqlServerLogin
                                                         )
                                                         if ($mockInvalidOperationForDropMemberMethod)
@@ -140,7 +140,7 @@ try
                                                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseRoleSecond -PassThru |
                                                         Add-Member -MemberType ScriptMethod -Name AddMember -Value {
                                                         param(
-                                                            [String]
+                                                            [System.String]
                                                             $mockSqlServerLogin
                                                         )
                                                         if ($mockInvalidOperationForAddMemberMethod)
@@ -155,7 +155,7 @@ try
                                                     } -PassThru |
                                                         Add-Member -MemberType ScriptMethod -Name DropMember -Value {
                                                         param(
-                                                            [String]
+                                                            [System.String]
                                                             $mockSqlServerLogin
                                                         )
                                                         if ($mockInvalidOperationForDropMemberMethod)

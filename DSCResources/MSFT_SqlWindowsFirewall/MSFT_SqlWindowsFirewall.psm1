@@ -628,15 +628,15 @@ function Get-SQLPath
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Feature,
 
         [Parameter()]
-        [String]
+        [System.String]
         $InstanceName,
 
         [Parameter()]
-        [String]
+        [System.String]
         $SQLVersion
     )
 
@@ -703,39 +703,39 @@ function Test-IsFirewallRuleInDesiredState
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $DisplayName,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('True', 'False')]
-        [String]
+        [System.String]
         $Enabled,
 
         [Parameter(Mandatory = $true)]
-        [String[]]
+        [System.String[]]
         [ValidateSet('Any', 'Domain', 'Private', 'Public', 'NotApplicable')]
         $Profile,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('Inbound', 'Outbound')]
-        [String]
+        [System.String]
         $Direction,
 
         [Parameter()]
-        [String]
+        [System.String]
         $Program,
 
         [Parameter()]
-        [String]
+        [System.String]
         $Service,
 
         [Parameter()]
         [ValidateSet('TCP', 'UDP', 'ICMPv4', 'ICMPv6')]
-        [String]
+        [System.String]
         $Protocol,
 
         [Parameter()]
-        [String]
+        [System.String]
         $LocalPort
     )
 
@@ -796,7 +796,7 @@ function Get-SqlMajorVersion
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $path
     )
 

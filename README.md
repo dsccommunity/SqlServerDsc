@@ -188,7 +188,7 @@ It will also manage the Availability Group replica on the specified node.
   { Primary | SecondaryOnly | Secondary | *None* }
 * **`[String]` AvailabilityMode** _(Write)_: Specifies the replica availability mode.
   Default is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
-* **`[Uint32]` BackupPriority** _(Write)_: Specifies the desired priority of the
+* **`[UInt32]` BackupPriority** _(Write)_: Specifies the desired priority of the
   replicas in performing backups. The acceptable values for this parameter are:
   integers from 0 through 100. Of the set of replicas which are online and available,
   the replica that has the highest priority performs the backup. Default is 50.
@@ -216,7 +216,7 @@ It will also manage the Availability Group replica on the specified node.
   OnAnyQualifiedFailureCondition }
 * **`[String]` FailoverMode** _(Write)_: Specifies the failover mode.
   Default is 'Manual'. { Automatic | *Manual* }
-* **`[Uint32]` HealthCheckTimeout** _(Write)_: Specifies the length of time, in
+* **`[UInt32]` HealthCheckTimeout** _(Write)_: Specifies the length of time, in
   milliseconds, after which AlwaysOn availability groups declare an unresponsive
   server to be unhealthy. Default is 30000.
 * **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
@@ -227,9 +227,9 @@ It will also manage the Availability Group replica on the specified node.
 
 * **`[String]` EndpointUrl** _(Read)_: Gets the Endpoint URL of the
   availability group replica endpoint.
-* **`[Uint32]` EndpointPort** _(Read)_: Gets the port the database mirroring
+* **`[UInt32]` EndpointPort** _(Read)_: Gets the port the database mirroring
   endpoint is listening on
-* **`[Uint32]` Version** _(Read)_: Gets the major version of the SQL Server
+* **`[UInt32]` Version** _(Read)_: Gets the major version of the SQL Server
   instance.
 * **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
   actively hosting the SQL Server instance.
@@ -384,7 +384,7 @@ Always On Availability Group Replica.
   be present or absent. Default is Present. { *Present* | Absent }
 * **`[String]` AvailabilityMode** _(Write)_: Specifies the replica availability mode.
   Default is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
-* **`[Uint32]` BackupPriority** _(Write)_: Specifies the desired priority of the
+* **`[UInt32]` BackupPriority** _(Write)_: Specifies the desired priority of the
   replicas in performing backups. The acceptable values for this parameter are:
   integers from 0 through 100. Of the set of replicas which are online and available,
   the replica that has the highest priority performs the backup. Default is 50.
@@ -482,7 +482,7 @@ Enables or disabled SQL Server Always On high availability and disaster recovery
 * **`[String]` Ensure** _(Required)_: An enumerated value that describes if the SQL
   Server should have Always On high availability and disaster recovery (HADR)
   property enabled ('Present') or disabled ('Absent'). { Present | Absent }.
-* **`[Sint32]` RestartTimeout** _(Write)_: The length of time, in seconds, to wait
+* **`[SInt32]` RestartTimeout** _(Write)_: The length of time, in seconds, to wait
   for the service to restart. Default is 120 seconds.
 
 #### Read-Only Properties from Get-TargetResource
@@ -1120,7 +1120,7 @@ Read more about max degree of parallelism in this article
 * **`[Boolean]` DynamicAlloc** _(Write)_: If set to $true then max degree of parallelism
   will be dynamically configured. When this is set parameter is set to $true, the
   parameter MaxDop must be set to $null or not be configured.
-* **`[Sint32]` MaxDop** _(Write)_: A numeric value to limit the number of processors
+* **`[SInt32]` MaxDop** _(Write)_: A numeric value to limit the number of processors
   used in parallel plan execution.
 * **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
   will only determine if a change is needed if the target node is the active
@@ -1197,9 +1197,9 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
   will be set to either the value in parameter MinMemory and MaxMemory or dynamically
   configured when parameter DynamicAlloc is set to $true. When set to 'Absent' min
   and max memory will be set to default values. { *Present* | Absent }.
-* **`[Sint32]` MinMemory** _(Write)_: Minimum amount of memory, in MB, in the buffer
+* **`[SInt32]` MinMemory** _(Write)_: Minimum amount of memory, in MB, in the buffer
   pool used by the instance of SQL Server.
-* **`[Sint32]` MaxMemory** _(Write)_: Maximum amount of memory, in MB, in the buffer
+* **`[SInt32]` MaxMemory** _(Write)_: Maximum amount of memory, in MB, in the buffer
   pool used by the instance of SQL Server.
 * **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
   will only determine if a change is needed if the target node is the active
@@ -1554,7 +1554,7 @@ installing feature Database Engine and Analysis Services respectively.
   this setup parameter.
 * **`[String]` FailoverClusterNetworkName** _(Write)_: Host name to be assigned to
   the clustered SQL Server instance.
-* **`[Uint32]` SetupProcessTimeout** _(Write)_: The timeout, in seconds, to wait
+* **`[UInt32]` SetupProcessTimeout** _(Write)_: The timeout, in seconds, to wait
   for the setup process to finish. Default value is 7200 seconds (2 hours). If
   the setup process does not finish before this time, and error will be thrown.
 
@@ -1613,7 +1613,7 @@ or that it has finished creating the Availability Group.
   the presence of the cluster role/group. Default value is 20 seconds. When the
   cluster role/group has been found the resource will wait for this amount of time
   once more before returning.
-* **`[Uint32]` RetryCount** _(Write)_: Maximum number of retries until the resource
+* **`[UInt32]` RetryCount** _(Write)_: Maximum number of retries until the resource
   will timeout and throw an error. Default value is 30 times.
 
 #### Read-Only Properties from Get-TargetResource
