@@ -198,7 +198,7 @@ Configuration MSFT_SqlScript_RunSqlScriptAsWindowsUser_Config
     node localhost {
         SqlScript 'Integration_Test'
         {
-            ServerInstance       = "$($Node.ServerName)\$($Node.InstanceName)"
+            ServerInstance       = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
 
             GetFilePath          = $Node.GetSqlScriptPath
             TestFilePath         = $Node.TestSqlScriptPath
@@ -228,7 +228,7 @@ Configuration MSFT_SqlScript_RunSqlScriptAsSqlUser_Config
     node localhost {
         SqlScript 'Integration_Test'
         {
-            ServerInstance = "$($Node.ServerName)\$($Node.InstanceName)"
+            ServerInstance = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
 
             GetFilePath    = $Node.GetSqlScriptPath
             TestFilePath   = $Node.TestSqlScriptPath
