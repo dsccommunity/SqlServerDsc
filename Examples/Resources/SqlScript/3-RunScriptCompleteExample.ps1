@@ -156,7 +156,7 @@ Configuration Example
             TestFilePath         = $Node.TestSqlScriptPath
             SetFilePath          = $Node.SetSqlScriptPath
             Variable             = @(
-                ('DatabaseName={0}' -f $Node.Database1Name)
+                ('DatabaseName={0}' -f $Node.DatabaseName)
             )
             QueryTimeout         = 30
 
