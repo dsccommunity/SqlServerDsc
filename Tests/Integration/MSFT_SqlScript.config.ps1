@@ -72,15 +72,14 @@ Configuration MSFT_SqlScript_CreateDependencies_Config
             }
 
             TestScript = {
-                if (Test-Path -Path $Using:Node.GetSqlScriptPath)
-                {
-                    $fileContent = Get-Content -Path $Using:Node.GetSqlScriptPath -Raw
-                    return $fileContent -eq $Using:Node.GetSqlScript
-                }
-                else
-                {
-                    return $false
-                }
+                <#
+                    This takes the string of the $GetScript parameter and creates
+                    a new script block (during runtime in the resource) and then
+                    runs that script block.
+                #>
+                $getScriptResult = & ([ScriptBlock]::Create($GetScript))
+
+                return $getScriptResult.Result -eq $Using:Node.GetSqlScript
             }
 
             GetScript  = {
@@ -104,15 +103,9 @@ Configuration MSFT_SqlScript_CreateDependencies_Config
             }
 
             TestScript = {
-                if (Test-Path -Path $Using:Node.TestSqlScriptPath)
-                {
-                    $fileContent = Get-Content -Path $Using:Node.TestSqlScriptPath -Raw
-                    return $fileContent -eq $Using:Node.TestSqlScript
-                }
-                else
-                {
-                    return $false
-                }
+                $getScriptResult = & ([ScriptBlock]::Create($GetScript))
+
+                return $getScriptResult.Result -eq $Using:Node.TestSqlScript
             }
 
             GetScript  = {
@@ -136,15 +129,9 @@ Configuration MSFT_SqlScript_CreateDependencies_Config
             }
 
             TestScript = {
-                if (Test-Path -Path $Using:Node.SetSqlScriptPath)
-                {
-                    $fileContent = Get-Content -Path $Using:Node.SetSqlScriptPath -Raw
-                    return $fileContent -eq $Using:Node.SetSqlScript
-                }
-                else
-                {
-                    return $false
-                }
+                $getScriptResult = & ([ScriptBlock]::Create($GetScript))
+
+                return $getScriptResult.Result -eq $Using:Node.SetSqlScript
             }
 
             GetScript  = {
