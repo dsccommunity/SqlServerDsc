@@ -122,8 +122,6 @@
 - Changes to SqlServerReplication
   - Fixed minor typos in verbose messages.
   - Style cleanup in tests.
-- Changes to SqlScript
-  - Fixed minor typos in comment-based help.
 - Changes to SqlServerNetwork
   - Added sysadmin account parameter usage to the examples.
 - Changes to SqlServerReplication
