@@ -370,7 +370,7 @@ Always On Availability Group Replica.
 #### Parameters
 
 * **`[String]` Name** _(Key)_: The name of the availability group replica. For named
-  instances this must be in the following format SQLServer\InstanceName.
+  instances this must be in the following format ServerName\InstanceName.
 * **`[String]` AvailabilityGroupName** _(Key)_: The name of the availability group.
 * **`[String]` ServerName** _(Required)_: Hostname of the SQL Server to be configured.
 * **`[String]` InstanceName** _(Key)_: Name of the SQL instance to be configured.
