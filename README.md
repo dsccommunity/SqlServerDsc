@@ -848,6 +848,7 @@ for more information._
 
 * [Run a script using SQL Authentication](/Examples/Resources/SqlScript/1-RunScriptUsingSQLAuthentication.ps1)
 * [Run a script using Windows Authentication](/Examples/Resources/SqlScript/2-RunScriptUsingWindowsAuthentication.ps1)
+* [This example shows one way to create the SQL script files and how to run those files](/Examples/Resources/SqlScript/3-RunScriptCompleteExample.ps1)
 
 #### Known issues
 

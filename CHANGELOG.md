@@ -91,6 +91,10 @@
   - Style cleanup in code and tests.
 - Changes to SqlScript
   - Style cleanup in tests.
+  - Updated examples.
+  - Added integration tests.
+  - Fixed minor typos in comment-based help.
+  - Added new example based on integration test.
 - Changes to SqlServerConfiguration
   - Fixed minor typos in comment-based help.
   - Now the verbose message say what option is changing and to what value
@@ -118,8 +122,6 @@
 - Changes to SqlServerReplication
   - Fixed minor typos in verbose messages.
   - Style cleanup in tests.
-- Changes to SqlScript
-  - Fixed minor typos in comment-based help.
 - Changes to SqlServerNetwork
   - Added sysadmin account parameter usage to the examples.
 - Changes to SqlServerReplication

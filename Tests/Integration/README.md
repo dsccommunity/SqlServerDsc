@@ -15,6 +15,8 @@ tests.
 
 **Run order:** 1
 
+**Depends on:** None
+
 The integration tests will install the following instances and leave them on the
 AppVeyor build worker for other integration tests to use.
 
@@ -25,6 +27,8 @@ DSCTABULAR | AS,CONN,BC,SDK | TABULAR
 MSSQLSERVER | SQLENGINE,CONN,BC,SDK | -
 
 All instances have a SQL Server Agent that is started.
+
+The instance DSCSQL2016 support mixed authentication mode.
 
 ### Properties for all instances
 
@@ -41,12 +45,13 @@ be used by other integration tests.
 
 User | Password | Permission | Description
 --- | --- | --- | ---
-.\SqlInstall | P@ssw0rd1 | Local administrator. Administrator of Database Engine instance DSCSQL2016\*. | Runs Setup for the default instance.
+.\SqlInstall | P@ssw0rd1 | Local Windows administrator. Administrator of Database Engine instance DSCSQL2016\*. | Runs Setup for the default instance.
 .\SqlAdmin | P@ssw0rd1 | Administrator of all SQL Server instances. |
 .\svc-SqlPrimary | yig-C^Equ3 | Local user. | Runs the SQL Server Agent service.
 .\svc-SqlAgentPri | yig-C^Equ3 | Local user. | Runs the SQL Server Agent service.
 .\svc-SqlSecondary | yig-C^Equ3 | Local user. | Used by other tests, but created here.
 .\svc-SqlAgentSec | yig-C^Equ3 | Local user. | Used by other tests.
+sa | P@ssw0rd1 | Administrator of the Database Engine instances DSCSQL2016. |
 
 *\* This is due to that the integration tests runs the resource SqlAlwaysOnService
 with this user and that means that this user must have permission to access the
@@ -55,6 +60,7 @@ properties `IsClustered` and `IsHadrEnable`.*
 ## SqlRS
 
 **Run order:** 2
+
 **Depends on:** SqlSetup
 
 The integration tests will install the following instances and leave it on the
@@ -75,6 +81,7 @@ DSCRS2016 | RS | The Reporting Services is left initialized, and in a working st
 ## SqlDatabaseDefaultLocation
 
 **Run order:** 2
+
 **Depends on:** SqlSetup
 
 The integration test will change the data, log and backup path of instance
@@ -87,6 +94,7 @@ C:\SQLData | C:\SQLLog | C:\Backups
 ## SqlServerLogin
 
 **Run order:** 2
+
 **Depends on:** SqlSetup
 
 The integration tests will leave the following local Windows users on the build
@@ -120,6 +128,7 @@ DscUser4 | SQL | P@ssw0rd1 | *None*
 ## SqlServerRole
 
 **Run order:** 3
+
 **Depends on:** SqlSetup, SqlServerLogin
 
 The integration test will keep the following server roles on the SQL Server instance
@@ -129,3 +138,31 @@ Server Role | Members
 --- | ---
 DscServerRole1 | DscUser1, DscUser2
 DscServerRole2 | DscUser4
+
+## SqlScript
+
+**Run order:** 4
+
+**Depends on:** SqlSetup
+
+The integration tests will leave the following logins on the SQL Server instance
+**DSCSQL2016**.
+
+Login | Type | Password | Permission
+--- | --- | --- | ---
+DscAdmin1 | SQL | P@ssw0rd1 | dbcreator
+
+The integration test will change the following server roles on the SQL Server instance
+**DSCSQL2016**.
+
+Server Role | Members
+--- | ---
+dbcreator | DscAdmin1
+
+The integration test will leave the following databases on the SQL Server instance
+**DSCSQL2016**.
+
+Database name | Owner
+--- | ---
+ScriptDatabase1 | $env:COMPUTERNAME\SqlAdmin
+ScriptDatabase2 | DscAdmin1

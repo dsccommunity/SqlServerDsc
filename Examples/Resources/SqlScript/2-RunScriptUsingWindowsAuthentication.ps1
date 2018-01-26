@@ -16,29 +16,29 @@ Configuration Example
 
     Node localhost
     {
-        SqlScript 'RunSQLScript-AsSYSTEM'
+        SqlScript 'RunAsSYSTEM'
         {
             ServerInstance = 'localhost\SQL2016'
 
             SetFilePath    = 'C:\DSCTemp\SQLScripts\Set-RunSQLScript-AsSYSTEM.sql'
             TestFilePath   = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript-AsSYSTEM.sql'
             GetFilePath    = 'C:\DSCTemp\SQLScripts\Get-RunSQLScript-AsSYSTEM.sql'
-            Variable       = @("FilePath=C:\temp\log\AuditFiles")
+            Variable       = @('FilePath=C:\temp\log\AuditFiles')
         }
 
-        SqlScript 'RunSQLScript-AsUSER'
+        SqlScript 'RunAsUser'
         {
             ServerInstance       = 'localhost\SQL2016'
 
             SetFilePath          = 'C:\DSCTemp\SQLScripts\Set-RunSQLScript-AsUSER.sql'
             TestFilePath         = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript-AsUSER.sql'
             GetFilePath          = 'C:\DSCTemp\SQLScripts\Get-RunSQLScript-AsUSER.sql'
-            Variable             = @("FilePath=C:\temp\log\AuditFiles")
+            Variable             = @('FilePath=C:\temp\log\AuditFiles')
 
             PsDscRunAsCredential = $WindowsCredential
         }
 
-        SqlScript 'RunSQLScript-With30SecondTimeout'
+        SqlScript 'RunAsUser-With30SecondTimeout'
         {
             ServerInstance       = 'localhost\SQL2016'
 
@@ -46,7 +46,7 @@ Configuration Example
             TestFilePath         = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript-WithQueryTimeout.sql'
             GetFilePath          = 'C:\DSCTemp\SQLScripts\Get-RunSQLScript-WithQueryTimeout.sql'
             QueryTimeout         = 30
-            Variable             = @("FilePath=C:\temp\log\AuditFiles")
+            Variable             = @('FilePath=C:\temp\log\AuditFiles')
 
             PsDscRunAsCredential = $WindowsCredential
         }
