@@ -62,6 +62,8 @@
   - Fixed minor typos in comment-based help.
   - Fixed minor typos in comment.
   - Style cleanup in code and tests.
+  - Updated description for parameter Name in README.md and in comment-based help
+    ([issue #1034](https://github.com/PowerShell/SqlServerDsc/issues/1034)).
 - Changes to SqlAlias
   - Fixed issue where exception was thrown if reg keys did not exist
     ([issue #949](https://github.com/PowerShell/SqlServerDsc/issues/949)).

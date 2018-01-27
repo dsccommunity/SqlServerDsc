@@ -7,7 +7,8 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
         Gets the specified Availability Group Replica from the specified Availability Group.
 
     .PARAMETER Name
-        The name of the availability group replica.
+        The name of the availability group replica. For named instances this
+        must be in the following format ServerName\InstanceName.
 
     .PARAMETER AvailabilityGroupName
         The name of the availability group.
@@ -109,7 +110,8 @@ function Get-TargetResource
         Creates or removes the availability group replica in accordance with the desired state.
 
     .PARAMETER Name
-        The name of the availability group replica.
+        The name of the availability group replica. For named instances this
+        must be in the following format ServerName\InstanceName.
 
     .PARAMETER AvailabilityGroupName
         The name of the availability group.
@@ -465,7 +467,8 @@ function Set-TargetResource
         Determines if the availability group replica is in the desired state.
 
     .PARAMETER Name
-        The name of the availability group replica.
+        The name of the availability group replica. For named instances this
+        must be in the following format ServerName\InstanceName.
 
     .PARAMETER AvailabilityGroupName
         The name of the availability group.
