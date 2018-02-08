@@ -15,6 +15,9 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerNetwork'
 
     .PARAMETER ProtocolName
     The name of network protocol to be configured. Only tcp is currently supported.
+
+    .PARAMETER IPAddress
+    Specify the IP address to configure. Use IPAll for all ip adresses (listen on all).
 #>
 function Get-TargetResource
 {
@@ -30,7 +33,11 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateSet('Tcp')]
         [System.String]
-        $ProtocolName
+        $ProtocolName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $IPAddress
     )
 
     try
@@ -42,13 +49,17 @@ function Get-TargetResource
         Write-Verbose -Message ($script:localizedData.GetNetworkProtocol -f $ProtocolName, $InstanceName)
         $tcp = $managedComputerObject.ServerInstances[$InstanceName].ServerProtocols[$ProtocolName]
 
+        $ipAddressKey = Resolve-SqlProtocolIPAddress -Protocol $tcp -IPAddress $IPAddress
+
         Write-Verbose -Message $script:localizedData.ReadingNetworkProperties
         $returnValue = @{
-            InstanceName = $InstanceName
-            ProtocolName    = $ProtocolName
-            IsEnabled       = $tcp.IsEnabled
-            TcpDynamicPort  = ($tcp.IPAddresses['IPAll'].IPAddressProperties['TcpDynamicPorts'].Value -ge 0)
-            TcpPort         = $tcp.IPAddresses['IPAll'].IPAddressProperties['TcpPort'].Value
+            InstanceName   = $InstanceName
+            ProtocolName   = $ProtocolName
+            IPAddress      = $IPAddress
+            IsEnabled      = $(if($ipAddressKey -eq 'IPAll') { $tcp.IsEnabled } else { $tcp.IPAddresses[$ipAddressKey].IPAddressProperties['Enabled'].Value })
+            ListenAll      = $(if($ipAddressKey -eq 'IPAll') { $tcp.ProtocolProperties['ListenOnAllIPs'].Value } else { $null })
+            TcpDynamicPort = ($tcp.IPAddresses[$ipAddressKey].IPAddressProperties['TcpDynamicPorts'].Value -ge 0)
+            TcpPort        = $tcp.IPAddresses[$ipAddressKey].IPAddressProperties['TcpPort'].Value
         }
 
         $returnValue.Keys | ForEach-Object {
@@ -76,8 +87,15 @@ function Get-TargetResource
     .PARAMETER ProtocolName
     The name of network protocol to be configured. Only tcp is currently supported.
 
+    .PARAMETER IPAddress
+    Specify the IP address to configure. Use IPAll for all ip adresses (listen on all).
+
     .PARAMETER IsEnabled
     Enables or disables the network protocol.
+
+    .PARAMETER ListenAll
+    Enables or disables to listen on all IP adresses. Will be ignored if IPAddress is
+    not set to 'IPAll'.
 
     .PARAMETER TcpDynamicPort
     Specifies whether the SQL Server instance should use a dynamic port.
@@ -116,9 +134,17 @@ function Set-TargetResource
         [System.String]
         $ProtocolName,
 
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $IPAddress,
+
         [Parameter()]
         [System.Boolean]
         $IsEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $ListenAll,
 
         [Parameter()]
         [System.Boolean]
@@ -143,18 +169,20 @@ function Set-TargetResource
         New-InvalidOperationException -Message $errorMessage
     }
 
-    $getTargetResourceResult = Get-TargetResource -InstanceName $InstanceName -ProtocolName $ProtocolName
+    $getTargetResourceResult = Get-TargetResource -InstanceName $InstanceName -ProtocolName $ProtocolName -IPAddress $IPAddress
 
     try
     {
         $applicationDomainObject = Register-SqlWmiManagement -SQLInstanceName $InstanceName
 
         $desiredState = @{
-            InstanceName = $InstanceName
-            ProtocolName    = $ProtocolName
-            IsEnabled       = $IsEnabled
-            TcpDynamicPort  = $TcpDynamicPort
-            TcpPort         = $TcpPort
+            InstanceName   = $InstanceName
+            ProtocolName   = $ProtocolName
+            IPAddress      = $IPAddress
+            ListenAll      = $ListenAll
+            IsEnabled      = $IsEnabled
+            TcpDynamicPort = $TcpDynamicPort
+            TcpPort        = $TcpPort
         }
 
         $isRestartNeeded = $false
@@ -164,13 +192,31 @@ function Set-TargetResource
         Write-Verbose -Message ($script:localizedData.GetNetworkProtocol -f $ProtocolName, $InstanceName)
         $tcp = $managedComputerObject.ServerInstances[$InstanceName].ServerProtocols[$ProtocolName]
 
+        $ipAddressKey = Resolve-SqlProtocolIPAddress -Protocol $tcp -IPAddress $IPAddress
+
         Write-Verbose -Message ($script:localizedData.CheckingProperty -f 'IsEnabled')
         if ($desiredState.IsEnabled -ine $getTargetResourceResult.IsEnabled)
         {
             Write-Verbose -Message ($script:localizedData.UpdatingProperty -f 'IsEnabled', $getTargetResourceResult.IsEnabled, $desiredState.IsEnabled)
-            $tcp.IsEnabled = $desiredState.IsEnabled
-            $tcp.Alter()
+            if ($ipAddressKey -eq 'IPAll')
+            {
+                $tcp.IsEnabled = $desiredState.IsEnabled
+                $tcp.Alter()
+            }
+            else
+            {
+                $tcp.IPAddresses[$ipAddressKey].IPAddressProperties['Enabled'].Value = $desiredState.IsEnabled
+                $tcp.Alter()
+            }
+            $isRestartNeeded = $true
+        }
 
+        Write-Verbose -Message ($script:localizedData.CheckingProperty -f 'ListenAll')
+        if ($desiredState.ListenAll -ine $getTargetResourceResult.ListenAll -and $ipAddressKey -eq 'IPAll')
+        {
+            Write-Verbose -Message ($script:localizedData.UpdatingProperty -f 'ListenAll', $getTargetResourceResult.ListenAll, $desiredState.ListenAll)
+            $tcp.ProtocolProperties['ListenOnAllIPs'].Value = $desiredState.ListenAll
+            $tcp.Alter()
             $isRestartNeeded = $true
         }
 
@@ -193,7 +239,7 @@ function Set-TargetResource
             $toTcpDynamicPortDisplayValue = $dynamicPortDisplayValueTable[$desiredState.TcpDynamicPort]
 
             Write-Verbose -Message ($script:localizedData.UpdatingProperty -f 'TcpDynamicPorts', $fromTcpDynamicPortDisplayValue, $toTcpDynamicPortDisplayValue)
-            $tcp.IPAddresses['IPAll'].IPAddressProperties['TcpDynamicPorts'].Value = $desiredDynamicPortValue[$desiredState.TcpDynamicPort]
+            $tcp.IPAddresses[$ipAddressKey].IPAddressProperties['TcpDynamicPorts'].Value = $desiredDynamicPortValue[$desiredState.TcpDynamicPort]
             $tcp.Alter()
 
             $isRestartNeeded = $true
@@ -215,7 +261,7 @@ function Set-TargetResource
             }
 
             Write-Verbose -Message ($script:localizedData.UpdatingProperty -f 'TcpPort', $fromTcpPort, $toTcpPort)
-            $tcp.IPAddresses['IPAll'].IPAddressProperties['TcpPort'].Value = $desiredState.TcpPort
+            $tcp.IPAddresses[$ipAddressKey].IPAddressProperties['TcpPort'].Value = $desiredState.TcpPort
             $tcp.Alter()
 
             $isRestartNeeded = $true
@@ -247,8 +293,15 @@ function Set-TargetResource
     .PARAMETER ProtocolName
     The name of network protocol to be configured. Only tcp is currently supported.
 
+    .PARAMETER IPAddress
+    Specify the IP address to configure. Use IPAll for all ip adresses (listen on all).
+
     .PARAMETER IsEnabled
     Enables or disables the network protocol.
+
+    .PARAMETER ListenAll
+    Enables or disables to listen on all IP adresses. Will be ignored if IPAddress is
+    not set to 'IPAll'.
 
     .PARAMETER TcpDynamicPort
     Specifies whether the SQL Server instance should use a dynamic port.
@@ -291,9 +344,17 @@ function Test-TargetResource
         [System.String]
         $ProtocolName,
 
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $IPAddress,
+
         [Parameter()]
         [System.Boolean]
         $IsEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $ListenAll,
 
         [Parameter()]
         [System.Boolean]
@@ -318,7 +379,7 @@ function Test-TargetResource
         New-InvalidOperationException -Message $errorMessage
     }
 
-    $getTargetResourceResult = Get-TargetResource -InstanceName $InstanceName -ProtocolName $ProtocolName
+    $getTargetResourceResult = Get-TargetResource -InstanceName $InstanceName -ProtocolName $ProtocolName -IPAddress $IPAddress
 
     Write-Verbose -Message $script:localizedData.CompareStates
 
@@ -341,6 +402,21 @@ function Test-TargetResource
             }
 
             Write-Verbose -Message ($script:localizedData.ExpectedPropertyValue -f 'IsEnabled', $evaluateEnableOrDisable[$IsEnabled], $evaluateEnableOrDisable[$getTargetResourceResult.IsEnabled])
+
+            $isInDesiredState = $false
+        }
+    }
+
+    if ($PSBoundParameters.ContainsKey('ListenAll') -and $IPAddress -eq 'IPAll')
+    {
+        if ($ListenAll -ne $getTargetResourceResult.ListenAll)
+        {
+            $evaluateEnableOrDisable = @{
+                $true  = 'enabled'
+                $false = 'disabled'
+            }
+
+            Write-Verbose -Message ($script:localizedData.ExpectedPropertyValue -f 'ListenAll', $evaluateEnableOrDisable[$ListenAll], $evaluateEnableOrDisable[$getTargetResourceResult.ListenAll])
 
             $isInDesiredState = $false
         }
@@ -378,6 +454,51 @@ function Test-TargetResource
     }
 
     return $isInDesiredState
+}
+
+<#
+    .SYNOPSIS
+    Resolve the IP Adress to the SQL Server protocol key.
+
+    .PARAMETER Protocol
+    SQL Server protocol object.
+
+    .PARAMETER IPAddress
+    The IP address to resolve.
+#>
+function Resolve-SqlProtocolIPAddress
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        $Protocol,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $IPAddress
+    )
+
+    Write-Verbose ($script:localizedData.GetSQLProtocolIPAddressKey -f $IPAddress)
+
+    if ($IPAddress -eq 'IPAll')
+    {
+        return $IPAddress
+    }
+    else
+    {
+        $ipAddressObject = $Protocol.IPAddresses.Where({$_.IPAddress.IPAddressToString -eq $IPAddress})
+
+        if ($null -eq $ipAddressObject)
+        {
+            throw ($script:localizedData.IPAddressNotFoundError -f $IPAddress)
+        }
+        else
+        {
+            return $ipAddressObject.Name
+        }
+    }
 }
 
 Export-ModuleMember -Function *-TargetResource

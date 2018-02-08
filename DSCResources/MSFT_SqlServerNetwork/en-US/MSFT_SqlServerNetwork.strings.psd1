@@ -9,4 +9,6 @@ ConvertFrom-StringData @'
     CompareStates = Comparing desired state with current state.
     InDesiredState = System is in the desired state.
     ErrorDynamicAndStaticPortSpecified = Unable to set both tcp dynamic port and tcp static port. Only one can be set.
+    GetSQLProtocolIPAddressKey = Get the SQL protocol key for IP address [{0}].
+    IPAddressNotFoundError = Specified IP address [{0}] not found.
 '@

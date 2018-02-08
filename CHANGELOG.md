@@ -9,6 +9,9 @@
     SqlRS as the parameter UseSsl. The UseSsl parameter is of type boolean. This
     change was made because from SQL Server 2008 R2 this value is made an on/off
     switch. Read more in the article [ConfigurationSetting Method - SetSecureConnectionLevel](https://docs.microsoft.com/en-us/sql/reporting-services/wmi-provider-library-reference/configurationsetting-method-setsecureconnectionlevel).
+  - BREAKING CHANGE: Added new key parameter to SqlServerNetwork resource
+    Added IPAddress parameter to configure IP adresses. Must be a key property
+    to configure multiple IP adresses including the IPAll.
   - Updated so that named parameters are used for New-Object cmdlet. This was
     done to follow the style guideline.
   - Updated manifest and license to reflect the new year
@@ -126,6 +129,7 @@
   - Style cleanup in tests.
 - Changes to SqlServerNetwork
   - Added sysadmin account parameter usage to the examples.
+  - Added ListenAll parameter to configure if it should listen on all IP adresses.
 - Changes to SqlServerReplication
   - Fix Script Analyzer warning ([issue #263](https://github.com/PowerShell/SqlServerDsc/issues/263)).
 - Changes to SqlServerRole

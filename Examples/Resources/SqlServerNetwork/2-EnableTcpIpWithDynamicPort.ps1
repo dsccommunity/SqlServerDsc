@@ -21,6 +21,7 @@ Configuration Example
         {
             InstanceName         = 'MSSQLSERVER'
             ProtocolName         = 'Tcp'
+            IPAddress            = 'IPAll'
             IsEnabled            = $true
             TCPDynamicPort       = $true
             RestartService       = $true

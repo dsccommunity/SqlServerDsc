@@ -1243,7 +1243,11 @@ Read more about the network settings in the article
   Only tcp is currently supported. { tcp }.
 * **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
   Default value is $env:COMPUTERNAME.
+* **`[String]` IPAddress** _(Key)_: Specify the IP address to configure. Use IPAll for
+  all ip adresses (listen on all).
 * **`[Boolean]` IsEnabled** _(Write)_: Enables or disables the network protocol.
+* **`[Boolean]` ListenAll** _(Write)_: Enables or disables to listen on all IP adresses.
+  Will be ignored if IPAddress is not set to 'IPAll'.
 * **`[Boolean]` TcpDynamicPort** _(Write)_: Specifies whether the SQL Server
   instance should use a dynamic port. Value cannot be set to $true if TcpPort
   is set to a non-empty string.
@@ -1261,6 +1265,7 @@ Read more about the network settings in the article
 
 * [Enable TCP/IP with static port and restart SQL Server](/Examples/Resources/SqlServerNetwork/1-EnableTcpIpWithStaticPort.ps1)
 * [Enable TCP/IP with dynamic port](/Examples/Resources/SqlServerNetwork/2-EnableTcpIpWithDynamicPort.ps1)
+* [Enable TCP/IP on custom IP](/Examples/Resources/SqlServerNetwork/3-EnableTcpIpOnCustomIP.ps1)
 
 #### Known issues
 

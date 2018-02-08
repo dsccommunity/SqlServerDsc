@@ -1,8 +1,7 @@
 <#
 .EXAMPLE
-    This example will enable TCP/IP protocol and set the custom static port to 4509.
-    When RestartService is set to $true the resource will also restart the SQL service.
-    The resource will be run as the account provided in $SystemAdministratorAccount.
+    This example will enable TCP/IP protocol and set the custom static port to 1433
+    on the IP address 192.168.1.10.
 #>
 Configuration Example
 {
@@ -21,11 +20,10 @@ Configuration Example
         {
             InstanceName         = 'MSSQLSERVER'
             ProtocolName         = 'Tcp'
-            IPAddress            = 'IPAll'
+            IPAddress            = '192.168.1.10'
             IsEnabled            = $true
             TCPDynamicPort       = $false
-            TCPPort              = 4509
-            RestartService       = $true
+            TCPPort              = 1433
             PsDscRunAsCredential = $SystemAdministratorAccount
         }
     }
