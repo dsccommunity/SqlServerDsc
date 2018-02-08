@@ -293,6 +293,17 @@ function Get-TargetResource
         $analysisLogDirectory = $analysisServer.ServerProperties['LogDir'].Value
         $analysisBackupDirectory = $analysisServer.ServerProperties['BackupDir'].Value
 
+        <#
+            The property $analysisServer.ServerMode.value__ contains the
+            server mode (aka deployment mode) value 0, 1 or 2. See DeploymentMode
+            here https://docs.microsoft.com/en-us/sql/analysis-services/server-properties/general-properties.
+
+            The property $analysisServer.ServerMode contains the display name of
+            the property value__. See more information here
+            https://msdn.microsoft.com/en-us/library/microsoft.analysisservices.core.server.servermode.aspx.
+        #>
+        $analysisServerMode = $analysisServer.ServerMode.ToString().ToUpper()
+
         $analysisSystemAdminAccounts = [System.String[]] $analysisServer.Roles['Administrators'].Members.Name
 
         $analysisConfigDirectory = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$analysisServiceName" -Name 'ImagePath').ImagePath.Replace(' -s ',',').Split(',')[1].Trim('"')
@@ -487,6 +498,7 @@ function Get-TargetResource
         ASBackupDir = $analysisBackupDirectory
         ASTempDir = $analysisTempDirectory
         ASConfigDir = $analysisConfigDirectory
+        ASServerMode = $analysisServerMode
         ISSvcAccountUsername = $integrationServiceAccountUsername
         FailoverClusterGroupName = $clusteredSqlGroupName
         FailoverClusterNetworkName = $clusteredSqlHostname
@@ -619,6 +631,13 @@ function Get-TargetResource
     .PARAMETER ASConfigDir
         Path for Analysis Services config.
 
+    .PARAMETER ASServerMode
+        The server mode for SQL Server Analysis Services instance. The default is
+        to install in Multidimensional mode. Valid values in a cluster scenario
+        are MULTIDIMENSIONAL or TABULAR. Parameter ASServerMode is case-sensitive.
+        All values must be expressed in upper case.
+        { MULTIDIMENSIONAL | TABULAR | POWERPIVOT }.
+
     .PARAMETER ISSvcAccount
        Service account for Integration Services service.
 
@@ -639,8 +658,16 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
-    # Suppressing this rule because $global:DSCMachineStatus is used to trigger a reboot, either by force or when there are pending changes.
+    <#
+        Suppressing this rule because $global:DSCMachineStatus is used to trigger
+        a reboot, either by force or when there are pending changes.
+    #>
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+    <#
+        Suppressing this rule because $global:DSCMachineStatus is only set,
+        never used (by design of Desired State Configuration).
+    #>
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function', Target='DSCMachineStatus')]
     [CmdletBinding()]
     param
     (
@@ -796,6 +823,11 @@ function Set-TargetResource
         [Parameter()]
         [System.String]
         $ASConfigDir,
+
+        [Parameter()]
+        [ValidateSet('MULTIDIMENSIONAL','TABULAR','POWERPIVOT', IgnoreCase = $false)]
+        [System.String]
+        $ASServerMode,
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -1244,6 +1276,12 @@ function Set-TargetResource
             'ASConfigDir'
         )
 
+
+        if ($PSBoundParameters.ContainsKey('ASServerMode'))
+        {
+            $setupArguments['ASServerMode'] = $ASServerMode
+        }
+
         if ($PSBoundParameters.ContainsKey('ASSvcAccount'))
         {
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $ASSvcAccount -ServiceType 'AS')
@@ -1300,12 +1338,12 @@ function Set-TargetResource
         if ($currentSetupArgument.Value -ne '')
         {
             # Arrays are handled specially
-            if ($currentSetupArgument.Value -is [array])
+            if ($currentSetupArgument.Value -is [System.Array])
             {
                 # Sort and format the array
                 $setupArgumentValue = ($currentSetupArgument.Value | Sort-Object | ForEach-Object { '"{0}"' -f $_ }) -join ' '
             }
-            elseif ($currentSetupArgument.Value -is [Boolean])
+            elseif ($currentSetupArgument.Value -is [System.Boolean])
             {
                 $setupArgumentValue = @{ $true = 'True'; $false = 'False' }[$currentSetupArgument.Value]
                 $setupArgumentValue = '"{0}"' -f $setupArgumentValue
@@ -1540,6 +1578,13 @@ function Set-TargetResource
     .PARAMETER ASConfigDir
         Path for Analysis Services config.
 
+    .PARAMETER ASServerMode
+        The server mode for SQL Server Analysis Services instance. The default is
+        to install in Multidimensional mode. Valid values in a cluster scenario
+        are MULTIDIMENSIONAL or TABULAR. Parameter ASServerMode is case-sensitive.
+        All values must be expressed in upper case.
+        { MULTIDIMENSIONAL | TABULAR | POWERPIVOT }.
+
     .PARAMETER ISSvcAccount
        Service account for Integration Services service.
 
@@ -1718,6 +1763,11 @@ function Test-TargetResource
         $ASConfigDir,
 
         [Parameter()]
+        [ValidateSet('MULTIDIMENSIONAL','TABULAR','POWERPIVOT', IgnoreCase = $false)]
+        [System.String]
+        $ASServerMode,
+
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $ISSvcAccount,
 
@@ -1807,7 +1857,7 @@ function Get-SqlMajorVersion
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Path
     )
 
@@ -1827,7 +1877,7 @@ function Get-FirstItemPropertyValue
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Path
     )
 
@@ -1861,12 +1911,12 @@ function Copy-ItemWithRobocopy
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String]
+        [System.String]
         $Path,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String]
+        [System.String]
         $DestinationPath
     )
 
@@ -1962,20 +2012,21 @@ function ConvertTo-Decimal
 {
     [CmdletBinding()]
     [OutputType([System.UInt32])]
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.Net.IPAddress]
         $IPAddress
     )
 
     $i = 3
-    $DecimalIP = 0
+    $decimalIpAddress = 0
     $IPAddress.GetAddressBytes() | ForEach-Object {
-        $DecimalIP += $_ * [Math]::Pow(256,$i)
+        $decimalIpAddress += $_ * [Math]::Pow(256,$i)
         $i--
     }
 
-    return [UInt32]$DecimalIP
+    return [System.UInt32] $decimalIpAddress
 }
 
 <#
@@ -2035,12 +2086,12 @@ function Get-ServiceAccountParameters
     param
     (
         [Parameter(Mandatory = $true)]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         $ServiceAccount,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('SQL','AGT','IS','RS','AS','FT')]
-        [String]
+        [System.String]
         $ServiceType
     )
 

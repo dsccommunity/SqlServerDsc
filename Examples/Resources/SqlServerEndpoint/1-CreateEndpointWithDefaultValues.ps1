@@ -9,8 +9,7 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $SysAdminAccount
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
@@ -22,7 +21,7 @@ Configuration Example
             EndpointName         = 'HADR'
             InstanceName         = 'INST1'
 
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlServerEndpoint SQLConfigureEndpoint-Instances2
@@ -30,7 +29,7 @@ Configuration Example
             EndpointName         = 'HADR'
             InstanceName         = 'INST2'
 
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
 }

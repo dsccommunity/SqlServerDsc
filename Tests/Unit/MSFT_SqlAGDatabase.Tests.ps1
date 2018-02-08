@@ -72,10 +72,10 @@ try
 
         #region Availability Replica Mocks
 
-            $mockAvailabilityReplicaObjects = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityReplicaCollection
+            $mockAvailabilityReplicaObjects = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplicaCollection
             foreach ( $mockAvailabilityReplicaName in @('Server1','Server2') )
             {
-                $newAvailabilityReplicaObject = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+                $newAvailabilityReplicaObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
                 $newAvailabilityReplicaObject.Name = $mockAvailabilityReplicaName
 
                 if ( $mockServerObjectDomainInstanceName -eq $mockAvailabilityReplicaName )
@@ -113,28 +113,28 @@ try
                 'DB1'
             )
 
-            $mockAvailabilityDatabaseObjects = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityDatabaseCollection
+            $mockAvailabilityDatabaseObjects = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityDatabaseCollection
             foreach ( $mockAvailabilityDatabaseName in $mockAvailabilityDatabaseNames )
             {
-                $newAvailabilityDatabaseObject = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityDatabase
+                $newAvailabilityDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityDatabase
                 $newAvailabilityDatabaseObject.Name = $mockAvailabilityDatabaseName
                 $mockAvailabilityDatabaseObjects.Add($newAvailabilityDatabaseObject)
             }
 
             $mockBadAvailabilityGroupObject = New-Object -TypeName Object
 
-            $mockAvailabilityGroupObject = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+            $mockAvailabilityGroupObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
             $mockAvailabilityGroupObject.AvailabilityDatabases = $mockAvailabilityDatabaseObjects
             $mockAvailabilityGroupObject.Name = $mockAvailabilityGroupObjectName
             $mockAvailabilityGroupObject.PrimaryReplicaServerName = $mockServerObjectDomainInstanceName
             $mockAvailabilityGroupObject.AvailabilityReplicas = $mockAvailabilityReplicaObjects
 
-            $mockAvailabilityGroupWithoutDatabasesObject = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+            $mockAvailabilityGroupWithoutDatabasesObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
             $mockAvailabilityGroupWithoutDatabasesObject.Name = $mockAvailabilityGroupWithoutDatabasesObjectName
             $mockAvailabilityGroupWithoutDatabasesObject.PrimaryReplicaServerName = $mockServerObjectDomainInstanceName
             $mockAvailabilityGroupWithoutDatabasesObject.AvailabilityReplicas = $mockAvailabilityReplicaObjects
 
-            $mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+            $mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
             $mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.AvailabilityDatabases = $mockAvailabilityDatabaseObjects
             $mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Name = $mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServerName
             $mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.PrimaryReplicaServerName = $mockPrimaryServerObjectDomainInstanceName
@@ -198,13 +198,13 @@ try
                 103
             )
 
-            $mockCertificateObject1 = New-Object Microsoft.SqlServer.Management.Smo.Certificate
+            $mockCertificateObject1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Certificate
             $mockCertificateObject1.Thumbprint = $mockThumbprint1
 
-            $mockCertificateObject2 = New-Object Microsoft.SqlServer.Management.Smo.Certificate
+            $mockCertificateObject2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Certificate
             $mockCertificateObject2.Thumbprint = $mockThumbprint2
 
-            $mockDatabaseEncryptionKeyObject = New-Object Microsoft.SqlServer.Management.Smo.DatabaseEncryptionKey
+            $mockDatabaseEncryptionKeyObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.DatabaseEncryptionKey
             $mockDatabaseEncryptionKeyObject.EncryptorName = 'TDE Cert'
             $mockDatabaseEncryptionKeyObject.Thumbprint = $mockThumbprint1
 
@@ -230,7 +230,7 @@ try
             )
 
             $mockMasterDatabaseName = 'master'
-            $mockMasterDatabaseObject1 = New-Object Microsoft.SqlServer.Management.Smo.Database
+            $mockMasterDatabaseObject1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
             $mockMasterDatabaseObject1.Name = $mockMasterDatabaseName
             $mockMasterDatabaseObject1.ID = 1
             $mockMasterDatabaseObject1.Certificates = @($mockCertificateObject1)
@@ -244,10 +244,10 @@ try
                 FileName = ( [IO.Path]::Combine( $mockLogFilePath, "$($mockMasterDatabaseName).ldf" ) )
             }
 
-            $mockDatabaseObjects = New-Object Microsoft.SqlServer.Management.Smo.DatabaseCollection
+            $mockDatabaseObjects = New-Object -TypeName Microsoft.SqlServer.Management.Smo.DatabaseCollection
             foreach ( $mockPresentDatabaseName in $mockPresentDatabaseNames )
             {
-                $newDatabaseObject = New-Object Microsoft.SqlServer.Management.Smo.Database
+                $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                 $newDatabaseObject.Name = $mockPresentDatabaseName
                 $newDatabaseObject.FileGroups = @{
                     Name = 'PRIMARY'
@@ -264,10 +264,10 @@ try
             }
             $mockDatabaseObjects.Add($mockMasterDatabaseObject1)
 
-            $mockDatabaseObjectsWithIncorrectFileNames = New-Object Microsoft.SqlServer.Management.Smo.DatabaseCollection
+            $mockDatabaseObjectsWithIncorrectFileNames = New-Object -TypeName Microsoft.SqlServer.Management.Smo.DatabaseCollection
             foreach ( $mockPresentDatabaseName in $mockPresentDatabaseNames )
             {
-                $newDatabaseObject = New-Object Microsoft.SqlServer.Management.Smo.Database
+                $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                 $newDatabaseObject.Name = $mockPresentDatabaseName
                 $newDatabaseObject.FileGroups = @{
                     Name = 'PRIMARY'
@@ -289,8 +289,8 @@ try
 
             $mockBadServerObject = New-Object -TypeName Object
 
-            $mockServerObject = New-Object Microsoft.SqlServer.Management.Smo.Server
-            $mockServerObject.AvailabilityGroups = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityGroupCollection
+            $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+            $mockServerObject.AvailabilityGroups = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroupCollection
             $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupObject.Clone())
             $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
             $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
@@ -302,8 +302,8 @@ try
             $mockServerObject.AvailabilityGroups[$mockAvailabilityGroupWithoutDatabasesObject.Name].LocalReplicaRole = 'Primary'
             $mockServerObject.AvailabilityGroups[$mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Name].LocalReplicaRole = 'Secondary'
 
-            $mockServer2Object = New-Object Microsoft.SqlServer.Management.Smo.Server
-            $mockServer2Object.AvailabilityGroups = New-Object Microsoft.SqlServer.Management.Smo.AvailabilityGroupCollection
+            $mockServer2Object = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+            $mockServer2Object.AvailabilityGroups = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroupCollection
             $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupObject.Clone())
             $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
             $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
@@ -357,7 +357,7 @@ WITH NORECOVERY'
         Describe 'SqlAGDatabase\Get-TargetResource' {
             BeforeAll {
                 Mock -CommandName Connect-SQL -MockWith { return $mockServerObject } -Verifiable
-                Mock -CommandName Import-SQLPSModule -MockWith {} -Verifiable
+                Mock -CommandName Import-SQLPSModule -Verifiable
             }
 
             BeforeEach {
@@ -426,14 +426,14 @@ WITH NORECOVERY'
             BeforeAll {
                 Mock -CommandName Get-PrimaryReplicaServerObject -MockWith { return $mockServerObject } -Verifiable -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
                 Mock -CommandName Get-PrimaryReplicaServerObject -MockWith { return $mockServer2Object } -Verifiable -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                Mock -CommandName Import-SQLPSModule -MockWith {} -Verifiable
-                Mock -CommandName Invoke-Query -MockWith {} -Verifiable -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                Mock -CommandName Invoke-Query -MockWith {} -Verifiable -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                Mock -CommandName Import-SQLPSModule -Verifiable
+                Mock -CommandName Invoke-Query -Verifiable -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                Mock -CommandName Invoke-Query -Verifiable -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                 Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Full_$(Get-Date -Format 'yyyyMMddhhmmss').bak") } -Verifiable -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                 Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Log_$(Get-Date -Format 'yyyyMMddhhmmss').trn") } -Verifiable -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                 Mock -CommandName New-TerminatingError { $ErrorType } -Verifiable
-                Mock -CommandName Remove-Item -MockWith {} -Verifiable
-                Mock -CommandName Restore-SqlDatabase -MockWith {} -Verifiable
+                Mock -CommandName Remove-Item -Verifiable
+                Mock -CommandName Restore-SqlDatabase -Verifiable
             }
 
             BeforeEach {
@@ -448,17 +448,17 @@ WITH NORECOVERY'
                     MatchDatabaseOwner = $true
                 }
 
-                Mock -CommandName Add-SqlAvailabilityDatabase -MockWith {} -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                Mock -CommandName Add-SqlAvailabilityDatabase -MockWith {} -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                Mock -CommandName Add-SqlAvailabilityDatabase -MockWith {} -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                Mock -CommandName Add-SqlAvailabilityDatabase -MockWith {} -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                Mock -CommandName Backup-SqlDatabase -MockWith {} -Verifiable -ParameterFilter { $BackupAction -eq 'Database' }
-                Mock -CommandName Backup-SqlDatabase -MockWith {} -Verifiable -ParameterFilter { $BackupAction -eq 'Log'}
+                Mock -CommandName Add-SqlAvailabilityDatabase -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                Mock -CommandName Add-SqlAvailabilityDatabase -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                Mock -CommandName Add-SqlAvailabilityDatabase -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                Mock -CommandName Add-SqlAvailabilityDatabase -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                Mock -CommandName Backup-SqlDatabase -Verifiable -ParameterFilter { $BackupAction -eq 'Database' }
+                Mock -CommandName Backup-SqlDatabase -Verifiable -ParameterFilter { $BackupAction -eq 'Log'}
                 Mock -CommandName Connect-SQL -MockWith { return $mockServerObject } -Verifiable -ParameterFilter { $SqlServer -eq 'Server1' -and $SQLInstanceName -eq 'MSSQLSERVER' }
                 Mock -CommandName Connect-SQL -MockWith { return $mockServerObject } -Verifiable -ParameterFilter { $SqlServer -eq 'Server1' }
                 Mock -CommandName Connect-SQL -MockWith { return $mockServer2Object } -Verifiable -ParameterFilter { $SqlServer -eq 'Server2' }
                 Mock -CommandName Invoke-Query -MockWith $mockResultInvokeQueryFileExist -Verifiable -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                Mock -CommandName Remove-SqlAvailabilityDatabase -MockWith {} -Verifiable
+                Mock -CommandName Remove-SqlAvailabilityDatabase -Verifiable
                 Mock -CommandName Test-ImpersonatePermissions -MockWith { $true } -Verifiable
             }
 

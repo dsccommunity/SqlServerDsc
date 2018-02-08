@@ -64,21 +64,21 @@ try
         $mockConnectSQL = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru |
                         Add-Member -MemberType ScriptProperty -Name Databases -Value {
                         return @{
                             $mockSqlDatabaseName = @((
-                                    New-Object Object |
+                                    New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
                                         Add-Member -MemberType ScriptProperty -Name Users -Value {
                                         return @{
                                             $mockSqlServerLoginOne = @((
-                                                    New-Object Object |
+                                                    New-Object -TypeName Object |
                                                         Add-Member -MemberType ScriptMethod -Name IsMember -Value {
                                                         param(
-                                                            [String]
+                                                            [System.String]
                                                             $mockSqlDatabaseRole
                                                         )
                                                         if ( $mockSqlDatabaseRole -eq $mockExpectedSqlDatabaseRole )
@@ -92,7 +92,7 @@ try
                                                     } -PassThru
                                                 ))
                                             $mockSqlServerLoginTwo = @((
-                                                    New-Object Object |
+                                                    New-Object -TypeName Object |
                                                         Add-Member -MemberType ScriptMethod -Name IsMember -Value {
                                                         return $true
                                                     } -PassThru
@@ -102,11 +102,11 @@ try
                                         Add-Member -MemberType ScriptProperty -Name Roles -Value {
                                         return @{
                                             $mockSqlDatabaseRole       = @((
-                                                    New-Object Object |
+                                                    New-Object -TypeName Object |
                                                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseRole -PassThru |
                                                         Add-Member -MemberType ScriptMethod -Name AddMember -Value {
                                                         param(
-                                                            [String]
+                                                            [System.String]
                                                             $mockSqlServerLogin
                                                         )
                                                         if ($mockInvalidOperationForAddMemberMethod)
@@ -121,7 +121,7 @@ try
                                                     } -PassThru |
                                                         Add-Member -MemberType ScriptMethod -Name DropMember -Value {
                                                         param(
-                                                            [String]
+                                                            [System.String]
                                                             $mockSqlServerLogin
                                                         )
                                                         if ($mockInvalidOperationForDropMemberMethod)
@@ -136,11 +136,11 @@ try
                                                     } -PassThru
                                                 ))
                                             $mockSqlDatabaseRoleSecond = @((
-                                                    New-Object Object |
+                                                    New-Object -TypeName Object |
                                                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseRoleSecond -PassThru |
                                                         Add-Member -MemberType ScriptMethod -Name AddMember -Value {
                                                         param(
-                                                            [String]
+                                                            [System.String]
                                                             $mockSqlServerLogin
                                                         )
                                                         if ($mockInvalidOperationForAddMemberMethod)
@@ -155,7 +155,7 @@ try
                                                     } -PassThru |
                                                         Add-Member -MemberType ScriptMethod -Name DropMember -Value {
                                                         param(
-                                                            [String]
+                                                            [System.String]
                                                             $mockSqlServerLogin
                                                         )
                                                         if ($mockInvalidOperationForDropMemberMethod)
@@ -177,15 +177,15 @@ try
                         Add-Member -MemberType ScriptProperty -Name Logins -Value {
                         return @{
                             $mockSqlServerLoginOne = @((
-                                    New-Object Object |
+                                    New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru
                                 ))
                             $mockSqlServerLoginTwo = @((
-                                    New-Object Object |
+                                    New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru
                                 ))
                             $mockSqlServerLogin    = @((
-                                    New-Object Object |
+                                    New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru
                                 ))
                         }
@@ -198,7 +198,7 @@ try
         $mockNewObjectUser = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlServerLogin -PassThru |
                         Add-Member -MemberType NoteProperty -Name Login -Value $mockSqlServerLogin -PassThru |
                         Add-Member -MemberType ScriptMethod -Name Create -Value {

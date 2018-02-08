@@ -167,11 +167,11 @@ try
             Param
             (
                 [Parameter()]
-                [string]
+                [System.String]
                 $SQLServer,
 
                 [Parameter()]
-                [string]
+                [System.String]
                 $SQLInstanceName,
 
                 # The following two parameters are used to mock Get-PrimaryReplicaServerObject
@@ -270,11 +270,11 @@ try
             Param
             (
                 [Parameter()]
-                [string]
+                [System.String]
                 $SQLServer,
 
                 [Parameter()]
-                [string]
+                [System.String]
                 $SQLInstanceName,
 
                 # The following two parameters are used to mock Get-PrimaryReplicaServerObject
@@ -390,11 +390,11 @@ try
             Param
             (
                 [Parameter()]
-                [string]
+                [System.String]
                 $SQLServer,
 
                 [Parameter()]
-                [string]
+                [System.String]
                 $SQLInstanceName,
 
                 # The following two parameters are used to mock Get-PrimaryReplicaServerObject
@@ -517,7 +517,7 @@ try
                 $AvailabilityGroupReplica
             )
 
-            if ( [string]::IsNullOrEmpty($mockAvailabilityGroupReplicaPropertyName) -and [string]::IsNullOrEmpty($mockAvailabilityGroupReplicaPropertyValue) )
+            if ( [System.String]::IsNullOrEmpty($mockAvailabilityGroupReplicaPropertyName) -and [System.String]::IsNullOrEmpty($mockAvailabilityGroupReplicaPropertyValue) )
             {
                 return
             }
@@ -605,7 +605,7 @@ try
         Describe 'SqlAGReplica\Set-TargetResource' {
 
             BeforeAll {
-                Mock -CommandName Import-SQLPSModule -MockWith {} -Verifiable
+                Mock -CommandName Import-SQLPSModule -Verifiable
                 Mock -CommandName New-TerminatingError {
                     $ErrorType
                 } -Verifiable
@@ -634,8 +634,8 @@ try
                 Mock -CommandName Get-PrimaryReplicaServerObject -MockWith $mockConnectSqlServer3 -Verifiable -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
                 }
-                Mock -CommandName Join-SqlAvailabilityGroup -MockWith {} -Verifiable
-                Mock -CommandName New-SqlAvailabilityReplica {} -Verifiable
+                Mock -CommandName Join-SqlAvailabilityGroup -Verifiable
+                Mock -CommandName New-SqlAvailabilityReplica -Verifiable
                 Mock -CommandName Test-ClusterPermissions -MockWith {
                     $null
                 } -Verifiable
@@ -644,7 +644,7 @@ try
             Context 'When the desired state is absent' {
 
                 BeforeAll {
-                    Mock -CommandName Update-AvailabilityGroupReplica {} -Verifiable
+                    Mock -CommandName Update-AvailabilityGroupReplica -Verifiable
                 }
 
                 BeforeEach {
@@ -659,7 +659,7 @@ try
 
                 It 'Should silently remove the availability group replica' {
 
-                    Mock -CommandName Remove-SqlAvailabilityReplica -MockWith {} -Verifiable
+                    Mock -CommandName Remove-SqlAvailabilityReplica -Verifiable
 
                     { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
 
@@ -727,8 +727,8 @@ try
             Context 'When the desired state is present and the availability group is absent' {
 
                 BeforeAll {
-                    Mock -CommandName Remove-SqlAvailabilityReplica -MockWith {} -Verifiable
-                    Mock -CommandName Update-AvailabilityGroupReplica {} -Verifiable
+                    Mock -CommandName Remove-SqlAvailabilityReplica -Verifiable
+                    Mock -CommandName Update-AvailabilityGroupReplica -Verifiable
                 }
 
                 BeforeEach {
@@ -1052,7 +1052,7 @@ try
             Context 'When the desired state is present and the availability group is present' {
 
                 BeforeAll {
-                    Mock -CommandName Remove-SqlAvailabilityReplica -MockWith {} -Verifiable
+                    Mock -CommandName Remove-SqlAvailabilityReplica -Verifiable
                     Mock -CommandName Update-AvailabilityGroupReplica -MockWith $mockUpdateAvailabilityGroupReplica -Verifiable
 
                     # Create a hash table to provide test properties and values for the update tests

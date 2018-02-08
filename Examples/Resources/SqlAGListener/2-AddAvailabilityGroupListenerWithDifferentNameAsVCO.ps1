@@ -8,8 +8,7 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $SysAdminAccount
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
@@ -26,7 +25,7 @@ Configuration Example
             IpAddress            = '192.168.0.74/255.255.255.0'
             Port                 = 5302
 
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
 }

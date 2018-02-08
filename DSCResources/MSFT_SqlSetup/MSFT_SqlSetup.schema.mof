@@ -44,11 +44,12 @@ class MSFT_SqlSetup : OMI_BaseResource
     [Write, Description("Path for Analysis Services backup files.")] String ASBackupDir;
     [Write, Description("Path for Analysis Services temp files.")] String ASTempDir;
     [Write, Description("Path for Analysis Services config.")] String ASConfigDir;
+    [Write, Description("The server mode for SQL Server Analysis Services instance. The default is to install in Multidimensional mode. Valid values in a cluster scenario are MULTIDIMENSIONAL or TABULAR. Parameter ASServerMode is case-sensitive. All values must be expressed in upper case."), ValueMap{"MULTIDIMENSIONAL", "TABULAR", "POWERPIVOT"}, Values{"MULTIDIMENSIONAL", "TABULAR", "POWERPIVOT"}] String ASServerMode;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("Service account for Integration Services service.")] String ISSvcAccount;
     [Read, Description("Output username for the Integration Services service.")] String ISSvcAccountUsername;
     [Write, Description("Specifies the startup mode for SQL Server Browser service."), ValueMap{"Automatic", "Disabled", "Manual"}, Values{"Automatic", "Disabled", "Manual"}] String BrowserSvcStartupType;
     [Write, Description("The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (InstanceName)'.")] String FailoverClusterGroupName;
     [Write, Description("Array of IP Addresses to be assigned to the clustered SQL Server instance.")] String FailoverClusterIPAddress[];
     [Write, Description("Host name to be assigned to the clustered SQL Server instance.")] String FailoverClusterNetworkName;
-    [Write, Description("The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.")] Uint32 SetupProcessTimeout;
+    [Write, Description("The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.")] UInt32 SetupProcessTimeout;
 };

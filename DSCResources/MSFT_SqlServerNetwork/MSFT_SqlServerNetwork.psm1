@@ -159,7 +159,7 @@ function Set-TargetResource
 
         $isRestartNeeded = $false
 
-        $managedComputerObject = New-Object Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer
+        $managedComputerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer
 
         Write-Verbose -Message ($script:localizedData.GetNetworkProtocol -f $ProtocolName, $InstanceName)
         $tcp = $managedComputerObject.ServerInstances[$InstanceName].ServerProtocols[$ProtocolName]

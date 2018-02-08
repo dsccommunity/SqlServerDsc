@@ -4,7 +4,7 @@ $script:DSCResourceName    = 'MSFT_SqlAlias'
 #region HEADER
 
 # Unit Test Template Version: 1.1.0
-[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
      (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
@@ -98,7 +98,7 @@ try
 
         # Mocking 64-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -290,7 +290,7 @@ try
 
             # Mocking 64-bit OS
             Mock -CommandName Get-CimInstance -MockWith {
-                return New-Object Object |
+                return New-Object -TypeName Object |
                     Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
             } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -335,7 +335,7 @@ try
 
         # Mocking 32-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '32-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -518,7 +518,7 @@ try
 
         # Mocking 64-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -647,7 +647,7 @@ try
 
         # Mocking 32-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '32-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -696,7 +696,7 @@ try
 
         # Mocking 64-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -760,7 +760,7 @@ try
 
         # Mocking 32-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '32-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -830,16 +830,16 @@ try
 
     #region Set-TargetResource
     Describe "$($script:DSCResourceName)\Set-TargetResource" {
-        Mock -CommandName New-Item -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
-        Mock -CommandName Set-ItemProperty -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
-        Mock -CommandName Remove-ItemProperty -MockWith {} -ModuleName $script:DSCResourceName -Verifiable
+        Mock -CommandName New-Item -ModuleName $script:DSCResourceName -Verifiable
+        Mock -CommandName Set-ItemProperty -ModuleName $script:DSCResourceName -Verifiable
+        Mock -CommandName Remove-ItemProperty -ModuleName $script:DSCResourceName -Verifiable
         Mock -CommandName Test-Path -MockWith {
             return $false
         } -ModuleName $script:DSCResourceName -Verifiable
 
         # Mocking 64-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -941,7 +941,7 @@ try
 
         # Mocking 32-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '32-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 
@@ -1063,7 +1063,7 @@ try
 
         # Mocking 64-bit OS
         Mock -CommandName Get-CimInstance -MockWith {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                 Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
         } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -ModuleName $script:DSCResourceName -Verifiable
 

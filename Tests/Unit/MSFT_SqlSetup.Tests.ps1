@@ -165,17 +165,17 @@ try
         $mockmockSetupCredentialUserName = "COMPANY\sqladmin"
 
         $mockmockSetupCredentialPassword = "dummyPassw0rd" | ConvertTo-SecureString -asPlainText -Force
-        $mockSetupCredential = New-Object System.Management.Automation.PSCredential( $mockmockSetupCredentialUserName, $mockmockSetupCredentialPassword )
+        $mockSetupCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockmockSetupCredentialUserName, $mockmockSetupCredentialPassword)
 
         $mockSqlServiceAccount = 'COMPANY\SqlAccount'
         $mockSqlServicePassword = 'Sqls3v!c3P@ssw0rd'
-        $mockSQLServiceCredential = New-Object System.Management.Automation.PSCredential($mockSqlServiceAccount,($mockSQLServicePassword | ConvertTo-SecureString -AsPlainText -Force))
+        $mockSQLServiceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockSqlServiceAccount,($mockSQLServicePassword | ConvertTo-SecureString -AsPlainText -Force))
         $mockAgentServiceAccount = 'COMPANY\AgentAccount'
         $mockAgentServicePassword = 'Ag3ntP@ssw0rd'
-        $mockSQLAgentCredential = New-Object System.Management.Automation.PSCredential($mockAgentServiceAccount,($mockAgentServicePassword | ConvertTo-SecureString -AsPlainText -Force))
+        $mockSQLAgentCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockAgentServiceAccount,($mockAgentServicePassword | ConvertTo-SecureString -AsPlainText -Force))
         $mockAnalysisServiceAccount = 'COMPANY\AnalysisAccount'
         $mockAnalysisServicePassword = 'Analysiss3v!c3P@ssw0rd'
-        $mockAnalysisServiceCredential = New-Object System.Management.Automation.PSCredential($mockAnalysisServiceAccount,($mockAnalysisServicePassword | ConvertTo-SecureString -AsPlainText -Force))
+        $mockAnalysisServiceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockAnalysisServiceAccount,($mockAnalysisServicePassword | ConvertTo-SecureString -AsPlainText -Force))
 
         $mockClusterNodes = @($env:COMPUTERNAME,'SQL01','SQL02')
 
@@ -272,7 +272,7 @@ try
         $mockGetCimInstance_DefaultInstance_DatabaseService = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_DatabaseServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 )
@@ -282,7 +282,7 @@ try
         $mockGetCimInstance_DefaultInstance_AgentService = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_AgentServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockAgentServiceAccount -PassThru -Force
                 )
@@ -292,7 +292,7 @@ try
         $mockGetCimInstance_DefaultInstance_FullTextService = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_FullTextServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 )
@@ -302,7 +302,7 @@ try
         $mockGetCimInstance_DefaultInstance_ReportingService = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_ReportingServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 )
@@ -312,7 +312,7 @@ try
         $mockGetCimInstance_DefaultInstance_IntegrationService = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value ($mockDefaultInstance_IntegrationServiceName -f $mockSqlMajorVersion) -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 )
@@ -322,7 +322,7 @@ try
         $mockGetCimInstance_DefaultInstance_AnalysisService = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_AnalysisServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 )
@@ -332,32 +332,32 @@ try
         $mockGetService_DefaultInstance = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_DatabaseServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_AgentServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockAgentServiceAccount -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_FullTextServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_ReportingServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value ($mockDefaultInstance_IntegrationServiceName -f $mockSqlMajorVersion) -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_AnalysisServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 )
@@ -367,7 +367,7 @@ try
         $mockGetCimInstance_NamedInstance_DatabaseService = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_DatabaseServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 )
@@ -377,7 +377,7 @@ try
         $mockGetCimInstance_NamedInstance_AgentService = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_AgentServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockAgentServiceAccount -PassThru -Force
                 )
@@ -387,7 +387,7 @@ try
         $mockGetCimInstance_NamedInstance_FullTextService = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_FullTextServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 )
@@ -397,7 +397,7 @@ try
         $mockGetCimInstance_NamedInstance_ReportingService = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_ReportingServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 )
@@ -407,7 +407,7 @@ try
         $mockGetCimInstance_NamedInstance_IntegrationService = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value ($mockNamedInstance_IntegrationServiceName -f $mockSqlMajorVersion) -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 )
@@ -417,7 +417,7 @@ try
         $mockGetCimInstance_NamedInstance_AnalysisService = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_AnalysisServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 )
@@ -427,32 +427,32 @@ try
         $mockGetService_NamedInstance = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_DatabaseServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_AgentServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockAgentServiceAccount -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_FullTextServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_ReportingServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value ($mockNamedInstance_IntegrationServiceName -f $mockSqlMajorVersion) -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_AnalysisServiceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
                 )
@@ -462,7 +462,7 @@ try
         $mockGetItemProperty_InstanceId_ConfigurationState = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'SQL_Replication_Core_Inst' -Value 1 -PassThru -Force
                 )
             )
@@ -471,7 +471,7 @@ try
         $mockGetItemProperty_DQFeature = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                     Add-Member -MemberType NoteProperty -Name 'DQ_Components' -Value 1 -PassThru -Force
                 )
             )
@@ -480,7 +480,7 @@ try
         $mockGetItemProperty_SqlVersion_ConfigurationState = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                     Add-Member -MemberType NoteProperty -Name 'SQL_BOL_Components' -Value 1 -PassThru |
                     Add-Member -MemberType NoteProperty -Name 'SQL_DQ_CLIENT_Full' -Value 1 -PassThru |
                     Add-Member -MemberType NoteProperty -Name 'MDSCoreFeature' -Value 1 -PassThru -Force
@@ -491,7 +491,7 @@ try
         $mockGetItemProperty_ClientComponentsFull_FeatureList = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'FeatureList' -Value 'Connectivity_Full=3 SQL_SSMS_Full=3 Tools_Legacy_Full=3 Connectivity_FNS=3 SQL_Tools_Standard_FNS=3 Tools_Legacy_FNS=3 SDK_Full=3 SDK_FNS=3' -PassThru -Force
                 )
             )
@@ -500,7 +500,7 @@ try
         $mockGetItemProperty_ClientComponentsFull_EmptyFeatureList = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'FeatureList' -Value '' -PassThru -Force
                 )
             )
@@ -509,11 +509,11 @@ try
         $mockGetItemProperty_SQL = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name $mockDefaultInstance_InstanceName -Value $mockDefaultInstance_InstanceId -PassThru -Force
                 ),
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name $mockNamedInstance_InstanceName -Value $mockNamedInstance_InstanceId -PassThru -Force
                 )
             )
@@ -522,7 +522,7 @@ try
         $mockGetItemProperty_SharedDirectory = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name '28A1158CDF9ED6B41B2B7358982D4BA8' -Value $mockSqlSharedDirectory -PassThru -Force
                 )
             )
@@ -531,7 +531,7 @@ try
         $mockGetItem_SharedDirectory = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Property' -Value '28A1158CDF9ED6B41B2B7358982D4BA8' -PassThru -Force
                 )
             )
@@ -540,7 +540,7 @@ try
         $mockGetItemProperty_SharedWowDirectory = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name '28A1158CDF9ED6B41B2B7358982D4BA8' -Value $mockSqlSharedWowDirectory -PassThru -Force
                 )
             )
@@ -549,7 +549,7 @@ try
         $mockGetItem_SharedWowDirectory = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Property' -Value '28A1158CDF9ED6B41B2B7358982D4BA8' -PassThru -Force
                 )
             )
@@ -558,7 +558,7 @@ try
         $mockGetItemProperty_Setup = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'SqlProgramDir' -Value $mockSqlProgramDirectory -PassThru -Force
                 )
             )
@@ -567,7 +567,7 @@ try
         $mockGetItemProperty_ServicesAnalysis = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'ImagePath' -Value ('"C:\Program Files\Microsoft SQL Server\OLAP\bin\msmdsrv.exe" -s "{0}"' -f $mockSqlAnalysisConfigDirectory) -PassThru -Force
                 )
             )
@@ -576,7 +576,7 @@ try
         $mockConnectSQL = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'LoginMode' -Value $mockSqlLoginMode -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'Collation' -Value $mockSqlCollation -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'InstallDataDirectory' -Value $mockSqlInstallPath -PassThru |
@@ -585,10 +585,10 @@ try
                         Add-Member -MemberType NoteProperty -Name 'SQLTempDBLogDir' -Value $mockDynamicSqlTempDatabaseLogPath -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'DefaultFile' -Value $mockSqlDefaultDatabaseFilePath -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'DefaultLog' -Value $mockSqlDefaultDatabaseLogPath -PassThru |
-                        Add-Member ScriptProperty Logins {
-                            return @( ( New-Object Object |
+                        Add-Member -MemberType ScriptProperty -Name Logins -Value {
+                            return @( ( New-Object -TypeName Object |
                                     Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockSqlSystemAdministrator -PassThru |
-                                    Add-Member ScriptMethod ListMembers {
+                                    Add-Member -MemberType ScriptMethod -Name ListMembers -Value {
                                         return @('sysadmin')
                                     } -PassThru -Force
                                 ) )
@@ -600,7 +600,7 @@ try
         $mockConnectSQLCluster = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'LoginMode' -Value $mockSqlLoginMode -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'Collation' -Value $mockSqlCollation -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'InstallDataDirectory' -Value $mockSqlInstallPath -PassThru |
@@ -610,10 +610,10 @@ try
                         Add-Member -MemberType NoteProperty -Name 'DefaultFile' -Value $mockSqlDefaultDatabaseFilePath -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'DefaultLog' -Value $mockSqlDefaultDatabaseLogPath -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'IsClustered' -Value $true -PassThru |
-                        Add-Member ScriptProperty Logins {
-                            return @( ( New-Object Object |
+                        Add-Member -MemberType ScriptProperty -Name Logins -Value {
+                            return @( ( New-Object -TypeName Object |
                                     Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockSqlSystemAdministrator -PassThru |
-                                    Add-Member ScriptMethod ListMembers {
+                                    Add-Member -MemberType ScriptMethod -Name ListMembers -Value {
                                         return @('sysadmin')
                                     } -PassThru -Force
                                 ) )
@@ -625,27 +625,28 @@ try
         $mockConnectSQLAnalysis = {
             return @(
                 (
-                    New-Object Object |
-                        Add-Member ScriptProperty ServerProperties  {
+                    New-Object -TypeName Object |
+                        Add-Member -MemberType ScriptProperty -Name ServerProperties -Value {
                             return @{
-                                'CollationName' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisCollation -PassThru -Force )
-                                'DataDir' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisDataDirectory -PassThru -Force )
-                                'TempDir' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisTempDirectory -PassThru -Force )
-                                'LogDir' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisLogDirectory -PassThru -Force )
-                                'BackupDir' = @( New-Object Object | Add-Member NoteProperty -Name 'Value' -Value $mockSqlAnalysisBackupDirectory -PassThru -Force )
+                                'CollationName' = @( New-Object -TypeName Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisCollation -PassThru -Force )
+                                'DataDir' = @( New-Object -TypeName Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisDataDirectory -PassThru -Force )
+                                'TempDir' = @( New-Object -TypeName Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisTempDirectory -PassThru -Force )
+                                'LogDir' = @( New-Object -TypeName Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisLogDirectory -PassThru -Force )
+                                'BackupDir' = @( New-Object -TypeName Object | Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockSqlAnalysisBackupDirectory -PassThru -Force )
                             }
                         } -PassThru |
-                        Add-Member ScriptProperty Roles  {
+                        Add-Member -MemberType ScriptProperty -Name Roles -Value {
                             return @{
-                                'Administrators' = @( New-Object Object |
-                                    Add-Member ScriptProperty Members {
-                                        return New-Object Object |
-                                            Add-Member ScriptProperty Name {
+                                'Administrators' = @( New-Object -TypeName Object |
+                                    Add-Member -MemberType ScriptProperty -Name Members -Value {
+                                        return New-Object -TypeName Object |
+                                            Add-Member -MemberType ScriptProperty -Name Name -Value {
                                                 return $mockDynamicSqlAnalysisAdmins
                                             } -PassThru -Force
                                     } -PassThru -Force
                                 ) }
-                        } -PassThru -Force
+                        } -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'ServerMode' -Value $mockDynamicAnalysisServerMode -PassThru -Force
                 )
             )
         }
@@ -664,10 +665,10 @@ try
         $mockGetCommand = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockRobocopyExecutableName -PassThru |
-                        Add-Member ScriptProperty FileVersionInfo {
-                            return @( ( New-Object Object |
+                        Add-Member -MemberType ScriptProperty -Name FileVersionInfo -Value {
+                            return @( ( New-Object -TypeName Object |
                                     Add-Member -MemberType NoteProperty -Name 'ProductVersion' -Value $mockRobocopyExecutableVersion -PassThru -Force
                                 ) )
                         } -PassThru -Force
@@ -684,19 +685,19 @@ try
                 throw "Expected arguments was not the same as the arguments in the function call.`nExpected: '$mockStartSqlSetupProcessExpectedArgument' `n But was: '$ArgumentList'"
             }
 
-            return New-Object Object |
+            return New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'ExitCode' -Value 0 -PassThru -Force
         }
 
         $mockStartSqlSetupProcess_Robocopy_WithExitCode = {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'ExitCode' -Value $mockStartSqlSetupProcessExitCode -PassThru -Force
         }
 
         $mockSourcePathUNCWithoutLeaf = '\\server\share'
         $mockSourcePathGuid = 'cc719562-0f46-4a16-8605-9f8a47c70402'
         $mockNewGuid = {
-            return New-Object Object |
+            return New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Guid' -Value $mockSourcePathGuid -PassThru -Force
         }
 
@@ -707,7 +708,7 @@ try
         $mockGetCimInstance_MSClusterResource = {
             return @(
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource','root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource','root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server ($mockCurrentInstanceName)" -PassThru -Force |
                         Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String' -PassThru -Force |
                         Add-Member -MemberType NoteProperty -Name 'PrivateProperties' -Value @{ InstanceName = $mockCurrentInstanceName } -PassThru -Force
@@ -718,7 +719,7 @@ try
         $mockGetCimInstance_MSClusterResourceGroup_AvailableStorage = {
             return @(
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ResourceGroup', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ResourceGroup', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Available Storage' -PassThru -Force
                 )
             )
@@ -727,27 +728,27 @@ try
         $mockGetCIMInstance_MSCluster_ClusterSharedVolume = {
             return @(
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockCSVClusterDiskMap['SysData'].Path -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockCSVClusterDiskMap['UserData'].Path -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockCSVClusterDiskMap['UserLogs'].Path -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockCSVClusterDiskMap['TempDBData'].Path -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockCSVClusterDiskMap['TempDBLogs'].Path -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockCSVClusterDiskMap['Backup'].Path -PassThru -Force
                 )
             )
@@ -756,34 +757,34 @@ try
         $mockGetCIMInstance_MSCluster_ClusterSharedVolumeToResource = {
             return @(
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['SysData'].Path}) -PassThru -Force |
-                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['SysData'].Name}) -PassThru -Force
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['SysData'].Path}) -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['SysData'].Name}) -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['UserData'].Path}) -PassThru -Force |
-                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['UserData'].Name}) -PassThru -Force
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['UserData'].Path}) -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['UserData'].Name}) -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['UserLogs'].Path}) -PassThru -Force |
-                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['UserLogs'].Name}) -PassThru -Force
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['UserLogs'].Path}) -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['UserLogs'].Name}) -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['TempDBData'].Path}) -PassThru -Force |
-                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['TempDBData'].Name}) -PassThru -Force
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['TempDBData'].Path}) -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['TempDBData'].Name}) -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['TempDBLogs'].Path}) -PassThru -Force |
-                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['TempDBLogs'].Name}) -PassThru -Force
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['TempDBLogs'].Path}) -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['TempDBLogs'].Name}) -PassThru -Force
                 ),
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['Backup'].Path}) -PassThru -Force |
-                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object PSObject -Property @{Name=$mockCSVClusterDiskMap['Backup'].Name}) -PassThru -Force
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                        Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['Backup'].Path}) -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{Name=$mockCSVClusterDiskMap['Backup'].Name}) -PassThru -Force
                 )
             )
         }
@@ -794,7 +795,7 @@ try
                     $mockClusterSites | ForEach-Object {
                         $network = $_
 
-                        New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Network', 'root/MSCluster' |
+                        New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Network', 'root/MSCluster' |
                             Add-Member -MemberType NoteProperty -Name 'Name' -Value "$($network.Name)_Prod" -PassThru -Force |
                             Add-Member -MemberType NoteProperty -Name 'Role' -Value 2 -PassThru -Force |
                             Add-Member -MemberType NoteProperty -Name 'Address' -Value $network.Address -PassThru -Force |
@@ -807,7 +808,7 @@ try
         $mockGetCimAssociatedInstance_MSClusterResourceGroup_DefaultInstance = {
             return @(
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ResourceGroup', 'root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ResourceGroup', 'root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_FailoverClusterGroupName -PassThru -Force
                 )
             )
@@ -838,7 +839,7 @@ try
                             }
                         }
 
-                        return New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource', 'root/MSCluster' |
+                        return New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource', 'root/MSCluster' |
                             Add-Member -MemberType NoteProperty -Name 'Type' -Value $resourceType -PassThru -Force |
                             Add-Member @propertyValue -PassThru -Force
                     }
@@ -853,7 +854,7 @@ try
                     # $mockClusterDiskMap contains variables that are assigned dynamically (during runtime) before each test.
                     (& $mockClusterDiskMap).Keys | ForEach-Object {
                         $diskName = $_
-                        New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource','root/MSCluster' |
+                        New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource','root/MSCluster' |
                             Add-Member -MemberType NoteProperty -Name 'Name' -Value $diskName -PassThru -Force |
                             Add-Member -MemberType NoteProperty -Name 'State' -Value 2 -PassThru -Force |
                             Add-Member -MemberType NoteProperty -Name 'Type' -Value 'Physical Disk' -PassThru -Force
@@ -867,7 +868,7 @@ try
                 (
                     $mockClusterNodes | ForEach-Object {
                         $node = $_
-                        New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Node', 'root/MSCluster' |
+                        New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Node', 'root/MSCluster' |
                             Add-Member -MemberType NoteProperty -Name 'Name' -Value $node -PassThru -Force
                     }
                 )
@@ -882,7 +883,7 @@ try
 
             return @(
                 (
-                    New-Object Microsoft.Management.Infrastructure.CimInstance 'MSCluster_DiskPartition','root/MSCluster' |
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_DiskPartition','root/MSCluster' |
                         Add-Member -MemberType NoteProperty -Name 'Path' -Value $clusterDiskPath -PassThru -Force
                 )
             )
@@ -985,6 +986,13 @@ try
                 Mock -CommandName Get-ItemProperty -ParameterFilter {
                     $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
                 } -MockWith $mockGetItemProperty_ClientComponentsFull_FeatureList -Verifiable
+
+                <#
+                    This make sure the mock for Connect-SQLAnalysis get the correct
+                    value for ServerMode property for the tests. It's dynamically
+                    changed in other tests for testing different server modes.
+                #>
+                $mockDynamicAnalysisServerMode = 'MULTIDIMENSIONAL'
             }
 
             BeforeEach {
@@ -1047,23 +1055,23 @@ try
                         Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable -Verifiable
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\DQ\*"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should return the same values as passed as parameters' {
@@ -1130,6 +1138,7 @@ try
                         $result.ASBackupDir | Should -BeNullOrEmpty
                         $result.ASTempDir | Should -BeNullOrEmpty
                         $result.ASConfigDir | Should -BeNullOrEmpty
+                        $result.ASServerMode | Should -BeNullOrEmpty
                         $result.ISSvcAccountUsername | Should -BeNullOrEmpty
                     }
                 }
@@ -1173,23 +1182,23 @@ try
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\DQ\*"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should return the same values as passed as parameters' {
@@ -1229,11 +1238,11 @@ try
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         $result = Get-TargetResource @testParameters
                         $result.Features | Should -Be ''
@@ -1584,8 +1593,26 @@ try
                         $result.ASBackupDir | Should -Be $mockSqlAnalysisBackupDirectory
                         $result.ASTempDir | Should -Be $mockSqlAnalysisTempDirectory
                         $result.ASConfigDir | Should -Be $mockSqlAnalysisConfigDirectory
+                        $result.ASServerMode | Should -Be 'MULTIDIMENSIONAL'
                         $result.ISSvcAccountUsername | Should -Be $mockSqlServiceAccount
                     }
+
+                    $mockDynamicAnalysisServerMode = 'POWERPIVOT'
+
+                    It 'Should return the correct values in the hash table' {
+                        $result = Get-TargetResource @testParameters
+                        $result.ASServerMode | Should -Be 'POWERPIVOT'
+                    }
+
+                    $mockDynamicAnalysisServerMode = 'TABULAR'
+
+                    It 'Should return the correct values in the hash table' {
+                        $result = Get-TargetResource @testParameters
+                        $result.ASServerMode | Should -Be 'TABULAR'
+                    }
+
+                    # Return the state to the default for all other tests.
+                    $mockDynamicAnalysisServerMode = 'MULTIDIMENSIONAL'
 
                     <#
                         This is a regression test for issue #691.
@@ -1863,23 +1890,23 @@ try
                         Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable -Verifiable
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\DQ\*"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockNamedInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should return the same values as passed as parameters' {
@@ -1916,11 +1943,11 @@ try
                     It 'Should not return any names of installed features' {
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         $result = Get-TargetResource @testParameters
                         $result.Features | Should -Be ''
@@ -2175,9 +2202,9 @@ try
 
                         Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
-                        Mock -CommandName Get-CimInstance -MockWith {} -Verifiable
+                        Mock -CommandName Get-CimInstance -Verifiable
 
-                        Mock -CommandName Get-CimAssociatedInstance -MockWith {} -Verifiable
+                        Mock -CommandName Get-CimAssociatedInstance -Verifiable
 
                         Mock -CommandName Get-ItemProperty -MockWith $mockGetItemProperty_Setup -Verifiable
 
@@ -3068,6 +3095,7 @@ try
                             InstallSharedWOWDir = 'C:\Program Files (x86)\Microsoft SQL Server'
                             UpdateEnabled = 'True'
                             UpdateSource = 'C:\Updates\' # Regression test for issue #720
+                            ASServerMode = 'TABULAR'
                         }
 
                         if ( $mockSqlMajorVersion -in (13,14) )
@@ -3091,6 +3119,7 @@ try
                             InstallSharedWOWDir = 'C:\Program Files (x86)\Microsoft SQL Server'
                             UpdateEnabled = 'True'
                             UpdateSource = 'C:\Updates' # Regression test for issue #720
+                            ASServerMode = 'TABULAR'
                         }
 
                         { Set-TargetResource @testParameters } | Should -Not -Throw
@@ -3279,11 +3308,11 @@ try
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should set the system in the desired state when feature is SQLENGINE' {
@@ -3452,11 +3481,11 @@ try
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should set the system in the desired state when feature is SQLENGINE' {
@@ -3628,11 +3657,11 @@ try
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should set the system in the desired state when feature is SQLENGINE' {
@@ -3810,11 +3839,11 @@ try
                     BeforeEach {
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should pass proper parameters to setup' {
@@ -3902,7 +3931,7 @@ try
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
@@ -3915,7 +3944,7 @@ try
                     BeforeEach {
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should pass proper parameters to setup' {
@@ -4196,7 +4225,7 @@ try
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockDefaultInstance_InstanceId\Setup" -and $Name -eq 'SqlProgramDir'
@@ -4204,23 +4233,23 @@ try
 
                         Mock -CommandName Start-SqlSetupProcess -MockWith $mockStartSqlSetupProcess -Verifiable
 
-                        Mock -CommandName Get-CimInstance -MockWith {} -ParameterFilter {
+                        Mock -CommandName Get-CimInstance -ParameterFilter {
                             ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_ResourceGroup') -and ($Filter -eq "Name = 'Available Storage'")
                         } -Verifiable
 
-                        Mock -CommandName Get-CimAssociatedInstance -MockWith {} -ParameterFilter {
+                        Mock -CommandName Get-CimAssociatedInstance -ParameterFilter {
                             ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
                         } -Verifiable
 
-                        Mock -CommandName Get-CimAssociatedInstance -MockWith {} -ParameterFilter {
+                        Mock -CommandName Get-CimAssociatedInstance -ParameterFilter {
                             $Association -eq 'MSCluster_ResourceToPossibleOwner'
                         } -Verifiable
 
-                        Mock -CommandName Get-CimAssociatedInstance -MockWith {} -ParameterFilter {
+                        Mock -CommandName Get-CimAssociatedInstance -ParameterFilter {
                             $ResultClass -eq 'MSCluster_DiskPartition'
                         } -Verifiable
 
-                        Mock -CommandName Get-CimInstance -MockWith {} -ParameterFilter {
+                        Mock -CommandName Get-CimInstance -ParameterFilter {
                             ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
                         } -Verifiable
                     }
@@ -4228,7 +4257,7 @@ try
                     BeforeEach {
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
                     }
 
                     It 'Should pass correct arguments to the setup process' {
@@ -4303,11 +4332,11 @@ try
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\Tools\Setup\Client_Components_Full"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-ItemProperty -ParameterFilter {
                             $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($mockSqlMajorVersion)0\ConfigurationState"
-                        } -MockWith {} -Verifiable
+                        } -Verifiable
 
                         Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterResourceGroup_AvailableStorage -ParameterFilter {
                             $Filter -eq "Name = 'Available Storage'"
@@ -4655,19 +4684,19 @@ try
                 $mockServiceAccountPassword = ConvertTo-SecureString 'Password' -AsPlainText -Force
 
                 $mockSystemServiceAccount = (
-                    New-Object System.Management.Automation.PSCredential 'NT AUTHORITY\SYSTEM', $mockServiceAccountPassword
+                    New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'NT AUTHORITY\SYSTEM', $mockServiceAccountPassword
                 )
 
                 $mockVirtualServiceAccount = (
-                    New-Object System.Management.Automation.PSCredential 'NT SERVICE\MSSQLSERVER', $mockServiceAccountPassword
+                    New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'NT SERVICE\MSSQLSERVER', $mockServiceAccountPassword
                 )
 
                 $mockManagedServiceAccount = (
-                    New-Object System.Management.Automation.PSCredential 'COMPANY\ManagedAccount$', $mockServiceAccountPassword
+                    New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'COMPANY\ManagedAccount$', $mockServiceAccountPassword
                 )
 
                 $mockDomainServiceAccount = (
-                    New-Object System.Management.Automation.PSCredential 'COMPANY\sql.service', $mockServiceAccountPassword
+                    New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'COMPANY\sql.service', $mockServiceAccountPassword
                 )
             }
 

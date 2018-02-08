@@ -13,7 +13,7 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        $SysAdminAccount
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
@@ -27,7 +27,7 @@ Configuration Example
             ProcessOnlyOnActiveNode = $true
             Type                    = 'Data'
             Path                    = 'C:\Program Files\Microsoft SQL Server'
-            PsDscRunAsCredential    = $SysAdminAccount
+            PsDscRunAsCredential    = $SqlAdministratorCredential
         }
 
         SqlDatabaseDefaultLocation Set_SqlDatabaseDefaultDirectory_Log
@@ -37,7 +37,7 @@ Configuration Example
             ProcessOnlyOnActiveNode = $true
             Type                    = 'Log'
             Path                    = 'C:\Program Files\Microsoft SQL Server'
-            PsDscRunAsCredential    = $SysAdminAccount
+            PsDscRunAsCredential    = $SqlAdministratorCredential
         }
 
         SqlDatabaseDefaultLocation Set_SqlDatabaseDefaultDirectory_Backup
@@ -47,7 +47,7 @@ Configuration Example
             ProcessOnlyOnActiveNode = $true
             Type                    = 'Backup'
             Path                    = 'C:\Program Files\Microsoft SQL Server'
-            PsDscRunAsCredential    = $SysAdminAccount
+            PsDscRunAsCredential    = $SqlAdministratorCredential
         }
     }
 }

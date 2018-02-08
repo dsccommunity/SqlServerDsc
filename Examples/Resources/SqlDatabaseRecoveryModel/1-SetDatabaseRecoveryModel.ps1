@@ -10,8 +10,7 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $SysAdminAccount
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
@@ -24,7 +23,7 @@ Configuration Example
             Name                 = 'Adventureworks'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlDatabase Add_SqlDatabaseAdventureWorks2012
@@ -33,7 +32,7 @@ Configuration Example
             Name                 = 'AdventureWorks2012'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlDatabaseRecoveryModel Set_SqlDatabaseRecoveryModel_Adventureworks
@@ -42,7 +41,7 @@ Configuration Example
             RecoveryModel        = 'Full'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlDatabaseRecoveryModel Set_SqlDatabaseRecoveryModel_AdventureWorks2012
@@ -51,7 +50,7 @@ Configuration Example
             RecoveryModel        = 'Simple'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
 }

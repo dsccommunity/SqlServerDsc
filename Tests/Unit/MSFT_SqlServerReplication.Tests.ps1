@@ -6,7 +6,7 @@ $script:DSCResourceName = 'MSFT_SqlServerReplication'
 
 #region HEADER
 # Unit Test Template Version: 1.1.0
-[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
      (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
@@ -65,7 +65,7 @@ try
         }
 
         $secpasswd = ConvertTo-SecureString 'P@$$w0rd1' -AsPlainText -Force
-        $credentials = New-Object System.Management.Automation.PSCredential ('AdminLink', $secpasswd)
+        $credentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('AdminLink', $secpasswd)
 
         Describe 'The system is not in the desired state given Local distribution mode' {
 

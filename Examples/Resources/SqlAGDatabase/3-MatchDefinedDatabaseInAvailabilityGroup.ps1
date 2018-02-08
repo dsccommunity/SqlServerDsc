@@ -6,9 +6,20 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName              = '*'
-            SQLInstanceName       = 'MSSQLSERVER'
-            AvailabilityGroupName = 'TestAG'
+            NodeName                    = '*'
+            SQLInstanceName             = 'MSSQLSERVER'
+            AvailabilityGroupName       = 'TestAG'
+
+            <#
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                This is added so that AppVeyor automatic tests can pass, otherwise
+                the tests will fail on passwords being in plain text and not being
+                encrypted. Because it is not possible to have a certificate in
+                AppVeyor to encrypt the passwords we need to add the parameter
+                'PSDscAllowPlainTextPassword'.
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+            #>
+            PSDscAllowPlainTextPassword = $true
         },
 
         @{
@@ -27,8 +38,8 @@ Configuration Example
 {
     param(
         [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $SysAdminAccount
+        [System.Management.Automation.PSCredential]
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
@@ -42,7 +53,7 @@ Configuration Example
             LoginType            = 'WindowsUser'
             ServerName           = $Node.NodeName
             InstanceName         = $Node.SQLInstanceName
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         # Add the required permissions to the cluster service login
@@ -54,7 +65,7 @@ Configuration Example
             InstanceName         = $Node.SqlInstanceName
             Principal            = 'NT SERVICE\ClusSvc'
             Permission           = 'AlterAnyAvailabilityGroup', 'ViewServerState'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         # Create a DatabaseMirroring endpoint
@@ -65,7 +76,7 @@ Configuration Example
             Port                 = 5022
             ServerName           = $Node.NodeName
             InstanceName         = $Node.SQLInstanceName
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         if ( $Node.Role -eq 'PrimaryReplica' )
@@ -78,7 +89,7 @@ Configuration Example
                 InstanceName         = $Node.SQLInstanceName
                 ServerName           = $Node.NodeName
                 DependsOn            = '[SqlServerEndpoint]HADREndpoint', '[SqlServerPermission]AddNTServiceClusSvcPermissions'
-                PsDscRunAsCredential = $SysAdminAccount
+                PsDscRunAsCredential = $SqlAdministratorCredential
             }
         }
 
@@ -108,7 +119,7 @@ Configuration Example
                 ServerName            = $Node.NodeName
                 Ensure                = 'Present'
                 Force                 = $true
-                PsDscRunAsCredential  = $SysAdminAccount
+                PsDscRunAsCredential  = $SqlAdministratorCredential
             }
         }
     }

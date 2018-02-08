@@ -7,8 +7,19 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName        = '*'
-            SqlInstanceName = 'MSSQLSERVER'
+            NodeName                    = '*'
+            SqlInstanceName             = 'MSSQLSERVER'
+
+            <#
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                This is added so that AppVeyor automatic tests can pass, otherwise
+                the tests will fail on passwords being in plain text and not being
+                encrypted. Because it is not possible to have a certificate in
+                AppVeyor to encrypt the passwords we need to add the parameter
+                'PSDscAllowPlainTextPassword'.
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+            #>
+            PSDscAllowPlainTextPassword = $true
         },
 
         @{
@@ -29,17 +40,14 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $SysAdminAccount,
+        $SqlAdministratorCredential,
 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
         $SqlServiceNode1Credential,
 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
         $SqlServiceNode2Credential
     )
 
@@ -53,12 +61,10 @@ Configuration Example
             ServerName           = $Node.NodeName
             InstanceName         = $Node.SqlInstanceName
             Name                 = 'DefaultMirrorEndpoint'
-            Principal            = $SqlServiceCredentialNode2.UserName
+            Principal            = $SqlServiceNode1Credential.UserName
             Permission           = 'CONNECT'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
-
-            DependsOn            = '[SqlServerEndpointPermission]SQLConfigureEndpointPermissionPrimary'
         }
 
         SqlServerEndpointPermission RemoveSQLConfigureEndpointPermissionSecondary
@@ -67,12 +73,10 @@ Configuration Example
             ServerName           = $Node.NodeName
             InstanceName         = $Node.SqlInstanceName
             Name                 = 'DefaultMirrorEndpoint'
-            Principal            = $SqlServiceCredentialNode2.UserName
+            Principal            = $SqlServiceNode2Credential.UserName
             Permission           = 'CONNECT'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
-
-            DependsOn            = '[SqlServerEndpointPermission]SQLConfigureEndpointPermissionSecondary'
         }
     }
 
@@ -84,12 +88,10 @@ Configuration Example
             ServerName           = $Node.NodeName
             InstanceName         = $Node.SqlInstanceName
             Name                 = 'DefaultMirrorEndpoint'
-            Principal            = $SqlServiceCredentialNode2.UserName
+            Principal            = $SqlServiceNode1Credential.UserName
             Permission           = 'CONNECT'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
-
-            DependsOn            = '[SqlServerEndpointPermission]SQLConfigureEndpointPermissionPrimary'
         }
 
         SqlServerEndpointPermission RemoveSQLConfigureEndpointPermissionSecondary
@@ -98,12 +100,10 @@ Configuration Example
             ServerName           = $Node.NodeName
             InstanceName         = $Node.SqlInstanceName
             Name                 = 'DefaultMirrorEndpoint'
-            Principal            = $SqlServiceCredentialNode2.UserName
+            Principal            = $SqlServiceNode2Credential.UserName
             Permission           = 'CONNECT'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
-
-            DependsOn            = '[SqlServerEndpointPermission]SQLConfigureEndpointPermissionSecondary'
         }
     }
 }

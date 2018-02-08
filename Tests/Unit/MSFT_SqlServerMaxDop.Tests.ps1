@@ -58,13 +58,13 @@ try
         $mockConnectSQL = {
             return @(
                 (
-                    New-Object Object -TypeName Microsoft.SqlServer.Management.Smo.Server |
+                    New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server |
                         Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru -Force |
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru -Force |
                         Add-Member -MemberType ScriptProperty -Name Configuration -Value {
-                        return @( ( New-Object Object |
+                        return @( ( New-Object -TypeName Object |
                                     Add-Member -MemberType ScriptProperty -Name MaxDegreeOfParallelism -Value {
-                                    return @( ( New-Object Object |
+                                    return @( ( New-Object -TypeName Object |
                                                 Add-Member -MemberType NoteProperty -Name DisplayName -Value 'max degree of parallelism' -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name Description -Value 'maximum degree of parallelism' -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name RunValue -Value $mockMaxDegreeOfParallelism -PassThru |
@@ -91,7 +91,7 @@ try
         $mockCimInstance_Win32Processor = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name NumberOfLogicalProcessors -Value $mockNumberOfLogicalProcessors -PassThru |
                         Add-Member -MemberType NoteProperty -Name NumberOfCores -Value $mockNumberOfCores -PassThru -Force
                 )

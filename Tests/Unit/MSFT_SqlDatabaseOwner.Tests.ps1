@@ -54,13 +54,13 @@ try
         $mockConnectSQL = {
             return @(
                 (
-                    New-Object Object |
+                    New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru |
                         Add-Member -MemberType ScriptProperty -Name Databases -Value {
                         return @{
                             $mockSqlDatabaseName = @((
-                                    New-Object Object |
+                                    New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
                                         Add-Member -MemberType NoteProperty -Name Owner -Value $mockDatabaseOwner -PassThru |
                                         Add-Member -MemberType ScriptMethod -Name SetOwner -Value {
@@ -81,7 +81,7 @@ try
                         Add-Member -MemberType ScriptProperty -Name Logins -Value {
                         return @{
                             $mockSqlServerLogin = @((
-                                    New-Object Object |
+                                    New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru
                                 ))
                         }

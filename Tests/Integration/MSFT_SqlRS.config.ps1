@@ -30,7 +30,7 @@ $ConfigurationData = @{
     )
 }
 
-Configuration MSFT_SqlRS_InstallReportingServices_Config
+Configuration MSFT_SqlRS_CreateDependencies_Config
 {
     param
     (
@@ -42,12 +42,7 @@ Configuration MSFT_SqlRS_InstallReportingServices_Config
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
-        $ReportingServicesServiceCredential,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential
+        $ReportingServicesServiceCredential
     )
 
     Import-DscResource -ModuleName 'PSDscResources'
@@ -95,20 +90,30 @@ Configuration MSFT_SqlRS_InstallReportingServices_Config
             SuppressReboot        = $Node.SuppressReboot
             ForceReboot           = $Node.ForceReboot
 
-            # This must be set if using SYSTEM account to install.
-            SQLSysAdminAccounts   = @(
-                $SqlAdministratorCredential.UserName
-            )
-
             DependsOn             = @(
-                '[xMountImage]MountIsoMedia'
+                '[xWaitForVolume]WaitForMountOfIsoMedia'
                 '[User]CreateReportingServicesServiceAccount'
                 '[WindowsFeature]NetFramework45'
             )
 
             PsDscRunAsCredential  = $SqlInstallCredential
         }
+    }
+}
 
+Configuration MSFT_SqlRS_InstallReportingServices_Config
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlInstallCredential
+    )
+
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node localhost {
         SqlRS 'Integration_Test'
         {
             # Instance name for the Reporting Services.
@@ -122,10 +127,68 @@ Configuration MSFT_SqlRS_InstallReportingServices_Config
             DatabaseInstanceName = $Node.DatabaseInstanceName
 
             PsDscRunAsCredential = $SqlInstallCredential
+        }
+    }
+}
 
-            DependsOn            = @(
-                '[SqlSetup]InstallReportingServicesInstance'
-            )
+Configuration MSFT_SqlRS_InstallReportingServices_ConfigureSsl_Config
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlInstallCredential
+    )
+
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node localhost {
+        SqlRS 'Integration_Test'
+        {
+            # Instance name for the Reporting Services.
+            InstanceName         = $Node.InstanceName
+            UseSsl               = $true
+
+            <#
+                Instance for Reporting Services databases.
+                Note: This instance is created in a prior integration test.
+            #>
+            DatabaseServerName   = $Node.DatabaseServerName
+            DatabaseInstanceName = $Node.DatabaseInstanceName
+
+            PsDscRunAsCredential = $SqlInstallCredential
+        }
+    }
+}
+
+Configuration MSFT_SqlRS_InstallReportingServices_RestoreToNoSsl_Config
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SqlInstallCredential
+    )
+
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node localhost {
+        SqlRS 'Integration_Test'
+        {
+            # Instance name for the Reporting Services.
+            InstanceName         = $Node.InstanceName
+            UseSsl               = $false
+
+            <#
+                Instance for Reporting Services databases.
+                Note: This instance is created in a prior integration test.
+            #>
+            DatabaseServerName   = $Node.DatabaseServerName
+            DatabaseInstanceName = $Node.DatabaseInstanceName
+
+            PsDscRunAsCredential = $SqlInstallCredential
         }
     }
 }

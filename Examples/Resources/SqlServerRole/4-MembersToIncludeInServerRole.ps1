@@ -9,8 +9,8 @@ Configuration Example
 {
     param(
         [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $SysAdminAccount
+        [System.Management.Automation.PSCredential]
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
@@ -23,7 +23,7 @@ Configuration Example
             MembersToInclude     = 'CONTOSO\John', 'CONTOSO\Kelly'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
 }

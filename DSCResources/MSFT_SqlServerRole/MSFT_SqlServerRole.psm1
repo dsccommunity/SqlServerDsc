@@ -1,6 +1,11 @@
-Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-        -ChildPath 'SqlServerDscHelper.psm1') `
-    -Force
+Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) `
+                               -ChildPath 'SqlServerDscHelper.psm1')
+
+Import-Module -Name (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent) `
+                               -ChildPath 'CommonResourceHelper.psm1')
+
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerRole'
+
 <#
     .SYNOPSIS
     This function gets the sql server role properties.
@@ -62,7 +67,11 @@ function Get-TargetResource
 
     if ($sqlServerObject)
     {
-        Write-Verbose -Message "Getting properties of SQL Server role '$ServerRoleName'."
+        Write-Verbose -Message (
+            $script:localizedData.GetProperties `
+                -f $ServerRoleName
+        )
+
         if ($sqlServerRoleObject = $sqlServerObject.Roles[$ServerRoleName])
         {
             try
@@ -71,24 +80,27 @@ function Get-TargetResource
             }
             catch
             {
-                throw New-TerminatingError -ErrorType EnumMemberNamesServerRoleGetError `
-                    -FormatArgs @($ServerName, $InstanceName, $ServerRoleName) `
-                    -ErrorCategory InvalidOperation `
-                    -InnerException $_.Exception
+                $errorMessage = $script:localizedData.EnumMemberNamesServerRoleGetError `
+                    -f $ServerName, $InstanceName, $ServerRoleName
+
+                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }
 
             if ($Members)
             {
                 if ($MembersToInclude -or $MembersToExclude)
                 {
-                    throw New-TerminatingError -ErrorType MembersToIncludeAndExcludeParamMustBeNull `
-                        -FormatArgs @($ServerName, $InstanceName) `
-                        -ErrorCategory InvalidArgument
+                    $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
+                    New-InvalidOperationException -Message $errorMessage
                 }
 
                 if ( $null -ne (Compare-Object -ReferenceObject $membersInRole -DifferenceObject $Members))
                 {
-                    New-VerboseMessage -Message "The desired members are not present in server role $ServerRoleName"
+                    Write-Verbose -Message (
+                        $script:localizedData.DesiredMemberNotPresent `
+                            -f $ServerRoleName
+                    )
+
                     $ensure = 'Absent'
                 }
             }
@@ -100,7 +112,11 @@ function Get-TargetResource
                     {
                         if ( -not ($membersInRole.Contains($memberToInclude)))
                         {
-                            New-VerboseMessage -Message "The included members are not present in server role $ServerRoleName"
+                            Write-Verbose -Message (
+                                $script:localizedData.MemberNotPresent `
+                                    -f $ServerRoleName, $memberToInclude
+                            )
+
                             $ensure = 'Absent'
                         }
                     }
@@ -112,7 +128,11 @@ function Get-TargetResource
                     {
                         if ($membersInRole.Contains($memberToExclude))
                         {
-                            New-VerboseMessage -Message "The excluded members are present in server role $ServerRoleName"
+                            Write-Verbose -Message (
+                                $script:localizedData.MemberPresent `
+                                    -f $ServerRoleName, $memberToExclude
+                            )
+
                             $ensure = 'Absent'
                         }
                     }
@@ -205,7 +225,10 @@ function Set-TargetResource
 
     if ($sqlServerObject)
     {
-        Write-Verbose -Message "Setting properties of SQL Server role '$ServerRoleName'."
+        Write-Verbose -Message (
+            $script:localizedData.SetProperties `
+                -f $ServerRoleName
+        )
 
         switch ($Ensure)
         {
@@ -216,17 +239,20 @@ function Set-TargetResource
                     $sqlServerRoleObjectToDrop = $sqlServerObject.Roles[$ServerRoleName]
                     if ($sqlServerRoleObjectToDrop)
                     {
-                        Write-Verbose -Message "Trying to drop the SQL Server role '$ServerRoleName'."
+                        Write-Verbose -Message (
+                            $script:localizedData.DropRole `
+                                -f $ServerRoleName
+                        )
+
                         $sqlServerRoleObjectToDrop.Drop()
-                        New-VerboseMessage -Message "Dropped the SQL Server role '$ServerRoleName'."
                     }
                 }
                 catch
                 {
-                    throw New-TerminatingError -ErrorType DropServerRoleSetError `
-                        -FormatArgs @($ServerName, $InstanceName, $ServerRoleName) `
-                        -ErrorCategory InvalidOperation `
-                        -InnerException $_.Exception
+                    $errorMessage = $script:localizedData.DropServerRoleSetError `
+                        -f $ServerName, $InstanceName, $ServerRoleName
+
+                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                 }
             }
 
@@ -240,17 +266,20 @@ function Set-TargetResource
                             -ArgumentList $sqlServerObject, $ServerRoleName
                         if ($sqlServerRoleObjectToCreate)
                         {
-                            Write-Verbose -Message "Creating the SQL Server role '$ServerRoleName'."
+                            Write-Verbose -Message (
+                                $script:localizedData.CreateRole `
+                                    -f $ServerRoleName
+                            )
+
                             $sqlServerRoleObjectToCreate.Create()
-                            New-VerboseMessage -Message "Created the SQL Server role '$ServerRoleName'."
                         }
                     }
                     catch
                     {
-                        throw New-TerminatingError -ErrorType CreateServerRoleSetError `
-                            -FormatArgs @($ServerName, $InstanceName, $ServerRoleName) `
-                            -ErrorCategory InvalidOperation `
-                            -InnerException $_.Exception
+                        $errorMessage = $script:localizedData.CreateServerRoleSetError `
+                            -f $ServerName, $InstanceName, $ServerRoleName
+
+                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                     }
                 }
 
@@ -258,9 +287,8 @@ function Set-TargetResource
                 {
                     if ($MembersToInclude -or $MembersToExclude)
                     {
-                        throw New-TerminatingError -ErrorType MembersToIncludeAndExcludeParamMustBeNull `
-                            -FormatArgs @($ServerName, $InstanceName) `
-                            -ErrorCategory InvalidArgument
+                        $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
+                        New-InvalidOperationException -Message $errorMessage
                     }
 
                     $memberNamesInRoleObject = $sqlServerObject.Roles[$ServerRoleName].EnumMemberNames()
@@ -387,7 +415,10 @@ function Test-TargetResource
         $InstanceName
     )
 
-    Write-Verbose -Message "Testing SQL Server role $ServerRoleName properties."
+    Write-Verbose -Message (
+        $script:localizedData.TestProperties `
+            -f $ServerRoleName
+    )
 
     $getTargetResourceParameters = @{
         InstanceName     = $PSBoundParameters.InstanceName
@@ -407,7 +438,11 @@ function Test-TargetResource
         {
             if ($getTargetResourceResult.Ensure -ne 'Absent')
             {
-                New-VerboseMessage -Message "Ensure is set to Absent. The existing role $ServerRoleName should be dropped"
+                Write-Verbose -Message (
+                    $script:localizedData.EnsureIsAbsent `
+                        -f $ServerRoleName
+                )
+
                 $isServerRoleInDesiredState = $false
             }
         }
@@ -416,8 +451,11 @@ function Test-TargetResource
         {
             if ($getTargetResourceResult.Ensure -ne 'Present')
             {
-                New-VerboseMessage -Message ("Ensure is set to Present. The missing role $ServerRoleName " + `
-                        "should be added or members are not correctly configured")
+                Write-Verbose -Message (
+                    $script:localizedData.EnsureIsPresent `
+                        -f $ServerRoleName
+                )
+
                 $isServerRoleInDesiredState = $false
             }
         }
@@ -462,23 +500,27 @@ function Add-SqlDscServerRoleMember
 
     if ( -not ($SqlServerObject.Logins[$LoginName]) )
     {
-        throw New-TerminatingError -ErrorType LoginNotFound `
-            -FormatArgs @($LoginName, $ServerName, $InstanceName) `
-            -ErrorCategory ObjectNotFound
+        $errorMessage = $script:localizedData.LoginNotFound `
+            -f $LoginName, $ServerName, $InstanceName
+
+        New-ObjectNotFoundException -Message $errorMessage
     }
 
     try
     {
-        Write-Verbose -Message "Adding SQL login $LoginName in role $ServerRoleName"
+        Write-Verbose -Message (
+            $script:localizedData.AddMemberToRole `
+                -f $LoginName, $ServerRoleName
+        )
+
         $SqlServerObject.Roles[$ServerRoleName].AddMember($LoginName)
-        New-VerboseMessage -Message "SQL Role $ServerRoleName for $LoginName, successfullly added"
     }
     catch
     {
-        throw New-TerminatingError -ErrorType AddMemberServerRoleSetError `
-            -FormatArgs @($ServerName, $InstanceName, $ServerRoleName, $LoginName) `
-            -ErrorCategory InvalidOperation `
-            -InnerException $_.Exception
+        $errorMessage = $script:localizedData.AddMemberServerRoleSetError `
+            -f $ServerName, $InstanceName, $ServerRoleName, $LoginName
+
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
 }
 
@@ -518,23 +560,27 @@ function Remove-SqlDscServerRoleMember
 
     if ( -not ($SqlServerObject.Logins[$LoginName]) )
     {
-        throw New-TerminatingError -ErrorType LoginNotFound `
-            -FormatArgs @($LoginName, $ServerName, $InstanceName) `
-            -ErrorCategory ObjectNotFound
+        $errorMessage = $script:localizedData.LoginNotFound `
+            -f $LoginName, $ServerName, $InstanceName
+
+        New-ObjectNotFoundException -Message $errorMessage
     }
 
     try
     {
-        Write-Verbose -Message "Removing SQL login $LoginName from role $ServerRoleName"
+        Write-Verbose -Message (
+            $script:localizedData.RemoveMemberFromRole `
+                -f $LoginName, $ServerRoleName
+        )
+
         $SqlServerObject.Roles[$ServerRoleName].DropMember($LoginName)
-        New-VerboseMessage -Message "SQL Role $ServerRoleName for $LoginName, successfullly dropped"
     }
     catch
     {
-        throw New-TerminatingError -ErrorType DropMemberServerRoleSetError `
-            -FormatArgs @($ServerName, $InstanceName, $ServerRoleName, $LoginName) `
-            -ErrorCategory InvalidOperation `
-            -InnerException $_.Exception
+        $errorMessage = $script:localizedData.DropMemberServerRoleSetError `
+            -f $ServerName, $InstanceName, $ServerRoleName, $LoginName
+
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
 }
 

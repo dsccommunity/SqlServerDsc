@@ -22,15 +22,15 @@ function Get-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $ServerName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $InstanceName
     )
 
@@ -150,61 +150,61 @@ function Set-TargetResource
     Param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $ServerName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $InstanceName,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
-        [String]
+        [System.String]
         $Ensure = 'Present',
 
         [Parameter()]
         [ValidateSet('Primary', 'SecondaryOnly', 'Secondary', 'None')]
-        [String]
+        [System.String]
         $AutomatedBackupPreference = 'None',
 
         [Parameter()]
         [ValidateSet('AsynchronousCommit', 'SynchronousCommit')]
-        [String]
+        [System.String]
         $AvailabilityMode = 'AsynchronousCommit',
 
         [Parameter()]
         [ValidateRange(0, 100)]
-        [UInt32]
+        [System.UInt32]
         $BackupPriority = 50,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $BasicAvailabilityGroup,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $DatabaseHealthTrigger,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $DtcSupportEnabled,
 
         [Parameter()]
         [ValidateSet('AllowAllConnections', 'AllowReadWriteConnections')]
-        [String]
+        [System.String]
         $ConnectionModeInPrimaryRole,
 
         [Parameter()]
         [ValidateSet('AllowNoConnections', 'AllowReadIntentConnectionsOnly', 'AllowAllConnections')]
-        [String]
+        [System.String]
         $ConnectionModeInSecondaryRole,
 
         [Parameter()]
-        [String]
+        [System.String]
         $EndpointHostName,
 
         [Parameter()]
@@ -215,20 +215,20 @@ function Set-TargetResource
             'OnModerateServerErrors',
             'OnAnyQualifiedFailureCondition'
         )]
-        [String]
+        [System.String]
         $FailureConditionLevel,
 
         [Parameter()]
         [ValidateSet('Automatic', 'Manual')]
-        [String]
+        [System.String]
         $FailoverMode = 'Manual',
 
         [Parameter()]
-        [UInt32]
+        [System.UInt32]
         $HealthCheckTimeout = 30000,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $ProcessOnlyOnActiveNode
     )
 
@@ -410,14 +410,14 @@ function Set-TargetResource
                 }
 
                 # Make sure ConnectionModeInPrimaryRole has a value in order to avoid false positive matches when the parameter is not defined
-                if ( ( $submittedParameters -contains 'ConnectionModeInPrimaryRole' ) -and ( -not [string]::IsNullOrEmpty($ConnectionModeInPrimaryRole) ) -and ( $ConnectionModeInPrimaryRole -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].ConnectionModeInPrimaryRole ) )
+                if ( ( $submittedParameters -contains 'ConnectionModeInPrimaryRole' ) -and ( -not [System.String]::IsNullOrEmpty($ConnectionModeInPrimaryRole) ) -and ( $ConnectionModeInPrimaryRole -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].ConnectionModeInPrimaryRole ) )
                 {
                     $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].ConnectionModeInPrimaryRole = $ConnectionModeInPrimaryRole
                     Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName]
                 }
 
                 # Make sure ConnectionModeInSecondaryRole has a value in order to avoid false positive matches when the parameter is not defined
-                if ( ( $submittedParameters -contains 'ConnectionModeInSecondaryRole' ) -and ( -not [string]::IsNullOrEmpty($ConnectionModeInSecondaryRole) ) -and ( $ConnectionModeInSecondaryRole -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].ConnectionModeInSecondaryRole ) )
+                if ( ( $submittedParameters -contains 'ConnectionModeInSecondaryRole' ) -and ( -not [System.String]::IsNullOrEmpty($ConnectionModeInSecondaryRole) ) -and ( $ConnectionModeInSecondaryRole -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].ConnectionModeInSecondaryRole ) )
                 {
                     $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].ConnectionModeInSecondaryRole = $ConnectionModeInSecondaryRole
                     Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName]
@@ -448,7 +448,7 @@ function Set-TargetResource
                 }
 
                 # Make sure FailureConditionLevel has a value in order to avoid false positive matches when the parameter is not defined
-                if ( ( $submittedParameters -contains 'FailureConditionLevel' ) -and ( -not [string]::IsNullOrEmpty($FailureConditionLevel) ) -and ( $FailureConditionLevel -ne $availabilityGroup.FailureConditionLevel ) )
+                if ( ( $submittedParameters -contains 'FailureConditionLevel' ) -and ( -not [System.String]::IsNullOrEmpty($FailureConditionLevel) ) -and ( $FailureConditionLevel -ne $availabilityGroup.FailureConditionLevel ) )
                 {
                     $availabilityGroup.FailureConditionLevel = $FailureConditionLevel
                     Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
@@ -529,79 +529,79 @@ function Test-TargetResource
     Param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $ServerName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $InstanceName,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
-        [String]
+        [System.String]
         $Ensure = 'Present',
 
         [Parameter()]
         [ValidateSet('Primary', 'SecondaryOnly', 'Secondary', 'None')]
-        [String]
+        [System.String]
         $AutomatedBackupPreference = 'None',
 
         [Parameter()]
         [ValidateSet('AsynchronousCommit', 'SynchronousCommit')]
-        [String]
+        [System.String]
         $AvailabilityMode = 'AsynchronousCommit',
 
         [Parameter()]
         [ValidateRange(0, 100)]
-        [UInt32]
+        [System.UInt32]
         $BackupPriority = 50,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $BasicAvailabilityGroup,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $DatabaseHealthTrigger,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $DtcSupportEnabled,
 
         [Parameter()]
         [ValidateSet('AllowAllConnections', 'AllowReadWriteConnections')]
-        [String]
+        [System.String]
         $ConnectionModeInPrimaryRole,
 
         [Parameter()]
         [ValidateSet('AllowNoConnections', 'AllowReadIntentConnectionsOnly', 'AllowAllConnections')]
-        [String]
+        [System.String]
         $ConnectionModeInSecondaryRole,
 
         [Parameter()]
-        [String]
+        [System.String]
         $EndpointHostName,
 
         [Parameter()]
         [ValidateSet('OnServerDown', 'OnServerUnresponsive', 'OnCriticalServerErrors', 'OnModerateServerErrors', 'OnAnyQualifiedFailureCondition')]
-        [String]
+        [System.String]
         $FailureConditionLevel,
 
         [Parameter()]
         [ValidateSet('Automatic', 'Manual')]
-        [String]
+        [System.String]
         $FailoverMode = 'Manual',
 
         [Parameter()]
-        [UInt32]
+        [System.UInt32]
         $HealthCheckTimeout = 30000,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $ProcessOnlyOnActiveNode
     )
 

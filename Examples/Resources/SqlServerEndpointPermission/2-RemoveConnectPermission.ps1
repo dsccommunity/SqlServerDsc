@@ -9,12 +9,10 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $SysAdminAccount,
+        $SqlAdministratorCredential,
 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
         $SqlServiceCredential
     )
 
@@ -25,13 +23,13 @@ Configuration Example
         SqlServerEndpointPermission SQLConfigureEndpointPermission
         {
             Ensure               = 'Absent'
-            ServerName           = $Node.NodeName
-            InstanceName         = $Node.SqlInstanceName
+            ServerName           = 'SQLTEST'
+            InstanceName         = 'DSCINSTANCE'
             Name                 = 'DefaultMirrorEndpoint'
             Principal            = $SqlServiceCredential.UserName
             Permission           = 'CONNECT'
 
-            PsDscRunAsCredential = $SysAdminAccount
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
 }

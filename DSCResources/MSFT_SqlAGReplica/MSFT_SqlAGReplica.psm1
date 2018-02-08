@@ -7,7 +7,8 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
         Gets the specified Availability Group Replica from the specified Availability Group.
 
     .PARAMETER Name
-        The name of the availability group replica.
+        The name of the availability group replica. For named instances this
+        must be in the following format ServerName\InstanceName.
 
     .PARAMETER AvailabilityGroupName
         The name of the availability group.
@@ -16,7 +17,7 @@ Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Pare
         Hostname of the SQL Server to be configured.
 
     .PARAMETER InstanceName
-        Name of the SQL instance to be configued.
+        Name of the SQL instance to be configured.
 #>
 function Get-TargetResource
 {
@@ -25,19 +26,19 @@ function Get-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $AvailabilityGroupName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $ServerName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $InstanceName
     )
 
@@ -109,7 +110,8 @@ function Get-TargetResource
         Creates or removes the availability group replica in accordance with the desired state.
 
     .PARAMETER Name
-        The name of the availability group replica.
+        The name of the availability group replica. For named instances this
+        must be in the following format ServerName\InstanceName.
 
     .PARAMETER AvailabilityGroupName
         The name of the availability group.
@@ -118,7 +120,7 @@ function Get-TargetResource
         Hostname of the SQL Server to be configured.
 
     .PARAMETER InstanceName
-        Name of the SQL instance to be configued.
+        Name of the SQL instance to be configured.
 
     .PARAMETER PrimaryReplicaServerName
         Hostname of the SQL Server where the primary replica is expected to be active. If the primary replica is not found here, the resource will attempt to find the host that holds the primary replica and connect to it.
@@ -163,73 +165,73 @@ function Set-TargetResource
     Param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $AvailabilityGroupName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $ServerName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $InstanceName,
 
         [Parameter()]
-        [String]
+        [System.String]
         $PrimaryReplicaServerName,
 
         [Parameter()]
-        [String]
+        [System.String]
         $PrimaryReplicaInstanceName,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
-        [String]
+        [System.String]
         $Ensure = 'Present',
 
         [Parameter()]
         [ValidateSet('AsynchronousCommit', 'SynchronousCommit')]
-        [String]
+        [System.String]
         $AvailabilityMode = 'AsynchronousCommit',
 
         [Parameter()]
         [ValidateRange(0, 100)]
-        [UInt32]
+        [System.UInt32]
         $BackupPriority = 50,
 
         [Parameter()]
         [ValidateSet('AllowAllConnections', 'AllowReadWriteConnections')]
-        [String]
+        [System.String]
         $ConnectionModeInPrimaryRole,
 
         [Parameter()]
         [ValidateSet('AllowNoConnections', 'AllowReadIntentConnectionsOnly', 'AllowAllConnections')]
-        [String]
+        [System.String]
         $ConnectionModeInSecondaryRole,
 
         [Parameter()]
-        [String]
+        [System.String]
         $EndpointHostName,
 
         [Parameter()]
         [ValidateSet('Automatic', 'Manual')]
-        [String]
+        [System.String]
         $FailoverMode = 'Manual',
 
         [Parameter()]
-        [String]
+        [System.String]
         $ReadOnlyRoutingConnectionUrl,
 
         [Parameter()]
-        [String[]]
+        [System.String[]]
         $ReadOnlyRoutingList,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $ProcessOnlyOnActiveNode
     )
 
@@ -303,7 +305,7 @@ function Set-TargetResource
             # Determine if the Availability Group exists on the instance
             if ( $availabilityGroup )
             {
-                # Make sure the replia exists on the instance. If the availability group exists, the replica should exist.
+                # Make sure the replica exists on the instance. If the availability group exists, the replica should exist.
                 $availabilityGroupReplica = $availabilityGroup.AvailabilityReplicas[$Name]
                 if ( $availabilityGroupReplica )
                 {
@@ -320,14 +322,14 @@ function Set-TargetResource
                     }
 
                     # Make sure ConnectionModeInPrimaryRole has a value in order to avoid false positive matches when the parameter is not defined
-                    if ( ( -not [string]::IsNullOrEmpty($ConnectionModeInPrimaryRole) ) -and ( $ConnectionModeInPrimaryRole -ne $availabilityGroupReplica.ConnectionModeInPrimaryRole ) )
+                    if ( ( -not [System.String]::IsNullOrEmpty($ConnectionModeInPrimaryRole) ) -and ( $ConnectionModeInPrimaryRole -ne $availabilityGroupReplica.ConnectionModeInPrimaryRole ) )
                     {
                         $availabilityGroupReplica.ConnectionModeInPrimaryRole = $ConnectionModeInPrimaryRole
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
                     # Make sure ConnectionModeInSecondaryRole has a value in order to avoid false positive matches when the parameter is not defined
-                    if ( ( -not [string]::IsNullOrEmpty($ConnectionModeInSecondaryRole) ) -and ( $ConnectionModeInSecondaryRole -ne $availabilityGroupReplica.ConnectionModeInSecondaryRole ) )
+                    if ( ( -not [System.String]::IsNullOrEmpty($ConnectionModeInSecondaryRole) ) -and ( $ConnectionModeInSecondaryRole -ne $availabilityGroupReplica.ConnectionModeInSecondaryRole ) )
                     {
                         $availabilityGroupReplica.ConnectionModeInSecondaryRole = $ConnectionModeInSecondaryRole
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
@@ -443,7 +445,7 @@ function Set-TargetResource
                     # Join the Availability Group Replica to the Availability Group
                     try
                     {
-                        $joinAvailabilityGroupResults = Join-SqlAvailabilityGroup -Name $AvailabilityGroupName -InputObject $serverObject
+                        Join-SqlAvailabilityGroup -Name $AvailabilityGroupName -InputObject $serverObject | Out-Null
                     }
                     catch
                     {
@@ -465,7 +467,8 @@ function Set-TargetResource
         Determines if the availability group replica is in the desired state.
 
     .PARAMETER Name
-        The name of the availability group replica.
+        The name of the availability group replica. For named instances this
+        must be in the following format ServerName\InstanceName.
 
     .PARAMETER AvailabilityGroupName
         The name of the availability group.
@@ -474,7 +477,7 @@ function Set-TargetResource
         Hostname of the SQL Server to be configured.
 
     .PARAMETER InstanceName
-        Name of the SQL instance to be configued.
+        Name of the SQL instance to be configured.
 
     .PARAMETER PrimaryReplicaServerName
         Hostname of the SQL Server where the primary replica is expected to be active. If the primary replica is not found here, the resource will attempt to find the host that holds the primary replica and connect to it.
@@ -519,73 +522,73 @@ function Test-TargetResource
     Param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $AvailabilityGroupName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $ServerName,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $InstanceName,
 
         [Parameter()]
-        [String]
+        [System.String]
         $PrimaryReplicaServerName,
 
         [Parameter()]
-        [String]
+        [System.String]
         $PrimaryReplicaInstanceName,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
-        [String]
+        [System.String]
         $Ensure = 'Present',
 
         [Parameter()]
         [ValidateSet('AsynchronousCommit', 'SynchronousCommit')]
-        [String]
+        [System.String]
         $AvailabilityMode = 'AsynchronousCommit',
 
         [Parameter()]
         [ValidateRange(0, 100)]
-        [UInt32]
+        [System.UInt32]
         $BackupPriority = 50,
 
         [Parameter()]
         [ValidateSet('AllowAllConnections', 'AllowReadWriteConnections')]
-        [String]
+        [System.String]
         $ConnectionModeInPrimaryRole,
 
         [Parameter()]
         [ValidateSet('AllowNoConnections', 'AllowReadIntentConnectionsOnly', 'AllowAllConnections')]
-        [String]
+        [System.String]
         $ConnectionModeInSecondaryRole,
 
         [Parameter()]
-        [String]
+        [System.String]
         $EndpointHostName,
 
         [Parameter()]
         [ValidateSet('Automatic', 'Manual')]
-        [String]
+        [System.String]
         $FailoverMode = 'Manual',
 
         [Parameter()]
-        [String]
+        [System.String]
         $ReadOnlyRoutingConnectionUrl,
 
         [Parameter()]
-        [String[]]
+        [System.String[]]
         $ReadOnlyRoutingList,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $ProcessOnlyOnActiveNode
     )
 
@@ -655,7 +658,7 @@ function Test-TargetResource
                     if ( $parametersToCheck -contains $parameterName )
                     {
                         # If the parameter is Null, a value wasn't provided
-                        if ( -not [string]::IsNullOrEmpty($parameterValue) )
+                        if ( -not [System.String]::IsNullOrEmpty($parameterValue) )
                         {
                             if ( $getTargetResourceResult.($parameterName) -ne $parameterValue )
                             {

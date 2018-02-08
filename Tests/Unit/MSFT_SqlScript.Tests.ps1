@@ -206,7 +206,7 @@ try
             Context 'Test-TargetResource throws the exception SqlPowerShellSqlExecutionException when running the script in the TestFilePath parameter' {
                 Mock -CommandName Import-SQLPSModule -MockWith {}
                 Mock -CommandName Invoke-Sqlcmd -MockWith {
-                    throw New-Object Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException
+                    throw New-Object -TypeName Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException
                 }
 
                 It 'Should return false' {
@@ -252,12 +252,12 @@ try
                 $user = "User"
 
                 Mock -CommandName Import-SQLPSModule -MockWith {}
-                Mock -CommandName Invoke-Sqlcmd -MockWith {} -ParameterFilter {
+                Mock -CommandName Invoke-Sqlcmd -ParameterFilter {
                     ($Username -eq $user) -and ($Password -eq $passwordPlain)
                 }
 
                 $password = ConvertTo-SecureString -String $passwordPlain -AsPlainText -Force
-                $cred = New-Object pscredential -ArgumentList $user, $password
+                $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $user, $password
 
                 It 'Should call Invoke-Sqlcmd with correct parameters' {
                     $invokeScriptParameters.Add("Credential", $cred)

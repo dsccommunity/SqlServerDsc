@@ -382,7 +382,7 @@ function Install-LocalDistributor
         $DistributionDB
     )
 
-    Write-Verbose "Calling InstallDistributor with DistributionDB"
+    Write-Verbose "Calling method InstallDistributor() with DistributionDB"
     $ReplicationServer.InstallDistributor($AdminLinkCredentials.Password, $DistributionDB)
 }
 
@@ -398,7 +398,7 @@ function Uninstall-Distributor
         [System.Boolean]
         $UninstallWithForce
     )
-    Write-Verbose 'Calling UnistallDistributor method on ReplicationServer object'
+    Write-Verbose 'Calling method UninstallDistributor() on ReplicationServer object'
     $ReplicationServer.UninstallDistributor($UninstallWithForce)
 }
 
@@ -447,7 +447,7 @@ function Register-DistributorPublisher
 function Get-ConnectionInfoAssembly
 {
     [CmdletBinding()]
-    [OutputType([System.Object])]
+    [OutputType([System.Reflection.Assembly])]
     param(
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -463,7 +463,7 @@ function Get-ConnectionInfoAssembly
 function Get-RmoAssembly
 {
     [CmdletBinding()]
-    [OutputType([System.Object])]
+    [OutputType([System.Reflection.Assembly])]
     param(
         [Parameter(Mandatory = $true)]
         [System.String]

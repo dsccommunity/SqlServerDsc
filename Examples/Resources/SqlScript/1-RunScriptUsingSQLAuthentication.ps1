@@ -7,7 +7,7 @@ Configuration Example
 {
     param(
         [Parameter(Mandatory = $true)]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         $SqlCredential
     )
 
@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        SqlScript 'RunSQLScript'
+        SqlScript 'RunAsSqlCredential'
         {
             ServerInstance = 'localhost\SQL2016'
             Credential     = $SqlCredential
@@ -23,7 +23,7 @@ Configuration Example
             SetFilePath    = 'C:\DSCTemp\SQLScripts\Set-RunSQLScript.sql'
             TestFilePath   = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript.sql'
             GetFilePath    = 'C:\DSCTemp\SQLScripts\Get-RunSQLScript.sql'
-            Variable       = @("FilePath=C:\temp\log\AuditFiles")
+            Variable       = @('FilePath=C:\temp\log\AuditFiles')
         }
     }
 }

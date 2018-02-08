@@ -44,16 +44,16 @@ try
         # Create PSCredential object for SQL Logins
         $mockSqlLoginUser = 'dba'
         $mockSqlLoginPassword = 'P@ssw0rd-12P@ssw0rd-12' | ConvertTo-SecureString -AsPlainText -Force
-        $mockSqlLoginCredential = New-Object System.Management.Automation.PSCredential( $mockSqlLoginUser, $mockSqlLoginPassword )
+        $mockSqlLoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockSqlLoginUser, $mockSqlLoginPassword)
 
         $mockSqlLoginBadPassword = 'pw' | ConvertTo-SecureString -AsPlainText -Force
-        $mockSqlLoginCredentialBadPassword = New-Object System.Management.Automation.PSCredential( $mockSqlLoginUser, $mockSqlLoginBadPassword )
+        $mockSqlLoginCredentialBadPassword = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockSqlLoginUser, $mockSqlLoginBadPassword)
 
         $mockSqlLoginReusedPassword = 'reused' | ConvertTo-SecureString -AsPlainText -Force
-        $mockSqlLoginCredentialReusedPassword = New-Object System.Management.Automation.PSCredential( $mockSqlLoginUser, $mockSqlLoginReusedPassword )
+        $mockSqlLoginCredentialReusedPassword = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockSqlLoginUser, $mockSqlLoginReusedPassword)
 
         $mockSqlLoginOtherPassword = 'other' | ConvertTo-SecureString -AsPlainText -Force
-        $mockSqlLoginCredentialOtherPassword = New-Object System.Management.Automation.PSCredential( $mockSqlLoginUser, $mockSqlLoginOtherPassword )
+        $mockSqlLoginCredentialOtherPassword = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ($mockSqlLoginUser, $mockSqlLoginOtherPassword)
 
         $instanceParameters = @{
             InstanceName = 'MSSQLSERVER'
@@ -171,29 +171,29 @@ try
         $script:mockWasLoginClassMethodDisabledCalled = $false
 
         $mockConnectSql = {
-            $windowsUser = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'Windows\User1' )
+            $windowsUser = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Windows\User1')
             $windowsUser.LoginType = 'WindowsUser'
-            $windowsUser = $windowsUser | Add-Member -Name 'Disable' -MemberType ScriptMethod {
+            $windowsUser = $windowsUser | Add-Member -Name 'Disable' -MemberType ScriptMethod -Value {
                 $script:mockWasLoginClassMethodDisabledCalled = $true
             } -PassThru -Force
 
-            $windowsGroup = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'Windows\Group1' )
+            $windowsGroup = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList ('Server', 'Windows\Group1')
             $windowsGroup.LoginType = 'windowsGroup'
 
-            $sqlLogin = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'SqlLogin1' )
+            $sqlLogin = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'SqlLogin1')
             $sqlLogin.LoginType = 'SqlLogin'
             $sqlLogin.MustChangePassword = $false
             $sqlLogin.PasswordPolicyEnforced = $true
             $sqlLogin.PasswordExpirationEnabled = $true
 
-            $sqlLoginDisabled = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'Windows\UserDisabled' )
+            $sqlLoginDisabled = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Windows\UserDisabled')
             $sqlLoginDisabled.LoginType = 'WindowsUser'
             $sqlLoginDisabled.IsDisabled = $true
-            $sqlLoginDisabled = $sqlLoginDisabled | Add-Member -Name 'Enable' -MemberType ScriptMethod {
+            $sqlLoginDisabled = $sqlLoginDisabled | Add-Member -Name 'Enable' -MemberType ScriptMethod -Value {
                 $script:mockWasLoginClassMethodEnableCalled = $true
             } -PassThru -Force
 
-            $mock = New-Object PSObject -Property @{
+            $mock = New-Object -TypeName PSObject -Property @{
                 LoginMode = 'Mixed'
                 Logins = @{
                     $windowsUser.Name = $windowsUser
@@ -508,10 +508,10 @@ try
 
         Describe 'MSFT_SqlServerLogin\Set-TargetResource' {
             Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:DSCResourceName
-            Mock -CommandName Update-SQLServerLogin -MockWith {} -ModuleName $script:DSCResourceName
-            Mock -CommandName New-SQLServerLogin -MockWith {} -ModuleName $script:DSCResourceName
-            Mock -CommandName Remove-SQLServerLogin -MockWith {} -ModuleName $script:DSCResourceName
-            Mock -CommandName Set-SQLServerLoginPassword -MockWith {} -ModuleName $script:DSCResourceName
+            Mock -CommandName Update-SQLServerLogin -ModuleName $script:DSCResourceName
+            Mock -CommandName New-SQLServerLogin -ModuleName $script:DSCResourceName
+            Mock -CommandName Remove-SQLServerLogin -ModuleName $script:DSCResourceName
+            Mock -CommandName Set-SQLServerLoginPassword -ModuleName $script:DSCResourceName
 
             Context 'When the desired state is Absent' {
                 BeforeEach {
@@ -677,8 +677,8 @@ try
                     }-Verifiable
 
                     Mock -CommandName New-Object -MockWith {
-                        $windowsUser = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'Windows\User1' )
-                        $windowsUser = $windowsUser | Add-Member -Name 'Disable' -MemberType ScriptMethod {
+                        $windowsUser = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Windows\User1')
+                        $windowsUser = $windowsUser | Add-Member -Name 'Disable' -MemberType ScriptMethod -Value {
                             $script:mockWasLoginClassMethodDisabledCalled = $true
                         } -PassThru -Force
 
@@ -862,16 +862,16 @@ try
 
                 It 'Should throw the correct error when creating a SQL Login if the LoginMode is not Mixed' {
                     $mockConnectSQL_LoginModeNormal = {
-                        return New-Object Object |
-                            Add-Member ScriptProperty Logins {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType ScriptProperty -Name Logins -Value {
                             return @{
-                                'Windows\User1' = ( New-Object Object |
+                                'Windows\User1' = ( New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Windows\User1' -PassThru |
                                         Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'WindowsUser' -PassThru |
                                         Add-Member -MemberType ScriptMethod -Name Alter -Value {} -PassThru |
                                         Add-Member -MemberType ScriptMethod -Name Drop -Value {} -PassThru -Force
                                 )
-                                'SqlLogin1' = ( New-Object Object |
+                                'SqlLogin1' = ( New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SqlLogin1' -PassThru |
                                         Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'SqlLogin' -PassThru |
                                         Add-Member -MemberType NoteProperty -Name 'MustChangePassword' -Value $false -PassThru |
@@ -880,7 +880,7 @@ try
                                         Add-Member -MemberType ScriptMethod -Name Alter -Value {} -PassThru |
                                         Add-Member -MemberType ScriptMethod -Name Drop -Value {} -PassThru -Force
                                 )
-                                'Windows\Group1' = ( New-Object Object |
+                                'Windows\Group1' = ( New-Object -TypeName Object |
                                         Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Windows\Group1' -PassThru |
                                         Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'WindowsGroup' -PassThru |
                                         Add-Member -MemberType ScriptMethod -Name Alter -Value {} -PassThru |
@@ -913,14 +913,14 @@ try
 
             Context 'When the Login is altered' {
                 It 'Should silently alter the login' {
-                    $login = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'Domain\User' )
+                    $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Domain\User')
                     $login.LoginType = 'WindowsUser'
 
                     { Update-SQLServerLogin -Login $login } | Should -Not -Throw
                 }
 
                 It 'Should throw the correct error when altering the login fails' {
-                    $login = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'Domain\User' )
+                    $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Domain\User')
                     $login.LoginType = 'WindowsUser'
                     $login.MockLoginType = 'SqlLogin'
 
@@ -934,7 +934,7 @@ try
 
             Context 'When the Login is created' {
                 It 'Should silently create a Windows login' {
-                    $login = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'Domain\User' )
+                    $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Domain\User')
                     $login.LoginType = 'WindowsUser'
                     $login.MockLoginType = 'WindowsUser'
 
@@ -942,7 +942,7 @@ try
                 }
 
                 It 'Should silently create a SQL login' {
-                    $login = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'dba' )
+                    $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'dba')
                     $login.LoginType = 'SqlLogin'
                     $login.MockLoginType = 'SqlLogin'
 
@@ -956,7 +956,7 @@ try
                 }
 
                 It 'Should throw the correct error when login creation fails' {
-                    $login = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'Domain\User' )
+                    $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Domain\User')
                     $login.LoginType = 'WindowsUser'
                     $login.MockLoginType = 'SqlLogin'
 
@@ -964,7 +964,7 @@ try
                 }
 
                 It 'Should throw the correct error when password validation fails when creating a SQL Login' {
-                    $login = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'dba' )
+                    $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'dba')
                     $login.LoginType = 'SqlLogin'
 
                     $createLoginParameters = @{
@@ -977,7 +977,7 @@ try
                 }
 
                 It 'Should throw the correct error when creating a SQL Login fails' {
-                    $login = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'Existing' )
+                    $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Existing')
                     $login.LoginType = 'SqlLogin'
 
                     $createLoginParameters = @{
@@ -990,7 +990,7 @@ try
                 }
 
                 It 'Should throw the correct error when creating a SQL Login fails with an unhandled exception' {
-                    $login = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'Unknown' )
+                    $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Unknown')
                     $login.LoginType = 'SqlLogin'
 
                     $createLoginParameters = @{
@@ -1009,14 +1009,14 @@ try
 
             Context 'When the Login is dropped' {
                 It 'Should silently drop the login' {
-                    $login = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'Domain\User' )
+                    $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Domain\User')
                     $login.LoginType = 'WindowsUser'
 
                     { Remove-SQLServerLogin -Login $login } | Should -Not -Throw
                 }
 
                 It 'Should throw the correct error when dropping the login fails' {
-                    $login = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'Domain\User' )
+                    $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Domain\User')
                     $login.LoginType = 'WindowsUser'
                     $login.MockLoginType = 'SqlLogin'
 
@@ -1031,7 +1031,7 @@ try
             Context 'When the password is set on an existing login' {
                 It 'Should silently set the password' {
                     $setPasswordParameters = @{
-                        Login = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'dba' )
+                        Login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'dba')
                         SecureString = ConvertTo-SecureString -String 'P@ssw0rd-12P@ssw0rd-12' -AsPlainText -Force
                     }
 
@@ -1040,7 +1040,7 @@ try
 
                 It 'Should throw the correct error when password validation fails' {
                     $setPasswordParameters = @{
-                        Login = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'dba' )
+                        Login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'dba')
                         SecureString = ConvertTo-SecureString -String 'pw' -AsPlainText -Force
                     }
 
@@ -1049,7 +1049,7 @@ try
 
                 It 'Should throw the correct error when changing the password fails' {
                     $setPasswordParameters = @{
-                        Login = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'dba' )
+                        Login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'dba')
                         SecureString = ConvertTo-SecureString -String 'reused' -AsPlainText -Force
                     }
 
@@ -1058,7 +1058,7 @@ try
 
                 It 'Should throw the correct error when changing the password fails' {
                     $setPasswordParameters = @{
-                        Login = New-Object Microsoft.SqlServer.Management.Smo.Login( 'Server', 'dba' )
+                        Login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'dba')
                         SecureString = ConvertTo-SecureString -String 'other' -AsPlainText -Force
                     }
 

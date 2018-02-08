@@ -287,7 +287,7 @@ function Get-SQLPermission
 function Get-SQLServerPermissionSet
 {
     [CmdletBinding()]
-    [OutputType([Object])]
+    [OutputType([System.Object])]
     param
     (
         [Parameter(Mandatory = $true, ParameterSetName = 'Permission')]
@@ -323,7 +323,7 @@ function Get-SQLServerPermissionSet
        Merges an array of any PermissionSet objects into a single PermissionSet.
 
        The though with this helper function si it can be used for any permission set object
-       because all inheriths from Microsoft.SqlServer.Management.Smo.PermissionSetBase.
+       because all inherits from Microsoft.SqlServer.Management.Smo.PermissionSetBase.
 
     .PARAMETER Object
         An array of strings which should be concatenated to a single PermissionSet object.

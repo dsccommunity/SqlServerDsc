@@ -376,7 +376,7 @@ function New-TerminatingError
         $ErrorType,
 
         [Parameter(Mandatory = $false)]
-        [String[]]
+        [System.String[]]
         $FormatArgs,
 
         [Parameter(Mandatory = $false)]
@@ -384,7 +384,7 @@ function New-TerminatingError
         $ErrorCategory = [System.Management.Automation.ErrorCategory]::OperationStopped,
 
         [Parameter(Mandatory = $false)]
-        [Object]
+        [System.Object]
         $TargetObject = $null,
 
         [Parameter(Mandatory = $false)]
@@ -429,8 +429,8 @@ function New-TerminatingError
 
     Write-Verbose -Message "$($script:localizedData.$ErrorType -f $FormatArgs) | ErrorType: $errorId"
 
-    $exception = New-Object System.Exception $errorMessage, $InnerException
-    $errorRecord = New-Object System.Management.Automation.ErrorRecord $exception, $errorId, $ErrorCategory, $TargetObject
+    $exception = New-Object -TypeName System.Exception -ArgumentList $errorMessage, $InnerException
+    $errorRecord = New-Object -TypeName System.Management.Automation.ErrorRecord -ArgumentList $exception, $errorId, $ErrorCategory, $TargetObject
 
     return $errorRecord
 }
@@ -462,7 +462,8 @@ function New-WarningMessage
         [System.String]
         $WarningType,
 
-        [String[]]
+        [Parameter()]
+        [System.String[]]
         $FormatArgs
     )
 
@@ -511,7 +512,8 @@ function New-VerboseMessage
     [OutputType([System.String])]
     Param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
+        [System.String]
         $Message
     )
     Write-Verbose -Message ((Get-Date -format yyyy-MM-dd_HH-mm-ss) + ": $Message") -Verbose
@@ -541,11 +543,11 @@ function Test-SQLDscParameterState
         $CurrentValues,
 
         [Parameter(Mandatory = $true)]
-        [Object]
+        [System.Object]
         $DesiredValues,
 
         [Parameter()]
-        [Array]
+        [System.Array]
         $ValuesToCheck
     )
 
@@ -632,7 +634,8 @@ function Test-SQLDscParameterState
                     {
                         switch ($desiredType.Name)
                         {
-                            'String' {
+                            'String'
+                            {
                                 if (-not [System.String]::IsNullOrEmpty($CurrentValues.$fieldName) -or `
                                     -not [System.String]::IsNullOrEmpty($DesiredValues.$fieldName))
                                 {
@@ -643,7 +646,8 @@ function Test-SQLDscParameterState
                                 }
                             }
 
-                            'Int32' {
+                            'Int32'
+                            {
                                 if (-not ($DesiredValues.$fieldName -eq 0) -or `
                                     -not ($null -eq $CurrentValues.$fieldName))
                                 {
@@ -654,7 +658,8 @@ function Test-SQLDscParameterState
                                 }
                             }
 
-                            'Int16' {
+                            { $_ -eq 'Int16' -or $_ -eq 'UInt16'}
+                            {
                                 if (-not ($DesiredValues.$fieldName -eq 0) -or `
                                     -not ($null -eq $CurrentValues.$fieldName))
                                 {
@@ -665,7 +670,8 @@ function Test-SQLDscParameterState
                                 }
                             }
 
-                            default {
+                            default
+                            {
                                 Write-Warning -Message ($script:localizedData.UnableToCompareProperty `
                                     -f $fieldName, $desiredType.Name)
 
@@ -688,7 +694,9 @@ function Test-SQLDscParameterState
 function Import-SQLPSModule
 {
     [CmdletBinding()]
-    param()
+    param
+    (
+    )
 
     $module = (Get-Module -FullyQualifiedName 'SqlServer' -ListAvailable).Name
     if ($module)
@@ -781,7 +789,7 @@ function Restart-SqlService
         $SQLInstanceName = 'MSSQLSERVER',
 
         [Parameter()]
-        [Int32]
+        [System.UInt32]
         $Timeout = 120
     )
 
@@ -837,6 +845,34 @@ function Restart-SqlService
             Write-Verbose -Message ($script:localizedData.StartingDependentService -f $_.DisplayName) -Verbose
             $_ | Start-Service
         }
+    }
+
+    Write-Verbose -Message ($script:localizedData.WaitingInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout) -Verbose
+
+    $connectTimer = [System.Diagnostics.StopWatch]::StartNew()
+
+    do
+    {
+        # This call, if it fails, will take between ~9-10 seconds to return.
+        $testConnectionServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -ErrorAction SilentlyContinue
+        if ($testConnectionServerObject -and $testConnectionServerObject.Status -ne 'Online')
+        {
+            # Waiting 2 seconds to not hammer the SQL Server instance.
+            Start-Sleep -Seconds 2
+        }
+        else
+        {
+            break
+        }
+    } until ($connectTimer.Elapsed.Seconds -ge $Timeout)
+
+    $connectTimer.Stop()
+
+    # Was the timeout period reach before able to connect to the SQL Server instance?
+    if (-not $testConnectionServerObject -or $testConnectionServerObject.Status -ne 'Online')
+    {
+        $errorMessage = $script:localizedData.FailedToConnectToInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout
+        New-InvalidOperationException -Message $errorMessage
     }
 }
 
@@ -1021,7 +1057,7 @@ function Test-LoginEffectivePermissions
         $LoginName,
 
         [Parameter(Mandatory = $true)]
-        [string[]]
+        [System.String[]]
         $Permissions
     )
 
@@ -1076,7 +1112,7 @@ function Test-LoginEffectivePermissions
         The name of the availability group to check.
 
     .PARAMETER AvailabilityReplicaName
-        The name of the availabilitiy replica to check.
+        The name of the availability replica to check.
 #>
 function Test-AvailabilityReplicaSeedingModeAutomatic
 {
@@ -1211,7 +1247,7 @@ function Test-ImpersonatePermissions
         The full SQL instance name string to be split.
 
     .OUTPUTS
-        Hashtable with the properties SQLServer and SQLInstanceName.
+        Hash table with the properties SQLServer and SQLInstanceName.
 #>
 function Split-FullSQLInstanceName
 {

@@ -12,7 +12,7 @@ questions or comments.
 
 ### master
 
-[![Build status](https://ci.appveyor.com/api/projects/status/mxn453y284eab8li/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/SqlServerDsc/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/b3g8f7kftx64n26l/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/SqlServerDsc/branch/master)
 [![codecov](https://codecov.io/gh/PowerShell/SqlServerDsc/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/SqlServerDsc/branch/master)
 
 This is the branch containing the latest release -
@@ -20,7 +20,7 @@ no contributions should be made directly to this branch.
 
 ### dev
 
-[![Build status](https://ci.appveyor.com/api/projects/status/mxn453y284eab8li/branch/dev?svg=true)](https://ci.appveyor.com/project/PowerShell/SqlServerDsc/branch/dev)
+[![Build status](https://ci.appveyor.com/api/projects/status/b3g8f7kftx64n26l/branch/dev?svg=true)](https://ci.appveyor.com/project/PowerShell/SqlServerDsc/branch/dev)
 [![codecov](https://codecov.io/gh/PowerShell/SqlServerDsc/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/SqlServerDsc/branch/dev)
 
 This is the development branch
@@ -134,12 +134,12 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   database roles.
 * [**SqlRS**](#sqlrs) configures SQL Server Reporting
   Services to use a database engine in another instance.
-* [**SqlRSSecureConnectionLevel**](#sqlrssecureconnectionlevel) sets
-  the secure connection level for SQL Server Reporting Services.
 * [**SqlScript**](#sqlscript) resource to extend DSC Get/Set/Test
   functionality to T-SQL.
 * [**SqlServerConfiguration**](#sqlserverconfiguration) resource to manage
   [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx).
+* [**SqlServerDatabaseMail**](#sqlserverdatabasemail) resource
+  to manage SQL Server Database Mail.
 * [**SqlServerEndpoint**](#sqlserverendpoint) resource to ensure database endpoint
   is present or absent.
 * [**SqlServerEndpointPermission**](#sqlserverendpointpermission) Grant or revoke
@@ -188,7 +188,7 @@ It will also manage the Availability Group replica on the specified node.
   { Primary | SecondaryOnly | Secondary | *None* }
 * **`[String]` AvailabilityMode** _(Write)_: Specifies the replica availability mode.
   Default is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
-* **`[Uint32]` BackupPriority** _(Write)_: Specifies the desired priority of the
+* **`[UInt32]` BackupPriority** _(Write)_: Specifies the desired priority of the
   replicas in performing backups. The acceptable values for this parameter are:
   integers from 0 through 100. Of the set of replicas which are online and available,
   the replica that has the highest priority performs the backup. Default is 50.
@@ -216,7 +216,7 @@ It will also manage the Availability Group replica on the specified node.
   OnAnyQualifiedFailureCondition }
 * **`[String]` FailoverMode** _(Write)_: Specifies the failover mode.
   Default is 'Manual'. { Automatic | *Manual* }
-* **`[Uint32]` HealthCheckTimeout** _(Write)_: Specifies the length of time, in
+* **`[UInt32]` HealthCheckTimeout** _(Write)_: Specifies the length of time, in
   milliseconds, after which AlwaysOn availability groups declare an unresponsive
   server to be unhealthy. Default is 30000.
 * **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
@@ -227,9 +227,9 @@ It will also manage the Availability Group replica on the specified node.
 
 * **`[String]` EndpointUrl** _(Read)_: Gets the Endpoint URL of the
   availability group replica endpoint.
-* **`[Uint32]` EndpointPort** _(Read)_: Gets the port the database mirroring
+* **`[UInt32]` EndpointPort** _(Read)_: Gets the port the database mirroring
   endpoint is listening on
-* **`[Uint32]` Version** _(Read)_: Gets the major version of the SQL Server
+* **`[UInt32]` Version** _(Read)_: Gets the major version of the SQL Server
   instance.
 * **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
   actively hosting the SQL Server instance.
@@ -239,6 +239,10 @@ It will also manage the Availability Group replica on the specified node.
 * [Add a SQL Server Always On Availability Group](/Examples/Resources/SqlAG/1-CreateAvailabilityGroup.ps1)
 * [Add a SQL Server Always On Availability Group and explicitly defines its properties](/Examples/Resources/SqlAG/3-CreateAvailabilityGroupDetailed.ps1)
 * [Remove a SQL Server Always On Availability Group](/Examples/Resources/SqlAG/2-RemoveAvailabilityGroup.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAG).
 
 ### SqlAGDatabase
 
@@ -301,6 +305,10 @@ group.
 * [Remove a database from an Availability Group](/Examples/Resources/SqlAGDatabase/2-RemoveDatabaseFromAvailabilityGroup.ps1)
 * [Enforce only specified databases as member in an Availability Group](/Examples/Resources/SqlAGDatabase/3-MatchDefinedDatabaseInAvailabilityGroup.ps1)
 
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAGDatabase).
+
 ### SqlAGListener
 
 No description.
@@ -336,16 +344,16 @@ No description.
 
 #### Examples
 
-* [Adds an Availability Group listener with the same name as the
-  Availability Group VCO](/Examples/Resources/SqlAGListener/1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1)
-* [Adds an Availability Group listener with a different name than the
-  Availability Group VCO](/Examples/Resources/SqlAGListener/2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
-* [Removes an Availability Group listener with the same name as the
-  Availability Group VCO](/Examples/Resources/SqlAGListener/3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1)
-* [Removes an Availability Group listener with a different name than the
-  Availability Group VCO](/Examples/Resources/SqlAGListener/4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
+* [Adds an Availability Group listener with the same name as the Availability Group VCO](/Examples/Resources/SqlAGListener/1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1)
+* [Adds an Availability Group listener with a different name than the Availability Group VCO](/Examples/Resources/SqlAGListener/2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
+* [Removes an Availability Group listener with the same name as the Availability Group VCO](/Examples/Resources/SqlAGListener/3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1)
+* [Removes an Availability Group listener with a different name than the Availability Group VCO](/Examples/Resources/SqlAGListener/4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
 * [Adds an Availability Group listener using DHCP on the default server subnet](/Examples/Resources/SqlAGListener/5-AddAvailabilityGroupListenerUsingDHCPWithDefaultServerSubnet.ps1)
 * [Adds an Availability Group listener using DHCP with a specific subnet](/Examples/Resources/SqlAGListener/6-AddAvailabilityGroupListenerUsingDHCPWithSpecificSubnet.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAGListener).
 
 ### SqlAGReplica
 
@@ -362,7 +370,7 @@ Always On Availability Group Replica.
 #### Parameters
 
 * **`[String]` Name** _(Key)_: The name of the availability group replica. For named
-  instances this must be in the following format SQLServer\InstanceName.
+  instances this must be in the following format ServerName\InstanceName.
 * **`[String]` AvailabilityGroupName** _(Key)_: The name of the availability group.
 * **`[String]` ServerName** _(Required)_: Hostname of the SQL Server to be configured.
 * **`[String]` InstanceName** _(Key)_: Name of the SQL instance to be configured.
@@ -376,7 +384,7 @@ Always On Availability Group Replica.
   be present or absent. Default is Present. { *Present* | Absent }
 * **`[String]` AvailabilityMode** _(Write)_: Specifies the replica availability mode.
   Default is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
-* **`[Uint32]` BackupPriority** _(Write)_: Specifies the desired priority of the
+* **`[UInt32]` BackupPriority** _(Write)_: Specifies the desired priority of the
   replicas in performing backups. The acceptable values for this parameter are:
   integers from 0 through 100. Of the set of replicas which are online and available,
   the replica that has the highest priority performs the backup. Default is 50.
@@ -416,6 +424,10 @@ Always On Availability Group Replica.
 * [Add a SQL Server Always On Availability Group Replica](/Examples/Resources/SqlAGReplica/1-CreateAvailabilityGroupReplica.ps1)
 * [Remove a SQL Server Always On Availability Group Replica](/Examples/Resources/SqlAGReplica/2-RemoveAvailabilityGroupReplica.ps1)
 
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAGReplica).
+
 ### SqlAlias
 
 No description.
@@ -449,6 +461,10 @@ No description.
 * [Add an SQL Server alias](/Examples/Resources/SqlAlias/1-AddSqlAlias.ps1)
 * [Remove an SQL Server alias](/Examples/Resources/SqlAlias/2-RemoveSqlAlias.ps1)
 
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAlias).
+
 ### SqlAlwaysOnService
 
 Enables or disabled SQL Server Always On high availability and disaster recovery
@@ -466,7 +482,7 @@ Enables or disabled SQL Server Always On high availability and disaster recovery
 * **`[String]` Ensure** _(Required)_: An enumerated value that describes if the SQL
   Server should have Always On high availability and disaster recovery (HADR)
   property enabled ('Present') or disabled ('Absent'). { Present | Absent }.
-* **`[Sint32]` RestartTimeout** _(Write)_: The length of time, in seconds, to wait
+* **`[SInt32]` RestartTimeout** _(Write)_: The length of time, in seconds, to wait
   for the service to restart. Default is 120 seconds.
 
 #### Read-Only Properties from Get-TargetResource
@@ -478,6 +494,10 @@ Enables or disabled SQL Server Always On high availability and disaster recovery
 
 * [Enable SQL Server Always On](/Examples/Resources/SqlAlwaysOnService/1-EnableAlwaysOn.ps1)
 * [Disable SQL Server Always On](/Examples/Resources/SqlAlwaysOnService/1-DisableAlwaysOn.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAlwaysOnService).
 
 ### SqlDatabase
 
@@ -506,6 +526,10 @@ database, please read:
 
 * [Create a Database](/Examples/Resources/SqlDatabase/1-CreateDatabase.ps1)
 * [Delete a database](/Examples/Resources/SqlDatabase/2-DeleteDatabase.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabase).
 
 ### SqlDatabaseDefaultLocation
 
@@ -543,6 +567,10 @@ more information about database default locations, please read the article
 
 * [Set database default locations](/Examples/Resources/SqlDatabaseDefaultLocation/1-SetDatabaseDefaultLocation.ps1)
 
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseDefaultLocation).
+
 ### SqlDatabaseOwner
 
 This resource is used to configure the owner of a database.
@@ -565,6 +593,10 @@ For more information about database owner, please read the article
 #### Examples
 
 * [Set database owner](/Examples/Resources/SqlDatabaseOwner/1-SetDatabaseOwner.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseOwner).
 
 ### SqlDatabasePermission
 
@@ -604,6 +636,10 @@ will also get their permission revoked.
 * [Revoke Database Permission](/Examples/Resources/SqlDatabasePermission/2-RevokeDatabasePermissions.ps1)
 * [Deny Database Permission](/Examples/Resources/SqlDatabasePermission/3-DenyDatabasePermissions.ps1)
 
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabasePermission).
+
 ### SqlDatabaseRecoveryModel
 
 This resource set the recovery model for a database. The recovery model controls
@@ -629,6 +665,10 @@ Read more about recovery model in this article
 #### Examples
 
 * [Set the RecoveryModel of a database](/Examples/Resources/SqlDatabaseRecoveryModel/1-SetDatabaseRecoveryModel.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseRecoveryModel).
 
 ### SqlDatabaseRole
 
@@ -659,6 +699,10 @@ Read more about database role in this article [CREATE ROLE (Transact-SQL)](https
 * [Add Role of a database](/Examples/Resources/SqlDatabaseRole/1-AddDatabaseRole.ps1)
 * [Remove Role of a database](/Examples/Resources/SqlDatabaseRole/2-RemoveDatabaseRole.ps1)
 
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseRole).
+
 ### SqlRS
 
 Initializes and configures SQL Reporting Services server.
@@ -667,9 +711,12 @@ Initializes and configures SQL Reporting Services server.
 
 * Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Reporting Services 2008 or later.
+* To use parameter `UseSSL` target machine must be running SQL Server Reporting
+  Services 2008 R2 or later.
 * If `PsDscRunAsCredential` common parameter is used to run the resource, the
-  specified credential must have permissions to connect to the SQL Server specified
-  in `RSSQLServer` and create Reporting Services databases.
+  specified credential must have permissions to connect to the SQL Server instance
+  specified in `DatabaseServerName` and `DatabaseInstanceName`, and have permission
+  to create the Reporting Services databases.
 
 #### Parameters
 
@@ -688,6 +735,9 @@ Initializes and configures SQL Reporting Services server.
 * **`[String[]]` ReportsReservedUrl** _(Write)_: Report Manager/Report Web App URL
   reservations. Optional. If not specified, 'http://+:80' URL reservation will be
   used.
+* **`[Boolean]` UseSsl** _(Write)_: If connections to the Reporting Services must
+  use SSL. If this parameter is not assigned a value, the default is that Reporting
+  Services does not use SSL.
 
 #### Read-Only Properties from Get-TargetResource
 
@@ -698,28 +748,33 @@ Initializes and configures SQL Reporting Services server.
 
 * [Default configuration](Examples/Resources/SqlRS/1-DefaultConfiguration.ps1)
 * [Custom virtual directories and reserved URLs](Examples/Resources/SqlRS/2-CustomConfiguration.ps1)
+* [Custom virtual directory and using SSL](Examples/Resources/SqlRS/3-CustomConfigurationUsingSsl.ps1)
+* [Complete example with two instances in default configuration](/Examples/Resources/SqlRS/4-CompleteWithTwoInstances.ps1)
 
-### SqlRSSecureConnectionLevel
+#### Known issues
 
-No description.
+* This resource does not currently have full SSL support, please see
+  [issue #587](https://github.com/PowerShell/SqlServerDsc/issues/587) for more
+  information.
 
-#### Requirements
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlRS).
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Reporting Services 2008 or later.
+#### Error messages
 
-#### Parameters
+##### Error: The parameter is incorrect (HRESULT:-2147024809)
 
-* **`[String]` InstanceName** _(Key)_: SQL instance to set secure connection level
-  for.
-* **`[Uint16]` SecureConnectionLevel** _(Key)_: SQL Server Reporting Service secure
-  connection level.
-* **`[PSCredential]` SQLAdminCredential** _(Required)_: Credential with administrative
-  permissions to the SQL instance.
+This is for example caused by trying to add an URL with the wrong format
+i.e. 'htp://+:80'.
 
-#### Examples
+##### Error: The Url has already been reserved (HRESULT:-2147220932)
 
-None.
+This is caused when the URL is already reserved. For example when 'http://+:80'
+already exist.
+
+##### Error: Cannot create a file when that file already exists (HRESULT:-2147024713)
+
+This is caused when trying to add another URL using the same protocol. For example
+when trying to add 'http://+:443' when 'http://+:80' already exist.
 
 ### SqlScript
 
@@ -793,10 +848,16 @@ for more information._
 
 * [Run a script using SQL Authentication](/Examples/Resources/SqlScript/1-RunScriptUsingSQLAuthentication.ps1)
 * [Run a script using Windows Authentication](/Examples/Resources/SqlScript/2-RunScriptUsingWindowsAuthentication.ps1)
+* [This example shows one way to create the SQL script files and how to run those files](/Examples/Resources/SqlScript/3-RunScriptCompleteExample.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlScript).
 
 ### SqlServerConfiguration
 
-No description.
+This resource manage the [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
+on a SQL Server instance.
 
 #### Requirements
 
@@ -810,11 +871,11 @@ No description.
 * **`[String]` OptionName** _(Key)_: The name of the SQL configuration option to
   be checked. For all possible values reference [MSDN](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
   or run sp_configure.
-* **`[Sint32]` OptionValue** _(Required)_: The desired value of the SQL configuration
+* **`[SInt32]` OptionValue** _(Required)_: The desired value of the SQL configuration
   option.
 * **`[Boolean]` RestartService** _(Write)_: Determines whether the instance should
   be restarted after updating the configuration option.
-* **`[Sint32]` RestartTimeout** _(Write)_: The length of time, in seconds, to wait
+* **`[UInt32]` RestartTimeout** _(Write)_: The length of time, in seconds, to wait
   for the service to restart. Default is 120 seconds.
 
 #### Examples
@@ -822,15 +883,67 @@ No description.
 * [Configure two instances on the same server to have CLR enabled](/Examples/Resources/SqlServerConfiguration/1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1)
 * [Configure a instance to have 'Priority Boost' enabled](/Examples/Resources/SqlServerConfiguration/2-ConfigureInstanceToEnablePriorityBoost.ps1)
 
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerConfiguration).
+
+### SqlServerDatabaseMail
+
+Resource to manage SQL Server Database Mail.
+
+>**Note:** Database Mail XPs can be enabled using the resource SqlServerConfiguration.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running SQL Server Agent.
+* Target machine must have enabled Database Mail XPs.
+
+#### Parameters
+
+* **`[String]` AccountName** _(Key)_: The name of the Database Mail account.
+* **`[String]` InstanceName** _(Key)_: Name of the SQL instance to be configured.
+* **`[String]` EmailAddress** _(Required)_: The e-mail address from which mail
+  will originate.
+* **`[String]` MailServerName** _(Required)_: The fully qualified domain name of
+  the mail server name to which e-mail are sent.
+* **`[String]` ProfileName** _(Required)_: The profile name of the Database Mail.
+* **`[String]` Ensure** _(Write)_: Specifies the desired state of the Database Mail.
+  When set to 'Present', the Database Mail will be created. When set to 'Absent',
+  the Database Mail will be removed. Default value is 'Present'.
+* **`[String]` ServerName** _(Write)_: The hostname of the SQL Server to be configured.
+  Defaults to $env:COMPUTERNAME.
+* **`[String]` DisplayName** _(Write)_: The display name of the outgoing mail server.
+  Default value is the same value assigned to parameter MailServerName.
+* **`[String]` ReplyToAddress** _(Write)_: The e-mail address to which the receiver
+  of e-mails will reply to. Default value is the same e-mail address assigned to
+  parameter EmailAddress.
+* **`[String]` Description** _(Write)_: The description of the Database Mail.
+* **`[String]` LoggingLevel** _(Write)_: The logging level that the Database Mail
+  will use. If not specified the default logging level is 'Extended'.
+  { Normal | *Extended* | Verbose }.
+* **`[UInt16]` TcpPort** _(Write)_: The TCP port used for communication. Default
+  value is port 25.
+
+#### Examples
+
+* [Enable Database Mail](/Examples/Resources/SqlServerDatabaseMail/1-EnableDatabaseMail.ps1)
+* [Disable Database Mail](/Examples/Resources/SqlServerDatabaseMail/2-DisableDatabaseMail.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerDatabaseMail).
+
 ### SqlServerEndpoint
 
 This resource is used to create an endpoint. Currently it only supports creating
 a database mirror endpoint which can be used by, for example, AlwaysOn.
 
 >Note: The endpoint will be started after creation, but will not be enforced. Please
-use [**SqlServerEndpointState**](#xsqlserverendpointstate) to make sure the endpoint
+use [**SqlServerEndpointState**](#sqlserverendpointstate) to make sure the endpoint
 remains in started state. To set connect permission to the endpoint, please use
-the resource [**SqlServerEndpointPermission**](#xsqlserverendpointpermission).
+the resource [**SqlServerEndpointPermission**](#sqlserverendpointpermission).
 
 #### Requirements
 
@@ -857,7 +970,13 @@ the resource [**SqlServerEndpointPermission**](#xsqlserverendpointpermission).
 
 #### Examples
 
-None.
+* [Create an endpoint with default values](/Examples/Resources/SqlServerEndpoint/1-CreateEndpointWithDefaultValues.ps1)
+* [Create an endpoint with specific port and IP address](/Examples/Resources/SqlServerEndpoint/2-CreateEndpointWithSpecificPortAndIPAddress.ps1)
+* [Remove an endpoint](/Examples/Resources/SqlServerEndpoint/3-RemoveEndpoint.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpoint).
 
 ### SqlServerEndpointPermission
 
@@ -883,11 +1002,12 @@ This resource is used to give connect permission to an endpoint for a user (logi
 
 * [Add connect permission to an Endpoint](/Examples/Resources/SqlServerEndpointPermission/1-AddConnectPermission.ps1)
 * [Remove the connect permission for an Endpoint](/Examples/Resources/SqlServerEndpointPermission/2-RemoveConnectPermission.ps1)
-* [Add connect permission to both an Always On primary replica and an Always On
-  secondary replica, and where each replica has a different SQL service account](/Examples/Resources/SqlServerEndpointPermission/3-AddConnectPermissionToTwoReplicasEachWithDifferentServiceAccount.ps1)
-* [Remove connect permission to both an Always On primary replica and an
-  Always On secondary replica, and where each replica has a different SQL service
-  account](/Examples/Resources/SqlServerEndpointPermission/4-RemoveConnectPermissionForTwoReplicasEachWithDifferentServiceAccount.ps1)
+* [Add connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/Examples/Resources/SqlServerEndpointPermission/3-AddConnectPermissionToTwoReplicasEachWithDifferentServiceAccount.ps1)
+* [Remove connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/Examples/Resources/SqlServerEndpointPermission/4-RemoveConnectPermissionForTwoReplicasEachWithDifferentServiceAccount.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpointPermission).
 
 ### SqlServerEndpointState
 
@@ -916,6 +1036,10 @@ This resource is used to set the state of an endpoint.
 
 * [Make sure that an endpoint is started](/Examples/Resources/SqlServerEndpointState/1-MakeSureEndpointIsStarted.ps1)
 * [Make sure that an endpoint is stopped](/Examples/Resources/SqlServerEndpointState/2-MakeSureEndpointIsStopped.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpointState).
 
 ### SqlServerLogin
 
@@ -953,7 +1077,12 @@ No description.
 
 #### Examples
 
-None.
+* [Add a login](/Examples/Resources/SqlServerLogin/1-AddLogin.ps1)
+* [Remove a login](/Examples/Resources/SqlServerLogin/2-RemoveLogin.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerLogin).
 
 ### SqlServerMaxDop
 
@@ -992,7 +1121,7 @@ Read more about max degree of parallelism in this article
 * **`[Boolean]` DynamicAlloc** _(Write)_: If set to $true then max degree of parallelism
   will be dynamically configured. When this is set parameter is set to $true, the
   parameter MaxDop must be set to $null or not be configured.
-* **`[Sint32]` MaxDop** _(Write)_: A numeric value to limit the number of processors
+* **`[SInt32]` MaxDop** _(Write)_: A numeric value to limit the number of processors
   used in parallel plan execution.
 * **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
   will only determine if a change is needed if the target node is the active
@@ -1008,6 +1137,10 @@ Read more about max degree of parallelism in this article
 * [Set SQLServerMaxDop to 1](/Examples/Resources/SqlServerMaxDop/1-SetMaxDopToOne.ps1)
 * [Set SQLServerMaxDop to Auto](/Examples/Resources/SqlServerMaxDop/2-SetMaxDopToAuto.ps1)
 * [Set SQLServerMaxDop to Default](/Examples/Resources/SqlServerMaxDop/3-SetMaxDopToDefault.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerMaxDop).
 
 ### SqlServerMemory
 
@@ -1065,9 +1198,9 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
   will be set to either the value in parameter MinMemory and MaxMemory or dynamically
   configured when parameter DynamicAlloc is set to $true. When set to 'Absent' min
   and max memory will be set to default values. { *Present* | Absent }.
-* **`[Sint32]` MinMemory** _(Write)_: Minimum amount of memory, in MB, in the buffer
+* **`[SInt32]` MinMemory** _(Write)_: Minimum amount of memory, in MB, in the buffer
   pool used by the instance of SQL Server.
-* **`[Sint32]` MaxMemory** _(Write)_: Maximum amount of memory, in MB, in the buffer
+* **`[SInt32]` MaxMemory** _(Write)_: Maximum amount of memory, in MB, in the buffer
   pool used by the instance of SQL Server.
 * **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
   will only determine if a change is needed if the target node is the active
@@ -1084,6 +1217,10 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
 * [Set SQLServerMaxMemory to Auto](/Examples/Resources/SqlServerMemory/2-SetMaxMemoryToAuto.ps1)
 * [Set SQLServerMinMemory to 2GB and SQLServerMaxMemory to Auto](/Examples/Resources/SqlServerMemory/3-SetMinMemoryToFixedValueAndMaxMemoryToAuto.ps1)
 * [Set SQLServerMaxMemory to Default](/Examples/Resources/SqlServerMemory/3-SetMaxMemoryToDefault.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerMemory).
 
 ### SqlServerNetwork
 
@@ -1125,6 +1262,10 @@ Read more about the network settings in the article
 * [Enable TCP/IP with static port and restart SQL Server](/Examples/Resources/SqlServerNetwork/1-EnableTcpIpWithStaticPort.ps1)
 * [Enable TCP/IP with dynamic port](/Examples/Resources/SqlServerNetwork/2-EnableTcpIpWithDynamicPort.ps1)
 
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerNetwork).
+
 ### SqlServerPermission
 
 This resource sets server permissions to a user (login).
@@ -1156,9 +1297,13 @@ AlterAnyEndPoint and ViewServerState.
 * [Add server permission for a login](/Examples/Resources/SqlServerPermission/1-AddServerPermissionForLogin.ps1)
 * [Remove server permission for a login](/Examples/Resources/SqlServerPermission/2-RemoveServerPermissionForLogin.ps1)
 
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerPermission).
+
 ### SqlServerReplication
 
-No description.
+This resource manage SQL Replication distribution and publishing.
 
 #### Requirements
 
@@ -1191,6 +1336,10 @@ No description.
 
 * [Configure a instance as the distributor](/Examples/Resources/SqlServerReplication/1-ConfigureInstanceAsDistributor.ps1)
 * [Configure a instance as the publisher](/Examples/Resources/SqlServerReplication/2-ConfigureInstanceAsPublisher.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerReplication).
 
 ### SqlServerRole
 
@@ -1234,6 +1383,10 @@ server roles, please read the below articles.
 * [Members to include in server role](/Examples/Resources/SqlServerRole/4-MembersToIncludeInServerRole.ps1)
 * [Members to exclude from server role](/Examples/Resources/SqlServerRole/5-MembersToExcludeInServerRole.ps1)
 
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerRole).
+
 ### SqlServiceAccount
 
 Manage the service account for SQL Server services.
@@ -1254,15 +1407,24 @@ Manage the service account for SQL Server services.
 * **`[PSCredential]` ServiceAccount** (Required): The service account that should
   be used when running the service.
 * **`[Boolean]` RestartService** (Write): Determines whether the service is
-  automatically restarted.
+  automatically restarted when a change to the configuration was needed.
 * **`[Boolean]` Force** (Write): Forces the service account to be updated.
   Useful for password changes. This will cause `Set-TargetResource` to be run on
   each consecutive run.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[String]` ServiceAccountName** _(Read)_: Returns the service account username
+  for the service.
 
 #### Examples
 
 * [Run service under a user account](/Examples/Resources/SqlServiceAccount/1-ConfigureServiceAccount-UserAccount.ps1)
 * [Run service with a virtual account](/Examples/Resources/SqlServiceAccount/2-ConfigureServiceAccount-VirtualAccount.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServiceAccount).
 
 ### SqlSetup
 
@@ -1374,6 +1536,11 @@ installing feature Database Engine and Analysis Services respectively.
 * **`[String]` ASBackupDir** _(Write)_: Path for Analysis Services backup files.
 * **`[String]` ASTempDir** _(Write)_: Path for Analysis Services temp files.
 * **`[String]` ASConfigDir** _(Write)_: Path for Analysis Services config.
+* **`[String]` ASServerMode** _(Write)_: The server mode for SQL Server Analysis
+  Services instance. The default is to install in Multidimensional mode. Valid
+  values in a cluster scenario are MULTIDIMENSIONAL or TABULAR. Parameter
+  ASServerMode is case-sensitive. All values must be expressed in upper case.
+  { MULTIDIMENSIONAL | TABULAR | POWERPIVOT }.
 * **`[PSCredential]` ISSvcAccount** _(Write)_: Service account for Integration
   Services service.
 * **`[String]` BrowserSvcStartupType** _(Write)_: Specifies the startup mode for
@@ -1388,7 +1555,7 @@ installing feature Database Engine and Analysis Services respectively.
   this setup parameter.
 * **`[String]` FailoverClusterNetworkName** _(Write)_: Host name to be assigned to
   the clustered SQL Server instance.
-* **`[Uint32]` SetupProcessTimeout** _(Write)_: The timeout, in seconds, to wait
+* **`[UInt32]` SetupProcessTimeout** _(Write)_: The timeout, in seconds, to wait
   for the setup process to finish. Default value is 7200 seconds (2 hours). If
   the setup process does not finish before this time, and error will be thrown.
 
@@ -1416,13 +1583,7 @@ installing feature Database Engine and Analysis Services respectively.
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue%20is%3Aopen%20SqlSetup).
-
-##### Severe known issues
-
-This is a list of known issues that severely impact the use of the resource.
-
-There are currently no known severe issues.
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlSetup).
 
 ### SqlWaitForAG
 
@@ -1453,7 +1614,7 @@ or that it has finished creating the Availability Group.
   the presence of the cluster role/group. Default value is 20 seconds. When the
   cluster role/group has been found the resource will wait for this amount of time
   once more before returning.
-* **`[Uint32]` RetryCount** _(Write)_: Maximum number of retries until the resource
+* **`[UInt32]` RetryCount** _(Write)_: Maximum number of retries until the resource
   will timeout and throw an error. Default value is 30 times.
 
 #### Read-Only Properties from Get-TargetResource
@@ -1465,6 +1626,10 @@ or that it has finished creating the Availability Group.
 
 * [Wait for a cluster role/group to be available](/Examples/Resources/SqlWaitForAG/1-WaitForASingleClusterGroup.ps1)
 * [Wait for multiple cluster roles/groups to be available](/Examples/Resources/SqlWaitForAG/2-WaitForMultipleClusterGroups.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlWaitForAG).
 
 ### SqlWindowsFirewall
 
@@ -1550,3 +1715,7 @@ Port: tcp/135 | SQL Server Integration Services Port
 
 * [Create inbound firewall rules](/Examples/Resources/SqlWindowsFirewall/1-CreateInboundFirewallRules.ps1)
 * [Remove inbound firewall rules](/Examples/Resources/SqlWindowsFirewall/2-RemoveInboundFirewallRules.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlWindowsFirewall).

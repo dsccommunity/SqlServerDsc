@@ -8,14 +8,14 @@ Configuration Example
 {
     param(
         [Parameter(Mandatory = $true)]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         $ServiceAccountCredential
     )
 
     Import-DscResource -ModuleName SqlServerDsc
 
     Node localhost {
-        SqlServiceAccount SetServiceAcccount_User
+        SqlServiceAccount SetServiceAccount_User
         {
             ServerName     = 'TestServer'
             InstanceName   = 'MSSQLSERVER'
