@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 11.0.0.0
+
 - Changes to SqlServerDsc
   - BREAKING CHANGE: Resource SqlRSSecureConnectionLevel was remove
     ([issue #990](https://github.com/PowerShell/SqlServerDsc/issues/990)).
