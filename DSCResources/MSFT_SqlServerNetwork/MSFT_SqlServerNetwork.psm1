@@ -488,7 +488,7 @@ function Resolve-SqlProtocolIPAddress
     }
     else
     {
-        $ipAddressObject = $Protocol.IPAddresses.Where({$_.IPAddress.IPAddressToString -eq $IPAddress})
+        $ipAddressObject = $Protocol.IPAddresses.Where({$_.IPAddress.IPAddressToString -eq $IPAddress})[0]
 
         if ($null -eq $ipAddressObject)
         {
