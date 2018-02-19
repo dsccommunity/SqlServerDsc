@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Changes to SqlServerLogin
+  - Fix password test fails for nativ sql users ([issue #1048](https://github.com/PowerShell/SqlServerDsc/issues/1048)).
+
 ## 11.0.0.0
 
 - Changes to SqlServerDsc

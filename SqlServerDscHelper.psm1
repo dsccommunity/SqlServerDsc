@@ -18,6 +18,11 @@ $script:localizedData = Get-LocalizedData -ResourceName 'SqlServerDscHelper' -Sc
     .PARAMETER SetupCredential
         PSCredential object with the credentials to use to impersonate a user when connecting.
         If this is not provided then the current user will be used to connect to the SQL Server Database Engine instance.
+
+    .PARAMETER LoginType
+        If the SetupCredential is set, specify with this parameter, which type
+        of credentials are set: Native SQL login or Windows user Login. Default
+        value is 'WindowsUser'.
 #>
 function Connect-SQL
 {
@@ -34,7 +39,12 @@ function Connect-SQL
 
         [ValidateNotNull()]
         [System.Management.Automation.PSCredential]
-        $SetupCredential
+        $SetupCredential,
+
+        [Parameter()]
+        [ValidateSet('WindowsUser', 'SqlLogin')]
+        [System.String]
+        $LoginType = 'WindowsUser'
     )
 
     Import-SQLPSModule
@@ -51,9 +61,18 @@ function Connect-SQL
     if ($SetupCredential)
     {
         $sql = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
-        $sql.ConnectionContext.ConnectAsUser = $true
-        $sql.ConnectionContext.ConnectAsUserPassword = $SetupCredential.GetNetworkCredential().Password
-        $sql.ConnectionContext.ConnectAsUserName = $SetupCredential.GetNetworkCredential().UserName
+        if ($LoginType -eq 'SqlLogin')
+        {
+            $sql.ConnectionContext.LoginSecure = $false
+            $sql.ConnectionContext.Login = $SetupCredential.Username
+            $sql.ConnectionContext.SecurePassword = $SetupCredential.Password
+        }
+        if ($LoginType -eq 'WindowsUser')
+        {
+            $sql.ConnectionContext.ConnectAsUser = $true
+            $sql.ConnectionContext.ConnectAsUserPassword = $SetupCredential.GetNetworkCredential().Password
+            $sql.ConnectionContext.ConnectAsUserName = $SetupCredential.GetNetworkCredential().UserName
+        }
         $sql.ConnectionContext.ServerInstance = $databaseEngineInstance
         $sql.ConnectionContext.Connect()
     }
