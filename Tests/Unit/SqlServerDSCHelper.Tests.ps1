@@ -81,7 +81,8 @@ InModuleScope $script:moduleName {
             Add-Member -MemberType NoteProperty -Name ConnectionContext -Value (
                 New-Object -TypeName Object |
                     Add-Member -MemberType NoteProperty -Name ServerInstance -Value $serverInstance -PassThru |
-                    Add-Member -MemberType ScriptProperty -Name LoginSecure -Value { [System.Boolean] $mockExpectedDatabaseEngineLoginSecure } -PassThru -Force |
+                    #Add-Member -MemberType ScriptProperty -Name LoginSecure -Value { [System.Boolean] $mockExpectedDatabaseEngineLoginSecure } -PassThru -Force |
+                    Add-Member -MemberType NoteProperty -Name LoginSecure -Value $true -PassThru |
                     Add-Member -MemberType NoteProperty -Name Login -Value '' -PassThru |
                     Add-Member -MemberType NoteProperty -Name SecurePassword -Value $null -PassThru |
                     Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
@@ -1178,8 +1179,10 @@ InModuleScope $script:moduleName {
                 $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
                 $mockExpectedDatabaseEngineLoginSecure = $false
 
-                $databaseEngineServerObject = Connect-SQL -SQLServer $mockExpectedDatabaseEngineServer -LoginType 'SqlLogin'
+                $databaseEngineServerObject = Connect-SQL -SQLServer $mockExpectedDatabaseEngineServer -SetupCredential $mockSetupCredential -LoginType 'SqlLogin'
                 $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $false
+                $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSetupCredentialUserName
+                $databaseEngineServerObject.ConnectionContext.SecurePassword | Should -Be $mockSetupCredentialSecurePassword
                 $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly $mockExpectedDatabaseEngineServer
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
@@ -1206,8 +1209,10 @@ InModuleScope $script:moduleName {
                 $mockExpectedDatabaseEngineInstance = $mockInstanceName
                 $mockExpectedDatabaseEngineLoginSecure = $false
 
-                $databaseEngineServerObject = Connect-SQL -SQLInstanceName $mockExpectedDatabaseEngineInstance
+                $databaseEngineServerObject = Connect-SQL -SQLInstanceName $mockExpectedDatabaseEngineInstance -SetupCredential $mockSetupCredential -LoginType 'SqlLogin'
                 $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $false
+                $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSetupCredentialUserName
+                $databaseEngineServerObject.ConnectionContext.SecurePassword | Should -Be $mockSetupCredentialSecurePassword
                 $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
