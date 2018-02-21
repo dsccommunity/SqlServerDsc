@@ -416,14 +416,7 @@ function Test-TargetResource
 
                 try
                 {
-                    if ($LoginType -eq 'SqlLogin')
-                    {
-                        Connect-SQL -SQLServer $ServerName -SQLInstanceName $InstanceName -SetupCredential $userCredential -LoginType 'SqlLogin' | Out-Null
-                    }
-                    else
-                    {
-                        Connect-SQL -SQLServer $ServerName -SQLInstanceName $InstanceName -SetupCredential $userCredential | Out-Null
-                    }
+                    Connect-SQL -SQLServer $ServerName -SQLInstanceName $InstanceName -SetupCredential $userCredential -LoginType 'SqlLogin' | Out-Null
                 }
                 catch
                 {
