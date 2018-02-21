@@ -61,18 +61,21 @@ function Connect-SQL
     if ($SetupCredential)
     {
         $sql = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+
         if ($LoginType -eq 'SqlLogin')
         {
             $sql.ConnectionContext.LoginSecure = $false
             $sql.ConnectionContext.Login = $SetupCredential.Username
             $sql.ConnectionContext.SecurePassword = $SetupCredential.Password
         }
+
         if ($LoginType -eq 'WindowsUser')
         {
             $sql.ConnectionContext.ConnectAsUser = $true
             $sql.ConnectionContext.ConnectAsUserPassword = $SetupCredential.GetNetworkCredential().Password
             $sql.ConnectionContext.ConnectAsUserName = $SetupCredential.GetNetworkCredential().UserName
         }
+
         $sql.ConnectionContext.ServerInstance = $databaseEngineInstance
         $sql.ConnectionContext.Connect()
     }
