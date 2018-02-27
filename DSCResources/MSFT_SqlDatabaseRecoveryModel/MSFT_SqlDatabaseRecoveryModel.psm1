@@ -49,25 +49,38 @@ function Get-TargetResource
 
     if ($sqlServerObject)
     {
-        Write-Verbose -Message "Getting RecoveryModel of SQL database '$Name'"
-        $sqlDatabaseObject = $sqlServerObject.Databases[$Name]
+        $databases = $sqlServerObject.Databases.Where{$_.Name -like "$Name"}
 
-        if ($sqlDatabaseObject)
-        {
-            $sqlDatabaseRecoveryModel = $sqlDatabaseObject.RecoveryModel
-            New-VerboseMessage -Message "The current recovery model used by database $Name is '$sqlDatabaseRecoveryModel'"
-        }
-        else
+        if(!$databases)
         {
             throw New-TerminatingError -ErrorType NoDatabase `
-                -FormatArgs @($Name, $ServerName, $InstanceName) `
-                -ErrorCategory InvalidResult
+                    -FormatArgs @($Name, $ServerName, $InstanceName) `
+                    -ErrorCategory InvalidResult
+        }
+
+        $sqlDatabaseRecoveryModel = ""
+        foreach($sqlDatabaseObject in $databases)
+        {
+
+            if($sqlDatabaseObject.Name -eq "tempdb")
+            {
+                New-VerboseMessage -Message "Skipping 'tempdb', recovery model for this DB cannot be changed"
+
+                Continue
+            }
+
+            New-VerboseMessage -Message "The current recovery model used by database $($sqlDatabaseObject.Name) is '$($sqlDatabaseObject.RecoveryModel)'"
+
+            if($sqlDatabaseRecoveryModel -notlike "*$($sqlDatabaseObject.RecoveryModel)*")
+            {
+                $sqlDatabaseRecoveryModel += ",$($sqlDatabaseObject.RecoveryModel)"
+            }            
         }
     }
 
     $returnValue = @{
         Name          = $Name
-        RecoveryModel = $sqlDatabaseRecoveryModel
+        RecoveryModel = $sqlDatabaseRecoveryModel.SubString(1, $sqlDatabaseRecoveryModel.Length - 1)
         ServerName    = $ServerName
         InstanceName  = $InstanceName
     }
@@ -122,23 +135,32 @@ function Set-TargetResource
 
     if ($sqlServerObject)
     {
-        Write-Verbose -Message "Setting RecoveryModel of SQL database '$Name'"
-        $sqlDatabaseObject = $sqlServerObject.Databases[$Name]
+        $databases = $sqlServerObject.Databases.Where{$_.Name -like "$Name"}
 
-        if ($sqlDatabaseObject)
+        if(!$databases)
         {
+            throw New-TerminatingError -ErrorType NoDatabase `
+                    -FormatArgs @($Name, $ServerName, $InstanceName) `
+                    -ErrorCategory InvalidResult
+        }
+
+        foreach($sqlDatabaseObject in $databases)
+        {
+            if($sqlDatabaseObject.Name -eq "tempdb")
+            {
+                New-VerboseMessage -Message "Skipping 'tempdb', recovery model for this DB cannot be changed"
+
+                Continue
+            }
+
+            Write-Verbose -Message "Setting RecoveryModel of SQL database '$($sqlDatabaseObject.Name)'"
+
             if ($sqlDatabaseObject.RecoveryModel -ne $RecoveryModel)
             {
                 $sqlDatabaseObject.RecoveryModel = $RecoveryModel
                 $sqlDatabaseObject.Alter()
-                New-VerboseMessage -Message "The recovery model for the database $Name is changed to '$RecoveryModel'."
+                New-VerboseMessage -Message "The recovery model for the database $($sqlDatabaseObject.Name) is changed to '$RecoveryModel'."
             }
-        }
-        else
-        {
-            throw New-TerminatingError -ErrorType NoDatabase `
-                -FormatArgs @($Name, $ServerName, $InstanceName) `
-                -ErrorCategory InvalidResult
         }
     }
 }
