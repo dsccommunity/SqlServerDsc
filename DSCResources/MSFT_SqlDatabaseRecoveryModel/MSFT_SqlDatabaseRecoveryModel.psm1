@@ -61,7 +61,6 @@ function Get-TargetResource
         $sqlDatabaseRecoveryModel = ""
         foreach($sqlDatabaseObject in $databases)
         {
-
             if($sqlDatabaseObject.Name -eq "tempdb")
             {
                 New-VerboseMessage -Message "Skipping 'tempdb', recovery model for this DB cannot be changed"
