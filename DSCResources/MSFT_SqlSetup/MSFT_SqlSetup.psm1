@@ -578,7 +578,7 @@ function Get-TargetResource
         Array of accounts to be made SQL administrators.
 
     .PARAMETER SecurityMode
-        Security mode to apply to the SQL Server instance.
+        Security mode to apply to the SQL Server instance. 'SQL' indicates mixed-mode authentication while 'Windows' indicates windows authentication.
 
     .PARAMETER SAPwd
         SA password, if SecurityMode is set to 'SQL'.
@@ -753,6 +753,7 @@ function Set-TargetResource
         $SQLSysAdminAccounts,
 
         [Parameter()]
+        [ValidateSet('SQL', 'Windows')]
         [System.String]
         $SecurityMode,
 
@@ -1525,7 +1526,7 @@ function Set-TargetResource
         Array of accounts to be made SQL administrators.
 
     .PARAMETER SecurityMode
-        Security mode to apply to the SQL Server instance.
+        Security mode to apply to the SQL Server instance. 'SQL' indicates mixed-mode authentication while 'Windows' indicates windows authentication.
 
     .PARAMETER SAPwd
         SA password, if SecurityMode is set to 'SQL'.
@@ -1691,6 +1692,7 @@ function Test-TargetResource
         $SQLSysAdminAccounts,
 
         [Parameter()]
+        [ValidateSet('SQL', 'Windows')]
         [System.String]
         $SecurityMode,
 
