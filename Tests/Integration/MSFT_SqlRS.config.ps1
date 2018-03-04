@@ -46,18 +46,18 @@ Configuration MSFT_SqlRS_CreateDependencies_Config
     )
 
     Import-DscResource -ModuleName 'PSDscResources'
-    Import-DscResource -ModuleName 'xStorage'
+    Import-DscResource -ModuleName 'StorageDsc'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost {
-        xMountImage 'MountIsoMedia'
+        MountImage 'MountIsoMedia'
         {
             ImagePath   = $Node.ImagePath
             DriveLetter = $Node.DriveLetter
             Ensure      = 'Present'
         }
 
-        xWaitForVolume 'WaitForMountOfIsoMedia'
+        WaitForVolume 'WaitForMountOfIsoMedia'
         {
             DriveLetter      = $Node.DriveLetter
             RetryIntervalSec = 5
@@ -91,7 +91,7 @@ Configuration MSFT_SqlRS_CreateDependencies_Config
             ForceReboot           = $Node.ForceReboot
 
             DependsOn             = @(
-                '[xWaitForVolume]WaitForMountOfIsoMedia'
+                '[WaitForVolume]WaitForMountOfIsoMedia'
                 '[User]CreateReportingServicesServiceAccount'
                 '[WindowsFeature]NetFramework45'
             )

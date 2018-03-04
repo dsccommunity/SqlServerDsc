@@ -4,6 +4,8 @@
 
 - Changes to SqlServerLogin
   - Fix password test fails for nativ sql users ([issue #1048](https://github.com/PowerShell/SqlServerDsc/issues/1048)).
+- Changes to Integration Tests
+  - Replace xStorage dsc resource module with StorageDsc ([issue #1038](https://github.com/PowerShell/SqlServerDsc/issues/1038)).
 
 ## 11.0.0.0
 
