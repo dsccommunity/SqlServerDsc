@@ -578,7 +578,7 @@ function Get-TargetResource
         Array of accounts to be made SQL administrators.
 
     .PARAMETER SecurityMode
-        Security mode to apply to the SQL Server instance. 'SQL' indicates mixed-mode authentication while 'Windows' indicates windows authentication.
+        Security mode to apply to the SQL Server instance. 'SQL' indicates mixed-mode authentication while 'Windows' indicates Windows authentication. Default is Windows.
 
     .PARAMETER SAPwd
         SA password, if SecurityMode is set to 'SQL'.
@@ -1526,7 +1526,7 @@ function Set-TargetResource
         Array of accounts to be made SQL administrators.
 
     .PARAMETER SecurityMode
-        Security mode to apply to the SQL Server instance. 'SQL' indicates mixed-mode authentication while 'Windows' indicates windows authentication.
+        Security mode to apply to the SQL Server instance. 'SQL' indicates mixed-mode authentication while 'Windows' indicates Windows authentication. Default is Windows.
 
     .PARAMETER SAPwd
         SA password, if SecurityMode is set to 'SQL'.
