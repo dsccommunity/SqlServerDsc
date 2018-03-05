@@ -6,6 +6,8 @@
   - Fix password test fails for nativ sql users ([issue #1048](https://github.com/PowerShell/SqlServerDsc/issues/1048)).
 - Changes to SqlSetup
   - Clarify usage of 'SecurityMode' along with adding parameter validations for the only 2 supported values.  'SQL' and 'Windows'. ([issue #1010](https://github.com/PowerShell/SqlServerDsc/issues/1010))
+- Changes to Integration Tests
+  - Replace xStorage dsc resource module with StorageDsc ([issue #1038](https://github.com/PowerShell/SqlServerDsc/issues/1038)).
 
 ## 11.0.0.0
 
