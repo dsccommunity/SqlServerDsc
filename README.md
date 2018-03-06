@@ -1513,8 +1513,10 @@ installing feature Database Engine and Analysis Services respectively.
 * **`[String]` SQLCollation** _(Write)_: Collation for SQL.
 * **`[String[]]` SQLSysAdminAccounts** _(Write)_: Array of accounts to be made SQL
   administrators.
-* **`[String]` SecurityMode** _(Write)_: Security mode to apply to the SQL Server
-   instance.
+* **`[String]` SecurityMode** _(Write)_: Security mode to apply to the
+  SQL Server instance. 'SQL' indicates mixed-mode authentication while
+  'Windows' indicates Windows authentication.
+  Default is Windows. { *Windows* | SQL }
 * **`[PSCredential]` SAPwd** _(Write)_: SA password, if SecurityMode is set to 'SQL'.
 * **`[String]` InstallSQLDataDir** _(Write)_: Root path for SQL database files.
 * **`[String]` SQLUserDBDir** _(Write)_: Path for SQL database files.
