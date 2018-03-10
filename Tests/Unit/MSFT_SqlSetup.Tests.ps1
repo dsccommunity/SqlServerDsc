@@ -4683,29 +4683,23 @@ try
             BeforeAll {
                 $mockServiceAccountPassword = ConvertTo-SecureString 'Password' -AsPlainText -Force
 
-                $mockSystemServiceAccount = (
+                $mockSystemServiceAccount = `
                     New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'NT AUTHORITY\SYSTEM', $mockServiceAccountPassword
-                )
 
-                $mockVirtualServiceAccount = (
+                $mockVirtualServiceAccount = `
                     New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'NT SERVICE\MSSQLSERVER', $mockServiceAccountPassword
-                )
 
-                $mockManagedServiceAccount = (
+                $mockManagedServiceAccount = `
                     New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'COMPANY\ManagedAccount$', $mockServiceAccountPassword
-                )
 
-                $mockDomainServiceAccount = (
+                $mockDomainServiceAccount = `
                     New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'COMPANY\sql.service', $mockServiceAccountPassword
-                )
 
-                $mockDomainServiceAccountContainingDollarSign = (
+                $mockDomainServiceAccountContainingDollarSign = `
                     New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'COMPANY\$sql.service', $mockServiceAccountPassword
-                )
             }
 
             $serviceTypes | ForEach-Object {
-
                 $serviceType = $_
 
                 Context "When service type is $serviceType" {
