@@ -2121,7 +2121,7 @@ function Get-ServiceAccountParameters
             }
         }
 
-        '.*\$'
+        '\$$'
         {
             $parameters = @{
                 "$($ServiceType)SVCACCOUNT" = $ServiceAccount.UserName
