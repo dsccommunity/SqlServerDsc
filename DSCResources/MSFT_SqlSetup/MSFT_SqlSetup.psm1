@@ -2121,13 +2121,15 @@ function Get-ServiceAccountParameters
             }
         }
 
-        '.*\$'
+        # Testing if account is a Managed Service Account, which ends with '$'.
+        '\$$'
         {
             $parameters = @{
                 "$($ServiceType)SVCACCOUNT" = $ServiceAccount.UserName
             }
         }
 
+        # Normal local or domain service account.
         default
         {
             $parameters = @{

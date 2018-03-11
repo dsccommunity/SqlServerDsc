@@ -1456,7 +1456,7 @@ cluster. This is a limitation of SQL Server. See article
 [You cannot add or remove features to a SQL Server 2008, SQL Server 2008 R2, or
 SQL Server 2012 failover cluster](https://support.microsoft.com/en-us/help/2547273/you-cannot-add-or-remove-features-to-a-sql-server-2008,-sql-server-2008-r2,-or-sql-server-2012-failover-cluster).
 
-#### Credentials
+#### Credentials for running the resource
 
 ##### PsDscRunAsCredential
 
@@ -1469,6 +1469,21 @@ If PsDscRunAsCredential is not assigned credentials then installation will be
 performed by the SYSTEM account. When installing as the SYSTEM account, then
 parameter SQLSysAdminAccounts and ASSysAdminAccounts must be specified when
 installing feature Database Engine and Analysis Services respectively.
+
+#### Credentials for service accounts
+
+##### Service Accounts
+
+Service account username containing dollar sign ('$') is allowed, but if the
+dollar sign is at the end of the username it will be considered a Managed Service
+Account.
+
+##### Managed Service Accounts
+
+If a service account username has a dollar sign at the end of the name it will
+be considered a Managed Service Account. Any password passed in
+the credential object will be ignored, meaning the account is not expected to
+need a '*SVCPASSWORD' argument in the setup arguments.
 
 #### Parameters
 

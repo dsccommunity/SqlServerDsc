@@ -4683,56 +4683,65 @@ try
             BeforeAll {
                 $mockServiceAccountPassword = ConvertTo-SecureString 'Password' -AsPlainText -Force
 
-                $mockSystemServiceAccount = (
+                $mockSystemServiceAccount = `
                     New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'NT AUTHORITY\SYSTEM', $mockServiceAccountPassword
-                )
 
-                $mockVirtualServiceAccount = (
+                $mockVirtualServiceAccount = `
                     New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'NT SERVICE\MSSQLSERVER', $mockServiceAccountPassword
-                )
 
-                $mockManagedServiceAccount = (
+                $mockManagedServiceAccount = `
                     New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'COMPANY\ManagedAccount$', $mockServiceAccountPassword
-                )
 
-                $mockDomainServiceAccount = (
+                $mockDomainServiceAccount = `
                     New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'COMPANY\sql.service', $mockServiceAccountPassword
-                )
+
+                $mockDomainServiceAccountContainingDollarSign = `
+                    New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'COMPANY\$sql.service', $mockServiceAccountPassword
             }
 
             $serviceTypes | ForEach-Object {
-
                 $serviceType = $_
 
                 Context "When service type is $serviceType" {
+                    $mockAccountArgumentName = ('{0}SVCACCOUNT' -f $serviceType)
+                    $mockPasswordArgumentName = ('{0}SVCPASSWORD' -f $serviceType)
 
-                    It "Should return the correct parameters when the account is a system account." {
+                    It 'Should return the correct parameters when the account is a system account.' {
                         $result = Get-ServiceAccountParameters -ServiceAccount $mockSystemServiceAccount -ServiceType $serviceType
 
-                        $result.$("$($serviceType)SVCACCOUNT") | Should -BeExactly $mockSystemServiceAccount.UserName
-                        $result.ContainsKey("$($serviceType)SVCPASSWORD") | Should -Be $false
+                        $result.$mockAccountArgumentName | Should -BeExactly $mockSystemServiceAccount.UserName
+                        $result.ContainsKey($mockPasswordArgumentName) | Should -Be $false
                     }
 
-                    It "Should return the correct parameters when the account is a virtual service account" {
+                    It 'Should return the correct parameters when the account is a virtual service account' {
                         $result = Get-ServiceAccountParameters -ServiceAccount $mockVirtualServiceAccount -ServiceType $serviceType
 
-                        $result.$("$($serviceType)SVCACCOUNT") | Should -BeExactly $mockVirtualServiceAccount.UserName
-                        $result.ContainsKey("$($serviceType)SVCPASSWORD") | Should -Be $false
+                        $result.$mockAccountArgumentName | Should -BeExactly $mockVirtualServiceAccount.UserName
+                        $result.ContainsKey($mockPasswordArgumentName) | Should -Be $false
                     }
 
-                    It "Should return the correct parameters when the account is a managed service account" {
+                    It 'Should return the correct parameters when the account is a managed service account' {
                         $result = Get-ServiceAccountParameters -ServiceAccount $mockManagedServiceAccount -ServiceType $serviceType
 
-                        $result.$("$($serviceType)SVCACCOUNT") | Should -BeExactly $mockManagedServiceAccount.UserName
-                        $result.ContainsKey("$($serviceType)SVCPASSWORD") | Should -Be $false
+                        $result.$mockAccountArgumentName | Should -BeExactly $mockManagedServiceAccount.UserName
+                        $result.ContainsKey($mockPasswordArgumentName) | Should -Be $false
                     }
 
-                    It "Should return the correct parameters when the account is a domain account" {
+                    It 'Should return the correct parameters when the account is a domain account' {
                         $result = Get-ServiceAccountParameters -ServiceAccount $mockDomainServiceAccount -ServiceType $serviceType
 
-                        $result.$("$($serviceType)SVCACCOUNT") | Should -BeExactly $mockDomainServiceAccount.UserName
-                        $result.$("$($serviceType)SVCPASSWORD") | Should -BeExactly $mockDomainServiceAccount.GetNetworkCredential().Password
+                        $result.$mockAccountArgumentName | Should -BeExactly $mockDomainServiceAccount.UserName
+                        $result.$mockPasswordArgumentName | Should -BeExactly $mockDomainServiceAccount.GetNetworkCredential().Password
                     }
+
+                    # Regression test for issue #1055
+                    It 'Should return the correct parameters when the account is a domain account containing a dollar sign ($)' {
+                        $result = Get-ServiceAccountParameters -ServiceAccount $mockDomainServiceAccountContainingDollarSign -ServiceType $serviceType
+
+                        $result.$mockAccountArgumentName | Should -BeExactly $mockDomainServiceAccountContainingDollarSign.UserName
+                        $result.$mockPasswordArgumentName | Should -BeExactly $mockDomainServiceAccountContainingDollarSign.GetNetworkCredential().Password
+                    }
+
                 }
             }
         }
