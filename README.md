@@ -1480,7 +1480,7 @@ Account.
 
 ##### Managed Service Accounts
 
-If a service account username have a dollar sign at the end of the name it will
+If a service account username has a dollar sign at the end of the name it will
 be considered a Managed Service Account. Any password passed in
 the credential object will be ignored, meaning the account is not expected to
 need a '*SVCPASSWORD' argument in the setup arguments.
