@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Changes to SqlServerDsc
+  - Updated the PULL_REQUEST_TEMPLATE with an improved task list and modified
+    some text to be clearer
+    ([issue #973](https://github.com/PowerShell/SqlServerDsc/issues/973)).
 - Changes to SqlServerLogin
   - Fix password test fails for nativ sql users
     ([issue #1048](https://github.com/PowerShell/SqlServerDsc/issues/1048)).
