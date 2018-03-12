@@ -1,19 +1,3 @@
-<#
-    .SYNOPSIS
-        Template for creating DSC Resource Unit Tests
-    .DESCRIPTION
-        To Use:
-        1. Copy to \Tests\Unit\ folder and rename <ResourceName>.tests.ps1 (e.g. MSFT_xFirewall.tests.ps1)
-        2. Customize TODO sections.
-        3. Delete all template comments (TODOs, etc.)
-
-    .NOTES
-        There are multiple methods for writing unit tests. This template provides a few examples
-        which you are welcome to follow but depending on your resource, you may want to
-        design it differently. Read through our TestsGuidelines.md file for an intro on how to
-        write unit tests for DSC resources: https://github.com/PowerShell/DscResources/blob/master/TestsGuidelines.md
-#>
-
 #region HEADER
 
 # Unit Test Template Version: 1.2.1
@@ -76,15 +60,7 @@ try
             Ensure = 'Present'
         }
 
-        Describe 'SqlAlias/Get-TargetResource' {
-            BeforeEach {
-                # per-test-initialization
-            }
-
-            AfterEach {
-                # per-test-cleanup
-            }
-
+        Describe 'SqlAlias\Get-TargetResource' {
             # Mocking for protocol TCP
             Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $name } -MockWith {
                 return @{
@@ -133,14 +109,6 @@ try
             } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -Verifiable
 
             Context 'When the system is in the desired present state for 64-bit OS using TCP' {
-                BeforeEach {
-                    # per-test-initialization
-                }
-
-                AfterEach {
-                    # per-test-cleanup
-                }
-
                 $testParameters = @{
                     Name = $name
                     ServerName = $serverNameTcp
@@ -183,14 +151,6 @@ try
             }
 
             Context 'When the system is in the desired absent state for 64-bit OS' {
-                BeforeEach {
-                    # per-test-initialization
-                }
-
-                AfterEach {
-                    # per-test-cleanup
-                }
-
                 $testParameters = @{
                     Name = $unknownName
                     ServerName = $unknownServerName
@@ -232,13 +192,6 @@ try
             }
 
             Context 'When the system is not in the desired state because TcpPort is different when desired protocol is TCP' {
-                BeforeEach {
-                    # per-test-initialization
-                }
-
-                AfterEach {
-                    # per-test-cleanup
-                }
                 $testParameters = @{
                     Name = $nameDifferentTcpPort
                     ServerName = $serverNameTcp
@@ -280,13 +233,6 @@ try
             }
 
             Context 'When the system is not in the desired state because ServerName is different when desired protocol is TCP' {
-                BeforeEach {
-                    # per-test-initialization
-                }
-
-                AfterEach {
-                    # per-test-cleanup
-                }
                 $testParameters = @{
                     Name = $nameDifferentServerNameTcp
                     ServerName = $serverNameTcp
@@ -331,13 +277,6 @@ try
             }
 
             Context 'When the system is not in the desired present state for 64-bit OS using UseDynamicTcpPort' {
-                BeforeEach {
-                    # per-test-initialization
-                }
-
-                AfterEach {
-                    # per-test-cleanup
-                }
                 $testParameters = @{
                     Name = $name
                     ServerName = $serverNameTcp
@@ -408,13 +347,6 @@ try
             } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -Verifiable
 
             Context 'When the system is in the desired present state for 32-bit OS using TCP' {
-                BeforeEach {
-                    # per-test-initialization
-                }
-
-                AfterEach {
-                    # per-test-cleanup
-                }
                 $testParameters = @{
                     Name = $name
                     ServerName = $serverNameTcp
@@ -452,13 +384,6 @@ try
             }
 
             Context 'When the system is in the desired present state for 32-bit OS using UseDynamicTcpPort' {
-                BeforeEach {
-                    # per-test-initialization
-                }
-
-                AfterEach {
-                    # per-test-cleanup
-                }
                 $testParameters = @{
                     Name = $name
                     ServerName = $serverNameTcp
@@ -519,13 +444,6 @@ try
             }
 
             Context 'When the system is in the desired absent state for 32-bit OS' {
-                BeforeEach {
-                    # per-test-initialization
-                }
-
-                AfterEach {
-                    # per-test-cleanup
-                }
                 $testParameters = @{
                     Name = $unknownName
                     ServerName = $unknownServerName
@@ -612,13 +530,6 @@ try
             } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -Verifiable
 
             Context 'When the system is in the desired present state for 64-bit OS using Named Pipes' {
-                BeforeEach {
-                    # per-test-initialization
-                }
-
-                AfterEach {
-                    # per-test-cleanup
-                }
                 $testParameters = @{
                     Name = $name
                     ServerName = $serverNameNamedPipes
@@ -660,13 +571,6 @@ try
             }
 
             Context 'When the system is not in the desired state because ServerName is different when desired protocol is Named Pipes' {
-                BeforeEach {
-                    # per-test-initialization
-                }
-
-                AfterEach {
-                    # per-test-cleanup
-                }
                 $testParameters = @{
                     Name = $nameDifferentPipeName
                     ServerName = $serverNameNamedPipes
@@ -708,13 +612,6 @@ try
             }
 
             Context 'When the state differ between 32-bit OS and 64-bit OS registry keys' {
-                BeforeEach {
-                    # per-test-initialization
-                }
-
-                AfterEach {
-                    # per-test-cleanup
-                }
                 $testParameters = @{
                     Name = $nameWow6432NodeDifferFrom64BitOS
                     ServerName = $serverNameNamedPipes
@@ -762,13 +659,6 @@ try
             } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -Verifiable
 
             Context 'When the system is in the desired present state for 32-bit OS using Named Pipes' {
-                BeforeEach {
-                    # per-test-initialization
-                }
-
-                AfterEach {
-                    # per-test-cleanup
-                }
                 $testParameters = @{
                     Name = $name
                     ServerName = $serverNameNamedPipes
@@ -818,13 +708,6 @@ try
             } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -Verifiable
 
             Context 'When the system is in the desired present state for 64-bit OS using UseDynamicTcpPort' {
-                BeforeEach {
-                    # per-test-initialization
-                }
-
-                AfterEach {
-                    # per-test-cleanup
-                }
                 $testParameters = @{
                     Name = $name
                     ServerName = $serverNameTcp
@@ -889,13 +772,6 @@ try
             } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -Verifiable
 
             Context 'When the system is in the desired present state for 32-bit OS using UseDynamicTcpPort' {
-                BeforeEach {
-                    # per-test-initialization
-                }
-
-                AfterEach {
-                    # per-test-cleanup
-                }
                 $testParameters = @{
                     Name = $name
                     ServerName = $serverNameTcp
@@ -1170,7 +1046,8 @@ try
                 }
             }
         }
-        Describe "SqlAlias\Test-TargetResource" {
+
+        Describe 'SqlAlias\Test-TargetResource' {
             Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $name } -MockWith {
                 return @{
                     'MyAlias' = 'DBMSSOCN,sqlnode.company.local,1433'
