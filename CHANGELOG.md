@@ -9,6 +9,9 @@
     validations for the only 2 supported values. ([issue #1010](https://github.com/PowerShell/SqlServerDsc/issues/1010))
 - Changes to Integration Tests
   - Replace xStorage dsc resource module with StorageDsc ([issue #1038](https://github.com/PowerShell/SqlServerDsc/issues/1038)).
+- Changes to Unit Tests
+  - Updated the following resources unit test template to version 1.2.1
+    - SqlAlias
 
 ## 11.0.0.0
 
