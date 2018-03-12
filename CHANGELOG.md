@@ -16,6 +16,10 @@
 - Changes to Integration Tests
   - Replace xStorage dsc resource module with StorageDsc
     ([issue #1038](https://github.com/PowerShell/SqlServerDsc/issues/1038)).
+- Changes to Unit Tests
+  - Updated the following resources unit test template to version 1.2.1
+    ([issue #999](https://github.com/PowerShell/SqlServerDsc/issues/999)).
+    - SqlAlias
 
 ## 11.0.0.0
 
