@@ -3,14 +3,22 @@
 ## Unreleased
 
 - Changes to SqlServerLogin
-  - Fix password test fails for nativ sql users ([issue #1048](https://github.com/PowerShell/SqlServerDsc/issues/1048)).
+  - Fix password test fails for nativ sql users
+    ([issue #1048](https://github.com/PowerShell/SqlServerDsc/issues/1048)).
 - Changes to SqlSetup
   - Clarify usage of 'SecurityMode' along with adding parameter
-    validations for the only 2 supported values. ([issue #1010](https://github.com/PowerShell/SqlServerDsc/issues/1010))
+    validations for the only 2 supported values
+    ([issue #1010](https://github.com/PowerShell/SqlServerDsc/issues/1010)).
+  - Now accounts containing '$' will be able to be used for installing
+    SQL Server. Although, if the account ends with '$' it is considered a
+    Managed Service Account
+    ([issue #1055](https://github.com/PowerShell/SqlServerDsc/issues/1055)).
 - Changes to Integration Tests
-  - Replace xStorage dsc resource module with StorageDsc ([issue #1038](https://github.com/PowerShell/SqlServerDsc/issues/1038)).
+  - Replace xStorage dsc resource module with StorageDsc
+    ([issue #1038](https://github.com/PowerShell/SqlServerDsc/issues/1038)).
 - Changes to Unit Tests
   - Updated the following resources unit test template to version 1.2.1
+    ([issue #999](https://github.com/PowerShell/SqlServerDsc/issues/999)).
     - SqlAlias
 
 ## 11.0.0.0
@@ -576,10 +584,10 @@
     SHIFT+ALT+F, or press F1 and choose 'Format document' in the list. The
     PowerShell code will then be formatted according to the Style Guideline
     (although maybe not complete, but would help a long way).
-      - Removed powershell.codeFormatting.alignPropertyValuePairs setting since
-        it does not align with the style guideline.
-      - Added powershell.codeFormatting.preset with a value of 'Custom' so that
-        workspace formatting settings are honored (issue #665).
+    - Removed powershell.codeFormatting.alignPropertyValuePairs setting since
+      it does not align with the style guideline.
+    - Added powershell.codeFormatting.preset with a value of 'Custom' so that
+      workspace formatting settings are honored (issue #665).
   - Fixed lint error MD013 and MD036 in README.md.
   - Updated .markdownlint.json to enable rule MD013 and MD036 to enforce those
     lint markdown rules in the common tests.
@@ -1044,11 +1052,11 @@
   - BREAKING CHANGE: Removed default value "$PSScriptRoot\..\..\" from parameter
     SourcePath.
   - Old code, that no longer filled any function, has been replaced.
-      - Function `ResolvePath` has been replaced with
+    - Function `ResolvePath` has been replaced with
       `[Environment]::ExpandEnvironmentVariables($SourcePath)` so that environment
       variables still can be used in Source Path.
-      - Function `NetUse` has been replaced with `New-SmbMapping` and
-        `Remove-SmbMapping`.
+    - Function `NetUse` has been replaced with `New-SmbMapping` and
+      `Remove-SmbMapping`.
   - Renamed function `GetSQLVersion` to `Get-SqlMajorVersion`.
   - BREAKING CHANGE: Renamed parameter PID to ProductKey to avoid collision with
     automatic variable $PID
@@ -1287,28 +1295,28 @@
     - Grant-CNOPerms
     - New-ListenerADObject
 - xSQLDatabaseRecoveryModel
-    - Updated Verbose statements to use new function New-VerboseMessage
+  - Updated Verbose statements to use new function New-VerboseMessage
 - xSQLServerDatabase
-    - Updated Verbose statements to use new function New-VerboseMessage
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
+  - Updated Verbose statements to use new function New-VerboseMessage
+  - Removed ConnectSQL function and replaced with new Connect-SQL function
 - xSQLServerDatabaseOwner
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
+  - Removed ConnectSQL function and replaced with new Connect-SQL function
 - xSQLServerDatabasePermissions
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
+  - Removed ConnectSQL function and replaced with new Connect-SQL function
 - xSQLServerDatabaseRole
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
+  - Removed ConnectSQL function and replaced with new Connect-SQL function
 - xSQLServerLogin
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
+  - Removed ConnectSQL function and replaced with new Connect-SQL function
 - xSQLServerMaxDop
-    - Updated Verbose statements to use new function New-VerboseMessage
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
+  - Updated Verbose statements to use new function New-VerboseMessage
+  - Removed ConnectSQL function and replaced with new Connect-SQL function
 - xSQLServerMemory
-    - Updated Verbose statements to use new function New-VerboseMessage
-    - Removed ConnectSQL function and replaced with new Connect-SQL function
+  - Updated Verbose statements to use new function New-VerboseMessage
+  - Removed ConnectSQL function and replaced with new Connect-SQL function
 - xSQLServerPowerPlan
-    - Updated Verbose statements to use new function New-VerboseMessage
+  - Updated Verbose statements to use new function New-VerboseMessage
 - Examples
-    - Added xSQLServerConfiguration resource example
+  - Added xSQLServerConfiguration resource example
 
 ## 1.5.0.0
 
