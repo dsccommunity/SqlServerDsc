@@ -23,7 +23,7 @@ class MSFT_SqlSetup : OMI_BaseResource
     [Read, Description("Output username for the SQL Agent service.")] String AgtSvcAccountUsername;
     [Write, Description("Collation for SQL.")] String SQLCollation;
     [Write, Description("Array of accounts to be made SQL administrators.")] String SQLSysAdminAccounts[];
-    [Write, Description("Security mode to apply to the SQL Server instance.")] String SecurityMode;
+    [Write, Description("Security mode to apply to the SQL Server instance. 'SQL' indicates mixed-mode authentication while 'Windows' indicates Windows authentication. Default is Windows."), ValueMap{"SQL", "Windows"}, Values{"SQL", "Windows"}] String SecurityMode;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("SA password, if SecurityMode is set to 'SQL'.")] String SAPwd;
     [Write, Description("Root path for SQL database files.")] String InstallSQLDataDir;
     [Write, Description("Path for SQL database files.")] String SQLUserDBDir;

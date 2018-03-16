@@ -11,7 +11,7 @@
         (Windows Server 2012 R2 and earlier) or cluster role (Windows Server 2016 and later). Also so that the
         Virtual Computer Object (VCO) can be removed when the Failover CLuster instance is uninstalled.
 
-        See the DSC resources xFailoverCluster, xStorage and iSCSIDsc for information how to setup a failover cluster
+        See the DSC resources xFailoverCluster, StorageDsc and iSCSIDsc for information how to setup a failover cluster
         with DSC.
 
         The resource is run using the SYSTEM account, but the setup is run using impersonation, with the credentials in
