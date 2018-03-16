@@ -28,6 +28,8 @@
   - Updated the following resources unit test template to version 1.2.1
     ([issue #999](https://github.com/PowerShell/SqlServerDsc/issues/999)).
     - SqlAlias
+    - SqlWindowsFirewall
+      ([issue #1089](https://github.com/PowerShell/SqlServerDsc/issues/1089)).
 
 ## 11.0.0.0
 
