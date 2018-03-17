@@ -24,10 +24,9 @@
     dsc resource module with StorageDsc ([issue #1038](https://github.com/PowerShell/SqlServerDsc/issues/1038)).
 - Changes to Unit Tests
   - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Updated
-    the following resources unit test template to version 1.2.1 ([issue #999](https://github.com/PowerShell/SqlServerDsc/issues/999)).
-    - SqlAlias
-    - SqlWindowsFirewall
-      ([issue #1089](https://github.com/PowerShell/SqlServerDsc/issues/1089)).
+    the following resources unit test template to version 1.2.1
+    - SqlAlias ([issue #999](https://github.com/PowerShell/SqlServerDsc/issues/999)).
+    - SqlWindowsFirewall ([issue #1089](https://github.com/PowerShell/SqlServerDsc/issues/1089)).
 
 ## 11.0.0.0
 
