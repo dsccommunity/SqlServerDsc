@@ -8,7 +8,7 @@
     ISSUE DESCRIPTION (this template):
     Please provide information regarding your issue under each header below.
     PLEASE KEEP THE HEADERS. Write N/A under any headers that don't apply to your issue.
-    Any sensitive can (and should) be obfuscated.
+    Any sensitive information can (and should) be obfuscated.
 
     You may remove this and the other comments, but again, please keep the headers.
 
