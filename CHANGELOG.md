@@ -10,6 +10,7 @@
   - Added information to ISSUE_TEMPLATE that issues must be reproducible in
     SqlServerDsc resource module (if running the older xSQLServer resource module)
     ([issue #1036](https://github.com/PowerShell/SqlServerDsc/issues/1036)).
+  - Updated ISSUE_TEMPLATE.md with a note about sensitive information ([issue #1092](https://github.com/PowerShell/SqlServerDsc/issues/1092)).
 - Changes to SqlServerLogin
   - Fix password test fails for nativ sql users
     ([issue #1048](https://github.com/PowerShell/SqlServerDsc/issues/1048)).
