@@ -81,6 +81,10 @@ InModuleScope $script:moduleName {
             Add-Member -MemberType NoteProperty -Name ConnectionContext -Value (
                 New-Object -TypeName Object |
                     Add-Member -MemberType NoteProperty -Name ServerInstance -Value $serverInstance -PassThru |
+                    #Add-Member -MemberType ScriptProperty -Name LoginSecure -Value { [System.Boolean] $mockExpectedDatabaseEngineLoginSecure } -PassThru -Force |
+                    Add-Member -MemberType NoteProperty -Name LoginSecure -Value $true -PassThru |
+                    Add-Member -MemberType NoteProperty -Name Login -Value '' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name SecurePassword -Value $null -PassThru |
                     Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
                     Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
                     Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
@@ -1169,12 +1173,46 @@ InModuleScope $script:moduleName {
             }
         }
 
+        Context 'When connecting to the default instance using SQL Server Authentication' {
+            It 'Should return the correct service instance' {
+                $mockExpectedDatabaseEngineServer = 'TestServer'
+                $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
+                $mockExpectedDatabaseEngineLoginSecure = $false
+
+                $databaseEngineServerObject = Connect-SQL -SQLServer $mockExpectedDatabaseEngineServer -SetupCredential $mockSetupCredential -LoginType 'SqlLogin'
+                $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $false
+                $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSetupCredentialUserName
+                $databaseEngineServerObject.ConnectionContext.SecurePassword | Should -Be $mockSetupCredentialSecurePassword
+                $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly $mockExpectedDatabaseEngineServer
+
+                Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                    -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+            }
+        }
+
         Context 'When connecting to the named instance using Windows Authentication' {
             It 'Should return the correct service instance' {
                 $mockExpectedDatabaseEngineServer = $env:COMPUTERNAME
                 $mockExpectedDatabaseEngineInstance = $mockInstanceName
 
                 $databaseEngineServerObject = Connect-SQL -SQLInstanceName $mockExpectedDatabaseEngineInstance
+                $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+
+                Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                    -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+            }
+        }
+
+        Context 'When connecting to the named instance using SQL Server Authentication' {
+            It 'Should return the correct service instance' {
+                $mockExpectedDatabaseEngineServer = $env:COMPUTERNAME
+                $mockExpectedDatabaseEngineInstance = $mockInstanceName
+                $mockExpectedDatabaseEngineLoginSecure = $false
+
+                $databaseEngineServerObject = Connect-SQL -SQLInstanceName $mockExpectedDatabaseEngineInstance -SetupCredential $mockSetupCredential -LoginType 'SqlLogin'
+                $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $false
+                $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSetupCredentialUserName
+                $databaseEngineServerObject.ConnectionContext.SecurePassword | Should -Be $mockSetupCredentialSecurePassword
                 $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
