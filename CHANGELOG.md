@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 11.1.0.0
+
 - Changes to SqlServerDsc
   - Updated the PULL\_REQUEST\_TEMPLATE with an improved task list and modified
     some text to be clearer ([issue #973](https://github.com/PowerShell/SqlServerDsc/issues/973)).
