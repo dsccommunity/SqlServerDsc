@@ -44,7 +44,7 @@ test_script:
         }
         Write-Verbose -Message '' -Verbose
 
-        Invoke-AppveyorTestScriptTask -CodeCoverage -CodeCovIo -ExcludeTag @() -RunTestInOrder
+        Invoke-AppveyorTestScriptTask -CodeCoverage -CodeCovIo -ExcludeTag @() -RunTestInOrder -RunInContainer
 
 #---------------------------------#
 #      deployment configuration   #

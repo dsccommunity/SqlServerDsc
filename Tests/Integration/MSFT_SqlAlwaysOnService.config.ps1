@@ -1,7 +1,3 @@
-# This is used to make sure the integration test run in the correct order.
-[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 2)]
-param()
-
 <#
     Get all adapters with static IP addresses, all of which should be ignored
     when creating the cluster.

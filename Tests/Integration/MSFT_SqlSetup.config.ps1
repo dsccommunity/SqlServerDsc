@@ -1,7 +1,3 @@
-# This is used to make sure the integration test run in the correct order.
-[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 1)]
-param()
-
 # Get a spare drive letter
 $mockLastDrive = ((Get-Volume).DriveLetter | Sort-Object | Select-Object -Last 1)
 $mockIsoMediaDriveLetter = [char](([int][char]$mockLastDrive) + 1)
