@@ -1,6 +1,10 @@
 # Change log for SqlServerDsc
 
 ## Unreleased
+- Changes to Unit Tests
+  - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Updated
+    the following resources unit test template to version 1.2.1
+    - SqlWaitForAG ([issue #1088](https://github.com/PowerShell/SqlServerDsc/issues/1088)).
 
 ## 11.1.0.0
 
@@ -29,7 +33,6 @@
   - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Updated
     the following resources unit test template to version 1.2.1
     - SqlAlias ([issue #999](https://github.com/PowerShell/SqlServerDsc/issues/999)).
-    - SqlWaitForAG ([issue #1088](https://github.com/PowerShell/SqlServerDsc/issues/1088)).
     - SqlWindowsFirewall ([issue #1089](https://github.com/PowerShell/SqlServerDsc/issues/1089)).
 
 ## 11.0.0.0
