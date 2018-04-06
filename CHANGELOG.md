@@ -234,8 +234,8 @@
 - Changes to SqlSetup
   - Updated the integration tests to stop some services after each integration test.
     This is to save memory on the AppVeyor build worker.
-  - Updated the integration tests to use a SQL Server 2016 Service Pack 1.
   - Fixed Script Analyzer rule error.
+  - Integration test is using SQL Server 2017 ([issue #858](https://github.com/PowerShell/SqlServerDsc/issues/858)).
 - Changes to SqlRS
   - Updated the integration tests to stop the Reporting Services service after
     the integration test. This is to save memory on the AppVeyor build worker.
