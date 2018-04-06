@@ -23,7 +23,7 @@ else
                 NodeName                                = 'localhost'
 
                 # Database Engine properties.
-                DatabaseEngineNamedInstanceName         = 'DSCSQL2016'
+                DatabaseEngineNamedInstanceName         = 'DSCSQLTEST'
                 DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,AS,CONN,BC,SDK'
                 AnalysisServicesMultiServerMode         = 'MULTIDIMENSIONAL'
 
