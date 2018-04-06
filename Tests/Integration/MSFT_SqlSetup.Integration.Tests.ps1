@@ -199,12 +199,12 @@ try
                 $resourceCurrentState.AgtSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlAgentServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.AgtSvcStartupType          | Should -Be 'Automatic'
                 $resourceCurrentState.ASServerMode               | Should -Be $ConfigurationData.AllNodes.AnalysisServicesMultiServerMode
-                $resourceCurrentState.ASBackupDir                | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS13.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\OLAP\Backup")
+                $resourceCurrentState.ASBackupDir                | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS14.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\OLAP\Backup")
                 $resourceCurrentState.ASCollation                | Should -Be $ConfigurationData.AllNodes.Collation
-                $resourceCurrentState.ASConfigDir                | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS13.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\OLAP\Config")
-                $resourceCurrentState.ASDataDir                  | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS13.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\OLAP\Data")
-                $resourceCurrentState.ASLogDir                   | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS13.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\OLAP\Log")
-                $resourceCurrentState.ASTempDir                  | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS13.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\OLAP\Temp")
+                $resourceCurrentState.ASConfigDir                | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS14.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\OLAP\Config")
+                $resourceCurrentState.ASDataDir                  | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS14.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\OLAP\Data")
+                $resourceCurrentState.ASLogDir                   | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS14.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\OLAP\Log")
+                $resourceCurrentState.ASTempDir                  | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS14.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\OLAP\Temp")
                 $resourceCurrentState.ASSvcAccount               | Should -BeNullOrEmpty
                 $resourceCurrentState.ASSvcAccountUsername       | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.AsSvcStartupType           | Should -Be 'Automatic'
@@ -223,7 +223,7 @@ try
                 $resourceCurrentState.FTSvcAccountUsername       | Should -BeNullOrEmpty
                 $resourceCurrentState.InstallSharedDir           | Should -Be $ConfigurationData.AllNodes.InstallSharedDir
                 $resourceCurrentState.InstallSharedWOWDir        | Should -Be $ConfigurationData.AllNodes.InstallSharedWOWDir
-                $resourceCurrentState.InstallSQLDataDir          | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSSQL13.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\MSSQL")
+                $resourceCurrentState.InstallSQLDataDir          | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSSQL14.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\MSSQL")
                 $resourceCurrentState.InstanceDir                | Should -Be $ConfigurationData.AllNodes.InstallSharedDir
                 $resourceCurrentState.InstanceID                 | Should -Be $ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName
                 $resourceCurrentState.InstanceName               | Should -Be $ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName
@@ -237,7 +237,7 @@ try
                 $resourceCurrentState.SetupProcessTimeout        | Should -BeNullOrEmpty
                 $resourceCurrentState.SourceCredential           | Should -BeNullOrEmpty
                 $resourceCurrentState.SourcePath                 | Should -Be "$($ConfigurationData.AllNodes.DriveLetter):\"
-                $resourceCurrentState.SQLBackupDir               | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSSQL13.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\MSSQL\Backup")
+                $resourceCurrentState.SQLBackupDir               | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSSQL14.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\MSSQL\Backup")
                 $resourceCurrentState.SQLCollation               | Should -Be $ConfigurationData.AllNodes.Collation
                 $resourceCurrentState.SQLSvcAccount              | Should -BeNullOrEmpty
                 $resourceCurrentState.SQLSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
@@ -258,8 +258,8 @@ try
                 $resourceCurrentState.SQLTempDBLogDir            | Should -BeNullOrEmpty
                 $resourceCurrentState.SqlTempdbLogFileSize       | Should -Be $ConfigurationData.AllNodes.SqlTempdbLogFileSize
                 $resourceCurrentState.SqlTempdbLogFileGrowth     | Should -Be $ConfigurationData.AllNodes.SqlTempdbLogFileGrowth
-                $resourceCurrentState.SQLUserDBDir               | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSSQL13.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\MSSQL\DATA\")
-                $resourceCurrentState.SQLUserDBLogDir            | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSSQL13.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\MSSQL\DATA\")
+                $resourceCurrentState.SQLUserDBDir               | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSSQL14.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\MSSQL\DATA\")
+                $resourceCurrentState.SQLUserDBLogDir            | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSSQL14.$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\MSSQL\DATA\")
                 $resourceCurrentState.SQMReporting               | Should -BeNullOrEmpty
                 $resourceCurrentState.SuppressReboot             | Should -BeNullOrEmpty
                 $resourceCurrentState.UpdateEnabled              | Should -BeNullOrEmpty
@@ -366,7 +366,7 @@ try
                 $resourceCurrentState.FTSvcAccountUsername       | Should -BeNullOrEmpty
                 $resourceCurrentState.InstallSharedDir           | Should -Be $ConfigurationData.AllNodes.InstallSharedDir
                 $resourceCurrentState.InstallSharedWOWDir        | Should -Be $ConfigurationData.AllNodes.InstallSharedWOWDir
-                $resourceCurrentState.InstallSQLDataDir          | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSSQL13.$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL")
+                $resourceCurrentState.InstallSQLDataDir          | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSSQL14.$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL")
                 $resourceCurrentState.InstanceDir                | Should -Be $ConfigurationData.AllNodes.InstallSharedDir
                 $resourceCurrentState.InstanceID                 | Should -Be $ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName
                 $resourceCurrentState.InstanceName               | Should -Be $ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName
@@ -380,7 +380,7 @@ try
                 $resourceCurrentState.SetupProcessTimeout        | Should -BeNullOrEmpty
                 $resourceCurrentState.SourceCredential           | Should -BeNullOrEmpty
                 $resourceCurrentState.SourcePath                 | Should -Be "$($ConfigurationData.AllNodes.DriveLetter):\"
-                $resourceCurrentState.SQLBackupDir               | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSSQL13.$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\Backup")
+                $resourceCurrentState.SQLBackupDir               | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSSQL14.$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\Backup")
                 $resourceCurrentState.SQLCollation               | Should -Be $ConfigurationData.AllNodes.Collation
                 $resourceCurrentState.SQLSvcAccount              | Should -BeNullOrEmpty
                 $resourceCurrentState.SQLSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
@@ -395,8 +395,8 @@ try
                 )
                 $resourceCurrentState.SQLTempDBDir               | Should -BeNullOrEmpty
                 $resourceCurrentState.SQLTempDBLogDir            | Should -BeNullOrEmpty
-                $resourceCurrentState.SQLUserDBDir               | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSSQL13.$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\DATA\")
-                $resourceCurrentState.SQLUserDBLogDir            | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSSQL13.$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\DATA\")
+                $resourceCurrentState.SQLUserDBDir               | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSSQL14.$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\DATA\")
+                $resourceCurrentState.SQLUserDBLogDir            | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSSQL14.$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\DATA\")
                 $resourceCurrentState.SQMReporting               | Should -BeNullOrEmpty
                 $resourceCurrentState.SuppressReboot             | Should -BeNullOrEmpty
                 $resourceCurrentState.UpdateEnabled              | Should -BeNullOrEmpty
@@ -483,12 +483,12 @@ try
                 $resourceCurrentState.AgtSvcAccount              | Should -BeNullOrEmpty
                 $resourceCurrentState.AgtSvcAccountUsername      | Should -BeNullOrEmpty
                 $resourceCurrentState.ASServerMode               | Should -Be $ConfigurationData.AllNodes.AnalysisServicesTabularServerMode
-                $resourceCurrentState.ASBackupDir                | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS13.$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Backup")
+                $resourceCurrentState.ASBackupDir                | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS14.$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Backup")
                 $resourceCurrentState.ASCollation                | Should -Be $ConfigurationData.AllNodes.Collation
-                $resourceCurrentState.ASConfigDir                | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS13.$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Config")
-                $resourceCurrentState.ASDataDir                  | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS13.$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Data")
-                $resourceCurrentState.ASLogDir                   | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS13.$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Log")
-                $resourceCurrentState.ASTempDir                  | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS13.$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Temp")
+                $resourceCurrentState.ASConfigDir                | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS14.$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Config")
+                $resourceCurrentState.ASDataDir                  | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS14.$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Data")
+                $resourceCurrentState.ASLogDir                   | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS14.$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Log")
+                $resourceCurrentState.ASTempDir                  | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "MSAS14.$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Temp")
                 $resourceCurrentState.ASSvcAccount               | Should -BeNullOrEmpty
                 $resourceCurrentState.ASSvcAccountUsername       | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.ASSysAdminAccounts         | Should -Be @(
