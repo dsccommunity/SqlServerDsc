@@ -1,3 +1,10 @@
+# This is used to make sure the unit test run in a container.
+[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container2', ContainerImage = 'microsoft/windowsservercore')]
+param()
+
+$script:DSCModuleName      = 'SqlServerDsc'
+$script:DSCResourceName    = 'MSFT_SqlWaitForAG'
+
 #region HEADER
 
 # Unit Test Template Version: 1.2.1

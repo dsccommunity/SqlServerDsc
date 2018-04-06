@@ -1,5 +1,7 @@
+# This is used to make sure the unit test run in a container.
+[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container2', ContainerImage = 'microsoft/windowsservercore')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
-param ()
+param()
 
 $script:DSCModuleName   = 'SqlServerDSC'
 $script:DSCResourceName = 'MSFT_SqlServerReplication'

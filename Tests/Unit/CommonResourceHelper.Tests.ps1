@@ -1,3 +1,7 @@
+# This is used to make sure the unit test run in a container.
+[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container1', ContainerImage = 'microsoft/windowsservercore')]
+param()
+
 Describe 'CommonResourceHelper Unit Tests' {
     BeforeAll {
         # Import the CommonResourceHelper module to test

@@ -1,11 +1,8 @@
-<#
-    .SYNOPSIS
-        Automated unit test for MSFT_SqlScript DSC Resource
-#>
-
+# This is used to make sure the unit test run in a container.
+[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container2', ContainerImage = 'microsoft/windowsservercore')]
 # Suppression of this PSSA rule allowed in tests.
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
-Param()
+param()
 
 #region HEADER
 

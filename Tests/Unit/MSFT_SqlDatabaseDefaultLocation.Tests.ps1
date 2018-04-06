@@ -1,3 +1,7 @@
+# This is used to make sure the unit test run in a container.
+[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container1', ContainerImage = 'microsoft/windowsservercore')]
+param()
+
 #region Header
 
 # Unit Test Template Version: 1.2.1
