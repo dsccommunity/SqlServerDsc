@@ -11,6 +11,7 @@
     - **Remove-IntegrationLoopbackAdapter:** Removes a new network loopback adapter.
     - **Get-NetIPAddressNetwork:** Returns the IP network address from an IPv4 address
       and prefix length.
+  - Enabled PSSA rule violations to fail build in the CI environment.
 - Changes to Unit Tests
   - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Updated
     the following resources unit test template to version 1.2.1
