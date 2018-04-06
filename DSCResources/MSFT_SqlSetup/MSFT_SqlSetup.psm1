@@ -1201,7 +1201,6 @@ function Set-TargetResource
 
     if ($Features.Contains('SQLENGINE'))
     {
-
         if ($PSBoundParameters.ContainsKey('SQLSvcAccount'))
         {
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $SQLSvcAccount -ServiceType 'SQL')
@@ -1842,7 +1841,8 @@ function Test-TargetResource
         $boundParameters.Keys | Where-Object {$_ -imatch "^FailoverCluster"} | ForEach-Object {
             $variableName = $_
 
-            if ($getTargetResourceResult.$variableName -ne $boundParameters[$variableName]) {
+            if ($getTargetResourceResult.$variableName -ne $boundParameters[$variableName])
+            {
                 Write-Verbose -Message ($script:localizedData.ClusterParameterIsNotInDesiredState -f $variableName, $($boundParameters[$variableName]))
                 $result = $false
             }
