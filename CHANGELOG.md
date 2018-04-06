@@ -10,7 +10,7 @@
   - Updated broken links in `\README.md` and in `\Examples\README.md`
   - Opt-in for common test 'Common Tests - Relative Path Length'.
   - Updated the Installation section in the README.md.
-  - To speed up testing in AppVeyor, unit tests are now run in a container.
+  - To speed up testing in AppVeyor, unit tests are now run in two containers.
 - Changes to SqlServerDscHelper
   - Fix style guideline lint errors.
   - Changes to Connect-SQL
