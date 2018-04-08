@@ -1,21 +1,18 @@
-$script:DSCModuleName      = 'SqlServerDsc'
-$script:DSCResourceName    = 'MSFT_SqlWaitForAG'
-
 #region HEADER
 
-# Unit Test Template Version: 1.2.0
+# Unit Test Template Version: 1.2.1
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
      (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
+    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))
 }
 
-Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
 
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName 'SqlServerDsc' `
+    -DSCResourceName 'MSFT_SqlWaitForAG' `
     -TestType Unit
 
 #endregion HEADER
@@ -32,7 +29,7 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope $script:DSCResourceName {
+    InModuleScope 'MSFT_SqlWaitForAG' {
         $mockClusterGroupName = 'AGTest'
         $mockRetryInterval = 1
         $mockRetryCount = 2
@@ -78,7 +75,7 @@ try
             RetryCount = $mockRetryCount
         }
 
-        Describe 'MSFT_SqlWaitForAG\Get-TargetResource' -Tag 'Get' {
+        Describe 'SqlWaitForAG\Get-TargetResource' -Tag 'Get' {
             BeforeEach {
                 $testParameters = $mockDefaultParameters.Clone()
 
@@ -142,7 +139,7 @@ try
         }
 
 
-        Describe 'MSFT_SqlWaitForAG\Test-TargetResource' -Tag 'Test'{
+        Describe 'SqlWaitForAG\Test-TargetResource' -Tag 'Test'{
             BeforeEach {
                 $testParameters = $mockDefaultParameters.Clone()
 
@@ -191,7 +188,7 @@ try
             Assert-VerifiableMock
         }
 
-        Describe 'MSFT_SqlWaitForAG\Set-TargetResource' -Tag 'Set'{
+        Describe 'SqlWaitForAG\Set-TargetResource' -Tag 'Set'{
             BeforeEach {
                 $testParameters = $mockDefaultParameters.Clone()
 

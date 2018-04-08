@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Changes to Unit Tests
+  - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Updated
+    the following resources unit test template to version 1.2.1
+    - SqlWaitForAG ([issue #1088](https://github.com/PowerShell/SqlServerDsc/issues/1088)).
+
 ## 11.1.0.0
 
 - Changes to SqlServerDsc
