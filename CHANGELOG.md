@@ -242,6 +242,7 @@
     to already be installed. It no longer quietly removes the feature from the
     `/FEATURES` argument.
   - Cleaned up a bit in the tests, removed excessive piping.
+  - Fixed minor typo in examples.
 - Changes to SqlRS
   - Updated the integration tests to stop the Reporting Services service after
     the integration test. This is to save memory on the AppVeyor build worker.
