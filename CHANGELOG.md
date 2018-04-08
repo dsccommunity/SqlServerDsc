@@ -1,6 +1,7 @@
 # Change log for SqlServerDsc
 
 ## Unreleased
+
 - Changes to Unit Tests
   - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Updated
     the following resources unit test template to version 1.2.1
