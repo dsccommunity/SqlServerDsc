@@ -24,7 +24,14 @@ else
 
                 # Database Engine properties.
                 DatabaseEngineNamedInstanceName         = 'DSCSQLTEST'
-                DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,AS,CONN,BC,SDK'
+
+                <#
+                    CONN feature:
+                    Due to issue #1105 the feature CONN was removed.
+                    It cannot be used here if CONN is already installed
+                    in the AppVeyor build worker.
+                #>
+                DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,AS,BC,SDK'
                 AnalysisServicesMultiServerMode         = 'MULTIDIMENSIONAL'
 
                 <#
@@ -35,7 +42,14 @@ else
                     evaluate the result in the test.
                 #>
                 AnalysisServicesTabularInstanceName     = 'DSCTABULAR'
-                AnalysisServicesTabularFeatures         = 'AS,CONN,BC,SDK'
+
+                <#
+                    CONN feature:
+                    Due to issue #1105 the feature CONN was removed.
+                    It cannot be used here if CONN is already installed
+                    in the AppVeyor build worker.
+                #>
+                AnalysisServicesTabularFeatures         = 'AS,BC,SDK'
                 AnalysisServicesTabularServerMode       = 'TABULAR'
 
                 <#
@@ -46,7 +60,14 @@ else
                     evaluate the result in the test.
                 #>
                 DatabaseEngineDefaultInstanceName       = 'MSSQLSERVER'
-                DatabaseEngineDefaultInstanceFeatures   = 'SQLENGINE,CONN,BC,SDK'
+
+                <#
+                    CONN feature:
+                    Due to issue #1105 the feature CONN was removed.
+                    It cannot be used here if CONN is already installed
+                    in the AppVeyor build worker.
+                #>
+                DatabaseEngineDefaultInstanceFeatures   = 'SQLENGINE,BC,SDK'
 
                 # General SqlSetup properties
                 Collation                               = 'Finnish_Swedish_CI_AS'
