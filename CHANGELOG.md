@@ -236,6 +236,12 @@
     This is to save memory on the AppVeyor build worker.
   - Fixed Script Analyzer rule error.
   - Integration test is using SQL Server 2017 ([issue #858](https://github.com/PowerShell/SqlServerDsc/issues/858)).
+  - Localized messages for Master Data Services no longer start and end with
+    single quote.
+  - When installing features a verbose message is written if a feature is found
+    to already be installed. It no longer quietly removes the feature from the
+    `/FEATURES` argument.
+  - Cleaned up a bit in the tests, removed excessive piping.
 - Changes to SqlRS
   - Updated the integration tests to stop the Reporting Services service after
     the integration test. This is to save memory on the AppVeyor build worker.

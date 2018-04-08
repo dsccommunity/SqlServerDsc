@@ -3043,9 +3043,8 @@ try
                 }
             }
 
-            $testProductVersion | ForEach-Object -Process {
-                $mockSqlMajorVersion = $_
-
+            foreach ($mockSqlMajorVersion in $testProductVersion )
+            {
                 $mockDefaultInstance_InstanceId = "$($mockSqlDatabaseEngineName)$($mockSqlMajorVersion).$($mockDefaultInstance_InstanceName)"
 
                 $mockSqlInstallPath = "C:\Program Files\Microsoft SQL Server\$($mockDefaultInstance_InstanceId)\MSSQL"
@@ -4824,9 +4823,8 @@ try
                     New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'COMPANY\$sql.service', $mockServiceAccountPassword
             }
 
-            $serviceTypes | ForEach-Object {
-                $serviceType = $_
-
+            foreach ($serviceType in $serviceTypes )
+            {
                 Context "When service type is $serviceType" {
                     $mockAccountArgumentName = ('{0}SVCACCOUNT' -f $serviceType)
                     $mockPasswordArgumentName = ('{0}SVCPASSWORD' -f $serviceType)

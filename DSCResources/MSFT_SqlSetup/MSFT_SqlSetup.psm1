@@ -1082,6 +1082,10 @@ function Set-TargetResource
         {
             $featuresToInstall += "$feature,"
         }
+        else
+        {
+            Write-Verbose -Message ($script:localizedData.FeatureAlreadyInstalled -f $featuresToInstall)
+        }
     }
 
     $Features = $featuresToInstall.Trim(',')
