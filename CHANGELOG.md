@@ -15,6 +15,7 @@
   - Renamed SqlServerDsc.psd1 to be consistent
     ([issue #1116](https://github.com/PowerShell/SqlServerDsc/issues/1116)).
     [Glenn Sarti (@glennsarti)](https://github.com/glennsarti)
+  - [Chase Wilson(@chasewilson)](https://github.com/chasewilson): Added SqlScriptQuery Resource
 - Changes to Unit Tests
   - Updated
     the following resources unit test template to version 1.2.1
@@ -59,15 +60,22 @@
     supported values ([issue #1010](https://github.com/PowerShell/SqlServerDsc/issues/1010)).
   - Now accounts containing '$' will be able to be used for installing
     SQL Server. Although, if the account ends with '$' it is considered a
-    Managed Service Account ([issue #1055](https://github.com/PowerShell/SqlServerDsc/issues/1055)).
+    ([issue #1055](https://github.com/PowerShell/SqlServerDsc/issues/1055)).
+        Managed Service Account\
+- Changes to SqlScript
+  - Adds string queries in addition with updated error handling.
+    ([issue #719](https://github.com/PowerShell/SqlServerDsc/issues/719))
 - Changes to Integration Tests
-  - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Replace xStorage
-    dsc resource module with StorageDsc ([issue #1038](https://github.com/PowerShell/SqlServerDsc/issues/1038)).
+  - Replace xStorage dsc resource module with StorageDsc
+    ([issue #1038](https://github.com/PowerShell/SqlServerDsc/issues/1038)).
+  - Update SqlScript
+    ([issue #719](https://github.com/PowerShell/SqlServerDsc/issues/719))
 - Changes to Unit Tests
-  - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Updated
-    the following resources unit test template to version 1.2.1
-    - SqlAlias ([issue #999](https://github.com/PowerShell/SqlServerDsc/issues/999)).
-    - SqlWindowsFirewall ([issue #1089](https://github.com/PowerShell/SqlServerDsc/issues/1089)).
+  - Updated the following resources unit test template to version 1.2.1
+    ([issue #999](https://github.com/PowerShell/SqlServerDsc/issues/999)).
+    - SqlAlias
+    ([issue #719](https://github.com/PowerShell/SqlServerDsc/issues/719))
+    -SqlScript
 
 ## 11.0.0.0
 
