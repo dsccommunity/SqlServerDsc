@@ -1,6 +1,21 @@
 # Change log for SqlServerDsc
 
 ## Unreleased
+- Changes to SqlScript
+  -[Chase Wilson (@chasewilson)](https://github.com/chasewilson): Updated
+    - Adds string queries in addition with updated error handling.
+      ([issue #719](https://github.com/PowerShell/SqlServerDsc/issues/719))
+- Changes to Integration Tests
+  - [Chase Wilson (@chasewilson)](https://github.com/chasewilson): Updated
+    -SqlScript ([issue #719](https://github.com/PowerShell/SqlServerDsc/issues/719))
+- Changes to Unit Tests
+  - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Updated
+    the following resources unit test template to version 1.2.1
+    - SqlWaitForAG ([issue #1088](https://github.com/PowerShell/SqlServerDsc/issues/1088)).
+  - [Chase Wilson (@chasewilson)](https://github.com/chasewilson): Updated
+    -SqlScript ([issue #719](https://github.com/PowerShell/SqlServerDsc/issues/719))
+
+## 11.1.0.0
 
 - Changes to SqlServerDsc
   - Added new test helper functions in the CommonTestHelpers module. These are used
@@ -60,22 +75,15 @@
     supported values ([issue #1010](https://github.com/PowerShell/SqlServerDsc/issues/1010)).
   - Now accounts containing '$' will be able to be used for installing
     SQL Server. Although, if the account ends with '$' it is considered a
-    ([issue #1055](https://github.com/PowerShell/SqlServerDsc/issues/1055)).
-        Managed Service Account\
-- Changes to SqlScript
-  - Adds string queries in addition with updated error handling.
-    ([issue #719](https://github.com/PowerShell/SqlServerDsc/issues/719))
+    Managed Service Account ([issue #1055](https://github.com/PowerShell/SqlServerDsc/issues/1055)).
 - Changes to Integration Tests
-  - Replace xStorage dsc resource module with StorageDsc
-    ([issue #1038](https://github.com/PowerShell/SqlServerDsc/issues/1038)).
-  - Update SqlScript
-    ([issue #719](https://github.com/PowerShell/SqlServerDsc/issues/719))
+  - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Replace xStorage
+    dsc resource module with StorageDsc ([issue #1038](https://github.com/PowerShell/SqlServerDsc/issues/1038)).
 - Changes to Unit Tests
-  - Updated the following resources unit test template to version 1.2.1
-    ([issue #999](https://github.com/PowerShell/SqlServerDsc/issues/999)).
-    - SqlAlias
-    ([issue #719](https://github.com/PowerShell/SqlServerDsc/issues/719))
-    -SqlScript
+  - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Updated
+    the following resources unit test template to version 1.2.1
+    - SqlAlias ([issue #999](https://github.com/PowerShell/SqlServerDsc/issues/999)).
+    - SqlWindowsFirewall ([issue #1089](https://github.com/PowerShell/SqlServerDsc/issues/1089)).
 
 ## 11.0.0.0
 
