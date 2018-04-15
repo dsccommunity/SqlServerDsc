@@ -2,10 +2,23 @@
 
 ## Unreleased
 
+- Changes to SqlServerDsc
+  - Added new test helper functions in the CommonTestHelpers module. These are used
+    by the integration tests.
+    - **New-IntegrationLoopbackAdapter:** Installs the PowerShell module
+      'LoopbackAdapter' from PowerShell Gallery and creates a new network
+      loopback adapter.
+    - **Remove-IntegrationLoopbackAdapter:** Removes a new network loopback adapter.
+    - **Get-NetIPAddressNetwork:** Returns the IP network address from an IPv4 address
+      and prefix length.
 - Changes to Unit Tests
   - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Updated
     the following resources unit test template to version 1.2.1
     - SqlWaitForAG ([issue #1088](https://github.com/PowerShell/SqlServerDsc/issues/1088)).
+- Changes to SqlAlwaysOnService
+  - Updated the integration tests to use a loopback adapter to be less intrusive
+    in the build worker environment.
+
 
 ## 11.1.0.0
 

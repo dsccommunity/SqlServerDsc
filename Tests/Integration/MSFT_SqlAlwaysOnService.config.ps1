@@ -2,6 +2,27 @@
 [Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 2)]
 param()
 
+<#
+    Get all adapters with static IP addresses, all of which should be ignored
+    when creating the cluster.
+#>
+$ignoreAdapterIpAddress = Get-NetAdapter |
+    Get-NetIPInterface |
+        Where-Object -FilterScript {
+            $_.Dhcp -eq 'Disabled'
+        } | Get-NetIPAddress
+
+$ignoreIpNetwork = @()
+foreach ($adapterIpAddress in $ignoreAdapterIpAddress)
+{
+    <#
+        Get-NetIPAddressNetwork is in CommonTestHelper.psm1 which is imported
+        withing the integration test before this file is dot-sourced.
+    #>
+    $ipNetwork = (Get-NetIPAddressNetwork -IPAddress $adapterIpAddress.IPAddress -PrefixLength $adapterIpAddress.PrefixLength).NetworkAddress
+    $ignoreIpNetwork += ('{0}/{1}' -f $ipNetwork, $adapterIpAddress.PrefixLength)
+}
+
 $ConfigurationData = @{
     AllNodes = @(
         @{
@@ -9,6 +30,13 @@ $ConfigurationData = @{
             ComputerName                = $env:COMPUTERNAME
             InstanceName                = 'DSCSQL2016'
             RestartTimeout              = 120
+
+            LoopbackAdapterName         = 'ClusterNetwork'
+            LoopbackAdapterIpAddress    = '192.168.40.10'
+            LoopbackAdapterGateway      = '192.168.40.254'
+
+            ClusterStaticIpAddress      = '192.168.40.11'
+            IgnoreNetwork               = $ignoreIpNetwork
 
             PSDscAllowPlainTextPassword = $true
         }
@@ -18,18 +46,39 @@ $ConfigurationData = @{
 Configuration MSFT_SqlAlwaysOnService_CreateDependencies_Config
 {
     Import-DscResource -ModuleName 'PSDscResources'
+    Import-DscResource -ModuleName 'xNetworking'
 
-    node localhost {
+    node localhost
+    {
         WindowsFeature 'AddFeatureFailoverClustering'
         {
-            Ensure = "Present"
-            Name   = "Failover-clustering"
+            Ensure = 'Present'
+            Name   = 'Failover-clustering'
         }
 
         WindowsFeature 'AddFeatureFailoverClusteringPowerShellModule'
         {
-            Ensure = "Present"
-            Name   = "RSAT-Clustering-PowerShell"
+            Ensure = 'Present'
+            Name   = 'RSAT-Clustering-PowerShell'
+        }
+
+        xIPAddress LoopbackAdapterIPv4Address
+        {
+            IPAddress      = $Node.LoopbackAdapterIpAddress
+            InterfaceAlias = $Node.LoopbackAdapterName
+            AddressFamily  = 'IPv4'
+        }
+
+        <#
+            Must have a default gateway for the Cluster to be able to use the
+            loopback adapter as clustered network.
+            This will be removed directly after the cluster has been created.
+        #>
+        xDefaultGatewayAddress LoopbackAdapterIPv4DefaultGateway
+        {
+            Address      = $Node.LoopbackAdapterGateway
+            InterfaceAlias = $Node.LoopbackAdapterName
+            AddressFamily  = 'IPv4'
         }
 
         <#
@@ -40,24 +89,16 @@ Configuration MSFT_SqlAlwaysOnService_CreateDependencies_Config
         Script 'CreateActiveDirectoryDetachedCluster'
         {
             SetScript  = {
-                <#
-                    This is used to get the correct IP address in AppVeyor.
-                    The logic is to get the IP address of the first NIC not
-                    named something like 'Internal' and then addition 1 to the
-                    last number. For example if the NIC has and IP address
-                    of 10.0.0.10, then cluster IP address will be 10.0.0.11.
-                #>
-                $ipAddress = Get-NetIPConfiguration | Where-Object -FilterScript {
-                    $_.InterfaceAlias -notlike '*Internal*'
-                } | Select-Object -ExpandProperty IPv4Address | Select-Object IPAddress
-                $ipAddressParts = ($ipAddress[0].IPAddress -split '\.')
-                [System.UInt32] $ipAddressParts[3] += 1
-                $clusterStaticIpAddress = ($ipAddressParts -join '.')
+                $clusterStaticIpAddress = $Using:Node.ClusterStaticIpAddress
+                $ignoreNetwork = $Using:Node.IgnoreNetwork
+
+                Write-Verbose -Message ('Ignoring networks: ''{0}''' -f ($ignoreNetwork -join ', ')) -Verbose
 
                 $newClusterParameters = @{
                     Name                      = 'DSCCLU01'
                     Node                      = $env:COMPUTERNAME
                     StaticAddress             = $clusterStaticIpAddress
+                    IgnoreNetwork             = $ignoreNetwork
                     NoStorage                 = $true
                     AdministrativeAccessPoint = 'Dns'
 
@@ -121,6 +162,23 @@ Configuration MSFT_SqlAlwaysOnService_CreateDependencies_Config
                 '[WindowsFeature]AddFeatureFailoverClusteringPowerShellModule'
             )
 
+        }
+    }
+}
+
+Configuration MSFT_SqlAlwaysOnService_CleanupDependencies_Config
+{
+    Import-DscResource -ModuleName 'xNetworking'
+
+    node localhost
+    {
+        <#
+            Removing the default gateway from the loopback adapter.
+        #>
+        xDefaultGatewayAddress LoopbackAdapterIPv4DefaultGateway
+        {
+            InterfaceAlias = $Node.LoopbackAdapterName
+            AddressFamily  = 'IPv4'
         }
     }
 }
