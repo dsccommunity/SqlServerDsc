@@ -19,7 +19,6 @@
   - Updated the integration tests to use a loopback adapter to be less intrusive
     in the build worker environment.
 
-
 ## 11.1.0.0
 
 - Changes to SqlServerDsc
