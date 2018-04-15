@@ -78,6 +78,7 @@ function New-IntegrationLoopbackAdapter
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AdapterName
     )
@@ -129,6 +130,7 @@ function Remove-IntegrationLoopbackAdapter
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
         [String]
         $AdapterName
     )
