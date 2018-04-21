@@ -314,6 +314,13 @@ Configuration MSFT_SqlSetup_StopSqlServerDefaultInstance_Config
 
     node localhost
     {
+        Service ('StopSqlServerAgentForInstance{0}' -f $Node.DatabaseEngineDefaultInstanceName)
+        {
+            Name   = 'SQLSERVERAGENT'
+            State  = 'Stopped'
+        }
+
+
         Service ('StopSqlServerInstance{0}' -f $Node.DatabaseEngineDefaultInstanceName)
         {
             Name   = $Node.DatabaseEngineDefaultInstanceName
