@@ -11,6 +11,9 @@
     - **Remove-IntegrationLoopbackAdapter:** Removes a new network loopback adapter.
     - **Get-NetIPAddressNetwork:** Returns the IP network address from an IPv4 address
       and prefix length.
+  - Sometimes the integration tests failed to start services in the AppVeyor
+    build worker. Now the value 'ServicesPipeTimeout' is set to the max of two
+    minutes (default 30 seconds) in appveyor.yml ([issue #1114](https://github.com/PowerShell/SqlServerDsc/issues/1114)).
 - Changes to Unit Tests
   - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Updated
     the following resources unit test template to version 1.2.1

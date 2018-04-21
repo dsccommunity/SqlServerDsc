@@ -5,6 +5,16 @@ version: 9.0.{build}.0
 image: Visual Studio 2017
 install:
     - git clone https://github.com/PowerShell/DscResource.Tests
+    - ps: |
+        Write-Verbose -Message 'Updating services start timeout to 1200000 milliseconds (2 minutes).' -Verbose
+        New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control' -Name 'ServicesPipeTimeout' -Value '120000' -PropertyType DWORD -Force
+        Write-Verbose -Message 'Restarting build worker.' -Verbose
+    - ps: Start-Sleep 5
+    - ps: Restart-Computer -Force
+    - ps: Start-Sleep 5
+    - ps: |
+        $servicesPipeTimeout = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control' -Name 'ServicesPipeTimeout').ServicesPipeTimeout
+        Write-Verbose -Message "Services start timeout is '$servicesPipeTimeout' milliseconds." -Verbose
     - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
     - ps: Import-Module "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
     - ps: Invoke-AppveyorInstallTask
