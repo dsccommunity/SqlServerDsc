@@ -100,7 +100,7 @@ try
     $mockIsoMediaFilePath = $ConfigurationData.AllNodes.ImagePath
     $mockIsoMediaDriveLetter = $ConfigurationData.AllNodes.DriveLetter
 
-    $mockSourceMediaUrl = 'http://care.dlservice.microsoft.com/dl/download/F/E/9/FE9397FA-BFAB-4ADD-8B97-91234BC774B2/SQLServer2016-x64-ENU.iso'
+    $mockSourceMediaUrl = 'https://download.microsoft.com/download/9/0/7/907AD35F-9F9C-43A5-9789-52470555DB90/ENU/SQLServer2016SP1-FullSlipstream-x64-ENU.iso'
 
     # Download SQL Server media
     if (-not (Test-Path -Path $mockIsoMediaFilePath))

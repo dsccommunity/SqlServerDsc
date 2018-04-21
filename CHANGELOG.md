@@ -22,6 +22,7 @@
 - Changes to SqlSetup
   - Updated the integration tests to stop the services after each integration test.
     This is to save memory on the AppVeyor build worker.
+  - Updated the integration tests to use a SQL Server 2016 Service Pack 1.
 
 ## 11.1.0.0
 
