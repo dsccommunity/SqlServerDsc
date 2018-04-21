@@ -25,7 +25,7 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 #endregion
 
-$integrationErrorMessagePrefix = 'INTEGRATION ERROR MESSAGE:'
+$script:integrationErrorMessagePrefix = 'INTEGRATION ERROR MESSAGE:'
 
 $testRootFolderPath = Split-Path -Path $PSScriptRoot -Parent
 Import-Module -Name (Join-Path -Path $testRootFolderPath -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'CommonTestHelper.psm1')) -Force
@@ -84,7 +84,7 @@ try
                     }
                     catch
                     {
-                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        Write-Verbose -Message ('{0} {1}' -f $script:integrationErrorMessagePrefix, $_) -Verbose
                         throw $_
                     }
                 } | Should -Not -Throw
@@ -120,7 +120,7 @@ try
                     }
                     catch
                     {
-                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        Write-Verbose -Message ('{0} {1}' -f $script:integrationErrorMessagePrefix, $_) -Verbose
                         throw $_
                     }
                 } | Should -Not -Throw
@@ -172,7 +172,7 @@ try
                     }
                     catch
                     {
-                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        Write-Verbose -Message ('{0} {1}' -f $script:integrationErrorMessagePrefix, $_) -Verbose
                         throw $_
                     }
                 } | Should -Not -Throw
@@ -223,7 +223,7 @@ try
                     }
                     catch
                     {
-                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        Write-Verbose -Message ('{0} {1}' -f $script:integrationErrorMessagePrefix, $_) -Verbose
                         throw $_
                     }
                 } | Should -Not -Throw

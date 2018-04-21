@@ -18,6 +18,10 @@
 - Changes to SqlAlwaysOnService
   - Updated the integration tests to use a loopback adapter to be less intrusive
     in the build worker environment.
+  - Minor code cleanup in integration test, fixed the scope on variable.
+- Changes to SqlSetup
+  - Updated the integration tests to stop the services after each integration test.
+    This is to save memory on the AppVeyor build worker.
 
 ## 11.1.0.0
 
