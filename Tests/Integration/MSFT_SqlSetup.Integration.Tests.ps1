@@ -310,7 +310,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_StopNamedInstance_Config"
+        $configurationName = "$($script:DSCResourceName)_StopMultiAnalysisServicesInstance_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -465,7 +465,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_StopDefaultInstance_Config"
+        $configurationName = "$($script:DSCResourceName)_StopSqlServerDefaultInstance_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
