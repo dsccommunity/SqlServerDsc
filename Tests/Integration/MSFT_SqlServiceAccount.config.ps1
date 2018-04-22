@@ -192,13 +192,8 @@ Configuration MSFT_SqlServiceAccount_SqlServerAgent_DefaultInstance_Restore_Conf
 
 <#
     .SYNOPSIS
-        Stopping the default instance service.
-
-    .NOTES
-        The dependencies:
-          - Must have the default instance MSSQLSERVER started.
+        Stopping the default instance service to save memory on the build worker.
 #>
-
 Configuration MSFT_SqlServiceAccount_StopSqlServerDefaultInstance_Config
 {
     Import-DscResource -ModuleName 'PSDscResources'
