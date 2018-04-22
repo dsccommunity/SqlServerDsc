@@ -1,7 +1,5 @@
 # This is used to make sure the unit test run in a container.
 [Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container1', ContainerImage = 'microsoft/windowsservercore')]
-param()
-
 # To run these tests, we have to fake login credentials
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param ()
