@@ -21,7 +21,7 @@ The integration tests will install the following instances and leave them on the
 AppVeyor build worker for other integration tests to use.
 
 Instance | Feature | AS server mode | State
---- | --- | ---
+--- | --- | --- | ---
 DSCSQL2016 | SQLENGINE,AS,CONN,BC,SDK | MULTIDIMENSIONAL | Running
 DSCTABULAR | AS,CONN,BC,SDK | TABULAR | Stopped
 MSSQLSERVER | SQLENGINE,CONN,BC,SDK | - | Stopped
