@@ -900,11 +900,15 @@ function Restart-SqlService
 
 <#
     .SYNOPSIS
-    Restarts a Reporting Services instance and associated services
+        Restarts a Reporting Services instance and associated services
 
     .PARAMETER SQLInstanceName
-    Name of the instance to be restarted. Default is 'MSSQLSERVER'
-    (the default instance).
+        Name of the instance to be restarted. Default is 'MSSQLSERVER'
+        (the default instance).
+
+    .PARAMETER WaitTime
+        Number of seconds to wait between service stop and service start.
+        Defaults to 0 seconds.
 #>
 function Restart-ReportingServicesService
 {
@@ -913,7 +917,11 @@ function Restart-ReportingServicesService
     (
         [Parameter()]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER'
+        $SQLInstanceName = 'MSSQLSERVER',
+
+        [Parameter()]
+        [System.UInt16]
+        $WaitTime = 0
     )
 
     $ServiceName = 'ReportServer'
@@ -935,8 +943,19 @@ function Restart-ReportingServicesService
         $_.Status -eq 'Running'
     }
 
-    Write-Verbose -Message ($script:localizedData.RestartService -f 'Reporting Services') -Verbose
-    $reportingServicesService | Restart-Service -Force
+    Write-Verbose -Message ($script:localizedData.RestartService -f $reportingServicesService.DisplayName) -Verbose
+
+    Write-Verbose -Message ($script:localizedData.StoppingService -f $reportingServicesService.DisplayName) -Verbose
+    $reportingServicesService | Stop-Service -Force
+
+    if ($WaitTime -ne 0)
+    {
+        Write-Verbose -Message ($script:localizedData.WaitServiceRestart -f $WaitTime, $reportingServicesService.DisplayName) -Verbose
+        Start-Sleep -Seconds $WaitTime
+    }
+
+    Write-Verbose -Message ($script:localizedData.StartingService -f $reportingServicesService.DisplayName) -Verbose
+    $reportingServicesService | Start-Service
 
     # Start dependent services
     $dependentService | ForEach-Object {

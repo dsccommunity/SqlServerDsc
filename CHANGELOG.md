@@ -18,6 +18,19 @@
 - Changes to SqlAlwaysOnService
   - Updated the integration tests to use a loopback adapter to be less intrusive
     in the build worker environment.
+  - Minor code cleanup in integration test, fixed the scope on variable.
+- Changes to SqlSetup
+  - Updated the integration tests to stop some services after each integration test.
+    This is to save memory on the AppVeyor build worker.
+  - Updated the integration tests to use a SQL Server 2016 Service Pack 1.
+- Changes to SqlRS
+  - Updated the integration tests to stop the Reporting Services service after
+    the integration test. This is to save memory on the AppVeyor build worker.
+  - The helper function `Restart-ReportingServicesService` should no longer timeout
+    when restarting the service ([issue #1114](https://github.com/PowerShell/SqlServerDsc/issues/1114)).
+- Changes to SqlServiceAccount
+  - Updated the integration tests to stop some services after each integration test.
+    This is to save memory on the AppVeyor build worker.
 
 ## 11.1.0.0
 

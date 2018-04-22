@@ -20,15 +20,18 @@ tests.
 The integration tests will install the following instances and leave them on the
 AppVeyor build worker for other integration tests to use.
 
-Instance | Feature | AS server mode
---- | --- | ---
-DSCSQL2016 | SQLENGINE,AS,CONN,BC,SDK | MULTIDIMENSIONAL
-DSCTABULAR | AS,CONN,BC,SDK | TABULAR
-MSSQLSERVER | SQLENGINE,CONN,BC,SDK | -
+Instance | Feature | AS server mode | State
+--- | --- | --- | ---
+DSCSQL2016 | SQLENGINE,AS,CONN,BC,SDK | MULTIDIMENSIONAL | Running
+DSCTABULAR | AS,CONN,BC,SDK | TABULAR | Stopped
+MSSQLSERVER | SQLENGINE,CONN,BC,SDK | - | Stopped
 
-All instances have a SQL Server Agent that is started.
+All running Database Engine instances also have a SQL Server Agent that is started.
 
 The instance DSCSQL2016 support mixed authentication mode.
+
+>**Note:** Some services are stopped to save memory on the build worker. See the
+>column *State*.
 
 ### Properties for all instances
 
@@ -90,7 +93,10 @@ AppVeyor build worker for other integration tests to use.
 
 Instance | Feature | Description
 --- | --- | ---
-DSCRS2016 | RS | The Reporting Services is left initialized, and in a working state.
+DSCRS2016 | RS | The Reporting Services is initialized, and in a working state.
+
+>**Note:** The Reporting Services service is stopped to save memory on the build
+>worker.
 
 ### Properties for the instance
 

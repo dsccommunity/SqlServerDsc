@@ -23,6 +23,7 @@ $TestEnvironment = Initialize-TestEnvironment `
     -DSCResourceName $script:DSCResourceName `
     -TestType Integration
 
+$script:integrationErrorMessagePrefix = 'INTEGRATION ERROR MESSAGE:'
 #endregion
 
 $mockSqlInstallAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
@@ -65,6 +66,41 @@ try
             $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
         }
 
+        $configurationName = "$($script:DSCResourceName)_CreateDependencies_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath        = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
+                } | Should -Not -Throw
+            }
+        }
+
         $configurationName = "$($script:DSCResourceName)_DatabaseEngine_DefaultInstance_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
@@ -88,7 +124,15 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             }
 
@@ -134,7 +178,15 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             }
 
@@ -179,7 +231,15 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             }
 
@@ -225,7 +285,15 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             }
 
@@ -244,6 +312,41 @@ try
 
                 $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeSqlServerAgent
                 $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlAgentServicePrimaryAccountUserName -Leaf))
+            }
+        }
+
+        $configurationName = "$($script:DSCResourceName)_StopSqlServerDefaultInstance_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath        = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
+                } | Should -Not -Throw
             }
         }
 
@@ -270,7 +373,15 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             }
 
@@ -316,7 +427,15 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             }
 
@@ -361,7 +480,15 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             }
 
@@ -407,7 +534,15 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             }
 
