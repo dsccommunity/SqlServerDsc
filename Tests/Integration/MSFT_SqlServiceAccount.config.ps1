@@ -35,13 +35,13 @@ Configuration MSFT_SqlServiceAccount_CreateDependencies_Config
         Service ('StartSqlServerDefaultInstance{0}' -f $Node.DefaultInstanceName)
         {
             Name   = $Node.DefaultInstanceName
-            State  = 'Started'
+            State  = 'Running'
         }
 
         Service ('StartSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
         {
             Name   = 'SQLSERVERAGENT'
-            State  = 'Started'
+            State  = 'Running'
         }
     }
 }
@@ -208,13 +208,13 @@ Configuration MSFT_SqlServiceAccount_StopSqlServerDefaultInstance_Config
         Service ('StartSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
         {
             Name   = 'SQLSERVERAGENT'
-            State  = 'Started'
+            State  = 'Stopped'
         }
 
         Service ('StartSqlServerDefaultInstance{0}' -f $Node.DefaultInstanceName)
         {
             Name   = $Node.DefaultInstanceName
-            State  = 'Started'
+            State  = 'Stopped'
         }
     }
 }
