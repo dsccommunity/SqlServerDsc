@@ -1729,25 +1729,33 @@ InModuleScope $script:moduleName {
         }
     }
 
+    $mockGetService = {
+        return @{
+            Name = $mockDynamicServiceName
+            DisplayName = $mockDynamicServiceDisplayName
+            DependentServices = @(
+                @{
+                    Name = $mockDynamicDependedServiceName
+                    Status = 'Running'
+                    DependentServices = @()
+                }
+            )
+        }
+    }
+
     Describe 'Testing Restart-ReportingServicesService' {
         Context 'When restarting a Report Services default instance' {
             BeforeAll {
                 $mockServiceName = 'ReportServer'
+                $mockDependedServiceName = 'DependentService'
 
-                Mock -CommandName Restart-Service -Verifiable
+                $mockDynamicServiceName = $mockServiceName
+                $mockDynamicDependedServiceName = $mockDependedServiceName
+                $mockDynamicServiceDisplayName = 'Reporting Services (MSSQLSERVER)'
+
+                Mock -CommandName Stop-Service -Verifiable
                 Mock -CommandName Start-Service -Verifiable
-                Mock -CommandName Get-Service -MockWith {
-                    return @{
-                        Name = $mockServiceName
-                        DependentServices = @(
-                            @{
-                                Name = 'DependentService'
-                                Status = 'Running'
-                                DependentServices = @()
-                            }
-                        )
-                    }
-                }
+                Mock -CommandName Get-Service -MockWith $mockGetService
             }
 
             It 'Should restart the service and dependent service' {
@@ -1756,29 +1764,23 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Get-Service -ParameterFilter {
                     $Name -eq $mockServiceName
                 } -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Stop-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 2
             }
         }
 
         Context 'When restarting a Report Services named instance' {
             BeforeAll {
                 $mockServiceName = 'ReportServer$TEST'
+                $mockDependedServiceName = 'DependentService'
 
-                Mock -CommandName Restart-Service -Verifiable
+                $mockDynamicServiceName = $mockServiceName
+                $mockDynamicDependedServiceName = $mockDependedServiceName
+                $mockDynamicServiceDisplayName = 'Reporting Services (TEST)'
+
+                Mock -CommandName Stop-Service -Verifiable
                 Mock -CommandName Start-Service -Verifiable
-                Mock -CommandName Get-Service -MockWith {
-                    return @{
-                        Name = $mockServiceName
-                        DependentServices = @(
-                            @{
-                                Name = 'DependentService'
-                                Status = 'Running'
-                                DependentServices = @()
-                            }
-                        )
-                    }
-                }
+                Mock -CommandName Get-Service -MockWith $mockGetService
             }
 
             It 'Should restart the service and dependent service' {
@@ -1787,9 +1789,36 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Get-Service -ParameterFilter {
                     $Name -eq $mockServiceName
                 } -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Stop-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 2
+           }
+        }
+
+        Context 'When restarting a Report Services named instance using a wait timer' {
+            BeforeAll {
+                $mockServiceName = 'ReportServer$TEST'
+                $mockDependedServiceName = 'DependentService'
+
+                $mockDynamicServiceName = $mockServiceName
+                $mockDynamicDependedServiceName = $mockDependedServiceName
+                $mockDynamicServiceDisplayName = 'Reporting Services (TEST)'
+
+                Mock -CommandName Start-Sleep -Verifiable
+                Mock -CommandName Stop-Service -Verifiable
+                Mock -CommandName Start-Service -Verifiable
+                Mock -CommandName Get-Service -MockWith $mockGetService
             }
+
+            It 'Should restart the service and dependent service' {
+                { Restart-ReportingServicesService -SQLInstanceName 'TEST' -WaitTime 1 } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Get-Service -ParameterFilter {
+                    $Name -eq $mockServiceName
+                } -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Stop-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 2
+                Assert-MockCalled -CommandName Start-Sleep -Scope It -Exactly -Times 1
+           }
         }
     }
 
