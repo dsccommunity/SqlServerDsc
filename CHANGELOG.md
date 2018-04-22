@@ -11,6 +11,7 @@
     - **Remove-IntegrationLoopbackAdapter:** Removes a new network loopback adapter.
     - **Get-NetIPAddressNetwork:** Returns the IP network address from an IPv4 address
       and prefix length.
+  - Enabled PSSA rule violations to fail build in the CI environment.
 - Changes to Unit Tests
   - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Updated
     the following resources unit test template to version 1.2.1
@@ -23,6 +24,7 @@
   - Updated the integration tests to stop some services after each integration test.
     This is to save memory on the AppVeyor build worker.
   - Updated the integration tests to use a SQL Server 2016 Service Pack 1.
+  - Fixed Script Analyzer rule error.
 - Changes to SqlRS
   - Updated the integration tests to stop the Reporting Services service after
     the integration test. This is to save memory on the AppVeyor build worker.
@@ -31,6 +33,8 @@
 - Changes to SqlServiceAccount
   - Updated the integration tests to stop some services after each integration test.
     This is to save memory on the AppVeyor build worker.
+- Changes to SqlServerDatabaseMail
+  - Fixed Script Analyzer rule error.
 
 ## 11.1.0.0
 
