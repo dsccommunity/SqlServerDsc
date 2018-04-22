@@ -31,7 +31,7 @@ ConvertFrom-StringData @'
     BringClusterResourcesOffline = Bringing the SQL Server resources {0} offline.
     BringSqlServerClusterResourcesOnline = Bringing the SQL Server resource back online.
     BringSqlServerAgentClusterResourcesOnline = Bringing the SQL Server Agent resource online.
-    GetServiceInformation = Getting {0} service information.
+    GetServiceInformation = Getting information about service '{0}'.
     RestartService = '{0}' service is restarting.
     StoppingService = '{0}' service is stopping.
     StartingService = '{0}' service is starting.
