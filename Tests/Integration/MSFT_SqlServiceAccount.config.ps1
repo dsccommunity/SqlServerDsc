@@ -20,6 +20,34 @@ $ConfigurationData = @{
 
 <#
     .SYNOPSIS
+        Make sure the dependencies for these tests are configured.
+
+    .NOTES
+        The dependencies:
+          - Must have the default instance MSSQLSERVER started.
+#>
+Configuration MSFT_SqlServiceAccount_CreateDependencies_Config
+{
+    Import-DscResource -ModuleName 'PSDscResources'
+
+    node localhost
+    {
+        Service ('StartSqlServerDefaultInstance{0}' -f $Node.DefaultInstanceName)
+        {
+            Name   = $Node.DefaultInstanceName
+            State  = 'Started'
+        }
+
+        Service ('StartSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
+        {
+            Name   = 'SQLSERVERAGENT'
+            State  = 'Started'
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
         Changes the SQL Server service account of the default instance to a
         different account that was initially used during installation.
 
@@ -158,6 +186,35 @@ Configuration MSFT_SqlServiceAccount_SqlServerAgent_DefaultInstance_Restore_Conf
             RestartService       = $true
 
             PsDscRunAsCredential = $SqlInstallCredential
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Stopping the default instance service.
+
+    .NOTES
+        The dependencies:
+          - Must have the default instance MSSQLSERVER started.
+#>
+
+Configuration MSFT_SqlServiceAccount_StopSqlServerDefaultInstance_Config
+{
+    Import-DscResource -ModuleName 'PSDscResources'
+
+    node localhost
+    {
+        Service ('StartSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
+        {
+            Name   = 'SQLSERVERAGENT'
+            State  = 'Started'
+        }
+
+        Service ('StartSqlServerDefaultInstance{0}' -f $Node.DefaultInstanceName)
+        {
+            Name   = $Node.DefaultInstanceName
+            State  = 'Started'
         }
     }
 }
