@@ -23,6 +23,7 @@ $TestEnvironment = Initialize-TestEnvironment `
     -DSCResourceName $script:DSCResourceName `
     -TestType Integration
 
+$script:integrationErrorMessagePrefix = 'INTEGRATION ERROR MESSAGE:'
 #endregion
 
 $mockSqlInstallAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
