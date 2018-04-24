@@ -13,6 +13,7 @@
       and prefix length.
   - Enabled PSSA rule violations to fail build in the CI environment.
 <<<<<<< HEAD
+<<<<<<< HEAD
   - Renamed SqlServerDsc.psd1 to be consistent
     ([issue #1116](https://github.com/PowerShell/SqlServerDsc/issues/1116)).
     [Glenn Sarti (@glennsarti)](https://github.com/glennsarti)
@@ -20,6 +21,9 @@
 =======
   - Chase Wilson [Chase Wilson(@chasewilson)](https://github.com/chasewilson): Added new resource SqlScriptQuery
 >>>>>>> updates for rebase
+=======
+  - [Chase Wilson(@chasewilson)](https://github.com/chasewilson): Added SqlScriptQuery Resource
+>>>>>>> updates for rebase and merge from upstream
 - Changes to Unit Tests
   - Updated
     the following resources unit test template to version 1.2.1
