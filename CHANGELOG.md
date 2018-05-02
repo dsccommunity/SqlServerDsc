@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 11.2.0.0
+
 - Changes to SqlServerDsc
   - Added new test helper functions in the CommonTestHelpers module. These are used
     by the integration tests.

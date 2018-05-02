@@ -1,6 +1,6 @@
 @{
   # Version number of this module.
-  moduleVersion = '11.1.0.0'
+  moduleVersion = '11.2.0.0'
 
   # ID used to uniquely identify this module
   GUID = '693ee082-ed36-45a7-b490-88b07c86b42f'
@@ -50,31 +50,42 @@
 
           # ReleaseNotes of this module
         ReleaseNotes = '- Changes to SqlServerDsc
-  - Updated the PULL\_REQUEST\_TEMPLATE with an improved task list and modified
-    some text to be clearer ([issue 973](https://github.com/PowerShell/SqlServerDsc/issues/973)).
-  - Updated the ISSUE_TEMPLATE to hopefully be more intuitive and easier to use.
-  - Added information to ISSUE_TEMPLATE that issues must be reproducible in
-    SqlServerDsc resource module (if running the older xSQLServer resource module)
-    ([issue 1036](https://github.com/PowerShell/SqlServerDsc/issues/1036)).
-  - Updated ISSUE_TEMPLATE.md with a note about sensitive information ([issue 1092](https://github.com/PowerShell/SqlServerDsc/issues/1092)).
-- Changes to SqlServerLogin
-  - [Claudio Spizzi (@claudiospizzi)](https://github.com/claudiospizzi): Fix password
-    test fails for nativ sql users ([issue 1048](https://github.com/PowerShell/SqlServerDsc/issues/1048)).
-- Changes to SqlSetup
-  - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Clarify usage
-    of "SecurityMode" along with adding parameter validations for the only 2
-    supported values ([issue 1010](https://github.com/PowerShell/SqlServerDsc/issues/1010)).
-  - Now accounts containing "$" will be able to be used for installing
-    SQL Server. Although, if the account ends with "$" it is considered a
-    Managed Service Account ([issue 1055](https://github.com/PowerShell/SqlServerDsc/issues/1055)).
-- Changes to Integration Tests
-  - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Replace xStorage
-    dsc resource module with StorageDsc ([issue 1038](https://github.com/PowerShell/SqlServerDsc/issues/1038)).
+  - Added new test helper functions in the CommonTestHelpers module. These are used
+    by the integration tests.
+    - **New-IntegrationLoopbackAdapter:** Installs the PowerShell module
+      "LoopbackAdapter" from PowerShell Gallery and creates a new network
+      loopback adapter.
+    - **Remove-IntegrationLoopbackAdapter:** Removes a new network loopback adapter.
+    - **Get-NetIPAddressNetwork:** Returns the IP network address from an IPv4 address
+      and prefix length.
+  - Enabled PSSA rule violations to fail build in the CI environment.
+  - Renamed SqlServerDsc.psd1 to be consistent
+    ([issue 1116](https://github.com/PowerShell/SqlServerDsc/issues/1116)).
+    [Glenn Sarti (@glennsarti)](https://github.com/glennsarti)
 - Changes to Unit Tests
-  - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Updated
+  - Updated
     the following resources unit test template to version 1.2.1
-    - SqlAlias ([issue 999](https://github.com/PowerShell/SqlServerDsc/issues/999)).
-    - SqlWindowsFirewall ([issue 1089](https://github.com/PowerShell/SqlServerDsc/issues/1089)).
+    - SqlWaitForAG ([issue 1088](https://github.com/PowerShell/SqlServerDsc/issues/1088)).
+      [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode)
+- Changes to SqlAlwaysOnService
+  - Updated the integration tests to use a loopback adapter to be less intrusive
+    in the build worker environment.
+  - Minor code cleanup in integration test, fixed the scope on variable.
+- Changes to SqlSetup
+  - Updated the integration tests to stop some services after each integration test.
+    This is to save memory on the AppVeyor build worker.
+  - Updated the integration tests to use a SQL Server 2016 Service Pack 1.
+  - Fixed Script Analyzer rule error.
+- Changes to SqlRS
+  - Updated the integration tests to stop the Reporting Services service after
+    the integration test. This is to save memory on the AppVeyor build worker.
+  - The helper function `Restart-ReportingServicesService` should no longer timeout
+    when restarting the service ([issue 1114](https://github.com/PowerShell/SqlServerDsc/issues/1114)).
+- Changes to SqlServiceAccount
+  - Updated the integration tests to stop some services after each integration test.
+    This is to save memory on the AppVeyor build worker.
+- Changes to SqlServerDatabaseMail
+  - Fixed Script Analyzer rule error.
 
 '
 
@@ -82,6 +93,7 @@
 
   } # End of PrivateData hashtable
   }
+
 
 
 
