@@ -23,6 +23,7 @@ $TestEnvironment = Initialize-TestEnvironment `
     -DSCResourceName $script:DSCResourceName `
     -TestType Integration
 
+$script:integrationErrorMessagePrefix = 'INTEGRATION ERROR MESSAGE:'
 #endregion
 
 $mockSqlInstallAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
@@ -71,7 +72,15 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             }
         }
@@ -99,7 +108,15 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             }
 
@@ -191,7 +208,15 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             }
 
@@ -247,7 +272,15 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             }
 
@@ -289,6 +322,42 @@ try
                 $webRequestStatusCode | Should -BeExactly 200
             }
         }
+
+        $configurationName = "$($script:DSCResourceName)_StopReportingServicesInstance_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath        = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
+                } | Should -Not -Throw
+            }
+        }
+
     }
 }
 finally

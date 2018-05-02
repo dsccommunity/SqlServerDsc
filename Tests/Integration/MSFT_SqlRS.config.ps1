@@ -192,3 +192,17 @@ Configuration MSFT_SqlRS_InstallReportingServices_RestoreToNoSsl_Config
         }
     }
 }
+
+Configuration MSFT_SqlRS_StopReportingServicesInstance_Config
+{
+    Import-DscResource -ModuleName 'PSDscResources'
+
+    node localhost
+    {
+        Service ('StopReportingServicesInstance{0}' -f $Node.InstanceName)
+        {
+            Name   = ('ReportServer${0}' -f $Node.InstanceName)
+            State  = 'Stopped'
+        }
+    }
+}

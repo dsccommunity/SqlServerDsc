@@ -31,9 +31,12 @@ ConvertFrom-StringData @'
     BringClusterResourcesOffline = Bringing the SQL Server resources {0} offline.
     BringSqlServerClusterResourcesOnline = Bringing the SQL Server resource back online.
     BringSqlServerAgentClusterResourcesOnline = Bringing the SQL Server Agent resource online.
-    GetServiceInformation = Getting {0} service information.
-    RestartService = {0} service restarting.
-    StartingDependentService = Starting service {0}
+    GetServiceInformation = Getting information about service '{0}'.
+    RestartService = '{0}' service is restarting.
+    StoppingService = '{0}' service is stopping.
+    StartingService = '{0}' service is starting.
+    WaitServiceRestart = Waiting {0} seconds before starting service '{1}'.
+    StartingDependentService = Starting service '{0}'.
     WaitingInstanceTimeout = Waiting for instance {0}\\{1} to report status online, with a timeout value of {2} seconds.
     FailedToConnectToInstanceTimeout = Failed to connect to the instance {0}\\{1} within the timeout period of {2} seconds.
     ExecuteQueryWithResultsFailed = Executing query with results failed on database '{0}'.

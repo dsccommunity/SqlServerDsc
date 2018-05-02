@@ -20,15 +20,18 @@ tests.
 The integration tests will install the following instances and leave them on the
 AppVeyor build worker for other integration tests to use.
 
-Instance | Feature | AS server mode
---- | --- | ---
-DSCSQL2016 | SQLENGINE,AS,CONN,BC,SDK | MULTIDIMENSIONAL
-DSCTABULAR | AS,CONN,BC,SDK | TABULAR
-MSSQLSERVER | SQLENGINE,CONN,BC,SDK | -
+Instance | Feature | AS server mode | State
+--- | --- | --- | ---
+DSCSQL2016 | SQLENGINE,AS,CONN,BC,SDK | MULTIDIMENSIONAL | Running
+DSCTABULAR | AS,CONN,BC,SDK | TABULAR | Stopped
+MSSQLSERVER | SQLENGINE,CONN,BC,SDK | - | Stopped
 
-All instances have a SQL Server Agent that is started.
+All running Database Engine instances also have a SQL Server Agent that is started.
 
 The instance DSCSQL2016 support mixed authentication mode.
+
+>**Note:** Some services are stopped to save memory on the build worker. See the
+>column *State*.
 
 ### Properties for all instances
 
@@ -57,6 +60,28 @@ sa | P@ssw0rd1 | Administrator of the Database Engine instances DSCSQL2016. |
 with this user and that means that this user must have permission to access the
 properties `IsClustered` and `IsHadrEnable`.*
 
+## SqlAlwaysOnService
+
+**Run order:** 2
+
+**Depends on:** SqlSetup
+
+The integration test will install a loopback adapter named 'ClusterNetwork' with
+an IP address of '192.168.40.10'. To be able to activate the AlwaysOn service the
+tests creates an Active Directory Detached Cluster with an IP address of
+'192.168.40.11' and the cluster will ignore any other static IP addresses.
+
+>**Note:** During the tests the gateway of the loopback adatper named 'ClusterNetwork'
+>will be set to '192.168.40.254', because it is a requirement to create the cluster,
+>but the gateway will be removed in the last clean up test. Gateway is removed so
+>that there will be no conflict with the default gateway.
+
+>*Note:** The Active Directory Detached Cluster is not fully functioning in the
+>sense that it cannot start the Name resource in the 'Cluster Group', but it
+>starts enough to be able to run integration tests for AlwaysOn service.s
+
+The tests will leave the AlwaysOn service disabled.
+
 ## SqlRS
 
 **Run order:** 2
@@ -68,7 +93,10 @@ AppVeyor build worker for other integration tests to use.
 
 Instance | Feature | Description
 --- | --- | ---
-DSCRS2016 | RS | The Reporting Services is left initialized, and in a working state.
+DSCRS2016 | RS | The Reporting Services is initialized, and in a working state.
+
+>**Note:** The Reporting Services service is stopped to save memory on the build
+>worker.
 
 ### Properties for the instance
 

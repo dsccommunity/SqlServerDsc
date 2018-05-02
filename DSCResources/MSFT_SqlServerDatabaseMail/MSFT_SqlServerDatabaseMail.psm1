@@ -298,7 +298,6 @@ function Set-TargetResource
     {
         if ($Ensure -eq 'Present')
         {
-
             $databaseMailEnabledRunValue = $sqlServerObject.Configuration.DatabaseMailEnabled.RunValue
             if ($databaseMailEnabledRunValue -eq 1)
             {
