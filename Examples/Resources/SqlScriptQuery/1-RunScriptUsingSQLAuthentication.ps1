@@ -20,9 +20,9 @@ Configuration Example
             ServerInstance = 'localhost\SQL2016'
             Credential     = $SqlCredential
 
-            SetQuery    = 'Set query'
-            TestQuery  = 'Test query'
-            GetQuery    = 'Get query'
+            SetQuery       = 'Set query'
+            TestQuery      = 'Test query'
+            GetQuery       = 'Get query'
             Variable       = @('FilePath=C:\temp\log\AuditFiles')
         }
     }

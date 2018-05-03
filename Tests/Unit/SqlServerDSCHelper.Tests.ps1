@@ -1844,7 +1844,7 @@ InModuleScope $script:moduleName {
             }
 
             It 'Should return "$true"' {
-                Test-ActiveNode -ServerObject $mockServerObject | Should Be $true
+                Test-ActiveNode -ServerObject $mockServerObject | Should -Be $true
             }
         }
 
@@ -1862,7 +1862,79 @@ InModuleScope $script:moduleName {
 
                 $mockServerObject.ComputerNamePhysicalNetBIOS = $ComputerNamePhysicalNetBIOS
 
-                Test-ActiveNode -ServerObject $mockServerObject | Should Be $Result
+                Test-ActiveNode -ServerObject $mockServerObject | Should -Be $Result
+            }
+        }
+    }
+
+    Describe "Invoke-SqlScript" {
+        $invokeScriptFileParameters = @{
+            ServerInstance = $env:COMPUTERNAME
+            InputFile = "set.sql"
+        }
+
+        $invokeScriptQueryParameters = @{
+            ServerInstance = $env:COMPUTERNAME
+            InputFile = "Test Query"
+        }
+
+        Context 'Invoke-SqlScript fails to import SQLPS module' {
+            $throwMessage = "Failed to import SQLPS module."
+
+            Mock -CommandName Import-SQLPSModule -MockWith {
+                throw $throwMessage
+            }
+
+            It 'Should throw the correct error from Import-Module' {
+                { Invoke-SqlScript @invokeScriptFileParameters } | Should -Throw $throwMessage
+            }
+        }
+
+        Context 'Invoke-SqlScript is called with credentials' {
+            $passwordPlain = "password"
+            $user = "User"
+
+            Mock -CommandName Import-SQLPSModule -MockWith {}
+            Mock -CommandName Invoke-Sqlcmd -ParameterFilter {
+                ($Username -eq $user) -and ($Password -eq $passwordPlain)
+            }
+
+            $password = ConvertTo-SecureString -String $passwordPlain -AsPlainText -Force
+            $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $user, $password
+
+            It 'Should call Invoke-Sqlcmd with correct File parameterset parameters' {
+                $invokeScriptParameters.Add("Credential", $cred)
+                $null = Invoke-SqlScript @invokeScriptFileParameters
+
+                Assert-MockCalled -CommandName Invoke-Sqlcmd -ParameterFilter {
+                    ($Username -eq $user) -and ($Password -eq $passwordPlain)
+                } -Times 1 -Exactly -Scope It
+            }
+
+            It 'Should call Invoke-Sqlcmd with correct Query parameterset parameters' {
+                $invokeScriptParameters.Add("Credential", $cred)
+                $null = Invoke-SqlScript @invokeScriptQueryParameters
+
+                Assert-MockCalled -CommandName Invoke-Sqlcmd -ParameterFilter {
+                    ($Username -eq $user) -and ($Password -eq $passwordPlain)
+                } -Times 1 -Exactly -Scope It
+            }
+        }
+
+        Context 'Invoke-SqlScript fails to execute the SQL scripts' {
+            $errorMessage = "Failed to run SQL Script"
+
+            Mock -CommandName Import-SQLPSModule -MockWith {}
+            Mock -CommandName Invoke-Sqlcmd -MockWith {
+                throw $errorMessage
+            }
+
+            It 'Should throw the correct error from File parameterset Invoke-Sqlcmd' {
+                { Invoke-SqlScript @invokeScriptFileParameters } | Should -Throw $errorMessage
+            }
+
+            It 'Should throw the correct error from Query parameterset Invoke-Sqlcmd' {
+                { Invoke-SqlScript @invokeScriptQueryParameters } | Should -Throw $errorMessage
             }
         }
     }

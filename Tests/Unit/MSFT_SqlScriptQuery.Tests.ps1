@@ -229,60 +229,6 @@ try
                 }
             }
         }
-
-        Describe "$resourceName\Invoke-SqlQuery" {
-            $invokeScriptParameters = @{
-                ServerInstance = $env:COMPUTERNAME
-                Query = "Test Query"
-            }
-
-            Context 'Invoke-SqlQuery fails to import SQLPS module' {
-                $throwMessage = "Failed to import SQLPS module."
-
-                Mock -CommandName Import-SQLPSModule -MockWith {
-                    throw $throwMessage
-                }
-
-                It 'Should throw the correct error from Import-Module' {
-                    { Invoke-SqlQuery @invokeScriptParameters } | Should Throw $throwMessage
-                }
-            }
-
-            Context 'Invoke-SqlQuery is called with credentials' {
-                $passwordPlain = "password"
-                $user = "User"
-
-                Mock -CommandName Import-SQLPSModule -MockWith {}
-                Mock -CommandName Invoke-Sqlcmd -ParameterFilter {
-                    ($Username -eq $user) -and ($Password -eq $passwordPlain)
-                }
-
-                $password = ConvertTo-SecureString -String $passwordPlain -AsPlainText -Force
-                $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $user, $password
-
-                It 'Should call Invoke-Sqlcmd with correct parameters' {
-                    $invokeScriptParameters.Add("Credential", $cred)
-                    $null = Invoke-SqlQuery @invokeScriptParameters
-
-                    Assert-MockCalled -CommandName Invoke-Sqlcmd -ParameterFilter {
-                        ($Username -eq $user) -and ($Password -eq $passwordPlain)
-                    } -Times 1 -Exactly -Scope It
-                }
-            }
-
-            Context 'Invoke-SqlQuery fails to execute the SQL scripts' {
-                $errorMessage = "Failed to run SQL Script"
-
-                Mock -CommandName Import-SQLPSModule -MockWith {}
-                Mock -CommandName Invoke-Sqlcmd -MockWith {
-                    throw $errorMessage
-                }
-
-                It 'Should throw the correct error from Invoke-Sqlcmd' {
-                    { Invoke-SqlQuery @invokeScriptParameters } | Should Throw $errorMessage
-                }
-            }
-        }
     }
 }
 finally

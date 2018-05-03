@@ -6,18 +6,16 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                    = 'localhost'
+            NodeName     = 'localhost'
+            ServerName   = $env:COMPUTERNAME
+            InstanceName = 'DSCTEST'
+            DatabaseName = 'ScriptDatabase1'
 
-            ServerName                  = $env:COMPUTERNAME
-            InstanceName                = 'DSCTEST'
-
-            DatabaseName                = 'ScriptDatabase1'
-
-            GetSqlQuery                = @'
+            GetSqlQuery  = @'
 SELECT Name FROM sys.databases WHERE Name = '$(DatabaseName)' FOR JSON AUTO
 '@
 
-            TestSqlQuery               = @'
+            TestSqlQuery = @'
 if (select count(name) from sys.databases where name = '$(DatabaseName)') = 0
 BEGIN
     RAISERROR ('Did not find database [$(DatabaseName)]', 16, 1)
@@ -28,7 +26,7 @@ BEGIN
 END
 '@
 
-            SetSqlQuery                = @'
+            SetSqlQuery = @'
 CREATE DATABASE [$(DatabaseName)]
 '@
 

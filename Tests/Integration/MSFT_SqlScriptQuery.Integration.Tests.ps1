@@ -207,7 +207,6 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-
                 $resourceCurrentState.GetResult | Should -Match $mockDatabase2Name
                 $resourceCurrentState.GetQuery | Should -Be $mockGetQuery
                 $resourceCurrentState.TestQuery | Should -Be $mockTestQuery

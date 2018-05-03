@@ -12,18 +12,10 @@
     - **Get-NetIPAddressNetwork:** Returns the IP network address from an IPv4 address
       and prefix length.
   - Enabled PSSA rule violations to fail build in the CI environment.
-<<<<<<< HEAD
-<<<<<<< HEAD
   - Renamed SqlServerDsc.psd1 to be consistent
     ([issue #1116](https://github.com/PowerShell/SqlServerDsc/issues/1116)).
     [Glenn Sarti (@glennsarti)](https://github.com/glennsarti)
   - [Chase Wilson(@chasewilson)](https://github.com/chasewilson): Added SqlScriptQuery Resource
-=======
-  - Chase Wilson [Chase Wilson(@chasewilson)](https://github.com/chasewilson): Added new resource SqlScriptQuery
->>>>>>> updates for rebase
-=======
-  - [Chase Wilson(@chasewilson)](https://github.com/chasewilson): Added SqlScriptQuery Resource
->>>>>>> updates for rebase and merge from upstream
 - Changes to Unit Tests
   - Updated
     the following resources unit test template to version 1.2.1
@@ -70,20 +62,14 @@
     SQL Server. Although, if the account ends with '$' it is considered a
     ([issue #1055](https://github.com/PowerShell/SqlServerDsc/issues/1055)).
         Managed Service Account\
-- Changes to SqlScript
-  - Adds string queries in addition with updated error handling.
     ([issue #719](https://github.com/PowerShell/SqlServerDsc/issues/719))
 - Changes to Integration Tests
   - Replace xStorage dsc resource module with StorageDsc
     ([issue #1038](https://github.com/PowerShell/SqlServerDsc/issues/1038)).
-  - Update SqlScript
-    ([issue #719](https://github.com/PowerShell/SqlServerDsc/issues/719))
 - Changes to Unit Tests
   - Updated the following resources unit test template to version 1.2.1
     ([issue #999](https://github.com/PowerShell/SqlServerDsc/issues/999)).
     - SqlAlias
-    ([issue #719](https://github.com/PowerShell/SqlServerDsc/issues/719))
-    -SqlScript
 
 ## 11.0.0.0
 
