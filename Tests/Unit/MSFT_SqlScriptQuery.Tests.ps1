@@ -70,7 +70,7 @@ try
                 }
 
                 It 'Should throw the correct error from Import-Module' {
-                    { Get-TargetResource @testParameters } | Should Throw $throwMessage
+                    { Get-TargetResource @testParameters } | Should -Throw $throwMessage
                 }
             }
 
@@ -83,10 +83,10 @@ try
                 It 'Should return the expected results' {
                     $result = Get-TargetResource @testParameters
 
-                    $result.ServerInstance | Should Be $testParameters.ServerInstance
-                    $result.GetQuery | Should Be $testParameters.GetQuery
-                    $result.SetQuery | Should Be $testParameters.SetQuery
-                    $result.TestQuery | Should Be $testParameters.TestQuery
+                    $result.ServerInstance | Should -Be $testParameters.ServerInstance
+                    $result.GetQuery | Should -Be $testParameters.GetQuery
+                    $result.SetQuery | Should -Be $testParameters.SetQuery
+                    $result.TestQuery | Should -Be $testParameters.TestQuery
                     $result | Should BeOfType Hashtable
                 }
             }
@@ -99,10 +99,10 @@ try
 
                 It 'Should return the expected results' {
                     $result = Get-TargetResource @testParametersTimeout
-                    $result.ServerInstance | Should Be $testParametersTimeout.ServerInstance
-                    $result.GetQuery | Should Be $testParameters.GetQuery
-                    $result.SetQuery | Should Be $testParameters.SetQuery
-                    $result.TestQuery | Should Be $testParameters.TestQuery
+                    $result.ServerInstance | Should -Be $testParametersTimeout.ServerInstance
+                    $result.GetQuery | Should -Be $testParameters.GetQuery
+                    $result.SetQuery | Should -Be $testParameters.SetQuery
+                    $result.TestQuery | Should -Be $testParameters.TestQuery
                     $result | Should BeOfType Hashtable
                 }
             }
@@ -116,7 +116,7 @@ try
                 }
 
                 It 'Should throw the correct error from Invoke-Sqlcmd' {
-                    { Get-TargetResource @testParameters } | Should Throw $errorMessage
+                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
             }
         }
@@ -129,7 +129,7 @@ try
                 Mock -CommandName Import-SQLPSModule -MockWith { throw $throwMessage }
 
                 It 'Should throw the correct error from Import-Module' {
-                    { Set-TargetResource @testParameters } | Should Throw $throwMessage
+                    { Set-TargetResource @testParameters } | Should -Throw $throwMessage
                 }
             }
 
@@ -141,7 +141,7 @@ try
 
                 It 'Should return the expected results' {
                     $result = Set-TargetResource @testParameters
-                    $result | Should Be ''
+                    $result | Should -Be ''
                 }
             }
 
@@ -153,7 +153,7 @@ try
 
                 It 'Should return the expected results' {
                     $result = Set-TargetResource @testParametersTimeout
-                    $result | Should Be ''
+                    $result | Should -Be ''
                 }
             }
 
@@ -166,7 +166,7 @@ try
                 }
 
                 It 'Should throw the correct error from Invoke-Sqlcmd' {
-                    { Set-TargetResource @testParameters } | Should Throw $errorMessage
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
             }
         }
@@ -180,7 +180,7 @@ try
                 }
 
                 It 'Should throw the correct error from Import-Module' {
-                    { Set-TargetResource @testParameters } | Should Throw $throwMessage
+                    { Set-TargetResource @testParameters } | Should -Throw $throwMessage
                 }
             }
 
@@ -190,7 +190,7 @@ try
 
                 It 'Should return true' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
             }
 
@@ -200,7 +200,7 @@ try
 
                 It 'Should return true' {
                     $result = Test-TargetResource @testParametersTimeout
-                    $result | Should Be $true
+                    $result | Should -Be $true
                 }
             }
 
@@ -212,7 +212,7 @@ try
 
                 It 'Should return false' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should Be $false
+                    $result | Should -Be $false
                 }
             }
 
@@ -225,7 +225,7 @@ try
                 }
 
                 It 'Should throw the correct error from Invoke-Sqlcmd' {
-                    { Test-TargetResource @testParameters } | Should Throw $errorMessage
+                    { Test-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
             }
         }
