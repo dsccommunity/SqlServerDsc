@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Automated unit test for MSFT_SqlScript DSC Resource
+        Automated unit test for MSFT_SqlScriptQuery DSC Resource
 #>
 
 # Suppression of this PSSA rule allowed in tests.
@@ -21,7 +21,7 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.
 
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName 'SqlServerDsc' `
-    -DSCResourceName 'MSFT_SqlScript'  `
+    -DSCResourceName 'MSFT_SqlScriptQuery'  `
     -TestType Unit
 
 #endregion HEADER
@@ -41,22 +41,22 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope 'MSFT_SqlScript' {
+    InModuleScope 'MSFT_SqlScriptQuery' {
         $script:DSCModuleName = 'SqlServerDsc'
-        $resourceName         = 'MSFT_SqlScript'
+        $resourceName         = 'MSFT_SqlScriptQuery'
 
         $testParameters = @{
             ServerInstance = $env:COMPUTERNAME
-            SetFilePath    = "set.sql"
-            GetFilePath    = "get.sql"
-            TestFilePath   = "test.sql"
+            GetQuery       = "GetQuery;"
+            TestQuery      = "TestQuery;"
+            SetQuery       = "SetQuery;"
         }
 
         $testParametersTimeout = @{
             ServerInstance = $env:COMPUTERNAME
-            SetFilePath    = "set-timeout.sql"
-            GetFilePath    = "get-timeout.sql"
-            TestFilePath   = "test-timeout.sql"
+            GetQuery       = "GetQuery;"
+            TestQuery      = "TestQuery;"
+            SetQuery       = "SetQuery;"
             QueryTimeout   = 30
         }
 
@@ -82,11 +82,12 @@ try
 
                 It 'Should return the expected results' {
                     $result = Get-TargetResource @testParameters
+
                     $result.ServerInstance | Should -Be $testParameters.ServerInstance
-                    $result.SetFilePath | Should -Be $testParameters.SetFilePath
-                    $result.GetFilePath | Should -Be $testParameters.GetFilePath
-                    $result.TestFilePath | Should -Be $testParameters.TestFilePath
-                    $result | Should -BeOfType Hashtable
+                    $result.GetQuery | Should -Be $testParameters.GetQuery
+                    $result.SetQuery | Should -Be $testParameters.SetQuery
+                    $result.TestQuery | Should -Be $testParameters.TestQuery
+                    $result | Should BeOfType Hashtable
                 }
             }
 
@@ -99,14 +100,14 @@ try
                 It 'Should return the expected results' {
                     $result = Get-TargetResource @testParametersTimeout
                     $result.ServerInstance | Should -Be $testParametersTimeout.ServerInstance
-                    $result.SetFilePath | Should -Be $testParametersTimeout.SetFilePath
-                    $result.GetFilePath | Should -Be $testParametersTimeout.GetFilePath
-                    $result.TestFilePath | Should -Be $testParametersTimeout.TestFilePath
-                    $result | Should -BeOfType Hashtable
+                    $result.GetQuery | Should -Be $testParameters.GetQuery
+                    $result.SetQuery | Should -Be $testParameters.SetQuery
+                    $result.TestQuery | Should -Be $testParameters.TestQuery
+                    $result | Should BeOfType Hashtable
                 }
             }
 
-            Context 'Get-TargetResource throws an error when running the script in the GetFilePath parameter' {
+            Context 'Get-TargetResource throws an error when running the script in the GetQuery parameter' {
                 $errorMessage = "Failed to run SQL Script"
 
                 Mock -CommandName Import-SQLPSModule
@@ -140,7 +141,7 @@ try
 
                 It 'Should return the expected results' {
                     $result = Set-TargetResource @testParameters
-                    $result | Should Be ''
+                    $result | Should -Be ''
                 }
             }
 
@@ -152,7 +153,7 @@ try
 
                 It 'Should return the expected results' {
                     $result = Set-TargetResource @testParametersTimeout
-                    $result | Should Be ''
+                    $result | Should -Be ''
                 }
             }
 
