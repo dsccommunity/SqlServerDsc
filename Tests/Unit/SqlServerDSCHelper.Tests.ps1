@@ -19,6 +19,9 @@ Import-Module (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent | Split-P
 # Loading mocked classes
 Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SMO.cs )
 
+Add-Type -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests') -ChildPath 'Unit') -ChildPath 'Stubs') -ChildPath 'SqlPowerShellSqlExecutionException.cs')
+Import-Module -Name (Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests') -ChildPath 'Unit') -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Global -Force
+
 # Begin Testing
 InModuleScope $script:moduleName {
     $mockNewObject_MicrosoftAnalysisServicesServer = {
@@ -1791,7 +1794,7 @@ InModuleScope $script:moduleName {
                 } -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Stop-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 2
-           }
+        }
         }
 
         Context 'When restarting a Report Services named instance using a wait timer' {
@@ -1818,7 +1821,7 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Stop-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 2
                 Assert-MockCalled -CommandName Start-Sleep -Scope It -Exactly -Times 1
-           }
+        }
         }
     }
 
@@ -1868,6 +1871,7 @@ InModuleScope $script:moduleName {
     }
 
     Describe "Invoke-SqlScript" {
+
         $invokeScriptFileParameters = @{
             ServerInstance = $env:COMPUTERNAME
             InputFile = "set.sql"

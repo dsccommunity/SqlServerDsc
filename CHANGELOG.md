@@ -5,7 +5,8 @@
 - Changes to SqlServerDsc
   - Moved decoration for integration test to resolve a breaking change in
     DscResource.Tests.
-  - [Chase Wilson(@chasewilson)](https://github.com/chasewilson): Added SqlScriptQuery Resource
+  - [Chase Wilson(@chasewilson)](https://github.com/chasewilson):
+    - Added SqlScriptQueryResource
 
 ## 11.2.0.0
 

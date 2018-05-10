@@ -63,9 +63,9 @@ Configuration Example
         {
             ServerInstance       = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
 
-            GetQuery          = $Node.GetSqlScriptQuery
-            TestQuery         = $Node.TestSqlScriptQuery
-            SetQuery          = $Node.SetSqlScriptQuery
+            GetQuery             = $Node.GetSqlQuery
+            TestQuery            = $Node.TestSqlQuery
+            SetQuery             = $Node.SetSqlQuery
             Variable             = @(
                 ('DatabaseName={0}' -f $Node.DatabaseName)
             )
