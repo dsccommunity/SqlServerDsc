@@ -1,3 +1,12 @@
+<#
+    This is used to make sure the integration test run in the correct order.
+    The integration test should run after the integration tests SqlServerLogin
+    and SqlServerRole, so any problems in those will be caught first, since
+    these integration tests are using those resources.
+#>
+[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 4)]
+param()
+
 $ConfigurationData = @{
     AllNodes = @(
         @{

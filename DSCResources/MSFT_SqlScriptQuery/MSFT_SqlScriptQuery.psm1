@@ -9,17 +9,17 @@ Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script
         The name of an instance of the Database Engine. For a default instance, only specify the computer name. For a named instances,
         use the format ComputerName\InstanceName.
 
-    .PARAMETER SetFilePath
-        Path to the T-SQL file that will perform Set action.
-
-    .PARAMETER GetFilePath
-        Path to the T-SQL file that will perform Get action.
+    .PARAMETER GetQuery
+        The full query that will perform the Get Action
         Any values returned by the T-SQL queries will also be returned by the cmdlet Get-DscConfiguration through the `GetResult` property.
 
-    .PARAMETER TestFilePath
-        Path to the T-SQL file that will perform Test action.
+    .PARAMETER TestQuery
+        The full query that will perform the Test Action
         Any script that does not throw an error or returns null is evaluated to true.
         The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text, and will not cause the test to return false.
+
+    .PARAMETER SetQuery
+        The full query that will perform the Set Action
 
     .PARAMETER Credential
         The credentials to authenticate with, using SQL Authentication. To authenticate using Windows Authentication, assign the credentials
@@ -36,7 +36,7 @@ Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $script
         In some SQL Server versions there is a bug in Invoke-Sqlcmd where the normal default value 0 (no timeout) is not respected and the default value is incorrectly set to 30 seconds.
 
     .OUTPUTS
-        Hash table containing key 'GetResult' which holds the value of the result from the SQL script that was ran from the parameter 'GetFilePath'.
+        Hash table containing key 'GetResult' which holds the value of the result from the SQL script that was ran from the parameter 'GetQuery'.
 #>
 function Get-TargetResource
 {
@@ -50,15 +50,15 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $SetFilePath,
+        $GetQuery,
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $GetFilePath,
+        $TestQuery,
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $TestFilePath,
+        $SetQuery,
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -75,12 +75,12 @@ function Get-TargetResource
     )
 
     $invokeParameters = @{
+        Query          = $GetQuery
         ServerInstance = $ServerInstance
-        InputFile = $GetFilePath
-        Credential = $Credential
-        Variable = $Variable
-        QueryTimeout = $QueryTimeout
-        ErrorAction = 'Stop'
+        Credential     = $Credential
+        Variable       = $Variable
+        QueryTimeout   = $QueryTimeout
+        ErrorAction    = 'Stop'
     }
 
     $result = Invoke-SqlScript @invokeParameters
@@ -89,9 +89,9 @@ function Get-TargetResource
 
     $returnValue = @{
         ServerInstance = [System.String] $ServerInstance
-        SetFilePath    = [System.String] $SetFilePath
-        GetFilePath    = [System.String] $GetFilePath
-        TestFilePath   = [System.String] $TestFilePath
+        GetQuery       = [System.String] $GetQuery
+        TestQuery      = [System.String] $TestQuery
+        SetQuery       = [System.String] $SetQuery
         Credential     = [System.Object] $Credential
         QueryTimeout   = [System.UInt32] $QueryTimeout
         Variable       = [System.String[]] $Variable
@@ -109,17 +109,17 @@ function Get-TargetResource
         The name of an instance of the Database Engine. For a default instance, only specify the computer name. For a named instances,
         use the format ComputerName\InstanceName.
 
-    .PARAMETER SetFilePath
-        Path to the T-SQL file that will perform Set action.
-
-    .PARAMETER GetFilePath
-        Path to the T-SQL file that will perform Get action.
+    .PARAMETER GetQuery
+        The full query that will perform the Get Action
         Any values returned by the T-SQL queries will also be returned by the cmdlet Get-DscConfiguration through the `GetResult` property.
 
-    .PARAMETER TestFilePath
-        Path to the T-SQL file that will perform Test action.
+    .PARAMETER TestQuery
+        The full query that will perform the Test Action
         Any script that does not throw an error or returns null is evaluated to true.
         The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text, and will not cause the test to return false.
+
+    .PARAMETER SetQuery
+        The full query that will perform the Set Action
 
     .PARAMETER Credential
         The credentials to authenticate with, using SQL Authentication. To authenticate using Windows Authentication, assign the credentials
@@ -146,15 +146,15 @@ function Set-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $SetFilePath,
+        $GetQuery,
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $GetFilePath,
+        $TestQuery,
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $TestFilePath,
+        $SetQuery,
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -169,13 +169,14 @@ function Set-TargetResource
         [System.String[]]
         $Variable
     )
+
     $invokeParameters = @{
+        Query          = $SetQuery
         ServerInstance = $ServerInstance
-        InputFile = $SetFilePath
-        Credential = $Credential
-        Variable = $Variable
-        QueryTimeout = $QueryTimeout
-        ErrorAction = 'Stop'
+        Credential     = $Credential
+        Variable       = $Variable
+        QueryTimeout   = $QueryTimeout
+        ErrorAction    = 'Stop'
     }
 
     Invoke-SqlScript @invokeParameters
@@ -189,17 +190,17 @@ function Set-TargetResource
         The name of an instance of the Database Engine. For a default instance, only specify the computer name. For a named instances,
         use the format ComputerName\InstanceName.
 
-    .PARAMETER SetFilePath
-        Path to the T-SQL file that will perform Set action.
-
-    .PARAMETER GetFilePath
-        Path to the T-SQL file that will perform Get action.
+    .PARAMETER GetQuery
+        The full query that will perform the Get Action
         Any values returned by the T-SQL queries will also be returned by the cmdlet Get-DscConfiguration through the `GetResult` property.
 
-    .PARAMETER TestFilePath
-        Path to the T-SQL file that will perform Test action.
+    .PARAMETER TestQuery
+        The full query that will perform the Test Action
         Any script that does not throw an error or returns null is evaluated to true.
         The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text, and will not cause the test to return false.
+
+    .PARAMETER SetQuery
+        The full query that will perform the Set Action
 
     .PARAMETER Credential
         The credentials to authenticate with, using SQL Authentication. To authenticate using Windows Authentication, assign the credentials
@@ -228,15 +229,15 @@ function Test-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $SetFilePath,
+        $GetQuery,
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $GetFilePath,
+        $TestQuery,
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $TestFilePath,
+        $SetQuery,
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -255,12 +256,12 @@ function Test-TargetResource
     try
     {
         $invokeParameters = @{
+            Query          = $TestQuery
             ServerInstance = $ServerInstance
-            InputFile = $TestFilePath
-            Credential = $Credential
-            Variable = $Variable
-            QueryTimeout = $QueryTimeout
-            ErrorAction = 'Stop'
+            Credential     = $Credential
+            Variable       = $Variable
+            QueryTimeout   = $QueryTimeout
+            ErrorAction    = 'Stop'
         }
 
         $result = Invoke-SqlScript @invokeParameters

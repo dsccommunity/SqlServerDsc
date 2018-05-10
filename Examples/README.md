@@ -21,6 +21,7 @@ These are the links to the examples for each individual resource.
 - [SqlDatabaseRole](/Examples/Resources/SqlDatabaseRole)
 - [SqlRS](/Examples/Resources/SqlRS)
 - [SqlScript](/Examples/Resources/SqlScript)
+- [SqlScriptQuery](/Examples/Resources/SqlScriptQuery)
 - [SqlServerConfiguration](/Examples/Resources/SqlServerConfiguration)
 - [SqlServerDatabaseMail](/Examples/Resources/SqlServerDatabaseMail)
 - [SqlServerEndpoint](/Examples/Resources/SqlServerEndpoint)
