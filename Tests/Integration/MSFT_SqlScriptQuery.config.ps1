@@ -1,12 +1,3 @@
-<#
-    This is used to make sure the integration test run in the correct order.
-    The integration test should run after the integration tests SqlServerLogin
-    and SqlServerRole, so any problems in those will be caught first, since
-    these integration tests are using those resources.
-#>
-[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 4)]
-param()
-
 $ConfigurationData = @{
     AllNodes = @(
         @{
@@ -58,8 +49,8 @@ Configuration MSFT_SqlScriptQuery_CreateDependencies_Config
     Import-DscResource -ModuleName 'PSDscResources'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
-
+    node localhost
+    {
         SqlServerLogin ('Create{0}' -f $UserCredential.UserName)
         {
             Ensure                         = 'Present'
@@ -69,10 +60,8 @@ Configuration MSFT_SqlScriptQuery_CreateDependencies_Config
             LoginMustChangePassword        = $false
             LoginPasswordExpirationEnabled = $true
             LoginPasswordPolicyEnforced    = $true
-
             ServerName                     = $Node.ServerName
             InstanceName                   = $Node.InstanceName
-
             PsDscRunAsCredential           = $SqlAdministratorCredential
         }
 
@@ -87,7 +76,6 @@ Configuration MSFT_SqlScriptQuery_CreateDependencies_Config
             )
 
             PsDscRunAsCredential = $SqlAdministratorCredential
-
             DependsOn            = @(
                 ('[SqlServerLogin]Create{0}' -f $UserCredential.UserName)
             )
@@ -107,19 +95,19 @@ Configuration MSFT_SqlScriptQuery_RunSqlScriptQueryAsWindowsUser_Config
 
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node localhost
+    {
         SqlScriptQuery 'Integration_Test'
         {
             ServerInstance       = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
-
-            GetQuery    = $Node.GetQuery
-            TestQuery   = $Node.TestQuery
-            SetQuery    = $Node.SetQuery
-            Variable    = @(
+            GetQuery             = $Node.GetQuery
+            TestQuery            = $Node.TestQuery
+            SetQuery             = $Node.SetQuery
+            Variable             = @(
                 ('DatabaseName={0}' -f $Node.Database1Name)
             )
-            QueryTimeout         = 30
 
+            QueryTimeout         = 30
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
@@ -137,19 +125,19 @@ Configuration MSFT_SqlScriptQuery_RunSqlScriptQueryAsSqlUser_Config
 
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node localhost
+    {
         SqlScriptQuery 'Integration_Test'
         {
             ServerInstance = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
-
-            GetQuery    = $Node.GetQuery
-            TestQuery   = $Node.TestQuery
-            SetQuery    = $Node.SetQuery
-            Variable    = @(
+            GetQuery     = $Node.GetQuery
+            TestQuery    = $Node.TestQuery
+            SetQuery     = $Node.SetQuery
+            Variable     = @(
                 ('DatabaseName={0}' -f $Node.Database2Name)
             )
-            QueryTimeout   = 30
-            Credential     = $UserCredential
+            QueryTimeout = 30
+            Credential   = $UserCredential
         }
     }
 }

@@ -169,6 +169,7 @@ function Set-TargetResource
         [System.String[]]
         $Variable
     )
+
     $invokeParameters = @{
         ServerInstance = $ServerInstance
         InputFile = $SetFilePath

@@ -1,12 +1,3 @@
-<#
-    This is used to make sure the integration test run in the correct order.
-    The integration test should run after the integration tests SqlServerLogin
-    and SqlServerRole, so any problems in those will be caught first, since
-    these integration tests are using those resources.
-#>
-[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 4)]
-param()
-
 $ConfigurationData = @{
     AllNodes = @(
         @{
@@ -64,7 +55,8 @@ Configuration MSFT_SqlScript_CreateDependencies_Config
     Import-DscResource -ModuleName 'PSDscResources'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node localhost
+    {
         Script 'CreateFile_GetSqlScript'
         {
             SetScript  = {
@@ -195,7 +187,8 @@ Configuration MSFT_SqlScript_RunSqlScriptAsWindowsUser_Config
 
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node localhost
+    {
         SqlScript 'Integration_Test'
         {
             ServerInstance       = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
@@ -225,7 +218,8 @@ Configuration MSFT_SqlScript_RunSqlScriptAsSqlUser_Config
 
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node localhost
+    {
         SqlScript 'Integration_Test'
         {
             ServerInstance = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName

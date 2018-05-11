@@ -1871,7 +1871,6 @@ InModuleScope $script:moduleName {
     }
 
     Describe "Invoke-SqlScript" {
-
         $invokeScriptFileParameters = @{
             ServerInstance = $env:COMPUTERNAME
             InputFile = "set.sql"
