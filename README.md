@@ -136,6 +136,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   Services to use a database engine in another instance.
 * [**SqlScript**](#sqlscript) resource to extend DSC Get/Set/Test
   functionality to T-SQL.
+* [**SqlScriptQuery**](#sqlscriptquery) resource to extend DSC Get/Set/Test
+  functionality to T-SQL.
 * [**SqlServerConfiguration**](#sqlserverconfiguration) resource to manage
   [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx).
 * [**SqlServerDatabaseMail**](#sqlserverdatabasemail) resource

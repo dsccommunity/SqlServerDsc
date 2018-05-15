@@ -4,8 +4,8 @@ $ConfigurationData = @{
             NodeName      = 'localhost'
             ServerName    = $env:COMPUTERNAME
             InstanceName  = 'DSCSQL2016'
-            Database1Name = 'ScriptDatabase1'
-            Database2Name = 'ScriptDatabase2'
+            Database1Name = 'ScriptDatabase3'
+            Database2Name = 'ScriptDatabase4'
 
             GetQuery      = @'
 SELECT Name FROM sys.databases WHERE Name = '$(DatabaseName)' FOR JSON AUTO
@@ -29,58 +29,6 @@ CREATE DATABASE [$(DatabaseName)]
             PSDscAllowPlainTextPassword = $true
         }
     )
-}
-
-Configuration MSFT_SqlScriptQuery_CreateDependencies_Config
-{
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $UserCredential
-    )
-
-    Import-DscResource -ModuleName 'PSDscResources'
-    Import-DscResource -ModuleName 'SqlServerDsc'
-
-    node localhost
-    {
-        SqlServerLogin ('Create{0}' -f $UserCredential.UserName)
-        {
-            Ensure                         = 'Present'
-            Name                           = $UserCredential.UserName
-            LoginType                      = 'SqlLogin'
-            LoginCredential                = $UserCredential
-            LoginMustChangePassword        = $false
-            LoginPasswordExpirationEnabled = $true
-            LoginPasswordPolicyEnforced    = $true
-            ServerName                     = $Node.ServerName
-            InstanceName                   = $Node.InstanceName
-            PsDscRunAsCredential           = $SqlAdministratorCredential
-        }
-
-        SqlServerRole ('Add{0}ToDbCreator' -f $UserCredential.UserName)
-        {
-            Ensure               = 'Present'
-            ServerRoleName       = 'dbcreator'
-            ServerName           = $Node.ServerName
-            InstanceName         = $Node.InstanceName
-            Members              = @(
-                $UserCredential.UserName
-            )
-
-            PsDscRunAsCredential = $SqlAdministratorCredential
-            DependsOn            = @(
-                ('[SqlServerLogin]Create{0}' -f $UserCredential.UserName)
-            )
-        }
-    }
 }
 
 Configuration MSFT_SqlScriptQuery_RunSqlScriptQueryAsWindowsUser_Config
