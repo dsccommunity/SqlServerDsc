@@ -200,3 +200,11 @@ ScriptDatabase2 | DscAdmin1
 **Run order:** 5
 
 **Depends on:** SqlScript
+
+The integration test will leave the following databases on the SQL Server instance
+**DSCSQL2016**.
+
+Database name | Owner
+--- | ---
+ScriptDatabase3 | $env:COMPUTERNAME\SqlAdmin
+ScriptDatabase4 | DscAdmin1

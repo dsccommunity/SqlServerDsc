@@ -4,8 +4,8 @@ $ConfigurationData = @{
             NodeName      = 'localhost'
             ServerName    = $env:COMPUTERNAME
             InstanceName  = 'DSCSQL2016'
-            Database1Name = 'ScriptDatabase1'
-            Database2Name = 'ScriptDatabase2'
+            Database1Name = 'ScriptDatabase3'
+            Database2Name = 'ScriptDatabase4'
 
             GetQuery      = @'
 SELECT Name FROM sys.databases WHERE Name = '$(DatabaseName)' FOR JSON AUTO
