@@ -8,7 +8,7 @@
 param()
 
 $script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceFriendlyName = 'SqlScript'
+$script:DSCResourceFriendlyName = 'SqlScriptQuery'
 $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 if (-not $env:APPVEYOR -eq $true)
@@ -46,11 +46,11 @@ try
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
     . $configFile
 
-    $mockGetSqlScriptPath  = $ConfigurationData.AllNodes.GetSqlScriptPath
-    $mockTestSqlScriptPath = $ConfigurationData.AllNodes.TestSqlScriptPath
-    $mockSetSqlScriptPath  = $ConfigurationData.AllNodes.SetSqlScriptPath
-    $mockDatabase1Name     = $ConfigurationData.AllNodes.Database1Name
-    $mockDatabase2Name     = $ConfigurationData.AllNodes.Database2Name
+    $mockGetQuery      = $ConfigurationData.AllNodes.GetQuery
+    $mockTestQuery     = $ConfigurationData.AllNodes.TestQuery
+    $mockSetQuery      = $ConfigurationData.AllNodes.SetQuery
+    $mockDatabase1Name = $ConfigurationData.AllNodes.Database1Name
+    $mockDatabase2Name = $ConfigurationData.AllNodes.Database2Name
 
     Describe "$($script:DSCResourceName)_Integration" {
         BeforeAll {
@@ -91,7 +91,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_RunSqlScriptAsWindowsUser_Config"
+        $configurationName = "$($script:DSCResourceName)_RunSqlScriptQueryAsWindowsUser_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -170,13 +170,13 @@ try
                 }
 
                 $resultObject.Name | Should -Be $mockDatabase1Name
-                $resourceCurrentState.GetFilePath | Should -Be $mockGetSqlScriptPath
-                $resourceCurrentState.TestFilePath | Should -Be $mockTestSqlScriptPath
-                $resourceCurrentState.SetFilePath | Should -Be $mockSetSqlScriptPath
+                $resourceCurrentState.GetQuery | Should -Be $mockGetQuery
+                $resourceCurrentState.TestQuery | Should -Be $mockTestQuery
+                $resourceCurrentState.SetQuery | Should -Be $mockSetQuery
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_RunSqlScriptAsSqlUser_Config"
+        $configurationName = "$($script:DSCResourceName)_RunSqlScriptQueryAsSqlUser_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -217,9 +217,9 @@ try
                 }
 
                 $resourceCurrentState.GetResult | Should -Match $mockDatabase2Name
-                $resourceCurrentState.GetFilePath | Should -Be $mockGetSqlScriptPath
-                $resourceCurrentState.TestFilePath | Should -Be $mockTestSqlScriptPath
-                $resourceCurrentState.SetFilePath | Should -Be $mockSetSqlScriptPath
+                $resourceCurrentState.GetQuery | Should -Be $mockGetQuery
+                $resourceCurrentState.TestQuery | Should -Be $mockTestQuery
+                $resourceCurrentState.SetQuery | Should -Be $mockSetQuery
             }
         }
     }

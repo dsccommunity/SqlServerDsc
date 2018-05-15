@@ -55,7 +55,8 @@ Configuration MSFT_SqlScript_CreateDependencies_Config
     Import-DscResource -ModuleName 'PSDscResources'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node localhost
+    {
         Script 'CreateFile_GetSqlScript'
         {
             SetScript  = {
@@ -186,7 +187,8 @@ Configuration MSFT_SqlScript_RunSqlScriptAsWindowsUser_Config
 
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node localhost
+    {
         SqlScript 'Integration_Test'
         {
             ServerInstance       = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
@@ -216,7 +218,8 @@ Configuration MSFT_SqlScript_RunSqlScriptAsSqlUser_Config
 
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node localhost
+    {
         SqlScript 'Integration_Test'
         {
             ServerInstance = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
