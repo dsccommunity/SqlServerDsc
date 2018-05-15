@@ -194,3 +194,9 @@ Database name | Owner
 --- | ---
 ScriptDatabase1 | $env:COMPUTERNAME\SqlAdmin
 ScriptDatabase2 | DscAdmin1
+
+## SqlScriptQuery
+
+**Run order:** 5
+
+**Depends on:** SqlScript

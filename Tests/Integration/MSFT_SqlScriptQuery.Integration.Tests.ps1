@@ -4,7 +4,7 @@
     and SqlServerRole, so any problems in those will be caught first, since
     these integration tests are using those resources.
 #>
-[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 4)]
+[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 5)]
 param()
 
 $script:DSCModuleName = 'SqlServerDsc'
@@ -55,40 +55,6 @@ try
     Describe "$($script:DSCResourceName)_Integration" {
         BeforeAll {
             $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
-        }
-
-        $configurationName = "$($script:DSCResourceName)_CreateDependencies_Config"
-
-        Context ('When using configuration {0}' -f $configurationName) {
-            It 'Should compile and apply the MOF without throwing' {
-                {
-                    $configurationParameters = @{
-                        SqlAdministratorCredential = $mockSqlAdminCredential
-                        UserCredential             = $mockUserCredential
-                        OutputPath                 = $TestDrive
-                        # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData          = $ConfigurationData
-                    }
-
-                    & $configurationName @configurationParameters
-
-                    $startDscConfigurationParameters = @{
-                        Path         = $TestDrive
-                        ComputerName = 'localhost'
-                        Wait         = $true
-                        <#
-                            The Script resource generate _a lot_ of verbose output
-                            which slows down the build worker. Verbose is turned
-                            off for this particular test.
-                        #>
-                        Verbose      = $false
-                        Force        = $true
-                        ErrorAction  = 'Stop'
-                    }
-
-                    Start-DscConfiguration @startDscConfigurationParameters
-                } | Should -Not -Throw
-            }
         }
 
         $configurationName = "$($script:DSCResourceName)_RunSqlScriptQueryAsWindowsUser_Config"
