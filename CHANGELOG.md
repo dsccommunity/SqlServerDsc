@@ -6,7 +6,7 @@
   - Moved decoration for integration test to resolve a breaking change in
     DscResource.Tests.
   - New resources:
-    - Added SqlScriptQueryResource. [Chase Wilson(@chasewilson)](https://github.com/chasewilson)
+    - Added SqlScriptQueryResource. [Chase Wilson (@chasewilson)](https://github.com/chasewilson)
 
 ## 11.2.0.0
 
