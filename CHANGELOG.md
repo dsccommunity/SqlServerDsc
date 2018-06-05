@@ -5,6 +5,7 @@
 - Changes to SqlServerDsc
   - Moved decoration for integration test to resolve a breaking change in
     DscResource.Tests.
+  - Activated the GitHub App Stale on the GitHub repository.
   - New resources:
     - Added SqlScriptQueryResource. [Chase Wilson(@chasewilson)](https://github.com/chasewilson)
 
