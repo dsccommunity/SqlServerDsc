@@ -28,8 +28,6 @@ issues:
     - tests
     - documentation
     - on hold
-    - new module submission
-    - module proposal
 
   markComment: >
     This issue has been automatically marked as needs more information because
