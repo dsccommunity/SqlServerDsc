@@ -28,6 +28,7 @@ issues:
     - enhancement
     - tests
     - documentation
+    - resource proposal
     - on hold
 
   markComment: >
