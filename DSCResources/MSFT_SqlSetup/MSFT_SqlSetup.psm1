@@ -1926,7 +1926,7 @@ function Copy-ItemWithRobocopy
         [ValidateNotNullOrEmpty()]
         [System.String]
         $DestinationPath
-    }
+    )
     $quotedPath = '"{0}"' -f $Path
     $quotedDestinationPath = '"{0}"' -f $DestinationPath
     $robocopyExecutable = Get-Command -Name "Robocopy.exe" -ErrorAction Stop
