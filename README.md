@@ -3,6 +3,8 @@
 The **SqlServerDsc** module contains DSC resources
 for deployment and configuration of SQL Server.
 
+This project has adopted [this code of conduct](\CODE_OF_CONDUCT.md).
+
 ## Branches
 
 ### master
