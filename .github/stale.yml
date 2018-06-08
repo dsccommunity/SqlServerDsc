@@ -8,7 +8,7 @@ pulls:
   daysUntilClose: false
   exemptProjects: true
   exemptMilestones: true
-  staleLabel: stale
+  staleLabel: abandoned
   exemptLabels:
     - needs review
     - on hold
