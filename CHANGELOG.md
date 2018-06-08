@@ -7,6 +7,7 @@
     DscResource.Tests.
   - New resources:
     - Added SqlScriptQueryResource. [Chase Wilson (@chasewilson)](https://github.com/chasewilson)
+  - Fix for issue #779 (https://github.com/PowerShell/SqlServerDsc/issues/779) [Paul Kelly (@prkelly)](https://github.com/prkelly)
 
 ## 11.2.0.0
 
