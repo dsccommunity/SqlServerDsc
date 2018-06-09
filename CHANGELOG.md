@@ -6,6 +6,8 @@
   - Moved decoration for integration test to resolve a breaking change in
     DscResource.Tests.
   - Activated the GitHub App Stale on the GitHub repository.
+  - Added a CODE\_OF\_CONDUCT.md with the same content as in the README.md
+    [issue #939](https://github.com/PowerShell/SqlServerDsc/issues/939).
   - New resources:
     - Added SqlScriptQueryResource. [Chase Wilson (@chasewilson)](https://github.com/chasewilson)
 
