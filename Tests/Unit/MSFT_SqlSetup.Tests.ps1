@@ -4524,6 +4524,8 @@ try
                 BeforeEach {
                     Mock -CommandName Get-Command -MockWith $mockGetCommand -Verifiable
                     Mock -CommandName Start-Process -MockWith $mockStartSqlSetupProcess_Robocopy -Verifiable
+                    $mockRobocopyArgumentSourcePathQuoted = '"{0}"' -f $mockRobocopyArgumentSourcePath
+                    $mockRobocopyArgumentDestinationPathQuoted = '"{0}"' -f $mockRobocopyArgumentDestinationPath
                 }
 
 
@@ -4531,8 +4533,8 @@ try
                     $mockRobocopyExecutableVersion = $mockRobocopyExecutableVersionWithUnbufferedIO
 
                     $mockStartSqlSetupProcessExpectedArgument =
-                        $mockRobocopyArgumentSourcePath,
-                        $mockRobocopyArgumentDestinationPath,
+                        $mockRobocopyArgumentSourcePathQuoted,
+                        $mockRobocopyArgumentDestinationPathQuoted,
                         $mockRobocopyArgumentCopySubDirectoriesIncludingEmpty,
                         $mockRobocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource,
                         $mockRobocopyArgumentUseUnbufferedIO,
@@ -4553,8 +4555,8 @@ try
                     $mockRobocopyExecutableVersion = $mockRobocopyExecutableVersionWithoutUnbufferedIO
 
                     $mockStartSqlSetupProcessExpectedArgument =
-                        $mockRobocopyArgumentSourcePath,
-                        $mockRobocopyArgumentDestinationPath,
+                        $mockRobocopyArgumentSourcePathQuoted,
+                        $mockRobocopyArgumentDestinationPathQuoted,
                         $mockRobocopyArgumentCopySubDirectoriesIncludingEmpty,
                         $mockRobocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource,
                         '',
