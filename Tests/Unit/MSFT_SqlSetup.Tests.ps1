@@ -661,6 +661,8 @@ try
         $mockRobocopyArgumentUseUnbufferedIO = '/J'
         $mockRobocopyArgumentSourcePath = 'C:\Source\SQL2016'
         $mockRobocopyArgumentDestinationPath = 'D:\Temp'
+        $mockRobocopyArgumentSourcePathWithSpaces = 'C:\Source\SQL2016 STD SP1'
+        $mockRobocopyArgumentDestinationPathWithSpaces = 'D:\Temp\DSC SQL2016'
 
         $mockGetCommand = {
             return @(
@@ -4672,6 +4674,54 @@ try
                     $copyItemWithRobocopyParameter = @{
                         Path = $mockRobocopyArgumentSourcePath
                         DestinationPath = $mockRobocopyArgumentDestinationPath
+                    }
+
+                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
+                }
+            }
+            Context 'When Copy-ItemWithRobocopy is called with spaces in paths and finishes successfully it should return the correct exit code' {
+                BeforeEach {
+                    $mockRobocopyExecutableVersion = $mockRobocopyExecutableVersionWithUnbufferedIO
+
+                    Mock -CommandName Get-Command -MockWith $mockGetCommand -Verifiable
+                    Mock -CommandName Start-Process -MockWith $mockStartSqlSetupProcess_Robocopy_WithExitCode -Verifiable
+                }
+
+                AfterEach {
+                    Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Start-Process -Exactly -Times 1 -Scope It
+                }
+
+                It 'Should finish successfully with exit code 1' {
+                    $mockStartSqlSetupProcessExitCode = 1
+
+                    $copyItemWithRobocopyParameter = @{
+                        Path = $mockRobocopyArgumentSourcePathWithSpaces
+                        DestinationPath = $mockRobocopyArgumentDestinationPathWithSpaces
+                    }
+
+                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
+                   
+                }
+
+                It 'Should finish successfully with exit code 2' {
+                    $mockStartSqlSetupProcessExitCode = 2
+
+                    $copyItemWithRobocopyParameter = @{
+                        Path = $mockRobocopyArgumentSourcePathWithSpaces
+                        DestinationPath = $mockRobocopyArgumentDestinationPathWithSpaces
+                    }
+
+                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
+
+                }
+
+                It 'Should finish successfully with exit code 3' {
+                    $mockStartSqlSetupProcessExitCode = 3
+
+                    $copyItemWithRobocopyParameter = @{
+                        Path = $mockRobocopyArgumentSourcePathWithSpaces
+                        DestinationPath = $mockRobocopyArgumentDestinationPathWithSpaces
                     }
 
                     { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
