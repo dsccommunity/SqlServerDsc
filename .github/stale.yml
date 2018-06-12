@@ -19,7 +19,6 @@ pulls:
     The abandoned label will be removed if work on this PR is taken up again.
 
 issues:
-  only: issues
   daysUntilStale: 30
   daysUntilClose: 40
   exemptProjects: true
