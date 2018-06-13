@@ -1,9 +1,14 @@
-# This is used to make sure the integration test run in the correct order.
-[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 2)]
+<#
+    This is used to make sure the integration test run in the correct order.
+    The integration test should run after the integration tests SqlServerLogin
+    and SqlServerRole, so any problems in those will be caught first, since
+    these integration tests are using those resources.
+#>
+[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 5)]
 param()
 
 $script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceFriendlyName = 'SqlServerDatabaseMail'
+$script:DSCResourceFriendlyName = 'SqlScriptQuery'
 $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 if (-not $env:APPVEYOR -eq $true)
@@ -14,7 +19,7 @@ if (-not $env:APPVEYOR -eq $true)
 
 #region HEADER
 # Integration Test Template Version: 1.1.2
-[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
@@ -29,38 +34,39 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 #endregion
 
-$mockSqlInstallAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-$mockSqlInstallAccountUserName = "$env:COMPUTERNAME\SqlInstall"
-$mockSqlInstallCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlInstallAccountUserName, $mockSqlInstallAccountPassword
+$mockSqlAdminAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+$mockSqlAdminAccountUserName = "$env:COMPUTERNAME\SqlAdmin"
+$mockSqlAdminCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAdminAccountUserName, $mockSqlAdminAccountPassword
+
+$mockUserAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+$mockUserCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'DscAdmin1', $mockUserAccountPassword
 
 try
 {
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
     . $configFile
 
-    $mockMailServerName = $ConfigurationData.AllNodes.MailServerName
-    $mockAccountName = $ConfigurationData.AllNodes.AccountName
-    $mockProfileName = $ConfigurationData.AllNodes.ProfileName
-    $mockEmailAddress = $ConfigurationData.AllNodes.EmailAddress
-    $mockDescription = $ConfigurationData.AllNodes.Description
-    $mockLoggingLevel = $ConfigurationData.AllNodes.LoggingLevel
-    $mockTcpPort = $ConfigurationData.AllNodes.TcpPort
+    $mockGetQuery      = $ConfigurationData.AllNodes.GetQuery
+    $mockTestQuery     = $ConfigurationData.AllNodes.TestQuery
+    $mockSetQuery      = $ConfigurationData.AllNodes.SetQuery
+    $mockDatabase1Name = $ConfigurationData.AllNodes.Database1Name
+    $mockDatabase2Name = $ConfigurationData.AllNodes.Database2Name
 
     Describe "$($script:DSCResourceName)_Integration" {
         BeforeAll {
             $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
         }
 
-        $configurationName = "$($script:DSCResourceName)_Add_Config"
+        $configurationName = "$($script:DSCResourceName)_RunSqlScriptQueryAsWindowsUser_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlInstallCredential = $mockSqlInstallCredential
-                        OutputPath           = $TestDrive
+                        SqlAdministratorCredential = $mockSqlAdminCredential
+                        OutputPath                 = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData    = $ConfigurationData
+                        ConfigurationData          = $ConfigurationData
                     }
 
                     & $configurationName @configurationParameters
@@ -91,29 +97,61 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.AccountName | Should -Be $mockAccountName
-                $resourceCurrentState.ProfileName | Should -Be $mockProfileName
-                $resourceCurrentState.EmailAddress | Should -Be $mockEmailAddress
-                $resourceCurrentState.ReplyToAddress | Should -Be $mockEmailAddress
-                $resourceCurrentState.DisplayName | Should -Be $mockMailServerName
-                $resourceCurrentState.MailServerName | Should -Be $mockMailServerName
-                $resourceCurrentState.Description | Should -Be $mockDescription
-                $resourceCurrentState.LoggingLevel | Should -Be $mockLoggingLevel
-                $resourceCurrentState.TcpPort | Should -Be $mockTcpPort
+                <#
+                    This returns an array of string containing the result of the
+                    get scripts JSON output. The output looks like the below.
+
+                    ```
+                    JSON_F52E2B61-18A1-11d1-B105-00805F49916B
+                    -----------------------------------------
+                    [{"Name":"ScriptDatabase1"}]
+                    ```
+
+                    This could have been easier by just having this test
+                    $resourceCurrentState.GetResult | Should -Match 'ScriptDatabase1'
+                    but for making sure the returned data is actually usable, this
+                    parses the returned data to an object.
+                #>
+                $regularExpression = [regex] '\[.*\]'
+                if ($regularExpression.IsMatch($resourceCurrentState.GetResult))
+                {
+                    $regularExpressionMatch = $regularExpression.Match($resourceCurrentState.GetResult).Value
+                }
+                else
+                {
+                    Write-Verbose -Message ('Unexpected output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
+                    $regularExpressionMatch = '[{"Name":""}]'
+                }
+
+                try
+                {
+
+                    $resultObject = $regularExpressionMatch | ConvertFrom-Json
+                }
+                catch
+                {
+                    Write-Verbose -Message ('Output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
+                    Write-Verbose -Message ('Result from regular expression match: {0}' -f $regularExpressionMatch) -Verbose
+                    throw $_
+                }
+
+                $resultObject.Name | Should -Be $mockDatabase1Name
+                $resourceCurrentState.GetQuery | Should -Be $mockGetQuery
+                $resourceCurrentState.TestQuery | Should -Be $mockTestQuery
+                $resourceCurrentState.SetQuery | Should -Be $mockSetQuery
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_Remove_Config"
+        $configurationName = "$($script:DSCResourceName)_RunSqlScriptQueryAsSqlUser_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlInstallCredential = $mockSqlInstallCredential
-                        OutputPath           = $TestDrive
+                        UserCredential    = $mockUserCredential
+                        OutputPath        = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData    = $ConfigurationData
+                        ConfigurationData = $ConfigurationData
                     }
 
                     & $configurationName @configurationParameters
@@ -144,16 +182,10 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.Ensure | Should -Be 'Absent'
-                $resourceCurrentState.AccountName | Should -BeNullOrEmpty
-                $resourceCurrentState.ProfileName | Should -BeNullOrEmpty
-                $resourceCurrentState.EmailAddress | Should -BeNullOrEmpty
-                $resourceCurrentState.ReplyToAddress | Should -BeNullOrEmpty
-                $resourceCurrentState.DisplayName | Should -BeNullOrEmpty
-                $resourceCurrentState.MailServerName | Should -BeNullOrEmpty
-                $resourceCurrentState.Description | Should -BeNullOrEmpty
-                $resourceCurrentState.LoggingLevel | Should -BeNullOrEmpty
-                $resourceCurrentState.TcpPort | Should -BeNullOrEmpty
+                $resourceCurrentState.GetResult | Should -Match $mockDatabase2Name
+                $resourceCurrentState.GetQuery | Should -Be $mockGetQuery
+                $resourceCurrentState.TestQuery | Should -Be $mockTestQuery
+                $resourceCurrentState.SetQuery | Should -Be $mockSetQuery
             }
         }
     }

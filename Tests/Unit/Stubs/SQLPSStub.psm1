@@ -538,7 +538,7 @@ function Invoke-Sqlcmd {
         [string]
         ${Password},
 
-        [Parameter(Position=0)]
+        [Parameter(Position = 0)]
         [ValidateNotNullOrEmpty()]
         [string]
         ${Query},
