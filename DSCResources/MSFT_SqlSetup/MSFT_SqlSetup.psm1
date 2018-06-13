@@ -1927,7 +1927,8 @@ function Copy-ItemWithRobocopy
         [System.String]
         $DestinationPath
     )
-
+    $quotedPath = '"{0}"' -f $Path
+    $quotedDestinationPath = '"{0}"' -f $DestinationPath
     $robocopyExecutable = Get-Command -Name "Robocopy.exe" -ErrorAction Stop
 
     $robocopyArgumentSilent = '/njh /njs /ndl /nc /ns /nfl'
@@ -1945,8 +1946,8 @@ function Copy-ItemWithRobocopy
         Write-Verbose -Message $script:localizedData.RobocopyNotUsingUnbufferedIo
     }
 
-    $robocopyArgumentList = '{0} {1} {2} {3} {4} {5}' -f $Path,
-                                                         $DestinationPath,
+    $robocopyArgumentList = '{0} {1} {2} {3} {4} {5}' -f $quotedPath,
+                                                         $quotedDestinationPath,
                                                          $robocopyArgumentCopySubDirectoriesIncludingEmpty,
                                                          $robocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource,
                                                          $robocopyArgumentUseUnbufferedIO,
