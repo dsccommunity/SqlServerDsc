@@ -12,7 +12,10 @@
     [issue #939](https://github.com/PowerShell/SqlServerDsc/issues/939).
   - New resources:
     - Added SqlScriptQueryResource. [Chase Wilson (@chasewilson)](https://github.com/chasewilson)
-  - Fix for issue #779 [Paul Kelly (@prkelly)](https://github.com/prkelly)
+- Changes to SqlSetup
+  - Enabling Robocopy to use paths containing spaces
+    ([issue #779](https://github.com/PowerShell/SqlServerDsc/issues/779)).
+    [Paul Kelly (@prkelly)](https://github.com/prkelly)
 
 ## 11.2.0.0
 
