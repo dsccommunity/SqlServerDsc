@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 11.3.0.0
+
 - Changes to SqlServerDsc
   - Moved decoration for integration test to resolve a breaking change in
     DscResource.Tests.
