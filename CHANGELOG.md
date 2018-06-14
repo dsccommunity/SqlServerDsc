@@ -210,6 +210,11 @@
   - Fix unit tests that didn't mock some of the calls. It no longer fail
     when a SQL Server installation is not present on the node running the
     unit test ([issue #983](https://github.com/PowerShell/SqlServerDsc/issues/983)).
+- Changes to SqlSetup
+  - Now the correct assembly should load when using the helper function
+    Connect-SQLAnalysis. Previously is was using LoadWithPartialName() which
+    meant that it would load the first assembly in GAC, regardless of which
+    PowerShell module was used (SQLPS or SqlSever).
 
 ## 12.0.0.0
 

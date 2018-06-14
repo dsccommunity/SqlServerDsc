@@ -1288,6 +1288,8 @@ InModuleScope 'DscResource.Common' {
             $mockSetupCredentialPassword = 'StrongOne7.'
             $mockSetupCredentialSecurePassword = ConvertTo-SecureString -String $mockSetupCredentialPassword -AsPlainText -Force
             $mockSetupCredential = New-Object -TypeName PSCredential -ArgumentList ($mockSetupCredentialUserName, $mockSetupCredentialSecurePassword)
+
+            Mock -CommandName Import-SQLPSModule
         }
 
         BeforeEach {

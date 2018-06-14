@@ -742,7 +742,7 @@ function Connect-SQLAnalysis
         $SetupCredential
     )
 
-    $null = [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.AnalysisServices')
+    Import-SQLPSModule
 
     if ($SQLInstanceName -eq 'MSSQLSERVER')
     {
