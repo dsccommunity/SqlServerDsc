@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ([issue #1688](https://github.com/dsccommunity/SqlServerDsc/issues/1688)).
 - SqlServerDsc
   - Removed a left-over comment in the file `analyzersettings.psd1`.
+- SqlSetup
+  - Now the correct assembly should load when using the helper function
+    Connect-SQLAnalysis. Previously is was using LoadWithPartialName() which
+    meant that it would load the first assembly in GAC, regardless of which
+    PowerShell module was used (SQLPS or SqlSever).
 
 ## [15.1.0] - 2021-02-02
 

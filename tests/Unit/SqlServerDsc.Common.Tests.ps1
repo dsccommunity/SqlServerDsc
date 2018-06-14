@@ -1444,7 +1444,7 @@ InModuleScope $script:subModuleName {
             $mockFqdnSqlCredentialSecurePassword = ConvertTo-SecureString -String $mockFqdnSqlCredentialPassword -AsPlainText -Force
             $mockFqdnSqlCredential = New-Object -TypeName PSCredential -ArgumentList ($mockFqdnSqlCredentialUserName, $mockFqdnSqlCredentialSecurePassword)
 
-            Mock -CommandName Import-Assembly
+            Mock -CommandName Import-SQLPSModule
         }
 
         BeforeEach {
