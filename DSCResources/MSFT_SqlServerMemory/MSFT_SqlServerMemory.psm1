@@ -340,7 +340,7 @@ function Get-SqlDscDynamicMaxMemory
 {
     try
     {
-        $physicalMemory = ((Get-CimInstance -ClassName Win32_PhysicalMemory).Capacity | Measure-Object -Sum).Sum
+        $physicalMemory = Get-CimInstance -ClassName Win32_ComputerSystem).TotalPhysicalMemory
         $physicalMemoryInMegaBytes = [Math]::Round($physicalMemory / 1MB)
 
         # Find how much to save for OS: 20% of total ram for under 15GB / 12.5% for over 20GB
