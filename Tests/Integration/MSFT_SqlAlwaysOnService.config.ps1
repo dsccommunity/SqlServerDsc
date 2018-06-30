@@ -2,10 +2,12 @@
     Get all adapters with static IP addresses, all of which should be ignored
     when creating the cluster.
 #>
+
 $ignoreAdapterIpAddress = Get-NetAdapter |
     Get-NetIPInterface |
         Where-Object -FilterScript {
-            $_.Dhcp -eq 'Disabled'
+            $_.AddressFamily -eq 'IPv4' `
+            -and $_.Dhcp -eq 'Disabled'
         } | Get-NetIPAddress
 
 $ignoreIpNetwork = @()
@@ -72,7 +74,7 @@ Configuration MSFT_SqlAlwaysOnService_CreateDependencies_Config
         #>
         xDefaultGatewayAddress LoopbackAdapterIPv4DefaultGateway
         {
-            Address      = $Node.LoopbackAdapterGateway
+            Address        = $Node.LoopbackAdapterGateway
             InterfaceAlias = $Node.LoopbackAdapterName
             AddressFamily  = 'IPv4'
         }
@@ -153,7 +155,7 @@ Configuration MSFT_SqlAlwaysOnService_CreateDependencies_Config
                 }
             }
 
-            DependsOn            = @(
+            DependsOn  = @(
                 '[WindowsFeature]AddFeatureFailoverClustering'
                 '[WindowsFeature]AddFeatureFailoverClusteringPowerShellModule'
             )
