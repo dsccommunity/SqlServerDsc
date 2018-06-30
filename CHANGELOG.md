@@ -4,7 +4,7 @@
 
 - Changes to SqlAlwaysOnService
   - Integration tests was updated to handle new IPv6 addresses on the AppVeyor
-    build worker [issue #1155](https://github.com/PowerShell/SqlServerDsc/issues/1155))
+    build worker ([issue #1155](https://github.com/PowerShell/SqlServerDsc/issues/1155)).
 
 ## 11.3.0.0
 
