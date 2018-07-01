@@ -1,7 +1,10 @@
 # Change log for SqlServerDsc
 
 ## Unreleased
-
+ - Changes to SqlServerMemory
+   - Using Get-CimInstance -ClassName Win32_ComputerSystem).TotalPhysicalMemory 
+     ([issue #1154](https://github.com/PowerShell/SqlServerDsc/issues/1154))
+ 
 ## 11.3.0.0
 
 - Changes to SqlServerDsc
