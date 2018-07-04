@@ -5,6 +5,8 @@
 - Changes to SqlAlwaysOnService
   - Integration tests was updated to handle new IPv6 addresses on the AppVeyor
     build worker ([issue #1155](https://github.com/PowerShell/SqlServerDsc/issues/1155)).
+- Changes to SqlServerNetwork
+  - Refactor SqlServerNetwork to not load assembly from GAC ([issue #1151](https://github.com/PowerShell/SqlServerDsc/issues/1151)).
 
 ## 11.3.0.0
 
