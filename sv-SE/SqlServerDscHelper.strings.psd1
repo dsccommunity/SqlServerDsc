@@ -6,10 +6,6 @@ ConvertFrom-StringData @'
     ConnectedToAnalysisServicesInstance = Ansluten till Analysis Services instans '{0}'.
     FailedToConnectToAnalysisServicesInstance = Misslyckades att ansluta till Analysis Services instans '{0}'.
     SqlMajorVersion = SQL major version är {0}.
-    CreatingApplicationDomain = Skapar applikationsdomän '{0}'.
-    ReusingApplicationDomain = Återanvänder applikationsdomän '{0}'.
-    LoadingAssembly = Laddar samling '{0}'.
-    UnloadingApplicationDomain = Återställer applikationsdomän '{0}'.
     SqlServerVersionIsInvalid = Kunde inte hämta SQL version för instansen '{0}'.
     PropertyTypeInvalidForDesiredValues = Egenskapen 'DesiredValues' måste vara endera en [System.Collections.Hashtable], [CimInstance] eller [PSBoundParametersDictionary]. Den typ som hittades var {0}.
     PropertyTypeInvalidForValuesToCheck = Om 'DesiredValues' är av typ CimInstance, då måste egenskapen 'ValuesToCheck' sättas till ett värde.
@@ -37,7 +33,7 @@ ConvertFrom-StringData @'
     ExecuteQueryWithResultsFailed = Exekvering av fråga med resultat misslyckades mot databas '{0}'.
     ExecuteNonQueryFailed = Exekvering av icke-fråga misslyckades på databas '{0}'.
     AlterAvailabilityGroupReplicaFailed = Misslyckades att ändra Availability Group kopia '{0}'.
-    GetEffectivePermissionForLogin = Hämtar effektiva behörigeter för inloggningen '{0}' på '{1}'.
+    GetEffectivePermissionForLogin = Hämtar effektiva behörigheter för inloggningen '{0}' på '{1}'.
 
     # - NOTE!
     # - Below strings are used by helper functions New-TerminatingError and New-WarningMessage.

@@ -90,10 +90,6 @@ try
             $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer'
         }
 
-        $mockFunction_RegisterSqlWmiManagement = {
-            return [System.AppDomain]::CreateDomain('DummyTestApplicationDomain')
-        }
-
         $mockDefaultParameters = @{
             InstanceName = $mockInstanceName
             ProtocolName = $mockTcpProtocolName
@@ -103,10 +99,7 @@ try
             BeforeEach {
                 $testParameters = $mockDefaultParameters.Clone()
 
-                Mock -CommandName Register-SqlWmiManagement `
-                    -MockWith $mockFunction_RegisterSqlWmiManagement `
-                    -Verifiable
-
+                Mock -CommandName Import-SQLPSModule
                 Mock -CommandName New-Object `
                     -MockWith $mockFunction_NewObject_ManagedComputer `
                     -ParameterFilter $mockFunction_NewObject_ManagedComputer_ParameterFilter -Verifiable
@@ -126,7 +119,6 @@ try
                     $result.TcpDynamicPort | Should -Be $false
                     $result.TcpPort | Should -Be $mockDynamicValue_TcpPort
 
-                    Assert-MockCalled -CommandName Register-SqlWmiManagement -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
                         -ParameterFilter $mockFunction_NewObject_ManagedComputer_ParameterFilter
                 }
@@ -145,10 +137,7 @@ try
             BeforeEach {
                 $testParameters = $mockDefaultParameters.Clone()
 
-                Mock -CommandName Register-SqlWmiManagement `
-                    -MockWith $mockFunction_RegisterSqlWmiManagement `
-                    -Verifiable
-
+                Mock -CommandName Import-SQLPSModule
                 Mock -CommandName New-Object `
                     -MockWith $mockFunction_NewObject_ManagedComputer `
                     -ParameterFilter $mockFunction_NewObject_ManagedComputer_ParameterFilter -Verifiable
@@ -314,10 +303,7 @@ try
                 $testParameters = $mockDefaultParameters.Clone()
 
                 Mock -CommandName Restart-SqlService -Verifiable
-                Mock -CommandName Register-SqlWmiManagement `
-                    -MockWith $mockFunction_RegisterSqlWmiManagement `
-                    -Verifiable
-
+                Mock -CommandName Import-SQLPSModule
                 Mock -CommandName New-Object `
                     -MockWith $mockFunction_NewObject_ManagedComputer `
                     -ParameterFilter $mockFunction_NewObject_ManagedComputer_ParameterFilter -Verifiable

@@ -181,151 +181,6 @@ function Connect-SQLAnalysis
 
 <#
     .SYNOPSIS
-        Creates a new application domain and loads the assemblies Microsoft.SqlServer.Smo
-        for the correct SQL Server major version.
-
-        An isolated application domain is used to load version specific assemblies, this needed
-        if there is multiple versions of SQL server in the same configuration. So that a newer
-        version of SQL is not using an older version of the assembly, or vice verse.
-
-        This should be unloaded using the helper function Unregister-SqlAssemblies or
-        using [System.AppDomain]::Unload($applicationDomainObject).
-
-    .PARAMETER SQLInstanceName
-        String containing the SQL Server Database Engine instance name to get the major SQL version from.
-
-    .PARAMETER ApplicationDomain
-        An optional System.AppDomain object to load the assembly into.
-
-    .OUTPUTS
-        System.AppDomain. Returns the application domain object with SQL SMO loaded.
-#>
-function Register-SqlSmo
-{
-    [CmdletBinding()]
-    [OutputType([System.AppDomain])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $SQLInstanceName,
-
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [System.AppDomain]
-        $ApplicationDomain
-    )
-
-    $sqlMajorVersion = Get-SqlInstanceMajorVersion -SQLInstanceName $SQLInstanceName
-
-    Write-Verbose -Message ($script:localizedData.SqlMajorVersion -f $sqlMajorVersion) -Verbose
-
-    if ( -not $ApplicationDomain )
-    {
-        $applicationDomainName = $MyInvocation.MyCommand.ModuleName
-        Write-Verbose -Message ($script:localizedData.CreatingApplicationDomain -f $applicationDomainName) -Verbose
-        $applicationDomainObject = [System.AppDomain]::CreateDomain($applicationDomainName)
-    }
-    else
-    {
-        Write-Verbose -Message ($script:localizedData.ReusingApplicationDomain -f $ApplicationDomain.FriendlyName) -Verbose
-        $applicationDomainObject = $ApplicationDomain
-    }
-
-    $sqlSmoAssemblyName = "Microsoft.SqlServer.Smo, Version=$sqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"
-    Write-Verbose -Message ($script:localizedData.LoadingAssembly -f $sqlSmoAssemblyName) -Verbose
-    $applicationDomainObject.Load($sqlSmoAssemblyName) | Out-Null
-
-    return $applicationDomainObject
-}
-
-<#
-    .SYNOPSIS
-        Creates a new application domain and loads the assemblies Microsoft.SqlServer.Smo and
-        Microsoft.SqlServer.SqlWmiManagement for the correct SQL Server major version.
-
-        An isolated application domain is used to load version specific assemblies, this needed
-        if there is multiple versions of SQL server in the same configuration. So that a newer
-        version of SQL is not using an older version of the assembly, or vice verse.
-
-        This should be unloaded using the helper function Unregister-SqlAssemblies or
-        using [System.AppDomain]::Unload($applicationDomainObject) preferably in a finally block.
-
-    .PARAMETER SQLInstanceName
-        String containing the SQL Server Database Engine instance name to get the major SQL version from.
-
-    .PARAMETER ApplicationDomain
-        An optional System.AppDomain object to load the assembly into.
-
-    .OUTPUTS
-        System.AppDomain. Returns the application domain object with SQL WMI Management loaded.
-#>
-function Register-SqlWmiManagement
-{
-    [CmdletBinding()]
-    [OutputType([System.AppDomain])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $SQLInstanceName,
-
-        [Parameter()]
-        [ValidateNotNull()]
-        [System.AppDomain]
-        $ApplicationDomain
-    )
-
-    $sqlMajorVersion = Get-SqlInstanceMajorVersion -SQLInstanceName $SQLInstanceName
-    Write-Verbose -Message ($script:localizedData.SqlMajorVersion -f $sqlMajorVersion) -Verbose
-
-    <#
-        Must register Microsoft.SqlServer.Smo first because that is a
-        dependency of Microsoft.SqlServer.SqlWmiManagement.
-    #>
-    if (-not $ApplicationDomain)
-    {
-        $applicationDomainObject = Register-SqlSmo -SQLInstanceName $SQLInstanceName
-    }
-    # Returns zero (0) objects if the assembly is not found
-    elseif (-not ($ApplicationDomain.GetAssemblies().FullName -match 'Microsoft.SqlServer.Smo'))
-    {
-        $applicationDomainObject = Register-SqlSmo -SQLInstanceName $SQLInstanceName -ApplicationDomain $ApplicationDomain
-    }
-
-    $sqlSqlWmiManagementAssemblyName = "Microsoft.SqlServer.SqlWmiManagement, Version=$sqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"
-    Write-Verbose -Message ($script:localizedData.LoadingAssembly -f $sqlSqlWmiManagementAssemblyName) -Verbose
-    $applicationDomainObject.Load($sqlSqlWmiManagementAssemblyName) | Out-Null
-
-    return $applicationDomainObject
-}
-
-<#
-    .SYNOPSIS
-        Unloads all assemblies in an application domain. It unloads the application domain.
-
-    .PARAMETER ApplicationDomain
-        System.AppDomain object containing the SQL assemblies to unload.
-#>
-function Unregister-SqlAssemblies
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNull()]
-        [System.AppDomain]
-        $ApplicationDomain
-    )
-
-    Write-Verbose -Message ($script:localizedData.UnloadingApplicationDomain -f $ApplicationDomain.FriendlyName) -Verbose
-    [System.AppDomain]::Unload($ApplicationDomain)
-}
-
-<#
-    .SYNOPSIS
         Returns the major SQL version for the specific instance.
 
     .PARAMETER SQLInstanceName
@@ -777,25 +632,42 @@ function Import-SQLPSModule
 
 <#
     .SYNOPSIS
-    Restarts a SQL Server instance and associated services
+        Restarts a SQL Server instance and associated services
 
     .PARAMETER SQLServer
-    Hostname of the SQL Server to be configured
+        Hostname of the SQL Server to be configured
 
     .PARAMETER SQLInstanceName
-    Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
+        Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
 
     .PARAMETER Timeout
-    Timeout value for restarting the SQL services. The default value is 120 seconds.
+        Timeout value for restarting the SQL services. The default value is 120 seconds.
+
+    .PARAMETER SkipClusterCheck
+        If cluster check should be skipped. If this is present no connection
+        is made to the instance to check if the instance is on a cluster.
+
+        This need to be used for some resource, for example for the SqlServerNetwork
+        resource when it's used to enable a disable protocol.
+
+    .PARAMETER SkipWaitForOnline
+        If this is present no connection is made to the instance to check if the
+        instance is online.
+
+        This need to be used for some resource, for example for the SqlServerNetwork
+        resource when it's used to disable protocol.
 
     .EXAMPLE
-    Restart-SqlService -SQLServer localhost
+        Restart-SqlService -SQLServer localhost
 
     .EXAMPLE
-    Restart-SqlService -SQLServer localhost -SQLInstanceName 'NamedInstance'
+        Restart-SqlService -SQLServer localhost -SQLInstanceName 'NamedInstance'
 
     .EXAMPLE
-    Restart-SqlService -SQLServer CLU01 -Timeout 300
+        Restart-SqlService -SQLServer localhost -SQLInstanceName 'NamedInstance' -SkipClusterCheck -SkipWaitForOnline
+
+    .EXAMPLE
+        Restart-SqlService -SQLServer CLU01 -Timeout 300
 #>
 function Restart-SqlService
 {
@@ -812,45 +684,76 @@ function Restart-SqlService
 
         [Parameter()]
         [System.UInt32]
-        $Timeout = 120
+        $Timeout = 120,
+
+        [Parameter()]
+        [Switch]
+        $SkipClusterCheck,
+
+        [Parameter()]
+        [Switch]
+        $SkipWaitForOnline
     )
 
-    ## Connect to the instance
-    $serverObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-
-    if ($serverObject.IsClustered)
+    if (-not $SkipClusterCheck.IsPresent)
     {
-        # Get the cluster resources
-        Write-Verbose -Message ($script:localizedData.GetSqlServerClusterResources) -Verbose
-        $sqlService = Get-CimInstance -Namespace root/MSCluster -ClassName MSCluster_Resource -Filter "Type = 'SQL Server'" |
-                        Where-Object -FilterScript { $_.PrivateProperties.InstanceName -eq $serverObject.ServiceName }
+        ## Connect to the instance
+        $serverObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
-        Write-Verbose -Message ($script:localizedData.GetSqlAgentClusterResource) -Verbose
-        $agentService = $sqlService | Get-CimAssociatedInstance -ResultClassName MSCluster_Resource |
-                            Where-Object -FilterScript { ($_.Type -eq 'SQL Server Agent') -and ($_.State -eq 2) }
-
-        # Build a listing of resources being acted upon
-        $resourceNames = @($sqlService.Name, ($agentService | Select-Object -ExpandProperty Name)) -join ","
-
-        # Stop the SQL Server and dependent resources
-        Write-Verbose -Message ($script:localizedData.BringClusterResourcesOffline -f $resourceNames) -Verbose
-        $sqlService | Invoke-CimMethod -MethodName TakeOffline -Arguments @{ Timeout = $Timeout }
-
-        # Start the SQL server resource
-        Write-Verbose -Message ($script:localizedData.BringSqlServerClusterResourcesOnline) -Verbose
-        $sqlService | Invoke-CimMethod -MethodName BringOnline -Arguments @{ Timeout = $Timeout }
-
-        # Start the SQL Agent resource
-        if ($agentService)
+        if ($serverObject.IsClustered)
         {
-            Write-Verbose -Message ($script:localizedData.BringSqlServerAgentClusterResourcesOnline) -Verbose
-            $agentService | Invoke-CimMethod -MethodName BringOnline -Arguments @{ Timeout = $Timeout }
+            # Get the cluster resources
+            Write-Verbose -Message ($script:localizedData.GetSqlServerClusterResources) -Verbose
+            $sqlService = Get-CimInstance -Namespace root/MSCluster -ClassName MSCluster_Resource -Filter "Type = 'SQL Server'" |
+                            Where-Object -FilterScript { $_.PrivateProperties.InstanceName -eq $serverObject.ServiceName }
+
+            Write-Verbose -Message ($script:localizedData.GetSqlAgentClusterResource) -Verbose
+            $agentService = $sqlService | Get-CimAssociatedInstance -ResultClassName MSCluster_Resource |
+                                Where-Object -FilterScript { ($_.Type -eq 'SQL Server Agent') -and ($_.State -eq 2) }
+
+            # Build a listing of resources being acted upon
+            $resourceNames = @($sqlService.Name, ($agentService | Select-Object -ExpandProperty Name)) -join ","
+
+            # Stop the SQL Server and dependent resources
+            Write-Verbose -Message ($script:localizedData.BringClusterResourcesOffline -f $resourceNames) -Verbose
+            $sqlService | Invoke-CimMethod -MethodName TakeOffline -Arguments @{ Timeout = $Timeout }
+
+            # Start the SQL server resource
+            Write-Verbose -Message ($script:localizedData.BringSqlServerClusterResourcesOnline) -Verbose
+            $sqlService | Invoke-CimMethod -MethodName BringOnline -Arguments @{ Timeout = $Timeout }
+
+            # Start the SQL Agent resource
+            if ($agentService)
+            {
+                Write-Verbose -Message ($script:localizedData.BringSqlServerAgentClusterResourcesOnline) -Verbose
+                $agentService | Invoke-CimMethod -MethodName BringOnline -Arguments @{ Timeout = $Timeout }
+            }
+        }
+        else
+        {
+            # Not a cluster, restart the Windows service.
+            $restartWindowsService = $true
         }
     }
     else
     {
+        # Should not check if a cluster, assume that a Windows service should be restarted.
+        $restartWindowsService = $true
+    }
+
+    if ($restartWindowsService)
+    {
+        if ($SQLInstanceName -eq 'MSSQLSERVER')
+        {
+            $serviceName = 'MSSQLSERVER'
+        }
+        else
+        {
+            $serviceName = 'MSSQL${0}' -f $SQLInstanceName
+        }
+
         Write-Verbose -Message ($script:localizedData.GetServiceInformation -f 'SQL Server') -Verbose
-        $sqlService = Get-Service -DisplayName "SQL Server ($($serverObject.ServiceName))"
+        $sqlService = Get-Service -Name $serviceName
 
         <#
             Get all dependent services that are running.
@@ -871,30 +774,33 @@ function Restart-SqlService
 
     Write-Verbose -Message ($script:localizedData.WaitingInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout) -Verbose
 
-    $connectTimer = [System.Diagnostics.StopWatch]::StartNew()
-
-    do
+    if (-not $SkipWaitForOnline.IsPresent)
     {
-        # This call, if it fails, will take between ~9-10 seconds to return.
-        $testConnectionServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -ErrorAction SilentlyContinue
-        if ($testConnectionServerObject -and $testConnectionServerObject.Status -ne 'Online')
-        {
-            # Waiting 2 seconds to not hammer the SQL Server instance.
-            Start-Sleep -Seconds 2
-        }
-        else
-        {
-            break
-        }
-    } until ($connectTimer.Elapsed.Seconds -ge $Timeout)
+        $connectTimer = [System.Diagnostics.StopWatch]::StartNew()
 
-    $connectTimer.Stop()
+        do
+        {
+            # This call, if it fails, will take between ~9-10 seconds to return.
+            $testConnectionServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -ErrorAction SilentlyContinue
+            if ($testConnectionServerObject -and $testConnectionServerObject.Status -ne 'Online')
+            {
+                # Waiting 2 seconds to not hammer the SQL Server instance.
+                Start-Sleep -Seconds 2
+            }
+            else
+            {
+                break
+            }
+        } until ($connectTimer.Elapsed.Seconds -ge $Timeout)
 
-    # Was the timeout period reach before able to connect to the SQL Server instance?
-    if (-not $testConnectionServerObject -or $testConnectionServerObject.Status -ne 'Online')
-    {
-        $errorMessage = $script:localizedData.FailedToConnectToInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout
-        New-InvalidOperationException -Message $errorMessage
+        $connectTimer.Stop()
+
+        # Was the timeout period reach before able to connect to the SQL Server instance?
+        if (-not $testConnectionServerObject -or $testConnectionServerObject.Status -ne 'Online')
+        {
+            $errorMessage = $script:localizedData.FailedToConnectToInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout
+            New-InvalidOperationException -Message $errorMessage
+        }
     }
 }
 

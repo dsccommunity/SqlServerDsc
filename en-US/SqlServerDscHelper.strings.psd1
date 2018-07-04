@@ -6,10 +6,6 @@ ConvertFrom-StringData @'
     ConnectedToAnalysisServicesInstance = Connected to Analysis Services instance '{0}'.
     FailedToConnectToAnalysisServicesInstance = Failed to connected to Analysis Services instance '{0}'.
     SqlMajorVersion = SQL major version is {0}.
-    CreatingApplicationDomain = Creating application domain '{0}'.
-    ReusingApplicationDomain = Reusing application domain '{0}'.
-    LoadingAssembly = Loading assembly '{0}'.
-    UnloadingApplicationDomain = Unloading application domain '{0}'.
     SqlServerVersionIsInvalid = Could not get the SQL version for the instance '{0}'.
     PropertyTypeInvalidForDesiredValues = Property 'DesiredValues' must be either a [System.Collections.Hashtable], [CimInstance] or [PSBoundParametersDictionary]. The type detected was {0}.
     PropertyTypeInvalidForValuesToCheck = If 'DesiredValues' is a CimInstance, then property 'ValuesToCheck' must contain a value.
