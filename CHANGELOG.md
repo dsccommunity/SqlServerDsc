@@ -2,9 +2,19 @@
 
 ## Unreleased
 
+- Changes to SqlServerDsc
+  - Updated helper function Restart-SqlService to have to new optional parameters
+    `SkipClusterCheck` and `SkipWaitForOnline`. This was to support more aspects
+    of the resource SqlServerNetwork.
 - Changes to SqlAlwaysOnService
   - Integration tests was updated to handle new IPv6 addresses on the AppVeyor
     build worker ([issue #1155](https://github.com/PowerShell/SqlServerDsc/issues/1155)).
+- Changes to SqlServerNetwork
+  - Refactor SqlServerNetwork to not load assembly from GAC ([issue #1151](https://github.com/PowerShell/SqlServerDsc/issues/1151)).
+  - The resource now supports restarting the SQL Server service when both
+    enabling and disabling the protocol.
+  - Added integration tests for this resource
+    ([issue #751](https://github.com/PowerShell/SqlServerDsc/issues/751)).
 
 ## 11.3.0.0
 

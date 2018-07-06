@@ -90,10 +90,6 @@ try
             $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer'
         }
 
-        $mockFunction_RegisterSqlWmiManagement = {
-            return [System.AppDomain]::CreateDomain('DummyTestApplicationDomain')
-        }
-
         $mockDefaultParameters = @{
             InstanceName = $mockInstanceName
             ProtocolName = $mockTcpProtocolName
@@ -103,10 +99,7 @@ try
             BeforeEach {
                 $testParameters = $mockDefaultParameters.Clone()
 
-                Mock -CommandName Register-SqlWmiManagement `
-                    -MockWith $mockFunction_RegisterSqlWmiManagement `
-                    -Verifiable
-
+                Mock -CommandName Import-SQLPSModule
                 Mock -CommandName New-Object `
                     -MockWith $mockFunction_NewObject_ManagedComputer `
                     -ParameterFilter $mockFunction_NewObject_ManagedComputer_ParameterFilter -Verifiable
@@ -126,7 +119,6 @@ try
                     $result.TcpDynamicPort | Should -Be $false
                     $result.TcpPort | Should -Be $mockDynamicValue_TcpPort
 
-                    Assert-MockCalled -CommandName Register-SqlWmiManagement -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
                         -ParameterFilter $mockFunction_NewObject_ManagedComputer_ParameterFilter
                 }
@@ -145,10 +137,7 @@ try
             BeforeEach {
                 $testParameters = $mockDefaultParameters.Clone()
 
-                Mock -CommandName Register-SqlWmiManagement `
-                    -MockWith $mockFunction_RegisterSqlWmiManagement `
-                    -Verifiable
-
+                Mock -CommandName Import-SQLPSModule
                 Mock -CommandName New-Object `
                     -MockWith $mockFunction_NewObject_ManagedComputer `
                     -ParameterFilter $mockFunction_NewObject_ManagedComputer_ParameterFilter -Verifiable
@@ -195,6 +184,25 @@ try
                     }
 
                     It 'Should return $false' {
+                        $result = Test-TargetResource @testParameters
+                        $result | Should -Be $false
+                    }
+                }
+
+                Context 'When ProtocolName is not in desired state' {
+                    BeforeEach {
+                        $testParameters += @{
+                            IsEnabled = $false
+                            TcpDynamicPort = $false
+                            TcpPort = '4509'
+                        }
+
+                        # Not supporting any other than 'TCP' yet.
+                        $testParameters['ProtocolName'] = 'Unknown'
+                    }
+
+                    # Skipped since no other protocol is supported yet (issue #14).
+                    It 'Should return $false' -Skip:$true {
                         $result = Test-TargetResource @testParameters
                         $result | Should -Be $false
                     }
@@ -314,10 +322,7 @@ try
                 $testParameters = $mockDefaultParameters.Clone()
 
                 Mock -CommandName Restart-SqlService -Verifiable
-                Mock -CommandName Register-SqlWmiManagement `
-                    -MockWith $mockFunction_RegisterSqlWmiManagement `
-                    -Verifiable
-
+                Mock -CommandName Import-SQLPSModule
                 Mock -CommandName New-Object `
                     -MockWith $mockFunction_NewObject_ManagedComputer `
                     -ParameterFilter $mockFunction_NewObject_ManagedComputer_ParameterFilter -Verifiable
@@ -344,22 +349,55 @@ try
                 }
 
                 Context 'When IsEnabled is not in desired state' {
-                    BeforeEach {
-                        $testParameters += @{
-                            IsEnabled = $false
-                            TcpDynamicPort = $false
-                            TcpPort = '4509'
-                            RestartService = $true
+                    Context 'When IsEnabled should be $false' {
+                        BeforeEach {
+                            $testParameters += @{
+                                IsEnabled = $false
+                                TcpDynamicPort = $false
+                                TcpPort = '4509'
+                                RestartService = $true
+                            }
+
+                            $mockExpectedValue_IsEnabled = $false
                         }
 
-                        $mockExpectedValue_IsEnabled = $false
+                        It 'Should call Set-TargetResource without throwing and should call Alter()' {
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
+                            $script:WasMethodAlterCalled | Should -Be $true
+
+                            Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                        }
                     }
 
-                    It 'Should call Set-TargetResource without throwing and should call Alter()' {
-                        { Set-TargetResource @testParameters } | Should -Not -Throw
-                        $script:WasMethodAlterCalled | Should -Be $true
+                    Context 'When IsEnabled should be $true' {
+                        BeforeEach {
+                            $testParameters += @{
+                                IsEnabled = $true
+                                TcpDynamicPort = $false
+                                TcpPort = '4509'
+                                RestartService = $true
+                            }
 
-                        Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                            $mockExpectedValue_IsEnabled = $true
+
+                            Mock -CommandName Get-TargetResource -MockWith {
+                                return @{
+                                    ProtocolName   = $mockTcpProtocolName
+                                    IsEnabled      = $false
+                                    TcpDynamicPort = $testParameters.TcpDynamicPort
+                                    TcpPort        = $testParameters.TcpPort
+                                }
+                            }
+                        }
+
+                        It 'Should call Set-TargetResource without throwing and should call Alter()' {
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
+                            $script:WasMethodAlterCalled | Should -Be $true
+
+                            Assert-MockCalled -CommandName Restart-SqlService -ParameterFilter {
+                                $SkipClusterCheck -eq $true
+                            } -Exactly -Times 1 -Scope It
+                        }
                     }
                 }
 

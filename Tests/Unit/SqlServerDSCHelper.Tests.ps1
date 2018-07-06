@@ -139,8 +139,29 @@ InModuleScope $script:moduleName {
                         InstanceName = ''
                         ServiceName = 'MSSQLSERVER'
                         Status = $mockDynamicStatus
+                        IsClustered = $false
                     }
                 } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'MSSQLSERVER' }
+
+                Mock -CommandName Connect-SQL -MockWith {
+                    return @{
+                        Name = 'NOCLUSTERCHECK'
+                        InstanceName = 'NOCLUSTERCHECK'
+                        ServiceName = 'NOCLUSTERCHECK'
+                        Status = $mockDynamicStatus
+                        IsClustered = $true
+                    }
+                } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'NOCLUSTERCHECK' }
+
+                Mock -CommandName Connect-SQL -MockWith {
+                    return @{
+                        Name = 'NOCONNECT'
+                        InstanceName = 'NOCONNECT'
+                        ServiceName = 'NOCONNECT'
+                        Status = $mockDynamicStatus
+                        IsClustered = $true
+                    }
+                } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'NOCONNECT' }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
@@ -176,7 +197,7 @@ InModuleScope $script:moduleName {
                             }
                         )
                     }
-                } -Verifiable -ParameterFilter { $DisplayName -eq 'SQL Server (MSSQLSERVER)' }
+                } -Verifiable -ParameterFilter { $Name -eq 'MSSQLSERVER' }
 
                 ## SQL instance with no installed SQL Agent Service
                 Mock -CommandName Get-Service -MockWith {
@@ -185,7 +206,25 @@ InModuleScope $script:moduleName {
                         DisplayName = 'Microsoft SQL Server (NOAGENT)'
                         DependentServices = @()
                     }
-                } -Verifiable -ParameterFilter { $DisplayName -eq 'SQL Server (NOAGENT)' }
+                } -Verifiable -ParameterFilter { $Name -eq 'MSSQL$NOAGENT' }
+
+                ## SQL instance with no installed SQL Agent Service
+                Mock -CommandName Get-Service -MockWith {
+                    return @{
+                        Name = 'MSSQL$NOCLUSTERCHECK'
+                        DisplayName = 'Microsoft SQL Server (NOCLUSTERCHECK)'
+                        DependentServices = @()
+                    }
+                } -Verifiable -ParameterFilter { $Name -eq 'MSSQL$NOCLUSTERCHECK' }
+
+                ## SQL instance with no installed SQL Agent Service
+                Mock -CommandName Get-Service -MockWith {
+                    return @{
+                        Name = 'MSSQL$NOCONNECT'
+                        DisplayName = 'Microsoft SQL Server (NOCONNECT)'
+                        DependentServices = @()
+                    }
+                } -Verifiable -ParameterFilter { $Name -eq 'MSSQL$NOCONNECT' }
 
                 ## SQL instance with stopped SQL Agent Service
                 Mock -CommandName Get-Service -MockWith {
@@ -201,7 +240,7 @@ InModuleScope $script:moduleName {
                             }
                         )
                     }
-                } -Verifiable -ParameterFilter { $DisplayName -eq 'SQL Server (STOPPEDAGENT)' }
+                } -Verifiable -ParameterFilter { $Name -eq 'MSSQL$STOPPEDAGENT' }
 
                 Mock -CommandName Restart-Service -Verifiable
                 Mock -CommandName Start-Service -Verifiable
@@ -218,6 +257,30 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
+            }
+
+            It 'Should restart SQL Service, and not do cluster cluster check' {
+                Mock -CommandName Get-CimInstance
+
+                { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'NOCLUSTERCHECK' -SkipClusterCheck } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 0
+                Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 0
+            }
+
+            It 'Should restart SQL Service, and not do cluster cluster check nor check online status' {
+                Mock -CommandName Get-CimInstance
+
+                { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'NOCONNECT' -SkipClusterCheck -SkipWaitForOnline } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 0
+                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 0
+                Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 0
             }
 
             It 'Should restart SQL Service and not try to restart missing SQL Agent service' {
@@ -850,109 +913,6 @@ InModuleScope $script:moduleName {
         }
 
         Assert-VerifiableMock
-    }
-
-    $mockApplicationDomainName = 'SqlServerDscHelperTests'
-    $mockApplicationDomainObject = [System.AppDomain]::CreateDomain($mockApplicationDomainName)
-
-    <#
-        It is not possible to fully test this helper function since we can't mock having the correct assembly
-        in the GAC. So these test will try to load the wrong assembly and will catch the error. But that means
-        it will never test the rows after if fails to load the assembly.
-    #>
-    Describe 'Testing Register-SqlSmo' -Tag RegisterSqlSmo {
-        BeforeEach {
-            Mock -CommandName Get-SqlInstanceMajorVersion -MockWith {
-                return '0' # Mocking zero because that could never match a correct assembly
-            } -Verifiable
-        }
-
-        Context 'When calling Register-SqlSmo to load the wrong assembly' {
-            It 'Should throw with the correct error' {
-                {
-                    Register-SqlSmo -SQLInstanceName $mockInstanceName
-                } | Should -Throw 'Exception calling "Load" with "1" argument(s): "Could not load file or assembly ''Microsoft.SqlServer.Smo, Version=0.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91'' or one of its dependencies. The system cannot find the file specified."'
-
-                Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion
-            }
-        }
-
-        Context 'When calling Register-SqlSmo with a application domain to load the wrong assembly' {
-            It 'Should throw with the correct error' {
-                {
-                    Register-SqlSmo -SQLInstanceName $mockInstanceName -ApplicationDomain $mockApplicationDomainObject
-                } | Should -Throw 'Exception calling "Load" with "1" argument(s): "Could not load file or assembly ''Microsoft.SqlServer.Smo, Version=0.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91'' or one of its dependencies. The system cannot find the file specified."'
-
-                Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion
-            }
-        }
-
-        Assert-VerifiableMock
-    }
-
-    <#
-        It is not possible to fully test this helper function since we can't mock having the correct assembly
-        in the GAC. So these test will try to load the wrong assembly and will catch the error. But that means
-        it will never test the rows after if fails to load the assembly.
-    #>
-    Describe 'Testing Register-SqlWmiManagement' -Tag RegisterSqlWmiManagement {
-        BeforeEach {
-            Mock -CommandName Get-SqlInstanceMajorVersion -MockWith {
-                return '0' # Mocking zero because that could never match a correct assembly
-            } -Verifiable
-
-            Mock -CommandName Register-SqlSmo -MockWith {
-                [System.AppDomain]::CreateDomain('SqlServerDscHelper')
-            } -ParameterFilter {
-                $SQLInstanceName -eq $mockInstanceName
-            } -Verifiable
-        }
-
-        Context 'When calling Register-SqlWmiManagement to load the wrong assembly' {
-            It 'Should throw with the correct error' {
-                {
-                    Register-SqlWmiManagement -SQLInstanceName $mockInstanceName
-                } | Should -Throw 'Exception calling "Load" with "1" argument(s): "Could not load file or assembly ''Microsoft.SqlServer.SqlWmiManagement, Version=0.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91'' or one of its dependencies. The system cannot find the file specified."'
-
-                Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion
-                Assert-MockCalled -CommandName Register-SqlSmo -Exactly -Times 1 -Scope It -ParameterFilter {
-                    $SQLInstanceName -eq $mockInstanceName -and $ApplicationDomain -eq $null
-                }
-            }
-        }
-
-        Context 'When calling Register-SqlWmiManagement with a application domain to load the wrong assembly' {
-            It 'Should throw with the correct error' {
-                {
-                    Register-SqlWmiManagement -SQLInstanceName $mockInstanceName -ApplicationDomain $mockApplicationDomainObject
-                } | Should -Throw 'Exception calling "Load" with "1" argument(s): "Could not load file or assembly ''Microsoft.SqlServer.SqlWmiManagement, Version=0.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91'' or one of its dependencies. The system cannot find the file specified."'
-
-                Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion
-                Assert-MockCalled -CommandName Register-SqlSmo -Exactly -Times 0 -Scope It -ParameterFilter {
-                    $SQLInstanceName -eq $mockInstanceName -and $ApplicationDomain -eq $null
-                }
-
-                Assert-MockCalled -CommandName Register-SqlSmo -Exactly -Times 1 -Scope It -ParameterFilter {
-                    $SQLInstanceName -eq $mockInstanceName -and $ApplicationDomain.FriendlyName -eq $mockApplicationDomainName
-                }
-            }
-        }
-
-        Assert-VerifiableMock
-    }
-
-    <#
-        NOTE! This test must be after the tests for Register-SqlSmo and Register-SqlWmiManagement.
-        This test unloads the application domain that is used during those tests.
-    #>
-    Describe 'Testing Unregister-SqlAssemblies' -Tag UnregisterSqlAssemblies {
-        Context 'When calling Unregister-SqlAssemblies to unload the assemblies' {
-            It 'Should not throw an error' {
-                {
-                    Unregister-SqlAssemblies -ApplicationDomain $mockApplicationDomainObject
-                } | Should -Not -Throw
-            }
-        }
     }
 
     Describe 'Testing Get-PrimaryReplicaServerObject' {
