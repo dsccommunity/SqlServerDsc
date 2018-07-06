@@ -22,11 +22,6 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $ServerName = $env:COMPUTERNAME,
-
         [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
@@ -47,11 +42,11 @@ function Get-TargetResource
 
     Write-Verbose -Message $script:localizedData.ReadingNetworkProperties
     $returnValue = @{
-        InstanceName = $InstanceName
-        ProtocolName    = $ProtocolName
-        IsEnabled       = $tcp.IsEnabled
-        TcpDynamicPort  = ($tcp.IPAddresses['IPAll'].IPAddressProperties['TcpDynamicPorts'].Value -ge 0)
-        TcpPort         = $tcp.IPAddresses['IPAll'].IPAddressProperties['TcpPort'].Value
+        InstanceName   = $InstanceName
+        ProtocolName   = $ProtocolName
+        IsEnabled      = $tcp.IsEnabled
+        TcpDynamicPort = ($tcp.IPAddresses['IPAll'].IPAddressProperties['TcpDynamicPorts'].Value -ge 0)
+        TcpPort        = $tcp.IPAddresses['IPAll'].IPAddressProperties['TcpPort'].Value
     }
 
     $returnValue.Keys | ForEach-Object {
@@ -144,11 +139,11 @@ function Set-TargetResource
     $getTargetResourceResult = Get-TargetResource -InstanceName $InstanceName -ProtocolName $ProtocolName
 
     $desiredState = @{
-        InstanceName = $InstanceName
-        ProtocolName    = $ProtocolName
-        IsEnabled       = $IsEnabled
-        TcpDynamicPort  = $TcpDynamicPort
-        TcpPort         = $TcpPort
+        InstanceName   = $InstanceName
+        ProtocolName   = $ProtocolName
+        IsEnabled      = $IsEnabled
+        TcpDynamicPort = $TcpDynamicPort
+        TcpPort        = $TcpPort
     }
 
     $isRestartNeeded = $false
@@ -174,13 +169,13 @@ function Set-TargetResource
     {
         # Translates the current and desired state to a string for display
         $dynamicPortDisplayValueTable = @{
-            $true = 'enabled'
+            $true  = 'enabled'
             $false = 'disabled'
         }
 
         # Translates the desired state to a valid value
         $desiredDynamicPortValue = @{
-            $true = '0'
+            $true  = '0'
             $false = ''
         }
 
@@ -219,10 +214,19 @@ function Set-TargetResource
     if ($RestartService -and $isRestartNeeded)
     {
         $restartSqlServiceParameters = @{
-            SQLServer = $ServerName
+            SQLServer       = $ServerName
             SQLInstanceName = $InstanceName
-            Timeout = $RestartTimeout
-            SkipClusterCheck = $true
+            Timeout         = $RestartTimeout
+        }
+
+        if ($getTargetResourceResult.IsEnabled -eq $false -and $IsEnabled -eq $true)
+        {
+            <#
+                If the protocol was disabled and now being enabled, is not possible
+                to connect to the instance to evaluate if it is a clustered instance.
+                This is being tracked in issue #1174.
+            #>
+            $restartSqlServiceParameters['SkipClusterCheck'] = $true
         }
 
         if ($PSBoundParameters.ContainsKey('IsEnabled') -and $IsEnabled -eq $false)

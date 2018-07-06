@@ -4,7 +4,7 @@
 
 - Changes to SqlServerDsc
   - Updated helper function Restart-SqlService to have to new optional parameters
-    `SkipClusterCheck` and `SkipWaitForOnline`. This was to support more aspectes
+    `SkipClusterCheck` and `SkipWaitForOnline`. This was to support more aspects
     of the resource SqlServerNetwork.
 - Changes to SqlAlwaysOnService
   - Integration tests was updated to handle new IPv6 addresses on the AppVeyor

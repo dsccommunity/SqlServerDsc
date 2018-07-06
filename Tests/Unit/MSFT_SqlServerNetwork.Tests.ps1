@@ -189,6 +189,25 @@ try
                     }
                 }
 
+                Context 'When ProtocolName is not in desired state' {
+                    BeforeEach {
+                        $testParameters += @{
+                            IsEnabled = $false
+                            TcpDynamicPort = $false
+                            TcpPort = '4509'
+                        }
+
+                        # Not supporting any other than 'TCP' yet.
+                        $testParameters['ProtocolName'] = 'Unknown'
+                    }
+
+                    # Skipped since no other protocol is supported yet (issue #14).
+                    It 'Should return $false' -Skip:$true {
+                        $result = Test-TargetResource @testParameters
+                        $result | Should -Be $false
+                    }
+                }
+
                 Context 'When current state is using static tcp port' {
                     Context 'When TcpDynamicPort is not in desired state' {
                         BeforeEach {
@@ -330,22 +349,55 @@ try
                 }
 
                 Context 'When IsEnabled is not in desired state' {
-                    BeforeEach {
-                        $testParameters += @{
-                            IsEnabled = $false
-                            TcpDynamicPort = $false
-                            TcpPort = '4509'
-                            RestartService = $true
+                    Context 'When IsEnabled should be $false' {
+                        BeforeEach {
+                            $testParameters += @{
+                                IsEnabled = $false
+                                TcpDynamicPort = $false
+                                TcpPort = '4509'
+                                RestartService = $true
+                            }
+
+                            $mockExpectedValue_IsEnabled = $false
                         }
 
-                        $mockExpectedValue_IsEnabled = $false
+                        It 'Should call Set-TargetResource without throwing and should call Alter()' {
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
+                            $script:WasMethodAlterCalled | Should -Be $true
+
+                            Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                        }
                     }
 
-                    It 'Should call Set-TargetResource without throwing and should call Alter()' {
-                        { Set-TargetResource @testParameters } | Should -Not -Throw
-                        $script:WasMethodAlterCalled | Should -Be $true
+                    Context 'When IsEnabled should be $true' {
+                        BeforeEach {
+                            $testParameters += @{
+                                IsEnabled = $true
+                                TcpDynamicPort = $false
+                                TcpPort = '4509'
+                                RestartService = $true
+                            }
 
-                        Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                            $mockExpectedValue_IsEnabled = $true
+
+                            Mock -CommandName Get-TargetResource -MockWith {
+                                return @{
+                                    ProtocolName   = $mockTcpProtocolName
+                                    IsEnabled      = $false
+                                    TcpDynamicPort = $testParameters.TcpDynamicPort
+                                    TcpPort        = $testParameters.TcpPort
+                                }
+                            }
+                        }
+
+                        It 'Should call Set-TargetResource without throwing and should call Alter()' {
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
+                            $script:WasMethodAlterCalled | Should -Be $true
+
+                            Assert-MockCalled -CommandName Restart-SqlService -ParameterFilter {
+                                $SkipClusterCheck -eq $true
+                            } -Exactly -Times 1 -Scope It
+                        }
                     }
                 }
 
