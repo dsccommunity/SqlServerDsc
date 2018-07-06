@@ -16,9 +16,10 @@ ConvertFrom-StringData @'
     UnableToCompareProperty = Inte möjligt att jämföra egenskapen {0} som typen {1}. {1} hanteras inte av Test-SQLDscParameterState cmdlet.
     PreferredModuleFound = Föredragen modul SqlServer funnen.
     PreferredModuleNotFound = Information: PowerShell modul SqlServer ej funnen, försöker att använda äldre SQLPS modul.
-    ImportingPowerShellModule = Importerar PowerShell modul {0}.
+    ImportedPowerShellModule = Importerade PowerShell modul '{0}' med version '{1}' från mapp '{2}'.
+    PowerShellModuleAlreadyImported = Fann att PowerShell modul {0} redan är importerad i sessionen.
+    ModuleForceRemoval = Tvingade bort den tidigare SQL PowerShell modulen från sessionen för att importera den fräsch igen.
     DebugMessagePushingLocation = SQLPS modul ändrar nuvarande katalog till SQLSERVER:\ när modulen laddas, sparar nuvarande katalog så den kan återställas efter modulen laddats.
-    DebugMessageImportedPowerShellModule = Modul {0} importerad.
     DebugMessagePoppingLocation = Återställer nuvarande katalog till vad den var innan modulen SQLPS importerades.
     PowerShellSqlModuleNotFound = Varken PowerShell modulen SqlServer eller SQLPS kunde hittas. Kommer inte kunna köra SQL Server cmdlets.
     FailedToImportPowerShellSqlModule = Misslyckades att importera {0} modulen.

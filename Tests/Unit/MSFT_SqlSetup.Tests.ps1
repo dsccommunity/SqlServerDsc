@@ -1003,8 +1003,9 @@ try
                 $testParameters = $mockDefaultParameters.Clone()
             }
 
-            $testProductVersion | ForEach-Object -Process {
-                $mockSqlMajorVersion = $_
+            foreach ($version in $testProductVersion)
+            {
+                $mockSqlMajorVersion = $version
 
                 $mockDefaultInstance_InstanceId = "$($mockSqlDatabaseEngineName)$($mockSqlMajorVersion).$($mockDefaultInstance_InstanceName)"
 
@@ -2960,6 +2961,7 @@ try
 
             BeforeAll {
                 # General mocks
+                Mock -CommandName Import-SQLPSModule
                 Mock -CommandName Get-SqlMajorVersion -MockWith $mockGetSqlMajorVersion -Verifiable
 
                 # Mocking SharedDirectory and SharedWowDirectory (when not previously installed)
@@ -3041,7 +3043,7 @@ try
 
                         Mock -CommandName Write-Warning
 
-                        It 'Should warn that target nod need to restart' {
+                        It 'Should warn that target node need to restart' {
                             { Set-TargetResource @testParameters } | Should -Not -Throw
 
                             Assert-MockCalled -CommandName Write-Warning -Exactly -Times 1 -Scope It
@@ -3057,6 +3059,7 @@ try
                             { Set-TargetResource @testParameters } | Should -Not -Throw
 
                             Assert-MockCalled -CommandName Write-Warning -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Import-SQLPSModule -Exactly -Times 0 -Scope It
                         }
                     }
                 }
@@ -3151,6 +3154,7 @@ try
 
                         Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
                     }
 
                     if( $mockSqlMajorVersion -in (13,14) )
@@ -3530,6 +3534,7 @@ try
 
                         Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
                     }
 
                     if( $mockSqlMajorVersion -in (13,14) )
@@ -4701,7 +4706,7 @@ try
                     }
 
                     { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
-                   
+
                 }
 
                 It 'Should finish successfully with exit code 2' {

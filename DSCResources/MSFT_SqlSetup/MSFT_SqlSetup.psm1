@@ -1420,8 +1420,9 @@ function Set-TargetResource
         elseif ($processExitCode -ne 0)
         {
             $setupExitMessageError = ('{0} {1}' -f $setupExitMessage, ($script:localizedData.SetupFailed))
-
             Write-Warning $setupExitMessageError
+
+            $setupEndedInError = $true
         }
         else
         {
@@ -1436,12 +1437,26 @@ function Set-TargetResource
             {
                 Write-Verbose -Message $script:localizedData.Reboot
 
+                # Rebooting, so no point in refreshing the session.
+                $forceReloadPowerShellModule = $false
+
                 $global:DSCMachineStatus = 1
             }
             else
             {
                 Write-Verbose -Message $script:localizedData.SuppressReboot
+                $forceReloadPowerShellModule = $true
             }
+        }
+        else
+        {
+            $forceReloadPowerShellModule = $true
+        }
+
+        if ((-not $setupEndedInError) -and $forceReloadPowerShellModule)
+        {
+            # Force reload of SQLPS module if newer version was installed.
+            Import-SQLPSModule -Force
         }
 
         if (-not (Test-TargetResource @PSBoundParameters))

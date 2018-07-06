@@ -1,7 +1,7 @@
 # Load Localization Data
 Import-Module -Name (Join-Path -Path (Join-Path -Path $PSScriptRoot `
-                                                -ChildPath 'DscResources') `
-                               -ChildPath 'CommonResourceHelper.psm1')
+            -ChildPath 'DscResources') `
+        -ChildPath 'CommonResourceHelper.psm1')
 
 $script:localizedData = Get-LocalizedData -ResourceName 'SqlServerDscHelper' -ScriptRoot $PSScriptRoot
 
@@ -271,11 +271,11 @@ function New-TerminatingError
 
     $errorMessage = $script:localizedData.$ErrorType
 
-    if(!$errorMessage)
+    if (!$errorMessage)
     {
         $errorMessage = ($script:localizedData.NoKeyFound -f $ErrorType)
 
-        if(!$errorMessage)
+        if (!$errorMessage)
         {
             $errorMessage = ("No Localization key found for key: {0}" -f $ErrorType)
         }
@@ -283,7 +283,7 @@ function New-TerminatingError
 
     $errorMessage = ($errorMessage -f $FormatArgs)
 
-    if( $InnerException )
+    if ( $InnerException )
     {
         $errorMessage += " InnerException: $($InnerException.Message)"
     }
@@ -291,7 +291,7 @@ function New-TerminatingError
     $callStack = Get-PSCallStack
 
     # Get Name of calling script
-    if($callStack[1] -and $callStack[1].ScriptName)
+    if ($callStack[1] -and $callStack[1].ScriptName)
     {
         $scriptPath = $callStack[1].ScriptName
 
@@ -351,10 +351,10 @@ function New-WarningMessage
     if (!$warningMessage)
     {
         $errorParams = @{
-            ErrorType = 'NoKeyFound'
-            FormatArgs = $WarningType
+            ErrorType     = 'NoKeyFound'
+            FormatArgs    = $WarningType
             ErrorCategory = 'InvalidArgument'
-            TargetObject = 'New-WarningMessage'
+            TargetObject  = 'New-WarningMessage'
         }
 
         ## Raise an error indicating the localization data is not present
@@ -431,8 +431,8 @@ function Test-SQLDscParameterState
     $returnValue = $true
 
     if (($DesiredValues.GetType().Name -ne 'HashTable') `
-        -and ($DesiredValues.GetType().Name -ne 'CimInstance') `
-        -and ($DesiredValues.GetType().Name -ne 'PSBoundParametersDictionary'))
+            -and ($DesiredValues.GetType().Name -ne 'CimInstance') `
+            -and ($DesiredValues.GetType().Name -ne 'PSBoundParametersDictionary'))
     {
         $errorMessage = $script:localizedData.PropertyTypeInvalidForDesiredValues -f $($DesiredValues.GetType().Name)
         New-InvalidArgumentException -ArgumentName 'DesiredValues' -Message $errorMessage
@@ -457,11 +457,11 @@ function Test-SQLDscParameterState
         if (($_ -ne 'Verbose'))
         {
             if (($CurrentValues.ContainsKey($_) -eq $false) `
-            -or ($CurrentValues.$_ -ne $DesiredValues.$_) `
-            -or (($DesiredValues.GetType().Name -ne 'CimInstance' -and $DesiredValues.ContainsKey($_) -eq $true) -and ($null -ne $DesiredValues.$_ -and $DesiredValues.$_.GetType().IsArray)))
+                    -or ($CurrentValues.$_ -ne $DesiredValues.$_) `
+                    -or (($DesiredValues.GetType().Name -ne 'CimInstance' -and $DesiredValues.ContainsKey($_) -eq $true) -and ($null -ne $DesiredValues.$_ -and $DesiredValues.$_.GetType().IsArray)))
             {
                 if ($DesiredValues.GetType().Name -eq 'HashTable' -or `
-                    $DesiredValues.GetType().Name -eq 'PSBoundParametersDictionary')
+                        $DesiredValues.GetType().Name -eq 'PSBoundParametersDictionary')
                 {
                     $checkDesiredValue = $DesiredValues.ContainsKey($_)
                 }
@@ -485,7 +485,7 @@ function Test-SQLDscParameterState
                     if ($desiredType.IsArray -eq $true)
                     {
                         if (($CurrentValues.ContainsKey($fieldName) -eq $false) `
-                        -or ($null -eq $CurrentValues.$fieldName))
+                                -or ($null -eq $CurrentValues.$fieldName))
                         {
                             Write-Verbose -Message ($script:localizedData.PropertyValidationError -f $fieldName) -Verbose
 
@@ -494,7 +494,7 @@ function Test-SQLDscParameterState
                         else
                         {
                             $arrayCompare = Compare-Object -ReferenceObject $CurrentValues.$fieldName `
-                                                           -DifferenceObject $DesiredValues.$fieldName
+                                -DifferenceObject $DesiredValues.$fieldName
                             if ($null -ne $arrayCompare)
                             {
                                 Write-Verbose -Message ($script:localizedData.PropertiesDoesNotMatch -f $fieldName) -Verbose
@@ -514,10 +514,10 @@ function Test-SQLDscParameterState
                             'String'
                             {
                                 if (-not [System.String]::IsNullOrEmpty($CurrentValues.$fieldName) -or `
-                                    -not [System.String]::IsNullOrEmpty($DesiredValues.$fieldName))
+                                        -not [System.String]::IsNullOrEmpty($DesiredValues.$fieldName))
                                 {
                                     Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
+                                            -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
 
                                     $returnValue = $false
                                 }
@@ -526,10 +526,10 @@ function Test-SQLDscParameterState
                             'Int32'
                             {
                                 if (-not ($DesiredValues.$fieldName -eq 0) -or `
-                                    -not ($null -eq $CurrentValues.$fieldName))
+                                        -not ($null -eq $CurrentValues.$fieldName))
                                 {
                                     Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
+                                            -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
 
                                     $returnValue = $false
                                 }
@@ -538,10 +538,10 @@ function Test-SQLDscParameterState
                             { $_ -eq 'Int16' -or $_ -eq 'UInt16'}
                             {
                                 if (-not ($DesiredValues.$fieldName -eq 0) -or `
-                                    -not ($null -eq $CurrentValues.$fieldName))
+                                        -not ($null -eq $CurrentValues.$fieldName))
                                 {
                                     Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
+                                            -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
 
                                     $returnValue = $false
                                 }
@@ -550,7 +550,7 @@ function Test-SQLDscParameterState
                             default
                             {
                                 Write-Warning -Message ($script:localizedData.UnableToCompareProperty `
-                                    -f $fieldName, $desiredType.Name)
+                                        -f $fieldName, $desiredType.Name)
 
                                 $returnValue = $false
                             }
@@ -567,16 +567,49 @@ function Test-SQLDscParameterState
 <#
     .SYNOPSIS
         Imports the module SQLPS in a standardized way.
+
+    .PARAMETER Force
+        Forces the removal of the previous SQL module, to load the same or newer
+        version fresh.
+        This is meant to make sure the newest version is used, with the latest
+        assemblies.
+
 #>
 function Import-SQLPSModule
 {
     [CmdletBinding()]
     param
     (
+        [Parameter()]
+        [Switch]
+        $Force
     )
 
-    $module = (Get-Module -FullyQualifiedName 'SqlServer' -ListAvailable).Name
-    if ($module)
+    if ($Force.IsPresent)
+    {
+        Write-Verbose -Message $script:localizedData.ModuleForceRemoval -Verbose
+        Remove-Module -Name @('SqlServer','SQLPS','SQLASCmdlets') -Force -ErrorAction SilentlyContinue
+    }
+
+    <#
+        Check if either of the modules are already loaded into the session.
+        Prefer to use the first one (in order found).
+        NOTE: There should actually only be either SqlServer or SQLPS loaded,
+        otherwise there can be problems with wrong assemblies being loaded.
+    #>
+    $loadedModuleName = (Get-Module -Name @('SqlServer', 'SQLPS') | Select-Object -First 1).Name
+    if ($loadedModuleName)
+    {
+        Write-Verbose -Message ($script:localizedData.PowerShellModuleAlreadyImported -f $loadedModuleName) -Verbose
+        return
+    }
+
+    # Get the newest SqlServer module if more than one exist
+    $availableModuleName = (Get-Module -FullyQualifiedName 'SqlServer' -ListAvailable |
+            Sort-Object -Property 'Version' -Descending |
+            Select-Object -First 1).Name
+
+    if ($availableModuleName)
     {
         Write-Verbose -Message ($script:localizedData.PreferredModuleFound) -Verbose
     }
@@ -592,29 +625,40 @@ function Import-SQLPSModule
         #>
         $env:PSModulePath = [System.Environment]::GetEnvironmentVariable('PSModulePath', 'Machine')
 
-        $module = (Get-Module -FullyQualifiedName 'SQLPS' -ListAvailable).Name
+        <#
+            Get the newest SQLPS module if more than one exist.
+            This sets $availableModuleName to the Path of the module to be loaded.
+        #>
+        $availableModuleName = (Get-Module -FullyQualifiedName 'SQLPS' -ListAvailable |
+            Select-Object -Property Name, Path, @{
+                Name = 'Version'
+                Expression = {
+                    # Parse the build version number '120', '130' from the Path.
+                    (Select-String -InputObject $_.Path -Pattern '\\([0-9]{3})\\' -List).Matches.Groups[1].Value
+                }
+            } |
+            Sort-Object -Property 'Version' -Descending |
+            Select-Object -First 1).Path
     }
 
-    if ($module)
+    if ($availableModuleName)
     {
         try
         {
             Write-Debug -Message ($script:localizedData.DebugMessagePushingLocation)
             Push-Location
 
-            Write-Verbose -Message ($script:localizedData.ImportingPowerShellModule -f $module) -Verbose
-
             <#
                 SQLPS has unapproved verbs, disable checking to ignore Warnings.
                 Suppressing verbose so all cmdlet is not listed.
             #>
-            Import-Module -Name $module -DisableNameChecking -Verbose:$False -ErrorAction Stop
+            $importedModule = Import-Module -Name $availableModuleName -DisableNameChecking -Verbose:$False -Force:$Force -PassThru -ErrorAction Stop
 
-            Write-Debug -Message ($script:localizedData.DebugMessageImportedPowerShellModule -f $module)
+            Write-Verbose -Message ($script:localizedData.ImportedPowerShellModule -f $importedModule.Name, $importedModule.Version, $importedModule.Path) -Verbose
         }
         catch
         {
-            $errorMessage = $script:localizedData.FailedToImportPowerShellSqlModule -f $module
+            $errorMessage = $script:localizedData.FailedToImportPowerShellSqlModule -f $availableModuleName
             New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
         }
         finally
@@ -705,11 +749,11 @@ function Restart-SqlService
             # Get the cluster resources
             Write-Verbose -Message ($script:localizedData.GetSqlServerClusterResources) -Verbose
             $sqlService = Get-CimInstance -Namespace root/MSCluster -ClassName MSCluster_Resource -Filter "Type = 'SQL Server'" |
-                            Where-Object -FilterScript { $_.PrivateProperties.InstanceName -eq $serverObject.ServiceName }
+                Where-Object -FilterScript { $_.PrivateProperties.InstanceName -eq $serverObject.ServiceName }
 
             Write-Verbose -Message ($script:localizedData.GetSqlAgentClusterResource) -Verbose
             $agentService = $sqlService | Get-CimAssociatedInstance -ResultClassName MSCluster_Resource |
-                                Where-Object -FilterScript { ($_.Type -eq 'SQL Server Agent') -and ($_.State -eq 2) }
+                Where-Object -FilterScript { ($_.Type -eq 'SQL Server Agent') -and ($_.State -eq 2) }
 
             # Build a listing of resources being acted upon
             $resourceNames = @($sqlService.Name, ($agentService | Select-Object -ExpandProperty Name)) -join ","
@@ -1012,10 +1056,10 @@ function Test-LoginEffectivePermissions
     $permissionsPresent = $false
 
     $invokeQueryParameters = @{
-        SQLServer = $SQLServer
+        SQLServer       = $SQLServer
         SQLInstanceName = $SQLInstanceName
-        Database = 'master'
-        WithResults = $true
+        Database        = 'master'
+        WithResults     = $true
     }
 
     $queryToGetEffectivePermissionsForLogin = "
@@ -1094,10 +1138,10 @@ function Test-AvailabilityReplicaSeedingModeAutomatic
     if ( $serverObject.Version -ge 13 )
     {
         $invokeQueryParams = @{
-            SQLServer = $SQLServer
+            SQLServer       = $SQLServer
             SQLInstanceName = $SQLInstanceName
-            Database = 'master'
-            WithResults = $true
+            Database        = 'master'
+            WithResults     = $true
         }
 
         $queryToGetSeedingMode = "
@@ -1170,10 +1214,10 @@ function Test-ImpersonatePermissions
     )
 
     $testLoginEffectivePermissionsParams = @{
-        SQLServer = $ServerObject.ComputerNamePhysicalNetBIOS
+        SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
         SQLInstanceName = $ServerObject.ServiceName
-        LoginName = $ServerObject.ConnectionContext.TrueLogin
-        Permissions = @('IMPERSONATE ANY LOGIN')
+        LoginName       = $ServerObject.ConnectionContext.TrueLogin
+        Permissions     = @('IMPERSONATE ANY LOGIN')
     }
 
     $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
@@ -1206,7 +1250,7 @@ function Split-FullSQLInstanceName
         $FullSQLInstanceName
     )
 
-    $sqlServer,$sqlInstanceName = $FullSQLInstanceName.Split('\')
+    $sqlServer, $sqlInstanceName = $FullSQLInstanceName.Split('\')
 
     if ( [System.String]::IsNullOrEmpty($sqlInstanceName) )
     {
@@ -1214,7 +1258,7 @@ function Split-FullSQLInstanceName
     }
 
     return @{
-        SQLServer = $sqlServer
+        SQLServer       = $sqlServer
         SQLInstanceName = $sqlInstanceName
     }
 }
@@ -1265,12 +1309,12 @@ function Test-ClusterPermissions
                 {
                     $clusterServiceName
                     {
-                        Write-Verbose -Message ( $script:localizedData.ClusterLoginMissingRecommendedPermissions -f $loginName,( $availabilityGroupManagementPerms -join ', ' ) ) -Verbose
+                        Write-Verbose -Message ( $script:localizedData.ClusterLoginMissingRecommendedPermissions -f $loginName, ( $availabilityGroupManagementPerms -join ', ' ) ) -Verbose
                     }
 
                     $ntAuthoritySystemName
                     {
-                        Write-Verbose -Message ( $script:localizedData.ClusterLoginMissingPermissions -f $loginName,( $availabilityGroupManagementPerms -join ', ' ) ) -Verbose
+                        Write-Verbose -Message ( $script:localizedData.ClusterLoginMissingPermissions -f $loginName, ( $availabilityGroupManagementPerms -join ', ' ) ) -Verbose
                     }
                 }
             }
@@ -1285,12 +1329,12 @@ function Test-ClusterPermissions
             {
                 $clusterServiceName
                 {
-                    Write-Verbose -Message ($script:localizedData.ClusterLoginMissingRecommendedPermissions -f $loginName,"Trying with '$ntAuthoritySystemName'.") -Verbose
+                    Write-Verbose -Message ($script:localizedData.ClusterLoginMissingRecommendedPermissions -f $loginName, "Trying with '$ntAuthoritySystemName'.") -Verbose
                 }
 
                 $ntAuthoritySystemName
                 {
-                    Write-Verbose -Message ( $script:localizedData.ClusterLoginMissing -f $loginName,'' ) -Verbose
+                    Write-Verbose -Message ( $script:localizedData.ClusterLoginMissing -f $loginName, '' ) -Verbose
                 }
             }
         }
@@ -1299,7 +1343,7 @@ function Test-ClusterPermissions
     # If neither 'NT SERVICE\ClusSvc' or 'NT AUTHORITY\SYSTEM' have the required permissions, throw an error.
     if ( -not $clusterPermissionsPresent )
     {
-        throw ($script:localizedData.ClusterPermissionsMissing -f $sqlServer,$sqlInstanceName )
+        throw ($script:localizedData.ClusterPermissionsMissing -f $sqlServer, $sqlInstanceName )
     }
 
     return $clusterPermissionsPresent

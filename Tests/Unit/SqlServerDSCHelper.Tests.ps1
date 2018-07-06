@@ -725,10 +725,36 @@ InModuleScope $script:moduleName {
         }
     }
 
-    $mockGetModule = {
-        return New-Object -TypeName PSObject -Property @{
-            Name = $mockModuleNameToImport
-        }
+    $mockGetModuleSqlServer = {
+        # Return an array to test so that the latest version is only imported.
+        return @(
+            New-Object -TypeName PSObject -Property @{
+                Name = 'SqlServer'
+                Version = [Version] '1.0'
+            }
+
+            New-Object -TypeName PSObject -Property @{
+                Name = 'SqlServer'
+                Version = [Version] '2.0'
+            }
+        )
+    }
+
+    $sqlPsLatestModulePath = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
+
+    $mockGetModuleSqlPs = {
+        # Return an array to test so that the latest version is only imported.
+        return @(
+            New-Object -TypeName PSObject -Property @{
+                Name = 'SQLPS'
+                Path = 'C:\Program Files (x86)\Microsoft SQL Server\120\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
+            }
+
+            New-Object -TypeName PSObject -Property @{
+                Name = 'SQLPS'
+                Path = $sqlPsLatestModulePath
+            }
+        )
     }
 
     $mockGetModule_SqlServer_ParameterFilter = {
@@ -739,7 +765,7 @@ InModuleScope $script:moduleName {
         $FullyQualifiedName.Name -eq 'SQLPS' -and $ListAvailable -eq $true
     }
 
-    Describe 'Testing Import-SQLPSModule' -Tag ImportSQLPSModule {
+    Describe 'Testing Import-SQLPSModule' -Tag 'ImportSQLPSModule' {
         BeforeEach {
             Mock -CommandName Push-Location -Verifiable
             Mock -CommandName Pop-Location -Verifiable
@@ -747,12 +773,49 @@ InModuleScope $script:moduleName {
             Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
         }
 
-        Context 'When module SqlServer exists' {
-            $mockModuleNameToImport = 'SqlServer'
-            $mockExpectedModuleNameToImport = 'SqlServer'
+        Context 'When module SqlServer is already loaded into the session' {
+            BeforeAll {
+                Mock -CommandName Get-Module -MockWith {
+                    return @{
+                        Name = 'SqlServer'
+                    }
+                }
+            }
+
+            It 'Should use the already loaded module and not call Import-Module' {
+                { Import-SQLPSModule } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Import-Module -Exactly -Times 0 -Scope It
+            }
+        }
+
+        Context 'When module SQLPS is already loaded into the session' {
+            BeforeAll {
+                Mock -CommandName Get-Module -MockWith {
+                    return @{
+                        Name = 'SQLPS'
+                    }
+                }
+            }
+
+            It 'Should use the already loaded module and not call Import-Module' {
+                { Import-SQLPSModule } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Import-Module -Exactly -Times 0 -Scope It
+            }
+        }
+
+        Context 'When module SqlServer exists, but not loaded into the session' {
+            BeforeAll {
+                Mock -CommandName Get-Module -ParameterFilter {
+                    $PSBoundParameters.ContainsKey('Name') -eq $true
+                }
+
+                $mockExpectedModuleNameToImport = 'SqlServer'
+            }
 
             It 'Should import the SqlServer module without throwing' {
-                Mock -CommandName Get-Module -MockWith $mockGetModule -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
+                Mock -CommandName Get-Module -MockWith $mockGetModuleSqlServer -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
 
                 { Import-SQLPSModule } | Should -Not -Throw
 
@@ -763,36 +826,43 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Context 'When only module SQLPS exists' {
-            $mockModuleNameToImport = 'SQLPS'
-            $mockExpectedModuleNameToImport = 'SQLPS'
+        Context 'When only module SQLPS exists, but not loaded into the session, and using -Force' {
+            BeforeAll {
+                Mock -CommandName Remove-Module
+                Mock -CommandName Get-Module -ParameterFilter {
+                    $PSBoundParameters.ContainsKey('Name') -eq $true
+                }
+
+                $mockExpectedModuleNameToImport = $sqlPsLatestModulePath
+            }
 
             It 'Should import the SqlServer module without throwing' {
-                Mock -CommandName Get-Module -MockWith $mockGetModule -ParameterFilter $mockGetModule_SQLPS_ParameterFilter -Verifiable
+                Mock -CommandName Get-Module -MockWith $mockGetModuleSqlPs -ParameterFilter $mockGetModule_SQLPS_ParameterFilter -Verifiable
                 Mock -CommandName Get-Module -MockWith {
                     return $null
                 } -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
 
-                { Import-SQLPSModule } | Should -Not -Throw
+                { Import-SQLPSModule -Force } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Get-Module -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Get-Module -ParameterFilter $mockGetModule_SQLPS_ParameterFilter -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Push-Location -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Pop-Location -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Remove-Module -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Import-Module -Exactly -Times 1 -Scope It
             }
         }
 
         Context 'When neither SqlServer or SQLPS exists' {
-            $mockModuleNameToImport = 'UnknownModule'
-            $mockExpectedModuleNameToImport = 'SQLPS'
+            $mockExpectedModuleNameToImport = $sqlPsLatestModulePath
 
             It 'Should throw the correct error message' {
                 Mock -CommandName Get-Module
 
                 { Import-SQLPSModule } | Should -Throw $script:localizedData.PowerShellSqlModuleNotFound
 
-                Assert-MockCalled -CommandName Get-Module -Exactly -Times 2 -Scope It
+                Assert-MockCalled -CommandName Get-Module -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Get-Module -ParameterFilter $mockGetModule_SQLPS_ParameterFilter -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Push-Location -Exactly -Times 0 -Scope It
                 Assert-MockCalled -CommandName Pop-Location -Exactly -Times 0 -Scope It
                 Assert-MockCalled -CommandName Import-Module -Exactly -Times 0 -Scope It
@@ -800,12 +870,11 @@ InModuleScope $script:moduleName {
         }
 
         Context 'When Import-Module fails to load the module' {
-            $mockModuleNameToImport = 'SqlServer'
             $mockExpectedModuleNameToImport = 'SqlServer'
 
             It 'Should throw the correct error message' {
                 $errorMessage = 'Mock Import-Module throwing a mocked error.'
-                Mock -CommandName Get-Module -MockWith $mockGetModule -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
+                Mock -CommandName Get-Module -MockWith $mockGetModuleSqlServer -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
                 Mock -CommandName Import-Module -MockWith {
                     throw $errorMessage
                 }
@@ -821,13 +890,12 @@ InModuleScope $script:moduleName {
 
         # This is to test the tests (so the mock throws correctly)
         Context 'When mock Import-Module is called with wrong module name' {
-            $mockModuleNameToImport = 'SqlServer'
             $mockExpectedModuleNameToImport = 'UnknownModule'
 
             It 'Should throw the correct error message' {
-                Mock -CommandName Get-Module -MockWith $mockGetModule -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
+                Mock -CommandName Get-Module -MockWith $mockGetModuleSqlServer -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
 
-                { Import-SQLPSModule } | Should -Throw ($script:localizedData.FailedToImportPowerShellSqlModule -f $mockModuleNameToImport)
+                { Import-SQLPSModule } | Should -Throw ($script:localizedData.FailedToImportPowerShellSqlModule -f 'SqlServer')
 
                 Assert-MockCalled -CommandName Get-Module -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Push-Location -Exactly -Times 1 -Scope It

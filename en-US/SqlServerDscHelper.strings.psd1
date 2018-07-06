@@ -16,9 +16,10 @@ ConvertFrom-StringData @'
     UnableToCompareProperty = Unable to compare property {0} as the type {1} is not handled by the Test-SQLDSCParameterState cmdlet.
     PreferredModuleFound = Preferred module SqlServer found.
     PreferredModuleNotFound = Information: PowerShell module SqlServer not found, trying to use older SQLPS module.
-    ImportingPowerShellModule = Importing PowerShell module {0}.
+    ImportedPowerShellModule = Importing PowerShell module '{0}' with version '{1}' from path '{2}'.
+    PowerShellModuleAlreadyImported = Found PowerShell module {0} already imported in the session.
+    ModuleForceRemoval = Forcibly removed the SQL PowerShell module from the session to import it fresh again.
     DebugMessagePushingLocation = SQLPS module changes CWD to SQLSERVER:\ when loading, pushing location to pop it when module is loaded.
-    DebugMessageImportedPowerShellModule = Module {0} imported.
     DebugMessagePoppingLocation = Popping location back to what it was before importing SQLPS module.
     PowerShellSqlModuleNotFound = Neither PowerShell module SqlServer or SQLPS was found. Unable to run SQL Server cmdlets.
     FailedToImportPowerShellSqlModule = Failed to import {0} module.
