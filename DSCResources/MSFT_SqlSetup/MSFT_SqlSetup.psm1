@@ -1455,7 +1455,15 @@ function Set-TargetResource
 
         if ((-not $setupEndedInError) -and $forceReloadPowerShellModule)
         {
-            # Force reload of SQLPS module if newer version was installed.
+            <#
+                Force reload of SQLPS module in case a newer version of
+                SQL Server was installed that contains a newer version
+                of the SQLPS module, although if SqlServer module exist
+                on the target node, that will be used regardless.
+                This is to make sure we use the latest SQLPS module that
+                matches the latest assemblies in GAC, mitigating for example
+                issue #1151.
+            #>
             Import-SQLPSModule -Force
         }
 
