@@ -188,7 +188,7 @@ function Get-TargetResource
         $instanceId = $fullInstanceId.Split('.')[1]
         $instanceDirectory = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$fullInstanceId\Setup" -Name 'SqlProgramDir').SqlProgramDir.Trim("\")
 
-        $databaseServer = Connect-SQL -SQLServer $sqlHostName -SQLInstanceName $InstanceName
+        $databaseServer = Connect-SQL -ServerName $sqlHostName -InstanceName $InstanceName
 
         $sqlCollation = $databaseServer.Collation
 
@@ -295,7 +295,7 @@ function Get-TargetResource
         $analysisServiceAccountUsername = $analysisServiceCimInstance.StartName
         $AsSvcStartupType = ConvertTo-StartupType -StartMode $analysisServiceCimInstance.StartMode
 
-        $analysisServer = Connect-SQLAnalysis -SQLServer $sqlHostName -SQLInstanceName $InstanceName
+        $analysisServer = Connect-SQLAnalysis -ServerName $sqlHostName -InstanceName $InstanceName
 
         $analysisCollation = $analysisServer.ServerProperties['CollationName'].Value
         $analysisDataDirectory = $analysisServer.ServerProperties['DataDir'].Value

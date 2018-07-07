@@ -186,7 +186,7 @@ try
 
                 [Parameter()]
                 [System.String]
-                $SQLInstanceName,
+                $InstanceName,
 
                 # The following two parameters are used to mock Get-PrimaryReplicaServerObject
                 [Parameter()]
@@ -289,7 +289,7 @@ try
 
                 [Parameter()]
                 [System.String]
-                $SQLInstanceName,
+                $InstanceName,
 
                 # The following two parameters are used to mock Get-PrimaryReplicaServerObject
                 [Parameter()]
@@ -409,7 +409,7 @@ try
 
                 [Parameter()]
                 [System.String]
-                $SQLInstanceName,
+                $InstanceName,
 
                 # The following two parameters are used to mock Get-PrimaryReplicaServerObject
                 [Parameter()]

@@ -41,6 +41,7 @@
       shows the name, version and path when importing
       the module SQLPS (it did show correctly for the
       SqlServer module).
+  - Code cleanup: Change parameter names of Connect-SQL to align with resources.
 - Changes to SqlAg, SqlAGDatabase, and SqlAGReplica examples
   - Included configuration for SqlAlwaysOnService to enable
     HADR on each node to avoid confusion

@@ -1255,7 +1255,7 @@ InModuleScope $script:moduleName {
                 $mockExpectedDatabaseEngineServer = 'TestServer'
                 $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
 
-                $databaseEngineServerObject = Connect-SQL -SQLServer $mockExpectedDatabaseEngineServer
+                $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer
                 $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly $mockExpectedDatabaseEngineServer
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
@@ -1269,7 +1269,7 @@ InModuleScope $script:moduleName {
                 $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
                 $mockExpectedDatabaseEngineLoginSecure = $false
 
-                $databaseEngineServerObject = Connect-SQL -SQLServer $mockExpectedDatabaseEngineServer -SetupCredential $mockSetupCredential -LoginType 'SqlLogin'
+                $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -SetupCredential $mockSetupCredential -LoginType 'SqlLogin'
                 $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $false
                 $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSetupCredentialUserName
                 $databaseEngineServerObject.ConnectionContext.SecurePassword | Should -Be $mockSetupCredentialSecurePassword
@@ -1285,7 +1285,7 @@ InModuleScope $script:moduleName {
                 $mockExpectedDatabaseEngineServer = $env:COMPUTERNAME
                 $mockExpectedDatabaseEngineInstance = $mockInstanceName
 
-                $databaseEngineServerObject = Connect-SQL -SQLInstanceName $mockExpectedDatabaseEngineInstance
+                $databaseEngineServerObject = Connect-SQL -InstanceName $mockExpectedDatabaseEngineInstance
                 $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
@@ -1299,7 +1299,7 @@ InModuleScope $script:moduleName {
                 $mockExpectedDatabaseEngineInstance = $mockInstanceName
                 $mockExpectedDatabaseEngineLoginSecure = $false
 
-                $databaseEngineServerObject = Connect-SQL -SQLInstanceName $mockExpectedDatabaseEngineInstance -SetupCredential $mockSetupCredential -LoginType 'SqlLogin'
+                $databaseEngineServerObject = Connect-SQL -InstanceName $mockExpectedDatabaseEngineInstance -SetupCredential $mockSetupCredential -LoginType 'SqlLogin'
                 $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $false
                 $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSetupCredentialUserName
                 $databaseEngineServerObject.ConnectionContext.SecurePassword | Should -Be $mockSetupCredentialSecurePassword
@@ -1315,7 +1315,7 @@ InModuleScope $script:moduleName {
                 $mockExpectedDatabaseEngineServer = 'SERVER'
                 $mockExpectedDatabaseEngineInstance = $mockInstanceName
 
-                $databaseEngineServerObject = Connect-SQL -SQLServer $mockExpectedDatabaseEngineServer -SQLInstanceName $mockExpectedDatabaseEngineInstance
+                $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -InstanceName $mockExpectedDatabaseEngineInstance
                 $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
@@ -1329,8 +1329,8 @@ InModuleScope $script:moduleName {
                 $mockExpectedDatabaseEngineInstance = $mockInstanceName
 
                 $testParameters = @{
-                    SQLServer = $mockExpectedDatabaseEngineServer
-                    SQLInstanceName = $mockExpectedDatabaseEngineInstance
+                    ServerName = $mockExpectedDatabaseEngineServer
+                    InstanceName = $mockExpectedDatabaseEngineInstance
                     SetupCredential = $mockSetupCredential
                 }
 
