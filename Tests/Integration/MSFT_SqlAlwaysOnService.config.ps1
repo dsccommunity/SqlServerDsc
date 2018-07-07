@@ -5,10 +5,10 @@
 
 $ignoreAdapterIpAddress = Get-NetAdapter |
     Get-NetIPInterface |
-        Where-Object -FilterScript {
-            $_.AddressFamily -eq 'IPv4' `
-            -and $_.Dhcp -eq 'Disabled'
-        } | Get-NetIPAddress
+    Where-Object -FilterScript {
+    $_.AddressFamily -eq 'IPv4' `
+        -and $_.Dhcp -eq 'Disabled'
+} | Get-NetIPAddress
 
 $ignoreIpNetwork = @()
 foreach ($adapterIpAddress in $ignoreAdapterIpAddress)
@@ -24,19 +24,19 @@ foreach ($adapterIpAddress in $ignoreAdapterIpAddress)
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                    = 'localhost'
-            ComputerName                = $env:COMPUTERNAME
-            InstanceName                = 'DSCSQL2016'
-            RestartTimeout              = 120
+            NodeName                 = 'localhost'
+            ComputerName             = $env:COMPUTERNAME
+            InstanceName             = 'DSCSQL2016'
+            RestartTimeout           = 120
 
-            LoopbackAdapterName         = 'ClusterNetwork'
-            LoopbackAdapterIpAddress    = '192.168.40.10'
-            LoopbackAdapterGateway      = '192.168.40.254'
+            LoopbackAdapterName      = 'ClusterNetwork'
+            LoopbackAdapterIpAddress = '192.168.40.10'
+            LoopbackAdapterGateway   = '192.168.40.254'
 
-            ClusterStaticIpAddress      = '192.168.40.11'
-            IgnoreNetwork               = $ignoreIpNetwork
+            ClusterStaticIpAddress   = '192.168.40.11'
+            IgnoreNetwork            = $ignoreIpNetwork
 
-            PSDscAllowPlainTextPassword = $true
+            CertificateFile          = $env:DscPublicCertificatePath
         }
     )
 }

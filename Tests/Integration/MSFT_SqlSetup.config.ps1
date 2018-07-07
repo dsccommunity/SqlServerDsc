@@ -45,12 +45,7 @@ $ConfigurationData = @{
             ImagePath                             = "$env:TEMP\SQL2016.iso"
             DriveLetter                           = $mockIsoMediaDriveLetter
 
-            <#
-                We must compile the configuration using plain text since the
-                common integration test framework does not use certificates.
-                This should not be used in production.
-            #>
-            PSDscAllowPlainTextPassword           = $true
+            CertificateFile                       = $env:DscPublicCertificatePath
         }
     )
 }
@@ -247,8 +242,8 @@ Configuration MSFT_SqlSetup_StopMultiAnalysisServicesInstance_Config
 
         Service ('StopMultiAnalysisServicesInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
         {
-            Name   = ('MSOLAP${0}' -f $Node.DatabaseEngineNamedInstanceName)
-            State  = 'Stopped'
+            Name  = ('MSOLAP${0}' -f $Node.DatabaseEngineNamedInstanceName)
+            State = 'Stopped'
         }
     }
 }
@@ -312,15 +307,15 @@ Configuration MSFT_SqlSetup_StopSqlServerDefaultInstance_Config
     {
         Service ('StopSqlServerAgentForInstance{0}' -f $Node.DatabaseEngineDefaultInstanceName)
         {
-            Name   = 'SQLSERVERAGENT'
-            State  = 'Stopped'
+            Name  = 'SQLSERVERAGENT'
+            State = 'Stopped'
         }
 
 
         Service ('StopSqlServerInstance{0}' -f $Node.DatabaseEngineDefaultInstanceName)
         {
-            Name   = $Node.DatabaseEngineDefaultInstanceName
-            State  = 'Stopped'
+            Name  = $Node.DatabaseEngineDefaultInstanceName
+            State = 'Stopped'
         }
     }
 }
@@ -380,8 +375,8 @@ Configuration MSFT_SqlSetup_StopTabularAnalysisServices_Config
     {
         Service ('StopTabularAnalysisServicesInstance{0}' -f $Node.AnalysisServicesTabularInstanceName)
         {
-            Name   = ('MSOLAP${0}' -f $Node.DatabaseEngineNamedInstanceName)
-            State  = 'Stopped'
+            Name  = ('MSOLAP${0}' -f $Node.DatabaseEngineNamedInstanceName)
+            State = 'Stopped'
         }
     }
 }

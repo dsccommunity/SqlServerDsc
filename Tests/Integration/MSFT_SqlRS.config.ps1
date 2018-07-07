@@ -5,23 +5,23 @@ $mockIsoMediaDriveLetter = [char](([int][char]$mockLastDrive) + 1)
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                    = 'localhost'
+            NodeName             = 'localhost'
 
-            InstanceName                = 'DSCRS2016'
-            Features                    = 'RS'
-            InstallSharedDir            = 'C:\Program Files\Microsoft SQL Server'
-            InstallSharedWOWDir         = 'C:\Program Files (x86)\Microsoft SQL Server'
-            UpdateEnabled               = 'False'
-            SuppressReboot              = $true # Make sure we don't reboot during testing.
-            ForceReboot                 = $false
+            InstanceName         = 'DSCRS2016'
+            Features             = 'RS'
+            InstallSharedDir     = 'C:\Program Files\Microsoft SQL Server'
+            InstallSharedWOWDir  = 'C:\Program Files (x86)\Microsoft SQL Server'
+            UpdateEnabled        = 'False'
+            SuppressReboot       = $true # Make sure we don't reboot during testing.
+            ForceReboot          = $false
 
-            ImagePath                   = "$env:TEMP\SQL2016.iso"
-            DriveLetter                 = $mockIsoMediaDriveLetter
+            ImagePath            = "$env:TEMP\SQL2016.iso"
+            DriveLetter          = $mockIsoMediaDriveLetter
 
-            DatabaseServerName          = $env:COMPUTERNAME
-            DatabaseInstanceName        = 'DSCSQL2016'
+            DatabaseServerName   = $env:COMPUTERNAME
+            DatabaseInstanceName = 'DSCSQL2016'
 
-            PSDscAllowPlainTextPassword = $true
+            CertificateFile      = $env:DscPublicCertificatePath
         }
     )
 }
@@ -197,8 +197,8 @@ Configuration MSFT_SqlRS_StopReportingServicesInstance_Config
     {
         Service ('StopReportingServicesInstance{0}' -f $Node.InstanceName)
         {
-            Name   = ('ReportServer${0}' -f $Node.InstanceName)
-            State  = 'Stopped'
+            Name  = ('ReportServer${0}' -f $Node.InstanceName)
+            State = 'Stopped'
         }
     }
 }

@@ -7,22 +7,22 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                    = 'localhost'
+            NodeName          = 'localhost'
 
-            ServerName                  = $env:COMPUTERNAME
-            InstanceName                = 'DSCTEST'
+            ServerName        = $env:COMPUTERNAME
+            InstanceName      = 'DSCTEST'
 
-            DatabaseName                = 'ScriptDatabase1'
+            DatabaseName      = 'ScriptDatabase1'
 
-            GetSqlScriptPath            = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
-            SetSqlScriptPath            = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
-            TestSqlScriptPath           = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+            GetSqlScriptPath  = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+            SetSqlScriptPath  = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+            TestSqlScriptPath = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
 
-            GetSqlScript                = @'
+            GetSqlScript      = @'
 SELECT Name FROM sys.databases WHERE Name = '$(DatabaseName)' FOR JSON AUTO
 '@
 
-            TestSqlScript               = @'
+            TestSqlScript     = @'
 if (select count(name) from sys.databases where name = '$(DatabaseName)') = 0
 BEGIN
     RAISERROR ('Did not find database [$(DatabaseName)]', 16, 1)
@@ -33,20 +33,9 @@ BEGIN
 END
 '@
 
-            SetSqlScript                = @'
+            SetSqlScript      = @'
 CREATE DATABASE [$(DatabaseName)]
 '@
-
-            <#
-                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
-                This is added so that AppVeyor automatic tests can pass, otherwise
-                the tests will fail on passwords being in plain text and not being
-                encrypted. Because it is not possible to have a certificate in
-                AppVeyor to encrypt the passwords we need to add the parameter
-                'PSDscAllowPlainTextPassword'.
-                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
-            #>
-            PSDscAllowPlainTextPassword = $true
         }
     )
 }

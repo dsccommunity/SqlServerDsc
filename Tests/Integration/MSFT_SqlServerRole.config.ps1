@@ -1,19 +1,19 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                    = 'localhost'
-            ServerName                  = $env:COMPUTERNAME
-            InstanceName                = 'DSCSQL2016'
+            NodeName        = 'localhost'
+            ServerName      = $env:COMPUTERNAME
+            InstanceName    = 'DSCSQL2016'
 
-            PSDscAllowPlainTextPassword = $true
+            Role1Name       = 'DscServerRole1'
+            Role2Name       = 'DscServerRole2'
+            Role3Name       = 'DscServerRole3'
 
-            Role1Name                   = 'DscServerRole1'
-            Role2Name                   = 'DscServerRole2'
-            Role3Name                   = 'DscServerRole3'
+            User1Name       = '{0}\{1}' -f $env:COMPUTERNAME, 'DscUser1'
+            User2Name       = '{0}\{1}' -f $env:COMPUTERNAME, 'DscUser2'
+            User4Name       = 'DscUser4'
 
-            User1Name                   = '{0}\{1}' -f $env:COMPUTERNAME, 'DscUser1'
-            User2Name                   = '{0}\{1}' -f $env:COMPUTERNAME, 'DscUser2'
-            User4Name                   = 'DscUser4'
+            CertificateFile = $env:DscPublicCertificatePath
         }
     )
 }

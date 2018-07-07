@@ -12,6 +12,9 @@
     - To always import the latest version of 'SqlServer' or 'SQLPS' module, if
       more than one version exist on the target node. It will still prefer to
       use 'SqlServer' module.
+  - Updated all the examples and integration tests to not use
+    `PSDscAllowPlainTextPassword`, so examples using credentials or
+    passwords by default are secure.
 - Changes to SqlAlwaysOnService
   - Integration tests was updated to handle new IPv6 addresses on the AppVeyor
     build worker ([issue #1155](https://github.com/PowerShell/SqlServerDsc/issues/1155)).

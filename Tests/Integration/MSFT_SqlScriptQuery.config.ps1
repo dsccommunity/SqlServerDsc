@@ -1,17 +1,17 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName      = 'localhost'
-            ServerName    = $env:COMPUTERNAME
-            InstanceName  = 'DSCSQL2016'
-            Database1Name = 'ScriptDatabase3'
-            Database2Name = 'ScriptDatabase4'
+            NodeName        = 'localhost'
+            ServerName      = $env:COMPUTERNAME
+            InstanceName    = 'DSCSQL2016'
+            Database1Name   = 'ScriptDatabase3'
+            Database2Name   = 'ScriptDatabase4'
 
-            GetQuery      = @'
+            GetQuery        = @'
 SELECT Name FROM sys.databases WHERE Name = '$(DatabaseName)' FOR JSON AUTO
 '@
 
-            TestQuery     = @'
+            TestQuery       = @'
 if (select count(name) from sys.databases where name = '$(DatabaseName)') = 0
 BEGIN
     RAISERROR ('Did not find database [$(DatabaseName)]', 16, 1)
@@ -22,11 +22,11 @@ BEGIN
 END
 '@
 
-            SetQuery      = @'
+            SetQuery        = @'
 CREATE DATABASE [$(DatabaseName)]
 '@
 
-            PSDscAllowPlainTextPassword = $true
+            CertificateFile = $env:DscPublicCertificatePath
         }
     )
 }
@@ -78,14 +78,14 @@ Configuration MSFT_SqlScriptQuery_RunSqlScriptQueryAsSqlUser_Config
         SqlScriptQuery 'Integration_Test'
         {
             ServerInstance = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
-            GetQuery     = $Node.GetQuery
-            TestQuery    = $Node.TestQuery
-            SetQuery     = $Node.SetQuery
-            Variable     = @(
+            GetQuery       = $Node.GetQuery
+            TestQuery      = $Node.TestQuery
+            SetQuery       = $Node.SetQuery
+            Variable       = @(
                 ('DatabaseName={0}' -f $Node.Database2Name)
             )
-            QueryTimeout = 30
-            Credential   = $UserCredential
+            QueryTimeout   = 30
+            Credential     = $UserCredential
         }
     }
 }
