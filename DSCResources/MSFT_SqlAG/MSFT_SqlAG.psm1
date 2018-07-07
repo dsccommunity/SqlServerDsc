@@ -232,8 +232,6 @@ function Set-TargetResource
         $ProcessOnlyOnActiveNode
     )
 
-    Import-SQLPSModule
-
     # Connect to the instance
     $serverObject = Connect-SQL -SQLServer $ServerName -SQLInstanceName $InstanceName
 

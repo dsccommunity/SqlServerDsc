@@ -6,6 +6,12 @@
   - Updated helper function Restart-SqlService to have to new optional parameters
     `SkipClusterCheck` and `SkipWaitForOnline`. This was to support more aspects
     of the resource SqlServerNetwork.
+  - Updated helper function `Import-SQLPSModule`
+    - To only import module if the
+      module does not exist in the session.
+    - To always import the latest version of 'SqlServer' or 'SQLPS' module, if
+      more than one version exist on the target node. It will still prefer to
+      use 'SqlServer' module.
 - Changes to SqlAlwaysOnService
   - Integration tests was updated to handle new IPv6 addresses on the AppVeyor
     build worker ([issue #1155](https://github.com/PowerShell/SqlServerDsc/issues/1155)).
@@ -15,6 +21,13 @@
     enabling and disabling the protocol.
   - Added integration tests for this resource
     ([issue #751](https://github.com/PowerShell/SqlServerDsc/issues/751)).
+- Changes to SqlAG
+  - Removed excess `Import-SQLPSModule` call.
+- Changes to SqlSetup
+  - Now after a successful install the "SQL PowerShell module" is reevaluated and
+    forced to be reimported into the session. This is to support that a never
+    version of SQL Server was installed side-by-side so that SQLPS module should
+    be used instead.
 
 ## 11.3.0.0
 
