@@ -1,34 +1,39 @@
-$ConfigurationData = @{
-    AllNodes = @(
-        @{
-            NodeName        = 'localhost'
-            ComputerName    = $env:COMPUTERNAME
-            InstanceName    = 'DSCSQL2016'
-            RestartTimeout  = 120
+$configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
+if (Test-Path -Path $configFile)
+{
+    $ConfigurationData = Get-Content -Path $configFile | ConvertFrom-Json
+}
+else
+{
+    $ConfigurationData = @{
+        AllNodes = @(
+            @{
+                NodeName        = 'localhost'
 
-            DataFilePath    = 'C:\SQLData\'
-            LogFilePath     = 'C:\SQLLog\'
-            BackupFilePath  = 'C:\Backups\'
+                UserName        = "$env:COMPUTERNAME\SqlInstall"
+                Password        = 'P@ssw0rd1'
 
-            CertificateFile = $env:DscPublicCertificatePath
-        }
-    )
+                ComputerName    = $env:COMPUTERNAME
+                InstanceName    = 'DSCSQL2016'
+                RestartTimeout  = 120
+
+                DataFilePath    = 'C:\SQLData\'
+                LogFilePath     = 'C:\SQLLog\'
+                BackupFilePath  = 'C:\Backups\'
+
+                CertificateFile = $env:DscPublicCertificatePath
+            }
+        )
+    }
 }
 
 Configuration MSFT_SqlDatabaseDefaultLocation_Data_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential
-    )
-
     Import-DscResource -ModuleName 'PSDesiredStateConfiguration'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         File 'SQLDataPath'
         {
             Checksum        = 'SHA-256'
@@ -46,7 +51,9 @@ Configuration MSFT_SqlDatabaseDefaultLocation_Data_Config
             ServerName           = $Node.ComputerName
             InstanceName         = $Node.InstanceName
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
 
             DependsOn            = '[File]SQLDataPath'
         }
@@ -55,18 +62,11 @@ Configuration MSFT_SqlDatabaseDefaultLocation_Data_Config
 
 Configuration MSFT_SqlDatabaseDefaultLocation_Log_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential
-    )
-
     Import-DscResource -ModuleName 'PSDesiredStateConfiguration'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         File 'SQLLogPath'
         {
             Checksum        = 'SHA-256'
@@ -84,7 +84,9 @@ Configuration MSFT_SqlDatabaseDefaultLocation_Log_Config
             ServerName           = $Node.ComputerName
             InstanceName         = $Node.InstanceName
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
 
             DependsOn            = '[File]SQLLogPath'
         }
@@ -93,18 +95,11 @@ Configuration MSFT_SqlDatabaseDefaultLocation_Log_Config
 
 Configuration MSFT_SqlDatabaseDefaultLocation_Backup_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential
-    )
-
     Import-DscResource -ModuleName 'PSDesiredStateConfiguration'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         File 'SQLBackupPath'
         {
             Checksum        = 'SHA-256'
@@ -122,7 +117,9 @@ Configuration MSFT_SqlDatabaseDefaultLocation_Backup_Config
             ServerName           = $Node.ComputerName
             InstanceName         = $Node.InstanceName
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
 
             DependsOn            = '[File]SQLBackupPath'
         }

@@ -23,6 +23,7 @@
     separate build job.
   - Updated the appveyor.yml to have the correct build step, and also
     correct run the build step only in one of the jobs.
+  - Update integration tests to use the new integration test template.
   - Added SqlAgentOperator resource.
 - Changes to SqlServiceAccount
   - Fixed Get-ServiceObject when searching for Integration Services service.
