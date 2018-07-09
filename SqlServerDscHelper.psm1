@@ -604,13 +604,16 @@ function Import-SQLPSModule
         return
     }
 
-    # Get the newest SqlServer module if more than one exist
-    $availableModuleName = (Get-Module -FullyQualifiedName 'SqlServer' -ListAvailable |
-            Sort-Object -Property 'Version' -Descending |
-            Select-Object -First 1).Name
+    $availableModuleName = $null
 
-    if ($availableModuleName)
+    # Get the newest SqlServer module if more than one exist
+    $availableModule = Get-Module -FullyQualifiedName 'SqlServer' -ListAvailable |
+        Sort-Object -Property 'Version' -Descending |
+        Select-Object -First 1 -Property Name, Path, Version
+
+    if ($availableModule)
     {
+        $availableModuleName = $availableModule.Name
         Write-Verbose -Message ($script:localizedData.PreferredModuleFound) -Verbose
     }
     else
@@ -627,9 +630,8 @@ function Import-SQLPSModule
 
         <#
             Get the newest SQLPS module if more than one exist.
-            This sets $availableModuleName to the Path of the module to be loaded.
         #>
-        $availableModuleName = (Get-Module -FullyQualifiedName 'SQLPS' -ListAvailable |
+        $availableModule = Get-Module -FullyQualifiedName 'SQLPS' -ListAvailable |
             Select-Object -Property Name, Path, @{
                 Name = 'Version'
                 Expression = {
@@ -638,7 +640,13 @@ function Import-SQLPSModule
                 }
             } |
             Sort-Object -Property 'Version' -Descending |
-            Select-Object -First 1).Path
+            Select-Object -First 1
+
+        if ($availableModule)
+        {
+            # This sets $availableModuleName to the Path of the module to be loaded.
+            $availableModuleName = $availableModule.Path
+        }
     }
 
     if ($availableModuleName)
@@ -652,9 +660,9 @@ function Import-SQLPSModule
                 SQLPS has unapproved verbs, disable checking to ignore Warnings.
                 Suppressing verbose so all cmdlet is not listed.
             #>
-            $importedModule = Import-Module -Name $availableModuleName -DisableNameChecking -Verbose:$False -Force:$Force -PassThru -ErrorAction Stop
+            Import-Module -Name $availableModuleName -DisableNameChecking -Verbose:$False -Force:$Force -ErrorAction Stop
 
-            Write-Verbose -Message ($script:localizedData.ImportedPowerShellModule -f $importedModule.Name, $importedModule.Version, $importedModule.Path) -Verbose
+            Write-Verbose -Message ($script:localizedData.ImportedPowerShellModule -f $availableModule.Name, $availableModule.Version, $availableModule.Path) -Verbose
         }
         catch
         {
