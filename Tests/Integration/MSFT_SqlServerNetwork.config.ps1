@@ -1,17 +1,17 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                    = 'localhost'
-            ServerName                  = $env:COMPUTERNAME
-            InstanceName                = 'DSCSQL2016'
+            NodeName        = 'localhost'
+            ServerName      = $env:COMPUTERNAME
+            InstanceName    = 'DSCSQL2016'
 
-            PSDscAllowPlainTextPassword = $true
+            ProtocolName    = 'Tcp'
+            Enabled         = $true
+            Disabled        = $false
+            TcpDynamicPort  = $true
+            RestartService  = $true
 
-            ProtocolName                = 'Tcp'
-            Enabled                     = $true
-            Disabled                    = $false
-            TcpDynamicPort              = $true
-            RestartService              = $true
+            CertificateFile = $env:DscPublicCertificatePath
         }
     )
 }
