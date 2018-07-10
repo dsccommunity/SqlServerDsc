@@ -3,7 +3,7 @@
 param()
 
 $script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceFriendlyName = 'SqlServerDatabaseMail'
+$script:DSCResourceFriendlyName = 'SqlServerNetwork'
 $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 if (-not $env:APPVEYOR -eq $true)
@@ -38,20 +38,17 @@ try
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
     . $configFile
 
-    $mockMailServerName = $ConfigurationData.AllNodes.MailServerName
-    $mockAccountName = $ConfigurationData.AllNodes.AccountName
-    $mockProfileName = $ConfigurationData.AllNodes.ProfileName
-    $mockEmailAddress = $ConfigurationData.AllNodes.EmailAddress
-    $mockDescription = $ConfigurationData.AllNodes.Description
-    $mockLoggingLevel = $ConfigurationData.AllNodes.LoggingLevel
-    $mockTcpPort = $ConfigurationData.AllNodes.TcpPort
+    $mockProtocolName = $ConfigurationData.AllNodes.ProtocolName
+    $mockEnabled = $ConfigurationData.AllNodes.Enabled
+    $mockDisabled = $ConfigurationData.AllNodes.Disabled
+    $mockTcpDynamicPort = $ConfigurationData.AllNodes.TcpDynamicPort
 
     Describe "$($script:DSCResourceName)_Integration" {
         BeforeAll {
             $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
         }
 
-        $configurationName = "$($script:DSCResourceName)_Add_Config"
+        $configurationName = "$($script:DSCResourceName)_SetDisabled_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -91,20 +88,13 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.AccountName | Should -Be $mockAccountName
-                $resourceCurrentState.ProfileName | Should -Be $mockProfileName
-                $resourceCurrentState.EmailAddress | Should -Be $mockEmailAddress
-                $resourceCurrentState.ReplyToAddress | Should -Be $mockEmailAddress
-                $resourceCurrentState.DisplayName | Should -Be $mockMailServerName
-                $resourceCurrentState.MailServerName | Should -Be $mockMailServerName
-                $resourceCurrentState.Description | Should -Be $mockDescription
-                $resourceCurrentState.LoggingLevel | Should -Be $mockLoggingLevel
-                $resourceCurrentState.TcpPort | Should -Be $mockTcpPort
+                $resourceCurrentState.IsEnabled | Should -Be $mockDisabled
+                $resourceCurrentState.ProtocolName | Should -Be $mockProtocolName
+                $resourceCurrentState.TcpDynamicPort | Should -Be $mockTcpDynamicPort
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_Remove_Config"
+        $configurationName = "$($script:DSCResourceName)_SetEnabled_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -144,16 +134,9 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.Ensure | Should -Be 'Absent'
-                $resourceCurrentState.AccountName | Should -BeNullOrEmpty
-                $resourceCurrentState.ProfileName | Should -BeNullOrEmpty
-                $resourceCurrentState.EmailAddress | Should -BeNullOrEmpty
-                $resourceCurrentState.ReplyToAddress | Should -BeNullOrEmpty
-                $resourceCurrentState.DisplayName | Should -BeNullOrEmpty
-                $resourceCurrentState.MailServerName | Should -BeNullOrEmpty
-                $resourceCurrentState.Description | Should -BeNullOrEmpty
-                $resourceCurrentState.LoggingLevel | Should -BeNullOrEmpty
-                $resourceCurrentState.TcpPort | Should -BeNullOrEmpty
+                $resourceCurrentState.IsEnabled | Should -Be $mockEnabled
+                $resourceCurrentState.ProtocolName | Should -Be $mockProtocolName
+                $resourceCurrentState.TcpDynamicPort | Should -Be $mockTcpDynamicPort
             }
         }
     }

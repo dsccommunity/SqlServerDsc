@@ -1,3 +1,12 @@
+<#
+    This is used to make sure the integration test run in the correct order.
+    The integration test should run after the integration tests SqlServerLogin
+    and SqlServerRole, so any problems in those will be caught first, since
+    these integration tests are using those resources.
+#>
+[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 4)]
+param()
+
 $script:DSCModuleName = 'SqlServerDsc'
 $script:DSCResourceFriendlyName = 'SqlScript'
 $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
@@ -37,11 +46,11 @@ try
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
     . $configFile
 
-    $mockGetSqlScriptPath = $ConfigurationData.AllNodes.GetSqlScriptPath
+    $mockGetSqlScriptPath  = $ConfigurationData.AllNodes.GetSqlScriptPath
     $mockTestSqlScriptPath = $ConfigurationData.AllNodes.TestSqlScriptPath
-    $mockSetSqlScriptPath = $ConfigurationData.AllNodes.SetSqlScriptPath
-    $mockDatabase1Name = $ConfigurationData.AllNodes.Database1Name
-    $mockDatabase2Name = $ConfigurationData.AllNodes.Database2Name
+    $mockSetSqlScriptPath  = $ConfigurationData.AllNodes.SetSqlScriptPath
+    $mockDatabase1Name     = $ConfigurationData.AllNodes.Database1Name
+    $mockDatabase2Name     = $ConfigurationData.AllNodes.Database2Name
 
     Describe "$($script:DSCResourceName)_Integration" {
         BeforeAll {
@@ -206,7 +215,6 @@ try
                 } | Where-Object -FilterScript {
                     $_.ResourceId -eq $resourceId
                 }
-
 
                 $resourceCurrentState.GetResult | Should -Match $mockDatabase2Name
                 $resourceCurrentState.GetFilePath | Should -Be $mockGetSqlScriptPath

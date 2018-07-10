@@ -3,33 +3,117 @@
 ## Unreleased
 
 - Changes to SqlServerDsc
+  - Updated helper function Restart-SqlService to have to new optional parameters
+    `SkipClusterCheck` and `SkipWaitForOnline`. This was to support more aspects
+    of the resource SqlServerNetwork.
+  - Updated helper function `Import-SQLPSModule`
+    - To only import module if the
+      module does not exist in the session.
+    - To always import the latest version of 'SqlServer' or 'SQLPS' module, if
+      more than one version exist on the target node. It will still prefer to
+      use 'SqlServer' module.
+  - Updated all the examples and integration tests to not use
+    `PSDscAllowPlainTextPassword`, so examples using credentials or
+    passwords by default are secure.
+- Changes to SqlAlwaysOnService
+  - Integration tests was updated to handle new IPv6 addresses on the AppVeyor
+    build worker ([issue #1155](https://github.com/PowerShell/SqlServerDsc/issues/1155)).
+- Changes to SqlServerNetwork
+  - Refactor SqlServerNetwork to not load assembly from GAC ([issue #1151](https://github.com/PowerShell/SqlServerDsc/issues/1151)).
+  - The resource now supports restarting the SQL Server service when both
+    enabling and disabling the protocol.
+  - Added integration tests for this resource
+    ([issue #751](https://github.com/PowerShell/SqlServerDsc/issues/751)).
+- Changes to SqlAG
+  - Removed excess `Import-SQLPSModule` call.
+- Changes to SqlSetup
+  - Now after a successful install the "SQL PowerShell module" is reevaluated and
+    forced to be reimported into the session. This is to support that a never
+    version of SQL Server was installed side-by-side so that SQLPS module should
+    be used instead.
+- Changes to SqlDatabaseRecoveryModel
+  - Now support regex style matching of databases.
+
+## 11.3.0.0
+
+- Changes to SqlServerDsc
+  - Moved decoration for integration test to resolve a breaking change in
+    DscResource.Tests.
+  - Activated the GitHub App Stale on the GitHub repository.
+  - Added a CODE\_OF\_CONDUCT.md with the same content as in the README.md
+    [issue #939](https://github.com/PowerShell/SqlServerDsc/issues/939).
+  - New resources:
+    - Added SqlScriptQueryResource. [Chase Wilson (@chasewilson)](https://github.com/chasewilson)
+  - Fix for issue #779 [Paul Kelly (@prkelly)](https://github.com/prkelly)
+
+## 11.2.0.0
+
+- Changes to SqlServerDsc
+  - Added new test helper functions in the CommonTestHelpers module. These are used
+    by the integration tests.
+    - **New-IntegrationLoopbackAdapter:** Installs the PowerShell module
+      'LoopbackAdapter' from PowerShell Gallery and creates a new network
+      loopback adapter.
+    - **Remove-IntegrationLoopbackAdapter:** Removes a new network loopback adapter.
+    - **Get-NetIPAddressNetwork:** Returns the IP network address from an IPv4 address
+      and prefix length.
+  - Enabled PSSA rule violations to fail build in the CI environment.
+  - Renamed SqlServerDsc.psd1 to be consistent
+    ([issue #1116](https://github.com/PowerShell/SqlServerDsc/issues/1116)).
+    [Glenn Sarti (@glennsarti)](https://github.com/glennsarti)
+- Changes to Unit Tests
+  - Updated
+    the following resources unit test template to version 1.2.1
+    - SqlWaitForAG ([issue #1088](https://github.com/PowerShell/SqlServerDsc/issues/1088)).
+      [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode)
+- Changes to SqlAlwaysOnService
+  - Updated the integration tests to use a loopback adapter to be less intrusive
+    in the build worker environment.
+  - Minor code cleanup in integration test, fixed the scope on variable.
+- Changes to SqlSetup
+  - Updated the integration tests to stop some services after each integration test.
+    This is to save memory on the AppVeyor build worker.
+  - Updated the integration tests to use a SQL Server 2016 Service Pack 1.
+  - Fixed Script Analyzer rule error.
+- Changes to SqlRS
+  - Updated the integration tests to stop the Reporting Services service after
+    the integration test. This is to save memory on the AppVeyor build worker.
+  - The helper function `Restart-ReportingServicesService` should no longer timeout
+    when restarting the service ([issue #1114](https://github.com/PowerShell/SqlServerDsc/issues/1114)).
+- Changes to SqlServiceAccount
+  - Updated the integration tests to stop some services after each integration test.
+    This is to save memory on the AppVeyor build worker.
+- Changes to SqlServerDatabaseMail
+  - Fixed Script Analyzer rule error.
+
+## 11.1.0.0
+
+- Changes to SqlServerDsc
   - Updated the PULL\_REQUEST\_TEMPLATE with an improved task list and modified
-    some text to be clearer
-    ([issue #973](https://github.com/PowerShell/SqlServerDsc/issues/973)).
+    some text to be clearer ([issue #973](https://github.com/PowerShell/SqlServerDsc/issues/973)).
   - Updated the ISSUE_TEMPLATE to hopefully be more intuitive and easier to use.
   - Added information to ISSUE_TEMPLATE that issues must be reproducible in
     SqlServerDsc resource module (if running the older xSQLServer resource module)
     ([issue #1036](https://github.com/PowerShell/SqlServerDsc/issues/1036)).
+  - Updated ISSUE_TEMPLATE.md with a note about sensitive information ([issue #1092](https://github.com/PowerShell/SqlServerDsc/issues/1092)).
 - Changes to SqlServerLogin
-  - Fix password test fails for nativ sql users ([issue #1048](https://github.com/PowerShell/SqlServerDsc/issues/1048)).
-  - Fix password test fails for nativ sql users
-    ([issue #1048](https://github.com/PowerShell/SqlServerDsc/issues/1048)).
+  - [Claudio Spizzi (@claudiospizzi)](https://github.com/claudiospizzi): Fix password
+    test fails for nativ sql users ([issue #1048](https://github.com/PowerShell/SqlServerDsc/issues/1048)).
 - Changes to SqlSetup
-  - Clarify usage of 'SecurityMode' along with adding parameter
-    validations for the only 2 supported values
-    ([issue #1010](https://github.com/PowerShell/SqlServerDsc/issues/1010)).
+  - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Clarify usage
+    of 'SecurityMode' along with adding parameter validations for the only 2
+    supported values ([issue #1010](https://github.com/PowerShell/SqlServerDsc/issues/1010)).
   - Now accounts containing '$' will be able to be used for installing
     SQL Server. Although, if the account ends with '$' it is considered a
-    Managed Service Account
-    ([issue #1055](https://github.com/PowerShell/SqlServerDsc/issues/1055)).
+    Managed Service Account ([issue #1055](https://github.com/PowerShell/SqlServerDsc/issues/1055)).
 - Changes to Integration Tests
-  - Replace xStorage dsc resource module with StorageDsc
-    ([issue #1038](https://github.com/PowerShell/SqlServerDsc/issues/1038)).
+  - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Replace xStorage
+    dsc resource module with StorageDsc ([issue #1038](https://github.com/PowerShell/SqlServerDsc/issues/1038)).
 - Changes to Unit Tests
-  - Updated the following resources unit test template to version 1.2.1
-    ([issue #999](https://github.com/PowerShell/SqlServerDsc/issues/999)).
-    - SqlAlias
-- MSFT_SqlDatabaseRecoveryModel now support regex style matching of databases.
+  - [Michael Fyffe (@TraGicCode)](https://github.com/TraGicCode): Updated
+    the following resources unit test template to version 1.2.1
+    - SqlAlias ([issue #999](https://github.com/PowerShell/SqlServerDsc/issues/999)).
+    - SqlWindowsFirewall ([issue #1089](https://github.com/PowerShell/SqlServerDsc/issues/1089)).
 
 ## 11.0.0.0
 

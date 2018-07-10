@@ -1,21 +1,45 @@
-# This is used to make sure the integration test run in the correct order.
-[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 2)]
-param()
-
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                    = 'localhost'
-            ServerName                  = $env:COMPUTERNAME
-            DefaultInstanceName         = 'MSSQLSERVER'
-            NamedInstanceName           = 'DSCSQL2016'
+            NodeName                  = 'localhost'
+            ServerName                = $env:COMPUTERNAME
+            DefaultInstanceName       = 'MSSQLSERVER'
+            NamedInstanceName         = 'DSCSQL2016'
 
-            ServiceTypeDatabaseEngine   = 'DatabaseEngine'
-            ServiceTypeSqlServerAgent   = 'SqlServerAgent'
+            ServiceTypeDatabaseEngine = 'DatabaseEngine'
+            ServiceTypeSqlServerAgent = 'SqlServerAgent'
 
-            PSDscAllowPlainTextPassword = $true
+            CertificateFile           = $env:DscPublicCertificatePath
         }
     )
+}
+
+<#
+    .SYNOPSIS
+        Make sure the dependencies for these tests are configured.
+
+    .NOTES
+        The dependencies:
+          - Must have the default instance MSSQLSERVER started.
+#>
+Configuration MSFT_SqlServiceAccount_CreateDependencies_Config
+{
+    Import-DscResource -ModuleName 'PSDscResources'
+
+    node localhost
+    {
+        Service ('StartSqlServerDefaultInstance{0}' -f $Node.DefaultInstanceName)
+        {
+            Name  = $Node.DefaultInstanceName
+            State = 'Running'
+        }
+
+        Service ('StartSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
+        {
+            Name  = 'SQLSERVERAGENT'
+            State = 'Running'
+        }
+    }
 }
 
 <#
@@ -158,6 +182,30 @@ Configuration MSFT_SqlServiceAccount_SqlServerAgent_DefaultInstance_Restore_Conf
             RestartService       = $true
 
             PsDscRunAsCredential = $SqlInstallCredential
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Stopping the default instance service to save memory on the build worker.
+#>
+Configuration MSFT_SqlServiceAccount_StopSqlServerDefaultInstance_Config
+{
+    Import-DscResource -ModuleName 'PSDscResources'
+
+    node localhost
+    {
+        Service ('StartSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
+        {
+            Name  = 'SQLSERVERAGENT'
+            State = 'Stopped'
+        }
+
+        Service ('StartSqlServerDefaultInstance{0}' -f $Node.DefaultInstanceName)
+        {
+            Name  = $Node.DefaultInstanceName
+            State = 'Stopped'
         }
     }
 }

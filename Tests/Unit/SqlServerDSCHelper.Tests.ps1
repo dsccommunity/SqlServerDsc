@@ -19,6 +19,9 @@ Import-Module (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent | Split-P
 # Loading mocked classes
 Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SMO.cs )
 
+Add-Type -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests') -ChildPath 'Unit') -ChildPath 'Stubs') -ChildPath 'SqlPowerShellSqlExecutionException.cs')
+Import-Module -Name (Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests') -ChildPath 'Unit') -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Global -Force
+
 # Begin Testing
 InModuleScope $script:moduleName {
     $mockNewObject_MicrosoftAnalysisServicesServer = {
@@ -136,8 +139,29 @@ InModuleScope $script:moduleName {
                         InstanceName = ''
                         ServiceName = 'MSSQLSERVER'
                         Status = $mockDynamicStatus
+                        IsClustered = $false
                     }
                 } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'MSSQLSERVER' }
+
+                Mock -CommandName Connect-SQL -MockWith {
+                    return @{
+                        Name = 'NOCLUSTERCHECK'
+                        InstanceName = 'NOCLUSTERCHECK'
+                        ServiceName = 'NOCLUSTERCHECK'
+                        Status = $mockDynamicStatus
+                        IsClustered = $true
+                    }
+                } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'NOCLUSTERCHECK' }
+
+                Mock -CommandName Connect-SQL -MockWith {
+                    return @{
+                        Name = 'NOCONNECT'
+                        InstanceName = 'NOCONNECT'
+                        ServiceName = 'NOCONNECT'
+                        Status = $mockDynamicStatus
+                        IsClustered = $true
+                    }
+                } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'NOCONNECT' }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
@@ -173,7 +197,7 @@ InModuleScope $script:moduleName {
                             }
                         )
                     }
-                } -Verifiable -ParameterFilter { $DisplayName -eq 'SQL Server (MSSQLSERVER)' }
+                } -Verifiable -ParameterFilter { $Name -eq 'MSSQLSERVER' }
 
                 ## SQL instance with no installed SQL Agent Service
                 Mock -CommandName Get-Service -MockWith {
@@ -182,7 +206,25 @@ InModuleScope $script:moduleName {
                         DisplayName = 'Microsoft SQL Server (NOAGENT)'
                         DependentServices = @()
                     }
-                } -Verifiable -ParameterFilter { $DisplayName -eq 'SQL Server (NOAGENT)' }
+                } -Verifiable -ParameterFilter { $Name -eq 'MSSQL$NOAGENT' }
+
+                ## SQL instance with no installed SQL Agent Service
+                Mock -CommandName Get-Service -MockWith {
+                    return @{
+                        Name = 'MSSQL$NOCLUSTERCHECK'
+                        DisplayName = 'Microsoft SQL Server (NOCLUSTERCHECK)'
+                        DependentServices = @()
+                    }
+                } -Verifiable -ParameterFilter { $Name -eq 'MSSQL$NOCLUSTERCHECK' }
+
+                ## SQL instance with no installed SQL Agent Service
+                Mock -CommandName Get-Service -MockWith {
+                    return @{
+                        Name = 'MSSQL$NOCONNECT'
+                        DisplayName = 'Microsoft SQL Server (NOCONNECT)'
+                        DependentServices = @()
+                    }
+                } -Verifiable -ParameterFilter { $Name -eq 'MSSQL$NOCONNECT' }
 
                 ## SQL instance with stopped SQL Agent Service
                 Mock -CommandName Get-Service -MockWith {
@@ -198,7 +240,7 @@ InModuleScope $script:moduleName {
                             }
                         )
                     }
-                } -Verifiable -ParameterFilter { $DisplayName -eq 'SQL Server (STOPPEDAGENT)' }
+                } -Verifiable -ParameterFilter { $Name -eq 'MSSQL$STOPPEDAGENT' }
 
                 Mock -CommandName Restart-Service -Verifiable
                 Mock -CommandName Start-Service -Verifiable
@@ -215,6 +257,30 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
+            }
+
+            It 'Should restart SQL Service, and not do cluster cluster check' {
+                Mock -CommandName Get-CimInstance
+
+                { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'NOCLUSTERCHECK' -SkipClusterCheck } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 0
+                Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 0
+            }
+
+            It 'Should restart SQL Service, and not do cluster cluster check nor check online status' {
+                Mock -CommandName Get-CimInstance
+
+                { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'NOCONNECT' -SkipClusterCheck -SkipWaitForOnline } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 0
+                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 0
+                Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 0
             }
 
             It 'Should restart SQL Service and not try to restart missing SQL Agent service' {
@@ -659,10 +725,36 @@ InModuleScope $script:moduleName {
         }
     }
 
-    $mockGetModule = {
-        return New-Object -TypeName PSObject -Property @{
-            Name = $mockModuleNameToImport
-        }
+    $mockGetModuleSqlServer = {
+        # Return an array to test so that the latest version is only imported.
+        return @(
+            New-Object -TypeName PSObject -Property @{
+                Name = 'SqlServer'
+                Version = [Version] '1.0'
+            }
+
+            New-Object -TypeName PSObject -Property @{
+                Name = 'SqlServer'
+                Version = [Version] '2.0'
+            }
+        )
+    }
+
+    $sqlPsLatestModulePath = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
+
+    $mockGetModuleSqlPs = {
+        # Return an array to test so that the latest version is only imported.
+        return @(
+            New-Object -TypeName PSObject -Property @{
+                Name = 'SQLPS'
+                Path = 'C:\Program Files (x86)\Microsoft SQL Server\120\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
+            }
+
+            New-Object -TypeName PSObject -Property @{
+                Name = 'SQLPS'
+                Path = $sqlPsLatestModulePath
+            }
+        )
     }
 
     $mockGetModule_SqlServer_ParameterFilter = {
@@ -673,7 +765,7 @@ InModuleScope $script:moduleName {
         $FullyQualifiedName.Name -eq 'SQLPS' -and $ListAvailable -eq $true
     }
 
-    Describe 'Testing Import-SQLPSModule' -Tag ImportSQLPSModule {
+    Describe 'Testing Import-SQLPSModule' -Tag 'ImportSQLPSModule' {
         BeforeEach {
             Mock -CommandName Push-Location -Verifiable
             Mock -CommandName Pop-Location -Verifiable
@@ -681,12 +773,49 @@ InModuleScope $script:moduleName {
             Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
         }
 
-        Context 'When module SqlServer exists' {
-            $mockModuleNameToImport = 'SqlServer'
-            $mockExpectedModuleNameToImport = 'SqlServer'
+        Context 'When module SqlServer is already loaded into the session' {
+            BeforeAll {
+                Mock -CommandName Get-Module -MockWith {
+                    return @{
+                        Name = 'SqlServer'
+                    }
+                }
+            }
+
+            It 'Should use the already loaded module and not call Import-Module' {
+                { Import-SQLPSModule } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Import-Module -Exactly -Times 0 -Scope It
+            }
+        }
+
+        Context 'When module SQLPS is already loaded into the session' {
+            BeforeAll {
+                Mock -CommandName Get-Module -MockWith {
+                    return @{
+                        Name = 'SQLPS'
+                    }
+                }
+            }
+
+            It 'Should use the already loaded module and not call Import-Module' {
+                { Import-SQLPSModule } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Import-Module -Exactly -Times 0 -Scope It
+            }
+        }
+
+        Context 'When module SqlServer exists, but not loaded into the session' {
+            BeforeAll {
+                Mock -CommandName Get-Module -ParameterFilter {
+                    $PSBoundParameters.ContainsKey('Name') -eq $true
+                }
+
+                $mockExpectedModuleNameToImport = 'SqlServer'
+            }
 
             It 'Should import the SqlServer module without throwing' {
-                Mock -CommandName Get-Module -MockWith $mockGetModule -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
+                Mock -CommandName Get-Module -MockWith $mockGetModuleSqlServer -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
 
                 { Import-SQLPSModule } | Should -Not -Throw
 
@@ -697,36 +826,43 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Context 'When only module SQLPS exists' {
-            $mockModuleNameToImport = 'SQLPS'
-            $mockExpectedModuleNameToImport = 'SQLPS'
+        Context 'When only module SQLPS exists, but not loaded into the session, and using -Force' {
+            BeforeAll {
+                Mock -CommandName Remove-Module
+                Mock -CommandName Get-Module -ParameterFilter {
+                    $PSBoundParameters.ContainsKey('Name') -eq $true
+                }
+
+                $mockExpectedModuleNameToImport = $sqlPsLatestModulePath
+            }
 
             It 'Should import the SqlServer module without throwing' {
-                Mock -CommandName Get-Module -MockWith $mockGetModule -ParameterFilter $mockGetModule_SQLPS_ParameterFilter -Verifiable
+                Mock -CommandName Get-Module -MockWith $mockGetModuleSqlPs -ParameterFilter $mockGetModule_SQLPS_ParameterFilter -Verifiable
                 Mock -CommandName Get-Module -MockWith {
                     return $null
                 } -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
 
-                { Import-SQLPSModule } | Should -Not -Throw
+                { Import-SQLPSModule -Force } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Get-Module -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Get-Module -ParameterFilter $mockGetModule_SQLPS_ParameterFilter -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Push-Location -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Pop-Location -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Remove-Module -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Import-Module -Exactly -Times 1 -Scope It
             }
         }
 
         Context 'When neither SqlServer or SQLPS exists' {
-            $mockModuleNameToImport = 'UnknownModule'
-            $mockExpectedModuleNameToImport = 'SQLPS'
+            $mockExpectedModuleNameToImport = $sqlPsLatestModulePath
 
             It 'Should throw the correct error message' {
                 Mock -CommandName Get-Module
 
                 { Import-SQLPSModule } | Should -Throw $script:localizedData.PowerShellSqlModuleNotFound
 
-                Assert-MockCalled -CommandName Get-Module -Exactly -Times 2 -Scope It
+                Assert-MockCalled -CommandName Get-Module -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Get-Module -ParameterFilter $mockGetModule_SQLPS_ParameterFilter -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Push-Location -Exactly -Times 0 -Scope It
                 Assert-MockCalled -CommandName Pop-Location -Exactly -Times 0 -Scope It
                 Assert-MockCalled -CommandName Import-Module -Exactly -Times 0 -Scope It
@@ -734,12 +870,11 @@ InModuleScope $script:moduleName {
         }
 
         Context 'When Import-Module fails to load the module' {
-            $mockModuleNameToImport = 'SqlServer'
             $mockExpectedModuleNameToImport = 'SqlServer'
 
             It 'Should throw the correct error message' {
                 $errorMessage = 'Mock Import-Module throwing a mocked error.'
-                Mock -CommandName Get-Module -MockWith $mockGetModule -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
+                Mock -CommandName Get-Module -MockWith $mockGetModuleSqlServer -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
                 Mock -CommandName Import-Module -MockWith {
                     throw $errorMessage
                 }
@@ -755,13 +890,12 @@ InModuleScope $script:moduleName {
 
         # This is to test the tests (so the mock throws correctly)
         Context 'When mock Import-Module is called with wrong module name' {
-            $mockModuleNameToImport = 'SqlServer'
             $mockExpectedModuleNameToImport = 'UnknownModule'
 
             It 'Should throw the correct error message' {
-                Mock -CommandName Get-Module -MockWith $mockGetModule -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
+                Mock -CommandName Get-Module -MockWith $mockGetModuleSqlServer -ParameterFilter $mockGetModule_SqlServer_ParameterFilter -Verifiable
 
-                { Import-SQLPSModule } | Should -Throw ($script:localizedData.FailedToImportPowerShellSqlModule -f $mockModuleNameToImport)
+                { Import-SQLPSModule } | Should -Throw ($script:localizedData.FailedToImportPowerShellSqlModule -f 'SqlServer')
 
                 Assert-MockCalled -CommandName Get-Module -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Push-Location -Exactly -Times 1 -Scope It
@@ -847,109 +981,6 @@ InModuleScope $script:moduleName {
         }
 
         Assert-VerifiableMock
-    }
-
-    $mockApplicationDomainName = 'SqlServerDscHelperTests'
-    $mockApplicationDomainObject = [System.AppDomain]::CreateDomain($mockApplicationDomainName)
-
-    <#
-        It is not possible to fully test this helper function since we can't mock having the correct assembly
-        in the GAC. So these test will try to load the wrong assembly and will catch the error. But that means
-        it will never test the rows after if fails to load the assembly.
-    #>
-    Describe 'Testing Register-SqlSmo' -Tag RegisterSqlSmo {
-        BeforeEach {
-            Mock -CommandName Get-SqlInstanceMajorVersion -MockWith {
-                return '0' # Mocking zero because that could never match a correct assembly
-            } -Verifiable
-        }
-
-        Context 'When calling Register-SqlSmo to load the wrong assembly' {
-            It 'Should throw with the correct error' {
-                {
-                    Register-SqlSmo -SQLInstanceName $mockInstanceName
-                } | Should -Throw 'Exception calling "Load" with "1" argument(s): "Could not load file or assembly ''Microsoft.SqlServer.Smo, Version=0.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91'' or one of its dependencies. The system cannot find the file specified."'
-
-                Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion
-            }
-        }
-
-        Context 'When calling Register-SqlSmo with a application domain to load the wrong assembly' {
-            It 'Should throw with the correct error' {
-                {
-                    Register-SqlSmo -SQLInstanceName $mockInstanceName -ApplicationDomain $mockApplicationDomainObject
-                } | Should -Throw 'Exception calling "Load" with "1" argument(s): "Could not load file or assembly ''Microsoft.SqlServer.Smo, Version=0.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91'' or one of its dependencies. The system cannot find the file specified."'
-
-                Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion
-            }
-        }
-
-        Assert-VerifiableMock
-    }
-
-    <#
-        It is not possible to fully test this helper function since we can't mock having the correct assembly
-        in the GAC. So these test will try to load the wrong assembly and will catch the error. But that means
-        it will never test the rows after if fails to load the assembly.
-    #>
-    Describe 'Testing Register-SqlWmiManagement' -Tag RegisterSqlWmiManagement {
-        BeforeEach {
-            Mock -CommandName Get-SqlInstanceMajorVersion -MockWith {
-                return '0' # Mocking zero because that could never match a correct assembly
-            } -Verifiable
-
-            Mock -CommandName Register-SqlSmo -MockWith {
-                [System.AppDomain]::CreateDomain('SqlServerDscHelper')
-            } -ParameterFilter {
-                $SQLInstanceName -eq $mockInstanceName
-            } -Verifiable
-        }
-
-        Context 'When calling Register-SqlWmiManagement to load the wrong assembly' {
-            It 'Should throw with the correct error' {
-                {
-                    Register-SqlWmiManagement -SQLInstanceName $mockInstanceName
-                } | Should -Throw 'Exception calling "Load" with "1" argument(s): "Could not load file or assembly ''Microsoft.SqlServer.SqlWmiManagement, Version=0.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91'' or one of its dependencies. The system cannot find the file specified."'
-
-                Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion
-                Assert-MockCalled -CommandName Register-SqlSmo -Exactly -Times 1 -Scope It -ParameterFilter {
-                    $SQLInstanceName -eq $mockInstanceName -and $ApplicationDomain -eq $null
-                }
-            }
-        }
-
-        Context 'When calling Register-SqlWmiManagement with a application domain to load the wrong assembly' {
-            It 'Should throw with the correct error' {
-                {
-                    Register-SqlWmiManagement -SQLInstanceName $mockInstanceName -ApplicationDomain $mockApplicationDomainObject
-                } | Should -Throw 'Exception calling "Load" with "1" argument(s): "Could not load file or assembly ''Microsoft.SqlServer.SqlWmiManagement, Version=0.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91'' or one of its dependencies. The system cannot find the file specified."'
-
-                Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion
-                Assert-MockCalled -CommandName Register-SqlSmo -Exactly -Times 0 -Scope It -ParameterFilter {
-                    $SQLInstanceName -eq $mockInstanceName -and $ApplicationDomain -eq $null
-                }
-
-                Assert-MockCalled -CommandName Register-SqlSmo -Exactly -Times 1 -Scope It -ParameterFilter {
-                    $SQLInstanceName -eq $mockInstanceName -and $ApplicationDomain.FriendlyName -eq $mockApplicationDomainName
-                }
-            }
-        }
-
-        Assert-VerifiableMock
-    }
-
-    <#
-        NOTE! This test must be after the tests for Register-SqlSmo and Register-SqlWmiManagement.
-        This test unloads the application domain that is used during those tests.
-    #>
-    Describe 'Testing Unregister-SqlAssemblies' -Tag UnregisterSqlAssemblies {
-        Context 'When calling Unregister-SqlAssemblies to unload the assemblies' {
-            It 'Should not throw an error' {
-                {
-                    Unregister-SqlAssemblies -ApplicationDomain $mockApplicationDomainObject
-                } | Should -Not -Throw
-            }
-        }
     }
 
     Describe 'Testing Get-PrimaryReplicaServerObject' {
@@ -1729,25 +1760,33 @@ InModuleScope $script:moduleName {
         }
     }
 
+    $mockGetService = {
+        return @{
+            Name = $mockDynamicServiceName
+            DisplayName = $mockDynamicServiceDisplayName
+            DependentServices = @(
+                @{
+                    Name = $mockDynamicDependedServiceName
+                    Status = 'Running'
+                    DependentServices = @()
+                }
+            )
+        }
+    }
+
     Describe 'Testing Restart-ReportingServicesService' {
         Context 'When restarting a Report Services default instance' {
             BeforeAll {
                 $mockServiceName = 'ReportServer'
+                $mockDependedServiceName = 'DependentService'
 
-                Mock -CommandName Restart-Service -Verifiable
+                $mockDynamicServiceName = $mockServiceName
+                $mockDynamicDependedServiceName = $mockDependedServiceName
+                $mockDynamicServiceDisplayName = 'Reporting Services (MSSQLSERVER)'
+
+                Mock -CommandName Stop-Service -Verifiable
                 Mock -CommandName Start-Service -Verifiable
-                Mock -CommandName Get-Service -MockWith {
-                    return @{
-                        Name = $mockServiceName
-                        DependentServices = @(
-                            @{
-                                Name = 'DependentService'
-                                Status = 'Running'
-                                DependentServices = @()
-                            }
-                        )
-                    }
-                }
+                Mock -CommandName Get-Service -MockWith $mockGetService
             }
 
             It 'Should restart the service and dependent service' {
@@ -1756,29 +1795,23 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Get-Service -ParameterFilter {
                     $Name -eq $mockServiceName
                 } -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Stop-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 2
             }
         }
 
         Context 'When restarting a Report Services named instance' {
             BeforeAll {
                 $mockServiceName = 'ReportServer$TEST'
+                $mockDependedServiceName = 'DependentService'
 
-                Mock -CommandName Restart-Service -Verifiable
+                $mockDynamicServiceName = $mockServiceName
+                $mockDynamicDependedServiceName = $mockDependedServiceName
+                $mockDynamicServiceDisplayName = 'Reporting Services (TEST)'
+
+                Mock -CommandName Stop-Service -Verifiable
                 Mock -CommandName Start-Service -Verifiable
-                Mock -CommandName Get-Service -MockWith {
-                    return @{
-                        Name = $mockServiceName
-                        DependentServices = @(
-                            @{
-                                Name = 'DependentService'
-                                Status = 'Running'
-                                DependentServices = @()
-                            }
-                        )
-                    }
-                }
+                Mock -CommandName Get-Service -MockWith $mockGetService
             }
 
             It 'Should restart the service and dependent service' {
@@ -1787,9 +1820,36 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Get-Service -ParameterFilter {
                     $Name -eq $mockServiceName
                 } -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Stop-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 2
+        }
+        }
+
+        Context 'When restarting a Report Services named instance using a wait timer' {
+            BeforeAll {
+                $mockServiceName = 'ReportServer$TEST'
+                $mockDependedServiceName = 'DependentService'
+
+                $mockDynamicServiceName = $mockServiceName
+                $mockDynamicDependedServiceName = $mockDependedServiceName
+                $mockDynamicServiceDisplayName = 'Reporting Services (TEST)'
+
+                Mock -CommandName Start-Sleep -Verifiable
+                Mock -CommandName Stop-Service -Verifiable
+                Mock -CommandName Start-Service -Verifiable
+                Mock -CommandName Get-Service -MockWith $mockGetService
             }
+
+            It 'Should restart the service and dependent service' {
+                { Restart-ReportingServicesService -SQLInstanceName 'TEST' -WaitTime 1 } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Get-Service -ParameterFilter {
+                    $Name -eq $mockServiceName
+                } -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Stop-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 2
+                Assert-MockCalled -CommandName Start-Sleep -Scope It -Exactly -Times 1
+        }
         }
     }
 
@@ -1834,6 +1894,78 @@ InModuleScope $script:moduleName {
                 $mockServerObject.ComputerNamePhysicalNetBIOS = $ComputerNamePhysicalNetBIOS
 
                 Test-ActiveNode -ServerObject $mockServerObject | Should Be $Result
+            }
+        }
+    }
+
+    Describe "Invoke-SqlScript" {
+        $invokeScriptFileParameters = @{
+            ServerInstance = $env:COMPUTERNAME
+            InputFile = "set.sql"
+        }
+
+        $invokeScriptQueryParameters = @{
+            ServerInstance = $env:COMPUTERNAME
+            Query = "Test Query"
+        }
+
+        Context 'Invoke-SqlScript fails to import SQLPS module' {
+            $throwMessage = "Failed to import SQLPS module."
+
+            Mock -CommandName Import-SQLPSModule -MockWith {
+                throw $throwMessage
+            }
+
+            It 'Should throw the correct error from Import-Module' {
+                { Invoke-SqlScript @invokeScriptFileParameters } | Should Throw $throwMessage
+            }
+        }
+
+        Context 'Invoke-SqlScript is called with credentials' {
+            $passwordPlain = "password"
+            $user = "User"
+
+            Mock -CommandName Import-SQLPSModule -MockWith {}
+            Mock -CommandName Invoke-Sqlcmd -ParameterFilter {
+                ($Username -eq $user) -and ($Password -eq $passwordPlain)
+            }
+
+            $password = ConvertTo-SecureString -String $passwordPlain -AsPlainText -Force
+            $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $user, $password
+
+            It 'Should call Invoke-Sqlcmd with correct File parameterset parameters' {
+                $invokeScriptFileParameters.Add("Credential", $cred)
+                $null = Invoke-SqlScript @invokeScriptFileParameters
+
+                Assert-MockCalled -CommandName Invoke-Sqlcmd -ParameterFilter {
+                    ($Username -eq $user) -and ($Password -eq $passwordPlain)
+                } -Times 1 -Exactly -Scope It
+            }
+
+            It 'Should call Invoke-Sqlcmd with correct Query parameterset parameters' {
+                $invokeScriptQueryParameters.Add("Credential", $cred)
+                $null = Invoke-SqlScript @invokeScriptQueryParameters
+
+                Assert-MockCalled -CommandName Invoke-Sqlcmd -ParameterFilter {
+                    ($Username -eq $user) -and ($Password -eq $passwordPlain)
+                } -Times 1 -Exactly -Scope It
+            }
+        }
+
+        Context 'Invoke-SqlScript fails to execute the SQL scripts' {
+            $errorMessage = "Failed to run SQL Script"
+
+            Mock -CommandName Import-SQLPSModule -MockWith {}
+            Mock -CommandName Invoke-Sqlcmd -MockWith {
+                throw $errorMessage
+            }
+
+            It 'Should throw the correct error from File parameterset Invoke-Sqlcmd' {
+                { Invoke-SqlScript @invokeScriptFileParameters } | Should Throw $errorMessage
+            }
+
+            It 'Should throw the correct error from Query parameterset Invoke-Sqlcmd' {
+                { Invoke-SqlScript @invokeScriptQueryParameters } | Should Throw $errorMessage
             }
         }
     }

@@ -1,7 +1,3 @@
-# This is used to make sure the integration test run in the correct order.
-[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 2)]
-param()
-
 # Get a spare drive letter
 $mockLastDrive = ((Get-Volume).DriveLetter | Sort-Object | Select-Object -Last 1)
 $mockIsoMediaDriveLetter = [char](([int][char]$mockLastDrive) + 1)
@@ -9,23 +5,23 @@ $mockIsoMediaDriveLetter = [char](([int][char]$mockLastDrive) + 1)
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                    = 'localhost'
+            NodeName             = 'localhost'
 
-            InstanceName                = 'DSCRS2016'
-            Features                    = 'RS'
-            InstallSharedDir            = 'C:\Program Files\Microsoft SQL Server'
-            InstallSharedWOWDir         = 'C:\Program Files (x86)\Microsoft SQL Server'
-            UpdateEnabled               = 'False'
-            SuppressReboot              = $true # Make sure we don't reboot during testing.
-            ForceReboot                 = $false
+            InstanceName         = 'DSCRS2016'
+            Features             = 'RS'
+            InstallSharedDir     = 'C:\Program Files\Microsoft SQL Server'
+            InstallSharedWOWDir  = 'C:\Program Files (x86)\Microsoft SQL Server'
+            UpdateEnabled        = 'False'
+            SuppressReboot       = $true # Make sure we don't reboot during testing.
+            ForceReboot          = $false
 
-            ImagePath                   = "$env:TEMP\SQL2016.iso"
-            DriveLetter                 = $mockIsoMediaDriveLetter
+            ImagePath            = "$env:TEMP\SQL2016.iso"
+            DriveLetter          = $mockIsoMediaDriveLetter
 
-            DatabaseServerName          = $env:COMPUTERNAME
-            DatabaseInstanceName        = 'DSCSQL2016'
+            DatabaseServerName   = $env:COMPUTERNAME
+            DatabaseInstanceName = 'DSCSQL2016'
 
-            PSDscAllowPlainTextPassword = $true
+            CertificateFile      = $env:DscPublicCertificatePath
         }
     )
 }
@@ -189,6 +185,20 @@ Configuration MSFT_SqlRS_InstallReportingServices_RestoreToNoSsl_Config
             DatabaseInstanceName = $Node.DatabaseInstanceName
 
             PsDscRunAsCredential = $SqlInstallCredential
+        }
+    }
+}
+
+Configuration MSFT_SqlRS_StopReportingServicesInstance_Config
+{
+    Import-DscResource -ModuleName 'PSDscResources'
+
+    node localhost
+    {
+        Service ('StopReportingServicesInstance{0}' -f $Node.InstanceName)
+        {
+            Name  = ('ReportServer${0}' -f $Node.InstanceName)
+            State = 'Stopped'
         }
     }
 }

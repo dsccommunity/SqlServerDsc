@@ -3,10 +3,7 @@
 The **SqlServerDsc** module contains DSC resources
 for deployment and configuration of SQL Server.
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/)
-or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional
-questions or comments.
+This project has adopted [this code of conduct](CODE_OF_CONDUCT.md).
 
 ## Branches
 
@@ -135,6 +132,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * [**SqlRS**](#sqlrs) configures SQL Server Reporting
   Services to use a database engine in another instance.
 * [**SqlScript**](#sqlscript) resource to extend DSC Get/Set/Test
+  functionality to T-SQL.
+* [**SqlScriptQuery**](#sqlscriptquery) resource to extend DSC Get/Set/Test
   functionality to T-SQL.
 * [**SqlServerConfiguration**](#sqlserverconfiguration) resource to manage
   [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx).
@@ -849,6 +848,80 @@ for more information._
 * [Run a script using SQL Authentication](/Examples/Resources/SqlScript/1-RunScriptUsingSQLAuthentication.ps1)
 * [Run a script using Windows Authentication](/Examples/Resources/SqlScript/2-RunScriptUsingWindowsAuthentication.ps1)
 * [This example shows one way to create the SQL script files and how to run those files](/Examples/Resources/SqlScript/3-RunScriptCompleteExample.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlScript).
+
+### SqlScriptQuery
+
+Provides the means to run a user generated T-SQL script on the SQL Server instance.
+Three scripts are required; Get T-SQL script, Set T-SQL script and the Test T-SQL
+script.
+
+#### Scripts
+
+##### Get T-SQL Script (GetQuery)
+
+The Get T-SQL script is used to query the status when running the cmdlet
+Get-DscConfiguration, and the result can be found in the property `GetResult`.
+
+##### Test T-SQL Script (TestQuery)
+
+The Test T-SQL script is used to test if the desired state is met. If Test
+T-SQL raises an error or returns any value other than 'null' the test fails, thus
+the Set T-SQL script is run.
+
+##### Set T-SQL Script (SetQuery)
+
+The Set T-SQL script performs the actual change when Test T-SQL script fails.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server 2008 or later.
+* Target machine must have access to the SQLPS PowerShell module or the SqlServer
+  PowerShell module.
+
+#### Parameters
+
+* **`[String]` ServerInstance** _(Key)_: The name of an instance of the Database
+  Engine. For a default instance, only specify the computer name. For a named
+  instances, use the format ComputerName\\InstanceName.
+* **`[String]` SetQuery** _(Key)_: Query that will perform Set
+  action.
+* **`[String]` GetQuery** _(Key)_: Query that will perform Get
+  action. Any values returned by the T-SQL queries will also be returned by the
+  cmdlet Get-DscConfiguration through the `GetResult` property.
+* **`[String]` TestQuery** _(Key)_: Query that will perform Test
+  action. Any script that does not throw an error or returns null is evaluated to
+  true. The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text,
+  and will not cause the test to return false.
+* **`[PSCredential]` Credential** _(Write)_: The credentials to authenticate with,
+  using SQL Authentication. To authenticate using Windows Authentication, assign
+  the credentials to the built-in parameter `PsDscRunAsCredential`. If both parameters
+  `Credential` and `PsDscRunAsCredential` are not assigned, then SYSTEM account will
+  be used to authenticate using Windows Authentication.
+* **`[UInt32]` QueryTimeout** _(Write)_: Specifies, as an integer, the number of
+  seconds after which the T-SQL script execution will time out.  In some SQL Server
+  versions there is a bug in Invoke-Sqlcmd where the normal default value 0 (no
+  timeout) is not respected and the default value is incorrectly set to 30 seconds.
+* **`[String[]]` Variable** _(Write)_: Specifies, as a string array, a scripting
+  variable for use in the sql script, and sets a value for the variable. Use a
+  Windows PowerShell array to specify multiple variables and their values. For more
+  information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx).
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[String]` GetResult** _(Read)_: Contains the values returned from the T-SQL
+  script provided in the parameter `GetQuery` when cmdlet Get-DscConfiguration
+  is run.
+
+#### Examples
+
+* [Run a script using SQL Authentication](/Examples/Resources/SqlScriptQuery/1-RunScriptUsingSQLAuthentication.ps1)
+* [Run a script using Windows Authentication](/Examples/Resources/SqlScriptQuery/2-RunScriptUsingWindowsAuthentication.ps1)
+* [This example shows one way to create the SQL script files and how to run those files](/Examples/Resources/SqlScriptQuery/3-RunScriptCompleteExample.ps1)
 
 #### Known issues
 

@@ -1201,7 +1201,6 @@ function Set-TargetResource
 
     if ($Features.Contains('SQLENGINE'))
     {
-
         if ($PSBoundParameters.ContainsKey('SQLSvcAccount'))
         {
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $SQLSvcAccount -ServiceType 'SQL')
@@ -1421,8 +1420,9 @@ function Set-TargetResource
         elseif ($processExitCode -ne 0)
         {
             $setupExitMessageError = ('{0} {1}' -f $setupExitMessage, ($script:localizedData.SetupFailed))
-
             Write-Warning $setupExitMessageError
+
+            $setupEndedInError = $true
         }
         else
         {
@@ -1437,12 +1437,34 @@ function Set-TargetResource
             {
                 Write-Verbose -Message $script:localizedData.Reboot
 
+                # Rebooting, so no point in refreshing the session.
+                $forceReloadPowerShellModule = $false
+
                 $global:DSCMachineStatus = 1
             }
             else
             {
                 Write-Verbose -Message $script:localizedData.SuppressReboot
+                $forceReloadPowerShellModule = $true
             }
+        }
+        else
+        {
+            $forceReloadPowerShellModule = $true
+        }
+
+        if ((-not $setupEndedInError) -and $forceReloadPowerShellModule)
+        {
+            <#
+                Force reload of SQLPS module in case a newer version of
+                SQL Server was installed that contains a newer version
+                of the SQLPS module, although if SqlServer module exist
+                on the target node, that will be used regardless.
+                This is to make sure we use the latest SQLPS module that
+                matches the latest assemblies in GAC, mitigating for example
+                issue #1151.
+            #>
+            Import-SQLPSModule -Force
         }
 
         if (-not (Test-TargetResource @PSBoundParameters))
@@ -1842,7 +1864,8 @@ function Test-TargetResource
         $boundParameters.Keys | Where-Object {$_ -imatch "^FailoverCluster"} | ForEach-Object {
             $variableName = $_
 
-            if ($getTargetResourceResult.$variableName -ne $boundParameters[$variableName]) {
+            if ($getTargetResourceResult.$variableName -ne $boundParameters[$variableName])
+            {
                 Write-Verbose -Message ($script:localizedData.ClusterParameterIsNotInDesiredState -f $variableName, $($boundParameters[$variableName]))
                 $result = $false
             }
@@ -1927,7 +1950,8 @@ function Copy-ItemWithRobocopy
         [System.String]
         $DestinationPath
     )
-
+    $quotedPath = '"{0}"' -f $Path
+    $quotedDestinationPath = '"{0}"' -f $DestinationPath
     $robocopyExecutable = Get-Command -Name "Robocopy.exe" -ErrorAction Stop
 
     $robocopyArgumentSilent = '/njh /njs /ndl /nc /ns /nfl'
@@ -1945,8 +1969,8 @@ function Copy-ItemWithRobocopy
         Write-Verbose -Message $script:localizedData.RobocopyNotUsingUnbufferedIo
     }
 
-    $robocopyArgumentList = '{0} {1} {2} {3} {4} {5}' -f $Path,
-                                                         $DestinationPath,
+    $robocopyArgumentList = '{0} {1} {2} {3} {4} {5}' -f $quotedPath,
+                                                         $quotedDestinationPath,
                                                          $robocopyArgumentCopySubDirectoriesIncludingEmpty,
                                                          $robocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource,
                                                          $robocopyArgumentUseUnbufferedIO,

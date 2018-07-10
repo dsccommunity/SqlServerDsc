@@ -1,7 +1,3 @@
-# This is used to make sure the integration test run in the correct order.
-[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 1)]
-param()
-
 # Get a spare drive letter
 $mockLastDrive = ((Get-Volume).DriveLetter | Sort-Object | Select-Object -Last 1)
 $mockIsoMediaDriveLetter = [char](([int][char]$mockLastDrive) + 1)
@@ -49,12 +45,7 @@ $ConfigurationData = @{
             ImagePath                             = "$env:TEMP\SQL2016.iso"
             DriveLetter                           = $mockIsoMediaDriveLetter
 
-            <#
-                We must compile the configuration using plain text since the
-                common integration test framework does not use certificates.
-                This should not be used in production.
-            #>
-            PSDscAllowPlainTextPassword           = $true
+            CertificateFile                       = $env:DscPublicCertificatePath
         }
     )
 }
@@ -97,7 +88,8 @@ Configuration MSFT_SqlSetup_CreateDependencies_Config
     Import-DscResource -ModuleName 'PSDscResources'
     Import-DscResource -ModuleName 'StorageDsc'
 
-    node localhost {
+    node localhost
+    {
         MountImage 'MountIsoMedia'
         {
             ImagePath   = $Node.ImagePath
@@ -196,7 +188,8 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
 
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node localhost
+    {
         SqlSetup 'Integration_Test'
         {
             InstanceName          = $Node.DatabaseEngineNamedInstanceName
@@ -235,6 +228,26 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
     }
 }
 
+Configuration MSFT_SqlSetup_StopMultiAnalysisServicesInstance_Config
+{
+    Import-DscResource -ModuleName 'PSDscResources'
+
+    node localhost
+    {
+        # Service ('StopSqlServerInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
+        # {
+        #     Name   = ('MSSQL${0}' -f $Node.DatabaseEngineNamedInstanceName)
+        #     State  = 'Stopped'
+        # }
+
+        Service ('StopMultiAnalysisServicesInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
+        {
+            Name  = ('MSOLAP${0}' -f $Node.DatabaseEngineNamedInstanceName)
+            State = 'Stopped'
+        }
+    }
+}
+
 Configuration MSFT_SqlSetup_InstallDatabaseEngineDefaultInstanceAsUser_Config
 {
     param
@@ -262,7 +275,8 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineDefaultInstanceAsUser_Config
 
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node localhost
+    {
         SqlSetup 'Integration_Test'
         {
             InstanceName         = $Node.DatabaseEngineDefaultInstanceName
@@ -285,7 +299,28 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineDefaultInstanceAsUser_Config
     }
 }
 
-Configuration MSFT_SqlSetup_InstallAnalysisServicesAsSystem_Config
+Configuration MSFT_SqlSetup_StopSqlServerDefaultInstance_Config
+{
+    Import-DscResource -ModuleName 'PSDscResources'
+
+    node localhost
+    {
+        Service ('StopSqlServerAgentForInstance{0}' -f $Node.DatabaseEngineDefaultInstanceName)
+        {
+            Name  = 'SQLSERVERAGENT'
+            State = 'Stopped'
+        }
+
+
+        Service ('StopSqlServerInstance{0}' -f $Node.DatabaseEngineDefaultInstanceName)
+        {
+            Name  = $Node.DatabaseEngineDefaultInstanceName
+            State = 'Stopped'
+        }
+    }
+}
+
+Configuration MSFT_SqlSetup_InstallTabularAnalysisServicesAsSystem_Config
 {
     param
     (
@@ -308,7 +343,8 @@ Configuration MSFT_SqlSetup_InstallAnalysisServicesAsSystem_Config
 
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node localhost
+    {
         SqlSetup 'Integration_Test'
         {
             InstanceName        = $Node.AnalysisServicesTabularInstanceName
@@ -331,3 +367,16 @@ Configuration MSFT_SqlSetup_InstallAnalysisServicesAsSystem_Config
     }
 }
 
+Configuration MSFT_SqlSetup_StopTabularAnalysisServices_Config
+{
+    Import-DscResource -ModuleName 'PSDscResources'
+
+    node localhost
+    {
+        Service ('StopTabularAnalysisServicesInstance{0}' -f $Node.AnalysisServicesTabularInstanceName)
+        {
+            Name  = ('MSOLAP${0}' -f $Node.DatabaseEngineNamedInstanceName)
+            State = 'Stopped'
+        }
+    }
+}

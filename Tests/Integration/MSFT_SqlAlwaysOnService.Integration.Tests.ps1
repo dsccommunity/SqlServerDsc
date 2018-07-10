@@ -1,3 +1,7 @@
+# This is used to make sure the integration test run in the correct order.
+[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 2)]
+param()
+
 $script:DSCModuleName = 'SqlServerDsc'
 $script:DSCResourceFriendlyName = 'SqlAlwaysOnService'
 $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
@@ -25,6 +29,11 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 #endregion
 
+$script:integrationErrorMessagePrefix = 'INTEGRATION ERROR MESSAGE:'
+
+$testRootFolderPath = Split-Path -Path $PSScriptRoot -Parent
+Import-Module -Name (Join-Path -Path $testRootFolderPath -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'CommonTestHelper.psm1')) -Force
+
 $mockSqlInstallAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 $mockSqlInstallAccountUserName = "$env:COMPUTERNAME\SqlInstall"
 $mockSqlInstallCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlInstallAccountUserName, $mockSqlInstallAccountPassword
@@ -33,6 +42,18 @@ try
 {
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
     . $configFile
+
+    # These sets variables used for verification from the dot-sourced $ConfigurationData variable.
+    $mockLoopbackAdapterName = $ConfigurationData.AllNodes.LoopbackAdapterName
+
+    <#
+        Create the loopback adapter to be used with the cluster.
+        The loopback adapter is kept on the build worker after test finishes
+        so that the cluster is available.
+        The IP address of the loopback adapter is set in the dependencies
+        configuration.
+    #>
+    New-IntegrationLoopbackAdapter -AdapterName $mockLoopbackAdapterName
 
     Describe "$($script:DSCResourceName)_Integration" {
         BeforeAll {
@@ -61,7 +82,15 @@ try
                         ErrorAction = 'Stop'
                     }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $script:integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             }
         }
@@ -89,7 +118,15 @@ try
                         ErrorAction = 'Stop'
                     }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $script:integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             }
 
@@ -115,14 +152,33 @@ try
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
                 {
-                    # The variable $ConfigurationData was dot-sourced above.
-                    & $configurationName `
-                        -SqlInstallCredential $mockSqlInstallCredential `
-                        -OutputPath $TestDrive `
-                        -ConfigurationData $ConfigurationData
+                    $configurationParameters = @{
+                        SqlInstallCredential = $mockSqlInstallCredential
+                        OutputPath = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData = $ConfigurationData
+                    }
 
-                    Start-DscConfiguration -Path $TestDrive `
-                        -ComputerName localhost -Wait -Verbose -Force
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait = $true
+                        Verbose = $true
+                        Force = $true
+                        ErrorAction = 'Stop'
+                    }
+
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $script:integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             }
 
@@ -140,6 +196,41 @@ try
                 }
 
                 $resourceCurrentState.IsHadrEnabled | Should -Be $false
+            }
+        }
+
+        $configurationName = "$($script:DSCResourceName)_CleanupDependencies_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait = $true
+                        Verbose = $true
+                        Force = $true
+                        ErrorAction = 'Stop'
+                    }
+
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $script:integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
+                } | Should -Not -Throw
             }
         }
     }

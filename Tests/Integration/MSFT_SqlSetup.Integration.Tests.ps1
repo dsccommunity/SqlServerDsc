@@ -1,3 +1,7 @@
+# This is used to make sure the integration test run in the correct order.
+[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 1)]
+param()
+
 $script:DSCModuleName = 'SqlServerDsc'
 $script:DSCResourceFriendlyName = 'SqlSetup'
 $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
@@ -23,6 +27,7 @@ $TestEnvironment = Initialize-TestEnvironment `
     -DSCResourceName $script:DSCResourceName `
     -TestType Integration
 
+$script:integrationErrorMessagePrefix = 'INTEGRATION ERROR MESSAGE:'
 #endregion
 
 <#
@@ -99,7 +104,7 @@ try
     $mockIsoMediaFilePath = $ConfigurationData.AllNodes.ImagePath
     $mockIsoMediaDriveLetter = $ConfigurationData.AllNodes.DriveLetter
 
-    $mockSourceMediaUrl = 'http://care.dlservice.microsoft.com/dl/download/F/E/9/FE9397FA-BFAB-4ADD-8B97-91234BC774B2/SQLServer2016-x64-ENU.iso'
+    $mockSourceMediaUrl = 'https://download.microsoft.com/download/9/0/7/907AD35F-9F9C-43A5-9789-52470555DB90/ENU/SQLServer2016SP1-FullSlipstream-x64-ENU.iso'
 
     # Download SQL Server media
     if (-not (Test-Path -Path $mockIsoMediaFilePath))
@@ -181,7 +186,15 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             }
         }
@@ -192,13 +205,13 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlInstallCredential               = $mockSqlInstallCredential
-                        SqlAdministratorCredential         = $mockSqlAdminCredential
-                        SqlServicePrimaryCredential        = $mockSqlServicePrimaryCredential
-                        SqlAgentServicePrimaryCredential   = $mockSqlAgentServicePrimaryCredential
-                        OutputPath                         = $TestDrive
+                        SqlInstallCredential             = $mockSqlInstallCredential
+                        SqlAdministratorCredential       = $mockSqlAdminCredential
+                        SqlServicePrimaryCredential      = $mockSqlServicePrimaryCredential
+                        SqlAgentServicePrimaryCredential = $mockSqlAgentServicePrimaryCredential
+                        OutputPath                       = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData                  = $ConfigurationData
+                        ConfigurationData                = $ConfigurationData
                     }
 
                     & $configurationName @configurationParameters
@@ -301,6 +314,41 @@ try
             }
         }
 
+        $configurationName = "$($script:DSCResourceName)_StopMultiAnalysisServicesInstance_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath        = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
+                } | Should -Not -Throw
+            }
+        }
+
         $configurationName = "$($script:DSCResourceName)_InstallDatabaseEngineDefaultInstanceAsUser_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
@@ -327,7 +375,15 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             } -ErrorVariable itBlockError
 
@@ -413,7 +469,42 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_InstallAnalysisServicesAsSystem_Config"
+        $configurationName = "$($script:DSCResourceName)_StopSqlServerDefaultInstance_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath        = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
+                } | Should -Not -Throw
+            }
+        }
+
+        $configurationName = "$($script:DSCResourceName)_InstallTabularAnalysisServicesAsSystem_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -438,7 +529,15 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
                 } | Should -Not -Throw
             } -ErrorVariable itBlockError
 
@@ -515,6 +614,41 @@ try
                 $resourceCurrentState.SuppressReboot             | Should -BeNullOrEmpty
                 $resourceCurrentState.UpdateEnabled              | Should -BeNullOrEmpty
                 $resourceCurrentState.UpdateSource               | Should -BeNullOrEmpty
+            }
+        }
+
+        $configurationName = "$($script:DSCResourceName)_StopTabularAnalysisServices_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath        = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
+                } | Should -Not -Throw
             }
         }
     }

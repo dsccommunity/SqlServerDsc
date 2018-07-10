@@ -1,3 +1,7 @@
+# This is used to make sure the integration test run in the correct order.
+[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 3)]
+param()
+
 $script:DSCModuleName = 'SqlServerDsc'
 $script:DSCResourceFriendlyName = 'SqlServerRole'
 $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"

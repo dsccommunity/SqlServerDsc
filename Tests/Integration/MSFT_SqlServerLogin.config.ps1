@@ -1,30 +1,26 @@
-# This is used to make sure the integration test run in the correct order.
-[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 2)]
-param()
-
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                    = 'localhost'
-            ServerName                  = $env:COMPUTERNAME
-            InstanceName                = 'DSCSQL2016'
+            NodeName         = 'localhost'
+            ServerName       = $env:COMPUTERNAME
+            InstanceName     = 'DSCSQL2016'
 
-            PSDscAllowPlainTextPassword = $true
+            DscUser1Name     = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscUser1')
+            DscUser1Type     = 'WindowsUser'
 
-            DscUser1Name                = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscUser1')
-            DscUser1Type                = 'WindowsUser'
+            DscUser2Name     = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscUser2')
+            DscUser2Type     = 'WindowsUser'
 
-            DscUser2Name                = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscUser2')
-            DscUser2Type                = 'WindowsUser'
+            DscUser3Name     = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscUser3')
+            DscUser3Type     = 'WindowsUser'
 
-            DscUser3Name                = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscUser3')
-            DscUser3Type                = 'WindowsUser'
+            DscUser4Name     = 'DscUser4'
+            DscUser4Type     = 'SqlLogin'
 
-            DscUser4Name                = 'DscUser4'
-            DscUser4Type                = 'SqlLogin'
+            DscSqlUsers1Name = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscSqlUsers1')
+            DscSqlUsers1Type = 'WindowsGroup'
 
-            DscSqlUsers1Name            = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscSqlUsers1')
-            DscSqlUsers1Type            = 'WindowsGroup'
+            CertificateFile  = $env:DscPublicCertificatePath
         }
     )
 }
