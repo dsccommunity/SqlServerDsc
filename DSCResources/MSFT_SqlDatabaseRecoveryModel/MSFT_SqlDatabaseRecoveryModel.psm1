@@ -1,6 +1,9 @@
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-        -ChildPath 'SqlServerDscHelper.psm1') `
-    -Force
+              -ChildPath 'SqlServerDscHelper.psm1') `
+              -Force
+
+$logMessage = "RAISERROR('PowerShell Desired State Configuration Updated database {0} to recovery model {1} because it matched pattern {2}',1,1,1) with log"
+
 <#
     .SYNOPSIS
     This function gets all Key properties defined in the resource schema file
@@ -159,6 +162,19 @@ function Set-TargetResource
                 $sqlDatabaseObject.RecoveryModel = $RecoveryModel
                 $sqlDatabaseObject.Alter()
                 New-VerboseMessage -Message "The recovery model for the database $($sqlDatabaseObject.Name) is changed to '$RecoveryModel'."
+
+                try 
+                {
+                    $null = Invoke-Query -SQLServer $ServerName `
+                                         -SQLInstanceName $InstanceName `
+                                         -Database $sqlDatabaseObject.Name `
+                                         -Query $($logMessage -f $sqlDatabaseObject.Name, $RecoveryModel, $Name) `
+                                         -ErrorAction stop 
+                }
+                catch 
+                {
+                    Write-Warning "Failed to log DSC database recovery model to SQL and event logs."
+                }
             }
         }
     }
