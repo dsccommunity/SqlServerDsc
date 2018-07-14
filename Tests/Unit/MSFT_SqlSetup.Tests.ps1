@@ -105,7 +105,7 @@ try
 
         # Testing each supported SQL Server version
         $testProductVersion = @(
-            14, # SQL Server "2017"
+            14, # SQL Server 2017
             13, # SQL Server 2016
             12, # SQL Server 2014
             11, # SQL Server 2012
@@ -931,6 +931,12 @@ try
             Features = $defaultFeatures
         }
 
+        $MockSqlSvcStartupType = 'Automatic'
+		$MockAgtSvcStartupType = 'Automatic'
+		$MockAsSvcStartupType = 'Automatic'
+		$MockIsSvcStartupType = 'Automatic'
+		$MockRsSvcStartupType = 'Automatic'
+
         $mockDefaultClusterParameters = @{
             SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
 
@@ -1030,7 +1036,7 @@ try
 
                         if ($mockSqlMajorVersion -in (13,14))
                         {
-                            # Mock all SSMS products here to make sure we don't return any when testing SQL Server 2016
+                            # Mock all SSMS products here to make sure we don't return any when testing SQL Server 2016 and 2017
                             Mock -CommandName Get-ItemProperty -ParameterFilter {
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
                                 $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
@@ -3101,6 +3107,11 @@ try
                             UpdateEnabled = 'True'
                             UpdateSource = 'C:\Updates\' # Regression test for issue #720
                             ASServerMode = 'TABULAR'
+                            SqlSvcStartupType = $mockSqlSvcStartupType
+                            AgtSvcStartupType = $mockAgtSvcStartupType
+                            AsSvcStartupType = $mockAsSvcStartupType
+                            IsSvcStartupType = $mockIsSvcStartupType
+                            RsSvcStartupType = $mockRsSvcStartupType
                         }
 
                         if ( $mockSqlMajorVersion -in (13,14) )
@@ -3112,7 +3123,6 @@ try
                             Quiet = 'True'
                             IAcceptSQLServerLicenseTerms = 'True'
                             Action = 'Install'
-                            AGTSVCSTARTUPTYPE = 'Automatic'
                             InstanceName = 'MSSQLSERVER'
                             Features = $testParameters.Features
                             SQLSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
@@ -3125,6 +3135,11 @@ try
                             UpdateEnabled = 'True'
                             UpdateSource = 'C:\Updates' # Regression test for issue #720
                             ASServerMode = 'TABULAR'
+                            SqlSvcStartupType = $mockSqlSvcStartupType
+                            AgtSvcStartupType = $mockAgtSvcStartupType
+                            AsSvcStartupType = $mockAsSvcStartupType
+                            IsSvcStartupType = $mockIsSvcStartupType
+                            RsSvcStartupType = $mockRsSvcStartupType
                         }
 
                         { Set-TargetResource @testParameters } | Should -Not -Throw
@@ -3159,7 +3174,7 @@ try
 
                     if( $mockSqlMajorVersion -in (13,14) )
                     {
-                        It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016' {
+                        It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016 and 2017' {
                             $testParameters += @{
                                 InstanceName = $mockDefaultInstance_InstanceName
                                 SourceCredential = $null
@@ -3172,7 +3187,7 @@ try
                             { Set-TargetResource @testParameters } | Should -Throw "'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
 
-                        It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016' {
+                        It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016 and 2017' {
                             $testParameters += @{
                                 InstanceName = $mockDefaultInstance_InstanceName
                                 SourceCredential = $null
@@ -3365,14 +3380,14 @@ try
 
                     if( $mockSqlMajorVersion -in (13,14) )
                     {
-                        It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016' {
+                        It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016 and 2017' {
                             $testParameters.Features = 'SSMS'
                             $mockStartSqlSetupProcessExpectedArgument = ''
 
                             { Set-TargetResource @testParameters } | Should -Throw "'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
 
-                        It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016' {
+                        It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016 and 2017' {
                             $testParameters.Features = 'ADV_SSMS'
                             $mockStartSqlSetupProcessExpectedArgument = ''
 
@@ -3539,14 +3554,14 @@ try
 
                     if( $mockSqlMajorVersion -in (13,14) )
                     {
-                        It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016' {
+                        It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016 and 2017' {
                             $testParameters.Features = 'SSMS'
                             $mockStartSqlSetupProcessExpectedArgument = @{}
 
                             { Set-TargetResource @testParameters } | Should -Throw "'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
 
-                        It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016' {
+                        It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016 and 2017' {
                             $testParameters.Features = 'ADV_SSMS'
                             $mockStartSqlSetupProcessExpectedArgument = @{}
 
@@ -3710,14 +3725,14 @@ try
 
                     if( $mockSqlMajorVersion -in (13,14) )
                     {
-                        It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016' {
+                        It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016 and 2017' {
                             $testParameters.Features = $($testParameters.Features), 'SSMS' -join ','
                             $mockStartSqlSetupProcessExpectedArgument = @{}
 
                             { Set-TargetResource @testParameters } | Should -Throw "'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
                         }
 
-                        It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016' {
+                        It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016 and 2017' {
                             $testParameters.Features = $($testParameters.Features), 'ADV_SSMS' -join ','
                             $mockStartSqlSetupProcessExpectedArgument = @{}
 

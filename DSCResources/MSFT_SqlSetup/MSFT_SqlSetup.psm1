@@ -644,6 +644,21 @@ function Get-TargetResource
     .PARAMETER ISSvcAccount
        Service account for Integration Services service.
 
+    .PARAMETER SqlSvcStartupType
+       Specifies the startup mode for SQL Server Engine service
+
+    .PARAMETER AgtSvcStartupType
+       Specifies the startup mode for SQL Server Agent service
+
+    .PARAMETER AsSvcStartupType
+       Specifies the startup mode for SQL Server Analysis service
+
+    .PARAMETER IsSvcStartupType
+       Specifies the startup mode for SQL Server Integration service
+
+    .PARAMETER RsSvcStartupType
+       Specifies the startup mode for SQL Server Report service
+
     .PARAMETER BrowserSvcStartupType
        Specifies the startup mode for SQL Server Browser service
 
@@ -836,6 +851,31 @@ function Set-TargetResource
         [Parameter()]
         [System.Management.Automation.PSCredential]
         $ISSvcAccount,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $SqlSvcStartupType,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $AgtSvcStartupType,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $IsSvcStartupType,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $AsSvcStartupType,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $RsSvcStartupType,
 
         [Parameter()]
         [System.String]
@@ -1246,9 +1286,19 @@ function Set-TargetResource
             )
         }
 
-        if ($Action -in @('Install'))
+		if ($Action -in @('Install'))
         {
             $setupArguments += @{ AgtSvcStartupType = 'Automatic' }
+
+            if ($PSBoundParameters.ContainsKey('AgtSvcStartupType'))
+            {
+                $setupArguments.AgtSvcStartupType = $AgtSvcStartupType
+            }
+
+            if ($null -ne $SqlSvcStartupType)
+            {
+                $setupArguments += @{ SqlSvcStartupType = $SqlSvcStartupType}
+            }
         }
     }
 
@@ -1265,6 +1315,10 @@ function Set-TargetResource
         if ($PSBoundParameters.ContainsKey('RSSvcAccount'))
         {
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $RSSvcAccount -ServiceType 'RS')
+        }
+        if ($null -ne $RsSvcStartupType)
+        {
+            $setupArguments += @{ RsSvcStartupType = $RsSvcStartupType}
         }
     }
 
@@ -1307,6 +1361,11 @@ function Set-TargetResource
                 $setupArguments['ASSysAdminAccounts'] += $ASSysAdminAccounts
             }
         }
+
+        if ( $null -ne $AsSvcStartupType )
+        {
+            $setupArguments += @{ AsSvcStartupType = $AsSvcStartupType}
+        }
     }
 
     if ($Features.Contains('IS'))
@@ -1314,6 +1373,11 @@ function Set-TargetResource
         if ($PSBoundParameters.ContainsKey('ISSvcAccount'))
         {
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $ISSvcAccount -ServiceType 'IS')
+        }
+
+        if ( $null -ne $IsSvcStartupType )
+        {
+            $setupArguments += @{ IsSvcStartupType = $IsSvcStartupType}
         }
     }
 
@@ -1617,6 +1681,21 @@ function Set-TargetResource
     .PARAMETER ISSvcAccount
        Service account for Integration Services service.
 
+    .PARAMETER SqlSvcStartupType
+       Specifies the startup mode for SQL Server Engine service
+
+    .PARAMETER AgtSvcStartupType
+       Specifies the startup mode for SQL Server Agent service
+
+    .PARAMETER IsSvcStartupType
+       Specifies the startup mode for SQL Server Integration service
+
+    .PARAMETER AsSvcStartupType
+       Specifies the startup mode for SQL Server Analysis service
+
+    .PARAMETER RsSvcStartupType
+       Specifies the startup mode for SQL Server Report service
+
     .PARAMETER BrowserSvcStartupType
        Specifies the startup mode for SQL Server Browser service
 
@@ -1800,6 +1879,31 @@ function Test-TargetResource
         [Parameter()]
         [System.Management.Automation.PSCredential]
         $ISSvcAccount,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $SqlSvcStartupType,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $AgtSvcStartupType,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $IsSvcStartupType,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $AsSvcStartupType,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $RsSvcStartupType,
 
         [Parameter()]
         [System.String]

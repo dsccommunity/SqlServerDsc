@@ -47,6 +47,11 @@ class MSFT_SqlSetup : OMI_BaseResource
     [Write, Description("The server mode for SQL Server Analysis Services instance. The default is to install in Multidimensional mode. Valid values in a cluster scenario are MULTIDIMENSIONAL or TABULAR. Parameter ASServerMode is case-sensitive. All values must be expressed in upper case."), ValueMap{"MULTIDIMENSIONAL", "TABULAR", "POWERPIVOT"}, Values{"MULTIDIMENSIONAL", "TABULAR", "POWERPIVOT"}] String ASServerMode;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("Service account for Integration Services service.")] String ISSvcAccount;
     [Read, Description("Output username for the Integration Services service.")] String ISSvcAccountUsername;
+	[Write, Description("Specifies the startup mode for SQL Server Sql Engine service."), ValueMap{"Automatic", "Disabled", "Manual"}, Values{"Automatic", "Disabled", "Manual"}] String SqlSvcStartupType;
+    [Write, Description("Specifies the startup mode for SQL Server Sql Agent service."), ValueMap{"Automatic", "Disabled", "Manual"}, Values{"Automatic", "Disabled", "Manual"}] String AgtSvcStartupType;
+    [Write, Description("Specifies the startup mode for SQL Server Integration service."), ValueMap{"Automatic", "Disabled", "Manual"}, Values{"Automatic", "Disabled", "Manual"}] String IsSvcStartupType;
+    [Write, Description("Specifies the startup mode for SQL Server Analysis service."), ValueMap{"Automatic", "Disabled", "Manual"}, Values{"Automatic", "Disabled", "Manual"}] String AsSvcStartupType;
+    [Write, Description("Specifies the startup mode for SQL Server Report service."), ValueMap{"Automatic", "Disabled", "Manual"}, Values{"Automatic", "Disabled", "Manual"}] String RSSVCStartupType;
     [Write, Description("Specifies the startup mode for SQL Server Browser service."), ValueMap{"Automatic", "Disabled", "Manual"}, Values{"Automatic", "Disabled", "Manual"}] String BrowserSvcStartupType;
     [Write, Description("The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (InstanceName)'.")] String FailoverClusterGroupName;
     [Write, Description("Array of IP Addresses to be assigned to the clustered SQL Server instance.")] String FailoverClusterIPAddress[];
