@@ -79,10 +79,10 @@ Configuration Example
             UpdateEnabled         = 'False'
             ForceReboot           = $false
             
-			SqlSvcStartupType     = 'Automatic'
-		    AgtSvcStartupType     = 'Disabled'
-		    AsSvcStartupType      = 'Automatic'
-			BrowserSvcStartupType = 'Automatic'
+            SqlSvcStartupType     = 'Automatic'
+            AgtSvcStartupType     = 'Disabled'
+            AsSvcStartupType      = 'Automatic'
+            BrowserSvcStartupType = 'Automatic'
 
             PsDscRunAsCredential  = $SqlInstallCredential
 

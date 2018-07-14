@@ -36,7 +36,6 @@
    service, the Agent service, the Analysis service and the Integration Service.
    The new optional parameters and respectively SqlSvcStartupType, AgtSvcStartupType,
    AsSvcStartupType, IsSvcStartupType and RsSvcStartupType.
-   
 
 ## 11.3.0.0
 

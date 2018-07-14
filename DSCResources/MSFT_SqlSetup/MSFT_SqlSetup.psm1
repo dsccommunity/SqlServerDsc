@@ -1286,7 +1286,7 @@ function Set-TargetResource
             )
         }
 
-		if ($Action -in @('Install'))
+        if ($Action -in @('Install'))
         {
             $setupArguments += @{ AgtSvcStartupType = 'Automatic' }
 
