@@ -932,10 +932,10 @@ try
         }
 
         $MockSqlSvcStartupType = 'Automatic'
-		$MockAgtSvcStartupType = 'Automatic'
-		$MockAsSvcStartupType = 'Automatic'
-		$MockIsSvcStartupType = 'Automatic'
-		$MockRsSvcStartupType = 'Automatic'
+        $MockAgtSvcStartupType = 'Automatic'
+        $MockAsSvcStartupType = 'Automatic'
+        $MockIsSvcStartupType = 'Automatic'
+        $MockRsSvcStartupType = 'Automatic'
 
         $mockDefaultClusterParameters = @{
             SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'

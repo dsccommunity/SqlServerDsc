@@ -31,11 +31,10 @@
     forced to be reimported into the session. This is to support that a never
     version of SQL Server was installed side-by-side so that SQLPS module should
     be used instead.
-- Changes to SqlSetup
- - Added new parameters to allow to choose the startup types for the Sql Engine
-   service, the Agent service, the Analysis service and the Integration Service.
-   The new optional parameters and respectively SqlSvcStartupType, AgtSvcStartupType,
-   AsSvcStartupType, IsSvcStartupType and RsSvcStartupType.
+  - Added new parameters to allow to define the startup types for the Sql Engine
+    service, the Agent service, the Analysis service and the Integration Service.
+    The new optional parameters are respectively SqlSvcStartupType, AgtSvcStartupType,
+    AsSvcStartupType, IsSvcStartupType and RsSvcStartupType.
 
 ## 11.3.0.0
 
