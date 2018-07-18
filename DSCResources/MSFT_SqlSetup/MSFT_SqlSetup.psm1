@@ -1292,11 +1292,11 @@ function Set-TargetResource
             {
                 $setupArguments.AgtSvcStartupType = $AgtSvcStartupType
             }
-			else
-			{
-			    $setupArguments += @{ AgtSvcStartupType = 'Automatic' }
-			}
-			
+            else
+            {
+                $setupArguments += @{ AgtSvcStartupType = 'Automatic' }
+            }
+            
             if ($PSBoundParameters.ContainsKey('SqlSvcStartupType'))
             {
                 $setupArguments += @{ SqlSvcStartupType = $SqlSvcStartupType}
@@ -1363,7 +1363,7 @@ function Set-TargetResource
                 $setupArguments['ASSysAdminAccounts'] += $ASSysAdminAccounts
             }
         }
-		
+        
         if ($PSBoundParameters.ContainsKey('AsSvcStartupType'))
         {
             $setupArguments += @{ AsSvcStartupType = $AsSvcStartupType}
@@ -1376,7 +1376,7 @@ function Set-TargetResource
         {
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $ISSvcAccount -ServiceType 'IS')
         }
-		
+        
         if ($PSBoundParameters.ContainsKey('IsSvcStartupType'))
         {
             $setupArguments += @{ IsSvcStartupType = $IsSvcStartupType}
