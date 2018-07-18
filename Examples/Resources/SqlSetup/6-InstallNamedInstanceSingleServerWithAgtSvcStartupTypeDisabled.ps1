@@ -1,6 +1,7 @@
 <#
     .EXAMPLE
         This example shows how to install a named instance of SQL Server on a single server.
+
     .NOTES
         SQL Server setup is run using the SYSTEM account. Even if SetupCredential is provided
         it is not used to install SQL Server at this time (see issue #139).

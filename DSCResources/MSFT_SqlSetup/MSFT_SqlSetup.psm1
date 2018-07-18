@@ -12,7 +12,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlSetup'
 
     .PARAMETER Action
         The action to be performed. Default value is 'Install'.
-        Possible values are 'Install', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'
+        Possible values are 'Install', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'.
 
     .PARAMETER SourcePath
         The path to the root of the source files for installation. I.e and UNC path to a shared resource.  Environment variables can be used in the path.
@@ -30,7 +30,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlSetup'
         Name of the SQL instance to be installed.
 
     .PARAMETER FailoverClusterNetworkName
-        Host name to be assigned to the clustered SQL Server instance
+        Host name to be assigned to the clustered SQL Server instance.
 #>
 function Get-TargetResource
 {
@@ -512,7 +512,7 @@ function Get-TargetResource
 
     .PARAMETER Action
         The action to be performed. Default value is 'Install'.
-        Possible values are 'Install', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'
+        Possible values are 'Install', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'.
 
     .PARAMETER SourcePath
         The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.
@@ -645,31 +645,31 @@ function Get-TargetResource
        Service account for Integration Services service.
 
     .PARAMETER SqlSvcStartupType
-       Specifies the startup mode for SQL Server Engine service
+       Specifies the startup mode for SQL Server Engine service.
 
     .PARAMETER AgtSvcStartupType
-       Specifies the startup mode for SQL Server Agent service
+       Specifies the startup mode for SQL Server Agent service.
 
     .PARAMETER AsSvcStartupType
-       Specifies the startup mode for SQL Server Analysis service
+       Specifies the startup mode for SQL Server Analysis service.
 
     .PARAMETER IsSvcStartupType
-       Specifies the startup mode for SQL Server Integration service
+       Specifies the startup mode for SQL Server Integration service.
 
     .PARAMETER RsSvcStartupType
-       Specifies the startup mode for SQL Server Report service
+       Specifies the startup mode for SQL Server Report service.
 
     .PARAMETER BrowserSvcStartupType
-       Specifies the startup mode for SQL Server Browser service
+       Specifies the startup mode for SQL Server Browser service.
 
     .PARAMETER FailoverClusterGroupName
         The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (InstanceName)'.
 
     .PARAMETER FailoverClusterIPAddress
-        Array of IP Addresses to be assigned to the clustered SQL Server instance
+        Array of IP Addresses to be assigned to the clustered SQL Server instance.
 
     .PARAMETER FailoverClusterNetworkName
-        Host name to be assigned to the clustered SQL Server instance
+        Host name to be assigned to the clustered SQL Server instance.
 
     .PARAMETER SetupProcessTimeout
         The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.
@@ -1288,14 +1288,16 @@ function Set-TargetResource
 
         if ($Action -in @('Install'))
         {
-            $setupArguments += @{ AgtSvcStartupType = 'Automatic' }
-
             if ($PSBoundParameters.ContainsKey('AgtSvcStartupType'))
             {
                 $setupArguments.AgtSvcStartupType = $AgtSvcStartupType
             }
-
-            if ($null -ne $SqlSvcStartupType)
+			else
+			{
+			    $setupArguments += @{ AgtSvcStartupType = 'Automatic' }
+			}
+			
+            if ($PSBoundParameters.ContainsKey('SqlSvcStartupType'))
             {
                 $setupArguments += @{ SqlSvcStartupType = $SqlSvcStartupType}
             }
@@ -1316,7 +1318,7 @@ function Set-TargetResource
         {
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $RSSvcAccount -ServiceType 'RS')
         }
-        if ($null -ne $RsSvcStartupType)
+        if ($PSBoundParameters.ContainsKey('RsSvcStartupType'))
         {
             $setupArguments += @{ RsSvcStartupType = $RsSvcStartupType}
         }
@@ -1361,8 +1363,8 @@ function Set-TargetResource
                 $setupArguments['ASSysAdminAccounts'] += $ASSysAdminAccounts
             }
         }
-
-        if ( $null -ne $AsSvcStartupType )
+		
+        if ($PSBoundParameters.ContainsKey('AsSvcStartupType'))
         {
             $setupArguments += @{ AsSvcStartupType = $AsSvcStartupType}
         }
@@ -1374,8 +1376,8 @@ function Set-TargetResource
         {
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $ISSvcAccount -ServiceType 'IS')
         }
-
-        if ( $null -ne $IsSvcStartupType )
+		
+        if ($PSBoundParameters.ContainsKey('IsSvcStartupType'))
         {
             $setupArguments += @{ IsSvcStartupType = $IsSvcStartupType}
         }
@@ -1549,7 +1551,7 @@ function Set-TargetResource
 
     .PARAMETER Action
         The action to be performed. Default value is 'Install'.
-        Possible values are 'Install', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'
+        Possible values are 'Install', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'.
 
     .PARAMETER SourcePath
         The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.
@@ -1682,31 +1684,31 @@ function Set-TargetResource
        Service account for Integration Services service.
 
     .PARAMETER SqlSvcStartupType
-       Specifies the startup mode for SQL Server Engine service
+       Specifies the startup mode for SQL Server Engine service.
 
     .PARAMETER AgtSvcStartupType
-       Specifies the startup mode for SQL Server Agent service
+       Specifies the startup mode for SQL Server Agent service.
 
     .PARAMETER IsSvcStartupType
-       Specifies the startup mode for SQL Server Integration service
+       Specifies the startup mode for SQL Server Integration service.
 
     .PARAMETER AsSvcStartupType
-       Specifies the startup mode for SQL Server Analysis service
+       Specifies the startup mode for SQL Server Analysis service.
 
     .PARAMETER RsSvcStartupType
-       Specifies the startup mode for SQL Server Report service
+       Specifies the startup mode for SQL Server Report service.
 
     .PARAMETER BrowserSvcStartupType
-       Specifies the startup mode for SQL Server Browser service
+       Specifies the startup mode for SQL Server Browser service.
 
     .PARAMETER FailoverClusterGroupName
         The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (InstanceName)'.
 
     .PARAMETER FailoverClusterIPAddress
-        Array of IP Addresses to be assigned to the clustered SQL Server instance
+        Array of IP Addresses to be assigned to the clustered SQL Server instance.
 
     .PARAMETER FailoverClusterNetworkName
-        Host name to be assigned to the clustered SQL Server instance
+        Host name to be assigned to the clustered SQL Server instance.
 
     .PARAMETER SetupProcessTimeout
         The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.
@@ -2139,10 +2141,10 @@ function Get-TemporaryFolder
 
 <#
     .SYNOPSIS
-        Returns the decimal representation of an IP Addresses
+        Returns the decimal representation of an IP Addresses.
 
     .PARAMETER IPAddress
-        The IP Address to be converted
+        The IP Address to be converted.
 #>
 function ConvertTo-Decimal
 {
@@ -2167,16 +2169,16 @@ function ConvertTo-Decimal
 
 <#
     .SYNOPSIS
-        Determines whether an IP Address is valid for a given network / subnet
+        Determines whether an IP Address is valid for a given network / subnet.
 
     .PARAMETER IPAddress
-        IP Address to be checked
+        IP Address to be checked.
 
     .PARAMETER NetworkID
-        IP Address of the network identifier
+        IP Address of the network identifier.
 
     .PARAMETER SubnetMask
-        Subnet mask of the network to be checked
+        Subnet mask of the network to be checked.
 #>
 function Test-IPAddress
 {
@@ -2207,13 +2209,13 @@ function Test-IPAddress
 
 <#
     .SYNOPSIS
-        Builds service account parameters for setup
+        Builds service account parameters for setup.
 
     .PARAMETER ServiceAccount
-        Credential for the service account
+        Credential for the service account.
 
     .PARAMETER ServiceType
-        Type of service account
+        Type of service account.
 #>
 function Get-ServiceAccountParameters
 {
@@ -2272,7 +2274,7 @@ function Get-ServiceAccountParameters
 
 <#
     .SYNOPSIS
-        Starts the SQL setup process-
+        Starts the SQL setup process.
 
     .PARAMETER FilePath
         String containing the path to setup.exe.

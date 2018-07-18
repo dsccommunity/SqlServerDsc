@@ -34,7 +34,8 @@
   - Added new parameters to allow to define the startup types for the Sql Engine
     service, the Agent service, the Analysis service and the Integration Service.
     The new optional parameters are respectively SqlSvcStartupType, AgtSvcStartupType,
-    AsSvcStartupType, IsSvcStartupType and RsSvcStartupType.
+    AsSvcStartupType, IsSvcStartupType and RsSvcStartupType. ([issue #1165](https://github.com/PowerShell/SqlServerDsc/issues/1165).
+    [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
 
 ## 11.3.0.0
 

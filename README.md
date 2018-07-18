@@ -1634,17 +1634,17 @@ need a '*SVCPASSWORD' argument in the setup arguments.
 * **`[PSCredential]` ISSvcAccount** _(Write)_: Service account for Integration
   Services service.
 * **`[String]` SqlSvcStartupType** _(Write)_: Specifies the startup mode for
-  SQL Server Engine service. { Automatic | Disabled | 'Manual' }
+  SQL Server Engine service. { Automatic | Disabled | Manual }
 * **`[String]` AgtSvcStartupType** _(Write)_: Specifies the startup mode for
-  SQL Server Agent service. { Automatic | Disabled | 'Manual' }
+  SQL Server Agent service. { Automatic | Disabled | Manual }
 * **`[String]` AsSvcStartupType** _(Write)_: Specifies the startup mode for
-  SQL Server Analysis service. { Automatic | Disabled | 'Manual' }
+  SQL Server Analysis service. { Automatic | Disabled | Manual }
 * **`[String]` IsSvcStartupType** _(Write)_: Specifies the startup mode for
-  SQL Server Integration service. { Automatic | Disabled | 'Manual' }
+  SQL Server Integration service. { Automatic | Disabled | Manual }
 * **`[String]` RsSvcStartupType** _(Write)_: Specifies the startup mode for
-  SQL Server Report service. { Automatic | Disabled | 'Manual' }
+  SQL Server Report service. { Automatic | Disabled | Manual }
 * **`[String]` BrowserSvcStartupType** _(Write)_: Specifies the startup mode for
-  SQL Server Browser service. { Automatic | Disabled | 'Manual' }
+  SQL Server Browser service. { Automatic | Disabled | Manual }
 * **`[String]` FailoverClusterGroupName** _(Write)_: The name of the resource group
   to create for the clustered SQL Server instance.
   Default is 'SQL Server (_InstanceName_)'.
