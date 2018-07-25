@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 11.4.0.0
+
 - Changes to SqlServerDsc
   - Updated helper function Restart-SqlService to have to new optional parameters
     `SkipClusterCheck` and `SkipWaitForOnline`. This was to support more aspects
