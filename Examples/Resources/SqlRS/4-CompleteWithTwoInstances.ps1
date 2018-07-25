@@ -14,35 +14,24 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                    = 'localhost'
+            NodeName                   = 'localhost'
 
             # This is values used for the Reporting Services instance.
-            InstanceName                = 'RS'
-            Features                    = 'RS'
+            InstanceName               = 'RS'
+            Features                   = 'RS'
 
             # This is values used for the Database Engine instance.
-            DatabaseServerName          = $env:COMPUTERNAME
-            DatabaseServerInstanceName  = 'RSDB'
-            DatabaseServerFeatures      = 'SQLENGINE'
-            DatabaseServerCollation     = 'Finnish_Swedish_CI_AS'
+            DatabaseServerName         = $env:COMPUTERNAME
+            DatabaseServerInstanceName = 'RSDB'
+            DatabaseServerFeatures     = 'SQLENGINE'
+            DatabaseServerCollation    = 'Finnish_Swedish_CI_AS'
 
             # This is values used for both instances.
-            MediaPath                   = 'Z:\Sql2016Media'
-            InstallSharedDir            = 'C:\Program Files\Microsoft SQL Server'
-            InstallSharedWOWDir         = 'C:\Program Files (x86)\Microsoft SQL Server'
-            UpdateEnabled               = 'False'
-            BrowserSvcStartupType       = 'Automatic'
-
-            <#
-                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
-                This is added so that AppVeyor automatic tests can pass, otherwise
-                the tests will fail on passwords being in plain text and not being
-                encrypted. Because it is not possible to have a certificate in
-                AppVeyor to encrypt the passwords we need to add the parameter
-                'PSDscAllowPlainTextPassword'.
-                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
-            #>
-            PSDscAllowPlainTextPassword = $true
+            MediaPath                  = 'Z:\Sql2016Media'
+            InstallSharedDir           = 'C:\Program Files\Microsoft SQL Server'
+            InstallSharedWOWDir        = 'C:\Program Files (x86)\Microsoft SQL Server'
+            UpdateEnabled              = 'False'
+            BrowserSvcStartupType      = 'Automatic'
         }
     )
 }

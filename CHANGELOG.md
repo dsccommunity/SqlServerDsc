@@ -2,6 +2,38 @@
 
 ## Unreleased
 
+## 11.4.0.0
+
+- Changes to SqlServerDsc
+  - Updated helper function Restart-SqlService to have to new optional parameters
+    `SkipClusterCheck` and `SkipWaitForOnline`. This was to support more aspects
+    of the resource SqlServerNetwork.
+  - Updated helper function `Import-SQLPSModule`
+    - To only import module if the
+      module does not exist in the session.
+    - To always import the latest version of 'SqlServer' or 'SQLPS' module, if
+      more than one version exist on the target node. It will still prefer to
+      use 'SqlServer' module.
+  - Updated all the examples and integration tests to not use
+    `PSDscAllowPlainTextPassword`, so examples using credentials or
+    passwords by default are secure.
+- Changes to SqlAlwaysOnService
+  - Integration tests was updated to handle new IPv6 addresses on the AppVeyor
+    build worker ([issue #1155](https://github.com/PowerShell/SqlServerDsc/issues/1155)).
+- Changes to SqlServerNetwork
+  - Refactor SqlServerNetwork to not load assembly from GAC ([issue #1151](https://github.com/PowerShell/SqlServerDsc/issues/1151)).
+  - The resource now supports restarting the SQL Server service when both
+    enabling and disabling the protocol.
+  - Added integration tests for this resource
+    ([issue #751](https://github.com/PowerShell/SqlServerDsc/issues/751)).
+- Changes to SqlAG
+  - Removed excess `Import-SQLPSModule` call.
+- Changes to SqlSetup
+  - Now after a successful install the "SQL PowerShell module" is reevaluated and
+    forced to be reimported into the session. This is to support that a never
+    version of SQL Server was installed side-by-side so that SQLPS module should
+    be used instead.
+
 ## 11.3.0.0
 
 - Changes to SqlServerDsc

@@ -1,23 +1,23 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                    = 'localhost'
+            NodeName          = 'localhost'
 
-            ServerName                  = $env:COMPUTERNAME
-            InstanceName                = 'DSCSQL2016'
+            ServerName        = $env:COMPUTERNAME
+            InstanceName      = 'DSCSQL2016'
 
-            Database1Name               = 'ScriptDatabase1'
-            Database2Name               = 'ScriptDatabase2'
+            Database1Name     = 'ScriptDatabase1'
+            Database2Name     = 'ScriptDatabase2'
 
-            GetSqlScriptPath            = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
-            SetSqlScriptPath            = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
-            TestSqlScriptPath           = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+            GetSqlScriptPath  = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+            SetSqlScriptPath  = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+            TestSqlScriptPath = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
 
-            GetSqlScript                = @'
+            GetSqlScript      = @'
 SELECT Name FROM sys.databases WHERE Name = '$(DatabaseName)' FOR JSON AUTO
 '@
 
-            TestSqlScript               = @'
+            TestSqlScript     = @'
 if (select count(name) from sys.databases where name = '$(DatabaseName)') = 0
 BEGIN
     RAISERROR ('Did not find database [$(DatabaseName)]', 16, 1)
@@ -28,11 +28,11 @@ BEGIN
 END
 '@
 
-            SetSqlScript                = @'
+            SetSqlScript      = @'
 CREATE DATABASE [$(DatabaseName)]
 '@
 
-            PSDscAllowPlainTextPassword = $true
+            CertificateFile   = $env:DscPublicCertificatePath
         }
     )
 }

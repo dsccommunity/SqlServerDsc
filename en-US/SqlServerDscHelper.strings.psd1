@@ -6,10 +6,6 @@ ConvertFrom-StringData @'
     ConnectedToAnalysisServicesInstance = Connected to Analysis Services instance '{0}'.
     FailedToConnectToAnalysisServicesInstance = Failed to connected to Analysis Services instance '{0}'.
     SqlMajorVersion = SQL major version is {0}.
-    CreatingApplicationDomain = Creating application domain '{0}'.
-    ReusingApplicationDomain = Reusing application domain '{0}'.
-    LoadingAssembly = Loading assembly '{0}'.
-    UnloadingApplicationDomain = Unloading application domain '{0}'.
     SqlServerVersionIsInvalid = Could not get the SQL version for the instance '{0}'.
     PropertyTypeInvalidForDesiredValues = Property 'DesiredValues' must be either a [System.Collections.Hashtable], [CimInstance] or [PSBoundParametersDictionary]. The type detected was {0}.
     PropertyTypeInvalidForValuesToCheck = If 'DesiredValues' is a CimInstance, then property 'ValuesToCheck' must contain a value.
@@ -20,9 +16,10 @@ ConvertFrom-StringData @'
     UnableToCompareProperty = Unable to compare property {0} as the type {1} is not handled by the Test-SQLDSCParameterState cmdlet.
     PreferredModuleFound = Preferred module SqlServer found.
     PreferredModuleNotFound = Information: PowerShell module SqlServer not found, trying to use older SQLPS module.
-    ImportingPowerShellModule = Importing PowerShell module {0}.
+    ImportedPowerShellModule = Importing PowerShell module '{0}' with version '{1}' from path '{2}'.
+    PowerShellModuleAlreadyImported = Found PowerShell module {0} already imported in the session.
+    ModuleForceRemoval = Forcibly removed the SQL PowerShell module from the session to import it fresh again.
     DebugMessagePushingLocation = SQLPS module changes CWD to SQLSERVER:\ when loading, pushing location to pop it when module is loaded.
-    DebugMessageImportedPowerShellModule = Module {0} imported.
     DebugMessagePoppingLocation = Popping location back to what it was before importing SQLPS module.
     PowerShellSqlModuleNotFound = Neither PowerShell module SqlServer or SQLPS was found. Unable to run SQL Server cmdlets.
     FailedToImportPowerShellSqlModule = Failed to import {0} module.

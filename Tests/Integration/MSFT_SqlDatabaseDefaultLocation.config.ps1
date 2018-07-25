@@ -1,16 +1,16 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                    = 'localhost'
-            ComputerName                = $env:COMPUTERNAME
-            InstanceName                = 'DSCSQL2016'
-            RestartTimeout              = 120
+            NodeName        = 'localhost'
+            ComputerName    = $env:COMPUTERNAME
+            InstanceName    = 'DSCSQL2016'
+            RestartTimeout  = 120
 
-            PSDscAllowPlainTextPassword = $true
+            DataFilePath    = 'C:\SQLData\'
+            LogFilePath     = 'C:\SQLLog\'
+            BackupFilePath  = 'C:\Backups\'
 
-            DataFilePath                = 'C:\SQLData\'
-            LogFilePath                 = 'C:\SQLLog\'
-            BackupFilePath              = 'C:\Backups\'
+            CertificateFile = $env:DscPublicCertificatePath
         }
     )
 }

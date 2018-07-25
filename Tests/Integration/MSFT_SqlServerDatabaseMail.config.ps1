@@ -1,19 +1,19 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                    = 'localhost'
-            ServerName                  = $env:COMPUTERNAME
-            InstanceName                = 'DSCSQL2016'
+            NodeName        = 'localhost'
+            ServerName      = $env:COMPUTERNAME
+            InstanceName    = 'DSCSQL2016'
 
-            PSDscAllowPlainTextPassword = $true
+            MailServerName  = 'mail.company.local'
+            AccountName     = 'MyMail'
+            ProfileName     = 'MyMailProfile'
+            EmailAddress    = 'NoReply@company.local'
+            Description     = 'Default mail account and profile.'
+            LoggingLevel    = 'Normal'
+            TcpPort         = 25
 
-            MailServerName              = 'mail.company.local'
-            AccountName                 = 'MyMail'
-            ProfileName                 = 'MyMailProfile'
-            EmailAddress                = 'NoReply@company.local'
-            Description                 = 'Default mail account and profile.'
-            LoggingLevel                = 'Normal'
-            TcpPort                     = 25
+            CertificateFile = $env:DscPublicCertificatePath
         }
     )
 }

@@ -1,15 +1,15 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                    = 'localhost'
-            ServerName                  = $env:COMPUTERNAME
-            DefaultInstanceName         = 'MSSQLSERVER'
-            NamedInstanceName           = 'DSCSQL2016'
+            NodeName                  = 'localhost'
+            ServerName                = $env:COMPUTERNAME
+            DefaultInstanceName       = 'MSSQLSERVER'
+            NamedInstanceName         = 'DSCSQL2016'
 
-            ServiceTypeDatabaseEngine   = 'DatabaseEngine'
-            ServiceTypeSqlServerAgent   = 'SqlServerAgent'
+            ServiceTypeDatabaseEngine = 'DatabaseEngine'
+            ServiceTypeSqlServerAgent = 'SqlServerAgent'
 
-            PSDscAllowPlainTextPassword = $true
+            CertificateFile           = $env:DscPublicCertificatePath
         }
     )
 }
@@ -30,14 +30,14 @@ Configuration MSFT_SqlServiceAccount_CreateDependencies_Config
     {
         Service ('StartSqlServerDefaultInstance{0}' -f $Node.DefaultInstanceName)
         {
-            Name   = $Node.DefaultInstanceName
-            State  = 'Running'
+            Name  = $Node.DefaultInstanceName
+            State = 'Running'
         }
 
         Service ('StartSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
         {
-            Name   = 'SQLSERVERAGENT'
-            State  = 'Running'
+            Name  = 'SQLSERVERAGENT'
+            State = 'Running'
         }
     }
 }
@@ -198,14 +198,14 @@ Configuration MSFT_SqlServiceAccount_StopSqlServerDefaultInstance_Config
     {
         Service ('StartSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
         {
-            Name   = 'SQLSERVERAGENT'
-            State  = 'Stopped'
+            Name  = 'SQLSERVERAGENT'
+            State = 'Stopped'
         }
 
         Service ('StartSqlServerDefaultInstance{0}' -f $Node.DefaultInstanceName)
         {
-            Name   = $Node.DefaultInstanceName
-            State  = 'Stopped'
+            Name  = $Node.DefaultInstanceName
+            State = 'Stopped'
         }
     }
 }

@@ -1,7 +1,7 @@
 # Load Localization Data
 Import-Module -Name (Join-Path -Path (Join-Path -Path $PSScriptRoot `
-                                                -ChildPath 'DscResources') `
-                               -ChildPath 'CommonResourceHelper.psm1')
+            -ChildPath 'DscResources') `
+        -ChildPath 'CommonResourceHelper.psm1')
 
 $script:localizedData = Get-LocalizedData -ResourceName 'SqlServerDscHelper' -ScriptRoot $PSScriptRoot
 
@@ -181,151 +181,6 @@ function Connect-SQLAnalysis
 
 <#
     .SYNOPSIS
-        Creates a new application domain and loads the assemblies Microsoft.SqlServer.Smo
-        for the correct SQL Server major version.
-
-        An isolated application domain is used to load version specific assemblies, this needed
-        if there is multiple versions of SQL server in the same configuration. So that a newer
-        version of SQL is not using an older version of the assembly, or vice verse.
-
-        This should be unloaded using the helper function Unregister-SqlAssemblies or
-        using [System.AppDomain]::Unload($applicationDomainObject).
-
-    .PARAMETER SQLInstanceName
-        String containing the SQL Server Database Engine instance name to get the major SQL version from.
-
-    .PARAMETER ApplicationDomain
-        An optional System.AppDomain object to load the assembly into.
-
-    .OUTPUTS
-        System.AppDomain. Returns the application domain object with SQL SMO loaded.
-#>
-function Register-SqlSmo
-{
-    [CmdletBinding()]
-    [OutputType([System.AppDomain])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $SQLInstanceName,
-
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [System.AppDomain]
-        $ApplicationDomain
-    )
-
-    $sqlMajorVersion = Get-SqlInstanceMajorVersion -SQLInstanceName $SQLInstanceName
-
-    Write-Verbose -Message ($script:localizedData.SqlMajorVersion -f $sqlMajorVersion) -Verbose
-
-    if ( -not $ApplicationDomain )
-    {
-        $applicationDomainName = $MyInvocation.MyCommand.ModuleName
-        Write-Verbose -Message ($script:localizedData.CreatingApplicationDomain -f $applicationDomainName) -Verbose
-        $applicationDomainObject = [System.AppDomain]::CreateDomain($applicationDomainName)
-    }
-    else
-    {
-        Write-Verbose -Message ($script:localizedData.ReusingApplicationDomain -f $ApplicationDomain.FriendlyName) -Verbose
-        $applicationDomainObject = $ApplicationDomain
-    }
-
-    $sqlSmoAssemblyName = "Microsoft.SqlServer.Smo, Version=$sqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"
-    Write-Verbose -Message ($script:localizedData.LoadingAssembly -f $sqlSmoAssemblyName) -Verbose
-    $applicationDomainObject.Load($sqlSmoAssemblyName) | Out-Null
-
-    return $applicationDomainObject
-}
-
-<#
-    .SYNOPSIS
-        Creates a new application domain and loads the assemblies Microsoft.SqlServer.Smo and
-        Microsoft.SqlServer.SqlWmiManagement for the correct SQL Server major version.
-
-        An isolated application domain is used to load version specific assemblies, this needed
-        if there is multiple versions of SQL server in the same configuration. So that a newer
-        version of SQL is not using an older version of the assembly, or vice verse.
-
-        This should be unloaded using the helper function Unregister-SqlAssemblies or
-        using [System.AppDomain]::Unload($applicationDomainObject) preferably in a finally block.
-
-    .PARAMETER SQLInstanceName
-        String containing the SQL Server Database Engine instance name to get the major SQL version from.
-
-    .PARAMETER ApplicationDomain
-        An optional System.AppDomain object to load the assembly into.
-
-    .OUTPUTS
-        System.AppDomain. Returns the application domain object with SQL WMI Management loaded.
-#>
-function Register-SqlWmiManagement
-{
-    [CmdletBinding()]
-    [OutputType([System.AppDomain])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $SQLInstanceName,
-
-        [Parameter()]
-        [ValidateNotNull()]
-        [System.AppDomain]
-        $ApplicationDomain
-    )
-
-    $sqlMajorVersion = Get-SqlInstanceMajorVersion -SQLInstanceName $SQLInstanceName
-    Write-Verbose -Message ($script:localizedData.SqlMajorVersion -f $sqlMajorVersion) -Verbose
-
-    <#
-        Must register Microsoft.SqlServer.Smo first because that is a
-        dependency of Microsoft.SqlServer.SqlWmiManagement.
-    #>
-    if (-not $ApplicationDomain)
-    {
-        $applicationDomainObject = Register-SqlSmo -SQLInstanceName $SQLInstanceName
-    }
-    # Returns zero (0) objects if the assembly is not found
-    elseif (-not ($ApplicationDomain.GetAssemblies().FullName -match 'Microsoft.SqlServer.Smo'))
-    {
-        $applicationDomainObject = Register-SqlSmo -SQLInstanceName $SQLInstanceName -ApplicationDomain $ApplicationDomain
-    }
-
-    $sqlSqlWmiManagementAssemblyName = "Microsoft.SqlServer.SqlWmiManagement, Version=$sqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"
-    Write-Verbose -Message ($script:localizedData.LoadingAssembly -f $sqlSqlWmiManagementAssemblyName) -Verbose
-    $applicationDomainObject.Load($sqlSqlWmiManagementAssemblyName) | Out-Null
-
-    return $applicationDomainObject
-}
-
-<#
-    .SYNOPSIS
-        Unloads all assemblies in an application domain. It unloads the application domain.
-
-    .PARAMETER ApplicationDomain
-        System.AppDomain object containing the SQL assemblies to unload.
-#>
-function Unregister-SqlAssemblies
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNull()]
-        [System.AppDomain]
-        $ApplicationDomain
-    )
-
-    Write-Verbose -Message ($script:localizedData.UnloadingApplicationDomain -f $ApplicationDomain.FriendlyName) -Verbose
-    [System.AppDomain]::Unload($ApplicationDomain)
-}
-
-<#
-    .SYNOPSIS
         Returns the major SQL version for the specific instance.
 
     .PARAMETER SQLInstanceName
@@ -416,11 +271,11 @@ function New-TerminatingError
 
     $errorMessage = $script:localizedData.$ErrorType
 
-    if(!$errorMessage)
+    if (!$errorMessage)
     {
         $errorMessage = ($script:localizedData.NoKeyFound -f $ErrorType)
 
-        if(!$errorMessage)
+        if (!$errorMessage)
         {
             $errorMessage = ("No Localization key found for key: {0}" -f $ErrorType)
         }
@@ -428,7 +283,7 @@ function New-TerminatingError
 
     $errorMessage = ($errorMessage -f $FormatArgs)
 
-    if( $InnerException )
+    if ( $InnerException )
     {
         $errorMessage += " InnerException: $($InnerException.Message)"
     }
@@ -436,7 +291,7 @@ function New-TerminatingError
     $callStack = Get-PSCallStack
 
     # Get Name of calling script
-    if($callStack[1] -and $callStack[1].ScriptName)
+    if ($callStack[1] -and $callStack[1].ScriptName)
     {
         $scriptPath = $callStack[1].ScriptName
 
@@ -496,10 +351,10 @@ function New-WarningMessage
     if (!$warningMessage)
     {
         $errorParams = @{
-            ErrorType = 'NoKeyFound'
-            FormatArgs = $WarningType
+            ErrorType     = 'NoKeyFound'
+            FormatArgs    = $WarningType
             ErrorCategory = 'InvalidArgument'
-            TargetObject = 'New-WarningMessage'
+            TargetObject  = 'New-WarningMessage'
         }
 
         ## Raise an error indicating the localization data is not present
@@ -576,8 +431,8 @@ function Test-SQLDscParameterState
     $returnValue = $true
 
     if (($DesiredValues.GetType().Name -ne 'HashTable') `
-        -and ($DesiredValues.GetType().Name -ne 'CimInstance') `
-        -and ($DesiredValues.GetType().Name -ne 'PSBoundParametersDictionary'))
+            -and ($DesiredValues.GetType().Name -ne 'CimInstance') `
+            -and ($DesiredValues.GetType().Name -ne 'PSBoundParametersDictionary'))
     {
         $errorMessage = $script:localizedData.PropertyTypeInvalidForDesiredValues -f $($DesiredValues.GetType().Name)
         New-InvalidArgumentException -ArgumentName 'DesiredValues' -Message $errorMessage
@@ -602,11 +457,11 @@ function Test-SQLDscParameterState
         if (($_ -ne 'Verbose'))
         {
             if (($CurrentValues.ContainsKey($_) -eq $false) `
-            -or ($CurrentValues.$_ -ne $DesiredValues.$_) `
-            -or (($DesiredValues.GetType().Name -ne 'CimInstance' -and $DesiredValues.ContainsKey($_) -eq $true) -and ($null -ne $DesiredValues.$_ -and $DesiredValues.$_.GetType().IsArray)))
+                    -or ($CurrentValues.$_ -ne $DesiredValues.$_) `
+                    -or (($DesiredValues.GetType().Name -ne 'CimInstance' -and $DesiredValues.ContainsKey($_) -eq $true) -and ($null -ne $DesiredValues.$_ -and $DesiredValues.$_.GetType().IsArray)))
             {
                 if ($DesiredValues.GetType().Name -eq 'HashTable' -or `
-                    $DesiredValues.GetType().Name -eq 'PSBoundParametersDictionary')
+                        $DesiredValues.GetType().Name -eq 'PSBoundParametersDictionary')
                 {
                     $checkDesiredValue = $DesiredValues.ContainsKey($_)
                 }
@@ -630,7 +485,7 @@ function Test-SQLDscParameterState
                     if ($desiredType.IsArray -eq $true)
                     {
                         if (($CurrentValues.ContainsKey($fieldName) -eq $false) `
-                        -or ($null -eq $CurrentValues.$fieldName))
+                                -or ($null -eq $CurrentValues.$fieldName))
                         {
                             Write-Verbose -Message ($script:localizedData.PropertyValidationError -f $fieldName) -Verbose
 
@@ -639,7 +494,7 @@ function Test-SQLDscParameterState
                         else
                         {
                             $arrayCompare = Compare-Object -ReferenceObject $CurrentValues.$fieldName `
-                                                           -DifferenceObject $DesiredValues.$fieldName
+                                -DifferenceObject $DesiredValues.$fieldName
                             if ($null -ne $arrayCompare)
                             {
                                 Write-Verbose -Message ($script:localizedData.PropertiesDoesNotMatch -f $fieldName) -Verbose
@@ -659,10 +514,10 @@ function Test-SQLDscParameterState
                             'String'
                             {
                                 if (-not [System.String]::IsNullOrEmpty($CurrentValues.$fieldName) -or `
-                                    -not [System.String]::IsNullOrEmpty($DesiredValues.$fieldName))
+                                        -not [System.String]::IsNullOrEmpty($DesiredValues.$fieldName))
                                 {
                                     Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
+                                            -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
 
                                     $returnValue = $false
                                 }
@@ -671,10 +526,10 @@ function Test-SQLDscParameterState
                             'Int32'
                             {
                                 if (-not ($DesiredValues.$fieldName -eq 0) -or `
-                                    -not ($null -eq $CurrentValues.$fieldName))
+                                        -not ($null -eq $CurrentValues.$fieldName))
                                 {
                                     Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
+                                            -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
 
                                     $returnValue = $false
                                 }
@@ -683,10 +538,10 @@ function Test-SQLDscParameterState
                             { $_ -eq 'Int16' -or $_ -eq 'UInt16'}
                             {
                                 if (-not ($DesiredValues.$fieldName -eq 0) -or `
-                                    -not ($null -eq $CurrentValues.$fieldName))
+                                        -not ($null -eq $CurrentValues.$fieldName))
                                 {
                                     Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
+                                            -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
 
                                     $returnValue = $false
                                 }
@@ -695,7 +550,7 @@ function Test-SQLDscParameterState
                             default
                             {
                                 Write-Warning -Message ($script:localizedData.UnableToCompareProperty `
-                                    -f $fieldName, $desiredType.Name)
+                                        -f $fieldName, $desiredType.Name)
 
                                 $returnValue = $false
                             }
@@ -712,17 +567,53 @@ function Test-SQLDscParameterState
 <#
     .SYNOPSIS
         Imports the module SQLPS in a standardized way.
+
+    .PARAMETER Force
+        Forces the removal of the previous SQL module, to load the same or newer
+        version fresh.
+        This is meant to make sure the newest version is used, with the latest
+        assemblies.
+
 #>
 function Import-SQLPSModule
 {
     [CmdletBinding()]
     param
     (
+        [Parameter()]
+        [Switch]
+        $Force
     )
 
-    $module = (Get-Module -FullyQualifiedName 'SqlServer' -ListAvailable).Name
-    if ($module)
+    if ($Force.IsPresent)
     {
+        Write-Verbose -Message $script:localizedData.ModuleForceRemoval -Verbose
+        Remove-Module -Name @('SqlServer','SQLPS','SQLASCmdlets') -Force -ErrorAction SilentlyContinue
+    }
+
+    <#
+        Check if either of the modules are already loaded into the session.
+        Prefer to use the first one (in order found).
+        NOTE: There should actually only be either SqlServer or SQLPS loaded,
+        otherwise there can be problems with wrong assemblies being loaded.
+    #>
+    $loadedModuleName = (Get-Module -Name @('SqlServer', 'SQLPS') | Select-Object -First 1).Name
+    if ($loadedModuleName)
+    {
+        Write-Verbose -Message ($script:localizedData.PowerShellModuleAlreadyImported -f $loadedModuleName) -Verbose
+        return
+    }
+
+    $availableModuleName = $null
+
+    # Get the newest SqlServer module if more than one exist
+    $availableModule = Get-Module -FullyQualifiedName 'SqlServer' -ListAvailable |
+        Sort-Object -Property 'Version' -Descending |
+        Select-Object -First 1 -Property Name, Path, Version
+
+    if ($availableModule)
+    {
+        $availableModuleName = $availableModule.Name
         Write-Verbose -Message ($script:localizedData.PreferredModuleFound) -Verbose
     }
     else
@@ -737,29 +628,45 @@ function Import-SQLPSModule
         #>
         $env:PSModulePath = [System.Environment]::GetEnvironmentVariable('PSModulePath', 'Machine')
 
-        $module = (Get-Module -FullyQualifiedName 'SQLPS' -ListAvailable).Name
+        <#
+            Get the newest SQLPS module if more than one exist.
+        #>
+        $availableModule = Get-Module -FullyQualifiedName 'SQLPS' -ListAvailable |
+            Select-Object -Property Name, Path, @{
+                Name = 'Version'
+                Expression = {
+                    # Parse the build version number '120', '130' from the Path.
+                    (Select-String -InputObject $_.Path -Pattern '\\([0-9]{3})\\' -List).Matches.Groups[1].Value
+                }
+            } |
+            Sort-Object -Property 'Version' -Descending |
+            Select-Object -First 1
+
+        if ($availableModule)
+        {
+            # This sets $availableModuleName to the Path of the module to be loaded.
+            $availableModuleName = $availableModule.Path
+        }
     }
 
-    if ($module)
+    if ($availableModuleName)
     {
         try
         {
             Write-Debug -Message ($script:localizedData.DebugMessagePushingLocation)
             Push-Location
 
-            Write-Verbose -Message ($script:localizedData.ImportingPowerShellModule -f $module) -Verbose
-
             <#
                 SQLPS has unapproved verbs, disable checking to ignore Warnings.
                 Suppressing verbose so all cmdlet is not listed.
             #>
-            Import-Module -Name $module -DisableNameChecking -Verbose:$False -ErrorAction Stop
+            Import-Module -Name $availableModuleName -DisableNameChecking -Verbose:$False -Force:$Force -ErrorAction Stop
 
-            Write-Debug -Message ($script:localizedData.DebugMessageImportedPowerShellModule -f $module)
+            Write-Verbose -Message ($script:localizedData.ImportedPowerShellModule -f $availableModule.Name, $availableModule.Version, $availableModule.Path) -Verbose
         }
         catch
         {
-            $errorMessage = $script:localizedData.FailedToImportPowerShellSqlModule -f $module
+            $errorMessage = $script:localizedData.FailedToImportPowerShellSqlModule -f $availableModuleName
             New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
         }
         finally
@@ -777,25 +684,42 @@ function Import-SQLPSModule
 
 <#
     .SYNOPSIS
-    Restarts a SQL Server instance and associated services
+        Restarts a SQL Server instance and associated services
 
     .PARAMETER SQLServer
-    Hostname of the SQL Server to be configured
+        Hostname of the SQL Server to be configured
 
     .PARAMETER SQLInstanceName
-    Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
+        Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
 
     .PARAMETER Timeout
-    Timeout value for restarting the SQL services. The default value is 120 seconds.
+        Timeout value for restarting the SQL services. The default value is 120 seconds.
+
+    .PARAMETER SkipClusterCheck
+        If cluster check should be skipped. If this is present no connection
+        is made to the instance to check if the instance is on a cluster.
+
+        This need to be used for some resource, for example for the SqlServerNetwork
+        resource when it's used to enable a disable protocol.
+
+    .PARAMETER SkipWaitForOnline
+        If this is present no connection is made to the instance to check if the
+        instance is online.
+
+        This need to be used for some resource, for example for the SqlServerNetwork
+        resource when it's used to disable protocol.
 
     .EXAMPLE
-    Restart-SqlService -SQLServer localhost
+        Restart-SqlService -SQLServer localhost
 
     .EXAMPLE
-    Restart-SqlService -SQLServer localhost -SQLInstanceName 'NamedInstance'
+        Restart-SqlService -SQLServer localhost -SQLInstanceName 'NamedInstance'
 
     .EXAMPLE
-    Restart-SqlService -SQLServer CLU01 -Timeout 300
+        Restart-SqlService -SQLServer localhost -SQLInstanceName 'NamedInstance' -SkipClusterCheck -SkipWaitForOnline
+
+    .EXAMPLE
+        Restart-SqlService -SQLServer CLU01 -Timeout 300
 #>
 function Restart-SqlService
 {
@@ -812,45 +736,76 @@ function Restart-SqlService
 
         [Parameter()]
         [System.UInt32]
-        $Timeout = 120
+        $Timeout = 120,
+
+        [Parameter()]
+        [Switch]
+        $SkipClusterCheck,
+
+        [Parameter()]
+        [Switch]
+        $SkipWaitForOnline
     )
 
-    ## Connect to the instance
-    $serverObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
-
-    if ($serverObject.IsClustered)
+    if (-not $SkipClusterCheck.IsPresent)
     {
-        # Get the cluster resources
-        Write-Verbose -Message ($script:localizedData.GetSqlServerClusterResources) -Verbose
-        $sqlService = Get-CimInstance -Namespace root/MSCluster -ClassName MSCluster_Resource -Filter "Type = 'SQL Server'" |
-                        Where-Object -FilterScript { $_.PrivateProperties.InstanceName -eq $serverObject.ServiceName }
+        ## Connect to the instance
+        $serverObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
-        Write-Verbose -Message ($script:localizedData.GetSqlAgentClusterResource) -Verbose
-        $agentService = $sqlService | Get-CimAssociatedInstance -ResultClassName MSCluster_Resource |
-                            Where-Object -FilterScript { ($_.Type -eq 'SQL Server Agent') -and ($_.State -eq 2) }
-
-        # Build a listing of resources being acted upon
-        $resourceNames = @($sqlService.Name, ($agentService | Select-Object -ExpandProperty Name)) -join ","
-
-        # Stop the SQL Server and dependent resources
-        Write-Verbose -Message ($script:localizedData.BringClusterResourcesOffline -f $resourceNames) -Verbose
-        $sqlService | Invoke-CimMethod -MethodName TakeOffline -Arguments @{ Timeout = $Timeout }
-
-        # Start the SQL server resource
-        Write-Verbose -Message ($script:localizedData.BringSqlServerClusterResourcesOnline) -Verbose
-        $sqlService | Invoke-CimMethod -MethodName BringOnline -Arguments @{ Timeout = $Timeout }
-
-        # Start the SQL Agent resource
-        if ($agentService)
+        if ($serverObject.IsClustered)
         {
-            Write-Verbose -Message ($script:localizedData.BringSqlServerAgentClusterResourcesOnline) -Verbose
-            $agentService | Invoke-CimMethod -MethodName BringOnline -Arguments @{ Timeout = $Timeout }
+            # Get the cluster resources
+            Write-Verbose -Message ($script:localizedData.GetSqlServerClusterResources) -Verbose
+            $sqlService = Get-CimInstance -Namespace root/MSCluster -ClassName MSCluster_Resource -Filter "Type = 'SQL Server'" |
+                Where-Object -FilterScript { $_.PrivateProperties.InstanceName -eq $serverObject.ServiceName }
+
+            Write-Verbose -Message ($script:localizedData.GetSqlAgentClusterResource) -Verbose
+            $agentService = $sqlService | Get-CimAssociatedInstance -ResultClassName MSCluster_Resource |
+                Where-Object -FilterScript { ($_.Type -eq 'SQL Server Agent') -and ($_.State -eq 2) }
+
+            # Build a listing of resources being acted upon
+            $resourceNames = @($sqlService.Name, ($agentService | Select-Object -ExpandProperty Name)) -join ","
+
+            # Stop the SQL Server and dependent resources
+            Write-Verbose -Message ($script:localizedData.BringClusterResourcesOffline -f $resourceNames) -Verbose
+            $sqlService | Invoke-CimMethod -MethodName TakeOffline -Arguments @{ Timeout = $Timeout }
+
+            # Start the SQL server resource
+            Write-Verbose -Message ($script:localizedData.BringSqlServerClusterResourcesOnline) -Verbose
+            $sqlService | Invoke-CimMethod -MethodName BringOnline -Arguments @{ Timeout = $Timeout }
+
+            # Start the SQL Agent resource
+            if ($agentService)
+            {
+                Write-Verbose -Message ($script:localizedData.BringSqlServerAgentClusterResourcesOnline) -Verbose
+                $agentService | Invoke-CimMethod -MethodName BringOnline -Arguments @{ Timeout = $Timeout }
+            }
+        }
+        else
+        {
+            # Not a cluster, restart the Windows service.
+            $restartWindowsService = $true
         }
     }
     else
     {
+        # Should not check if a cluster, assume that a Windows service should be restarted.
+        $restartWindowsService = $true
+    }
+
+    if ($restartWindowsService)
+    {
+        if ($SQLInstanceName -eq 'MSSQLSERVER')
+        {
+            $serviceName = 'MSSQLSERVER'
+        }
+        else
+        {
+            $serviceName = 'MSSQL${0}' -f $SQLInstanceName
+        }
+
         Write-Verbose -Message ($script:localizedData.GetServiceInformation -f 'SQL Server') -Verbose
-        $sqlService = Get-Service -DisplayName "SQL Server ($($serverObject.ServiceName))"
+        $sqlService = Get-Service -Name $serviceName
 
         <#
             Get all dependent services that are running.
@@ -871,30 +826,33 @@ function Restart-SqlService
 
     Write-Verbose -Message ($script:localizedData.WaitingInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout) -Verbose
 
-    $connectTimer = [System.Diagnostics.StopWatch]::StartNew()
-
-    do
+    if (-not $SkipWaitForOnline.IsPresent)
     {
-        # This call, if it fails, will take between ~9-10 seconds to return.
-        $testConnectionServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -ErrorAction SilentlyContinue
-        if ($testConnectionServerObject -and $testConnectionServerObject.Status -ne 'Online')
-        {
-            # Waiting 2 seconds to not hammer the SQL Server instance.
-            Start-Sleep -Seconds 2
-        }
-        else
-        {
-            break
-        }
-    } until ($connectTimer.Elapsed.Seconds -ge $Timeout)
+        $connectTimer = [System.Diagnostics.StopWatch]::StartNew()
 
-    $connectTimer.Stop()
+        do
+        {
+            # This call, if it fails, will take between ~9-10 seconds to return.
+            $testConnectionServerObject = Connect-SQL -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName -ErrorAction SilentlyContinue
+            if ($testConnectionServerObject -and $testConnectionServerObject.Status -ne 'Online')
+            {
+                # Waiting 2 seconds to not hammer the SQL Server instance.
+                Start-Sleep -Seconds 2
+            }
+            else
+            {
+                break
+            }
+        } until ($connectTimer.Elapsed.Seconds -ge $Timeout)
 
-    # Was the timeout period reach before able to connect to the SQL Server instance?
-    if (-not $testConnectionServerObject -or $testConnectionServerObject.Status -ne 'Online')
-    {
-        $errorMessage = $script:localizedData.FailedToConnectToInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout
-        New-InvalidOperationException -Message $errorMessage
+        $connectTimer.Stop()
+
+        # Was the timeout period reach before able to connect to the SQL Server instance?
+        if (-not $testConnectionServerObject -or $testConnectionServerObject.Status -ne 'Online')
+        {
+            $errorMessage = $script:localizedData.FailedToConnectToInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout
+            New-InvalidOperationException -Message $errorMessage
+        }
     }
 }
 
@@ -1106,10 +1064,10 @@ function Test-LoginEffectivePermissions
     $permissionsPresent = $false
 
     $invokeQueryParameters = @{
-        SQLServer = $SQLServer
+        SQLServer       = $SQLServer
         SQLInstanceName = $SQLInstanceName
-        Database = 'master'
-        WithResults = $true
+        Database        = 'master'
+        WithResults     = $true
     }
 
     $queryToGetEffectivePermissionsForLogin = "
@@ -1188,10 +1146,10 @@ function Test-AvailabilityReplicaSeedingModeAutomatic
     if ( $serverObject.Version -ge 13 )
     {
         $invokeQueryParams = @{
-            SQLServer = $SQLServer
+            SQLServer       = $SQLServer
             SQLInstanceName = $SQLInstanceName
-            Database = 'master'
-            WithResults = $true
+            Database        = 'master'
+            WithResults     = $true
         }
 
         $queryToGetSeedingMode = "
@@ -1264,10 +1222,10 @@ function Test-ImpersonatePermissions
     )
 
     $testLoginEffectivePermissionsParams = @{
-        SQLServer = $ServerObject.ComputerNamePhysicalNetBIOS
+        SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
         SQLInstanceName = $ServerObject.ServiceName
-        LoginName = $ServerObject.ConnectionContext.TrueLogin
-        Permissions = @('IMPERSONATE ANY LOGIN')
+        LoginName       = $ServerObject.ConnectionContext.TrueLogin
+        Permissions     = @('IMPERSONATE ANY LOGIN')
     }
 
     $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
@@ -1300,7 +1258,7 @@ function Split-FullSQLInstanceName
         $FullSQLInstanceName
     )
 
-    $sqlServer,$sqlInstanceName = $FullSQLInstanceName.Split('\')
+    $sqlServer, $sqlInstanceName = $FullSQLInstanceName.Split('\')
 
     if ( [System.String]::IsNullOrEmpty($sqlInstanceName) )
     {
@@ -1308,7 +1266,7 @@ function Split-FullSQLInstanceName
     }
 
     return @{
-        SQLServer = $sqlServer
+        SQLServer       = $sqlServer
         SQLInstanceName = $sqlInstanceName
     }
 }
@@ -1359,12 +1317,12 @@ function Test-ClusterPermissions
                 {
                     $clusterServiceName
                     {
-                        Write-Verbose -Message ( $script:localizedData.ClusterLoginMissingRecommendedPermissions -f $loginName,( $availabilityGroupManagementPerms -join ', ' ) ) -Verbose
+                        Write-Verbose -Message ( $script:localizedData.ClusterLoginMissingRecommendedPermissions -f $loginName, ( $availabilityGroupManagementPerms -join ', ' ) ) -Verbose
                     }
 
                     $ntAuthoritySystemName
                     {
-                        Write-Verbose -Message ( $script:localizedData.ClusterLoginMissingPermissions -f $loginName,( $availabilityGroupManagementPerms -join ', ' ) ) -Verbose
+                        Write-Verbose -Message ( $script:localizedData.ClusterLoginMissingPermissions -f $loginName, ( $availabilityGroupManagementPerms -join ', ' ) ) -Verbose
                     }
                 }
             }
@@ -1379,12 +1337,12 @@ function Test-ClusterPermissions
             {
                 $clusterServiceName
                 {
-                    Write-Verbose -Message ($script:localizedData.ClusterLoginMissingRecommendedPermissions -f $loginName,"Trying with '$ntAuthoritySystemName'.") -Verbose
+                    Write-Verbose -Message ($script:localizedData.ClusterLoginMissingRecommendedPermissions -f $loginName, "Trying with '$ntAuthoritySystemName'.") -Verbose
                 }
 
                 $ntAuthoritySystemName
                 {
-                    Write-Verbose -Message ( $script:localizedData.ClusterLoginMissing -f $loginName,'' ) -Verbose
+                    Write-Verbose -Message ( $script:localizedData.ClusterLoginMissing -f $loginName, '' ) -Verbose
                 }
             }
         }
@@ -1393,7 +1351,7 @@ function Test-ClusterPermissions
     # If neither 'NT SERVICE\ClusSvc' or 'NT AUTHORITY\SYSTEM' have the required permissions, throw an error.
     if ( -not $clusterPermissionsPresent )
     {
-        throw ($script:localizedData.ClusterPermissionsMissing -f $sqlServer,$sqlInstanceName )
+        throw ($script:localizedData.ClusterPermissionsMissing -f $sqlServer, $sqlInstanceName )
     }
 
     return $clusterPermissionsPresent
