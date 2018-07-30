@@ -4,11 +4,7 @@
 version: 9.0.{build}.0
 image: Visual Studio 2017
 install:
-    - git clone https://github.com/johlju/DscResource.Tests
-    - ps: Push-Location
-    - ps: cd "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests"
-    - git checkout container-interation2
-    - ps: Pop-Location
+    - git clone https://github.com/PowerShell/DscResource.Tests
     - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
     - ps: Import-Module "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
     - ps: Invoke-AppveyorInstallTask
