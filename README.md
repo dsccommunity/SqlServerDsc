@@ -492,7 +492,7 @@ Enables or disabled SQL Server Always On high availability and disaster recovery
 #### Examples
 
 * [Enable SQL Server Always On](/Examples/Resources/SqlAlwaysOnService/1-EnableAlwaysOn.ps1)
-* [Disable SQL Server Always On](/Examples/Resources/SqlAlwaysOnService/1-DisableAlwaysOn.ps1)
+* [Disable SQL Server Always On](/Examples/Resources/SqlAlwaysOnService/2-DisableAlwaysOn.ps1)
 
 #### Known issues
 
@@ -1290,7 +1290,7 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
 * [Set SQLServerMaxMemory to 12GB](/Examples/Resources/SqlServerMemory/1-SetMaxMemoryTo12GB.ps1)
 * [Set SQLServerMaxMemory to Auto](/Examples/Resources/SqlServerMemory/2-SetMaxMemoryToAuto.ps1)
 * [Set SQLServerMinMemory to 2GB and SQLServerMaxMemory to Auto](/Examples/Resources/SqlServerMemory/3-SetMinMemoryToFixedValueAndMaxMemoryToAuto.ps1)
-* [Set SQLServerMaxMemory to Default](/Examples/Resources/SqlServerMemory/3-SetMaxMemoryToDefault.ps1)
+* [Set SQLServerMaxMemory to Default](/Examples/Resources/SqlServerMemory/4-SetMaxMemoryToDefault.ps1)
 
 #### Known issues
 
