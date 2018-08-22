@@ -3,7 +3,8 @@
 ## Unreleased
 
 - Changes to SqlAGDatabase
-  - Corrected reference to "PsDscRunAsAccount" in documentation. ([issue #1199](https://github.com/PowerShell/SqlServerDsc/issues/1199). [Nick Reilingh (@NReilingh)](https://github.com/NReilingh)
+  - Corrected reference to "PsDscRunAsAccount" in documentation. 
+    ([issue #1199](https://github.com/PowerShell/SqlServerDsc/issues/1199). [Nick Reilingh (@NReilingh)](https://github.com/NReilingh)
 
 ## 11.4.0.0
 
