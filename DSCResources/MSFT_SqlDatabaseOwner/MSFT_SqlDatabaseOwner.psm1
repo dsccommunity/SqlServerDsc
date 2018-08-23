@@ -38,7 +38,7 @@ function Get-TargetResource
         [System.String]
         $ServerName = $env:COMPUTERNAME,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $InstanceName = 'MSSQLSERVER'
@@ -116,7 +116,7 @@ function Set-TargetResource
         [System.String]
         $ServerName = $env:COMPUTERNAME,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $InstanceName = 'MSSQLSERVER'
@@ -191,7 +191,7 @@ function Test-TargetResource
         [System.String]
         $ServerName = $env:COMPUTERNAME,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $InstanceName = 'MSSQLSERVER'
