@@ -7,7 +7,7 @@
     ([issue #1199](https://github.com/PowerShell/SqlServerDsc/issues/1199)).
     [Nick Reilingh (@NReilingh)](https://github.com/NReilingh)
 - Changes to SqlDatabaseOwner
-  - Support multi-instances which is the instance cannot be omitted
+  - BREAKING CHANGE: Support multi-instances which is the instance cannot be omitted
     ([issue #1197](https://github.com/PowerShell/SqlServerDsc/issues/1197)).
 
 ## 11.4.0.0

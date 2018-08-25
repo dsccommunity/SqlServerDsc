@@ -41,7 +41,7 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $InstanceName = 'MSSQLSERVER'
+        $InstanceName
     )
 
     Write-Verbose -Message "Getting owner of database $Database"
@@ -119,7 +119,7 @@ function Set-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $InstanceName = 'MSSQLSERVER'
+        $InstanceName
     )
 
     Write-Verbose -Message "Setting owner $Name of database $Database"
@@ -194,7 +194,7 @@ function Test-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $InstanceName = 'MSSQLSERVER'
+        $InstanceName
     )
 
     Write-Verbose -Message "Testing owner $Name of database $Database"

@@ -587,7 +587,7 @@ For more information about database owner, please read the article
 * **`[String]` Name** _(Required)_: The name of the login that will become a owner
   of the desired sql database.
 * **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
-* **`[String]` InstanceName** _(Write)_: The name of the SQL instance to be configured.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
 
 #### Examples
 
