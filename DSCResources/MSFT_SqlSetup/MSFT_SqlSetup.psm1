@@ -125,9 +125,24 @@ function Get-TargetResource
         Write-Verbose -Message $script:localizedData.DatabaseEngineFeatureFound
 
         $features += 'SQLENGINE,'
+        
+        $sqlServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$databaseServiceName'")
+        $agentServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$agentServiceName'")
 
-        $sqlServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$databaseServiceName'").StartName
-        $agentServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$agentServiceName'").StartName
+        $sqlServiceAccountUsername = $sqlServiceCimInstance.StartName
+        $agentServiceAccountUsername = $agentServiceCimInstance.StartName
+
+        $SqlSvcStartupType = $sqlServiceCimInstance.StartMode
+        $AgtSvcStartupType = $agentServiceCimInstance.StartMode
+
+        If ($SqlSvcStartupType -eq 'Auto')
+        {
+            $SqlSvcStartupType = 'Automatic'
+        }
+        If ($AgtSvcStartupType -eq 'Auto')
+        {
+            $AgtSvcStartupType = 'Automatic'
+        }
 
         $fullInstanceId = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' -Name $InstanceName).$InstanceName
 
@@ -269,7 +284,14 @@ function Get-TargetResource
         Write-Verbose -Message $script:localizedData.ReportingServicesFeatureFound
 
         $features += 'RS,'
-        $reportingServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$reportServiceName'").StartName
+        $reportingServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$reportServiceName'")
+        $reportingServiceAccountUsername = $reportingServiceCimInstance.StartName
+        $RsSvcStartupType = $reportingServiceCimInstance.StartMode
+        
+        If ($RsSvcStartupType -eq 'Auto')
+        {
+            $RsSvcStartupType = 'Automatic'
+        }
     }
     else
     {
@@ -283,7 +305,14 @@ function Get-TargetResource
         Write-Verbose -Message $script:localizedData.AnalysisServicesFeatureFound
 
         $features += 'AS,'
-        $analysisServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$analysisServiceName'").StartName
+        $analysisServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$analysisServiceName'")
+        $analysisServiceAccountUsername = $analysisServiceCimInstance.StartName
+        $AsSvcStartupType = $analysisServiceCimInstance.StartMode
+        
+        If ($AsSvcStartupType -eq 'Auto')
+        {
+            $AsSvcStartupType = 'Automatic'
+        }
 
         $analysisServer = Connect-SQLAnalysis -SQLServer $sqlHostName -SQLInstanceName $InstanceName
 
@@ -320,7 +349,14 @@ function Get-TargetResource
         Write-Verbose -Message $script:localizedData.IntegrationServicesFeatureFound
 
         $features += 'IS,'
-        $integrationServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$integrationServiceName'").StartName
+        $integrationServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$integrationServiceName'")
+        $integrationServiceAccountUsername = $integrationServiceCimInstance.StartName
+        $IsSvcStartupType = $integrationServiceCimInstance.StartMode
+
+        If ($IsSvcStartupType -eq 'Auto')
+        {
+            $IsSvcStartupType = 'Automatic'
+        }
     }
     else
     {
@@ -478,7 +514,9 @@ function Get-TargetResource
         InstallSharedWOWDir = $installSharedWOWDir
         InstanceDir = $instanceDirectory
         SQLSvcAccountUsername = $sqlServiceAccountUsername
+        SqlSvcStartupType = $SqlSvcStartupType
         AgtSvcAccountUsername = $agentServiceAccountUsername
+        AgtSvcStartupType = $AgtSvcStartupType
         SQLCollation = $sqlCollation
         SQLSysAdminAccounts = $sqlSystemAdminAccounts
         SecurityMode = $securityMode
@@ -490,7 +528,9 @@ function Get-TargetResource
         SQLBackupDir = $sqlBackupDirectory
         FTSvcAccountUsername = $fullTextServiceAccountUsername
         RSSvcAccountUsername = $reportingServiceAccountUsername
+        RsSvcStartupType = $RsSvcStartupType
         ASSvcAccountUsername = $analysisServiceAccountUsername
+        AsSvcStartupType = $AsSvcStartupType
         ASCollation = $analysisCollation
         ASSysAdminAccounts = $analysisSystemAdminAccounts
         ASDataDir = $analysisDataDirectory
@@ -500,6 +540,7 @@ function Get-TargetResource
         ASConfigDir = $analysisConfigDirectory
         ASServerMode = $analysisServerMode
         ISSvcAccountUsername = $integrationServiceAccountUsername
+        IsSvcStartupType = $IsSvcStartupType
         FailoverClusterGroupName = $clusteredSqlGroupName
         FailoverClusterNetworkName = $clusteredSqlHostname
         FailoverClusterIPAddress = $clusteredSqlIPAddress
