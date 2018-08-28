@@ -177,6 +177,11 @@ try
         $mockAnalysisServicePassword = 'Analysiss3v!c3P@ssw0rd'
         $mockAnalysisServiceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockAnalysisServiceAccount,($mockAnalysisServicePassword | ConvertTo-SecureString -AsPlainText -Force))
 
+        $mockAgtSvcStartupMode = 'Auto'
+        $mockAsSvcStartupMode = 'Auto'
+        $mockIsSvcStartupMode = 'Auto'
+        $mockRsSvcStartupMode = 'Auto'
+
         $mockClusterNodes = @($env:COMPUTERNAME,'SQL01','SQL02')
 
         $mockSqlDataDirectoryPath = 'E:\MSSQL\Data'
@@ -274,7 +279,8 @@ try
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_DatabaseServiceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockSqlSvcStartupMode -PassThru -Force
                 )
             )
         }
@@ -284,7 +290,8 @@ try
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_AgentServiceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockAgentServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockAgentServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockAgtSvcStartupMode -PassThru -Force
                 )
             )
         }
@@ -294,7 +301,8 @@ try
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_FullTextServiceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockSqlSvcStartupMode -PassThru -Force
                 )
             )
         }
@@ -304,7 +312,8 @@ try
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_ReportingServiceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockSqlSvcStartupMode -PassThru -Force
                 )
             )
         }
@@ -314,7 +323,8 @@ try
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value ($mockDefaultInstance_IntegrationServiceName -f $mockSqlMajorVersion) -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockSqlSvcStartupMode -PassThru -Force
                 )
             )
         }
@@ -324,7 +334,8 @@ try
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_AnalysisServiceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockSqlSvcStartupMode -PassThru -Force
                 )
             )
         }
@@ -334,12 +345,14 @@ try
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_DatabaseServiceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockSqlSvcStartupMode -PassThru -Force
                 ),
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_AgentServiceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockAgentServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockAgentServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockAgtSvcStartupMode -PassThru -Force
                 ),
                 (
                     New-Object -TypeName Object |
@@ -349,17 +362,20 @@ try
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_ReportingServiceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockRsSvcStartupMode -PassThru -Force
                 ),
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value ($mockDefaultInstance_IntegrationServiceName -f $mockSqlMajorVersion) -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockIsSvcStartupMode -PassThru -Force
                 ),
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDefaultInstance_AnalysisServiceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockAsSvcStartupMode -PassThru -Force
                 )
             )
         }
@@ -369,7 +385,8 @@ try
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_DatabaseServiceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockSqlSvcStartupMode -PassThru -Force
                 )
             )
         }
@@ -379,7 +396,8 @@ try
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_AgentServiceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockAgentServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockAgentServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockAgtSvcStartupMode -PassThru -Force
                 )
             )
         }
@@ -399,7 +417,8 @@ try
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_ReportingServiceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockRsSvcStartupMode -PassThru -Force
                 )
             )
         }
@@ -409,7 +428,8 @@ try
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value ($mockNamedInstance_IntegrationServiceName -f $mockSqlMajorVersion) -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockIsSvcStartupMode -PassThru -Force
                 )
             )
         }
@@ -419,7 +439,8 @@ try
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_AnalysisServiceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockAsSvcStartupMode -PassThru -Force
                 )
             )
         }
@@ -429,12 +450,14 @@ try
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_DatabaseServiceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockSqlSvcStartupMode -PassThru -Force
                 ),
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_AgentServiceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockAgentServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockAgentServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockAgtSvcStartupMode -PassThru -Force
                 ),
                 (
                     New-Object -TypeName Object |
@@ -444,17 +467,20 @@ try
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_ReportingServiceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockRsSvcStartupMode -PassThru -Force
                 ),
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value ($mockNamedInstance_IntegrationServiceName -f $mockSqlMajorVersion) -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockIsSvcStartupMode -PassThru -Force
                 ),
                 (
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_AnalysisServiceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'StartName' -Value $mockSqlServiceAccount -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'StartMode' -Value $mockAsSvcStartupMode -PassThru -Force
                 )
             )
         }
