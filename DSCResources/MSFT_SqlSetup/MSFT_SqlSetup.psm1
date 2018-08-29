@@ -2344,7 +2344,6 @@ function Set-StringToAutomatic
 {
     param
     (
-        [Parameter(Mandatory = $true)]
         [System.String]
         $String
     )
