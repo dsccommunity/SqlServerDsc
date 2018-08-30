@@ -132,8 +132,8 @@ function Get-TargetResource
         $sqlServiceAccountUsername = $sqlServiceCimInstance.StartName
         $agentServiceAccountUsername = $agentServiceCimInstance.StartName
 
-        $SqlSvcStartupType = ConvertTo-StartupType $sqlServiceCimInstance.StartMode
-        $AgtSvcStartupType = ConvertTo-StartupType $agentServiceCimInstance.StartMode
+        $SqlSvcStartupType = ConvertTo-StartupType -StartMode $sqlServiceCimInstance.StartMode
+        $AgtSvcStartupType = ConvertTo-StartupType -StartMode $agentServiceCimInstance.StartMode
 
         $fullInstanceId = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' -Name $InstanceName).$InstanceName
 
@@ -277,7 +277,7 @@ function Get-TargetResource
         $features += 'RS,'
         $reportingServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$reportServiceName'")
         $reportingServiceAccountUsername = $reportingServiceCimInstance.StartName
-        $RsSvcStartupType = ConvertTo-StartupType $reportingServiceCimInstance.StartMode
+        $RsSvcStartupType = ConvertTo-StartupType -StartMode $reportingServiceCimInstance.StartMode
     }
     else
     {
@@ -293,7 +293,7 @@ function Get-TargetResource
         $features += 'AS,'
         $analysisServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$analysisServiceName'")
         $analysisServiceAccountUsername = $analysisServiceCimInstance.StartName
-        $AsSvcStartupType = ConvertTo-StartupType $analysisServiceCimInstance.StartMode
+        $AsSvcStartupType = ConvertTo-StartupType -StartMode $analysisServiceCimInstance.StartMode
 
         $analysisServer = Connect-SQLAnalysis -SQLServer $sqlHostName -SQLInstanceName $InstanceName
 
@@ -332,7 +332,7 @@ function Get-TargetResource
         $features += 'IS,'
         $integrationServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$integrationServiceName'")
         $integrationServiceAccountUsername = $integrationServiceCimInstance.StartName
-        $IsSvcStartupType = ConvertTo-StartupType $integrationServiceCimInstance.StartMode
+        $IsSvcStartupType = ConvertTo-StartupType -StartMode $integrationServiceCimInstance.StartMode
     }
     else
     {
@@ -2335,10 +2335,10 @@ function Start-SqlSetupProcess
 
 <#
     .SYNOPSIS
-        Modify value to be 'Automatic' if it is 'Auto'. Otherwise returns the same string
+        Converts the start mode property returned by a Win32_Service CIM object to the resource properties *StartupType equivalent
 
     .PARAMETER String
-        String to check.
+        The StartMode to convert.
 #>
 function ConvertTo-StartupType
 {
