@@ -34,13 +34,8 @@ about: If you have a problem, bug, or enhancement with a resource in this resour
 
 #### SQL Server edition and version the target node is running
 <!--
-    To help with this information, please run the below commands:
-    $registryPath = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server'
-    $sqlInstance = (Get-ItemProperty -Path $registryPath -ErrorAction 'SilentlyContinue').InstalledInstances
-    $sqlInstance | ForEach-Object -Process {
-        $instanceId = (Get-ItemProperty "$registryPath\Instance Names\SQL" -ErrorAction 'SilentlyContinue').$_
-        (Get-ItemProperty "$registryPath\$instanceId\Setup" -ErrorAction 'SilentlyContinue') | fl Edition,Version, Language
-    }
+    To help with this information, please run this command in SQL:
+    select @@version
 -->
 
 #### SQL Server PowerShell modules present on the target node
