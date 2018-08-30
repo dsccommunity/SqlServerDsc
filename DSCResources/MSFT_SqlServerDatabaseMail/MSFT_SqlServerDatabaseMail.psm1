@@ -209,6 +209,7 @@ function Get-TargetResource
 
     .PARAMETER DisplayName
         The display name of the originating e-mail address.
+        Default value is the same value assigned to the EmailAddress parameter.
 
     .PARAMETER ReplyToAddress
         The e-mail address to which the receiver of e-mails will reply to.

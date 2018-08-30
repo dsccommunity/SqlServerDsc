@@ -988,7 +988,7 @@ Resource to manage SQL Server Database Mail.
 * **`[String]` EmailAddress** _(Required)_: The e-mail address from which mail
   will originate.
 * **`[String]` DisplayName** _(Write)_: The display name of the originating e-mail
-  address.
+  address. Default value is the same value assigned to the EmailAddress parameter.
 * **`[String]` ReplyToAddress** _(Write)_: The e-mail address to which the receiver
   of e-mails will reply to. Default value is the same e-mail address assigned to
   parameter EmailAddress.
