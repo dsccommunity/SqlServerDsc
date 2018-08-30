@@ -2344,6 +2344,7 @@ function ConvertTo-StartupType
 {
     param
     (
+        [Parameter()]
         [System.String]
         $StartMode
     )
