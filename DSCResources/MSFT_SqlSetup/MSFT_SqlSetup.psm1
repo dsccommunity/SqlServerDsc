@@ -2337,7 +2337,7 @@ function Start-SqlSetupProcess
     .SYNOPSIS
         Converts the start mode property returned by a Win32_Service CIM object to the resource properties *StartupType equivalent
 
-    .PARAMETER String
+    .PARAMETER StartMode
         The StartMode to convert.
 #>
 function ConvertTo-StartupType
