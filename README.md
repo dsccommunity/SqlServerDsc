@@ -1633,8 +1633,18 @@ need a '*SVCPASSWORD' argument in the setup arguments.
   { MULTIDIMENSIONAL | TABULAR | POWERPIVOT }.
 * **`[PSCredential]` ISSvcAccount** _(Write)_: Service account for Integration
   Services service.
+* **`[String]` SqlSvcStartupType** _(Write)_: Specifies the startup mode for
+  SQL Server Engine service. { Automatic | Disabled | Manual }
+* **`[String]` AgtSvcStartupType** _(Write)_: Specifies the startup mode for
+  SQL Server Agent service. { Automatic | Disabled | Manual }
+* **`[String]` AsSvcStartupType** _(Write)_: Specifies the startup mode for
+  SQL Server Analysis service. { Automatic | Disabled | Manual }
+* **`[String]` IsSvcStartupType** _(Write)_: Specifies the startup mode for
+  SQL Server Integration service. { Automatic | Disabled | Manual }
+* **`[String]` RsSvcStartupType** _(Write)_: Specifies the startup mode for
+  SQL Server Report service. { Automatic | Disabled | Manual }
 * **`[String]` BrowserSvcStartupType** _(Write)_: Specifies the startup mode for
-  SQL Server Browser service. { Automatic | Disabled | 'Manual' }
+  SQL Server Browser service. { Automatic | Disabled | Manual }
 * **`[String]` FailoverClusterGroupName** _(Write)_: The name of the resource group
   to create for the clustered SQL Server instance.
   Default is 'SQL Server (_InstanceName_)'.
@@ -1670,6 +1680,7 @@ need a '*SVCPASSWORD' argument in the setup arguments.
 * [Install a named instance on a single server from an UNC path using SourceCredential](/Examples/Resources/SqlSetup/3-InstallNamedInstanceSingleServerFromUncPathUsingSourceCredential.ps1)
 * [Install a named instance as the first node in SQL Server Failover Cluster](/Examples/Resources/SqlSetup/4-InstallNamedInstanceInFailoverClusterFirstNode.ps1)
 * [Install a named instance as the second node in SQL Server Failover Cluster](/Examples/Resources/SqlSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1)
+* [Install a named instance with the Agent Service set to Disabled](/Examples/Resources/SqlSetup/6-InstallNamedInstanceSingleServerWithAgtSvcStartupTypeDisabled.ps1)
 
 #### Known issues
 

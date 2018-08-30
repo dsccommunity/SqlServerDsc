@@ -42,6 +42,11 @@
     forced to be reimported into the session. This is to support that a never
     version of SQL Server was installed side-by-side so that SQLPS module should
     be used instead.
+  - Added new parameters to allow to define the startup types for the Sql Engine
+    service, the Agent service, the Analysis service and the Integration Service.
+    The new optional parameters are respectively SqlSvcStartupType, AgtSvcStartupType,
+    AsSvcStartupType, IsSvcStartupType and RsSvcStartupType. ([issue #1165](https://github.com/PowerShell/SqlServerDsc/issues/1165).
+    [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
 
 ## 11.3.0.0
 

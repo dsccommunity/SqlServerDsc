@@ -251,6 +251,7 @@ try
                 $resourceCurrentState.Action                     | Should -BeNullOrEmpty
                 $resourceCurrentState.AgtSvcAccount              | Should -BeNullOrEmpty
                 $resourceCurrentState.AgtSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlAgentServicePrimaryAccountUserName -Leaf))
+                $resourceCurrentState.AgtSvcStartupType          | Should -Be 'Automatic'
                 $resourceCurrentState.ASServerMode               | Should -Be $mockAnalysisServicesMultiServerMode
                 $resourceCurrentState.ASBackupDir                | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS13.$mockDatabaseEngineNamedInstanceName\OLAP\Backup")
                 $resourceCurrentState.ASCollation                | Should -Be $mockCollation
@@ -260,6 +261,7 @@ try
                 $resourceCurrentState.ASTempDir                  | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS13.$mockDatabaseEngineNamedInstanceName\OLAP\Temp")
                 $resourceCurrentState.ASSvcAccount               | Should -BeNullOrEmpty
                 $resourceCurrentState.ASSvcAccountUsername       | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlServicePrimaryAccountUserName -Leaf))
+                $resourceCurrentState.AsSvcStartupType           | Should -Be 'Automatic'
                 $resourceCurrentState.ASSysAdminAccounts         | Should -Be @(
                     $mockSqlAdminAccountUserName,
                     "NT SERVICE\SSASTELEMETRY`$$mockDatabaseEngineNamedInstanceName"
@@ -293,6 +295,7 @@ try
                 $resourceCurrentState.SQLCollation               | Should -Be $mockCollation
                 $resourceCurrentState.SQLSvcAccount              | Should -BeNullOrEmpty
                 $resourceCurrentState.SQLSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlServicePrimaryAccountUserName -Leaf))
+                $resourceCurrentState.SqlSvcStartupType          | Should -Be 'Automatic'
                 $resourceCurrentState.SQLSysAdminAccounts        | Should -Be @(
                     $mockSqlAdminAccountUserName,
                     $mockSqlInstallAccountUserName,
