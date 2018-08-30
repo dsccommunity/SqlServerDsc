@@ -32,6 +32,23 @@ about: If you have a problem, bug, or enhancement with a resource in this resour
 # insert configuration here
 ```
 
+#### SQL Server edition and version the target node is running
+<!--
+    To help with this information, please run the below commands:
+    $registryPath = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server'
+    $sqlInstance = (Get-ItemProperty -Path $registryPath -ErrorAction 'SilentlyContinue').InstalledInstances
+    $sqlInstance | ForEach-Object -Process {
+        $instanceId = (Get-ItemProperty "$registryPath\Instance Names\SQL" -ErrorAction 'SilentlyContinue').$_
+        (Get-ItemProperty "$registryPath\$instanceId\Setup" -ErrorAction 'SilentlyContinue') | fl Edition,Version, Language
+    }
+-->
+
+#### SQL Server PowerShell modules present on the target node
+<!--
+    To help with this information, please run this command:
+    Get-Module -Name '*sql*' -ListAvailable | ? Name -ne 'SqlServerDsc' | ft Name,Version,Path
+-->
+
 #### The operating system the target node is running
 <!--
     Please provide as much as possible about the target node, for example
@@ -55,3 +72,7 @@ about: If you have a problem, bug, or enhancement with a resource in this resour
 -->
 
 #### Version of the DSC module that was used ('dev' if using current dev branch)
+<!--
+    To help with this information, please run this command:
+    Get-Module -Name 'SqlServerDsc' -ListAvailable | ft Name,Version,Path
+-->
