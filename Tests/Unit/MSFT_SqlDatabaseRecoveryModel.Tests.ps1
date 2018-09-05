@@ -114,7 +114,7 @@ try
                     $throwInvalidOperation = ("Database 'UnknownDatabase' does not exist " + `
                         "on SQL server 'localhost\MSSQLSERVER'.")
 
-                    Mock -CommandName Connect-SQL -MockWith { throw $throwInvalidOperation }
+                   # Mock -CommandName Connect-SQL -MockWith { throw $throwInvalidOperation }
 
                     { Get-TargetResource @testParameters } | Should Throw $throwInvalidOperation
                 }
@@ -342,6 +342,28 @@ try
                     }
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the system is not in the desired state' {
+                It 'Should write a warning when failing to call RaiseError' {
+                    $mockConnectSQL.Databases.Where{$_.Name -eq 'AdventureWorks'}[0].mockInvalidOperationForAlterMethod = $false
+                    $mockConnectSQL.Databases.Where{$_.Name -eq 'AdventureWorks'}[0].mockExpectedRecoveryModel = 'Simple'
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name          = 'AdventureWorks'
+                        RecoveryModel = 'Simple'
+                    }
+
+                    Mock -CommandName Invoke-Query -MockWith { throw "Failed to write to log" }
+                    Mock -CommandName Write-Warning -MockWith { $null } -Verifiable
+
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    Assert-MockCalled -CommandName Write-Warning -Times 1 -Scope It
                 }
 
                 It 'Should call the mock function Connect-SQL' {
