@@ -195,6 +195,8 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
             InstanceName          = $Node.DatabaseEngineNamedInstanceName
             Features              = $Node.DatabaseEngineNamedInstanceFeatures
             SourcePath            = "$($Node.DriveLetter):\"
+            SqlSvcStartupType     = 'Automatic'
+            AgtSvcStartupType     = 'Automatic'
             BrowserSvcStartupType = 'Automatic'
             SecurityMode          = 'SQL'
             SAPwd                 = $SqlAdministratorCredential
@@ -202,6 +204,7 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
             SQLSvcAccount         = $SqlServicePrimaryCredential
             AgtSvcAccount         = $SqlAgentServicePrimaryCredential
             ASServerMode          = $Node.AnalysisServicesMultiServerMode
+            AsSvcStartupType      = 'Automatic'
             ASCollation           = $Node.Collation
             ASSvcAccount          = $SqlServicePrimaryCredential
             InstallSharedDir      = $Node.InstallSharedDir

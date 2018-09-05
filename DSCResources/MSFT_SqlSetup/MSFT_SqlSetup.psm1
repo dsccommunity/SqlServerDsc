@@ -12,7 +12,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlSetup'
 
     .PARAMETER Action
         The action to be performed. Default value is 'Install'.
-        Possible values are 'Install', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'
+        Possible values are 'Install', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'.
 
     .PARAMETER SourcePath
         The path to the root of the source files for installation. I.e and UNC path to a shared resource.  Environment variables can be used in the path.
@@ -30,7 +30,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlSetup'
         Name of the SQL instance to be installed.
 
     .PARAMETER FailoverClusterNetworkName
-        Host name to be assigned to the clustered SQL Server instance
+        Host name to be assigned to the clustered SQL Server instance.
 #>
 function Get-TargetResource
 {
@@ -125,9 +125,15 @@ function Get-TargetResource
         Write-Verbose -Message $script:localizedData.DatabaseEngineFeatureFound
 
         $features += 'SQLENGINE,'
+        
+        $sqlServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$databaseServiceName'")
+        $agentServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$agentServiceName'")
 
-        $sqlServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$databaseServiceName'").StartName
-        $agentServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$agentServiceName'").StartName
+        $sqlServiceAccountUsername = $sqlServiceCimInstance.StartName
+        $agentServiceAccountUsername = $agentServiceCimInstance.StartName
+
+        $SqlSvcStartupType = ConvertTo-StartupType -StartMode $sqlServiceCimInstance.StartMode
+        $AgtSvcStartupType = ConvertTo-StartupType -StartMode $agentServiceCimInstance.StartMode
 
         $fullInstanceId = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' -Name $InstanceName).$InstanceName
 
@@ -269,7 +275,9 @@ function Get-TargetResource
         Write-Verbose -Message $script:localizedData.ReportingServicesFeatureFound
 
         $features += 'RS,'
-        $reportingServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$reportServiceName'").StartName
+        $reportingServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$reportServiceName'")
+        $reportingServiceAccountUsername = $reportingServiceCimInstance.StartName
+        $RsSvcStartupType = ConvertTo-StartupType -StartMode $reportingServiceCimInstance.StartMode
     }
     else
     {
@@ -283,7 +291,9 @@ function Get-TargetResource
         Write-Verbose -Message $script:localizedData.AnalysisServicesFeatureFound
 
         $features += 'AS,'
-        $analysisServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$analysisServiceName'").StartName
+        $analysisServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$analysisServiceName'")
+        $analysisServiceAccountUsername = $analysisServiceCimInstance.StartName
+        $AsSvcStartupType = ConvertTo-StartupType -StartMode $analysisServiceCimInstance.StartMode
 
         $analysisServer = Connect-SQLAnalysis -SQLServer $sqlHostName -SQLInstanceName $InstanceName
 
@@ -320,7 +330,9 @@ function Get-TargetResource
         Write-Verbose -Message $script:localizedData.IntegrationServicesFeatureFound
 
         $features += 'IS,'
-        $integrationServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$integrationServiceName'").StartName
+        $integrationServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$integrationServiceName'")
+        $integrationServiceAccountUsername = $integrationServiceCimInstance.StartName
+        $IsSvcStartupType = ConvertTo-StartupType -StartMode $integrationServiceCimInstance.StartMode
     }
     else
     {
@@ -478,7 +490,9 @@ function Get-TargetResource
         InstallSharedWOWDir = $installSharedWOWDir
         InstanceDir = $instanceDirectory
         SQLSvcAccountUsername = $sqlServiceAccountUsername
+        SqlSvcStartupType = $SqlSvcStartupType
         AgtSvcAccountUsername = $agentServiceAccountUsername
+        AgtSvcStartupType = $AgtSvcStartupType
         SQLCollation = $sqlCollation
         SQLSysAdminAccounts = $sqlSystemAdminAccounts
         SecurityMode = $securityMode
@@ -490,7 +504,9 @@ function Get-TargetResource
         SQLBackupDir = $sqlBackupDirectory
         FTSvcAccountUsername = $fullTextServiceAccountUsername
         RSSvcAccountUsername = $reportingServiceAccountUsername
+        RsSvcStartupType = $RsSvcStartupType
         ASSvcAccountUsername = $analysisServiceAccountUsername
+        AsSvcStartupType = $AsSvcStartupType
         ASCollation = $analysisCollation
         ASSysAdminAccounts = $analysisSystemAdminAccounts
         ASDataDir = $analysisDataDirectory
@@ -500,6 +516,7 @@ function Get-TargetResource
         ASConfigDir = $analysisConfigDirectory
         ASServerMode = $analysisServerMode
         ISSvcAccountUsername = $integrationServiceAccountUsername
+        IsSvcStartupType = $IsSvcStartupType
         FailoverClusterGroupName = $clusteredSqlGroupName
         FailoverClusterNetworkName = $clusteredSqlHostname
         FailoverClusterIPAddress = $clusteredSqlIPAddress
@@ -512,7 +529,7 @@ function Get-TargetResource
 
     .PARAMETER Action
         The action to be performed. Default value is 'Install'.
-        Possible values are 'Install', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'
+        Possible values are 'Install', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'.
 
     .PARAMETER SourcePath
         The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.
@@ -644,17 +661,32 @@ function Get-TargetResource
     .PARAMETER ISSvcAccount
        Service account for Integration Services service.
 
+    .PARAMETER SqlSvcStartupType
+       Specifies the startup mode for SQL Server Engine service.
+
+    .PARAMETER AgtSvcStartupType
+       Specifies the startup mode for SQL Server Agent service.
+
+    .PARAMETER AsSvcStartupType
+       Specifies the startup mode for SQL Server Analysis service.
+
+    .PARAMETER IsSvcStartupType
+       Specifies the startup mode for SQL Server Integration service.
+
+    .PARAMETER RsSvcStartupType
+       Specifies the startup mode for SQL Server Report service.
+
     .PARAMETER BrowserSvcStartupType
-       Specifies the startup mode for SQL Server Browser service
+       Specifies the startup mode for SQL Server Browser service.
 
     .PARAMETER FailoverClusterGroupName
         The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (InstanceName)'.
 
     .PARAMETER FailoverClusterIPAddress
-        Array of IP Addresses to be assigned to the clustered SQL Server instance
+        Array of IP Addresses to be assigned to the clustered SQL Server instance.
 
     .PARAMETER FailoverClusterNetworkName
-        Host name to be assigned to the clustered SQL Server instance
+        Host name to be assigned to the clustered SQL Server instance.
 
     .PARAMETER SetupProcessTimeout
         The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.
@@ -836,6 +868,31 @@ function Set-TargetResource
         [Parameter()]
         [System.Management.Automation.PSCredential]
         $ISSvcAccount,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $SqlSvcStartupType,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $AgtSvcStartupType,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $IsSvcStartupType,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $AsSvcStartupType,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $RsSvcStartupType,
 
         [Parameter()]
         [System.String]
@@ -1248,7 +1305,19 @@ function Set-TargetResource
 
         if ($Action -in @('Install'))
         {
-            $setupArguments += @{ AgtSvcStartupType = 'Automatic' }
+            if ($PSBoundParameters.ContainsKey('AgtSvcStartupType'))
+            {
+                $setupArguments.AgtSvcStartupType = $AgtSvcStartupType
+            }
+            else
+            {
+                $setupArguments += @{ AgtSvcStartupType = 'Automatic' }
+            }
+            
+            if ($PSBoundParameters.ContainsKey('SqlSvcStartupType'))
+            {
+                $setupArguments += @{ SqlSvcStartupType = $SqlSvcStartupType}
+            }
         }
     }
 
@@ -1265,6 +1334,10 @@ function Set-TargetResource
         if ($PSBoundParameters.ContainsKey('RSSvcAccount'))
         {
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $RSSvcAccount -ServiceType 'RS')
+        }
+        if ($PSBoundParameters.ContainsKey('RsSvcStartupType'))
+        {
+            $setupArguments += @{ RsSvcStartupType = $RsSvcStartupType}
         }
     }
 
@@ -1307,6 +1380,11 @@ function Set-TargetResource
                 $setupArguments['ASSysAdminAccounts'] += $ASSysAdminAccounts
             }
         }
+        
+        if ($PSBoundParameters.ContainsKey('AsSvcStartupType'))
+        {
+            $setupArguments += @{ AsSvcStartupType = $AsSvcStartupType}
+        }
     }
 
     if ($Features.Contains('IS'))
@@ -1314,6 +1392,11 @@ function Set-TargetResource
         if ($PSBoundParameters.ContainsKey('ISSvcAccount'))
         {
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $ISSvcAccount -ServiceType 'IS')
+        }
+        
+        if ($PSBoundParameters.ContainsKey('IsSvcStartupType'))
+        {
+            $setupArguments += @{ IsSvcStartupType = $IsSvcStartupType}
         }
     }
 
@@ -1485,7 +1568,7 @@ function Set-TargetResource
 
     .PARAMETER Action
         The action to be performed. Default value is 'Install'.
-        Possible values are 'Install', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'
+        Possible values are 'Install', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'.
 
     .PARAMETER SourcePath
         The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.
@@ -1617,17 +1700,32 @@ function Set-TargetResource
     .PARAMETER ISSvcAccount
        Service account for Integration Services service.
 
+    .PARAMETER SqlSvcStartupType
+       Specifies the startup mode for SQL Server Engine service.
+
+    .PARAMETER AgtSvcStartupType
+       Specifies the startup mode for SQL Server Agent service.
+
+    .PARAMETER IsSvcStartupType
+       Specifies the startup mode for SQL Server Integration service.
+
+    .PARAMETER AsSvcStartupType
+       Specifies the startup mode for SQL Server Analysis service.
+
+    .PARAMETER RsSvcStartupType
+       Specifies the startup mode for SQL Server Report service.
+
     .PARAMETER BrowserSvcStartupType
-       Specifies the startup mode for SQL Server Browser service
+       Specifies the startup mode for SQL Server Browser service.
 
     .PARAMETER FailoverClusterGroupName
         The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (InstanceName)'.
 
     .PARAMETER FailoverClusterIPAddress
-        Array of IP Addresses to be assigned to the clustered SQL Server instance
+        Array of IP Addresses to be assigned to the clustered SQL Server instance.
 
     .PARAMETER FailoverClusterNetworkName
-        Host name to be assigned to the clustered SQL Server instance
+        Host name to be assigned to the clustered SQL Server instance.
 
     .PARAMETER SetupProcessTimeout
         The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.
@@ -1800,6 +1898,31 @@ function Test-TargetResource
         [Parameter()]
         [System.Management.Automation.PSCredential]
         $ISSvcAccount,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $SqlSvcStartupType,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $AgtSvcStartupType,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $IsSvcStartupType,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $AsSvcStartupType,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Automatic', 'Disabled', 'Manual')]
+        $RsSvcStartupType,
 
         [Parameter()]
         [System.String]
@@ -2035,10 +2158,10 @@ function Get-TemporaryFolder
 
 <#
     .SYNOPSIS
-        Returns the decimal representation of an IP Addresses
+        Returns the decimal representation of an IP Addresses.
 
     .PARAMETER IPAddress
-        The IP Address to be converted
+        The IP Address to be converted.
 #>
 function ConvertTo-Decimal
 {
@@ -2063,16 +2186,16 @@ function ConvertTo-Decimal
 
 <#
     .SYNOPSIS
-        Determines whether an IP Address is valid for a given network / subnet
+        Determines whether an IP Address is valid for a given network / subnet.
 
     .PARAMETER IPAddress
-        IP Address to be checked
+        IP Address to be checked.
 
     .PARAMETER NetworkID
-        IP Address of the network identifier
+        IP Address of the network identifier.
 
     .PARAMETER SubnetMask
-        Subnet mask of the network to be checked
+        Subnet mask of the network to be checked.
 #>
 function Test-IPAddress
 {
@@ -2103,13 +2226,13 @@ function Test-IPAddress
 
 <#
     .SYNOPSIS
-        Builds service account parameters for setup
+        Builds service account parameters for setup.
 
     .PARAMETER ServiceAccount
-        Credential for the service account
+        Credential for the service account.
 
     .PARAMETER ServiceType
-        Type of service account
+        Type of service account.
 #>
 function Get-ServiceAccountParameters
 {
@@ -2168,7 +2291,7 @@ function Get-ServiceAccountParameters
 
 <#
     .SYNOPSIS
-        Starts the SQL setup process-
+        Starts the SQL setup process.
 
     .PARAMETER FilePath
         String containing the path to setup.exe.
@@ -2208,6 +2331,30 @@ function Start-SqlSetupProcess
     Wait-Process -InputObject $sqlSetupProcess -Timeout $Timeout -ErrorAction Stop
 
     return $sqlSetupProcess.ExitCode
+}
+
+<#
+    .SYNOPSIS
+        Converts the start mode property returned by a Win32_Service CIM object to the resource properties *StartupType equivalent
+
+    .PARAMETER StartMode
+        The StartMode to convert.
+#>
+function ConvertTo-StartupType
+{
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $StartMode
+    )
+
+    If ($StartMode -eq 'Auto')
+    {
+        $StartMode = 'Automatic'
+    }
+
+    return $StartMode
 }
 
 Export-ModuleMember -Function *-TargetResource
