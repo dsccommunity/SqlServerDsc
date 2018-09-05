@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 12.0.0.0
+
 - Changes to SqlServerDatabaseMail
   - DisplayName is now properly treated as display name
     for the originating email address ([issue #1200](https://github.com/PowerShell/SqlServerDsc/issue/1200)).
