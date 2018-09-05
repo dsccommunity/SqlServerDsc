@@ -981,7 +981,8 @@ Resource to manage SQL Server Database Mail.
 * **`[String]` InstanceName** _(Key)_: Name of the SQL instance to be configured.
 * **`[String]` Ensure** _(Write)_: Specifies the desired state of the Database Mail.
   When set to 'Present', the Database Mail will be created. When set to 'Absent',
-  the Database Mail will be removed. Default value is 'Present'. { *Present* | Absent }.
+  the Database Mail will be removed. Default value is 'Present'.
+  { *Present* | Absent }.
 * **`[String]` ProfileName** _(Required)_: The name of the Database Mail profile.
 * **`[String]` Description** _(Write)_: The description for the Database Mail
   profile and account.
