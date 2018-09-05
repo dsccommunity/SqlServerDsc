@@ -93,6 +93,7 @@ try
         $databases = @(
             ([Database]::new($mockSqlDatabaseName, $mockSqlDatabaseRecoveryModel))
             ([Database]::new($mockSqlDatabaseName2, $mockSqlDatabaseRecoveryModel2))
+            ([Database]::new('tempDB', 'Simple'))
         )
         $mockConnectSQL = [ConnectSQL]::new($mockInstanceName, $mockServerName, $databases)
         #endregion
@@ -169,6 +170,46 @@ try
                 }
             }
 
+            Context 'When multiple databases match the name, info should be returned for all databases' {
+                It 'Should return data for each database' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name          = 'AdventureWorks*'
+                        RecoveryModel = 'Simple'
+                    }
+
+                    $result = Get-TargetResource @testParameters
+                    $result.RecoveryModel | Should -Be "$mockSqlDatabaseRecoveryModel,$mockSqlDatabaseRecoveryModel2"
+                }
+
+                It 'Should return the expected recovery models' {
+                    $result.ServerName | Should -Be $testParameters.ServerName
+                    $result.InstanceName | Should -Be $testParameters.InstanceName
+                    $result.Name | Should -Be $testParameters.Name
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the database is tempdb it should be skipped' {
+                It "Should not return a Recovery Model for tempDB" {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name          = 'tempDB'
+                        RecoveryModel = 'Simple'
+                    }
+
+                    $result = Get-TargetResource @testParameters
+                    $result.RecoveryModel | Should -Be ""
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
             Assert-VerifiableMock
         }
 
@@ -182,6 +223,23 @@ try
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         Name          = 'AdventureWorks'
+                        RecoveryModel = 'Full'
+                    }
+
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $false
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the system is not in the desired state' {
+                It "Should return false when not all matching databases are correct" {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name          = 'AdventureWorks*'
                         RecoveryModel = 'Full'
                     }
 
@@ -211,12 +269,31 @@ try
                 }
             }
 
+            Context 'When the system is in the desired state' {
+                It 'Should return the state as true only when all desired recovery model ar correct' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name          = 'AdventureWorks*'
+                        RecoveryModel = 'Simple'
+                    }
+                    $mockConnectSQL.Databases.Where{$_.Name -eq "AdventureWorks2"}[0].RecoveryModel = 'Simple'
+
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $true
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
             Assert-VerifiableMock
         }
 
         Describe "MSFT_SqlDatabaseRecoveryModel\Set-TargetResource" -Tag 'Set' {
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith { return $mockConnectSQL } -Verifiable
+                Mock -CommandName Invoke-Query -MockWith { $null }
             }
 
             Context 'When the system is not in the desired state, and database does not exist' {
@@ -244,6 +321,45 @@ try
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         Name          = 'AdventureWorks'
+                        RecoveryModel = 'Full'
+                    }
+
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the system is not in the desired state' {
+                It 'Should not call alter when matching on tempDB' {
+                    $mockConnectSQL.Databases.Where{$_.Name -eq 'AdventureWorks'}[0].mockInvalidOperationForAlterMethod = $true
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name          = 'TempDB'
+                        RecoveryModel = 'Full'
+                    }
+
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the system is in the desired state' {
+                It "Should not call alter when all databases have correct recovery model" {
+                    foreach($database in $mockConnectSQL.Databases)
+                    {
+                        $database.mockInvalidOperationForAlterMethod = $true
+                        $database.RecoveryModel = 'Full'
+                    }
+
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name          = 'AdventureWorks*'
                         RecoveryModel = 'Full'
                     }
 

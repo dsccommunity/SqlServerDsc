@@ -76,13 +76,18 @@ function Get-TargetResource
             if($sqlDatabaseRecoveryModel -notlike "*$($sqlDatabaseObject.RecoveryModel)*")
             {
                 $sqlDatabaseRecoveryModel += ",$($sqlDatabaseObject.RecoveryModel)"
-            }            
+            }
         }
+    }
+
+    if([string]::IsNullOrWhiteSpace($sqlDatabaseRecoveryModel) -eq $false)
+    {
+        $sqlDatabaseRecoveryModel = $sqlDatabaseRecoveryModel.SubString(1, $sqlDatabaseRecoveryModel.Length - 1)
     }
 
     $returnValue = @{
         Name          = $Name
-        RecoveryModel = $sqlDatabaseRecoveryModel.SubString(1, $sqlDatabaseRecoveryModel.Length - 1)
+        RecoveryModel = $sqlDatabaseRecoveryModel
         ServerName    = $ServerName
         InstanceName  = $InstanceName
     }
@@ -150,7 +155,7 @@ function Set-TargetResource
         {
             if($sqlDatabaseObject.Name -eq "tempdb")
             {
-                New-VerboseMessage -Message "Skipping 'tempdb', recovery model for this DB cannot be changed"
+                New-VerboseMessage -Message "Skipping 'tempdb', recovery model because this DB cannot be changed"
 
                 Continue
             }
@@ -163,15 +168,15 @@ function Set-TargetResource
                 $sqlDatabaseObject.Alter()
                 New-VerboseMessage -Message "The recovery model for the database $($sqlDatabaseObject.Name) is changed to '$RecoveryModel'."
 
-                try 
+                try
                 {
                     $null = Invoke-Query -SQLServer $ServerName `
                                          -SQLInstanceName $InstanceName `
                                          -Database $sqlDatabaseObject.Name `
                                          -Query $($logMessage -f $sqlDatabaseObject.Name, $RecoveryModel, $Name) `
-                                         -ErrorAction stop 
+                                         -ErrorAction stop
                 }
-                catch 
+                catch
                 {
                     Write-Warning "Failed to log DSC database recovery model to SQL and event logs."
                 }
