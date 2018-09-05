@@ -2,6 +2,29 @@
 
 ## Unreleased
 
+## 12.0.0.0
+
+- Changes to SqlServerDatabaseMail
+  - DisplayName is now properly treated as display name
+    for the originating email address ([issue #1200](https://github.com/PowerShell/SqlServerDsc/issue/1200)).
+    [Nick Reilingh (@NReilingh)](https://github.com/NReilingh)
+    - DisplayName property now defaults to email address instead of server name.
+    - Minor improvements to documentation.
+- Changes to SqlAGDatabase
+  - Corrected reference to "PsDscRunAsAccount" in documentation
+    ([issue #1199](https://github.com/PowerShell/SqlServerDsc/issues/1199)).
+    [Nick Reilingh (@NReilingh)](https://github.com/NReilingh)
+- Changes to SqlDatabaseOwner
+  - BREAKING CHANGE: Support multiple instances on the same node.
+    The parameter InstanceName is now Key and cannot be omitted
+    ([issue #1197](https://github.com/PowerShell/SqlServerDsc/issues/1197)).
+- Changes to SqlSetup
+  - Added new parameters to allow to define the startup types for the Sql Engine
+    service, the Agent service, the Analysis service and the Integration Service.
+    The new optional parameters are respectively SqlSvcStartupType, AgtSvcStartupType,
+    AsSvcStartupType, IsSvcStartupType and RsSvcStartupType ([issue #1165](https://github.com/PowerShell/SqlServerDsc/issues/1165).
+    [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
+
 ## 11.4.0.0
 
 - Changes to SqlServerDsc

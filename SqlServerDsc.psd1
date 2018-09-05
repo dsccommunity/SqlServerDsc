@@ -1,6 +1,6 @@
 @{
   # Version number of this module.
-  moduleVersion = '11.4.0.0'
+  moduleVersion = '12.0.0.0'
 
   # ID used to uniquely identify this module
   GUID = '693ee082-ed36-45a7-b490-88b07c86b42f'
@@ -49,35 +49,26 @@
           # IconUri = ''
 
           # ReleaseNotes of this module
-        ReleaseNotes = '- Changes to SqlServerDsc
-  - Updated helper function Restart-SqlService to have to new optional parameters
-    `SkipClusterCheck` and `SkipWaitForOnline`. This was to support more aspects
-    of the resource SqlServerNetwork.
-  - Updated helper function `Import-SQLPSModule`
-    - To only import module if the
-      module does not exist in the session.
-    - To always import the latest version of "SqlServer" or "SQLPS" module, if
-      more than one version exist on the target node. It will still prefer to
-      use "SqlServer" module.
-  - Updated all the examples and integration tests to not use
-    `PSDscAllowPlainTextPassword`, so examples using credentials or
-    passwords by default are secure.
-- Changes to SqlAlwaysOnService
-  - Integration tests was updated to handle new IPv6 addresses on the AppVeyor
-    build worker ([issue 1155](https://github.com/PowerShell/SqlServerDsc/issues/1155)).
-- Changes to SqlServerNetwork
-  - Refactor SqlServerNetwork to not load assembly from GAC ([issue 1151](https://github.com/PowerShell/SqlServerDsc/issues/1151)).
-  - The resource now supports restarting the SQL Server service when both
-    enabling and disabling the protocol.
-  - Added integration tests for this resource
-    ([issue 751](https://github.com/PowerShell/SqlServerDsc/issues/751)).
-- Changes to SqlAG
-  - Removed excess `Import-SQLPSModule` call.
+        ReleaseNotes = '- Changes to SqlServerDatabaseMail
+  - DisplayName is now properly treated as display name
+    for the originating email address ([issue 1200](https://github.com/PowerShell/SqlServerDsc/issue/1200)).
+    [Nick Reilingh (@NReilingh)](https://github.com/NReilingh)
+    - DisplayName property now defaults to email address instead of server name.
+    - Minor improvements to documentation.
+- Changes to SqlAGDatabase
+  - Corrected reference to "PsDscRunAsAccount" in documentation
+    ([issue 1199](https://github.com/PowerShell/SqlServerDsc/issues/1199)).
+    [Nick Reilingh (@NReilingh)](https://github.com/NReilingh)
+- Changes to SqlDatabaseOwner
+  - BREAKING CHANGE: Support multiple instances on the same node.
+    The parameter InstanceName is now Key and cannot be omitted
+    ([issue 1197](https://github.com/PowerShell/SqlServerDsc/issues/1197)).
 - Changes to SqlSetup
-  - Now after a successful install the "SQL PowerShell module" is reevaluated and
-    forced to be reimported into the session. This is to support that a never
-    version of SQL Server was installed side-by-side so that SQLPS module should
-    be used instead.
+  - Added new parameters to allow to define the startup types for the Sql Engine
+    service, the Agent service, the Analysis service and the Integration Service.
+    The new optional parameters are respectively SqlSvcStartupType, AgtSvcStartupType,
+    AsSvcStartupType, IsSvcStartupType and RsSvcStartupType ([issue 1165](https://github.com/PowerShell/SqlServerDsc/issues/1165).
+    [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
 
 '
 
@@ -85,6 +76,7 @@
 
   } # End of PrivateData hashtable
   }
+
 
 
 

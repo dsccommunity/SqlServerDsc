@@ -286,8 +286,8 @@ group.
 * **`[Boolean]` MatchDatabaseOwner** _(Write)_: If set to $true, this ensures the
   database owner of the database on the primary replica is the owner of the database
   on all secondary replicas. This requires the database owner is available as a
-  login on all replicas and that the PSDscRunAsAccount has impersonate permissions.
-  If set to $false, the owner of the database will be the PSDscRunAsAccount.
+  login on all replicas and that the PsDscRunAsCredential has impersonate permissions.
+  If set to $false, the owner of the database will be the PsDscRunAsCredential.
   The default is '$true'.
 * **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
   will only determine if a change is needed if the target node is the active
@@ -587,7 +587,7 @@ For more information about database owner, please read the article
 * **`[String]` Name** _(Required)_: The name of the login that will become a owner
   of the desired sql database.
 * **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
-* **`[String]` InstanceName** _(Write)_: The name of the SQL instance to be configured.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
 
 #### Examples
 
@@ -976,28 +976,29 @@ Resource to manage SQL Server Database Mail.
 #### Parameters
 
 * **`[String]` AccountName** _(Key)_: The name of the Database Mail account.
+* **`[String]` ServerName** _(Write)_: The hostname of the SQL Server to be configured.
+  Defaults to $env:COMPUTERNAME.
 * **`[String]` InstanceName** _(Key)_: Name of the SQL instance to be configured.
-* **`[String]` EmailAddress** _(Required)_: The e-mail address from which mail
-  will originate.
-* **`[String]` MailServerName** _(Required)_: The fully qualified domain name of
-  the mail server name to which e-mail are sent.
-* **`[String]` ProfileName** _(Required)_: The profile name of the Database Mail.
 * **`[String]` Ensure** _(Write)_: Specifies the desired state of the Database Mail.
   When set to 'Present', the Database Mail will be created. When set to 'Absent',
   the Database Mail will be removed. Default value is 'Present'.
-* **`[String]` ServerName** _(Write)_: The hostname of the SQL Server to be configured.
-  Defaults to $env:COMPUTERNAME.
-* **`[String]` DisplayName** _(Write)_: The display name of the outgoing mail server.
-  Default value is the same value assigned to parameter MailServerName.
+* **`[String]` ProfileName** _(Required)_: The name of the Database Mail profile.
+* **`[String]` Description** _(Write)_: The description for the Database Mail
+  profile and account.
+* **`[String]` EmailAddress** _(Required)_: The e-mail address from which mail
+  will originate.
+* **`[String]` DisplayName** _(Write)_: The display name of the originating e-mail
+  address. Default value is the same value assigned to the EmailAddress parameter.
 * **`[String]` ReplyToAddress** _(Write)_: The e-mail address to which the receiver
   of e-mails will reply to. Default value is the same e-mail address assigned to
   parameter EmailAddress.
-* **`[String]` Description** _(Write)_: The description of the Database Mail.
+* **`[String]` MailServerName** _(Required)_: The fully qualified domain name of
+  the mail server name to which e-mail are sent.
+* **`[UInt16]` TcpPort** _(Write)_: The TCP port used for communication. Default
+  value is port 25.
 * **`[String]` LoggingLevel** _(Write)_: The logging level that the Database Mail
   will use. If not specified the default logging level is 'Extended'.
   { Normal | *Extended* | Verbose }.
-* **`[UInt16]` TcpPort** _(Write)_: The TCP port used for communication. Default
-  value is port 25.
 
 #### Examples
 
@@ -1633,8 +1634,18 @@ need a '*SVCPASSWORD' argument in the setup arguments.
   { MULTIDIMENSIONAL | TABULAR | POWERPIVOT }.
 * **`[PSCredential]` ISSvcAccount** _(Write)_: Service account for Integration
   Services service.
+* **`[String]` SqlSvcStartupType** _(Write)_: Specifies the startup mode for
+  SQL Server Engine service. { Automatic | Disabled | Manual }
+* **`[String]` AgtSvcStartupType** _(Write)_: Specifies the startup mode for
+  SQL Server Agent service. { Automatic | Disabled | Manual }
+* **`[String]` AsSvcStartupType** _(Write)_: Specifies the startup mode for
+  SQL Server Analysis service. { Automatic | Disabled | Manual }
+* **`[String]` IsSvcStartupType** _(Write)_: Specifies the startup mode for
+  SQL Server Integration service. { Automatic | Disabled | Manual }
+* **`[String]` RsSvcStartupType** _(Write)_: Specifies the startup mode for
+  SQL Server Report service. { Automatic | Disabled | Manual }
 * **`[String]` BrowserSvcStartupType** _(Write)_: Specifies the startup mode for
-  SQL Server Browser service. { Automatic | Disabled | 'Manual' }
+  SQL Server Browser service. { Automatic | Disabled | Manual }
 * **`[String]` FailoverClusterGroupName** _(Write)_: The name of the resource group
   to create for the clustered SQL Server instance.
   Default is 'SQL Server (_InstanceName_)'.
@@ -1670,6 +1681,7 @@ need a '*SVCPASSWORD' argument in the setup arguments.
 * [Install a named instance on a single server from an UNC path using SourceCredential](/Examples/Resources/SqlSetup/3-InstallNamedInstanceSingleServerFromUncPathUsingSourceCredential.ps1)
 * [Install a named instance as the first node in SQL Server Failover Cluster](/Examples/Resources/SqlSetup/4-InstallNamedInstanceInFailoverClusterFirstNode.ps1)
 * [Install a named instance as the second node in SQL Server Failover Cluster](/Examples/Resources/SqlSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1)
+* [Install a named instance with the Agent Service set to Disabled](/Examples/Resources/SqlSetup/6-InstallNamedInstanceSingleServerWithAgtSvcStartupTypeDisabled.ps1)
 
 #### Known issues
 
