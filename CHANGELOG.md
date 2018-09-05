@@ -22,6 +22,8 @@
     The new optional parameters are respectively SqlSvcStartupType, AgtSvcStartupType,
     AsSvcStartupType, IsSvcStartupType and RsSvcStartupType ([issue #1165](https://github.com/PowerShell/SqlServerDsc/issues/1165).
     [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
+- Changes to SqlDatabaseRecoveryModel
+  - Now support regex style matching of databases.
 
 ## 11.4.0.0
 
@@ -54,8 +56,6 @@
     forced to be reimported into the session. This is to support that a never
     version of SQL Server was installed side-by-side so that SQLPS module should
     be used instead.
-- Changes to SqlDatabaseRecoveryModel
-  - Now support regex style matching of databases.
 
 ## 11.3.0.0
 
