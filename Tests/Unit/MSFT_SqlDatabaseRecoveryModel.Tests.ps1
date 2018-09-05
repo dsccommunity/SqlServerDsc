@@ -38,8 +38,8 @@ try
         $mockInstanceName = 'MSSQLSERVER'
         $mockSqlDatabaseName = 'AdventureWorks'
         $mockSqlDatabaseRecoveryModel = 'Simple'
-        $mockInvalidOperationForAlterMethod = $false
-        $mockExpectedRecoveryModel = 'Simple'
+        $mockSqlDatabaseName2 = 'AdventureWorks2'
+        $mockSqlDatabaseRecoveryModel2 = 'Full'
 
         # Default parameters that are used for the It-blocks
         $mockDefaultParameters = @{
@@ -48,40 +48,58 @@ try
         }
 
         #region Function mocks
-        $mockConnectSQL = {
-            return @(
-                (
-                    New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru |
-                        Add-Member -MemberType ScriptProperty -Name Databases -Value {
-                        return @{
-                            $mockSqlDatabaseName = ( New-Object -TypeName Object |
-                                    Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
-                                    Add-Member -MemberType NoteProperty -Name RecoveryModel -Value $mockSqlDatabaseRecoveryModel -PassThru |
-                                    Add-Member -MemberType ScriptMethod -Name Alter -Value {
-                                    if ($mockInvalidOperationForAlterMethod)
-                                    {
-                                        throw 'Mock Alter Method was called with invalid operation.'
-                                    }
+        Class Database
+        {
+            [string]$Name
+            [string]$RecoveryModel
+            [bool] $mockInvalidOperationForAlterMethod = $false
+            [string] $mockExpectedRecoveryModel = 'Simple'
 
-                                    if ( $this.RecoveryModel -ne $mockExpectedRecoveryModel )
-                                    {
-                                        throw "Called Alter Drop() method without setting the right recovery model. Expected '{0}'. But was '{1}'." `
-                                            -f $mockExpectedRecoveryModel, $this.RecoveryModel
-                                    }
-                                } -PassThru
-                            )
-                        }
-                    } -PassThru -Force
-                )
-            )
+            Database($Name, $RecoveryModel)
+            {
+                $this.Name = $Name
+                $this.RecoveryModel = $RecoveryModel
+            }
+
+            Alter()
+            {
+                if ($this.mockInvalidOperationForAlterMethod)
+                {
+                    throw 'Mock Alter Method was called with invalid operation.'
+                }
+
+                if ( $this.RecoveryModel -ne $this.mockExpectedRecoveryModel )
+                {
+                    throw "Called Alter Drop() method without setting the right recovery model. Expected '{0}'. But was '{1}'." `
+                        -f $this.mockExpectedRecoveryModel, $this.RecoveryModel
+                }
+            }
         }
+
+        Class ConnectSQL
+        {
+            [string] $InstanceName
+            [string] $ComputerNamePhysicalNetBIOS
+            [Database[]] $Databases
+
+            ConnectSQL($InstanceName, $ComputerNamePhysicalNetBIOS, $Databases)
+            {
+                $this.InstanceName = $InstanceName
+                $this.ComputerNamePhysicalNetBIOS = $ComputerNamePhysicalNetBIOS
+                $this.Databases = $Databases
+            }
+        }
+
+        $databases = @(
+            ([Database]::new($mockSqlDatabaseName, $mockSqlDatabaseRecoveryModel))
+            ([Database]::new($mockSqlDatabaseName2, $mockSqlDatabaseRecoveryModel2))
+        )
+        $mockConnectSQL = [ConnectSQL]::new($mockInstanceName, $mockServerName, $databases)
         #endregion
 
         Describe "MSFT_SqlDatabaseRecoveryModel\Get-TargetResource" -Tag 'Get' {
             BeforeEach {
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+                Mock -CommandName Connect-SQL -MockWith { return $mockConnectSQL } -Verifiable
             }
 
             Context 'When passing values to parameters and database does not exist' {
@@ -93,9 +111,11 @@ try
                     }
 
                     $throwInvalidOperation = ("Database 'UnknownDatabase' does not exist " + `
-                            "on SQL server 'localhost\MSSQLSERVER'.")
+                        "on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    Mock -CommandName Connect-SQL -MockWith { throw $throwInvalidOperation }
+
+                    { Get-TargetResource @testParameters } | Should Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -154,7 +174,7 @@ try
 
         Describe "MSFT_SqlDatabaseRecoveryModel\Test-TargetResource" -Tag 'Test' {
             BeforeEach {
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+                Mock -CommandName Connect-SQL -MockWith { return $mockConnectSQL } -Verifiable
             }
 
             Context 'When the system is not in the desired state' {
@@ -196,7 +216,7 @@ try
 
         Describe "MSFT_SqlDatabaseRecoveryModel\Set-TargetResource" -Tag 'Set' {
             BeforeEach {
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+                Mock -CommandName Connect-SQL -MockWith { return $mockConnectSQL } -Verifiable
             }
 
             Context 'When the system is not in the desired state, and database does not exist' {
@@ -220,7 +240,7 @@ try
 
             Context 'When the system is not in the desired state' {
                 It 'Should not throw when calling the alter method when desired recovery model should be set' {
-                    $mockExpectedRecoveryModel = 'Full'
+                    $mockConnectSQL.Databases.Where{$_.Name -eq 'AdventureWorks'}[0].mockExpectedRecoveryModel = 'Full'
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         Name          = 'AdventureWorks'
@@ -228,27 +248,6 @@ try
                     }
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
-                }
-
-                It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
-                }
-            }
-
-            Context 'When the system is not in the desired state' {
-                It 'Should throw when calling the alter method when desired recovery model should be set' {
-                    $mockInvalidOperationForAlterMethod = $true
-                    $mockExpectedRecoveryModel = 'Full'
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        Name          = 'AdventureWorks'
-                        RecoveryModel = 'Full'
-                    }
-
-                    $throwInvalidOperation = ('Exception calling "Alter" with "0" argument(s): ' +
-                        '"Mock Alter Method was called with invalid operation."')
-
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
                 }
 
                 It 'Should call the mock function Connect-SQL' {
