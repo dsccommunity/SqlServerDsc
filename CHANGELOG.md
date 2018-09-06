@@ -11,6 +11,8 @@
   - Included configuration for SqlAlwaysOnService to enable
     HADR on each node to avoid confusion
     ([issue #1182](https://github.com/PowerShell/SqlServerDsc/issues/1182)).
+- Changes to SqlServerDatabaseMail
+  - Minor update to Ensure parameter description in the README.md.
 
 ## 12.0.0.0
 
