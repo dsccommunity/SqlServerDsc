@@ -12,7 +12,7 @@ $ConfigurationData = @{
     AllNodes = @(
         @{
             NodeName              = '*'
-            SQLInstanceName       = 'MSSQLSERVER'
+            InstanceName       = 'MSSQLSERVER'
             AvailabilityGroupName = 'TestAG'
         },
 
@@ -38,7 +38,8 @@ Configuration Example
 
     Import-DscResource -ModuleName SqlServerDsc
 
-    Node $AllNodes.NodeName {
+    Node $AllNodes.NodeName
+    {
         # Adding the required service account to allow the cluster to log into SQL
         SqlServerLogin AddNTServiceClusSvc
         {
@@ -46,7 +47,7 @@ Configuration Example
             Name                 = 'NT SERVICE\ClusSvc'
             LoginType            = 'WindowsUser'
             ServerName           = $Node.NodeName
-            InstanceName         = $Node.SQLInstanceName
+            InstanceName         = $Node.InstanceName
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
@@ -56,7 +57,7 @@ Configuration Example
             DependsOn            = '[SqlServerLogin]AddNTServiceClusSvc'
             Ensure               = 'Present'
             ServerName           = $Node.NodeName
-            InstanceName         = $Node.SqlInstanceName
+            InstanceName         = $Node.InstanceName
             Principal            = 'NT SERVICE\ClusSvc'
             Permission           = 'AlterAnyAvailabilityGroup', 'ViewServerState'
             PsDscRunAsCredential = $SqlAdministratorCredential
@@ -69,7 +70,15 @@ Configuration Example
             Ensure               = 'Present'
             Port                 = 5022
             ServerName           = $Node.NodeName
-            InstanceName         = $Node.SQLInstanceName
+            InstanceName         = $Node.InstanceName
+            PsDscRunAsCredential = $SqlAdministratorCredential
+        }
+
+        SqlAlwaysOnService EnableHADR
+        {
+            Ensure               = 'Present'
+            InstanceName         = $Node.InstanceName
+            ServerName           = $Node.NodeName
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
@@ -80,9 +89,9 @@ Configuration Example
             {
                 Ensure               = 'Present'
                 Name                 = $Node.AvailabilityGroupName
-                InstanceName         = $Node.SQLInstanceName
+                InstanceName         = $Node.InstanceName
                 ServerName           = $Node.NodeName
-                DependsOn            = '[SqlServerEndpoint]HADREndpoint', '[SqlServerPermission]AddNTServiceClusSvcPermissions'
+                DependsOn            = '[SqlAlwaysOnService]EnableHADR', '[SqlServerEndpoint]HADREndpoint', '[SqlServerPermission]AddNTServiceClusSvcPermissions'
                 PsDscRunAsCredential = $SqlAdministratorCredential
             }
         }
@@ -96,9 +105,10 @@ Configuration Example
                 Name                       = $Node.NodeName
                 AvailabilityGroupName      = $Node.AvailabilityGroupName
                 ServerName                 = $Node.NodeName
-                InstanceName               = $Node.SQLInstanceName
+                InstanceName               = $Node.InstanceName
                 PrimaryReplicaServerName   = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).NodeName
-                PrimaryReplicaInstanceName = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).SQLInstanceName
+                PrimaryReplicaInstanceName = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).InstanceName
+                DependsOn                  = '[SqlAlwaysOnService]EnableHADR'
             }
         }
 
@@ -109,7 +119,7 @@ Configuration Example
                 AvailabilityGroupName   = $Node.AvailabilityGroupName
                 BackupPath              = '\\SQL1\AgInitialize'
                 DatabaseName            = 'DB*', 'AdventureWorks'
-                InstanceName            = $Node.SQLInstanceName
+                InstanceName            = $Node.InstanceName
                 ServerName              = $Node.NodeName
                 Ensure                  = 'Present'
                 ProcessOnlyOnActiveNode = $true

@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Changes to SqlAg, SqlAGDatabase, and SqlAGReplica examples
+  - Included configuration for SqlAlwaysOnService to enable
+    HADR on each node to avoid confusion
+    ([issue #1182](https://github.com/PowerShell/SqlServerDsc/issues/1182)).
+
 ## 12.0.0.0
 
 - Changes to SqlServerDatabaseMail
