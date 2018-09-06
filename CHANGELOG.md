@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Changes to SqlServerDsc
+  - Add support for validating the code with the DSC ResourceKit Script Analyzer
+    rules, both in Visual Studio Code and directly using `Invoke-ScriptAnalyzer`.
 - Changes to SqlAg, SqlAGDatabase, and SqlAGReplica examples
   - Included configuration for SqlAlwaysOnService to enable
     HADR on each node to avoid confusion
