@@ -7,6 +7,7 @@
     rules, both in Visual Studio Code and directly using `Invoke-ScriptAnalyzer`.
   - Opt-in for common test "Common Tests - Validate Markdown Links".
   - Updated broken links in `\README.md` and in `\Examples\README.md`
+  - Opt-in for common test 'Common Tests - Relative Path Length'.
 - Changes to SqlAg, SqlAGDatabase, and SqlAGReplica examples
   - Included configuration for SqlAlwaysOnService to enable
     HADR on each node to avoid confusion
