@@ -241,14 +241,21 @@ function Get-EncryptedConnectionSettings
     $sqlInstance = Get-Item 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL'
     if($sqlInstance)
     {
-        $sqlInstanceId = $sqlInstance.GetValue($InstanceName)
+        try
+        {
+            $sqlInstanceId = (Get-ItemProperty -Path $sqlInstance.PSPath -Name $InstanceName).$InstanceName
+        }
+        catch
+        {
+            throw "Instance not found."
+        }
         $superSocketNetLib = Get-Item "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$sqlInstanceId\MSSQLServer\SuperSocketNetLib"
 
         if($superSocketNetLib)
         {
             return @{
-                ForceEncryption = $superSocketNetLib.GetValue('ForceEncryption')
-                Certificate     = $superSocketNetLib.GetValue('Certificate')
+                ForceEncryption = (Get-ItemProperty -Path $superSocketNetLib.PSPath -Name "ForceEncryption").ForceEncryption
+                Certificate     = (Get-ItemProperty -Path $superSocketNetLib.PSPath -Name "Certificate").Certificate
             }
         }
     }
@@ -290,13 +297,21 @@ function Set-EncryptedConnectionSettings
     $sqlInstance = Get-Item 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL'
     if($sqlInstance)
     {
-        $sqlInstanceId = $sqlInstance.GetValue($InstanceName)
+        try
+        {
+            $sqlInstanceId = (Get-ItemProperty -Path $sqlInstance.PSPath -Name $InstanceName).$InstanceName
+        }
+        catch
+        {
+            throw "Instance not found."
+        }
+
         $superSocketNetLib = Get-Item "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$sqlInstanceId\MSSQLServer\SuperSocketNetLib"
 
         if($superSocketNetLib)
         {
-            $superSocketNetLib.SetValue('Certificate', $Thumbprint)
-            $superSocketNetLib.SetValue('ForceEncryption', [int]$ForceEncryption)
+            Set-ItemProperty -Path $superSocketNetLib.PSPath -Name 'Certificate' -Value $Thumbprint
+            Set-ItemProperty -Path $superSocketNetLib.PSPath -Name 'ForceEncryption' -Value $([int]$ForceEncryption)
         }
     }
 }
