@@ -1,5 +1,5 @@
 $script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceName = 'MSFT_SqlEncryptedConnection'
+$script:DSCResourceName = 'MSFT_SqlServerSecureConnection'
 
 #region HEADER
 
@@ -20,58 +20,6 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 #endregion HEADER
 
-class MockedSubClass
-{
-    [hashtable]$Access = @{
-        IdentityReference = "Everyone"
-        FileSystemRights = @{
-            value__ = '131209'
-        }
-    }    
-
-    [void] AddAccessRule([System.Security.AccessControl.FileSystemAccessRule] $object)
-    {
-
-    }
-}
-
-class MockedItem
-{
-    [string] $ThumbPrint = '12345678'
-    [hashtable]$PrivateKey = @{
-        CspKeyContainerInfo = @{
-            UniqueKeyContainerName = "key"
-        }
-    }
-
-    [MockedSubClass] GetAccessControl()
-    {
-        return [MockedSubClass]::new()
-    }
-
-    [string] GetValue([string] $key)
-    {
-        if($key -eq "ForceEncryption")
-        {
-            return '1'
-        }
-        elseif($key -eq "Certificate")
-        {
-            return '12345678'
-        }
-        elseif($key -eq "NamedInstance")
-        {
-            return 'NamedInstance'
-        }
-        return "-1"
-    }
-
-    [void] SetValue([string] $key, [string] $value)
-    {
-
-    }
-}
-
 function Invoke-TestSetup
 {
     Import-Module -Name (Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests') -ChildPath 'Unit') -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Global -Force
@@ -88,13 +36,65 @@ try
     Invoke-TestSetup
 
     InModuleScope $script:DSCResourceName {
+        class MockedAccessControl
+        {
+            [hashtable]$Access = @{
+                IdentityReference = "Everyone"
+                FileSystemRights = @{
+                    value__ = '131209'
+                }
+            }
+
+            [void] AddAccessRule([System.Security.AccessControl.FileSystemAccessRule] $object)
+            {
+
+            }
+        }
+
+        class MockedGetItem
+        {
+            [string] $ThumbPrint = '12345678'
+            [hashtable]$PrivateKey = @{
+                CspKeyContainerInfo = @{
+                    UniqueKeyContainerName = "key"
+                }
+            }
+
+            [MockedAccessControl] GetAccessControl()
+            {
+                return [MockedAccessControl]::new()
+            }
+
+            [string] GetValue([string] $key)
+            {
+                if($key -eq "ForceEncryption")
+                {
+                    return '1'
+                }
+                elseif($key -eq "Certificate")
+                {
+                    return '12345678'
+                }
+                elseif($key -eq "NamedInstance")
+                {
+                    return 'NamedInstance'
+                }
+                return "-1"
+            }
+
+            [void] SetValue([string] $key, [string] $value)
+            {
+
+            }
+        }
+
         $mockNamedInstanceName   = 'INSTANCE'
         $mockDefaultInstanceName = 'MSSQLSERVER'
         $mockThumbprint          = '123456789'
         $mockServiceAccount      = 'SqlSvc'
 
 
-        Describe "SqlEncryptedConnection\Get-TargetResource" -Tag 'Get' {
+        Describe "SqlServerSecureConnection\Get-TargetResource" -Tag 'Get' {
             BeforeAll {
                 $mockDynamic_SqlBuildVersion = '13.0.4001.0'
 
@@ -139,7 +139,7 @@ try
             }
         }
 
-        Describe "SqlEncryptedConnection\Set-TargetResource" -Tag 'Set' {
+        Describe "SqlServerSecureConnection\Set-TargetResource" -Tag 'Set' {
             BeforeAll {
                 $defaultParameters = @{
                     InstanceName    = $mockNamedInstanceName
@@ -257,7 +257,7 @@ try
             }
         }
 
-        Describe "SqlEncryptedConnection\Test-TargetResource" -Tag 'Test' {
+        Describe "SqlServerSecureConnection\Test-TargetResource" -Tag 'Test' {
             Context 'When the system is not in the desired state' {
                 Context 'When ForceEncryption is not configured properly' {
                     BeforeAll {
@@ -406,11 +406,11 @@ try
             }
         }
 
-        Describe "SqlRS\Get-EncryptedConnectionSettings" -Tag 'Helper' {
+        Describe "SqlServerSecureConnection\Get-EncryptedConnectionSettings" -Tag 'Helper' {
             Context 'When calling a method that execute successfully' {
                 BeforeAll {
                     Mock -CommandName "Get-Item" -MockWith {
-                        return [MockedItem]::new()
+                        return [MockedGetItem]::new()
                     }
                 }
 
@@ -435,11 +435,11 @@ try
             }
         }
 
-        Describe "SqlRS\Set-EncryptedConnectionSettings" -Tag 'Helper' {
+        Describe "SqlServerSecureConnection\Set-EncryptedConnectionSettings" -Tag 'Helper' {
             Context 'When calling a method that execute successfully' {
                 BeforeAll {
                     Mock -CommandName "Get-Item" -MockWith {
-                        return [MockedItem]::new()
+                        return [MockedGetItem]::new()
                     }
                 }
 
@@ -461,15 +461,15 @@ try
             }
         }
 
-        Describe "SqlRS\Test-CertificatePermission" -Tag 'Helper' {
+        Describe "SqlServerSecureConnection\Test-CertificatePermission" -Tag 'Helper' {
             Context 'When calling a method that execute successfully' {
                 BeforeAll {
                     Mock -CommandName "Get-Item" -MockWith {
-                        return [MockedItem]::new()
+                        return [MockedGetItem]::new()
                     }
 
                     Mock -CommandName "Get-ChildItem" -MockWith {
-                        return [MockedItem]::new()
+                        return [MockedGetItem]::new()
                     }
                 }
 
@@ -496,15 +496,15 @@ try
             }
         }
 
-        Describe "SqlRS\Set-CertificatePermission" -Tag 'Helper' {
+        Describe "SqlServerSecureConnection\Set-CertificatePermission" -Tag 'Helper' {
             Context 'When calling a method that execute successfully' {
                 BeforeAll {
                     Mock -CommandName "Get-Item" -MockWith {
-                        return [MockedItem]::new()
+                        return [MockedGetItem]::new()
                     }
 
                     Mock -CommandName "Get-ChildItem" -MockWith {
-                        return [MockedItem]::new()
+                        return [MockedGetItem]::new()
                     }
 
                     Mock -CommandName "Set-Acl" -MockWith {}

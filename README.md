@@ -129,7 +129,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   to manage database recovery model.
 * [**SqlDatabaseRole**](#sqldatabaserole) resource to manage SQL
   database roles.
-* [**SQLEncryptedConnection**](#sqlencryptedconnection) resource to enable encrypted SQL connections.
+* [**SqlServerSecureConnection**](#sqlserversecureconnection) resource to enable encrypted SQL connections.
 * [**SqlRS**](#sqlrs) configures SQL Server Reporting.
   Services to use a database engine in another instance.
 * [**SqlScript**](#sqlscript) resource to extend DSC Get/Set/Test
@@ -703,7 +703,7 @@ Read more about database role in this article [CREATE ROLE (Transact-SQL)](https
 
 All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseRole).
 
-### SqlEncryptedConnection
+### SqlServerSecureConnection
 
 Configures SQL connections to be encrypted.
 Read more about encrypted connections in this article [Enable Encrypted Connections](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/enable-encrypted-connections-to-the-database-engine).
@@ -737,11 +737,11 @@ Read more about encrypted connections in this article [Enable Encrypted Connecti
 
 #### Examples
 
-* [Default configuration](Examples/Resources/SqlEncryptedConnection/1-DefaultConfiguration.ps1).
+* [Default configuration](Examples/Resources/SqlServerSecureConnection/1-DefaultConfiguration.ps1).
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlEncryptedConnection).
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerSecureConnection).
 
 ### SqlRS
 
