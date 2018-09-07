@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+- Changes to SqlServerDsc
+  - Add support for validating the code with the DSC ResourceKit Script Analyzer
+    rules, both in Visual Studio Code and directly using `Invoke-ScriptAnalyzer`.
+  - Opt-in for common test "Common Tests - Validate Markdown Links".
+  - Updated broken links in `\README.md` and in `\Examples\README.md`
+  - Opt-in for common test 'Common Tests - Relative Path Length'.
+- Changes to SqlAg, SqlAGDatabase, and SqlAGReplica examples
+  - Included configuration for SqlAlwaysOnService to enable
+    HADR on each node to avoid confusion
+    ([issue #1182](https://github.com/PowerShell/SqlServerDsc/issues/1182)).
+- Changes to SqlServerDatabaseMail
+  - Minor update to Ensure parameter description in the README.md.
+
+## 12.0.0.0
+
 - Changes to SqlServerDatabaseMail
   - DisplayName is now properly treated as display name
     for the originating email address ([issue #1200](https://github.com/PowerShell/SqlServerDsc/issue/1200)).
