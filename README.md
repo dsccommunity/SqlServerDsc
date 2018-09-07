@@ -129,7 +129,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   to manage database recovery model.
 * [**SqlDatabaseRole**](#sqldatabaserole) resource to manage SQL
   database roles.
-* [**SqlServerSecureConnection**](#sqlserversecureconnection) resource to enable encrypted SQL connections.
+* [**SqlServerSecureConnection**](#sqlserversecureconnection) resource to
+  enable encrypted SQL connections.
 * [**SqlRS**](#sqlrs) configures SQL Server Reporting.
   Services to use a database engine in another instance.
 * [**SqlScript**](#sqlscript) resource to extend DSC Get/Set/Test

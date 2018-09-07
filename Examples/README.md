@@ -34,6 +34,7 @@ These are the links to the examples for each individual resource.
 - [SqlServerPermission](Resources/SqlServerPermission)
 - [SqlServerReplication](Resources/SqlServerReplication)
 - [SqlServerRole](Resources/SqlServerRole)
+- [SqlServerSecureConnection](Resources/SqlServerSecureConnection)
 - [SqlServiceAccount](Resources/SqlServiceAccount)
 - [SqlSetup](Resources/SqlSetup)
 - [SqlWaitForAG](Resources/SqlWaitForAG)

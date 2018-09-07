@@ -119,19 +119,19 @@ function Set-TargetResource
     {
         if ($ForceEncryption -ne $encryptionState.ForceEncryption -or $Thumbprint -ne $encryptionState.Thumbprint)
         {
-            Set-EncryptedConnectionSettings -InstanceName $InstanceName -Certificate $Thumbprint -ForceEncryption $ForceEncryption
+            Set-EncryptedConnectionSettings -InstanceName $InstanceName -Thumbprint $Thumbprint -ForceEncryption $ForceEncryption
         }
 
-        if ((Test-CertificatePermission -ThumbPrint $Thumbprint -ServiceAccount $ServiceAccount) -eq $false)
+        if ((Test-CertificatePermission -Thumbprint $Thumbprint -ServiceAccount $ServiceAccount) -eq $false)
         {
-            Set-CertificatePermission -ThumbPrint $Thumbprint -ServiceAccount $ServiceAccount
+            Set-CertificatePermission -Thumbprint $Thumbprint -ServiceAccount $ServiceAccount
         }
     }
     else
     {
         if ($encryptionState.ForceEncryption -eq $true)
         {
-            Set-EncryptedConnectionSettings -InstanceName $InstanceName -Certificate '' -ForceEncryption $false
+            Set-EncryptedConnectionSettings -InstanceName $InstanceName -Thumbprint '' -ForceEncryption $false
         }
     }
 
@@ -204,7 +204,7 @@ function Test-TargetResource
             return $false
         }
 
-        if ((Test-CertificatePermission -ThumbPrint $Thumbprint -ServiceAccount $ServiceAccount) -eq $false)
+        if ((Test-CertificatePermission -Thumbprint $Thumbprint -ServiceAccount $ServiceAccount) -eq $false)
         {
             return $false
         }
@@ -262,7 +262,7 @@ function Get-EncryptedConnectionSettings
     .PARAMETER InstanceName
         Name of the SQL Server Instance to be configured.
 
-    .PARAMETER Certificate
+    .PARAMETER Thumbprint
         Thumbprint of the certificate being used for encryption.
 
     .PARAMETER ForceEncryption
@@ -280,7 +280,7 @@ function Set-EncryptedConnectionSettings
         [Parameter(Mandatory = $true)]
         [AllowEmptyString()]
         [string]
-        $Certificate,
+        $Thumbprint,
 
         [Parameter(Mandatory = $true)]
         [boolean]
@@ -295,7 +295,7 @@ function Set-EncryptedConnectionSettings
 
         if($superSocketNetLib)
         {
-            $superSocketNetLib.SetValue('Certificate', $ThumbPrint)
+            $superSocketNetLib.SetValue('Certificate', $Thumbprint)
             $superSocketNetLib.SetValue('ForceEncryption', [int]$ForceEncryption)
         }
     }
@@ -305,7 +305,7 @@ function Set-EncryptedConnectionSettings
     .SYNOPSIS
         Gives the service account read permissions to the private key on the certificate.
 
-    .PARAMETER Certificate
+    .PARAMETER Thumbprint
         Thumbprint of the certificate being used for encryption.
 
     .PARAMETER ServiceAccount
@@ -319,7 +319,7 @@ function Set-CertificatePermission
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]
-        $ThumbPrint,
+        $Thumbprint,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -327,7 +327,7 @@ function Set-CertificatePermission
         $ServiceAccount
     )
 
-    $cert = Get-ChildItem -Path cert:\LocalMachine\My | Where-Object -FilterScript { $PSItem.ThumbPrint -eq $ThumbPrint }
+    $cert = Get-ChildItem -Path cert:\LocalMachine\My | Where-Object -FilterScript { $PSItem.Thumbprint -eq $Thumbprint }
 
     # Specify the user, the permissions and the permission type
     $permission = "$($ServiceAccount)", "Read", "Allow"
@@ -359,7 +359,7 @@ function Set-CertificatePermission
     .SYNOPSIS
         Test if the service account has read permissions to the private key on the certificate.
 
-    .PARAMETER Certificate
+    .PARAMETER Thumbprint
         Thumbprint of the certificate being used for encryption.
 
     .PARAMETER ServiceAccount
@@ -374,7 +374,7 @@ function Test-CertificatePermission
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]
-        $ThumbPrint,
+        $Thumbprint,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -383,7 +383,7 @@ function Test-CertificatePermission
     )
 
     $cert = Get-ChildItem -Path cert:\LocalMachine\My
-    $cert = $cert | Where-Object -FilterScript { $PSItem.ThumbPrint -eq $ThumbPrint }
+    $cert = $cert | Where-Object -FilterScript { $PSItem.Thumbprint -eq $Thumbprint }
 
     # Specify the user, the permissions and the permission type
     $permission = "$($ServiceAccount)", "Read", "Allow"

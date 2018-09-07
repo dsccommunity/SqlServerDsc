@@ -53,7 +53,7 @@ try
 
         class MockedGetItem
         {
-            [string] $ThumbPrint = '12345678'
+            [string] $Thumbprint = '12345678'
             [hashtable]$PrivateKey = @{
                 CspKeyContainerInfo = @{
                     UniqueKeyContainerName = "key"
@@ -444,7 +444,7 @@ try
                 }
 
                 It 'Should not throw' {
-                   { Set-EncryptedConnectionSettings -InstanceName 'NamedInstance' -Certificate '12345678' -ForceEncryption $true } | Should -Not -Throw
+                   { Set-EncryptedConnectionSettings -InstanceName 'NamedInstance' -Thumbprint '12345678' -ForceEncryption $true } | Should -Not -Throw
                 }
             }
 
@@ -456,7 +456,7 @@ try
                 }
 
                 It 'Should not throw' {
-                   { Set-EncryptedConnectionSettings -InstanceName 'NamedInstance' -Certificate '12345678' -ForceEncryption $true } | Should -Not -Throw
+                   { Set-EncryptedConnectionSettings -InstanceName 'NamedInstance' -Thumbprint '12345678' -ForceEncryption $true } | Should -Not -Throw
                 }
             }
         }
@@ -474,7 +474,7 @@ try
                 }
 
                 It 'Should return True' {
-                    $result = Test-CertificatePermission -ThumbPrint '12345678' -ServiceAccount 'Everyone'
+                    $result = Test-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone'
                     $result | Should -be $true
                 }
             }
@@ -490,7 +490,7 @@ try
                 }
 
                 It 'Should return False' {
-                   $result = Test-CertificatePermission -ThumbPrint '12345678' -ServiceAccount 'Everyone'
+                   $result = Test-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone'
                     $result | Should -be $false
                 }
             }
@@ -511,7 +511,7 @@ try
                 }
 
                 It 'Should not throw' {
-                    { Set-CertificatePermission -ThumbPrint '12345678' -ServiceAccount 'Everyone' } | Should -Not -Throw
+                    { Set-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone' } | Should -Not -Throw
                 }
             }
 
@@ -526,7 +526,7 @@ try
                 }
 
                 It 'Should throw' {
-                   { Set-CertificatePermission -ThumbPrint '12345678' -ServiceAccount 'Everyone' } | Should -Throw
+                   { Set-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone' } | Should -Throw
                 }
             }
         }
