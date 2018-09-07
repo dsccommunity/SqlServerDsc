@@ -38,6 +38,7 @@ $TestEnvironment = Initialize-TestEnvironment `
 $mockSqlServicePrimaryAccountUserName = "$env:COMPUTERNAME\svc-SqlPrimary"
 #$mockSqlServicePrimaryCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlServicePrimaryAccountUserName, $mockSqlServicePrimaryAccountPassword
 
+$null = New-SQLSelfSignedCertificate
 $mockSqlPrivateKeyPassword = ConvertTo-SecureString -String '1234' -AsPlainText -Force
 $mockSqlPriavteCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'Ignore', $mockSqlPrivateKeyPassword
 Import-PfxCertificate -FilePath $env:SqlPrivateCertificatePath -Password $mockSqlPrivateKeyPassword -Exportable -CertStoreLocation 'Cert:\LocalMachine\Root'
