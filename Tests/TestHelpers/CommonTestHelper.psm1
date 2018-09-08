@@ -260,7 +260,7 @@ function New-SQLSelfSignedCertificate
             $_.Subject -eq "CN=$certificateSubject"
         } | Select-Object -First 1
 
-    if (-not $certificate)
+    if ($true)
     {
         <#
                 There are build workers still on Windows Server 2012 R2 so let's
