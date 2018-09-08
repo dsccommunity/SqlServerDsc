@@ -8,7 +8,7 @@
 param()
 
 $script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceFriendlyName = 'SqlScriptQuery'
+$script:DSCResourceFriendlyName = 'SqlServerSecureConnection'
 $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 if (-not $env:APPVEYOR -eq $true)
@@ -40,7 +40,6 @@ $mockSqlServicePrimaryAccountUserName = "$env:COMPUTERNAME\svc-SqlPrimary"
 
 $null = New-SQLSelfSignedCertificate
 $mockSqlPrivateKeyPassword = ConvertTo-SecureString -String '1234' -AsPlainText -Force
-$mockSqlPriavteCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'Ignore', $mockSqlPrivateKeyPassword
 Import-PfxCertificate -FilePath $env:SqlPrivateCertificatePath -Password $mockSqlPrivateKeyPassword -Exportable -CertStoreLocation 'Cert:\LocalMachine\Root'
 try
 {

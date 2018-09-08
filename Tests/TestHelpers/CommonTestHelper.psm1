@@ -252,7 +252,7 @@ function New-SQLSelfSignedCertificate
     $sqlPublicCertificatePath = Join-Path -Path $env:temp -ChildPath 'SqlPublicKey.cer'
     $sqlPrivateCertificatePath = Join-Path -Path $env:temp -ChildPath 'SqlPrivateKey.cer'
 
-    $certificateSubject = 'TestSqlEncryptionCert'
+    $certificateSubject = $env:COMPUTERNAME
 
     # Look if there already is an existing certificate.
     $certificate = Get-ChildItem -Path 'cert:\LocalMachine\My' |
@@ -293,7 +293,7 @@ function New-SQLSelfSignedCertificate
     }
 
     # Export the public key certificate
-    Export-Certificate -Cert $certificate -FilePath $dscPublicCertificatePath -Force
+    Export-Certificate -Cert $certificate -FilePath $sqlPublicCertificatePath -Force
 
     # Export the private key certificate
     $sqlPriavteKeyPassword = ConvertTo-SecureString -String "1234" -Force -AsPlainText
