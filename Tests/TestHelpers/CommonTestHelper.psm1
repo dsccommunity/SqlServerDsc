@@ -279,7 +279,6 @@ function New-SQLSelfSignedCertificate
                 Path               = $sqlPrivateCertificatePath
                 Password           = $sqlPriavteKeyPassword
                 Exportable         = $true
-                StoreLocation      = 'LocalMachine'
                 KeyLength          = 2048
                 ProviderName       = 'Microsoft Enhanced Cryptographic Provider v1.0'
                 AlgorithmName      = 'RSA'
