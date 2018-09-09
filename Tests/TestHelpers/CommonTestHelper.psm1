@@ -251,6 +251,7 @@ function New-SQLSelfSignedCertificate
 {
     $sqlPublicCertificatePath = Join-Path -Path $env:temp -ChildPath 'SqlPublicKey.cer'
     $sqlPrivateCertificatePath = Join-Path -Path $env:temp -ChildPath 'SqlPrivateKey.cer'
+    $sqlPriavteKeyPassword = ConvertTo-SecureString -String "1234" -Force -AsPlainText
 
     $certificateSubject = $env:COMPUTERNAME
 
@@ -275,6 +276,9 @@ function New-SQLSelfSignedCertificate
                 KeyUsage           = 'KeyEncipherment, DataEncipherment'
                 SAN                = "dns:$certificateSubject"
                 FriendlyName       = 'Sql Encryption certificate'
+                Path               = $sqlPrivateCertificatePath
+                Password           = $sqlPriavteKeyPassword
+                Exportable         = $true
                 StoreLocation      = 'LocalMachine'
                 KeyLength          = 2048
                 ProviderName       = 'Microsoft Enhanced Cryptographic Provider v1.0'
@@ -282,7 +286,7 @@ function New-SQLSelfSignedCertificate
                 SignatureAlgorithm = 'SHA256'
             }
 
-            $certificate = New-SelfSignedCertificateEx @newSelfSignedCertificateExParameters -Exportable
+            $certificate = New-SelfSignedCertificateEx @newSelfSignedCertificateExParameters
 
         Write-Info -Message ('Created self-signed certificate ''{0}'' with thumbprint ''{1}''.' -f $certificate.Subject, $certificate.Thumbprint)
     }
@@ -290,17 +294,6 @@ function New-SQLSelfSignedCertificate
     {
         Write-Info -Message ('Using self-signed certificate ''{0}'' with thumbprint ''{1}''.' -f $certificate.Subject, $certificate.Thumbprint)
     }
-
-    # Export the public key certificate
-    Export-Certificate -Cert $certificate -FilePath $sqlPublicCertificatePath -Force
-
-    # Export the private key certificate
-    $sqlPriavteKeyPassword = ConvertTo-SecureString -String "1234" -Force -AsPlainText
-    Export-PfxCertificate -FilePath $sqlPrivateCertificatePath -Password $sqlPriavteKeyPassword -Cert $certificate
-
-    # Update a machine and session environment variable with the path to the public certificate.
-    Set-EnvironmentVariable -Name 'SqlPublicCertificatePath' -Value $sqlPublicCertificatePath -Machine
-    Write-Info -Message ('Environment variable $env:SqlPublicCertificatePath set to ''{0}''' -f $env:SqlPublicCertificatePath)
 
     # Update a machine and session environment variable with the path to the private certificate.
     Set-EnvironmentVariable -Name 'SqlPrivateCertificatePath' -Value $sqlPrivateCertificatePath -Machine
