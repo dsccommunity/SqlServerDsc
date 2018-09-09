@@ -275,7 +275,6 @@ function New-SQLSelfSignedCertificate
                 KeyUsage           = 'KeyEncipherment, DataEncipherment'
                 SAN                = "dns:$certificateSubject"
                 FriendlyName       = 'Sql Encryption certificate'
-                Exportable         = $true
                 StoreLocation      = 'LocalMachine'
                 KeyLength          = 2048
                 ProviderName       = 'Microsoft Enhanced Cryptographic Provider v1.0'
@@ -283,7 +282,7 @@ function New-SQLSelfSignedCertificate
                 SignatureAlgorithm = 'SHA256'
             }
 
-            $certificate = New-SelfSignedCertificateEx @newSelfSignedCertificateExParameters
+            $certificate = New-SelfSignedCertificateEx @newSelfSignedCertificateExParameters -Exportable
 
         Write-Info -Message ('Created self-signed certificate ''{0}'' with thumbprint ''{1}''.' -f $certificate.Subject, $certificate.Thumbprint)
     }
