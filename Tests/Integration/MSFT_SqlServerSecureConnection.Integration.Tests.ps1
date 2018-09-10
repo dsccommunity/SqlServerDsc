@@ -47,8 +47,6 @@ try
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
     . $configFile
 
-    $mockThumbprint      = $ConfigurationData.AllNodes.Thumbprint
-
     Describe "$($script:DSCResourceName)_Integration" {
         BeforeAll {
             $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
@@ -94,7 +92,7 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resultObject.Thumbprint | Should -Be $mockThumbprint
+                $resultObject.Thumbprint | Should -Be $env:SqlCertificateThumbprint
                 $resourceCurrentState.ForceEncryption | Should -Be $true
             }
         }

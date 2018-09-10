@@ -11,7 +11,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerSecureCon
         Name of the SQL Server instance to be configured.
 
     .PARAMETER Thumbprint
-        Thumbprint of the certificate being used for encryption. If parameter Ensure is set to 'Absent', then the parameter Certificate can be set to an empty string.
+        Thumbprint of the certificate being used for encryption. If parameter Ensure is set to 'Absent', then the parameter Thumbprint can be set to an empty string.
 
     .PARAMETER ForceEncryption
         If all connections to the SQL instance should be encrypted. If this parameter is not assigned a value, the default is that all connections must be encrypted.
@@ -34,6 +34,7 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
+        [AllowEmptyString()]
         $Thumbprint,
 
         [Parameter()]
@@ -79,7 +80,7 @@ function Get-TargetResource
         Name of the SQL Server instance to be configured.
 
     .PARAMETER Thumbprint
-        Thumbprint of the certificate being used for encryption. If parameter Ensure is set to 'Absent', then the parameter Certificate can be set to an empty string.
+        Thumbprint of the certificate being used for encryption. If parameter Ensure is set to 'Absent', then the parameter Thumbprint can be set to an empty string.
 
     .PARAMETER ForceEncryption
         If all connections to the SQL instance should be encrypted. If this parameter is not assigned a value, the default is that all connections must be encrypted.
@@ -101,6 +102,7 @@ function Set-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
+        [AllowEmptyString()]
         $Thumbprint,
 
         [Parameter()]
@@ -174,7 +176,7 @@ function Set-TargetResource
         Name of the SQL Server instance to be configured.
 
     .PARAMETER Thumbprint
-        Thumbprint of the certificate being used for encryption. If parameter Ensure is set to 'Absent', then the parameter Certificate can be set to an empty string.
+        Thumbprint of the certificate being used for encryption. If parameter Ensure is set to 'Absent', then the parameter Thumbprint can be set to an empty string.
 
     .PARAMETER ForceEncryption
         If all connections to the SQL instance should be encrypted. If this parameter is not assigned a value, the default is, set to true, that all connections must be encrypted.
@@ -197,6 +199,7 @@ function Test-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
+        [AllowEmptyString()]
         $Thumbprint,
 
         [Parameter()]
