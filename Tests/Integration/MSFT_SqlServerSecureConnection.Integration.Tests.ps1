@@ -92,7 +92,7 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resultObject.Thumbprint | Should -Be $env:SqlCertificateThumbprint
+                $resourceCurrentState.Thumbprint | Should -Be $env:SqlCertificateThumbprint
                 $resourceCurrentState.ForceEncryption | Should -Be $true
             }
         }
