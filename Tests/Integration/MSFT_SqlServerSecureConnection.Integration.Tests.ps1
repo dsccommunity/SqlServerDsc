@@ -64,7 +64,7 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        $SqlServicePrimaryUserName = $mockSqlServicePrimaryAccountUserName
+                        SqlServicePrimaryUserName = $mockSqlServicePrimaryAccountUserName
                         OutputPath                 = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData          = $ConfigurationData
@@ -111,7 +111,7 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        $SqlServicePrimaryUserName = $mockSqlServicePrimaryAccountUserName
+                        SqlServicePrimaryUserName = $mockSqlServicePrimaryAccountUserName
                         OutputPath        = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData = $ConfigurationData
