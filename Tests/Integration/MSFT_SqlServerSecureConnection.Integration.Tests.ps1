@@ -47,11 +47,7 @@ try
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
     . $configFile
 
-    #$mockGetQuery      = $ConfigurationData.AllNodes.GetQuery
-    #$mockTestQuery     = $ConfigurationData.AllNodes.TestQuery
-    #$mockSetQuery      = $ConfigurationData.AllNodes.SetQuery
-    #$mockDatabase1Name = $ConfigurationData.AllNodes.Database1Name
-    #$mockDatabase2Name = $ConfigurationData.AllNodes.Database2Name
+    $mockThumbprint      = $ConfigurationData.AllNodes.Thumbprint
 
     Describe "$($script:DSCResourceName)_Integration" {
         BeforeAll {
@@ -98,14 +94,12 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                #$resultObject.Name | Should -Be $mockDatabase1Name
-                #$resourceCurrentState.GetQuery | Should -Be $mockGetQuery
-                #$resourceCurrentState.TestQuery | Should -Be $mockTestQuery
-                #$resourceCurrentState.SetQuery | Should -Be $mockSetQuery
+                $resultObject.Thumbprint | Should -Be $mockThumbprint
+                $resourceCurrentState.ForceEncryption | Should -Be $true
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)__RemoveSecureConnection_Config"
+        $configurationName = "$($script:DSCResourceName)_RemoveSecureConnection_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -145,10 +139,8 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                #$resourceCurrentState.GetResult | Should -Match $mockDatabase2Name
-                #$resourceCurrentState.GetQuery | Should -Be $mockGetQuery
-                #$resourceCurrentState.TestQuery | Should -Be $mockTestQuery
-                #$resourceCurrentState.SetQuery | Should -Be $mockSetQuery
+                $resultObject.Thumbprint | Should -BeNullOrEmpty
+                $resourceCurrentState.ForceEncryption | Should -Be $false
             }
         }
     }

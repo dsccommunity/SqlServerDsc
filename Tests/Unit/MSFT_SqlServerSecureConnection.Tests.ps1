@@ -54,6 +54,7 @@ try
         class MockedGetItem
         {
             [string] $Thumbprint = '12345678'
+            [string] $PSPath = 'PathToItem'
             [hashtable]$PrivateKey = @{
                 CspKeyContainerInfo = @{
                     UniqueKeyContainerName = "key"
@@ -64,35 +65,12 @@ try
             {
                 return [MockedAccessControl]::new()
             }
-
-            [string] GetValue([string] $key)
-            {
-                if($key -eq "ForceEncryption")
-                {
-                    return '1'
-                }
-                elseif($key -eq "Certificate")
-                {
-                    return '12345678'
-                }
-                elseif($key -eq "NamedInstance")
-                {
-                    return 'NamedInstance'
-                }
-                return "-1"
-            }
-
-            [void] SetValue([string] $key, [string] $value)
-            {
-
-            }
         }
 
         $mockNamedInstanceName   = 'INSTANCE'
         $mockDefaultInstanceName = 'MSSQLSERVER'
         $mockThumbprint          = '123456789'
         $mockServiceAccount      = 'SqlSvc'
-
 
         Describe "SqlServerSecureConnection\Get-TargetResource" -Tag 'Get' {
             BeforeAll {
@@ -407,6 +385,11 @@ try
         }
 
         Describe "SqlServerSecureConnection\Get-EncryptedConnectionSettings" -Tag 'Helper' {
+
+            Mock -CommandName 'Get-ItemProperty' -MockWith { return @{ForceEncryption = '1'} } -ParameterFilter { $Name -eq 'ForceEncryption' }
+            Mock -CommandName 'Get-ItemProperty' -MockWith { return @{NamedInstance = 'NamedInstance'} } -ParameterFilter { $Name -eq 'NamedInstance' }
+            Mock -CommandName 'Get-ItemProperty' -MockWith { return @{Certificate ='12345678'} } -ParameterFilter { $Name -eq 'Certificate' }
+
             Context 'When calling a method that execute successfully' {
                 BeforeAll {
                     Mock -CommandName "Get-Item" -MockWith {
@@ -441,6 +424,8 @@ try
                     Mock -CommandName "Get-Item" -MockWith {
                         return [MockedGetItem]::new()
                     }
+                    Mock -CommandName 'Get-ItemProperty' -MockWith { return @{NamedInstance = 'NamedInstance'} } -ParameterFilter { $Name -eq 'NamedInstance' }
+                    Mock -CommandName 'Set-ItemProperty' -MockWith {}
                 }
 
                 It 'Should not throw' {
@@ -453,6 +438,8 @@ try
                     Mock -CommandName "Get-Item" -MockWith {
                         return $null
                     }
+                    Mock -CommandName 'Get-ItemProperty' -MockWith { return 'NamedInstance' } -ParameterFilter { $Name -eq 'NamedInstance' }
+                    Mock -CommandName 'Set-ItemProperty' -MockWith {}
                 }
 
                 It 'Should not throw' {

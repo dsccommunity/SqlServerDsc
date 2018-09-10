@@ -1,6 +1,8 @@
 Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
         -ChildPath 'SqlServerDscHelper.psm1') -Force
 
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerSecureConnection'
+
 <#
     .SYNOPSIS
         Gets the SQL Server Encryption status.
@@ -48,7 +50,17 @@ function Get-TargetResource
         $ServiceAccount
     )
 
+    Write-Verbose -Message (
+            $script:localizedData.GetEncryptionSettings `
+                -f $InstanceName
+    )
+
     $encryptionSettings = Get-EncryptedConnectionSettings -InstanceName $InstanceName
+
+    Write-Verbose -Message (
+                    $script:localizedData.EncryptedSettings `
+                        -f $encryptionSettings.Certificate, $encryptionSettings.ForceEncryption
+                )
 
     return @{
         InstanceName    = [System.String] $InstanceName
@@ -119,11 +131,19 @@ function Set-TargetResource
     {
         if ($ForceEncryption -ne $encryptionState.ForceEncryption -or $Thumbprint -ne $encryptionState.Thumbprint)
         {
+            Write-Verbose -Message (
+                        $script:localizedData.SetEncryptionSetting `
+                            -f $InstanceName, $Thumbprint, $ForceEncryption
+            )
             Set-EncryptedConnectionSettings -InstanceName $InstanceName -Thumbprint $Thumbprint -ForceEncryption $ForceEncryption
         }
 
         if ((Test-CertificatePermission -Thumbprint $Thumbprint -ServiceAccount $ServiceAccount) -eq $false)
         {
+            Write-Verbose -Message (
+                        $script:localizedData.SetCertificatePermission `
+                            -f $Thumbprint, $ServiceAccount
+            )
             Set-CertificatePermission -Thumbprint $Thumbprint -ServiceAccount $ServiceAccount
         }
     }
@@ -131,10 +151,18 @@ function Set-TargetResource
     {
         if ($encryptionState.ForceEncryption -eq $true)
         {
+            Write-Verbose -Message (
+                        $script:localizedData.SetEncryptionSetting `
+                            -f $InstanceName, '', $false
+            )
             Set-EncryptedConnectionSettings -InstanceName $InstanceName -Thumbprint '' -ForceEncryption $false
         }
     }
 
+    Write-Verbose -Message (
+                $script:localizedData.RestartingService `
+                    -f $InstanceName
+    )
     Restart-SqlService -SQLServer localhost -SQLInstanceName $InstanceName
 }
 
@@ -193,7 +221,10 @@ function Test-TargetResource
         ServiceAccount  = $ServiceAccount
     }
 
-    New-VerboseMessage -Message "Testing state of Encrypted Connection"
+    Write-Verbose -Message (
+                $script:localizedData.TestingConfiguration `
+                    -f $InstanceName
+    )
 
     $encryptionState = Get-TargetResource @parameters
 
