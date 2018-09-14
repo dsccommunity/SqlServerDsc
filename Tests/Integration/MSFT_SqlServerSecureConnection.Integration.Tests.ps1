@@ -32,11 +32,12 @@ $TestEnvironment = Initialize-TestEnvironment `
     -DSCResourceName $script:DSCResourceName `
     -TestType Integration
 
+$testRootFolderPath = Split-Path -Path $PSScriptRoot -Parent
+Import-Module -Name (Join-Path -Path $testRootFolderPath -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'CommonTestHelper.psm1')) -Force
+
 #endregion
 
-#$mockSqlServicePrimaryAccountPassword = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
 $mockSqlServicePrimaryAccountUserName = "$env:COMPUTERNAME\svc-SqlPrimary"
-#$mockSqlServicePrimaryCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlServicePrimaryAccountUserName, $mockSqlServicePrimaryAccountPassword
 
 $null = New-SQLSelfSignedCertificate
 $mockSqlPrivateKeyPassword = ConvertTo-SecureString -String '1234' -AsPlainText -Force

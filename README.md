@@ -738,7 +738,9 @@ Read more about encrypted connections in this article [Enable Encrypted Connecti
 
 #### Examples
 
-* [Default configuration](Examples/Resources/SqlServerSecureConnection/1-DefaultConfiguration.ps1).
+* [Force Secure Connection](Examples/Resources/SqlServerSecureConnection/1-ForceSecureConnection.ps1).
+* [Secure Connection but not required](Examples/Resources/SqlServerSecureConnection/2-SecureConnectionNotForced.ps1).
+* [Secure Connection disabled](Examples/Resources/SqlServerSecureConnection/3-SecureConnectionAbsent.ps1).
 
 #### Known issues
 

@@ -55,15 +55,17 @@ try
         {
             [string] $Thumbprint = '12345678'
             [string] $PSPath = 'PathToItem'
+            [string] $Path = 'PathToItem'
+            [MockedAccessControl]$ACL = [MockedAccessControl]::new()
             [hashtable]$PrivateKey = @{
                 CspKeyContainerInfo = @{
                     UniqueKeyContainerName = "key"
                 }
             }
 
-            [MockedAccessControl] GetAccessControl()
+            [MockedGetItem] GetAccessControl()
             {
-                return [MockedAccessControl]::new()
+                return $this
             }
         }
 
@@ -87,6 +89,7 @@ try
 
             Context 'When the system is in the desired state' {
                 Mock -CommandName Get-EncryptedConnectionSettings -MockWith {return @{ForceEncryption = $true; Certificate = $mockThumbprint}} -Verifiable
+                Mock -CommandName Test-CertificatePermission -MockWith { return $true }
 
                 It 'Should return the the state as initialized' {
                     $resultGetTargetResource = Get-TargetResource @defaultParameters
@@ -103,6 +106,7 @@ try
 
             Context 'When the system is not in the desired state' {
                 Mock -CommandName Get-EncryptedConnectionSettings -MockWith {return @{ForceEncryption = $true; Certificate = '987654321'}} -Verifiable
+                Mock -CommandName Test-CertificatePermission -MockWith { return $false }
 
                 It 'Should return the state as not initialized' {
                     $resultGetTargetResource = Get-TargetResource @defaultParameters
@@ -110,7 +114,39 @@ try
                     $resultGetTargetResource.Thumbprint | Should -Not -Be $mockThumbprint
                     $resultGetTargetResource.ServiceAccount | Should -Be $mockServiceAccount
                     $resultGetTargetResource.ForceEncryption | Should -Be $true
-                    $resultGetTargetResource.Ensure | Should -Be 'Present'
+                    $resultGetTargetResource.Ensure | Should -Be 'Absent'
+
+                    Assert-MockCalled -CommandName Get-EncryptedConnectionSettings -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When the system is not in the desired state' {
+                Mock -CommandName Get-EncryptedConnectionSettings -MockWith {return @{ForceEncryption = $true; Certificate = '987654321'}} -Verifiable
+                Mock -CommandName Test-CertificatePermission -MockWith { return $true }
+
+                It 'Should return the state as not initialized when certificate permissions match but encryption settings dont' {
+                    $resultGetTargetResource = Get-TargetResource @defaultParameters
+                    $resultGetTargetResource.InstanceName | Should -Be $mockNamedInstanceName
+                    $resultGetTargetResource.Thumbprint | Should -Not -Be $mockThumbprint
+                    $resultGetTargetResource.ServiceAccount | Should -Be $mockServiceAccount
+                    $resultGetTargetResource.ForceEncryption | Should -Be $true
+                    $resultGetTargetResource.Ensure | Should -Be 'Absent'
+
+                    Assert-MockCalled -CommandName Get-EncryptedConnectionSettings -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When the system is not in the desired state' {
+                Mock -CommandName Get-EncryptedConnectionSettings -MockWith {return @{ForceEncryption = $true; Certificate = $mockThumbprint}} -Verifiable
+                Mock -CommandName Test-CertificatePermission -MockWith { return $false }
+
+                It 'Should return the state as not initialized when certificate permissions dont match but encryption settings do' {
+                    $resultGetTargetResource = Get-TargetResource @defaultParameters
+                    $resultGetTargetResource.InstanceName | Should -Be $mockNamedInstanceName
+                    $resultGetTargetResource.Thumbprint | Should -Be $mockThumbprint
+                    $resultGetTargetResource.ServiceAccount | Should -Be $mockServiceAccount
+                    $resultGetTargetResource.ForceEncryption | Should -Be $true
+                    $resultGetTargetResource.Ensure | Should -Be 'Absent'
 
                     Assert-MockCalled -CommandName Get-EncryptedConnectionSettings -Exactly -Times 1 -Scope It
                 }
@@ -245,11 +281,9 @@ try
                                 Thumbprint      = $mockThumbprint
                                 ServiceAccount  = $mockServiceAccount
                                 ForceEncryption = $false
-                                Ensure          = 'Present'
+                                Ensure          = 'Absent'
                             }
                         } -Verifiable
-
-                        Mock -CommandName Test-CertificatePermission -MockWith { return $true }
 
                         $testParameters = @{
                             InstanceName    = $mockNamedInstanceName
@@ -274,11 +308,9 @@ try
                                 Thumbprint      = '987654321'
                                 ServiceAccount  = $mockServiceAccount
                                 ForceEncryption = $true
-                                Ensure          = 'Present'
+                                Ensure          = 'Absent'
                             }
                         } -Verifiable
-
-                        Mock -CommandName Test-CertificatePermission -MockWith { return $true }
 
                         $testParameters = @{
                             InstanceName    = $mockNamedInstanceName
@@ -303,7 +335,7 @@ try
                                 Thumbprint      = $mockThumbprint
                                 ServiceAccount  = $mockServiceAccount
                                 ForceEncryption = $true
-                                Ensure          = 'Present'
+                                Ensure          = 'Absent'
                             }
                         } -Verifiable
 
@@ -336,14 +368,12 @@ try
                             }
                         } -Verifiable
 
-                        Mock -CommandName Test-CertificatePermission -MockWith { return $false }
-
                         $testParameters = @{
                             InstanceName    = $mockNamedInstanceName
                             Thumbprint      = $mockThumbprint
                             ServiceAccount  = $mockServiceAccount
                             ForceEncryption = $true
-                            Ensure          = 'Absent'
+                            Ensure          = 'Present'
                         }
                     }
 
@@ -387,12 +417,11 @@ try
         Describe "SqlServerSecureConnection\Get-EncryptedConnectionSettings" -Tag 'Helper' {
 
             Mock -CommandName 'Get-ItemProperty' -MockWith { return @{ForceEncryption = '1'} } -ParameterFilter { $Name -eq 'ForceEncryption' }
-            Mock -CommandName 'Get-ItemProperty' -MockWith { return @{NamedInstance = 'NamedInstance'} } -ParameterFilter { $Name -eq 'NamedInstance' }
             Mock -CommandName 'Get-ItemProperty' -MockWith { return @{Certificate ='12345678'} } -ParameterFilter { $Name -eq 'Certificate' }
 
             Context 'When calling a method that execute successfully' {
                 BeforeAll {
-                    Mock -CommandName "Get-Item" -MockWith {
+                    Mock -CommandName "Get-SqlEncryptionValues" -MockWith {
                         return [MockedGetItem]::new()
                     }
                 }
@@ -406,7 +435,7 @@ try
 
             Context 'When calling a method that executes unsuccesfuly' {
                 BeforeAll {
-                    Mock -CommandName "Get-Item" -MockWith {
+                    Mock -CommandName "Get-SqlEncryptionValues" -MockWith {
                         return $null
                     }
                 }
@@ -421,10 +450,9 @@ try
         Describe "SqlServerSecureConnection\Set-EncryptedConnectionSettings" -Tag 'Helper' {
             Context 'When calling a method that execute successfully' {
                 BeforeAll {
-                    Mock -CommandName "Get-Item" -MockWith {
+                    Mock -CommandName "Get-SqlEncryptionValues" -MockWith {
                         return [MockedGetItem]::new()
                     }
-                    Mock -CommandName 'Get-ItemProperty' -MockWith { return @{NamedInstance = 'NamedInstance'} } -ParameterFilter { $Name -eq 'NamedInstance' }
                     Mock -CommandName 'Set-ItemProperty' -MockWith {}
                 }
 
@@ -435,10 +463,9 @@ try
 
             Context 'When calling a method that executes unsuccesfuly' {
                 BeforeAll {
-                    Mock -CommandName "Get-Item" -MockWith {
+                    Mock -CommandName "Get-SqlEncryptionValues" -MockWith {
                         return $null
                     }
-                    Mock -CommandName 'Get-ItemProperty' -MockWith { return 'NamedInstance' } -ParameterFilter { $Name -eq 'NamedInstance' }
                     Mock -CommandName 'Set-ItemProperty' -MockWith {}
                 }
 
@@ -451,13 +478,9 @@ try
         Describe "SqlServerSecureConnection\Test-CertificatePermission" -Tag 'Helper' {
             Context 'When calling a method that execute successfully' {
                 BeforeAll {
-                    Mock -CommandName "Get-Item" -MockWith {
-                        return [MockedGetItem]::new()
-                    }
-
-                    Mock -CommandName "Get-ChildItem" -MockWith {
-                        return [MockedGetItem]::new()
-                    }
+                        Mock -CommandName "Get-CertificateAcl" -MockWith {
+                            return [MockedGetItem]::new()
+                        }
                 }
 
                 It 'Should return True' {
@@ -468,12 +491,9 @@ try
 
             Context 'When calling a method that executes unsuccesfuly' {
                 BeforeAll {
-                    Mock -CommandName "Get-Item" -MockWith {
-                        return $null
-                    }
-                    Mock -CommandName "Get-ChildItem" -MockWith {
-                        return $null
-                    }
+                        Mock -CommandName "Get-CertificateAcl" -MockWith {
+                            return $null
+                        }
                 }
 
                 It 'Should return False' {
@@ -486,11 +506,7 @@ try
         Describe "SqlServerSecureConnection\Set-CertificatePermission" -Tag 'Helper' {
             Context 'When calling a method that execute successfully' {
                 BeforeAll {
-                    Mock -CommandName "Get-Item" -MockWith {
-                        return [MockedGetItem]::new()
-                    }
-
-                    Mock -CommandName "Get-ChildItem" -MockWith {
+                    Mock -CommandName "Get-CertificateAcl" -MockWith {
                         return [MockedGetItem]::new()
                     }
 
@@ -514,6 +530,42 @@ try
 
                 It 'Should throw' {
                    { Set-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone' } | Should -Throw
+                }
+            }
+        }
+
+        Describe "SqlServerSecureConnection\Get-CertificateAcl" -Tag 'Helper' {
+            Context 'When calling a method that execute successfully' {
+                BeforeAll {
+                    Mock -CommandName "Get-ChildItem" -MockWith {
+                        return [MockedGetItem]::new()
+                    }
+
+                    Mock -CommandName "Get-Item" -MockWith {
+                        return [MockedGetItem]::new()
+                    }
+                }
+
+                It 'Should not throw' {
+                    { Get-CertificateAcl -Thumbprint '12345678' } | Should -Not -Throw
+                }
+            }
+        }
+
+        Describe "SqlServerSecureConnection\Get-SqlEncryptionValues" -Tag 'Helper' {
+            Context 'When calling a method that execute successfully' {
+                BeforeAll {
+                    Mock -CommandName "Get-ItemProperty" -MockWith {
+                        return [MockedGetItem]::new()
+                    }
+
+                    Mock -CommandName "Get-Item" -MockWith {
+                        return [MockedGetItem]::new()
+                    }
+                }
+
+                It 'Should not throw' {
+                    { Get-SqlEncryptionValues -InstanceName $mockNamedInstanceName } | Should -Not -Throw
                 }
             }
         }
