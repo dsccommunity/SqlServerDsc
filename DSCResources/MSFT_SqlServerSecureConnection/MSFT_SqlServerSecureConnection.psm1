@@ -56,7 +56,7 @@ function Get-TargetResource
                 -f $InstanceName
     )
 
-    $encryptionSettings = Get-EncryptedConnectionSettings -InstanceName $InstanceName
+    $encryptionSettings = Get-EncryptedConnectionSetting -InstanceName $InstanceName
 
     Write-Verbose -Message (
                     $script:localizedData.EncryptedSettings `
@@ -214,7 +214,7 @@ function Set-TargetResource
                         $script:localizedData.SetEncryptionSetting `
                             -f $InstanceName, $Thumbprint, $ForceEncryption
             )
-            Set-EncryptedConnectionSettings -InstanceName $InstanceName -Thumbprint $Thumbprint -ForceEncryption $ForceEncryption
+            Set-EncryptedConnectionSetting -InstanceName $InstanceName -Thumbprint $Thumbprint -ForceEncryption $ForceEncryption
         }
 
         if ((Test-CertificatePermission -Thumbprint $Thumbprint -ServiceAccount $ServiceAccount) -eq $false)
@@ -232,7 +232,7 @@ function Set-TargetResource
                     $script:localizedData.RemoveEncryptionSetting `
                         -f $InstanceName
         )
-        Set-EncryptedConnectionSettings -InstanceName $InstanceName -Thumbprint '' -ForceEncryption $false
+        Set-EncryptedConnectionSetting -InstanceName $InstanceName -Thumbprint '' -ForceEncryption $false
     }
 
     Write-Verbose -Message (
@@ -315,7 +315,7 @@ function Test-TargetResource
     .PARAMETER InstanceName
         Name of the SQL Server Instance to be configured.
 #>
-function Get-SqlEncryptionValues
+function Get-SqlEncryptionValue
 {
     [CmdletBinding()]
     param
@@ -347,7 +347,7 @@ function Get-SqlEncryptionValues
     .PARAMETER InstanceName
         Name of the SQL Server Instance to be configured.
 #>
-function Get-EncryptedConnectionSettings
+function Get-EncryptedConnectionSetting
 {
     [CmdletBinding()]
     [OutputType([Hashtable])]
@@ -358,7 +358,7 @@ function Get-EncryptedConnectionSettings
         $InstanceName
     )
 
-    $superSocketNetLib = Get-SqlEncryptionValues -InstanceName $InstanceName
+    $superSocketNetLib = Get-SqlEncryptionValue -InstanceName $InstanceName
     if($superSocketNetLib)
     {
         return @{
@@ -382,7 +382,7 @@ function Get-EncryptedConnectionSettings
     .PARAMETER ForceEncryption
         If all connections to the SQL instance should be encrypted.
 #>
-function Set-EncryptedConnectionSettings
+function Set-EncryptedConnectionSetting
 {
     [CmdletBinding()]
     param
@@ -401,7 +401,7 @@ function Set-EncryptedConnectionSettings
         $ForceEncryption
     )
 
-    $superSocketNetLib = Get-SqlEncryptionValues -InstanceName $InstanceName
+    $superSocketNetLib = Get-SqlEncryptionValue -InstanceName $InstanceName
     if($superSocketNetLib)
     {
         Set-ItemProperty -Path $superSocketNetLib.PSPath -Name 'Certificate' -Value $Thumbprint
@@ -420,6 +420,7 @@ function Set-EncryptedConnectionSettings
 function Get-CertificateAcl
 {
     [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
     param
     (
         [Parameter(Mandatory = $true)]

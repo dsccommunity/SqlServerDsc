@@ -12,6 +12,7 @@ Configuration Example
             InstanceName    = 'MSSQLSERVER'
             Thumbprint      = ''
             Ensure          = 'Absent'
+            ServiceAccount  = 'SqlSvc'
         }
     }
 }

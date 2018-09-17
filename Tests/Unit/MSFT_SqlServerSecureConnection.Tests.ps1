@@ -88,7 +88,7 @@ try
             }
 
             Context 'When the system is in the desired state' {
-                Mock -CommandName Get-EncryptedConnectionSettings -MockWith {return @{ForceEncryption = $true; Certificate = $mockThumbprint}} -Verifiable
+                Mock -CommandName Get-EncryptedConnectionSetting -MockWith {return @{ForceEncryption = $true; Certificate = $mockThumbprint}} -Verifiable
                 Mock -CommandName Test-CertificatePermission -MockWith { return $true }
 
                 It 'Should return the the state as initialized' {
@@ -99,13 +99,13 @@ try
                     $resultGetTargetResource.ForceEncryption | Should -Be $true
                     $resultGetTargetResource.Ensure | Should -Be 'Present'
 
-                    Assert-MockCalled -CommandName Get-EncryptedConnectionSettings -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
                 }
 
             }
 
             Context 'When the system is not in the desired state' {
-                Mock -CommandName Get-EncryptedConnectionSettings -MockWith {return @{ForceEncryption = $true; Certificate = '987654321'}} -Verifiable
+                Mock -CommandName Get-EncryptedConnectionSetting -MockWith {return @{ForceEncryption = $true; Certificate = '987654321'}} -Verifiable
                 Mock -CommandName Test-CertificatePermission -MockWith { return $false }
 
                 It 'Should return the state as not initialized' {
@@ -116,12 +116,12 @@ try
                     $resultGetTargetResource.ForceEncryption | Should -Be $true
                     $resultGetTargetResource.Ensure | Should -Be 'Absent'
 
-                    Assert-MockCalled -CommandName Get-EncryptedConnectionSettings -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
                 }
             }
 
             Context 'When the system is not in the desired state' {
-                Mock -CommandName Get-EncryptedConnectionSettings -MockWith {return @{ForceEncryption = $true; Certificate = '987654321'}} -Verifiable
+                Mock -CommandName Get-EncryptedConnectionSetting -MockWith {return @{ForceEncryption = $true; Certificate = '987654321'}} -Verifiable
                 Mock -CommandName Test-CertificatePermission -MockWith { return $true }
 
                 It 'Should return the state as not initialized when certificate permissions match but encryption settings dont' {
@@ -132,12 +132,12 @@ try
                     $resultGetTargetResource.ForceEncryption | Should -Be $true
                     $resultGetTargetResource.Ensure | Should -Be 'Absent'
 
-                    Assert-MockCalled -CommandName Get-EncryptedConnectionSettings -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
                 }
             }
 
             Context 'When the system is not in the desired state' {
-                Mock -CommandName Get-EncryptedConnectionSettings -MockWith {return @{ForceEncryption = $true; Certificate = $mockThumbprint}} -Verifiable
+                Mock -CommandName Get-EncryptedConnectionSetting -MockWith {return @{ForceEncryption = $true; Certificate = $mockThumbprint}} -Verifiable
                 Mock -CommandName Test-CertificatePermission -MockWith { return $false }
 
                 It 'Should return the state as not initialized when certificate permissions dont match but encryption settings do' {
@@ -148,7 +148,7 @@ try
                     $resultGetTargetResource.ForceEncryption | Should -Be $true
                     $resultGetTargetResource.Ensure | Should -Be 'Absent'
 
-                    Assert-MockCalled -CommandName Get-EncryptedConnectionSettings -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
                 }
             }
         }
@@ -171,7 +171,7 @@ try
                     Ensure          = 'Absent'
                 }
 
-                Mock -CommandName Set-EncryptedConnectionSettings -Verifiable
+                Mock -CommandName Set-EncryptedConnectionSetting -Verifiable
                 Mock -CommandName Set-CertificatePermission -Verifiable
                 Mock -CommandName Restart-SqlService -Verifiable
             }
@@ -193,7 +193,7 @@ try
                     It 'Should configure only ForceEncryption and Certificate values' {
                         { Set-TargetResource @defaultParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Set-EncryptedConnectionSettings -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
 
                         Assert-MockCalled -CommandName Set-CertificatePermission -Exactly -Times 0 -Scope It
 
@@ -215,7 +215,7 @@ try
                     It 'Should configure only certificate permissions' {
                         { Set-TargetResource @defaultParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Set-EncryptedConnectionSettings -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Set-EncryptedConnectionSetting -Exactly -Times 0 -Scope It
 
                         Assert-MockCalled -CommandName Set-CertificatePermission -Exactly -Times 1 -Scope It
 
@@ -238,7 +238,7 @@ try
                     It 'Should configure Encryption settings and certificate permissions' {
                         { Set-TargetResource @defaultParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Set-EncryptedConnectionSettings -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
 
                         Assert-MockCalled -CommandName Set-CertificatePermission -Exactly -Times 1 -Scope It
 
@@ -261,7 +261,7 @@ try
                     It 'Should configure Encryption settings setting certificate to empty string' {
                         { Set-TargetResource @defaultAbsentParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Set-EncryptedConnectionSettings -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
 
                         Assert-MockCalled -CommandName Set-CertificatePermission -Exactly -Times 0 -Scope It
 
@@ -414,20 +414,20 @@ try
             }
         }
 
-        Describe "SqlServerSecureConnection\Get-EncryptedConnectionSettings" -Tag 'Helper' {
+        Describe "SqlServerSecureConnection\Get-EncryptedConnectionSetting" -Tag 'Helper' {
 
             Mock -CommandName 'Get-ItemProperty' -MockWith { return @{ForceEncryption = '1'} } -ParameterFilter { $Name -eq 'ForceEncryption' }
             Mock -CommandName 'Get-ItemProperty' -MockWith { return @{Certificate ='12345678'} } -ParameterFilter { $Name -eq 'Certificate' }
 
             Context 'When calling a method that execute successfully' {
                 BeforeAll {
-                    Mock -CommandName "Get-SqlEncryptionValues" -MockWith {
+                    Mock -CommandName "Get-SqlEncryptionValue" -MockWith {
                         return [MockedGetItem]::new()
                     }
                 }
 
                 It 'Should return hashtable with ForceEncryption and Certificate' {
-                   $result = Get-EncryptedConnectionSettings -InstanceName 'NamedInstance'
+                   $result = Get-EncryptedConnectionSetting -InstanceName 'NamedInstance'
                    $result.Certificate | Should -Be '12345678'
                    $result.ForceEncryption | Should -Be 1
                 }
@@ -435,42 +435,42 @@ try
 
             Context 'When calling a method that executes unsuccesfuly' {
                 BeforeAll {
-                    Mock -CommandName "Get-SqlEncryptionValues" -MockWith {
+                    Mock -CommandName "Get-SqlEncryptionValue" -MockWith {
                         return $null
                     }
                 }
 
                 It 'Should return null' {
-                   $result = Get-EncryptedConnectionSettings -InstanceName 'NamedInstance'
+                   $result = Get-EncryptedConnectionSetting -InstanceName 'NamedInstance'
                    $result | Should -BeNullOrEmpty
                 }
             }
         }
 
-        Describe "SqlServerSecureConnection\Set-EncryptedConnectionSettings" -Tag 'Helper' {
+        Describe "SqlServerSecureConnection\Set-EncryptedConnectionSetting" -Tag 'Helper' {
             Context 'When calling a method that execute successfully' {
                 BeforeAll {
-                    Mock -CommandName "Get-SqlEncryptionValues" -MockWith {
+                    Mock -CommandName "Get-SqlEncryptionValue" -MockWith {
                         return [MockedGetItem]::new()
                     }
                     Mock -CommandName 'Set-ItemProperty' -MockWith {}
                 }
 
                 It 'Should not throw' {
-                   { Set-EncryptedConnectionSettings -InstanceName 'NamedInstance' -Thumbprint '12345678' -ForceEncryption $true } | Should -Not -Throw
+                   { Set-EncryptedConnectionSetting -InstanceName 'NamedInstance' -Thumbprint '12345678' -ForceEncryption $true } | Should -Not -Throw
                 }
             }
 
             Context 'When calling a method that executes unsuccesfuly' {
                 BeforeAll {
-                    Mock -CommandName "Get-SqlEncryptionValues" -MockWith {
+                    Mock -CommandName "Get-SqlEncryptionValue" -MockWith {
                         return $null
                     }
                     Mock -CommandName 'Set-ItemProperty' -MockWith {}
                 }
 
                 It 'Should not throw' {
-                   { Set-EncryptedConnectionSettings -InstanceName 'NamedInstance' -Thumbprint '12345678' -ForceEncryption $true } | Should -Not -Throw
+                   { Set-EncryptedConnectionSetting -InstanceName 'NamedInstance' -Thumbprint '12345678' -ForceEncryption $true } | Should -Not -Throw
                 }
             }
         }
@@ -552,7 +552,7 @@ try
             }
         }
 
-        Describe "SqlServerSecureConnection\Get-SqlEncryptionValues" -Tag 'Helper' {
+        Describe "SqlServerSecureConnection\Get-SqlEncryptionValue" -Tag 'Helper' {
             Context 'When calling a method that execute successfully' {
                 BeforeAll {
                     Mock -CommandName "Get-ItemProperty" -MockWith {
@@ -565,7 +565,7 @@ try
                 }
 
                 It 'Should not throw' {
-                    { Get-SqlEncryptionValues -InstanceName $mockNamedInstanceName } | Should -Not -Throw
+                    { Get-SqlEncryptionValue -InstanceName $mockNamedInstanceName } | Should -Not -Throw
                 }
             }
         }
