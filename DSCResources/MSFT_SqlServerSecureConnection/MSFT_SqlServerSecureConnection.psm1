@@ -493,7 +493,7 @@ function Set-CertificatePermission
         $acl.ACL.AddAccessRule($accessRule)
 
         # Write back the new acl
-        Set-Acl -Path $acl.Path -AclObject $acl
+        Set-Acl -Path $acl.Path -AclObject $acl.ACL
     }
     catch
     {
