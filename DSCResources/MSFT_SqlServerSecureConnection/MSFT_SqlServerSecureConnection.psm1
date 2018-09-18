@@ -52,40 +52,40 @@ function Get-TargetResource
     )
 
     Write-Verbose -Message (
-            $script:localizedData.GetEncryptionSettings `
-                -f $InstanceName
+        $script:localizedData.GetEncryptionSettings `
+            -f $InstanceName
     )
 
     $encryptionSettings = Get-EncryptedConnectionSetting -InstanceName $InstanceName
 
     Write-Verbose -Message (
-                    $script:localizedData.EncryptedSettings `
-                        -f $encryptionSettings.Certificate, $encryptionSettings.ForceEncryption
-                )
+        $script:localizedData.EncryptedSettings `
+            -f $encryptionSettings.Certificate, $encryptionSettings.ForceEncryption
+    )
 
-    if($Ensure -eq 'Present')
+    if ($Ensure -eq 'Present')
     {
         $ensureValue = 'Present'
         $certificateSettings = Test-CertificatePermission -Thumbprint $Thumbprint -ServiceAccount $ServiceAccount
-        if($encryptionSettings.Certificate -ine $Thumbprint)
+        if ($encryptionSettings.Certificate -ine $Thumbprint)
         {
             Write-Verbose -Message (
-                    $script:localizedData.ThumprintResult `
-                        -f $encryptionSettings.Certificate, $Thumbprint
-                )
+                $script:localizedData.ThumbprintResult `
+                    -f $encryptionSettings.Certificate, $Thumbprint
+            )
             $ensureValue = 'Absent'
         }
 
-        if($encryptionSettings.ForceEncryption -ne $ForceEncryption)
+        if ($encryptionSettings.ForceEncryption -ne $ForceEncryption)
         {
             Write-Verbose -Message (
-                    $script:localizedData.ForceEncryptionResult `
-                        -f $encryptionSettings.ForceEncryption, $ForceEncryption
-                )
+                $script:localizedData.ForceEncryptionResult `
+                    -f $encryptionSettings.ForceEncryption, $ForceEncryption
+            )
             $ensureValue = 'Absent'
         }
 
-        if(-not $certificateSettings)
+        if (-not $certificateSettings)
         {
             Write-Verbose -Message (
                 $script:localizedData.CertificateSettings `
@@ -106,38 +106,38 @@ function Get-TargetResource
     else
     {
         $ensureValue = 'Absent'
-        if($encryptionSettings.ForceEncryption -eq $false)
+        if ($encryptionSettings.ForceEncryption -eq $false)
         {
             Write-Verbose -Message (
-                    $script:localizedData.EncryptionOff
-                )
+                $script:localizedData.EncryptionOff
+            )
         }
         else
         {
             $ensureValue = 'Present'
             Write-Verbose -Message (
-                    $script:localizedData.ForceEncryptionResult `
-                        -f $encryptionSettings.ForceEncryption, $false
-                )
+                $script:localizedData.ForceEncryptionResult `
+                    -f $encryptionSettings.ForceEncryption, $false
+            )
         }
 
-        if($encryptionSettings.Certificate -eq '')
+        if ($encryptionSettings.Certificate -eq '')
         {
-            $certificateValue = "Empty"
+            $certificateValue = 'Empty'
         }
         else
         {
             $ensureValue = 'Present'
             Write-Verbose -Message (
-                    $script:localizedData.ThumprintResult `
-                        -f $encryptionSettings.Certificate, 'Empty'
-                )
+                $script:localizedData.ThumbprintResult `
+                    -f $encryptionSettings.Certificate, 'Empty'
+            )
             $certificateValue = $encryptionSettings.Certificate
         }
         Write-Verbose -Message (
-                    $script:localizedData.EncryptedSettings `
-                        -f $certificateValue, $encryptionSettings.ForceEncryption
-                )
+            $script:localizedData.EncryptedSettings `
+                -f $certificateValue, $encryptionSettings.ForceEncryption
+        )
     }
 
     return @{
@@ -211,8 +211,8 @@ function Set-TargetResource
         if ($ForceEncryption -ne $encryptionState.ForceEncryption -or $Thumbprint -ne $encryptionState.Thumbprint)
         {
             Write-Verbose -Message (
-                        $script:localizedData.SetEncryptionSetting `
-                            -f $InstanceName, $Thumbprint, $ForceEncryption
+                $script:localizedData.SetEncryptionSetting `
+                    -f $InstanceName, $Thumbprint, $ForceEncryption
             )
             Set-EncryptedConnectionSetting -InstanceName $InstanceName -Thumbprint $Thumbprint -ForceEncryption $ForceEncryption
         }
@@ -220,8 +220,8 @@ function Set-TargetResource
         if ((Test-CertificatePermission -Thumbprint $Thumbprint -ServiceAccount $ServiceAccount) -eq $false)
         {
             Write-Verbose -Message (
-                        $script:localizedData.SetCertificatePermission `
-                            -f $Thumbprint, $ServiceAccount
+                $script:localizedData.SetCertificatePermission `
+                    -f $Thumbprint, $ServiceAccount
             )
             Set-CertificatePermission -Thumbprint $Thumbprint -ServiceAccount $ServiceAccount
         }
@@ -229,15 +229,15 @@ function Set-TargetResource
     else
     {
         Write-Verbose -Message (
-                    $script:localizedData.RemoveEncryptionSetting `
-                        -f $InstanceName
+            $script:localizedData.RemoveEncryptionSetting `
+                -f $InstanceName
         )
         Set-EncryptedConnectionSetting -InstanceName $InstanceName -Thumbprint '' -ForceEncryption $false
     }
 
     Write-Verbose -Message (
-                $script:localizedData.RestartingService `
-                    -f $InstanceName
+        $script:localizedData.RestartingService `
+            -f $InstanceName
     )
     Restart-SqlService -SQLServer localhost -SQLInstanceName $InstanceName
 }
@@ -299,8 +299,8 @@ function Test-TargetResource
     }
 
     Write-Verbose -Message (
-                $script:localizedData.TestingConfiguration `
-                    -f $InstanceName
+        $script:localizedData.TestingConfiguration `
+            -f $InstanceName
     )
 
     $encryptionState = Get-TargetResource @parameters
@@ -326,7 +326,7 @@ function Get-SqlEncryptionValue
     )
 
     $sqlInstance = Get-Item 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL'
-    if($sqlInstance)
+    if ($sqlInstance)
     {
         try
         {
@@ -359,11 +359,11 @@ function Get-EncryptedConnectionSetting
     )
 
     $superSocketNetLib = Get-SqlEncryptionValue -InstanceName $InstanceName
-    if($superSocketNetLib)
+    if ($superSocketNetLib)
     {
         return @{
-            ForceEncryption = [System.Boolean](Get-ItemProperty -Path $superSocketNetLib.PSPath -Name "ForceEncryption").ForceEncryption
-            Certificate     = (Get-ItemProperty -Path $superSocketNetLib.PSPath -Name "Certificate").Certificate
+            ForceEncryption = [System.Boolean](Get-ItemProperty -Path $superSocketNetLib.PSPath -Name 'ForceEncryption').ForceEncryption
+            Certificate     = (Get-ItemProperty -Path $superSocketNetLib.PSPath -Name 'Certificate').Certificate
         }
     }
     return $null
@@ -402,10 +402,15 @@ function Set-EncryptedConnectionSetting
     )
 
     $superSocketNetLib = Get-SqlEncryptionValue -InstanceName $InstanceName
-    if($superSocketNetLib)
+    if ($superSocketNetLib)
     {
         Set-ItemProperty -Path $superSocketNetLib.PSPath -Name 'Certificate' -Value $Thumbprint
         Set-ItemProperty -Path $superSocketNetLib.PSPath -Name 'ForceEncryption' -Value $([int]$ForceEncryption)
+    }
+    else
+    {
+        throw $script:localizedData.CouldNotFindEncryptionValues `
+                -f $InstanceName
     }
 }
 
@@ -432,22 +437,22 @@ function Get-CertificateAcl
     $cert = Get-ChildItem -Path cert:\LocalMachine\My | Where-Object -FilterScript { $PSItem.Thumbprint -eq $Thumbprint }
 
     # Location of the machine related keys
-    $keyPath = $env:ProgramData + "\Microsoft\Crypto\RSA\MachineKeys\"
+    $keyPath = $env:ProgramData + '\Microsoft\Crypto\RSA\MachineKeys\'
     $keyName = $cert.PrivateKey.CspKeyContainerInfo.UniqueKeyContainerName
     $keyFullPath = $keyPath + $keyName
 
     Write-Verbose -Message (
-                $script:localizedData.PrivateKeyPath `
-                    -f $keyFullPath
+        $script:localizedData.PrivateKeyPath `
+            -f $keyFullPath
     )
 
     try
     {
         # Get the current acl of the private key
         return @{
-                    ACL = (Get-Item $keyFullPath).GetAccessControl()
-                    Path = $keyFullPath
-                }
+            ACL  = (Get-Item $keyFullPath).GetAccessControl()
+            Path = $keyFullPath
+        }
     }
     catch
     {
@@ -482,7 +487,7 @@ function Set-CertificatePermission
     )
 
     # Specify the user, the permissions and the permission type
-    $permission = "$($ServiceAccount)", "Read", "Allow"
+    $permission = "$($ServiceAccount)", 'Read', 'Allow'
     $accessRule = New-Object -TypeName System.Security.AccessControl.FileSystemAccessRule -ArgumentList $permission
 
     try
@@ -530,7 +535,7 @@ function Test-CertificatePermission
     )
 
     # Specify the user, the permissions and the permission type
-    $permission = "$($ServiceAccount)", "Read", "Allow"
+    $permission = "$($ServiceAccount)", 'Read', 'Allow'
     $accessRule = New-Object -TypeName System.Security.AccessControl.FileSystemAccessRule -ArgumentList $permission
 
     try
@@ -538,7 +543,7 @@ function Test-CertificatePermission
         # Get the current acl of the private key
         $acl = Get-CertificateAcl -Thumbprint $Thumbprint
 
-        [array]$permissions = $acl.ACL.Access.Where( {$_.IdentityReference -eq $accessRule.IdentityReference})
+        [array] $permissions = $acl.ACL.Access.Where( {$_.IdentityReference -eq $accessRule.IdentityReference})
         if ($permissions.Count -eq 0)
         {
             return $false
