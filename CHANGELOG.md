@@ -18,8 +18,8 @@
   - Create aliases for cmdlets in the stubbed module which have aliases
     ([issue #1224](https://github.com/PowerShell/SqlServerDsc/issues/1224)).
     [Dan Reist (@randomnote1)](https://github.com/randomnote1)
-  - Use a string builder rather to build the stubs
-  - Fixed formatting issues so that it will work with modules other than SqlServer
+  - Use a string builder to build the function stubs.
+  - Fixed formatting issues for the function to work with modules other than SqlServer.
 
 ## 12.0.0.0
 
