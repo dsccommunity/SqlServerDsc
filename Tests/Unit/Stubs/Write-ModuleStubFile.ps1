@@ -42,17 +42,29 @@ function Write-ModuleStubFile
         throw "The file '$outFile' already exists."
     }
 
+    # Define the length of the indent
+    $indent = ' ' * 4
+
     # Define the header of the file
     $headerStringBuilder = New-Object -TypeName System.Text.StringBuilder
     [System.Void]$headerStringBuilder.AppendLine('<#')
-    [System.Void]$headerStringBuilder.AppendLine('    .SYNOPSIS')
-    [System.Void]$headerStringBuilder.AppendLine("        Cmdlet stubs for the module $($module.Name).")
+    [System.Void]$headerStringBuilder.Append($indent)
+    [System.Void]$headerStringBuilder.AppendLine('.SYNOPSIS')
+    [System.Void]$headerStringBuilder.Append($indent)
+    [System.Void]$headerStringBuilder.Append($indent)
+    [System.Void]$headerStringBuilder.AppendLine("Cmdlet stubs for the module $($module.Name).")
     [System.Void]$headerStringBuilder.AppendLine()
-    [System.Void]$headerStringBuilder.AppendLine('    .DESCRIPTION')
-    [System.Void]$headerStringBuilder.AppendLine("        This module contains the stubs for the cmdlets in the module $($module.Name) version $($module.Version.ToString()).")
+    [System.Void]$headerStringBuilder.Append($indent)
+    [System.Void]$headerStringBuilder.AppendLine('.DESCRIPTION')
+    [System.Void]$headerStringBuilder.Append($indent)
+    [System.Void]$headerStringBuilder.Append($indent)
+    [System.Void]$headerStringBuilder.AppendLine("This module contains the stubs for the cmdlets in the module $($module.Name) version $($module.Version.ToString()).")
     [System.Void]$headerStringBuilder.AppendLine()
-    [System.Void]$headerStringBuilder.AppendLine('    .NOTES')
-    [System.Void]$headerStringBuilder.AppendLine("        The stubs in this module were generated from the $($MyInvocation.MyCommand) function which is distributed as part of the SqlServerDsc module.")
+    [System.Void]$headerStringBuilder.Append($indent)
+    [System.Void]$headerStringBuilder.AppendLine('.NOTES')
+    [System.Void]$headerStringBuilder.Append($indent)
+    [System.Void]$headerStringBuilder.Append($indent)
+    [System.Void]$headerStringBuilder.AppendLine("The stubs in this module were generated from the $($MyInvocation.MyCommand) function which is distributed as part of the SqlServerDsc module.")
     [System.Void]$headerStringBuilder.AppendLine('#>')
     [System.Void]$headerStringBuilder.AppendLine()
     [System.Void]$headerStringBuilder.AppendLine('# Suppressing this rule because these functions are from an external module and are only being used as stubs')
@@ -94,7 +106,7 @@ function Write-ModuleStubFile
             $formatParam = $false
 
             # Make the objects generic to better support mocking
-            $line = $line -replace '\[Microsoft.*.\]', '[System.Object]'
+            $line = $line -replace '\[Microsoft.[\d\w\.]+\]', '[System.Object]'
             $line = $line -replace 'SupportsShouldProcess=\$true, ', ''
 
             # Determine if any line modifications need to be made
@@ -124,7 +136,7 @@ function Write-ModuleStubFile
             # Write the current line with an indent
             if ( -not [System.String]::IsNullOrEmpty($line.Trim()) )
             {
-                [System.Void]$functionDefinition.Append('    ')
+                [System.Void]$functionDefinition.Append($indent)
                 [System.Void]$functionDefinition.AppendLine($line.TrimEnd())
             }
 
@@ -137,20 +149,23 @@ function Write-ModuleStubFile
             # Move the right paranthesis at the end of the param section to a new line
             if ( $endOfDefinition )
             {
-                [System.Void]$functionDefinition.AppendLine('    )')
+                [System.Void]$functionDefinition.Append($indent)
+                [System.Void]$functionDefinition.AppendLine(')')
                 break
             }
 
             # Move the left parenthesis to the next line after the "param" keyword
             if ( $formatParam )
             {
-                [System.Void]$functionDefinition.AppendLine('    (')
+                [System.Void]$functionDefinition.Append($indent)
+                [System.Void]$functionDefinition.AppendLine('(')
             }
         }
 
         # Build the body of the function
         [System.Void]$functionDefinition.AppendLine()
-        [System.Void]$functionDefinition.AppendLine('    throw ''{0}: StubNotImplemented'' -f $MyInvocation.MyCommand')
+        [System.Void]$functionDefinition.Append($indent)
+        [System.Void]$functionDefinition.AppendLine('throw ''{0}: StubNotImplemented'' -f $MyInvocation.MyCommand')
         [System.Void]$functionDefinition.AppendLine('}')
         [System.Void]$functionDefinition.AppendLine()
 
