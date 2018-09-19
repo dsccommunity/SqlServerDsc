@@ -106,6 +106,7 @@ function Write-ModuleStubFile
             $formatParam = $false
 
             # Make the objects generic to better support mocking
+            $line = $line -replace '\[Microsoft.[\d\w\.]+\[\]\]', '[System.Object[]]'
             $line = $line -replace '\[Microsoft.[\d\w\.]+\]', '[System.Object]'
             $line = $line -replace 'SupportsShouldProcess=\$true, ', ''
 
