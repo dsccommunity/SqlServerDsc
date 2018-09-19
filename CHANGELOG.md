@@ -32,6 +32,8 @@
     [Dan Reist (@randomnote1)](https://github.com/randomnote1)
   - Use a string builder to build the function stubs.
   - Fixed formatting issues for the function to work with modules other than SqlServer.
+- New DSC resource SqlServerSecureConnection
+  - New resource to configure a SQL Server instance for encrypted SQL connections.
 
 ## 12.0.0.0
 
@@ -55,8 +57,6 @@
     The new optional parameters are respectively SqlSvcStartupType, AgtSvcStartupType,
     AsSvcStartupType, IsSvcStartupType and RsSvcStartupType ([issue #1165](https://github.com/PowerShell/SqlServerDsc/issues/1165).
     [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
-- New DSC resource SqlServerSecureConnection
-  - New resource to configure a SQL Server instance for encrypted SQL connections.
 
 ## 11.4.0.0
 
