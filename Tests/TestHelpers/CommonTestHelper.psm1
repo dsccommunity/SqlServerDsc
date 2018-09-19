@@ -228,3 +228,61 @@ function Get-NetIPAddressNetwork
 
     return $networkObject
 }
+
+
+
+<#
+    .SYNOPSIS
+        This command will create a new self-signed certificate to be used to
+        secure Sql Server connection.
+
+    .OUTPUTS
+        Returns the created certificate. Writes the path to the public
+        certificate in the machine environment variable $env:sqlPrivateCertificatePath,
+        and the certificate thumbprint in the machine environment variable
+        $env:SqlCertificateThumbprint.
+#>
+function New-SQLSelfSignedCertificate
+{
+    $sqlPublicCertificatePath = Join-Path -Path $env:temp -ChildPath 'SqlPublicKey.cer'
+    $sqlPrivateCertificatePath = Join-Path -Path $env:temp -ChildPath 'SqlPrivateKey.cer'
+    $sqlPriavteKeyPassword = ConvertTo-SecureString -String "1234" -Force -AsPlainText
+
+    $certificateSubject = $env:COMPUTERNAME
+
+    <#
+        There are build workers still on Windows Server 2012 R2 so let's
+        use the alternate method of New-SelfSignedCertificate.
+    #>
+    Install-Module -Name PSPKI -Scope CurrentUser -Force
+    Import-Module -Name PSPKI
+
+    $newSelfSignedCertificateExParameters = @{
+        Subject            = "CN=$certificateSubject"
+        EKU                = 'Server Authentication'
+        KeyUsage           = 'KeyEncipherment, DataEncipherment'
+        SAN                = "dns:$certificateSubject"
+        FriendlyName       = 'Sql Encryption certificate'
+        Path               = $sqlPrivateCertificatePath
+        Password           = $sqlPriavteKeyPassword
+        Exportable         = $true
+        KeyLength          = 2048
+        ProviderName       = 'Microsoft Enhanced Cryptographic Provider v1.0'
+        AlgorithmName      = 'RSA'
+        SignatureAlgorithm = 'SHA256'
+    }
+
+    $certificate = New-SelfSignedCertificateEx @newSelfSignedCertificateExParameters
+
+    Write-Info -Message ('Created self-signed certificate ''{0}'' with thumbprint ''{1}''.' -f $certificate.Subject, $certificate.Thumbprint)
+
+    # Update a machine and session environment variable with the path to the private certificate.
+    Set-EnvironmentVariable -Name 'SqlPrivateCertificatePath' -Value $sqlPrivateCertificatePath -Machine
+    Write-Info -Message ('Environment variable $env:SqlPrivateCertificatePath set to ''{0}''' -f $env:SqlPrivateCertificatePath)
+
+    # Update a machine and session environment variable with the thumbprint of the certificate.
+    Set-EnvironmentVariable -Name 'SqlCertificateThumbprint' -Value $certificate.Thumbprint -Machine
+    Write-Info -Message ('Environment variable $env:SqlCertificateThumbprint set to ''{0}''' -f $env:SqlCertificateThumbprint)
+
+    return $certificate
+}
