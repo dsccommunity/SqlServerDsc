@@ -14,6 +14,12 @@
     ([issue #1182](https://github.com/PowerShell/SqlServerDsc/issues/1182)).
 - Changes to SqlServerDatabaseMail
   - Minor update to Ensure parameter description in the README.md.
+- Changes to Write-ModuleStubFile.ps1
+  - Create aliases for cmdlets in the stubbed module which have aliases
+    ([issue #1224](https://github.com/PowerShell/SqlServerDsc/issues/1224)).
+    [Dan Reist (@randomnote1)](https://github.com/randomnote1)
+  - Use a string builder to build the function stubs.
+  - Fixed formatting issues for the function to work with modules other than SqlServer.
 
 ## 12.0.0.0
 
