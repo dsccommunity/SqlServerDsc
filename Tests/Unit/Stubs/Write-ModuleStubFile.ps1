@@ -47,29 +47,29 @@ function Write-ModuleStubFile
 
     # Define the header of the file
     $headerStringBuilder = New-Object -TypeName System.Text.StringBuilder
-    [System.Void] $headerStringBuilder.AppendLine('<#')
-    [System.Void] $headerStringBuilder.Append($indent)
-    [System.Void] $headerStringBuilder.AppendLine('.SYNOPSIS')
-    [System.Void] $headerStringBuilder.Append($indent)
-    [System.Void] $headerStringBuilder.Append($indent)
-    [System.Void] $headerStringBuilder.AppendLine("Cmdlet stubs for the module $($module.Name).")
-    [System.Void] $headerStringBuilder.AppendLine()
-    [System.Void] $headerStringBuilder.Append($indent)
-    [System.Void] $headerStringBuilder.AppendLine('.DESCRIPTION')
-    [System.Void] $headerStringBuilder.Append($indent)
-    [System.Void] $headerStringBuilder.Append($indent)
-    [System.Void] $headerStringBuilder.AppendLine("This module contains the stubs for the cmdlets in the module $($module.Name) version $($module.Version.ToString()).")
-    [System.Void] $headerStringBuilder.AppendLine()
-    [System.Void] $headerStringBuilder.Append($indent)
-    [System.Void] $headerStringBuilder.AppendLine('.NOTES')
-    [System.Void] $headerStringBuilder.Append($indent)
-    [System.Void] $headerStringBuilder.Append($indent)
-    [System.Void] $headerStringBuilder.AppendLine("The stubs in this module were generated from the $($MyInvocation.MyCommand) function which is distributed as part of the SqlServerDsc module.")
-    [System.Void] $headerStringBuilder.AppendLine('#>')
-    [System.Void] $headerStringBuilder.AppendLine()
-    [System.Void] $headerStringBuilder.AppendLine('# Suppressing this rule because these functions are from an external module and are only being used as stubs')
-    [System.Void] $headerStringBuilder.AppendLine('[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(''PSAvoidUsingUserNameAndPassWordParams'', '''')]')
-    [System.Void] $headerStringBuilder.AppendLine('param()')
+    $null = $headerStringBuilder.AppendLine('<#')
+    $null = $headerStringBuilder.Append($indent)
+    $null = $headerStringBuilder.AppendLine('.SYNOPSIS')
+    $null = $headerStringBuilder.Append($indent)
+    $null = $headerStringBuilder.Append($indent)
+    $null = $headerStringBuilder.AppendLine("Cmdlet stubs for the module $($module.Name).")
+    $null = $headerStringBuilder.AppendLine()
+    $null = $headerStringBuilder.Append($indent)
+    $null = $headerStringBuilder.AppendLine('.DESCRIPTION')
+    $null = $headerStringBuilder.Append($indent)
+    $null = $headerStringBuilder.Append($indent)
+    $null = $headerStringBuilder.AppendLine("This module contains the stubs for the cmdlets in the module $($module.Name) version $($module.Version.ToString()).")
+    $null = $headerStringBuilder.AppendLine()
+    $null = $headerStringBuilder.Append($indent)
+    $null = $headerStringBuilder.AppendLine('.NOTES')
+    $null = $headerStringBuilder.Append($indent)
+    $null = $headerStringBuilder.Append($indent)
+    $null = $headerStringBuilder.AppendLine("The stubs in this module were generated from the $($MyInvocation.MyCommand) function which is distributed as part of the SqlServerDsc module.")
+    $null = $headerStringBuilder.AppendLine('#>')
+    $null = $headerStringBuilder.AppendLine()
+    $null = $headerStringBuilder.AppendLine('# Suppressing this rule because these functions are from an external module and are only being used as stubs')
+    $null = $headerStringBuilder.AppendLine('[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(''PSAvoidUsingUserNameAndPassWordParams'', '''')]')
+    $null = $headerStringBuilder.AppendLine('param()')
     $headerStringBuilder.ToString() | Out-File -FilePath $outFile -Encoding utf8 -Append
 
 
@@ -94,8 +94,8 @@ function Write-ModuleStubFile
         $definition = [System.Management.Automation.ProxyCommand]::Create($metadata)
 
         # Define the beginning of the function
-        [System.Void] $functionDefinition.AppendLine("function $($cmdlet.Name)")
-        [System.Void] $functionDefinition.AppendLine('{')
+        $null = $functionDefinition.AppendLine("function $($cmdlet.Name)")
+        $null = $functionDefinition.AppendLine('{')
 
 
         # Iterate over each line in the cmdlet
@@ -137,38 +137,38 @@ function Write-ModuleStubFile
             # Write the current line with an indent
             if ( -not [System.String]::IsNullOrEmpty($line.Trim()) )
             {
-                [System.Void] $functionDefinition.Append($indent)
-                [System.Void] $functionDefinition.AppendLine($line.TrimEnd())
+                $null = $functionDefinition.Append($indent)
+                $null = $functionDefinition.AppendLine($line.TrimEnd())
             }
 
             # Add a blank line after the parameter section
             if ( $endOfParameter )
             {
-                [System.Void] $functionDefinition.AppendLine()
+                $null = $functionDefinition.AppendLine()
             }
 
             # Move the right paranthesis at the end of the param section to a new line
             if ( $endOfDefinition )
             {
-                [System.Void] $functionDefinition.Append($indent)
-                [System.Void] $functionDefinition.AppendLine(')')
+                $null = $functionDefinition.Append($indent)
+                $null = $functionDefinition.AppendLine(')')
                 break
             }
 
             # Move the left parenthesis to the next line after the "param" keyword
             if ( $formatParam )
             {
-                [System.Void] $functionDefinition.Append($indent)
-                [System.Void] $functionDefinition.AppendLine('(')
+                $null = $functionDefinition.Append($indent)
+                $null = $functionDefinition.AppendLine('(')
             }
         }
 
         # Build the body of the function
-        [System.Void] $functionDefinition.AppendLine()
-        [System.Void] $functionDefinition.Append($indent)
-        [System.Void] $functionDefinition.AppendLine('throw ''{0}: StubNotImplemented'' -f $MyInvocation.MyCommand')
-        [System.Void] $functionDefinition.AppendLine('}')
-        [System.Void] $functionDefinition.AppendLine()
+        $null = $functionDefinition.AppendLine()
+        $null = $functionDefinition.Append($indent)
+        $null = $functionDefinition.AppendLine('throw ''{0}: StubNotImplemented'' -f $MyInvocation.MyCommand')
+        $null = $functionDefinition.AppendLine('}')
+        $null = $functionDefinition.AppendLine()
 
         # Find any aliases which may exist for the cmdlet
         $alias = Get-Alias -Definition $cmdlet.Name -ErrorAction SilentlyContinue
@@ -177,8 +177,8 @@ function Write-ModuleStubFile
         if ( $alias )
         {
             # Create an alias in the stubs
-            [System.Void] $functionDefinition.Append("New-Alias -Name $($alias.DisplayName) -Value $($alias.Definition)")
-            [System.Void] $functionDefinition.AppendLine()
+            $null = $functionDefinition.Append("New-Alias -Name $($alias.DisplayName) -Value $($alias.Definition)")
+            $null = $functionDefinition.AppendLine()
         }
 
         # Export the function text to the file
