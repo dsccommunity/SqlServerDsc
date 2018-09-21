@@ -3112,6 +3112,77 @@ try
                     }
                 }
 
+                # Regression test for issue #1105
+                Context "When SQL Server version is $mockSqlMajorVersion and feature 'CONN' is already installed" {
+                    BeforeEach {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = 'CONN'
+                            }
+                        }
+
+                        Mock -CommandName New-SmbMapping -Verifiable
+                        Mock -CommandName Remove-SmbMapping -Verifiable
+                        Mock -CommandName Copy-ItemWithRobocopy -Verifiable
+                        Mock -CommandName Get-TemporaryFolder -MockWith $mockGetTemporaryFolder -Verifiable
+                        Mock -CommandName New-Guid -MockWith $mockNewGuid -Verifiable
+                        Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
+
+                        Mock -CommandName Get-ItemProperty -ParameterFilter {
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber) -or
+                            $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
+                        } -MockWith $mockEmptyHashtable -Verifiable
+
+                        Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable -Verifiable
+                    }
+
+                    It 'Should set the system in the desired state when feature is SQLENGINE' {
+                        $testParameters = $mockDefaultParameters.Clone()
+                        $testParameters['Features'] = 'SQLENGINE,CONN'
+                        $testParameters += @{
+                            InstanceName = $mockDefaultInstance_InstanceName
+                            SourcePath = $mockSourcePath
+                            SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
+                        }
+
+                        # Regression testing of issue #1105.
+                        if ($mockSqlMajorVersion -in (14))
+                        {
+                            <#
+                                CONN is already installed, but since it is the
+                                SQL Server 2017 version, CONN is forcibly added
+                                to the setup Features argument.
+                            #>
+                            $mockExpectedFeatures = $testParameters.Features
+                        }
+                        else
+                        {
+                            <#
+                                CONN is already installed, so that should not be
+                                installed, so it is not added to the setup Features
+                                argument.
+                            #>
+                            $mockExpectedFeatures = $testParameters.Features -replace ',CONN'
+                        }
+
+                        $mockStartSqlSetupProcessExpectedArgument = @{
+                            Quiet = 'True'
+                            IAcceptSQLServerLicenseTerms = 'True'
+                            Action = 'Install'
+                            InstanceName = 'MSSQLSERVER'
+                            Features = $mockExpectedFeatures
+                            SQLSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                            AGTSVCSTARTUPTYPE = 'Automatic'
+                        }
+
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
+                    }
+                }
+
                 Context "When SQL Server version is $mockSqlMajorVersion and the system is not in the desired state for a default instance" {
                     BeforeEach {
                         Mock -CommandName New-SmbMapping -Verifiable

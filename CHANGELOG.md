@@ -151,6 +151,9 @@
   - Changes to integration tests
     - CONN feature was temporarily removed from the instances installed by the
       integration tests. This is due to issue #1105.
+  - For SQL Server 2017 when installing feature CONN, and CONN already exist, the
+    feature CONN was no longer detected. Now CONN is forcibly installed even if
+    it already is installed ([issue #1105](https://github.com/PowerShell/SqlServerDsc/issues/1105)).
 
 ## 12.0.0.0
 

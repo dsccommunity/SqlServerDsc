@@ -1078,7 +1078,12 @@ function Set-TargetResource
             New-InvalidOperationException -Message $errorMessage
         }
 
-        if (-not ($getTargetResourceResult.Features.Contains($feature)))
+        <#
+            Need to override 'CONN' on SQL Server 2017 if already installed.
+            See issue #1105 for more information.
+        #>
+        if (($feature -eq 'CONN' -and $sqlVersion -in ('14')) `
+            -or (-not ($getTargetResourceResult.Features.Contains($feature))))
         {
             $featuresToInstall += "$feature,"
         }
