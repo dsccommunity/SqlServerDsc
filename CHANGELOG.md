@@ -8,6 +8,18 @@
   - Opt-in for common test "Common Tests - Validate Markdown Links".
   - Updated broken links in `\README.md` and in `\Examples\README.md`
   - Opt-in for common test 'Common Tests - Relative Path Length'.
+- Changes to SqlServerDscHelper
+  - Fix style guideline lint errors.
+  - Changes to Connect-SQL
+    - Adding verbose message in Connect-SQL so it
+      now shows the username that is connecting.
+  - Changes to Import-SQLPS
+    - Fixed so that when importing SQLPS it imports
+      using the path (and not the .psd1 file).
+    - Fixed so that the verbose message correctly
+      shows the name, version and path when importing
+      the module SQLPS (it did show correctly for the
+      SqlServer module).
 - Changes to SqlAg, SqlAGDatabase, and SqlAGReplica examples
   - Included configuration for SqlAlwaysOnService to enable
     HADR on each node to avoid confusion
@@ -20,6 +32,8 @@
     [Dan Reist (@randomnote1)](https://github.com/randomnote1)
   - Use a string builder to build the function stubs.
   - Fixed formatting issues for the function to work with modules other than SqlServer.
+- New DSC resource SqlServerSecureConnection
+  - New resource to configure a SQL Server instance for encrypted SQL connections.
 
 ## 12.0.0.0
 
@@ -43,8 +57,6 @@
     The new optional parameters are respectively SqlSvcStartupType, AgtSvcStartupType,
     AsSvcStartupType, IsSvcStartupType and RsSvcStartupType ([issue #1165](https://github.com/PowerShell/SqlServerDsc/issues/1165).
     [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
-- New DSC resource SqlServerSecureConnection
-  - New resource to configure a SQL Server instance for encrypted SQL connections.
 
 ## 11.4.0.0
 
