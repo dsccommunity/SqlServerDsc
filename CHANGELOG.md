@@ -139,6 +139,18 @@
   - Fix unit tests that didn't mock some of the calls. It no longer fail
     when a SQL Server installation is not present on the node running the
     unit test ([issue #983](https://github.com/PowerShell/SqlServerDsc/issues/983)).
+- Changes to SqlSetup
+  - Integration test is using SQL Server 2017 ([issue #858](https://github.com/PowerShell/SqlServerDsc/issues/858)).
+  - Localized messages for Master Data Services no longer start and end with
+    single quote.
+  - When installing features a verbose message is written if a feature is found
+    to already be installed. It no longer quietly removes the feature from the
+    `/FEATURES` argument.
+  - Cleaned up a bit in the tests, removed excessive piping.
+  - Fixed minor typo in examples.
+  - Changes to integration tests
+    - CONN feature was temporarily removed from the instances installed by the
+      integration tests. This is due to issue #1105.
 
 ## 12.0.0.0
 
@@ -235,17 +247,6 @@
   - Updated the integration tests to stop some services after each integration test.
     This is to save memory on the AppVeyor build worker.
   - Fixed Script Analyzer rule error.
-  - Integration test is using SQL Server 2017 ([issue #858](https://github.com/PowerShell/SqlServerDsc/issues/858)).
-  - Localized messages for Master Data Services no longer start and end with
-    single quote.
-  - When installing features a verbose message is written if a feature is found
-    to already be installed. It no longer quietly removes the feature from the
-    `/FEATURES` argument.
-  - Cleaned up a bit in the tests, removed excessive piping.
-  - Fixed minor typo in examples.
-  - Changes to integration tests
-    - CONN feature was temporarily removed from the instances installed by the
-      integration tests. This is due to issue #1105.
 - Changes to SqlRS
   - Updated the integration tests to stop the Reporting Services service after
     the integration test. This is to save memory on the AppVeyor build worker.
