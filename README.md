@@ -129,8 +129,6 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   to manage database recovery model.
 * [**SqlDatabaseRole**](#sqldatabaserole) resource to manage SQL
   database roles.
-* [**SqlServerSecureConnection**](#sqlserversecureconnection) resource to
-  enable encrypted SQL connections.
 * [**SqlRS**](#sqlrs) configures SQL Server Reporting.
   Services to use a database engine in another instance.
 * [**SqlScript**](#sqlscript) resource to extend DSC Get/Set/Test
@@ -157,6 +155,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * [**SqlServerReplication**](#sqlserverreplication) resource to manage SQL Replication
   distribution and publishing.
 * [**SqlServerRole**](#sqlserverrole) resource to manage SQL server roles.
+* [**SqlServerSecureConnection**](#sqlserversecureconnection) resource to
+  enable encrypted SQL connections.
 * [**SqlServiceAccount**](#sqlserviceaccount) Manage the service account
   for SQL Server services.
 * [**SqlSetup**](#sqlsetup) installs a standalone SQL Server instance.
@@ -703,48 +703,6 @@ Read more about database role in this article [CREATE ROLE (Transact-SQL)](https
 #### Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseRole).
-
-### SqlServerSecureConnection
-
-Configures SQL connections to be encrypted.
-Read more about encrypted connections in this article [Enable Encrypted Connections](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/enable-encrypted-connections-to-the-database-engine).
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* You must have a Certificate that is trusted and issued for
-   `ServerAuthentication`.
-* The name of the Certificate must be the fully qualified domain name (FQDN)
-   of the computer.
-* The Certificate must be installed in the LocalMachine Personal store.
-* If `PsDscRunAsCredential` common parameter is used to run the resource, the
-  specified credential must have permissions to connect to the SQL Server instance
-  specified in `InstanceName`.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: Name of the SQL Server instance to be
-   configured.
-* **`[String]` Thumbprint** _(Required)_: Thumbprint of the certificate being
-   used for encryption. If parameter Ensure is set to 'Absent', then the
-   parameter Certificate can be set to an empty string.
-* **`[String]` ServiceAccount** _(Required)_: Name of the account running the
-   SQL Server service.
-* **`[String]` Ensure** _(Write)_: If Encryption should be Enabled (Present)
-  or Disabled (Absent). { *Present* | Absent }. Defaults to Present.
-* **`[Boolean]` ForceEncryption** _(Write)_: If all connections to the SQL
-  instance should be encrypted. If this parameter is not assigned a value,
-  the default is, set to *True*, that all connections must be encrypted.
-
-#### Examples
-
-* [Force Secure Connection](Examples/Resources/SqlServerSecureConnection/1-ForceSecureConnection.ps1).
-* [Secure Connection but not required](Examples/Resources/SqlServerSecureConnection/2-SecureConnectionNotForced.ps1).
-* [Secure Connection disabled](Examples/Resources/SqlServerSecureConnection/3-SecureConnectionAbsent.ps1).
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerSecureConnection).
 
 ### SqlRS
 
@@ -1505,6 +1463,48 @@ server roles, please read the below articles.
 #### Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerRole).
+
+### SqlServerSecureConnection
+
+Configures SQL connections to be encrypted.
+Read more about encrypted connections in this article [Enable Encrypted Connections](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/enable-encrypted-connections-to-the-database-engine).
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* You must have a Certificate that is trusted and issued for
+   `ServerAuthentication`.
+* The name of the Certificate must be the fully qualified domain name (FQDN)
+   of the computer.
+* The Certificate must be installed in the LocalMachine Personal store.
+* If `PsDscRunAsCredential` common parameter is used to run the resource, the
+  specified credential must have permissions to connect to the SQL Server instance
+  specified in `InstanceName`.
+
+#### Parameters
+
+* **`[String]` InstanceName** _(Key)_: Name of the SQL Server instance to be
+   configured.
+* **`[String]` Thumbprint** _(Required)_: Thumbprint of the certificate being
+   used for encryption. If parameter Ensure is set to 'Absent', then the
+   parameter Certificate can be set to an empty string.
+* **`[String]` ServiceAccount** _(Required)_: Name of the account running the
+   SQL Server service.
+* **`[String]` Ensure** _(Write)_: If Encryption should be Enabled (Present)
+  or Disabled (Absent). { *Present* | Absent }. Defaults to Present.
+* **`[Boolean]` ForceEncryption** _(Write)_: If all connections to the SQL
+  instance should be encrypted. If this parameter is not assigned a value,
+  the default is, set to *True*, that all connections must be encrypted.
+
+#### Examples
+
+* [Force Secure Connection](Examples/Resources/SqlServerSecureConnection/1-ForceSecureConnection.ps1).
+* [Secure Connection but not required](Examples/Resources/SqlServerSecureConnection/2-SecureConnectionNotForced.ps1).
+* [Secure Connection disabled](Examples/Resources/SqlServerSecureConnection/3-SecureConnectionAbsent.ps1).
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerSecureConnection).
 
 ### SqlServiceAccount
 
