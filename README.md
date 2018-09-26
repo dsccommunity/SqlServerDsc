@@ -71,8 +71,7 @@ We are here for each other.
 
 To manually install the module,
 download the source code and unzip the contents
-of the '\Modules\SqlServerDsc' directory to the
-'$env:ProgramFiles\WindowsPowerShell\Modules' folder.
+to the '$env:ProgramFiles\WindowsPowerShell\Modules' folder.
 
 To install from the PowerShell gallery using PowerShellGet (in PowerShell 5.0)
 run the following command:
