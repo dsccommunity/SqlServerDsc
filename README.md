@@ -69,16 +69,18 @@ We are here for each other.
 
 ## Installation
 
-To manually install the module,
-download the source code and unzip the contents
-of the '\Modules\SqlServerDsc' directory to the
-'$env:ProgramFiles\WindowsPowerShell\Modules' folder.
+### From GitHub source code
+
+To manually install the module, download the source code from GitHub and unzip
+the contents to the '$env:ProgramFiles\WindowsPowerShell\Modules' folder.
+
+### From PowerShell Gallery
 
 To install from the PowerShell gallery using PowerShellGet (in PowerShell 5.0)
 run the following command:
 
 ```powershell
-Find-Module -Name SqlServerDsc -Repository PSGallery | Install-Module
+Find-Module -Name SqlServerDsc | Install-Module
 ```
 
 To confirm installation, run the below command and ensure you see the SQL Server
