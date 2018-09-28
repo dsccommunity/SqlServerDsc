@@ -378,13 +378,20 @@ For a review of a Pull Request (PR) to start, all tests must pass without error.
 If you need help to figure why some test don't pass, just write a comment in the
 Pull Request (PR), or submit an issue, and somebody will come along and assist.
 
-To run all tests manually run the following.
+To run all unit tests manually run the following.
 
 ```powershell
 Install-Module Pester
-cd '<path to cloned repository>\Tests'
+cd '<path to cloned repository>'
+.\Assert-TestEnvironment.ps1 -Verbose
+cd '<path to cloned repository>\Tests\Unit'
 Invoke-Pester
 ```
+
+The script `Assert-TestEnvironment.ps1` will clone the test framework from
+GitHub and load some necessary types to run the tests. The cmdlet
+`Invoke-Pester` looks for all the '*.Tests.ps1' PowerShell script files
+recursively and executes the tests.
 
 #### Unit tests for style check of Markdown files
 

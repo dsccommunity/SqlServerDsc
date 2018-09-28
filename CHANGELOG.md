@@ -11,6 +11,10 @@
   - Opt-in for common test 'Common Tests - Relative Path Length'.
   - Updated the Installation section in the README.md.
   - To speed up testing in AppVeyor, unit tests are now run in two containers.
+  - Adding the PowerShell script `Assert-TestEnvironment.ps1` which
+    must be run prior to running any unit tests with `Invoke-Pester`.
+    Read more in the specific contributing guidelines, under the section
+    [Unit Tests](https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#unit-tests).
 - Changes to SqlServerDscHelper
   - Fix style guideline lint errors.
   - Changes to Connect-SQL
