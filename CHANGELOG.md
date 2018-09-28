@@ -3,8 +3,9 @@
 ## Unreleased
 
 - Changes to SqlServerDsc
-  - Add support for validating the code with the DSC ResourceKit Script Analyzer
-    rules, both in Visual Studio Code and directly using `Invoke-ScriptAnalyzer`.
+  - Add support for validating the code with the DSC ResourceKit
+    Script Analyzer rules, both in Visual Studio Code and directly using
+    `Invoke-ScriptAnalyzer`.
   - Opt-in for common test "Common Tests - Validate Markdown Links".
   - Updated broken links in `\README.md` and in `\Examples\README.md`
   - Opt-in for common test 'Common Tests - Relative Path Length'.
@@ -32,12 +33,18 @@
     ([issue #1224](https://github.com/PowerShell/SqlServerDsc/issues/1224)).
     [Dan Reist (@randomnote1)](https://github.com/randomnote1)
   - Use a string builder to build the function stubs.
-  - Fixed formatting issues for the function to work with modules other than SqlServer.
+  - Fixed formatting issues for the function to work with modules other
+    than SqlServer.
 - New DSC resource SqlServerSecureConnection
-  - New resource to configure a SQL Server instance for encrypted SQL connections.
+  - New resource to configure a SQL Server instance for encrypted SQL
+    connections.
 - Changes to SqlAlwaysOnService
   - Updated integration tests to use NetworkingDsc
     ([issue #1129](https://github.com/PowerShell/SqlServerDsc/issues/1129)).
+- Changes to SqlServiceAccount
+  - Fix unit tests that didn't mock some of the calls. It no longer fail
+    when a SQL Server installation is not present on the node running the
+    unit test ([issue #983](https://github.com/PowerShell/SqlServerDsc/issues/983)).
 
 ## 12.0.0.0
 
