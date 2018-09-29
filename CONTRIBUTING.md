@@ -381,17 +381,20 @@ Pull Request (PR), or submit an issue, and somebody will come along and assist.
 To run all unit tests manually run the following.
 
 ```powershell
-Install-Module Pester
 cd '<path to cloned repository>'
-.\Assert-TestEnvironment.ps1 -Verbose
+.\Assert-TestEnvironment.ps1 -Confirm -Verbose
 cd '<path to cloned repository>\Tests\Unit'
 Invoke-Pester
 ```
 
-The script `Assert-TestEnvironment.ps1` will clone the test framework from
-GitHub and load some necessary types to run the tests. The cmdlet
-`Invoke-Pester` looks for all the '*.Tests.ps1' PowerShell script files
-recursively and executes the tests.
+The script `Assert-TestEnvironment.ps1` will clone the test framework
+from GitHub, check if the minimum required version of Pester is available,
+load some necessary types which is needed to run some of the tests.
+Read more about the bootstrap script in the section
+[Bootstrap script Assert-TestEnvironment](#bootstrap-script-assert-testenvironment).
+
+The cmdlet `Invoke-Pester` looks for all the '*.Tests.ps1' PowerShell
+script files recursively and executes the tests.
 
 #### Unit tests for style check of Markdown files
 
@@ -446,3 +449,29 @@ If using Visual Studio Code to edit Markdown files it can be a good idea to inst
 the markdownlint extension. It will help to do style checking.
 The file [.markdownlint.json](/.markdownlint.json) is prepared with a default set
 of rules which will automatically be used by the extension.
+
+## Bootstrap script Assert-TestEnvironment
+
+The bootstrap script [`Assert-TestEnvironment.ps1`](Assert-TestEnvironment.ps1)
+was needed when tests were updated to run in containers.
+There are some custom types (`Microsoft.DscResourceKit.*`) that are needed
+to be able to parse the test script files. Those types must be loaded
+into the session prior to running any unit tests with `Invoke-Pester`.
+
+The script works without any parameters and will do the following.
+
+>**Note:** If you want to confirm each step, then add the `-Confirm`
+>parameter.
+
+- Check if a compatible *Pester* version is available.
+- Check if *DscResource.Tests* is cloned, if not, clone it into the local
+  repository folder.
+- Load the necessary types from the test framework *DscResource.Tests*.
+
+If there are no compatible Pester version available, you will be asked
+to install it manually, and then run the script again.
+
+If the script is used with the `-UpdateTestFramework` parameter, then the
+local *DscResource.Tests* repository (that was cloned inside the
+SqlServerDsc repository folder) will be updated to the latest commit
+available in the branch `dev` (on GitHub).
