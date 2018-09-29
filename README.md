@@ -47,16 +47,11 @@ by sending in pull requests yourself.
   please first check out the [Review Pull Request guidelines](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md#reviewing-pull-requests),
   and the browse the list of [pull requests](https://github.com/PowerShell/SqlServerDsc/pulls)
   and look for those pull requests with label 'needs review'.
-* If you want to improve the resources or tests,
-  or create a new resource,
+* If you want to improve this resource module,
   then please check out the following guidelines.
-  * The [Contributing to the DSC Resource Kit](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md)
-    guidelines.
   * The specific [Contributing to SqlServerDsc](https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md)
     guidelines.
-  * The common [Style Guidelines](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md).
-  * The common [Best Practices](https://github.com/PowerShell/DscResources/blob/master/BestPractices.md)
-    guidelines.
+  * The common [Style Guidelines & Best Practices](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md).
   * The common [Testing Guidelines](https://github.com/PowerShell/DscResources/blob/master/TestsGuidelines.md).
   * If you are new to GitHub (and git),
     then please check out [Getting Started with GitHub](https://github.com/PowerShell/DscResources/blob/master/GettingStartedWithGitHub.md).

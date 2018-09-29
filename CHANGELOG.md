@@ -15,6 +15,7 @@
     must be run prior to running any unit tests with `Invoke-Pester`.
     Read more in the specific contributing guidelines, under the section
     [Unit Tests](https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#unit-tests).
+  - Updated the Contributing section in the README.md.
 - Changes to SqlServerDscHelper
   - Fix style guideline lint errors.
   - Changes to Connect-SQL
