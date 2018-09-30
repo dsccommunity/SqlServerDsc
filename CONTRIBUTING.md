@@ -388,9 +388,8 @@ Invoke-Pester
 ```
 
 The script `Assert-TestEnvironment.ps1` will clone the test framework
-from GitHub, check if the minimum required version of Pester is available,
-load some necessary types which is needed to run some of the tests.
-Read more about the bootstrap script in the section
+from GitHub, and load some necessary types which is needed to run some
+of the tests. Read more about the bootstrap script in the section
 [Bootstrap script Assert-TestEnvironment](#bootstrap-script-assert-testenvironment).
 
 The cmdlet `Invoke-Pester` looks for all the '*.Tests.ps1' PowerShell
@@ -464,14 +463,14 @@ The script works without any parameters and will do the following.
 >parameter.
 
 - Check if a compatible *Pester* version is available.
-- Check if *DscResource.Tests* is cloned, if not, clone it into the local
-  repository folder.
-- Load the necessary types from the test framework *DscResource.Tests*.
+- Check if a compatible *PSDepend* version is available.
+- Invoke PSDepend (using `Tests/Tests.depend.psd1`).
+  - Remove local cloned repository *DscResource.Tests* if it is present
+    (always assumes it's an older version).
+  - Clone *DscResource.Tests* from GitHub into the local repository
+    folder, and check out the branch `dev` to always be on the latest
+    commit available.
+  - Load the necessary types from the test framework *DscResource.Tests*.
 
-If there are no compatible Pester version available, you will be asked
+If there are no compatible Pester or PSDepend version available, you will be asked
 to install it manually, and then run the script again.
-
-If the script is used with the `-UpdateTestFramework` parameter, then the
-local *DscResource.Tests* repository (that was cloned inside the
-SqlServerDsc repository folder) will be updated to the latest commit
-available in the branch `dev` (on GitHub).
