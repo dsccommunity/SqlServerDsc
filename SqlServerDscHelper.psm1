@@ -52,13 +52,13 @@ function Connect-SQL
 
     Import-SQLPSModule
 
-    if ($SQLInstanceName -eq 'MSSQLSERVER')
+    if ($InstanceName -eq 'MSSQLSERVER')
     {
-        $databaseEngineInstance = $SQLServer
+        $databaseEngineInstance = $ServerName
     }
     else
     {
-        $databaseEngineInstance = "$SQLServer\$SQLInstanceName"
+        $databaseEngineInstance = "$ServerName\$InstanceName"
     }
 
     if ($SetupCredential)
@@ -1288,8 +1288,8 @@ function Split-FullSQLInstanceName
     }
 
     return @{
-        SQLServer       = $sqlServer
-        SQLInstanceName = $sqlInstanceName
+        ServerName   = $sqlServer
+        InstanceName = $sqlInstanceName
     }
 }
 

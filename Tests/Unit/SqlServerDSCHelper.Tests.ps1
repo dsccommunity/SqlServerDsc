@@ -153,7 +153,7 @@ InModuleScope $script:moduleName {
                         Status = $mockDynamicStatus
                         IsClustered = $false
                     }
-                } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'MSSQLSERVER' }
+                } -Verifiable -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
@@ -163,7 +163,7 @@ InModuleScope $script:moduleName {
                         Status = $mockDynamicStatus
                         IsClustered = $true
                     }
-                } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'NOCLUSTERCHECK' }
+                } -Verifiable -ParameterFilter { $InstanceName -eq 'NOCLUSTERCHECK' }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
@@ -173,7 +173,7 @@ InModuleScope $script:moduleName {
                         Status = $mockDynamicStatus
                         IsClustered = $true
                     }
-                } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'NOCONNECT' }
+                } -Verifiable -ParameterFilter { $InstanceName -eq 'NOCONNECT' }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
@@ -182,7 +182,7 @@ InModuleScope $script:moduleName {
                         ServiceName = 'NOAGENT'
                         Status = $mockDynamicStatus
                     }
-                } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'NOAGENT' }
+                } -Verifiable -ParameterFilter { $InstanceName -eq 'NOAGENT' }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
@@ -191,7 +191,7 @@ InModuleScope $script:moduleName {
                         ServiceName = 'STOPPEDAGENT'
                         Status = $mockDynamicStatus
                     }
-                } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'STOPPEDAGENT' }
+                } -Verifiable -ParameterFilter { $InstanceName -eq 'STOPPEDAGENT' }
             }
 
             BeforeAll {
@@ -326,7 +326,7 @@ InModuleScope $script:moduleName {
                             ServiceName = 'MSSQLSERVER'
                             Status = $mockDynamicStatus
                         }
-                    } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'MSSQLSERVER' }
+                    } -Verifiable -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
                 }
 
                 $mockDynamicStatus = 'Offline'
@@ -359,7 +359,7 @@ InModuleScope $script:moduleName {
                         IsClustered = $true
                         Status = $mockDynamicStatus
                     }
-                } -Verifiable -ParameterFilter { ($SQLServer -eq 'CLU01') -and ($SQLInstanceName -eq 'MSSQLSERVER') }
+                } -Verifiable -ParameterFilter { ($ServerName -eq 'CLU01') -and ($InstanceName -eq 'MSSQLSERVER') }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
@@ -369,7 +369,7 @@ InModuleScope $script:moduleName {
                         IsClustered = $true
                         Status = $mockDynamicStatus
                     }
-                } -Verifiable -ParameterFilter { ($SQLServer -eq 'CLU01') -and ($SQLInstanceName -eq 'NAMEDINSTANCE') }
+                } -Verifiable -ParameterFilter { ($ServerName -eq 'CLU01') -and ($InstanceName -eq 'NAMEDINSTANCE') }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
@@ -379,7 +379,7 @@ InModuleScope $script:moduleName {
                         IsClustered = $true
                         Status = $mockDynamicStatus
                     }
-                } -Verifiable -ParameterFilter { ($SQLServer -eq 'CLU01') -and ($SQLInstanceName -eq 'STOPPEDAGENT') }
+                } -Verifiable -ParameterFilter { ($ServerName -eq 'CLU01') -and ($InstanceName -eq 'STOPPEDAGENT') }
             }
 
             BeforeAll {
@@ -1056,17 +1056,17 @@ InModuleScope $script:moduleName {
             (
                 [Parameter()]
                 [System.String]
-                $SQLServer,
+                $ServerName,
 
                 [Parameter()]
                 [System.String]
-                $SQLInstanceName
+                $InstanceName
             )
 
             $mock = @(
                 (
                     New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name 'DomainInstanceName' -Value $SQLServer -PassThru
+                        Add-Member -MemberType NoteProperty -Name 'DomainInstanceName' -Value $ServerName -PassThru
                 )
             )
 
@@ -1123,11 +1123,11 @@ InModuleScope $script:moduleName {
                 (
                     [Parameter()]
                     [System.String]
-                    $SQLServer,
+                    $ServerName,
 
                     [Parameter()]
                     [System.String]
-                    $SQLInstanceName
+                    $InstanceName
                 )
 
                 $mock = @(
@@ -1240,7 +1240,7 @@ InModuleScope $script:moduleName {
         }
     }
 
-    Describe 'Testing Connect-SQL' -Tag ConnectSql {
+    Describe 'Testing Connect-SQL' -Tag 'ConnectSql' {
         BeforeEach {
             Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
             Mock -CommandName Import-SQLPSModule
@@ -1716,16 +1716,16 @@ InModuleScope $script:moduleName {
                 $result = Split-FullSQLInstanceName -FullSQLInstanceName 'ServerName'
 
                 $result.Count | Should -Be 2
-                $result.SQLServer | Should -Be 'ServerName'
-                $result.SQLInstanceName | Should -Be 'MSSQLSERVER'
+                $result.ServerName | Should -Be 'ServerName'
+                $result.InstanceName | Should -Be 'MSSQLSERVER'
             }
 
             It 'Should throw when the "FullSQLInstanceName" parameter is "ServerName\InstanceName"' {
                 $result = Split-FullSQLInstanceName -FullSQLInstanceName 'ServerName\InstanceName'
 
                 $result.Count | Should -Be 2
-                $result.SQLServer | Should -Be 'ServerName'
-                $result.SQLInstanceName | Should -Be 'InstanceName'
+                $result.ServerName | Should -Be 'ServerName'
+                $result.InstanceName | Should -Be 'InstanceName'
             }
         }
     }

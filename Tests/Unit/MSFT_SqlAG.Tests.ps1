@@ -474,7 +474,7 @@ try
             (
                 [Parameter()]
                 [System.String]
-                $SQLServer,
+                $ServerName,
 
                 [Parameter()]
                 [System.String]
@@ -491,16 +491,16 @@ try
             )
 
             # If this mock function is called from the Get-PrimaryReplicaServerObject command mock
-            if ( [System.String]::IsNullOrEmpty($SQLServer) -and [System.String]::IsNullOrEmpty($InstanceName) -and $AvailabilityGroup -and $ServerObject )
+            if ( [System.String]::IsNullOrEmpty($ServerName) -and [System.String]::IsNullOrEmpty($InstanceName) -and $AvailabilityGroup -and $ServerObject )
             {
-                $SQLServer,$InstanceName = $AvailabilityGroup.PrimaryReplicaServerName.Split('\')
+                $ServerName,$InstanceName = $AvailabilityGroup.PrimaryReplicaServerName.Split('\')
             }
 
             # Determine which SQL Server mock data we will use
-            $mockSqlServer = ( $mockSqlServerParameters.GetEnumerator() | Where-Object -FilterScript { $_.Value.Values -contains $SQLServer } ).Name
+            $mockSqlServer = ( $mockSqlServerParameters.GetEnumerator() | Where-Object -FilterScript { $_.Value.Values -contains $ServerName } ).Name
             if ( [System.String]::IsNullOrEmpty($mockSqlServer) )
             {
-                $mockSqlServer = $SQLServer
+                $mockSqlServer = $ServerName
             }
             $mockCurrentServerObjectProperties = $mockServerObjectProperties.$mockSqlServer
 
@@ -524,7 +524,7 @@ try
             $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
             $mockServerObject.DomainInstanceName = $mockDomainInstanceName
             $mockServerObject.IsHadrEnabled = $mockIsHadrEnabled
-            $mockServerObject.Name = $SQLServer
+            $mockServerObject.Name = $ServerName
             $mockServerObject.NetName = $mockCurrentServerObjectProperties.NetName
             $mockServerObject.ServiceName = $InstanceName
             $mockServerObject.Version = @{

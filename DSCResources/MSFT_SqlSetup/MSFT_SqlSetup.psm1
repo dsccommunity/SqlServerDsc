@@ -125,7 +125,7 @@ function Get-TargetResource
         Write-Verbose -Message $script:localizedData.DatabaseEngineFeatureFound
 
         $features += 'SQLENGINE,'
-        
+
         $sqlServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$databaseServiceName'")
         $agentServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$agentServiceName'")
 
@@ -295,7 +295,7 @@ function Get-TargetResource
         $analysisServiceAccountUsername = $analysisServiceCimInstance.StartName
         $AsSvcStartupType = ConvertTo-StartupType -StartMode $analysisServiceCimInstance.StartMode
 
-        $analysisServer = Connect-SQLAnalysis -ServerName $sqlHostName -InstanceName $InstanceName
+        $analysisServer = Connect-SQLAnalysis -SQLServer $sqlHostName -SQLInstanceName $InstanceName
 
         $analysisCollation = $analysisServer.ServerProperties['CollationName'].Value
         $analysisDataDirectory = $analysisServer.ServerProperties['DataDir'].Value
@@ -1313,7 +1313,7 @@ function Set-TargetResource
             {
                 $setupArguments += @{ AgtSvcStartupType = 'Automatic' }
             }
-            
+
             if ($PSBoundParameters.ContainsKey('SqlSvcStartupType'))
             {
                 $setupArguments += @{ SqlSvcStartupType = $SqlSvcStartupType}
@@ -1380,7 +1380,7 @@ function Set-TargetResource
                 $setupArguments['ASSysAdminAccounts'] += $ASSysAdminAccounts
             }
         }
-        
+
         if ($PSBoundParameters.ContainsKey('AsSvcStartupType'))
         {
             $setupArguments += @{ AsSvcStartupType = $AsSvcStartupType}
@@ -1393,7 +1393,7 @@ function Set-TargetResource
         {
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $ISSvcAccount -ServiceType 'IS')
         }
-        
+
         if ($PSBoundParameters.ContainsKey('IsSvcStartupType'))
         {
             $setupArguments += @{ IsSvcStartupType = $IsSvcStartupType}
