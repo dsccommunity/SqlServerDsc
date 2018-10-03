@@ -378,13 +378,22 @@ For a review of a Pull Request (PR) to start, all tests must pass without error.
 If you need help to figure why some test don't pass, just write a comment in the
 Pull Request (PR), or submit an issue, and somebody will come along and assist.
 
-To run all tests manually run the following.
+To run all unit tests manually run the following.
 
 ```powershell
-Install-Module Pester
-cd '<path to cloned repository>\Tests'
+cd '<path to cloned repository>'
+.\Assert-TestEnvironment.ps1 -Confirm -Verbose
+cd '<path to cloned repository>\Tests\Unit'
 Invoke-Pester
 ```
+
+The script `Assert-TestEnvironment.ps1` will clone the test framework
+from GitHub, and load some necessary types which is needed to run some
+of the tests. Read more about the bootstrap script in the section
+[Bootstrap script Assert-TestEnvironment](#bootstrap-script-assert-testenvironment).
+
+The cmdlet `Invoke-Pester` looks for all the '*.Tests.ps1' PowerShell
+script files recursively and executes the tests.
 
 #### Unit tests for style check of Markdown files
 
@@ -439,3 +448,29 @@ If using Visual Studio Code to edit Markdown files it can be a good idea to inst
 the markdownlint extension. It will help to do style checking.
 The file [.markdownlint.json](/.markdownlint.json) is prepared with a default set
 of rules which will automatically be used by the extension.
+
+## Bootstrap script Assert-TestEnvironment
+
+The bootstrap script [`Assert-TestEnvironment.ps1`](Assert-TestEnvironment.ps1)
+was needed when tests were updated to run in containers.
+There are some custom types (`Microsoft.DscResourceKit.*`) that are needed
+to be able to parse the test script files. Those types must be loaded
+into the session prior to running any unit tests with `Invoke-Pester`.
+
+The script works without any parameters and will do the following.
+
+>**Note:** If you want to confirm each step, then add the `-Confirm`
+>parameter.
+
+- Check if a compatible *Pester* version is available.
+- Check if a compatible *PSDepend* version is available.
+- Invoke PSDepend (using `Tests/Tests.depend.psd1`).
+  - Remove local cloned repository *DscResource.Tests* if it is present
+    (always assumes it's an older version).
+  - Clone *DscResource.Tests* from GitHub into the local repository
+    folder, and check out the branch `dev` to always be on the latest
+    commit available.
+  - Load the necessary types from the test framework *DscResource.Tests*.
+
+If there are no compatible Pester or PSDepend version available, you will be asked
+to install it manually, and then run the script again.

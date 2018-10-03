@@ -1,3 +1,15 @@
+<#
+    .SYNOPSIS
+        Automated unit test for helper functions in module SqlServerDscHelper.
+
+    .NOTES
+        To run this script locally, please make sure to first run the bootstrap
+        script. Read more at
+        https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
+#>
+
+# This is used to make sure the unit test run in a container.
+[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container1', ContainerImage = 'microsoft/windowsservercore')]
 # To run these tests, we have to fake login credentials
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param ()

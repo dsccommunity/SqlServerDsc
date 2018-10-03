@@ -1,11 +1,18 @@
 <#
     .SYNOPSIS
-        Automated unit test for MSFT_SqlScript DSC Resource
+        Automated unit test for MSFT_SqlScript DSC resource.
+
+    .NOTES
+        To run this script locally, please make sure to first run the bootstrap
+        script. Read more at
+        https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
+# This is used to make sure the unit test run in a container.
+[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container2', ContainerImage = 'microsoft/windowsservercore')]
 # Suppression of this PSSA rule allowed in tests.
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
-Param()
+param()
 
 #region HEADER
 

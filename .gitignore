@@ -1,4 +1,5 @@
-﻿DSCResource.Tests
+﻿DscResource.Tests
+DSCResource.Tests
 .vs
 .vscode
 node_modules
