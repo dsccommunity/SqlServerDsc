@@ -1,4 +1,7 @@
 <#
+    .SYNOPSIS
+        Automated unit test for helper functions in module SqlServerDscHelper.
+
     .NOTES
         To run this script locally, please make sure to first run the bootstrap
         script. Read more at
