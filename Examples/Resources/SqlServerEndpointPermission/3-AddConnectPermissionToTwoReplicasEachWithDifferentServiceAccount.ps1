@@ -8,7 +8,7 @@ $ConfigurationData = @{
     AllNodes = @(
         @{
             NodeName        = '*'
-            SqlInstanceName = 'MSSQLSERVER'
+            InstanceName = 'MSSQLSERVER'
         },
 
         @{
