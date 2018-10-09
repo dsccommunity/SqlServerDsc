@@ -1079,7 +1079,14 @@ function Test-LoginEffectivePermissions
 
         [Parameter(Mandatory = $true)]
         [System.String[]]
-        $Permissions
+        $Permissions,
+
+        [ValidateSet('APPLICATION ROLE', 'ASSEMBLY', 'ASYMMETRIC KEY', 'CERTIFICATE', 'CONTRACT', 'DATABASE', 'ENDPOINT', 'FULLTEXT CATALOG',
+            'LOGIN', 'MESSAGE TYPE', 'OBJECT', 'REMOTE SERVICE BINDING', 'ROLE', 'ROUTE', 'SCHEMA', 'SERVER', 'SERVICE', 'SYMMETRIC KEY',
+            'TYPE', 'USER', 'XML SCHEMA COLLECTION')]
+        [System.String] $SecurableClass = 'SERVER',
+
+        [System.String] $Securable
     )
 
     # Assume the permissions are not present
@@ -1092,13 +1099,21 @@ function Test-LoginEffectivePermissions
         WithResults     = $true
     }
 
-    $queryToGetEffectivePermissionsForLogin = "
-        EXECUTE AS LOGIN = '$LoginName'
-        SELECT DISTINCT permission_name
-        FROM fn_my_permissions(null,'SERVER')
-        REVERT
-    "
-
+    if ($null -eq $Securable) {
+        $queryToGetEffectivePermissionsForLogin = "
+            EXECUTE AS LOGIN = '$LoginName'
+            SELECT DISTINCT permission_name
+            FROM fn_my_permissions(null, '$SecurableClass')
+            REVERT
+        "
+    } else {
+        $queryToGetEffectivePermissionsForLogin = "
+            EXECUTE AS LOGIN = '$LoginName'
+            SELECT DISTINCT permission_name
+            FROM fn_my_permissions('$Securable', '$SecurableClass')
+            REVERT
+        "
+    }
     Write-Verbose -Message ($script:localizedData.GetEffectivePermissionForLogin -f $LoginName, $sqlInstanceName) -Verbose
 
     $loginEffectivePermissionsResult = Invoke-Query @invokeQueryParameters -Query $queryToGetEffectivePermissionsForLogin
@@ -1233,6 +1248,10 @@ function Get-PrimaryReplicaServerObject
 
     .PARAMETER ServerObject
         The server object on which to perform the test.
+
+    .PARAMETER LoginName
+        If set then this specific login is also checked for the specific permission.
+
 #>
 function Test-ImpersonatePermissions
 {
@@ -1240,17 +1259,46 @@ function Test-ImpersonatePermissions
     (
         [Parameter(Mandatory = $true)]
         [Microsoft.SqlServer.Management.Smo.Server]
-        $ServerObject
+        $ServerObject,
+
+        [System.String] $LoginName
     )
 
+    $impersonatePermissionsPresent = $false
+
+    # Only exists on this is SQL 2014 or newer
     $testLoginEffectivePermissionsParams = @{
         SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
         SQLInstanceName = $ServerObject.ServiceName
         LoginName       = $ServerObject.ConnectionContext.TrueLogin
         Permissions     = @('IMPERSONATE ANY LOGIN')
     }
-
     $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+
+    if ( -not $impersonatePermissionsPresent )
+    {
+        # Check for sysadmin / control server permission which allows impersonation
+        $testLoginEffectivePermissionsParams = @{
+            SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
+            SQLInstanceName = $ServerObject.ServiceName
+            LoginName       = $ServerObject.ConnectionContext.TrueLogin
+            Permissions     = @('CONTROL SERVER')
+        }
+        $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+    }
+
+    if ( -not $impersonatePermissionsPresent -and -not [System.String]::IsNullOrEmpty($LoginName) ) {
+        # Check for login-specific impersonation permissions
+        $testLoginEffectivePermissionsParams = @{
+            SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
+            SQLInstanceName = $ServerObject.ServiceName
+            LoginName       = $ServerObject.ConnectionContext.TrueLogin
+            Permissions     = @('IMPERSONATE')
+            SecurableClass  = 'LOGIN'
+            Securable       = $LoginName
+        }
+        $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+    }
 
     if ( -not $impersonatePermissionsPresent )
     {

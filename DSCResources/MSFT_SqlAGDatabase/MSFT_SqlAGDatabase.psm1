@@ -232,33 +232,33 @@ function Set-TargetResource
         # Get only the secondary replicas. Some tests do not need to be performed on the primary replica
         $secondaryReplicas = $availabilityGroup.AvailabilityReplicas | Where-Object -FilterScript { $_.Role -ne 'Primary' }
 
-        # Ensure the appropriate permissions are in place on all the replicas
-        if ( $MatchDatabaseOwner )
-        {
-            $impersonatePermissionsStatus = @{}
-
-            foreach ( $availabilityGroupReplica in $secondaryReplicas )
-            {
-                $currentAvailabilityGroupReplicaServerObject = Connect-SQL -SQLServer $availabilityGroupReplica.Name
-                $impersonatePermissionsStatus.Add(
-                    $availabilityGroupReplica.Name,
-                    ( Test-ImpersonatePermissions -ServerObject $currentAvailabilityGroupReplicaServerObject )
-                )
-            }
-
-            if ( $impersonatePermissionsStatus.Values -contains $false )
-            {
-                $impersonatePermissionsMissingParameters = @(
-                    [System.Security.Principal.WindowsIdentity]::GetCurrent().Name,
-                    ( ( $impersonatePermissionsStatus.GetEnumerator() | Where-Object -FilterScript { -not $_.Value } | Select-Object -ExpandProperty Key ) -join ', ' )
-                )
-                throw ($script:localizedData.ImpersonatePermissionsMissing -f $impersonatePermissionsMissingParameters )
-            }
-        }
-
         foreach ( $databaseToAddToAvailabilityGroup in $databasesToAddToAvailabilityGroup )
         {
             $databaseObject = $primaryServerObject.Databases[$databaseToAddToAvailabilityGroup]
+
+            # Ensure the appropriate permissions are in place on all the intended secondary replicas for each database
+            if ( $MatchDatabaseOwner )
+            {
+                $impersonatePermissionsStatus = @{}
+
+                foreach ( $availabilityGroupReplica in $secondaryReplicas )
+                {
+                    $currentAvailabilityGroupReplicaServerObject = Connect-SQL -SQLServer $availabilityGroupReplica.Name
+                    $impersonatePermissionsStatus.Add(
+                        $availabilityGroupReplica.Name,
+                        ( Test-ImpersonatePermissions -ServerObject $currentAvailabilityGroupReplicaServerObject -LoginName $databaseObject.Owner )
+                    )
+                }
+
+                if ( $impersonatePermissionsStatus.Values -contains $false )
+                {
+                    $impersonatePermissionsMissingParameters = @(
+                        [System.Security.Principal.WindowsIdentity]::GetCurrent().Name,
+                        ( ( $impersonatePermissionsStatus.GetEnumerator() | Where-Object -FilterScript { -not $_.Value } | Select-Object -ExpandProperty Key ) -join ', ' )
+                    )
+                    throw ($script:localizedData.ImpersonatePermissionsMissing -f $impersonatePermissionsMissingParameters )
+                }
+            }
 
             <#
                 Verify the prerequisites prior to joining the database to the availability group
@@ -608,7 +608,7 @@ function Set-TargetResource
 
         If set to $false, the owner of the database will be the PSDscRunAsCredential.
 
-        The default is '$true'.
+        The default is '$false'.
 
     .PARAMETER ProcessOnlyOnActiveNode
         Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.

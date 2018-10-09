@@ -54,6 +54,10 @@
   - Fix unit tests that didn't mock some of the calls. It no longer fail
     when a SQL Server installation is not present on the node running the
     unit test ([issue #983](https://github.com/PowerShell/SqlServerDsc/issues/983)).
+- Changes to SqlAGDatabase
+  - Fix MatchDatabaseOwner to check for CONTROL SERVER and IMPERSONATE
+    LOGIN permission in addition to IMPERSONATE ANY LOGIN.
+  - Fix MatchDatabaseOwner help text.
 
 ## 12.0.0.0
 
