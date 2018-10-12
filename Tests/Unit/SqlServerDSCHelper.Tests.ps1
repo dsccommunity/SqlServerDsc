@@ -1219,23 +1219,62 @@ InModuleScope $script:moduleName {
         $mockServerObject.ServiceName = 'MSSQLSERVER'
         $mockServerObject.ConnectionContext = $mockConnectionContextObject
 
+        $mockImpersonateAnyLoginPermissionsPresent = @(
+            'Impersonate Any Login'
+        )
+
+        $mockControlServerPermissionsPresent = @(
+            'Control Server'
+        )
+
+        $mockImpersonateLoginPermissionsPresent = @(
+            'Impersonate'
+        )
+
+        $mockPermissionsMissing = @(
+        )
+
+        $mockInvokeQueryImpersonatePermissionsSet = @() # Will be set dynamically in the check
+
+        $mockInvokeQueryImpersonatePermissionsResult = {
+            return New-Object -TypeName PSObject -Property @{
+                Tables = @{
+                    Rows = @{
+                        permission_name = $mockInvokeQueryImpersonatePermissionsSet
+                    }
+                }
+            }
+        }
+
+        BeforeEach {
+            Mock -CommandName Invoke-Query -MockWith $mockInvokeQueryImpersonatePermissionsResult -Verifiable
+        }
+
         Context 'When impersonate permissions are present for the login' {
-            Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true }
+            It 'Should return true when the impersonate any login permission is present'{
+                $mockInvokeQueryImpersonatePermissionsSet = $mockImpersonateAnyLoginPermissionsPresent.Clone()
 
-            It 'Should return true when the impersonate permissions are present for the login'{
                 Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $true
+            }
 
-                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly
+            It 'Should return true when the control server permission is present'{
+                $mockInvokeQueryImpersonatePermissionsSet = $mockControlServerPermissionsPresent.Clone()
+
+                Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $true
+            }
+
+            It 'Should return true when the impersonate login permission is present'{
+                $mockInvokeQueryImpersonatePermissionsSet = $mockImpersonateLoginPermissionsPresent.Clone()
+
+                Test-ImpersonatePermissions -ServerObject $mockServerObject -LoginName 'SomeLogin' | Should -Be $true
             }
         }
 
         Context 'When impersonate permissions are missing for the login' {
-            Mock -CommandName Test-LoginEffectivePermissions -MockWith { $false } -Verifiable
-
             It 'Should return false when the impersonate permissions are missing for the login'{
-                Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $false
+                $mockInvokeQueryImpersonatePermissionsSet = $mockPermissionsMissing.Clone()
 
-                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly
+                Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $false
             }
         }
     }
