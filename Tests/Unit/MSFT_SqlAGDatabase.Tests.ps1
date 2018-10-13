@@ -235,6 +235,8 @@ try
 
         #region Database Mocks
 
+            $mockDatabaseOwner = 'DatabaseOwner1'
+
             # The databases found on the instance
             $mockPresentDatabaseNames = @(
                 'DB1'
@@ -272,6 +274,7 @@ try
                 $newDatabaseObject.LogFiles = @{
                     FileName = ( [IO.Path]::Combine( $mockLogFilePath, "$($mockPresentDatabaseName).ldf" ) )
                 }
+                $newDatabaseObject.Owner = $mockDatabaseOwner
 
                 # Add the database object to the database collection
                 $mockDatabaseObjects.Add($newDatabaseObject)
@@ -292,6 +295,7 @@ try
                 $newDatabaseObject.LogFiles = @{
                     FileName = ( [IO.Path]::Combine( $mockLogFilePathIncorrect, "$($mockPresentDatabaseName).ldf" ) )
                 }
+                $newDatabaseObject.Owner = $mockDatabaseOwner
 
                 # Add the database object to the database collection
                 $mockDatabaseObjectsWithIncorrectFileNames.Add($newDatabaseObject)
