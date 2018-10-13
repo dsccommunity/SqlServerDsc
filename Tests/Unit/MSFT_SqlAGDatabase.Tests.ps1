@@ -76,6 +76,8 @@ try
 
         #region mock names
 
+            $mockTrueLogin = 'Login1'
+            $mockDatabaseOwner = 'DatabaseOwner1'
             $mockServerObjectDomainInstanceName = 'Server1'
             $mockPrimaryServerObjectDomainInstanceName = 'Server2'
             $mockAvailabilityGroupObjectName = 'AvailabilityGroup1'
@@ -235,8 +237,6 @@ try
 
         #region Database Mocks
 
-            $mockDatabaseOwner = 'DatabaseOwner1'
-
             # The databases found on the instance
             $mockPresentDatabaseNames = @(
                 'DB1'
@@ -312,6 +312,9 @@ try
             $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupObject.Clone())
             $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
             $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
+            $mockServerObject.ComputerNamePhysicalNetBIOS = $mockServerObjectDomainInstanceName
+            $mockServerObject.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ConnectionContext
+            $mockServerObject.ConnectionContext.TrueLogin = $mockTrueLogin
             $mockServerObject.Databases = $mockDatabaseObjects
             $mockServerObject.DomainInstanceName = $mockServerObjectDomainInstanceName
             $mockServerObject.NetName = $mockServerObjectDomainInstanceName
@@ -325,6 +328,9 @@ try
             $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupObject.Clone())
             $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
             $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
+            $mockServer2Object.ComputerNamePhysicalNetBIOS = $mockPrimaryServerObjectDomainInstanceName
+            $mockServer2Object.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ConnectionContext
+            $mockServer2Object.ConnectionContext.TrueLogin = $mockTrueLogin
             $mockServer2Object.Databases = $mockDatabaseObjects
             $mockServer2Object.DomainInstanceName = $mockPrimaryServerObjectDomainInstanceName
             $mockServer2Object.NetName = $mockPrimaryServerObjectDomainInstanceName
