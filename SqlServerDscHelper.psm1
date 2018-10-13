@@ -1249,8 +1249,8 @@ function Get-PrimaryReplicaServerObject
     .PARAMETER ServerObject
         The server object on which to perform the test.
 
-    .PARAMETER LoginName
-        If set then this specific login is also checked for the specific permission.
+    .PARAMETER Securable
+        If set then impersonate permission on tihs specific securable (login) is also checked.
 
 #>
 function Test-ImpersonatePermissions
@@ -1261,7 +1261,7 @@ function Test-ImpersonatePermissions
         [Microsoft.SqlServer.Management.Smo.Server]
         $ServerObject,
 
-        [System.String] $LoginName
+        [System.String] $Securable
     )
 
     $impersonatePermissionsPresent = $false
@@ -1287,7 +1287,7 @@ function Test-ImpersonatePermissions
         $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
     }
 
-    if ( -not $impersonatePermissionsPresent -and -not [System.String]::IsNullOrEmpty($LoginName) ) {
+    if ( -not $impersonatePermissionsPresent -and -not [System.String]::IsNullOrEmpty($Securable) ) {
         # Check for login-specific impersonation permissions
         $testLoginEffectivePermissionsParams = @{
             SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
@@ -1295,7 +1295,7 @@ function Test-ImpersonatePermissions
             LoginName       = $ServerObject.ConnectionContext.TrueLogin
             Permissions     = @('IMPERSONATE')
             SecurableClass  = 'LOGIN'
-            Securable       = $LoginName
+            Securable       = $Securable
         }
         $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
     }

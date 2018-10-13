@@ -1255,18 +1255,24 @@ InModuleScope $script:moduleName {
                 $mockInvokeQueryImpersonatePermissionsSet = $mockImpersonateAnyLoginPermissionsPresent.Clone()
 
                 Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $true
+                # It's called once because it short-circuits with the IMPERSONATE ANY LOGIN persmission is present
+                Assert-MockCalled -CommandName Invoke-Query -Exactly -Times 1 -Scope It
             }
 
             It 'Should return true when the control server permission is present'{
                 $mockInvokeQueryImpersonatePermissionsSet = $mockControlServerPermissionsPresent.Clone()
 
                 Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $true
+                # It's called twice, once for IMPERSONATE ANY LOGIN and again for CONTROL SERVER
+                Assert-MockCalled -CommandName Invoke-Query -Exactly -Times 2 -Scope It
             }
 
             It 'Should return true when the impersonate login permission is present'{
                 $mockInvokeQueryImpersonatePermissionsSet = $mockImpersonateLoginPermissionsPresent.Clone()
 
-                Test-ImpersonatePermissions -ServerObject $mockServerObject -LoginName 'SomeLogin' | Should -Be $true
+                Test-ImpersonatePermissions -ServerObject $mockServerObject -Securable 'DatabaseOwner1' | Should -Be $true
+                # It's called three times, IMPERSONATE ANY, CONTROL SERVER, and then a specific IMPERSONATE LOGIN
+                Assert-MockCalled -CommandName Invoke-Query -Exactly -Times 3 -Scope It
             }
         }
 

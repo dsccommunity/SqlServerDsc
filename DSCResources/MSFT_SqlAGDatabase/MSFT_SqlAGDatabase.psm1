@@ -246,7 +246,7 @@ function Set-TargetResource
                     $currentAvailabilityGroupReplicaServerObject = Connect-SQL -SQLServer $availabilityGroupReplica.Name
                     $impersonatePermissionsStatus.Add(
                         $availabilityGroupReplica.Name,
-                        ( Test-ImpersonatePermissions -ServerObject $currentAvailabilityGroupReplicaServerObject -LoginName $databaseObject.Owner )
+                        ( Test-ImpersonatePermissions -ServerObject $currentAvailabilityGroupReplicaServerObject -Securable $databaseObject.Owner )
                     )
                 }
 
