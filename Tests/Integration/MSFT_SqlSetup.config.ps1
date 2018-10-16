@@ -192,26 +192,31 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
     {
         SqlSetup 'Integration_Test'
         {
-            InstanceName          = $Node.DatabaseEngineNamedInstanceName
-            Features              = $Node.DatabaseEngineNamedInstanceFeatures
-            SourcePath            = "$($Node.DriveLetter):\"
-            SqlSvcStartupType     = 'Automatic'
-            AgtSvcStartupType     = 'Automatic'
-            BrowserSvcStartupType = 'Automatic'
-            SecurityMode          = 'SQL'
-            SAPwd                 = $SqlAdministratorCredential
-            SQLCollation          = $Node.Collation
-            SQLSvcAccount         = $SqlServicePrimaryCredential
-            AgtSvcAccount         = $SqlAgentServicePrimaryCredential
-            ASServerMode          = $Node.AnalysisServicesMultiServerMode
-            AsSvcStartupType      = 'Automatic'
-            ASCollation           = $Node.Collation
-            ASSvcAccount          = $SqlServicePrimaryCredential
-            InstallSharedDir      = $Node.InstallSharedDir
-            InstallSharedWOWDir   = $Node.InstallSharedWOWDir
-            UpdateEnabled         = $Node.UpdateEnabled
-            SuppressReboot        = $Node.SuppressReboot
-            ForceReboot           = $Node.ForceReboot
+            InstanceName           = $Node.DatabaseEngineNamedInstanceName
+            Features               = $Node.DatabaseEngineNamedInstanceFeatures
+            SourcePath             = "$($Node.DriveLetter):\"
+            SqlSvcStartupType      = 'Automatic'
+            AgtSvcStartupType      = 'Automatic'
+            BrowserSvcStartupType  = 'Automatic'
+            SecurityMode           = 'SQL'
+            SAPwd                  = $SqlAdministratorCredential
+            SQLCollation           = $Node.Collation
+            SQLSvcAccount          = $SqlServicePrimaryCredential
+            AgtSvcAccount          = $SqlAgentServicePrimaryCredential
+            ASServerMode           = $Node.AnalysisServicesMultiServerMode
+            AsSvcStartupType       = 'Automatic'
+            ASCollation            = $Node.Collation
+            ASSvcAccount           = $SqlServicePrimaryCredential
+            InstallSharedDir       = $Node.InstallSharedDir
+            InstallSharedWOWDir    = $Node.InstallSharedWOWDir
+            UpdateEnabled          = $Node.UpdateEnabled
+            SuppressReboot         = $Node.SuppressReboot
+            ForceReboot            = $Node.ForceReboot
+            SqlTempdbFileCount     = '2'
+            SqlTempdbFileSize      = '128'
+            SqlTempdbFileGrowth    = '128'
+            SqlTempdbLogFileSize   = '128'
+            SqlTempdbLogFileGrowth = '128'
 
             # This must be set if using SYSTEM account to install.
             SQLSysAdminAccounts   = @(

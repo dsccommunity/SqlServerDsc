@@ -190,6 +190,29 @@ function Get-TargetResource
 
         $databaseServer = Connect-SQL -SQLServer $sqlHostName -SQLInstanceName $InstanceName
 
+        # Retrieve Tempdb database files information
+        if ($sqlVersion -ge 13)
+        {
+            # Tempdb data files count
+            $tempdbPrimaryFilegroup = $databaseServer.Databases["tempdb"].FileGroups["PRIMARY"]
+            $SqlTempdbFileCount = $tempdbPrimaryFilegroup.Files.Count
+
+            # Tempdb data files size
+            $SqlTempdbFileSize = ($tempdbPrimaryFilegroup.Files.Size | Measure-Object -Average).Average / 1Kb
+            
+            # Tempdb data files growth
+            $SqlTempdbFileGrowth = ($tempdbPrimaryFilegroup.Files.Growth | Measure-Object -Average).Average / 1Kb
+            
+            # Tempdb log file size
+            $tempdbTempLog = $databaseServer.Databases["tempdb"].LogFiles["templog"]
+            $SqlTempdbLogFileSize = $tempdbTempLog.Size / 1Kb
+            
+            # Tempdb log file growth
+            $SqlTempdbLogFileGrowth = $tempdbTempLog.Growth / 1Kb
+        }
+
+
+
         $sqlCollation = $databaseServer.Collation
 
         $sqlSystemAdminAccounts = @()
@@ -501,6 +524,11 @@ function Get-TargetResource
         SQLUserDBLogDir = $sqlUserDatabaseLogDirectory
         SQLTempDBDir = $null
         SQLTempDBLogDir = $null
+        SqlTempdbFileCount = $SqlTempdbFileCount
+        SqlTempdbFileSize = $SqlTempdbFileSize
+        SqlTempdbFileGrowth = $SqlTempdbFileGrowth
+        SqlTempdbLogFileSize = $SqlTempdbLogFileSize
+        SqlTempdbLogFileGrowth = $SqlTempdbLogFileGrowth
         SQLBackupDir = $sqlBackupDirectory
         FTSvcAccountUsername = $fullTextServiceAccountUsername
         RSSvcAccountUsername = $reportingServiceAccountUsername
@@ -687,6 +715,21 @@ function Get-TargetResource
 
     .PARAMETER FailoverClusterNetworkName
         Host name to be assigned to the clustered SQL Server instance.
+
+    .PARAMETER SqlTempdbFileCount
+        Specifies the number of tempdb data files to be added by setup.
+
+    .PARAMETER SqlTempdbFileSize
+        Specifies the initial size of each tempdb data file in MB.
+
+    .PARAMETER SqlTempdbFileGrowth
+        Specifies the file growth increment of each tempdb data file in MB.
+
+    .PARAMETER SqlTempdbLogFileSize
+        Specifies the initial size of each tempdb log file in MB.
+
+    .PARAMETER SqlTempdbLogFileGrowth
+        Specifies the file growth increment of each tempdb data file in MB.
 
     .PARAMETER SetupProcessTimeout
         The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.
@@ -910,6 +953,26 @@ function Set-TargetResource
         [Parameter()]
         [System.String]
         $FailoverClusterNetworkName,
+
+        [Parameter()]
+        [System.UInt32]
+        $SqlTempdbFileCount,
+
+        [Parameter()]
+        [System.UInt32]
+        $SqlTempdbFileSize,
+
+        [Parameter()]
+        [System.UInt32]
+        $SqlTempdbFileGrowth,
+
+        [Parameter()]
+        [System.UInt32]
+        $SqlTempdbLogFileSize,
+
+        [Parameter()]
+        [System.UInt32]
+        $SqlTempdbLogFileGrowth,
 
         [Parameter()]
         [System.UInt32]
@@ -1301,6 +1364,36 @@ function Set-TargetResource
                 'SQLTempDBLogDir',
                 'SQLBackupDir'
             )
+        }
+        
+        # tempdb : define SqlTempdbFileCount
+        if($PSBoundParameters.ContainsKey('SqlTempdbFileCount'))
+        {
+            $setupArguments += @{ SqlTempdbFileCount = $SqlTempdbFileCount }
+        }
+        
+        # tempdb : define SqlTempdbFileSize
+        if($PSBoundParameters.ContainsKey('SqlTempdbFileSize'))
+        {
+            $setupArguments += @{ SqlTempdbFileSize = $SqlTempdbFileSize }
+        }
+        
+        # tempdb : define SqlTempdbFileGrowth
+        if($PSBoundParameters.ContainsKey('SqlTempdbFileGrowth'))
+        {
+            $setupArguments += @{ SqlTempdbFileGrowth = $SqlTempdbFileGrowth }
+        }
+        
+        # tempdb : define SqlTempdbLogFileSize
+        if($PSBoundParameters.ContainsKey('SqlTempdbLogFileSize'))
+        {
+            $setupArguments += @{ SqlTempdbLogFileSize = $SqlTempdbLogFileSize }
+        }
+        
+        # tempdb : define SqlTempdbLogFileGrowth
+        if($PSBoundParameters.ContainsKey('SqlTempdbLogFileGrowth'))
+        {
+            $setupArguments += @{ SqlTempdbLogFileGrowth = $SqlTempdbLogFileGrowth }
         }
 
         if ($Action -in @('Install'))
@@ -1727,6 +1820,21 @@ function Set-TargetResource
     .PARAMETER FailoverClusterNetworkName
         Host name to be assigned to the clustered SQL Server instance.
 
+    .PARAMETER SqlTempdbFileCount
+        Specifies the number of tempdb data files to be added by setup.
+
+    .PARAMETER SqlTempdbFileSize
+        Specifies the initial size of each tempdb data file in MB.
+
+    .PARAMETER SqlTempdbFileGrowth
+        Specifies the file growth increment of each tempdb data file in MB.
+
+    .PARAMETER SqlTempdbLogFileSize
+        Specifies the initial size of each tempdb log file in MB.
+
+    .PARAMETER SqlTempdbLogFileGrowth
+        Specifies the file growth increment of each tempdb data file in MB.
+
     .PARAMETER SetupProcessTimeout
         The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.
 #>
@@ -1940,6 +2048,26 @@ function Test-TargetResource
         [Parameter(ParameterSetName = 'ClusterInstall')]
         [System.String]
         $FailoverClusterNetworkName,
+
+        [Parameter()]
+        [System.UInt32]
+        $SqlTempdbFileCount,
+
+        [Parameter()]
+        [System.UInt32]
+        $SqlTempdbFileSize,
+
+        [Parameter()]
+        [System.UInt32]
+        $SqlTempdbFileGrowth,
+
+        [Parameter()]
+        [System.UInt32]
+        $SqlTempdbLogFileSize,
+
+        [Parameter()]
+        [System.UInt32]
+        $SqlTempdbLogFileGrowth,
 
         [Parameter()]
         [System.UInt32]

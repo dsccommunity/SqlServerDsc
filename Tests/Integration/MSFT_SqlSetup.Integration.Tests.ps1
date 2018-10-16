@@ -306,7 +306,12 @@ try
                     'sa'
                 )
                 $resourceCurrentState.SQLTempDBDir               | Should -BeNullOrEmpty
+                $resourceCurrentState.SqlTempdbFileCount         | Should -Be '2'
+                $resourceCurrentState.SqlTempdbFileSize          | Should -Be '128'
+                $resourceCurrentState.SqlTempdbFileGrowth        | Should -Be '128'
                 $resourceCurrentState.SQLTempDBLogDir            | Should -BeNullOrEmpty
+                $resourceCurrentState.SqlTempdbLogFileSize       | Should -Be '128'
+                $resourceCurrentState.SqlTempdbLogFileGrowth     | Should -Be '128'
                 $resourceCurrentState.SQLUserDBDir               | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineNamedInstanceName\MSSQL\DATA\")
                 $resourceCurrentState.SQLUserDBLogDir            | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineNamedInstanceName\MSSQL\DATA\")
                 $resourceCurrentState.SQMReporting               | Should -BeNullOrEmpty
