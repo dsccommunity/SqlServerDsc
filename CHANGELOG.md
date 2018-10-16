@@ -58,7 +58,7 @@
   - Add parameters to configure the Tempdb files during the installation of
     the instance. The new parameters are SqlTempdbFileCount, SqlTempdbFileSize,
     SqlTempdbFileGrowth, SqlTempdbLogFileSize and SqlTempdbLogFileGrowth
-    ([issue #1167](https://github.com/PowerShell/SqlServerDsc/issues/1167).
+    ([issue #1167](https://github.com/PowerShell/SqlServerDsc/issues/1167)).
     [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
 
 ## 12.0.0.0

@@ -80,12 +80,11 @@ Configuration Example
             SourcePath             = 'C:\InstallMedia\SQL2016RTM'
             UpdateEnabled          = 'False'
             ForceReboot            = $false
-
-		    SqlTempdbFileCount     = 4
-		    SqlTempdbFileSize      = 1024
-		    SqlTempdbFileGrowth    = 512
-		    SqlTempdbLogFileSize   = 128
-		    SqlTempdbLogFileGrowth = 64
+            SqlTempdbFileCount     = 4
+            SqlTempdbFileSize      = 1024
+            SqlTempdbFileGrowth    = 512
+            SqlTempdbLogFileSize   = 128
+            SqlTempdbLogFileGrowth = 64
 
             PsDscRunAsCredential = $SqlInstallCredential
 
