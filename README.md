@@ -1698,6 +1698,16 @@ need a '*SVCPASSWORD' argument in the setup arguments.
   this setup parameter.
 * **`[String]` FailoverClusterNetworkName** _(Write)_: Host name to be assigned to
   the clustered SQL Server instance.
+* **`[UInt32]` SqlTempdbFileCount** _(Write)_: Specifies the number of tempdb
+  data files to be added by setup.
+* **`[UInt32]` SqlTempdbFileSize** _(Write)_: Specifies the initial size of
+  each tempdb data file in MB.
+* **`[UInt32]` SqlTempdbFileGrowth** _(Write)_: Specifies the file growth
+  increment of each tempdb data file in MB.
+* **`[UInt32]` SqlTempdbLogFileSize** _(Write)_: Specifies the initial size
+  of each tempdb log file in MB.
+* **`[UInt32]` SqlTempdbLogFileGrowth** _(Write)_: Specifies the file growth
+  increment of each tempdb data file in MB.
 * **`[UInt32]` SetupProcessTimeout** _(Write)_: The timeout, in seconds, to wait
   for the setup process to finish. Default value is 7200 seconds (2 hours). If
   the setup process does not finish before this time, and error will be thrown.

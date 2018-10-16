@@ -54,6 +54,12 @@
   - Fix unit tests that didn't mock some of the calls. It no longer fail
     when a SQL Server installation is not present on the node running the
     unit test ([issue #983](https://github.com/PowerShell/SqlServerDsc/issues/983)).
+- Changes to SqlSetup
+  - Add parameters to configure the Tempdb files during the installation of
+    the instance. The new parameters are SqlTempdbFileCount, SqlTempdbFileSize,
+    SqlTempdbFileGrowth, SqlTempdbLogFileSize and SqlTempdbLogFileGrowth
+    ([issue #1167](https://github.com/PowerShell/SqlServerDsc/issues/1167).
+    [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
 
 ## 12.0.0.0
 
