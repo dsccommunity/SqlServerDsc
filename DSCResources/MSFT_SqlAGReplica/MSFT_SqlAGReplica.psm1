@@ -132,7 +132,7 @@ function Get-TargetResource
         Specifies if the availability group should be present or absent. Default is Present.
 
     .PARAMETER AvailabilityMode
-        Specifies the replica availability mode. Default is 'AsynchronousCommit'.
+        Specifies the replica availability mode. Default when adding a replica to an AG is 'AsynchronousCommit'.
 
     .PARAMETER BackupPriority
         Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. Default is 50.
@@ -147,7 +147,7 @@ function Get-TargetResource
         Specifies the hostname or IP address of the availability group replica endpoint. Default is the instance network name which is set in the code because the value can only be determined when connected to the SQL Instance.
 
     .PARAMETER FailoverMode
-        Specifies the failover mode. Default is Manual.
+        Specifies the failover mode. Default when adding a replica to an AG is Manual.
 
     .PARAMETER ReadOnlyRoutingConnectionUrl
         Specifies the fully-qualified domain name (FQDN) and port to use when routing to the replica for read only connections.
@@ -196,7 +196,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateSet('AsynchronousCommit', 'SynchronousCommit')]
         [System.String]
-        $AvailabilityMode = 'AsynchronousCommit',
+        $AvailabilityMode,
 
         [Parameter()]
         [ValidateRange(0, 100)]
@@ -220,7 +220,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateSet('Automatic', 'Manual')]
         [System.String]
-        $FailoverMode = 'Manual',
+        $FailoverMode,
 
         [Parameter()]
         [System.String]
@@ -309,13 +309,13 @@ function Set-TargetResource
                 $availabilityGroupReplica = $availabilityGroup.AvailabilityReplicas[$Name]
                 if ( $availabilityGroupReplica )
                 {
-                    if ( $AvailabilityMode -ne $availabilityGroupReplica.AvailabilityMode )
+                    if ( $PSBoundParameters['AvailabilityMode'] -and $AvailabilityMode -ne $availabilityGroupReplica.AvailabilityMode )
                     {
                         $availabilityGroupReplica.AvailabilityMode = $AvailabilityMode
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
-                    if ( $BackupPriority -ne $availabilityGroupReplica.BackupPriority )
+                    if ( $PSBoundParameters['BackupPriority'] -and $BackupPriority -ne $availabilityGroupReplica.BackupPriority )
                     {
                         $availabilityGroupReplica.BackupPriority = $BackupPriority
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
@@ -359,19 +359,19 @@ function Set-TargetResource
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
-                    if ( $FailoverMode -ne $availabilityGroupReplica.FailoverMode )
+                    if ( $PSBoundParameters['FailoverMode'] -and $FailoverMode -ne $availabilityGroupReplica.FailoverMode )
                     {
                         $availabilityGroupReplica.FailoverMode = $FailoverMode
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
-                    if ( $ReadOnlyRoutingConnectionUrl -ne $availabilityGroupReplica.ReadOnlyRoutingConnectionUrl )
+                    if ( $PSBoundParameters['ReadOnlyRoutingConnectionUrl'] -and $ReadOnlyRoutingConnectionUrl -ne $availabilityGroupReplica.ReadOnlyRoutingConnectionUrl )
                     {
                         $availabilityGroupReplica.ReadOnlyRoutingConnectionUrl = $ReadOnlyRoutingConnectionUrl
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
-                    if ( $ReadOnlyRoutingList -ne $availabilityGroupReplica.ReadOnlyRoutingList -and -not ( [string]::IsNullOrEmpty($ReadOnlyRoutingList) -and $availabilityReplica.ReadonlyRoutingList.Count -eq 0 ) )
+                    if ( $PSBoundParameters['ReadOnlyRoutingList'] -and ( $ReadOnlyRoutingList -join ',' ) -ne ($availabilityGroupReplica.ReadOnlyRoutingList -join ',' ) )
                     {
                         $availabilityGroupReplica.ReadOnlyRoutingList.Clear()
                         foreach ($readOnlyRoutingListEntry in $ReadOnlyRoutingList)
@@ -388,6 +388,16 @@ function Set-TargetResource
             }
             else
             {
+                if ( -not $PSBoundParameters['AvailabilityMode'] )
+                {
+                    $AvailabilityMode = 'AsynchronousCommit'
+                }
+                if ( -not $PSBoundParameters['FailoverMode'] )
+                {
+                    $FailoverMode = 'Manual'
+                }
+
+
                 # Connect to the instance that is supposed to house the primary replica
                 $primaryReplicaServerObject = Connect-SQL -SQLServer $PrimaryReplicaServerName -SQLInstanceName $PrimaryReplicaInstanceName
 
@@ -557,7 +567,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateSet('AsynchronousCommit', 'SynchronousCommit')]
         [System.String]
-        $AvailabilityMode = 'AsynchronousCommit',
+        $AvailabilityMode,
 
         [Parameter()]
         [ValidateRange(0, 100)]
@@ -581,7 +591,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateSet('Automatic', 'Manual')]
         [System.String]
-        $FailoverMode = 'Manual',
+        $FailoverMode
 
         [Parameter()]
         [System.String]
