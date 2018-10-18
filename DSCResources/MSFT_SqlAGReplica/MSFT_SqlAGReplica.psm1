@@ -147,7 +147,7 @@ function Get-TargetResource
         Specifies the hostname or IP address of the availability group replica endpoint. Default is the instance network name which is set in the code because the value can only be determined when connected to the SQL Instance.
 
     .PARAMETER FailoverMode
-        Specifies the failover mode. Default when adding a replica to an AG is Manual.
+        Specifies the failover mode. Default when adding a replica to an AG is 'Manual'.
 
     .PARAMETER ReadOnlyRoutingConnectionUrl
         Specifies the fully-qualified domain name (FQDN) and port to use when routing to the replica for read only connections.
@@ -503,7 +503,7 @@ function Set-TargetResource
         Specifies if the availability group should be present or absent. Default is Present.
 
     .PARAMETER AvailabilityMode
-        Specifies the replica availability mode. Default is 'AsynchronousCommit'.
+        Specifies the replica availability mode. Default when adding a replica to an AG is 'AsynchronousCommit'.
 
     .PARAMETER BackupPriority
         Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. Default is 50.
@@ -518,7 +518,7 @@ function Set-TargetResource
         Specifies the hostname or IP address of the availability group replica endpoint. Default is the instance network name which is set in the code because the value can only be determined when connected to the SQL Instance.
 
     .PARAMETER FailoverMode
-        Specifies the failover mode. Default is Manual.
+        Specifies the failover mode. Default when adding a replica to an AG is 'Manual'.
 
     .PARAMETER ReadOnlyRoutingConnectionUrl
         Specifies the fully-qualified domain name (FQDN) and port to use when routing to the replica for read only connections.
@@ -591,7 +591,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateSet('Automatic', 'Manual')]
         [System.String]
-        $FailoverMode
+        $FailoverMode,
 
         [Parameter()]
         [System.String]
