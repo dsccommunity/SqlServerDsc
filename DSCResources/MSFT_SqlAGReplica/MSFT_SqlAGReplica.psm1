@@ -371,9 +371,13 @@ function Set-TargetResource
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
-                    if ( $ReadOnlyRoutingList -ne $availabilityGroupReplica.ReadOnlyRoutingList )
+                    if ( $ReadOnlyRoutingList -ne $availabilityGroupReplica.ReadOnlyRoutingList -and -not ( [string]::IsNullOrEmpty($ReadOnlyRoutingList) -and $availabilityReplica.ReadonlyRoutingList.Count -eq 0 ) )
                     {
-                        $availabilityGroupReplica.ReadOnlyRoutingList = $ReadOnlyRoutingList
+                        $availabilityGroupReplica.ReadOnlyRoutingList.Clear()
+                        foreach ($readOnlyRoutingListEntry in $ReadOnlyRoutingList)
+                        {
+                            $availabilityGroupReplica.ReadOnlyRoutingList.Add($readOnlyRoutingListEntry)
+                        }
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
                 }
