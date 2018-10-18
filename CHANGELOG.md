@@ -58,6 +58,12 @@
   - Fix MatchDatabaseOwner to check for CONTROL SERVER and IMPERSONATE
     LOGIN permission in addition to IMPERSONATE ANY LOGIN.
   - Fix MatchDatabaseOwner help text.
+- Changes to SqlAGReplica
+  - When modifying an existing replica, the FailoverMode, AvailabilityMode,
+    and other parameters won't be changed unless you specify them explicitly
+    ([issue #1244](https://github.com/PowerShell/SqlServerDsc/issues/1244)).
+  - ReadOnlyRoutingList now gets updated without throwing an error the first
+    run ([issue #518](https://github.com/PowerShell/SqlServerDsc/issues/518)).
 
 ## 12.0.0.0
 
