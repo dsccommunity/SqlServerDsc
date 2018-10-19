@@ -65,7 +65,7 @@ try
         $mockEndpointHostName = $mockServerName
         $mockFailoverMode = 'Manual'
         $mockReadOnlyRoutingConnectionUrl = "TCP://$($mockServerName).domain.com:1433"
-        $mockReadOnlyRoutingList = [System.Collections.ArrayList] @($mockServerName)
+        $mockReadOnlyRoutingList = @($mockServerName)
         $mockProcessOnlyOnActiveNode = $false
 
         #endregion
@@ -147,7 +147,7 @@ try
         $mockAvailabilityGroupReplica1EndpointUrl = "$($mockAvailabilityGroupReplica1EndpointProtocol)://$($mockServer1Name):$($mockAvailabilityGroupReplica1EndpointPort)"
         $mockAvailabilityGroupReplica1FailoverMode = 'Manual'
         $mockAvailabilityGroupReplica1ReadOnlyRoutingConnectionUrl = "TCP://$($mockServer1Name).domain.com:1433"
-        $mockAvailabilityGroupReplica1ReadOnlyRoutingList = [System.Collections.ArrayList] @($mockServer1Name)
+        $mockAvailabilityGroupReplica1ReadOnlyRoutingList = @($mockServer1Name)
 
         $mockAvailabilityGroupReplica2Name = $mockServer2Name
         $mockAvailabilityGroupReplica2AvailabilityMode = 'AsynchronousCommit'
@@ -159,7 +159,7 @@ try
         $mockAvailabilityGroupReplica2EndpointUrl = "$($mockAvailabilityGroupReplica2EndpointProtocol)://$($mockServer2Name):$($mockAvailabilityGroupReplica2EndpointPort)"
         $mockAvailabilityGroupReplica2FailoverMode = 'Manual'
         $mockAvailabilityGroupReplica2ReadOnlyRoutingConnectionUrl = "TCP://$($mockServer2Name).domain.com:1433"
-        $mockAvailabilityGroupReplica2ReadOnlyRoutingList = [System.Collections.ArrayList] @($mockServer2Name)
+        $mockAvailabilityGroupReplica2ReadOnlyRoutingList = @($mockServer2Name)
 
         $mockAvailabilityGroupReplica3Name = $mockServer3Name
         $mockAvailabilityGroupReplica3AvailabilityMode = 'AsynchronousCommit'
@@ -171,7 +171,7 @@ try
         $mockAvailabilityGroupReplica3EndpointUrl = "$($mockAvailabilityGroupReplica3EndpointProtocol)://$($mockServer3Name):$($mockAvailabilityGroupReplica3EndpointPort)"
         $mockAvailabilityGroupReplica3FailoverMode = 'Manual'
         $mockAvailabilityGroupReplica3ReadOnlyRoutingConnectionUrl = "TCP://$($mockServer3Name).domain.com:1433"
-        $mockAvailabilityGroupReplica3ReadOnlyRoutingList = [System.Collections.ArrayList] @($mockServer3Name)
+        $mockAvailabilityGroupReplica3ReadOnlyRoutingList = @($mockServer3Name)
 
         #endregion
 
@@ -216,7 +216,7 @@ try
             $mockAvailabilityGroupReplica1.FailoverMode = $mockAvailabilityGroupReplica1FailoverMode
             $mockAvailabilityGroupReplica1.Name = $mockAvailabilityGroupReplica1Name
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingConnectionUrl = $mockAvailabilityGroupReplica1ReadOnlyRoutingConnectionUrl
-            $mockAvailabilityGroupReplica1.ReadOnlyRoutingList = $mockAvailabilityGroupReplica1ReadOnlyRoutingList
+            $mockAvailabilityGroupReplica1 | Add-Member -MemberType NoteProperty -Name ReadOnlyRoutingList -Value ( [System.Collections.Specialized.StringCollection] $mockAvailabilityGroupReplica1ReadOnlyRoutingList ) -Force
 
             $mockAvailabilityGroupReplica2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica2.AvailabilityMode = $mockAvailabilityGroupReplica2AvailabilityMode
@@ -227,7 +227,7 @@ try
             $mockAvailabilityGroupReplica2.FailoverMode = $mockAvailabilityGroupReplica2FailoverMode
             $mockAvailabilityGroupReplica2.Name = $mockAvailabilityGroupReplica2Name
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = $mockAvailabilityGroupReplica2ReadOnlyRoutingConnectionUrl
-            $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = $mockAvailabilityGroupReplica2ReadOnlyRoutingList
+            $mockAvailabilityGroupReplica2 | Add-Member -MemberType NoteProperty -Name ReadOnlyRoutingList -Value ( [System.Collections.Specialized.StringCollection] $mockAvailabilityGroupReplica2ReadOnlyRoutingList ) -Force
 
             $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica3.AvailabilityMode = $mockAvailabilityGroupReplica3AvailabilityMode
@@ -238,7 +238,7 @@ try
             $mockAvailabilityGroupReplica3.FailoverMode = $mockAvailabilityGroupReplica3FailoverMode
             $mockAvailabilityGroupReplica3.Name = $mockAvailabilityGroupReplica3Name
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = $mockAvailabilityGroupReplica3ReadOnlyRoutingConnectionUrl
-            $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = $mockAvailabilityGroupReplica3ReadOnlyRoutingList
+            $mockAvailabilityGroupReplica3 | Add-Member -MemberType NoteProperty -Name ReadOnlyRoutingList -Value ( [System.Collections.Specialized.StringCollection] $mockAvailabilityGroupReplica3ReadOnlyRoutingList ) -Force
 
             if ( $mockAlternateEndpointPort )
             {
@@ -319,7 +319,7 @@ try
             $mockAvailabilityGroupReplica1.FailoverMode = $mockAvailabilityGroupReplica1FailoverMode
             $mockAvailabilityGroupReplica1.Name = $mockAvailabilityGroupReplica1Name
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingConnectionUrl = $mockAvailabilityGroupReplica1ReadOnlyRoutingConnectionUrl
-            $mockAvailabilityGroupReplica1.ReadOnlyRoutingList = $mockAvailabilityGroupReplica1ReadOnlyRoutingList
+            $mockAvailabilityGroupReplica1 | Add-Member -MemberType NoteProperty -Name ReadOnlyRoutingList -Value ( [System.Collections.Specialized.StringCollection] $mockAvailabilityGroupReplica1ReadOnlyRoutingList ) -Force
 
             $mockAvailabilityGroupReplica2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica2.AvailabilityMode = $mockAvailabilityGroupReplica2AvailabilityMode
@@ -330,7 +330,7 @@ try
             $mockAvailabilityGroupReplica2.FailoverMode = $mockAvailabilityGroupReplica2FailoverMode
             $mockAvailabilityGroupReplica2.Name = $mockAvailabilityGroupReplica2Name
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = $mockAvailabilityGroupReplica2ReadOnlyRoutingConnectionUrl
-            $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = $mockAvailabilityGroupReplica2ReadOnlyRoutingList
+            $mockAvailabilityGroupReplica2 | Add-Member -MemberType NoteProperty -Name ReadOnlyRoutingList -Value ( [System.Collections.Specialized.StringCollection] $mockAvailabilityGroupReplica2ReadOnlyRoutingList ) -Force
 
             $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica3.AvailabilityMode = $mockAvailabilityGroupReplica3AvailabilityMode
@@ -341,7 +341,7 @@ try
             $mockAvailabilityGroupReplica3.FailoverMode = $mockAvailabilityGroupReplica3FailoverMode
             $mockAvailabilityGroupReplica3.Name = $mockAvailabilityGroupReplica3Name
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = $mockAvailabilityGroupReplica3ReadOnlyRoutingConnectionUrl
-            $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = $mockAvailabilityGroupReplica3ReadOnlyRoutingList
+            $mockAvailabilityGroupReplica3 | Add-Member -MemberType NoteProperty -Name ReadOnlyRoutingList -Value ( [System.Collections.Specialized.StringCollection] $mockAvailabilityGroupReplica3ReadOnlyRoutingList ) -Force
             #endregion Mock the availability group replicas
 
             if ( $mockAlternateEndpointPort )
@@ -439,7 +439,7 @@ try
             $mockAvailabilityGroupReplica1.FailoverMode = $mockAvailabilityGroupReplica1FailoverMode
             $mockAvailabilityGroupReplica1.Name = $mockAvailabilityGroupReplica1Name
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingConnectionUrl = $mockAvailabilityGroupReplica1ReadOnlyRoutingConnectionUrl
-            $mockAvailabilityGroupReplica1.ReadOnlyRoutingList = $mockAvailabilityGroupReplica1ReadOnlyRoutingList
+            $mockAvailabilityGroupReplica1 | Add-Member -MemberType NoteProperty -Name ReadOnlyRoutingList -Value ( [System.Collections.Specialized.StringCollection] $mockAvailabilityGroupReplica1ReadOnlyRoutingList ) -Force
 
             $mockAvailabilityGroupReplica2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica2.AvailabilityMode = $mockAvailabilityGroupReplica2AvailabilityMode
@@ -450,7 +450,7 @@ try
             $mockAvailabilityGroupReplica2.FailoverMode = $mockAvailabilityGroupReplica2FailoverMode
             $mockAvailabilityGroupReplica2.Name = $mockAvailabilityGroupReplica2Name
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = $mockAvailabilityGroupReplica2ReadOnlyRoutingConnectionUrl
-            $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = $mockAvailabilityGroupReplica2ReadOnlyRoutingList
+            $mockAvailabilityGroupReplica2 | Add-Member -MemberType NoteProperty -Name ReadOnlyRoutingList -Value ( [System.Collections.Specialized.StringCollection] $mockAvailabilityGroupReplica2ReadOnlyRoutingList ) -Force
 
             $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica3.AvailabilityMode = $mockAvailabilityGroupReplica3AvailabilityMode
@@ -461,7 +461,7 @@ try
             $mockAvailabilityGroupReplica3.FailoverMode = $mockAvailabilityGroupReplica3FailoverMode
             $mockAvailabilityGroupReplica3.Name = $mockAvailabilityGroupReplica3Name
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = $mockAvailabilityGroupReplica3ReadOnlyRoutingConnectionUrl
-            $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = $mockAvailabilityGroupReplica3ReadOnlyRoutingList
+            $mockAvailabilityGroupReplica3 | Add-Member -MemberType NoteProperty -Name ReadOnlyRoutingList -Value ( [System.Collections.Specialized.StringCollection] $mockAvailabilityGroupReplica3ReadOnlyRoutingList ) -Force
             #endregion Mock the availability group replicas
 
             if ( $mockAlternateEndpointPort )
@@ -1077,7 +1077,7 @@ try
                         ConnectionModeInSecondaryRole = 'AllowReadIntentConnectionsOnly'
                         FailoverMode                  = 'Automatic'
                         ReadOnlyRoutingConnectionUrl  = 'TCP://TestHost.domain.com:1433'
-                        ReadOnlyRoutingList           = [System.Collections.ArrayList] @('Server1', 'Server2')
+                        ReadOnlyRoutingList           = @('Server1', 'Server2')
                     }
                 }
 
@@ -1345,7 +1345,7 @@ try
                         ConnectionModeInSecondaryRole = 'AllowReadIntentConnectionsOnly'
                         FailoverMode                  = 'Automatic'
                         ReadOnlyRoutingConnectionUrl  = 'WrongUrl'
-                        ReadOnlyRoutingList           = [System.Collections.ArrayList] @('WrongServer')
+                        ReadOnlyRoutingList           = @('WrongServer')
                     }
                 }
 

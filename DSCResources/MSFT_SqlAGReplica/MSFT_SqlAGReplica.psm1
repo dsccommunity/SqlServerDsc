@@ -376,7 +376,7 @@ function Set-TargetResource
                         $availabilityGroupReplica.ReadOnlyRoutingList.Clear()
                         foreach ($readOnlyRoutingListEntry in $ReadOnlyRoutingList)
                         {
-                            $availabilityGroupReplica.ReadOnlyRoutingList.Add($readOnlyRoutingListEntry)
+                            [void] $availabilityGroupReplica.ReadOnlyRoutingList.Add($readOnlyRoutingListEntry)
                         }
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
