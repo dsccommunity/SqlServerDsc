@@ -371,12 +371,12 @@ function Set-TargetResource
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
-                    if ( $PSBoundParameters['ReadOnlyRoutingList'] -and ( $ReadOnlyRoutingList -join ',' ) -ne ($availabilityGroupReplica.ReadOnlyRoutingList -join ',' ) )
+                    if ( $PSBoundParameters['ReadOnlyRoutingList'] -and ( $ReadOnlyRoutingList -join ',' ) -ne ( $availabilityGroupReplica.ReadOnlyRoutingList -join ',' ) )
                     {
                         $availabilityGroupReplica.ReadOnlyRoutingList.Clear()
                         foreach ($readOnlyRoutingListEntry in $ReadOnlyRoutingList)
                         {
-                            [void] $availabilityGroupReplica.ReadOnlyRoutingList.Add($readOnlyRoutingListEntry)
+                            $availabilityGroupReplica.ReadOnlyRoutingList.Add($readOnlyRoutingListEntry) | Out-Null
                         }
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
