@@ -47,16 +47,11 @@ by sending in pull requests yourself.
   please first check out the [Review Pull Request guidelines](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md#reviewing-pull-requests),
   and the browse the list of [pull requests](https://github.com/PowerShell/SqlServerDsc/pulls)
   and look for those pull requests with label 'needs review'.
-* If you want to improve the resources or tests,
-  or create a new resource,
+* If you want to improve this resource module,
   then please check out the following guidelines.
-  * The [Contributing to the DSC Resource Kit](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md)
-    guidelines.
   * The specific [Contributing to SqlServerDsc](https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md)
     guidelines.
-  * The common [Style Guidelines](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md).
-  * The common [Best Practices](https://github.com/PowerShell/DscResources/blob/master/BestPractices.md)
-    guidelines.
+  * The common [Style Guidelines & Best Practices](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md).
   * The common [Testing Guidelines](https://github.com/PowerShell/DscResources/blob/master/TestsGuidelines.md).
   * If you are new to GitHub (and git),
     then please check out [Getting Started with GitHub](https://github.com/PowerShell/DscResources/blob/master/GettingStartedWithGitHub.md).
@@ -69,16 +64,18 @@ We are here for each other.
 
 ## Installation
 
-To manually install the module,
-download the source code and unzip the contents
-of the '\Modules\SqlServerDsc' directory to the
-'$env:ProgramFiles\WindowsPowerShell\Modules' folder.
+### From GitHub source code
+
+To manually install the module, download the source code from GitHub and unzip
+the contents to the '$env:ProgramFiles\WindowsPowerShell\Modules' folder.
+
+### From PowerShell Gallery
 
 To install from the PowerShell gallery using PowerShellGet (in PowerShell 5.0)
 run the following command:
 
 ```powershell
-Find-Module -Name SqlServerDsc -Repository PSGallery | Install-Module
+Find-Module -Name SqlServerDsc | Install-Module
 ```
 
 To confirm installation, run the below command and ensure you see the SQL Server
@@ -129,7 +126,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   to manage database recovery model.
 * [**SqlDatabaseRole**](#sqldatabaserole) resource to manage SQL
   database roles.
-* [**SqlRS**](#sqlrs) configures SQL Server Reporting
+* [**SqlRS**](#sqlrs) configures SQL Server Reporting.
   Services to use a database engine in another instance.
 * [**SqlScript**](#sqlscript) resource to extend DSC Get/Set/Test
   functionality to T-SQL.
@@ -155,6 +152,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * [**SqlServerReplication**](#sqlserverreplication) resource to manage SQL Replication
   distribution and publishing.
 * [**SqlServerRole**](#sqlserverrole) resource to manage SQL server roles.
+* [**SqlServerSecureConnection**](#sqlserversecureconnection) resource to
+  enable encrypted SQL connections.
 * [**SqlServiceAccount**](#sqlserviceaccount) Manage the service account
   for SQL Server services.
 * [**SqlSetup**](#sqlsetup) installs a standalone SQL Server instance.
@@ -492,7 +491,7 @@ Enables or disabled SQL Server Always On high availability and disaster recovery
 #### Examples
 
 * [Enable SQL Server Always On](/Examples/Resources/SqlAlwaysOnService/1-EnableAlwaysOn.ps1)
-* [Disable SQL Server Always On](/Examples/Resources/SqlAlwaysOnService/1-DisableAlwaysOn.ps1)
+* [Disable SQL Server Always On](/Examples/Resources/SqlAlwaysOnService/2-DisableAlwaysOn.ps1)
 
 #### Known issues
 
@@ -982,6 +981,7 @@ Resource to manage SQL Server Database Mail.
 * **`[String]` Ensure** _(Write)_: Specifies the desired state of the Database Mail.
   When set to 'Present', the Database Mail will be created. When set to 'Absent',
   the Database Mail will be removed. Default value is 'Present'.
+  { *Present* | Absent }.
 * **`[String]` ProfileName** _(Required)_: The name of the Database Mail profile.
 * **`[String]` Description** _(Write)_: The description for the Database Mail
   profile and account.
@@ -1290,7 +1290,7 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
 * [Set SQLServerMaxMemory to 12GB](/Examples/Resources/SqlServerMemory/1-SetMaxMemoryTo12GB.ps1)
 * [Set SQLServerMaxMemory to Auto](/Examples/Resources/SqlServerMemory/2-SetMaxMemoryToAuto.ps1)
 * [Set SQLServerMinMemory to 2GB and SQLServerMaxMemory to Auto](/Examples/Resources/SqlServerMemory/3-SetMinMemoryToFixedValueAndMaxMemoryToAuto.ps1)
-* [Set SQLServerMaxMemory to Default](/Examples/Resources/SqlServerMemory/3-SetMaxMemoryToDefault.ps1)
+* [Set SQLServerMaxMemory to Default](/Examples/Resources/SqlServerMemory/4-SetMaxMemoryToDefault.ps1)
 
 #### Known issues
 
@@ -1460,6 +1460,48 @@ server roles, please read the below articles.
 #### Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerRole).
+
+### SqlServerSecureConnection
+
+Configures SQL connections to be encrypted.
+Read more about encrypted connections in this article [Enable Encrypted Connections](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/enable-encrypted-connections-to-the-database-engine).
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* You must have a Certificate that is trusted and issued for
+   `ServerAuthentication`.
+* The name of the Certificate must be the fully qualified domain name (FQDN)
+   of the computer.
+* The Certificate must be installed in the LocalMachine Personal store.
+* If `PsDscRunAsCredential` common parameter is used to run the resource, the
+  specified credential must have permissions to connect to the SQL Server instance
+  specified in `InstanceName`.
+
+#### Parameters
+
+* **`[String]` InstanceName** _(Key)_: Name of the SQL Server instance to be
+   configured.
+* **`[String]` Thumbprint** _(Required)_: Thumbprint of the certificate being
+   used for encryption. If parameter Ensure is set to 'Absent', then the
+   parameter Certificate can be set to an empty string.
+* **`[String]` ServiceAccount** _(Required)_: Name of the account running the
+   SQL Server service.
+* **`[String]` Ensure** _(Write)_: If Encryption should be Enabled (Present)
+  or Disabled (Absent). { *Present* | Absent }. Defaults to Present.
+* **`[Boolean]` ForceEncryption** _(Write)_: If all connections to the SQL
+  instance should be encrypted. If this parameter is not assigned a value,
+  the default is, set to *True*, that all connections must be encrypted.
+
+#### Examples
+
+* [Force Secure Connection](Examples/Resources/SqlServerSecureConnection/1-ForceSecureConnection.ps1).
+* [Secure Connection but not required](Examples/Resources/SqlServerSecureConnection/2-SecureConnectionNotForced.ps1).
+* [Secure Connection disabled](Examples/Resources/SqlServerSecureConnection/3-SecureConnectionAbsent.ps1).
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerSecureConnection).
 
 ### SqlServiceAccount
 

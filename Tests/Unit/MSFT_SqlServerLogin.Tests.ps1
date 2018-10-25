@@ -1,3 +1,15 @@
+<#
+    .SYNOPSIS
+        Automated unit test for MSFT_SqlServerLogin DSC resource.
+
+    .NOTES
+        To run this script locally, please make sure to first run the bootstrap
+        script. Read more at
+        https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
+#>
+
+# This is used to make sure the unit test run in a container.
+[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container2', ContainerImage = 'microsoft/windowsservercore')]
 # Suppressing this rule because PlainText is required for one of the functions used in this test
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param()
