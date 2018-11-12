@@ -212,11 +212,11 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
             UpdateEnabled          = $Node.UpdateEnabled
             SuppressReboot         = $Node.SuppressReboot
             ForceReboot            = $Node.ForceReboot
-            #SqlTempdbFileCount     = '2'
-            #SqlTempdbFileSize      = '128'
-            #SqlTempdbFileGrowth    = '128'
-            #SqlTempdbLogFileSize   = '128'
-            #SqlTempdbLogFileGrowth = '128'
+            SqlTempdbFileCount     = '2'
+            SqlTempdbFileSize      = '128'
+            SqlTempdbFileGrowth    = '128'
+            SqlTempdbLogFileSize   = '128'
+            SqlTempdbLogFileGrowth = '128'
 
             # This must be set if using SYSTEM account to install.
             SQLSysAdminAccounts   = @(
