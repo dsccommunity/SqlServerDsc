@@ -7,6 +7,8 @@
     step to make sure the are no residual changes left from a previous SQL
     Server install on the Build Worker done by the AppVeyor Team
     ([issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260)).
+- Change to SqlServerLogin so it doesn't check properties for absent logins.
+  - Fix for ([issue #1096](https://github.com/PowerShell/SqlServerDsc/issues/1096))
 
 ## 12.1.0.0
 
