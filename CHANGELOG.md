@@ -7,6 +7,7 @@
     step to make sure the are no residual changes left from a previous SQL
     Server install on the Build Worker done by the AppVeyor Team
     ([issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260)).
+  - Code cleanup: Change parameter names of Connect-SQL to align with resources.
 - Change to SqlServerLogin so it doesn't check properties for absent logins.
   - Fix for ([issue #1096](https://github.com/PowerShell/SqlServerDsc/issues/1096))
 
