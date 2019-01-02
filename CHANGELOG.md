@@ -162,7 +162,8 @@
     when the backup file path was changed, and the path was ending with
     a backslash ([issue #1307](https://github.com/PowerShell/SqlServerDsc/issues/1307)).
 - Changes to SqlRs
-  - [issue #864](https://github.com/PowerShell/SqlServerDsc/issues/864) SqlRs can now initialise SSRS 2017 instances
+  - [issue #864](https://github.com/PowerShell/SqlServerDsc/issues/864) SqlRs 
+    can now initialise SSRS 2017 instances
 
 ## 12.3.0.0
 
