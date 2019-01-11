@@ -227,10 +227,10 @@ function Set-TargetResource
 
                 switch ($LoginType)
                 {
-                    SqlLogin
+                    'SqlLogin'
                     {
                         # Verify the instance is in Mixed authentication mode
-                        if ( $serverObject.LoginMode -notmatch 'Mixed|Integrated' )
+                        if ( $serverObject.LoginMode -notmatch 'Mixed|Normal' )
                         {
                             throw New-TerminatingError -ErrorType IncorrectLoginMode -FormatArgs $ServerName, $InstanceName, $serverObject.LoginMode -ErrorCategory NotImplemented
                         }
