@@ -19,6 +19,10 @@
     [issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260)
     in the previous release, as it only mitigated the issue, it did not
     solve the issue.
+- Changes to SqlSetup
+  - Updated the integration test to stop the named instance while installing
+    the other instances to mitigate
+    [issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260).
 
 ## 12.2.0.0
 

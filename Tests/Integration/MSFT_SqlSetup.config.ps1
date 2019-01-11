@@ -231,17 +231,21 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
     }
 }
 
-Configuration MSFT_SqlSetup_StopMultiAnalysisServicesInstance_Config
+Configuration MSFT_SqlSetup_StopServicesInstance_Config
 {
     Import-DscResource -ModuleName 'PSDscResources'
 
     node localhost
     {
-        # Service ('StopSqlServerInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
-        # {
-        #     Name   = ('MSSQL${0}' -f $Node.DatabaseEngineNamedInstanceName)
-        #     State  = 'Stopped'
-        # }
+        <#
+            Stopping the Database Engine named instance. It will be restarted
+            at the end of the tests.
+        #>
+        Service ('StopSqlServerInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
+        {
+            Name   = ('MSSQL${0}' -f $Node.DatabaseEngineNamedInstanceName)
+            State  = 'Stopped'
+        }
 
         Service ('StopMultiAnalysisServicesInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
         {
@@ -380,6 +384,21 @@ Configuration MSFT_SqlSetup_StopTabularAnalysisServices_Config
         {
             Name  = ('MSOLAP${0}' -f $Node.DatabaseEngineNamedInstanceName)
             State = 'Stopped'
+        }
+    }
+}
+
+Configuration MSFT_SqlSetup_StartServicesInstance_Config
+{
+    Import-DscResource -ModuleName 'PSDscResources'
+
+    node localhost
+    {
+        # Start the Database Engine named instance.
+        Service ('StartSqlServerInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
+        {
+            Name   = ('MSSQL${0}' -f $Node.DatabaseEngineNamedInstanceName)
+            State  = 'Running'
         }
     }
 }

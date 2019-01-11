@@ -317,7 +317,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_StopMultiAnalysisServicesInstance_Config"
+        $configurationName = "$($script:DSCResourceName)_StopServicesInstance_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -621,6 +621,41 @@ try
         }
 
         $configurationName = "$($script:DSCResourceName)_StopTabularAnalysisServices_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath        = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    try
+                    {
+                        Start-DscConfiguration @startDscConfigurationParameters
+                    }
+                    catch
+                    {
+                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
+                        throw $_
+                    }
+                } | Should -Not -Throw
+            }
+        }
+
+        $configurationName = "$($script:DSCResourceName)_StartServicesInstance_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
