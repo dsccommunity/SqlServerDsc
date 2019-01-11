@@ -238,6 +238,16 @@ Configuration MSFT_SqlSetup_StopServicesInstance_Config
     node localhost
     {
         <#
+            Stopping the SQL Server Agent service for the named instance.
+            It will be restarted at the end of the tests.
+        #>
+        Service ('StopSqlServerAgentForInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
+        {
+            Name  = ('SQLAGENT${0}' -f $Node.DatabaseEngineNamedInstanceName)
+            State = 'Stopped'
+        }
+
+        <#
             Stopping the Database Engine named instance. It will be restarted
             at the end of the tests.
         #>
@@ -399,6 +409,15 @@ Configuration MSFT_SqlSetup_StartServicesInstance_Config
         {
             Name   = ('MSSQL${0}' -f $Node.DatabaseEngineNamedInstanceName)
             State  = 'Running'
+        }
+
+        <#
+            Starting the SQL Server Agent service for the named instance.
+        #>
+        Service ('StopSqlServerAgentForInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
+        {
+            Name  = ('SQLAGENT${0}' -f $Node.DatabaseEngineNamedInstanceName)
+            State = 'Running'
         }
     }
 }
