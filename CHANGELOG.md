@@ -14,6 +14,11 @@
 - Changes to SqlServerLogin
   - Fixed issue in Test-TargetResource to valid password on disabled accounts.
     ([issue #915](https://github.com/PowerShell/SqlServerDsc/issues/915)).
+- Changes to SqlServerDsc
+  - Reverting the change that was made as part of the
+    [issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260)
+    in the previous release, as it only mitigated the issue, it did not
+    solve the issue.
 
 ## 12.2.0.0
 
