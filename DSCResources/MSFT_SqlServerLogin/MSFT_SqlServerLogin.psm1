@@ -420,8 +420,42 @@ function Test-TargetResource
                 }
                 catch
                 {
-                    New-VerboseMessage -Message "Password validation failed for the login '$Name'."
-                    $testPassed = $false
+                    # Check to see if the parameter of $Disabled is true
+                    if ($Disabled)
+                    {
+                        <#
+                            An exception occurred and $Disabled is true, we neeed
+                            to check the error codes for expected error numbers.
+                            Recursively search the Exception variable and inner
+                            Exceptions for the specific numbers.
+                            18470 - Username and password are correct, but
+                            account is disabled.
+                            18456 - Login failed for user.
+                        #>
+                        if ((Find-ExceptionByNumber -ExceptionToSearch $_.Exception -ErrorNumber 18470))
+                        {
+                            New-VerboseMessage -Message "Password valid, but '$Name' is disabled."                            
+                        }
+                        elseif ((Find-ExceptionByNumber -ExceptionToSearch $_.Exception -ErrorNumber 18456))
+                        {
+                            New-VerboseMessage -Message $_.Exception.message
+                            
+                            # The password was not correct, password validation failed
+                            $testPassed = $false
+                        }
+                        else 
+                        {
+                            New-VerboseMessage -Message "Unknown error: $($_.Exception.message)"
+                            
+                            # Something else went wrong, rethrow error
+                            throw
+                        }
+                    }
+                    else 
+                    {
+                        New-VerboseMessage -Message "Password validation failed for the login '$Name'."
+                        $testPassed = $false
+                    }
                 }
             }
         }

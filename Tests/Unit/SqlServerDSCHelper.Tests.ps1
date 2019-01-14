@@ -142,6 +142,20 @@ InModuleScope $script:moduleName {
     $mockSetupCredentialSecurePassword = ConvertTo-SecureString -String $mockSetupCredentialPassword -AsPlainText -Force
     $mockSetupCredential = New-Object -TypeName PSCredential -ArgumentList ($mockSetupCredentialUserName, $mockSetupCredentialSecurePassword)
 
+    $mockLocalSystemAccountUserName = 'NT AUTHORITY\SYSTEM'
+    $mockLocalSystemAccountCredential = New-Object System.Management.Automation.PSCredential $mockLocalSystemAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
+    $mockManagedServiceAccountUserName = 'CONTOSO\msa$'
+    $mockManagedServiceAccountCredential = New-Object System.Management.Automation.PSCredential $mockManagedServiceAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
+    $mockDomainAccountUserName = 'CONTOSO\User1'
+    $mockLocalServiceAccountUserName = 'NT SERVICE\MyService'
+    $mockLocalServiceAccountCredential = New-Object System.Management.Automation.PSCredential $mockLocalServiceAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
+    $mockDomainAccountCredential = New-Object System.Management.Automation.PSCredential $mockDomainAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
+    $mockInnerException = New-Object System.Exception "This is a mock inner excpetion object"
+    $mockInnerException | Add-Member -Name 'Number' -Value 2 -MemberType NoteProperty
+    $mockException = New-Object System.Exception "This is a mock exception object", $mockInnerException
+    $mockException | Add-Member -Name 'Number' -Value 1 -MemberType NoteProperty
+    
+
     Describe 'Testing Restart-SqlService' {
         Context 'Restart-SqlService standalone instance' {
             BeforeEach {
@@ -2025,6 +2039,53 @@ InModuleScope $script:moduleName {
 
             It 'Should throw the correct error from Query parameterset Invoke-Sqlcmd' {
                 { Invoke-SqlScript @invokeScriptQueryParameters } | Should Throw $errorMessage
+            }
+        }
+    }
+
+    Describe 'Testing Get-ServiceAccount'{
+        Context 'When getting service account' {
+            It 'Should return NT AUTHORITY\SYSTEM' {
+                $returnValue = Get-ServiceAccount -ServiceAccount $mockLocalSystemAccountCredential
+                
+                $returnValue.UserName | Should -Be $mockLocalSystemAccountUserName
+                $returnValue.Password | Should -BeNullOrEmpty
+            }
+
+            It 'Should return Domain Account and Password' {
+                $returnValue = Get-ServiceAccount -ServiceAccount $mockDomainAccountCredential
+
+                $returnValue.UserName | Should -Be $mockDomainAccountUserName
+                $returnValue.Password | Should -Be $mockDomainAccountCredential.GetNetworkCredential().Password
+            }
+
+            It 'Should return managed service account' {
+                $returnValue = Get-ServiceAccount -ServiceAccount $mockManagedServiceAccountCredential
+
+                $returnValue.UserName | Should -Be $mockManagedServiceAccountUserName
+            }
+
+            It 'Should return local service account' {
+                $returnValue= Get-ServiceAccount -ServiceAccount $mockLocalServiceAccountCredential
+
+                $returnValue.UserName | Should -Be $mockLocalServiceAccountUserName
+                $returnValue.Password | Should -BeNullOrEmpty
+            }
+        }
+    }
+
+    Describe 'Testing Find-ExceptionByNumber'{
+        Context 'When searching Exception objects'{
+            It 'Should return true for main exception' { 
+                Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 1 | Should -Be $true
+            }
+
+            It 'Should return true for inner exception' {
+                Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 2 | Should -Be $true
+            }
+
+            It 'Should return false when message not found' {
+                Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 3 | Should -Be $false
             }
         }
     }
