@@ -37,12 +37,14 @@ $ConfigurationData = @{
             Collation                             = 'Finnish_Swedish_CI_AS'
             InstallSharedDir                      = 'C:\Program Files\Microsoft SQL Server'
             InstallSharedWOWDir                   = 'C:\Program Files (x86)\Microsoft SQL Server'
-            UpdateEnabled                         = 'False'
+            UpdateEnabled                         = 'True'
+            UpdateSource                          = "$env:TEMP\SqlUpdates"
             SuppressReboot                        = $true # Make sure we don't reboot during testing.
             ForceReboot                           = $false
 
             # Properties for mounting media
             ImagePath                             = "$env:TEMP\SQL2016.iso"
+            ImagePathServicePack                  = "$env:TEMP\SqlUpdates\SQLServer2016SP2-KB4052908-x64-ENU.exe"
             DriveLetter                           = $mockIsoMediaDriveLetter
 
             CertificateFile                       = $env:DscPublicCertificatePath
@@ -210,6 +212,7 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
             InstallSharedDir      = $Node.InstallSharedDir
             InstallSharedWOWDir   = $Node.InstallSharedWOWDir
             UpdateEnabled         = $Node.UpdateEnabled
+            UpdateSource          = $Node.UpdateSource
             SuppressReboot        = $Node.SuppressReboot
             ForceReboot           = $Node.ForceReboot
 
@@ -305,6 +308,7 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineDefaultInstanceAsUser_Config
             InstallSharedDir     = $Node.InstallSharedDir
             InstallSharedWOWDir  = $Node.InstallSharedWOWDir
             UpdateEnabled        = $Node.UpdateEnabled
+            UpdateSource         = $Node.UpdateSource
             SuppressReboot       = $Node.SuppressReboot
             ForceReboot          = $Node.ForceReboot
             SQLSysAdminAccounts  = @(
@@ -373,6 +377,7 @@ Configuration MSFT_SqlSetup_InstallTabularAnalysisServicesAsSystem_Config
             InstallSharedDir    = $Node.InstallSharedDir
             InstallSharedWOWDir = $Node.InstallSharedWOWDir
             UpdateEnabled       = $Node.UpdateEnabled
+            UpdateSource        = $Node.UpdateSource
             SuppressReboot      = $Node.SuppressReboot
             ForceReboot         = $Node.ForceReboot
 
