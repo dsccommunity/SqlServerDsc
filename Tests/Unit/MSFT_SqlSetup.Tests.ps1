@@ -3150,11 +3150,11 @@ try
                             AsSvcStartupType = $mockAsSvcStartupType
                             IsSvcStartupType = $mockIsSvcStartupType
                             RsSvcStartupType = $mockRsSvcStartupType
-							SqlTempdbFileCount = 2
-							SqlTempdbFileSize = 128
-							SqlTempdbFileGrowth = 128
-							SqlTempdbLogFileSize = 128
-							SqlTempdbLogFileGrowth = 128
+                            SqlTempdbFileCount = 2
+                            SqlTempdbFileSize = 128
+                            SqlTempdbFileGrowth = 128
+                            SqlTempdbLogFileSize = 128
+                            SqlTempdbLogFileGrowth = 128
                         }
 
                         if ( $mockSqlMajorVersion -in (13,14) )
@@ -3183,11 +3183,11 @@ try
                             AsSvcStartupType = $mockAsSvcStartupType
                             IsSvcStartupType = $mockIsSvcStartupType
                             RsSvcStartupType = $mockRsSvcStartupType
-							SqlTempdbFileCount = 2
-							SqlTempdbFileSize = 128
-							SqlTempdbFileGrowth = 128
-							SqlTempdbLogFileSize = 128
-							SqlTempdbLogFileGrowth = 128
+                            SqlTempdbFileCount = 2
+                            SqlTempdbFileSize = 128
+                            SqlTempdbFileGrowth = 128
+                            SqlTempdbLogFileSize = 128
+                            SqlTempdbLogFileGrowth = 128
                         }
 
                         { Set-TargetResource @testParameters } | Should -Not -Throw
