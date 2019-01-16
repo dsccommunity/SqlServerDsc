@@ -194,7 +194,7 @@ function Get-TargetResource
         if ($sqlVersion -ge 13)
         {
             # Tempdb data files count
-            $tempdbPrimaryFilegroup = $databaseServer.Databases["tempdb"].FileGroups["PRIMARY"]
+            $tempdbPrimaryFilegroup = ($databaseServer.Databases | Where-Object {$_.Name -eq 'tempdb'}).FileGroups | Where-Object {$_.Name -eq 'PRIMARY'}
             $SqlTempdbFileCount = $tempdbPrimaryFilegroup.Files.Count
 
             # Tempdb data files size
@@ -204,7 +204,7 @@ function Get-TargetResource
             $SqlTempdbFileGrowth = ($tempdbPrimaryFilegroup.Files.Growth | Measure-Object -Average).Average / 1Kb
             
             # Tempdb log file size
-            $tempdbTempLog = $databaseServer.Databases["tempdb"].LogFiles["templog"]
+            $tempdbTempLog = ($databaseServer.Databases | Where-Object {$_.Name -eq 'tempdb'}).LogFiles | Where-Object {$_.Name -eq 'templog'}
             $SqlTempdbLogFileSize = $tempdbTempLog.Size / 1Kb
             
             # Tempdb log file growth
