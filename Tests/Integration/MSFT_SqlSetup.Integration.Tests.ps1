@@ -26,8 +26,6 @@ $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:DSCModuleName `
     -DSCResourceName $script:DSCResourceName `
     -TestType Integration
-
-$script:integrationErrorMessagePrefix = 'INTEGRATION ERROR MESSAGE:'
 #endregion
 
 <#
@@ -186,15 +184,7 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    try
-                    {
-                        Start-DscConfiguration @startDscConfigurationParameters
-                    }
-                    catch
-                    {
-                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
-                        throw $_
-                    }
+                    Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             }
         }
@@ -339,15 +329,7 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    try
-                    {
-                        Start-DscConfiguration @startDscConfigurationParameters
-                    }
-                    catch
-                    {
-                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
-                        throw $_
-                    }
+                    Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             }
         }
@@ -378,15 +360,7 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    try
-                    {
-                        Start-DscConfiguration @startDscConfigurationParameters
-                    }
-                    catch
-                    {
-                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
-                        throw $_
-                    }
+                    Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             } -ErrorVariable itBlockError
 
@@ -494,15 +468,7 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    try
-                    {
-                        Start-DscConfiguration @startDscConfigurationParameters
-                    }
-                    catch
-                    {
-                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
-                        throw $_
-                    }
+                    Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             }
         }
@@ -532,15 +498,7 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    try
-                    {
-                        Start-DscConfiguration @startDscConfigurationParameters
-                    }
-                    catch
-                    {
-                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
-                        throw $_
-                    }
+                    Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             } -ErrorVariable itBlockError
 
@@ -642,15 +600,7 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    try
-                    {
-                        Start-DscConfiguration @startDscConfigurationParameters
-                    }
-                    catch
-                    {
-                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
-                        throw $_
-                    }
+                    Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             }
         }
@@ -677,15 +627,7 @@ try
                         ErrorAction  = 'Stop'
                     }
 
-                    try
-                    {
-                        Start-DscConfiguration @startDscConfigurationParameters
-                    }
-                    catch
-                    {
-                        Write-Verbose -Message ('{0} {1}' -f $integrationErrorMessagePrefix, $_) -Verbose
-                        throw $_
-                    }
+                    Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             }
         }

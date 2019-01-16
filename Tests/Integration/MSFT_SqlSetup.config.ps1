@@ -412,7 +412,7 @@ Configuration MSFT_SqlSetup_StartServicesInstance_Config
         }
 
         # Starting the SQL Server Agent service for the named instance.
-        Service ('StopSqlServerAgentForInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
+        Service ('StartSqlServerAgentForInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
         {
             Name  = ('SQLAGENT${0}' -f $Node.DatabaseEngineNamedInstanceName)
             State = 'Running'
