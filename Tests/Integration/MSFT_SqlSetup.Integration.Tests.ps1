@@ -109,8 +109,6 @@ try
     # Download SQL Server media
     if (-not (Test-Path -Path $mockIsoMediaFilePath))
     {
-        Write-Verbose -Message "Start downloading the SQL Server media iso at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
-
         # Create the Updates folder
         New-Item -ItemType Directory -Path (Split-Path -Path $mockServicePackMediaFilePath -Parent) -Force
 
@@ -118,8 +116,16 @@ try
         $previousProgressPreference = $ProgressPreference
         $ProgressPreference = 'SilentlyContinue'
 
+        Write-Verbose -Message "Start downloading the SQL Server media at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
+
         Invoke-WebRequest -Uri $mockSourceMediaUrl -OutFile $mockIsoMediaFilePath
+
+        Write-Verbose -Message ('SQL Server media file has hash ''{0}''' -f (Get-FileHash -Path $mockIsoMediaFilePath).Hash) -Verbose
+
+        Write-Verbose -Message "Start downloading the SQL Server Service Pack media at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
+
         Invoke-WebRequest -Uri $mockServicePackMediaUrl -OutFile $mockServicePackMediaFilePath
+        Write-Verbose -Message ('SQL Server Service Pack media file has hash ''{0}''' -f (Get-FileHash -Path $mockServicePackMediaFilePath).Hash) -Verbose
 
         $ProgressPreference = $previousProgressPreference
 
