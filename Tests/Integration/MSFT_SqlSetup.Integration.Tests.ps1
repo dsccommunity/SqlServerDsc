@@ -120,12 +120,12 @@ try
 
         Invoke-WebRequest -Uri $mockSourceMediaUrl -OutFile $mockIsoMediaFilePath
 
-        Write-Verbose -Message ('SQL Server media file has hash ''{0}''' -f (Get-FileHash -Path $mockIsoMediaFilePath).Hash) -Verbose
+        Write-Verbose -Message ('SQL Server media file has hash ''{0}''' -f (Get-FileHash -Path $mockIsoMediaFilePath -Algorithm 'SHA384').Hash) -Verbose
 
         #Write-Verbose -Message "Start downloading the SQL Server Service Pack media at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
 
         #Invoke-WebRequest -Uri $mockServicePackMediaUrl -OutFile $mockServicePackMediaFilePath
-        #Write-Verbose -Message ('SQL Server Service Pack media file has hash ''{0}''' -f (Get-FileHash -Path $mockServicePackMediaFilePath).Hash) -Verbose
+        #Write-Verbose -Message ('SQL Server Service Pack media file has hash ''{0}''' -f (Get-FileHash -Path $mockServicePackMediaFilePath -Algorithm SHA384).Hash) -Verbose
 
         $ProgressPreference = $previousProgressPreference
 
