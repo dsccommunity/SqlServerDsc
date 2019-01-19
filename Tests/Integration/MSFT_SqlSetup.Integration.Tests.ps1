@@ -101,16 +101,16 @@ try
     $mockForceReboot = $ConfigurationData.AllNodes.ForceReboot
     $mockIsoMediaFilePath = $ConfigurationData.AllNodes.ImagePath
     $mockIsoMediaDriveLetter = $ConfigurationData.AllNodes.DriveLetter
-    $mockServicePackMediaFilePath = $ConfigurationData.AllNodes.ImagePathServicePack
+    #$mockServicePackMediaFilePath = $ConfigurationData.AllNodes.ImagePathServicePack
 
     $mockSourceMediaUrl = 'https://download.microsoft.com/download/9/0/7/907AD35F-9F9C-43A5-9789-52470555DB90/ENU/SQLServer2016SP1-FullSlipstream-x64-ENU.iso'
-    $mockServicePackMediaUrl = 'https://download.microsoft.com/download/9/2/B/92BAD988-00C5-4F68-811E-B7FFBE009B00/SQLServer2016SP2-KB4052908-x64-ENU.exe'
+    #$mockServicePackMediaUrl = 'https://download.microsoft.com/download/9/2/B/92BAD988-00C5-4F68-811E-B7FFBE009B00/SQLServer2016SP2-KB4052908-x64-ENU.exe'
 
     # Download SQL Server media
     if (-not (Test-Path -Path $mockIsoMediaFilePath))
     {
         # Create the Updates folder
-        New-Item -ItemType Directory -Path (Split-Path -Path $mockServicePackMediaFilePath -Parent) -Force
+        #New-Item -ItemType Directory -Path (Split-Path -Path $mockServicePackMediaFilePath -Parent) -Force
 
         # By switching to 'SilentlyContinue' should theoretically increase the download speed.
         $previousProgressPreference = $ProgressPreference
@@ -122,10 +122,10 @@ try
 
         Write-Verbose -Message ('SQL Server media file has hash ''{0}''' -f (Get-FileHash -Path $mockIsoMediaFilePath).Hash) -Verbose
 
-        Write-Verbose -Message "Start downloading the SQL Server Service Pack media at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
+        #Write-Verbose -Message "Start downloading the SQL Server Service Pack media at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
 
-        Invoke-WebRequest -Uri $mockServicePackMediaUrl -OutFile $mockServicePackMediaFilePath
-        Write-Verbose -Message ('SQL Server Service Pack media file has hash ''{0}''' -f (Get-FileHash -Path $mockServicePackMediaFilePath).Hash) -Verbose
+        #Invoke-WebRequest -Uri $mockServicePackMediaUrl -OutFile $mockServicePackMediaFilePath
+        #Write-Verbose -Message ('SQL Server Service Pack media file has hash ''{0}''' -f (Get-FileHash -Path $mockServicePackMediaFilePath).Hash) -Verbose
 
         $ProgressPreference = $previousProgressPreference
 
