@@ -30,6 +30,15 @@ for:
 
   test_script:
     - ps: |
+        Write-Verbose -Message '--- WORKAROUND FOR ISSUE #239 AND ISSUE #774 ---' -Verbose
+        $sqlModules = Get-Module -ListAvailable -Name 'sql*'
+        $sqlUniqueModulePath = Split-Path -Path (Split-Path $sqlModules.Path -Parent) -Parent | Sort-Object -Unique
+        $sqlUniqueModulePath | ForEach-Object -Process {
+            $newFolderName = '{0}.old' -f (Split-Path -Path $_ -Leaf)
+            Write-Verbose ('Renaming ''{0}'' to ''..\{1}''' -f $_, $newFolderName) -Verbose
+            Rename-Item $_ -NewName $newFolderName -Force
+        }
+        Write-Verbose -Message '' -Verbose
         # Workaround for issue #798
         Write-Verbose -Message '--- WORKAROUND FOR ISSUE #798 ---' -Verbose
         $azureModules = Get-Module -ListAvailable -Name 'Azure*' | Where-Object -FilterScript { $_.Name -notlike 'AzureRm*' }
