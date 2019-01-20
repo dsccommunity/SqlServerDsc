@@ -49,6 +49,7 @@ function Invoke-TestCleanup
 try
 {
     Invoke-TestSetup
+
     InModuleScope $script:DSCResourceName {
         $mockServerName = 'localhost'
         $mockInstanceName = 'MSSQLSERVER'

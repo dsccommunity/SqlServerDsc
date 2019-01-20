@@ -30,8 +30,8 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
 
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName 'SqlServerDsc' `
-    -DSCResourceName 'MSFT_SqlWaitForAG' `
+    -DSCModuleName $script:DSCModuleName `
+    -DSCResourceName $script:DSCResourceName `
     -TestType Unit
 
 #endregion HEADER
@@ -48,7 +48,7 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope 'MSFT_SqlWaitForAG' {
+    InModuleScope $script:DSCResourceName {
         $mockClusterGroupName = 'AGTest'
         $mockRetryInterval = 1
         $mockRetryCount = 2

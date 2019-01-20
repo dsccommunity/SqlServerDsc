@@ -36,8 +36,8 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath 'SqlServerDsc
 
 
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName 'SqlServerDsc' `
-    -DSCResourceName 'MSFT_SqlScript'  `
+    -DSCModuleName $script:DSCModuleName `
+    -DSCResourceName $script:DSCResourceName `
     -TestType Unit
 
 #endregion HEADER
@@ -57,7 +57,7 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope 'MSFT_SqlScript' {
+    InModuleScope $script:DSCResourceName {
         InModuleScope 'SqlServerDscHelper' {
             $script:DSCModuleName = 'SqlServerDsc'
             $resourceName = 'MSFT_SqlScript'

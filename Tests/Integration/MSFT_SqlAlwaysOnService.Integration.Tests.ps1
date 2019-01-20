@@ -35,8 +35,6 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 #endregion
 
-$script:integrationErrorMessagePrefix = 'INTEGRATION ERROR MESSAGE:'
-
 $testRootFolderPath = Split-Path -Path $PSScriptRoot -Parent
 Import-Module -Name (Join-Path -Path $testRootFolderPath -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'CommonTestHelper.psm1')) -Force
 
@@ -88,15 +86,7 @@ try
                         ErrorAction = 'Stop'
                     }
 
-                    try
-                    {
-                        Start-DscConfiguration @startDscConfigurationParameters
-                    }
-                    catch
-                    {
-                        Write-Verbose -Message ('{0} {1}' -f $script:integrationErrorMessagePrefix, $_) -Verbose
-                        throw $_
-                    }
+                    Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             }
         }
@@ -124,15 +114,7 @@ try
                         ErrorAction = 'Stop'
                     }
 
-                    try
-                    {
-                        Start-DscConfiguration @startDscConfigurationParameters
-                    }
-                    catch
-                    {
-                        Write-Verbose -Message ('{0} {1}' -f $script:integrationErrorMessagePrefix, $_) -Verbose
-                        throw $_
-                    }
+                    Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             }
 
@@ -176,15 +158,7 @@ try
                         ErrorAction = 'Stop'
                     }
 
-                    try
-                    {
-                        Start-DscConfiguration @startDscConfigurationParameters
-                    }
-                    catch
-                    {
-                        Write-Verbose -Message ('{0} {1}' -f $script:integrationErrorMessagePrefix, $_) -Verbose
-                        throw $_
-                    }
+                    Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             }
 
@@ -227,15 +201,7 @@ try
                         ErrorAction = 'Stop'
                     }
 
-                    try
-                    {
-                        Start-DscConfiguration @startDscConfigurationParameters
-                    }
-                    catch
-                    {
-                        Write-Verbose -Message ('{0} {1}' -f $script:integrationErrorMessagePrefix, $_) -Verbose
-                        throw $_
-                    }
+                    Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             }
         }

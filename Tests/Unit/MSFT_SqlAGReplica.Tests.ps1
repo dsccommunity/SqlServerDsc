@@ -33,8 +33,8 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SMO.cs )
 
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName 'SqlServerDsc' `
-    -DSCResourceName 'MSFT_SqlAGReplica' `
+    -DSCModuleName $script:DSCModuleName `
+    -DSCResourceName $script:DSCResourceName `
     -TestType Unit
 
 #endregion HEADER
@@ -53,7 +53,7 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope 'MSFT_SqlAGReplica' {
+    InModuleScope $script:DSCResourceName {
 
         #region parameter mocks
 

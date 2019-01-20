@@ -17,17 +17,17 @@ if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
     return
 }
 
-Describe 'CommonResourceHelper Unit Tests' {
+Describe "$script:helperModuleName Unit Tests" {
     BeforeAll {
         # Import the CommonResourceHelper module to test
         $dscResourcesFolderFilePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) `
                                                 -ChildPath 'DscResources'
 
         Import-Module -Name (Join-Path -Path $dscResourcesFolderFilePath `
-                                       -ChildPath 'CommonResourceHelper.psm1') -Force
+                                       -ChildPath "$script:helperModuleName.psm1") -Force
     }
 
-    InModuleScope 'CommonResourceHelper' {
+    InModuleScope $script:helperModuleName {
         Describe 'Get-LocalizedData' {
             $mockTestPath = {
                 return $mockTestPathReturnValue
