@@ -43,7 +43,6 @@ $ConfigurationData = @{
 
             # Properties for mounting media
             ImagePath                             = "$env:TEMP\SQL2016.iso"
-            #ImagePathServicePack                  = "$env:TEMP\SqlUpdates\SQLServer2016SP2-KB4052908-x64-ENU.exe"
             DriveLetter                           = $mockIsoMediaDriveLetter
 
             CertificateFile                       = $env:DscPublicCertificatePath

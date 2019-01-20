@@ -122,7 +122,7 @@ try
 
         Invoke-WebRequest -Uri $mockSourceMediaUrl -OutFile $mockIsoMediaFilePath
 
-        Write-Verbose -Message ('SQL Server media file has hash ''{0}''' -f (Get-FileHash -Path $mockIsoMediaFilePath -Algorithm 'SHA384').Hash) -Verbose
+        Write-Verbose -Message ('SQL Server media file has SHA1 hash ''{0}''' -f (Get-FileHash -Path $mockIsoMediaFilePath -Algorithm 'SHA1').Hash) -Verbose
 
         $ProgressPreference = $previousProgressPreference
 
