@@ -8,14 +8,18 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
-# This is used to make sure the unit test run in a container.
-[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container2', ContainerImage = 'microsoft/windowsservercore')]
 # Suppressing this rule because PlainText is required for one of the functions used in this test
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param()
 
 $script:DSCModuleName = 'SqlServerDsc'
 $script:DSCResourceName = 'MSFT_SqlServerLogin'
+
+if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
+{
+    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:DSCResourceName) -Verbose
+    return
+}
 
 #region HEADER
 
@@ -386,9 +390,9 @@ try
                     $mockTestTargetResourceParameters.Add('Disabled', $true)
                     $mockTestTargetResourceParameters.Add('LoginType', 'SqlLogin')
                     $mockTestTargetResourceParameters.Add('LoginCredential', (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockSqlLoginPassword)))
-                    
+
                     # Override mock declaration
-                    Mock -CommandName Connect-SQL -MockWith {throw $mockAccountDisabledException} 
+                    Mock -CommandName Connect-SQL -MockWith {throw $mockAccountDisabledException}
 
                     # Override Get-TargetResource
                     Mock -CommandName Get-TargetResource {return New-Object PSObject -Property @{
@@ -403,7 +407,7 @@ try
                         LoginPasswordExpirationEnabled = $true
                       }
                     }
-        
+
                     # Call the test target
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
@@ -420,9 +424,9 @@ try
                     $mockTestTargetResourceParameters.Add('Disabled', $true)
                     $mockTestTargetResourceParameters.Add('LoginType', 'SqlLogin')
                     $mockTestTargetResourceParameters.Add('LoginCredential', (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockSqlLoginPassword)))
-                    
+
                     # Override mock declaration
-                    Mock -CommandName Connect-SQL -MockWith {throw $mockLoginFailedException} 
+                    Mock -CommandName Connect-SQL -MockWith {throw $mockLoginFailedException}
 
                     # Override Get-TargetResource
                     Mock -CommandName Get-TargetResource {return New-Object PSObject -Property @{
@@ -437,7 +441,7 @@ try
                         LoginPasswordExpirationEnabled = $true
                       }
                     }
-        
+
                     # Call the test target
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
@@ -447,16 +451,16 @@ try
                     # Should be true
                     $result | Should -Be $false
                 }
-                
+
                 It 'Should throw exception when unkown error occurred and account is disabled' {
                     $mockTestTargetResourceParameters = $getTargetResource_KnownSqlLogin.Clone()
                     $mockTestTargetResourceParameters.Add('Ensure', 'Present')
                     $mockTestTargetResourceParameters.Add('Disabled', $true)
                     $mockTestTargetResourceParameters.Add('LoginType', 'SqlLogin')
                     $mockTestTargetResourceParameters.Add('LoginCredential', (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockSqlLoginPassword)))
-                    
+
                     # Override mock declaration
-                    Mock -CommandName Connect-SQL -MockWith {throw $mockException} 
+                    Mock -CommandName Connect-SQL -MockWith {throw $mockException}
 
                     # Override Get-TargetResource
                     Mock -CommandName Get-TargetResource {return New-Object PSObject -Property @{
@@ -471,13 +475,13 @@ try
                         LoginPasswordExpirationEnabled = $true
                       }
                     }
-        
+
                     # Call the test target
                     { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw
 
                     Assert-MockCalled -CommandName Get-TargetResource -Scope It -Times 1 -Exactly
                     Assert-MockCAlled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                }                
+                }
             }
 
             Context 'When the desired state is Present' {

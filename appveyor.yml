@@ -3,6 +3,9 @@
 #---------------------------------#
 version: 9.0.{build}.0
 image: Visual Studio 2017
+configuration:
+  - Unit
+  - Integration
 install:
     - git clone https://github.com/PowerShell/DscResource.Tests
     - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
