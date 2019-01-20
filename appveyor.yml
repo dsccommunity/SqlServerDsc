@@ -22,7 +22,22 @@ build: false
 #      test configuration         #
 #---------------------------------#
 
-test_script:
+for:
+-
+  matrix:
+    only:
+      - configuration: Integration
+
+  test_script:
+    - ps: |
+        Invoke-AppveyorTestScriptTask -ExcludeTag @() -RunTestInOrder
+
+-
+  matrix:
+    only:
+      - configuration: Unit
+
+  test_script:
     - ps: |
         # Workaround for issue #239 and issue #774.
         Write-Verbose -Message '--- WORKAROUND FOR ISSUE #239 AND ISSUE #774 ---' -Verbose
