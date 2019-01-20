@@ -32,7 +32,7 @@ for:
     - ps: |
         # Workaround for issue #798
         Write-Verbose -Message '--- WORKAROUND FOR ISSUE #798 ---' -Verbose
-        $azureModules = Get-Module -ListAvailable -Name 'Azure*'
+        $azureModules = Get-Module -ListAvailable -Name 'Azure*' | Where-Object -FilterScript { $_.Name -notlike 'AzureRm*' }
         $azureUniqueModulePath = Split-Path -Path (Split-Path $azureModules.Path -Parent) -Parent | Sort-Object -Unique
         $azureUniqueModulePath | ForEach-Object -Process {
             $newFolderName = '{0}.old' -f (Split-Path -Path $_ -Leaf)
