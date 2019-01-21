@@ -31,6 +31,9 @@
 - Changes to SqlServerLogin
   - Fixed issue in Test-TargetResource to valid password on disabled accounts.
     ([issue #915](https://github.com/PowerShell/SqlServerDsc/issues/915)).
+  - Now when adding a login of type SqlLogin, and the SQL Server login mode
+    is set to `'Integrated'`, an error is correctly thrown
+    ([issue #1179](https://github.com/PowerShell/SqlServerDsc/issues/1179)).
 - Changes to SqlSetup
   - Updated the integration test to stop the named instance while installing
     the other instances to mitigate
