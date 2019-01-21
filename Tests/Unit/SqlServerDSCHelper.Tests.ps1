@@ -8,15 +8,19 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
-# This is used to make sure the unit test run in a container.
-[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container1', ContainerImage = 'microsoft/windowsservercore')]
 # To run these tests, we have to fake login credentials
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param ()
 
 # Unit Test Template Version: 1.1.0
 
-$script:moduleName = 'SqlServerDscHelper'
+$script:helperModuleName = 'SqlServerDscHelper'
+
+if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
+{
+    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:helperModuleName) -Verbose
+    return
+}
 
 [System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
@@ -26,7 +30,7 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 }
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
-Import-Module (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent | Split-Path -Parent) -ChildPath 'SqlServerDscHelper.psm1') -Scope Global -Force
+Import-Module (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent | Split-Path -Parent) -ChildPath "$script:helperModuleName.psm1") -Scope Global -Force
 
 # Loading mocked classes
 Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SMO.cs )
@@ -35,7 +39,7 @@ Add-Type -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Pa
 Import-Module -Name (Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests') -ChildPath 'Unit') -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Global -Force
 
 # Begin Testing
-InModuleScope $script:moduleName {
+InModuleScope $script:helperModuleName {
     $mockNewObject_MicrosoftAnalysisServicesServer = {
         return New-Object -TypeName Object |
                     Add-Member -MemberType ScriptMethod -Name Connect -Value {
@@ -154,7 +158,7 @@ InModuleScope $script:moduleName {
     $mockInnerException | Add-Member -Name 'Number' -Value 2 -MemberType NoteProperty
     $mockException = New-Object System.Exception "This is a mock exception object", $mockInnerException
     $mockException | Add-Member -Name 'Number' -Value 1 -MemberType NoteProperty
-    
+
 
     Describe 'Testing Restart-SqlService' {
         Context 'Restart-SqlService standalone instance' {
@@ -2047,7 +2051,7 @@ InModuleScope $script:moduleName {
         Context 'When getting service account' {
             It 'Should return NT AUTHORITY\SYSTEM' {
                 $returnValue = Get-ServiceAccount -ServiceAccount $mockLocalSystemAccountCredential
-                
+
                 $returnValue.UserName | Should -Be $mockLocalSystemAccountUserName
                 $returnValue.Password | Should -BeNullOrEmpty
             }
@@ -2076,7 +2080,7 @@ InModuleScope $script:moduleName {
 
     Describe 'Testing Find-ExceptionByNumber'{
         Context 'When searching Exception objects'{
-            It 'Should return true for main exception' { 
+            It 'Should return true for main exception' {
                 Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 1 | Should -Be $true
             }
 

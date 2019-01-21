@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+- Changes to SqlServerDsc
+  - Reverting the change that was made as part of the
+    [issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260)
+    in the previous release, as it only mitigated the issue, it did not
+    solve the issue.
+  - Removed the container testing since that broke the integration tests,
+    possible due to using excessive amount of memory on the AppVeyor build
+    worker. This will make the unit tests to take a bit longer to run.
+    ([issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260)).
+  - The unit tests and the integration tests are now run in two separate
+    build workers in AppVeyor. One build worker runs the integration tests,
+    while a second build worker runs the unit tests. The build workers runs
+    in parallel on paid accounts, but sequentially on free accounts.
+    ([issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260)).
+  - Clean up error handling in some of the integration tests that was
+    part of a workaround for a bug in Pester. The bug is resolved, and
+    the error handling is not again built into Pester.
 - Changes to SqlServiceAccount
   - Fixed Get-ServiceObject when searching for Integration Services service.
     Unlike the rest of SQL Server services, the Integration Services service
@@ -14,6 +31,10 @@
 - Changes to SqlServerLogin
   - Fixed issue in Test-TargetResource to valid password on disabled accounts.
     ([issue #915](https://github.com/PowerShell/SqlServerDsc/issues/915)).
+- Changes to SqlSetup
+  - Updated the integration test to stop the named instance while installing
+    the other instances to mitigate
+    [issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260).
 
 ## 12.2.0.0
 

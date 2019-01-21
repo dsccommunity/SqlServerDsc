@@ -3,11 +3,11 @@
 #---------------------------------#
 version: 9.0.{build}.0
 image: Visual Studio 2017
+configuration:
+  - Unit
+  - Integration
 install:
     - git clone https://github.com/PowerShell/DscResource.Tests
-    - ps: Start-Sleep -Seconds 5
-    - ps: Restart-Computer -Force
-    - ps: Start-Sleep -Seconds 5
     - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
     - ps: Import-Module "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
     - ps: Invoke-AppveyorInstallTask
@@ -22,9 +22,14 @@ build: false
 #      test configuration         #
 #---------------------------------#
 
-test_script:
+for:
+-
+  matrix:
+    only:
+      - configuration: Integration
+
+  test_script:
     - ps: |
-        # Workaround for issue #239 and issue #774.
         Write-Verbose -Message '--- WORKAROUND FOR ISSUE #239 AND ISSUE #774 ---' -Verbose
         $sqlModules = Get-Module -ListAvailable -Name 'sql*'
         $sqlUniqueModulePath = Split-Path -Path (Split-Path $sqlModules.Path -Parent) -Parent | Sort-Object -Unique
@@ -33,14 +38,32 @@ test_script:
             Write-Verbose ('Renaming ''{0}'' to ''..\{1}''' -f $_, $newFolderName) -Verbose
             Rename-Item $_ -NewName $newFolderName -Force
         }
-
         Write-Verbose -Message '' -Verbose
-
         # Workaround for issue #798
         Write-Verbose -Message '--- WORKAROUND FOR ISSUE #798 ---' -Verbose
-        $azureModules = Get-Module -ListAvailable -Name 'Azure*'
+        $azureModules = Get-Module -ListAvailable -Name 'Azure*' | Where-Object -FilterScript { $_.Name -notlike 'AzureRm*' }
         $azureUniqueModulePath = Split-Path -Path (Split-Path $azureModules.Path -Parent) -Parent | Sort-Object -Unique
         $azureUniqueModulePath | ForEach-Object -Process {
+            $newFolderName = '{0}.old' -f (Split-Path -Path $_ -Leaf)
+            Write-Verbose ('Renaming ''{0}'' to ''..\{1}''' -f $_, $newFolderName) -Verbose
+            Rename-Item $_ -NewName $newFolderName -Force
+        }
+        Write-Verbose -Message '' -Verbose
+
+        Invoke-AppveyorTestScriptTask -ExcludeTag @() -RunTestInOrder
+
+-
+  matrix:
+    only:
+      - configuration: Unit
+
+  test_script:
+    - ps: |
+        # Workaround for issue #239 and issue #774.
+        Write-Verbose -Message '--- WORKAROUND FOR ISSUE #239 AND ISSUE #774 ---' -Verbose
+        $sqlModules = Get-Module -ListAvailable -Name 'sql*'
+        $sqlUniqueModulePath = Split-Path -Path (Split-Path $sqlModules.Path -Parent) -Parent | Sort-Object -Unique
+        $sqlUniqueModulePath | ForEach-Object -Process {
             $newFolderName = '{0}.old' -f (Split-Path -Path $_ -Leaf)
             Write-Verbose ('Renaming ''{0}'' to ''..\{1}''' -f $_, $newFolderName) -Verbose
             Rename-Item $_ -NewName $newFolderName -Force

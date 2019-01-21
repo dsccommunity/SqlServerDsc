@@ -8,21 +8,26 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
-# This is used to make sure the unit test run in a container.
-[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container1', ContainerImage = 'microsoft/windowsservercore')]
-param()
 
-Describe 'CommonResourceHelper Unit Tests' {
+$script:helperModuleName = 'CommonResourceHelper'
+
+if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
+{
+    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:helperModuleName) -Verbose
+    return
+}
+
+Describe "$script:helperModuleName Unit Tests" {
     BeforeAll {
         # Import the CommonResourceHelper module to test
         $dscResourcesFolderFilePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) `
                                                 -ChildPath 'DscResources'
 
         Import-Module -Name (Join-Path -Path $dscResourcesFolderFilePath `
-                                       -ChildPath 'CommonResourceHelper.psm1') -Force
+                                       -ChildPath "$script:helperModuleName.psm1") -Force
     }
 
-    InModuleScope 'CommonResourceHelper' {
+    InModuleScope $script:helperModuleName {
         Describe 'Get-LocalizedData' {
             $mockTestPath = {
                 return $mockTestPathReturnValue

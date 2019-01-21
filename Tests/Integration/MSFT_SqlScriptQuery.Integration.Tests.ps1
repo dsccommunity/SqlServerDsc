@@ -17,6 +17,12 @@ if (-not $env:APPVEYOR -eq $true)
     return
 }
 
+if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Integration')
+{
+    Write-Verbose -Message ('Integration test for {0} will be skipped unless $env:CONFIGURATION is set to ''Integration''.' -f $script:DSCResourceName) -Verbose
+    return
+}
+
 #region HEADER
 # Integration Test Template Version: 1.1.2
 [String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
