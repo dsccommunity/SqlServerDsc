@@ -1041,11 +1041,13 @@ the resource [**SqlServerEndpointPermission**](#sqlserverendpointpermission).
 * **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
 * **`[String]` IpAddress** _(Write)_: The network IP address the endpoint is listening
   on. Defaults to '0.0.0.0' which means listen on any valid IP address.
+* **`[String]` Owner** _(Write)_: The owner of the endpoint. Default is the login used
+  for the creation.
 
 #### Examples
 
 * [Create an endpoint with default values](/Examples/Resources/SqlServerEndpoint/1-CreateEndpointWithDefaultValues.ps1)
-* [Create an endpoint with specific port and IP address](/Examples/Resources/SqlServerEndpoint/2-CreateEndpointWithSpecificPortAndIPAddress.ps1)
+* [Create an endpoint with specific port and IP address](/Examples/Resources/SqlServerEndpoint/2-CreateEndpointWithSpecificPortIPAddressOwner.ps1)
 * [Remove an endpoint](/Examples/Resources/SqlServerEndpoint/3-RemoveEndpoint.ps1)
 
 #### Known issues
@@ -1527,6 +1529,9 @@ Manage the service account for SQL Server services.
 * **`[Boolean]` Force** (Write): Forces the service account to be updated.
   Useful for password changes. This will cause `Set-TargetResource` to be run on
   each consecutive run.
+* **`[String]` VersionNumber** (Write): The version number of the SQL Server,
+  mandatory for when IntegrationServices is used as **ServiceType**.
+  Eg. 130 for SQL 2016.  
 
 #### Read-Only Properties from Get-TargetResource
 

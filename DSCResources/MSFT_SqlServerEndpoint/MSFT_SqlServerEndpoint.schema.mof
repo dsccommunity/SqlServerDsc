@@ -7,4 +7,5 @@ class MSFT_SqlServerEndpoint : OMI_BaseResource
     [Write, Description("The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.")] String ServerName;
     [Key, Description("The name of the SQL instance to be configured.")] String InstanceName;
     [Write, Description("The network IP address the endpoint is listening on. Default the endpoint will listen on any valid IP address.")] String IpAddress;
+    [Write, Description("The owner of the endpoint. Default is the login used for the creation.")] String EndPointOwner;
 };
