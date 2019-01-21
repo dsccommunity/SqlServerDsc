@@ -59,11 +59,13 @@ try
         $mockEndpointType = 'DatabaseMirroring'
         $mockEndpointListenerPort = 5022
         $mockEndpointListenerIpAddress = '0.0.0.0'  # 0.0.0.0 means listen on all IP addresses.
+        $mockEndpointOwner = 'sa'
 
         $mockOtherEndpointName = 'UnknownEndpoint'
         $mockOtherEndpointType = 'UnknownType'
         $mockOtherEndpointListenerPort = 9001
         $mockOtherEndpointListenerIpAddress = '192.168.0.20'
+        $mockOtherEndpointOwner = 'COMPANY\OtherAcct'
 
         $script:mockMethodAlterRan = $false
         $script:mockMethodCreateRan = $false
@@ -74,6 +76,7 @@ try
         $mockDynamicEndpointType = $mockEndpointType
         $mockDynamicEndpointListenerPort = $mockEndpointListenerPort
         $mockDynamicEndpointListenerIpAddress = $mockEndpointListenerIpAddress
+        $mockDynamicEndpointOwner = $mockEndpointOwner
 
         $mockEndpointObject = {
             # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
@@ -81,6 +84,7 @@ try
                 Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDynamicEndpointName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'EndpointType' -Value $mockDynamicEndpointType -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'ProtocolType' -Value $null -PassThru |
+                Add-Member -MemberType NoteProperty -Name 'Owner' -Value $mockDynamicEndpointOwner -PassThru |
                 Add-Member -MemberType ScriptProperty -Name 'Protocol' -Value {
                     return New-Object -TypeName Object |
                         Add-Member -MemberType ScriptProperty -Name 'Tcp' -Value {
@@ -184,6 +188,7 @@ try
                     $result.EndpointName | Should -Be ''
                     $result.Port | Should -Be ''
                     $result.IpAddress | Should -Be ''
+                    $result.Owner | Should -Be ''
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -208,6 +213,7 @@ try
                     $result.EndpointName | Should -Be $testParameters.EndpointName
                     $result.Port | Should -Be $mockEndpointListenerPort
                     $result.IpAddress | Should -Be $mockEndpointListenerIpAddress
+                    $result.Owner | Should -Be $mockEndpointOwner
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -265,6 +271,7 @@ try
                     $testParameters.Add('Ensure', 'Present')
                     $testParameters.Add('Port', $mockEndpointListenerPort)
                     $testParameters.Add('IpAddress', $mockEndpointListenerIpAddress)
+                    $testParameters.Add('Owner', $mockEndpointOwner)
 
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
@@ -322,6 +329,26 @@ try
 
                 # Make sure the mock do return the correct endpoint listener IP address
                 $mockDynamicEndpointListenerIpAddress = $mockEndpointListenerIpAddress
+
+                # Make sure the mock do return the correct endpoint, but does not return the correct endpoint listener IP address
+                $mockDynamicEndpointName = $mockEndpointName
+                $mockDynamicEndpointOwner = $mockOtherEndpointOwner
+
+                Context 'When listener Owner is not in desired state' {
+                    It 'Should return that desired state is absent' {
+                        $testParameters.Add('Ensure', 'Present')
+                        $testParameters.Add('Owner', $mockEndpointOwner)
+
+
+                        $result = Test-TargetResource @testParameters
+                        $result | Should -Be $false
+
+                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                # Make sure the mock do return the correct endpoint listener IP address
+                $mockDynamicEndpointOwner = $mockEndpointOwner
             }
 
             Context 'When the system is in the desired state' {
@@ -372,7 +399,7 @@ try
                 # Set what the expected endpoint name should be when Create() method is called.
                 $mockExpectedNameWhenCallingMethod = $mockEndpointName
 
-                It 'Should call the the method Create when desired state is to be Present (using default values)' {
+                It 'Should call the method Create when desired state is to be Present (using default values)' {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
                             Ensure = 'Absent'
@@ -397,7 +424,7 @@ try
                 # Set what the expected endpoint name should be when Create() method is called.
                 $mockExpectedNameWhenCallingMethod = $mockEndpointName
 
-                It 'Should call the the method Create when desired state is to be Present (setting all parameters)' {
+                It 'Should call the method Create when desired state is to be Present (setting all parameters)' {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
                             Ensure = 'Absent'
@@ -407,6 +434,7 @@ try
                     $testParameters.Add('Ensure', 'Present')
                     $testParameters.Add('Port', $mockEndpointListenerPort)
                     $testParameters.Add('IpAddress', $mockEndpointListenerIpAddress)
+                    $testParameters.Add('Owner', $mockEndpointOwner)
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                     $script:mockMethodCreateRan | Should -Be $true
@@ -426,7 +454,7 @@ try
                 # Set what the expected endpoint name should be when Drop() method is called.
                 $mockExpectedNameWhenCallingMethod = $mockEndpointName
 
-                It 'Should call the the method Drop when desired state is to be Absent' {
+                It 'Should call the method Drop when desired state is to be Absent' {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
                             Ensure = 'Present'
@@ -453,7 +481,7 @@ try
                 # Set what the expected endpoint name should be when Alter() method is called.
                 $mockExpectedNameWhenCallingMethod = $mockEndpointName
 
-                It 'Should not call Alter method when listener port is not in desired state' {
+                It 'Should call Alter method when listener port is not in desired state' {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
                             Ensure = 'Present'
@@ -465,6 +493,7 @@ try
                     $testParameters.Add('Ensure', 'Present')
                     $testParameters.Add('Port', $mockOtherEndpointListenerPort)
                     $testParameters.Add('IpAddress', $mockEndpointListenerIpAddress)
+                    $testParameters.Add('Owner', $mockEndpointOwner)
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                     $script:mockMethodCreateRan | Should -Be $false
@@ -484,7 +513,7 @@ try
                 # Set what the expected endpoint name should be when Alter() method is called.
                 $mockExpectedNameWhenCallingMethod = $mockEndpointName
 
-                It 'Should not call Alter method when listener IP address is not in desired state' {
+                It 'Should call Alter method when listener IP address is not in desired state' {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
                             Ensure = 'Present'
@@ -496,6 +525,39 @@ try
                     $testParameters.Add('Ensure', 'Present')
                     $testParameters.Add('Port', $mockEndpointListenerPort)
                     $testParameters.Add('IpAddress', $mockOtherEndpointListenerIpAddress)
+                    $testParameters.Add('Owner', $mockEndpointOwner)
+
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodCreateRan | Should -Be $false
+                    $script:mockMethodStartRan | Should -Be $false
+                    $script:mockMethodAlterRan | Should -Be $true
+                    $script:mockMethodDropRan | Should -Be $false
+
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
+                # Set all method call tests variables to $false
+                $script:mockMethodCreateRan = $false
+                $script:mockMethodStartRan = $false
+                $script:mockMethodAlterRan = $false
+                $script:mockMethodDropRan = $false
+
+                # Set what the expected endpoint name should be when Alter() method is called.
+                $mockExpectedNameWhenCallingMethod = $mockEndpointName
+
+                It 'Should call Alter method when Owner is not in desired state' {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            Port = $mockEndpointListenerPort
+                            IpAddress = $mockEndpointListenerIpAddress
+                        }
+                    } -Verifiable
+
+                    $testParameters.Add('Ensure', 'Present')
+                    $testParameters.Add('Port', $mockEndpointListenerPort)
+                    $testParameters.Add('IpAddress', $mockEndpointListenerIpAddress)
+                    $testParameters.Add('Owner', $mockOtherEndpointOwner)
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                     $script:mockMethodCreateRan | Should -Be $false
@@ -516,6 +578,7 @@ try
                                 Ensure = 'Present'
                                 Port = $mockEndpointListenerPort
                                 IpAddress = $mockEndpointListenerIpAddress
+                                Owner = $mockEndpointOwner
                             }
                         } -Verifiable
 
@@ -530,6 +593,7 @@ try
                                 Ensure = 'Present'
                                 Port = $mockEndpointListenerPort
                                 IpAddress = $mockEndpointListenerIpAddress
+                                Owner = $mockEndpointOwner
                             }
                         } -Verifiable
 
@@ -551,11 +615,12 @@ try
                 }
             }
 
-            Context 'When the system is in the desired state' {
+            Context '	' {
                 # Make sure the mock do return the correct endpoint
                 $mockDynamicEndpointName = $mockEndpointName
                 $mockDynamicEndpointListenerPort = $mockEndpointListenerPort
                 $mockDynamicEndpointListenerIpAddress = $mockEndpointListenerIpAddress
+                $mockDynamicEndpointOwner = $mockEndpointOwner
 
                 # Set all method call tests variables to $false
                 $script:mockMethodCreateRan = $false
@@ -569,12 +634,14 @@ try
                             Ensure = 'Present'
                             Port = $mockEndpointListenerPort
                             IpAddress = $mockEndpointListenerIpAddress
+                            Owner = $mockEndpointOwner
                         }
                     } -Verifiable
 
                     $testParameters.Add('Ensure', 'Present')
                     $testParameters.Add('Port', $mockEndpointListenerPort)
                     $testParameters.Add('IpAddress', $mockEndpointListenerIpAddress)
+                    $testParameters.Add('Owner', $mockEndpointOwner)
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                     $script:mockMethodCreateRan | Should -Be $false
@@ -657,6 +724,7 @@ try
                         $testParameters.Add('Ensure', 'Present')
                         $testParameters.Add('Port', $mockOtherEndpointListenerPort)
                         $testParameters.Add('IpAddress', $mockEndpointListenerIpAddress)
+                        $testParameters.Add('Owner', $mockEndpointOwner)
 
                         { Set-TargetResource @testParameters } | Should -Throw 'Exception calling "Alter" with "0" argument(s): "Called mocked Alter() method on and endpoint with wrong name. Expected ''UnknownEndpoint''. But was ''DefaultEndpointMirror''."'
                     }
