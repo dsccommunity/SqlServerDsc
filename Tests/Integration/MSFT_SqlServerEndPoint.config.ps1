@@ -12,7 +12,7 @@ $ConfigurationData = @{
 
             EndpointName         = 'HADR'
             Port                 = 5023
-            IpAddress            = '10.10.10.10'
+            IpAddress            = '0.0.0.0'
             Owner                = 'sa'
 
             CertificateFile      = $env:DscPublicCertificatePath
