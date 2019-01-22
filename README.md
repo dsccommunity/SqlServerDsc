@@ -1041,8 +1041,8 @@ the resource [**SqlServerEndpointPermission**](#sqlserverendpointpermission).
 * **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
 * **`[String]` IpAddress** _(Write)_: The network IP address the endpoint is listening
   on. Defaults to '0.0.0.0' which means listen on any valid IP address.
-* **`[String]` Owner** _(Write)_: The owner of the endpoint. Default is the login used
-  for the creation.
+* **`[String]` Owner** _(Write)_: The owner of the endpoint. Default is the
+  login used for the creation.
 
 #### Examples
 

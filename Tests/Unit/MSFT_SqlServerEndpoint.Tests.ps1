@@ -615,7 +615,7 @@ try
                 }
             }
 
-            Context '	' {
+            Context '    ' {
                 # Make sure the mock do return the correct endpoint
                 $mockDynamicEndpointName = $mockEndpointName
                 $mockDynamicEndpointListenerPort = $mockEndpointListenerPort
