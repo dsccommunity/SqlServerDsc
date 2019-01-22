@@ -37,10 +37,10 @@ Configuration MSFT_SqlServerEndpoint_Add_Config
             EndpointName         = $Node.EndpointName
             Port                 = $Node.Port
             IpAddress            = $Node.IpAddress
-			#Owner                = $Node.Owner ## NOT UNCOMMENT WHEN ISSUE 1251 FIXED
+            #Owner                = $Node.Owner ## NOT UNCOMMENT WHEN ISSUE 1251 FIXED
 
             ServerName           = $Node.ServerName
-			InstanceName         = $Node.InstanceName
+            InstanceName         = $Node.InstanceName
         }
     }
 }
@@ -62,7 +62,7 @@ Configuration MSFT_SqlServerEndpoint_Remove_Config
             EndpointName         = $Node.EndpointName
 
             ServerName           = $Node.ServerName
-			InstanceName         = $Node.InstanceName
+            InstanceName         = $Node.InstanceName
         }
     }
 }
