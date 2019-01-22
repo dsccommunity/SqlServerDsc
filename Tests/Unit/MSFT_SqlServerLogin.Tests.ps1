@@ -8,14 +8,18 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
-# This is used to make sure the unit test run in a container.
-[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container2', ContainerImage = 'microsoft/windowsservercore')]
 # Suppressing this rule because PlainText is required for one of the functions used in this test
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param()
 
 $script:DSCModuleName = 'SqlServerDsc'
 $script:DSCResourceName = 'MSFT_SqlServerLogin'
+
+if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
+{
+    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:DSCResourceName) -Verbose
+    return
+}
 
 #region HEADER
 
@@ -218,12 +222,43 @@ try
             return $mock
         }
 
+        $mockConnectSQL_LoginMode = {
+            return New-Object -TypeName Object |
+                Add-Member -MemberType ScriptProperty -Name Logins -Value {
+                return @{
+                    'Windows\User1' = ( New-Object -TypeName Object |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Windows\User1' -PassThru |
+                            Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'WindowsUser' -PassThru |
+                            Add-Member -MemberType ScriptMethod -Name Alter -Value {} -PassThru |
+                            Add-Member -MemberType ScriptMethod -Name Drop -Value {} -PassThru -Force
+                    )
+                    'SqlLogin1' = ( New-Object -TypeName Object |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SqlLogin1' -PassThru |
+                            Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'SqlLogin' -PassThru |
+                            Add-Member -MemberType NoteProperty -Name 'MustChangePassword' -Value $false -PassThru |
+                            Add-Member -MemberType NoteProperty -Name 'PasswordExpirationEnabled' -Value $true -PassThru |
+                            Add-Member -MemberType NoteProperty -Name 'PasswordPolicyEnforced' -Value $true -PassThru |
+                            Add-Member -MemberType ScriptMethod -Name Alter -Value {} -PassThru |
+                            Add-Member -MemberType ScriptMethod -Name Drop -Value {} -PassThru -Force
+                    )
+                    'Windows\Group1' = ( New-Object -TypeName Object |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Windows\Group1' -PassThru |
+                            Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'WindowsGroup' -PassThru |
+                            Add-Member -MemberType ScriptMethod -Name Alter -Value {} -PassThru |
+                            Add-Member -MemberType ScriptMethod -Name Drop -Value {} -PassThru -Force
+                    )
+                }
+            } -PassThru |
+                Add-Member -MemberType NoteProperty -Name LoginMode -Value $mockLoginMode -PassThru -Force
+        }
+
         $mockAccountDisabledException = New-Object System.Exception 'Account disabled'
         $mockAccountDisabledException | Add-Member -Name 'Number' -Value 18470 -MemberType NoteProperty
         $mockLoginFailedException = New-Object System.Exception 'Login failed'
         $mockLoginFailedException | Add-Member -Name 'Number' -Value 18456 -MemberType NoteProperty
         $mockException = New-Object System.Exception 'Something went wrong'
         $mockException | Add-Member -Name 'Number' -Value 1 -MemberType NoteProperty
+
         #endregion Pester Test Initialization
 
         Describe 'MSFT_SqlServerLogin\Get-TargetResource' {
@@ -386,9 +421,9 @@ try
                     $mockTestTargetResourceParameters.Add('Disabled', $true)
                     $mockTestTargetResourceParameters.Add('LoginType', 'SqlLogin')
                     $mockTestTargetResourceParameters.Add('LoginCredential', (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockSqlLoginPassword)))
-                    
+
                     # Override mock declaration
-                    Mock -CommandName Connect-SQL -MockWith {throw $mockAccountDisabledException} 
+                    Mock -CommandName Connect-SQL -MockWith {throw $mockAccountDisabledException}
 
                     # Override Get-TargetResource
                     Mock -CommandName Get-TargetResource {return New-Object PSObject -Property @{
@@ -403,7 +438,7 @@ try
                         LoginPasswordExpirationEnabled = $true
                       }
                     }
-        
+
                     # Call the test target
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
@@ -420,9 +455,9 @@ try
                     $mockTestTargetResourceParameters.Add('Disabled', $true)
                     $mockTestTargetResourceParameters.Add('LoginType', 'SqlLogin')
                     $mockTestTargetResourceParameters.Add('LoginCredential', (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockSqlLoginPassword)))
-                    
+
                     # Override mock declaration
-                    Mock -CommandName Connect-SQL -MockWith {throw $mockLoginFailedException} 
+                    Mock -CommandName Connect-SQL -MockWith {throw $mockLoginFailedException}
 
                     # Override Get-TargetResource
                     Mock -CommandName Get-TargetResource {return New-Object PSObject -Property @{
@@ -437,7 +472,7 @@ try
                         LoginPasswordExpirationEnabled = $true
                       }
                     }
-        
+
                     # Call the test target
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
@@ -447,16 +482,16 @@ try
                     # Should be true
                     $result | Should -Be $false
                 }
-                
+
                 It 'Should throw exception when unkown error occurred and account is disabled' {
                     $mockTestTargetResourceParameters = $getTargetResource_KnownSqlLogin.Clone()
                     $mockTestTargetResourceParameters.Add('Ensure', 'Present')
                     $mockTestTargetResourceParameters.Add('Disabled', $true)
                     $mockTestTargetResourceParameters.Add('LoginType', 'SqlLogin')
                     $mockTestTargetResourceParameters.Add('LoginCredential', (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockSqlLoginPassword)))
-                    
+
                     # Override mock declaration
-                    Mock -CommandName Connect-SQL -MockWith {throw $mockException} 
+                    Mock -CommandName Connect-SQL -MockWith {throw $mockException}
 
                     # Override Get-TargetResource
                     Mock -CommandName Get-TargetResource {return New-Object PSObject -Property @{
@@ -471,13 +506,13 @@ try
                         LoginPasswordExpirationEnabled = $true
                       }
                     }
-        
+
                     # Call the test target
                     { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw
 
                     Assert-MockCalled -CommandName Get-TargetResource -Scope It -Times 1 -Exactly
                     Assert-MockCAlled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                }                
+                }
             }
 
             Context 'When the desired state is Present' {
@@ -1010,38 +1045,10 @@ try
                     Assert-MockCalled -CommandName Set-SQLServerLoginPassword  -Scope It -Times 1 -Exactly
                 }
 
-                It 'Should throw the correct error when creating a SQL Login if the LoginMode is not Mixed' {
-                    $mockConnectSQL_LoginModeNormal = {
-                        return New-Object -TypeName Object |
-                            Add-Member -MemberType ScriptProperty -Name Logins -Value {
-                            return @{
-                                'Windows\User1' = ( New-Object -TypeName Object |
-                                        Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Windows\User1' -PassThru |
-                                        Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'WindowsUser' -PassThru |
-                                        Add-Member -MemberType ScriptMethod -Name Alter -Value {} -PassThru |
-                                        Add-Member -MemberType ScriptMethod -Name Drop -Value {} -PassThru -Force
-                                )
-                                'SqlLogin1' = ( New-Object -TypeName Object |
-                                        Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SqlLogin1' -PassThru |
-                                        Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'SqlLogin' -PassThru |
-                                        Add-Member -MemberType NoteProperty -Name 'MustChangePassword' -Value $false -PassThru |
-                                        Add-Member -MemberType NoteProperty -Name 'PasswordExpirationEnabled' -Value $true -PassThru |
-                                        Add-Member -MemberType NoteProperty -Name 'PasswordPolicyEnforced' -Value $true -PassThru |
-                                        Add-Member -MemberType ScriptMethod -Name Alter -Value {} -PassThru |
-                                        Add-Member -MemberType ScriptMethod -Name Drop -Value {} -PassThru -Force
-                                )
-                                'Windows\Group1' = ( New-Object -TypeName Object |
-                                        Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Windows\Group1' -PassThru |
-                                        Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'WindowsGroup' -PassThru |
-                                        Add-Member -MemberType ScriptMethod -Name Alter -Value {} -PassThru |
-                                        Add-Member -MemberType ScriptMethod -Name Drop -Value {} -PassThru -Force
-                                )
-                            }
-                        } -PassThru |
-                            Add-Member -MemberType NoteProperty -Name LoginMode -Value 'Normal' -PassThru -Force
-                    }
+                It 'Should throw the correct error when creating a SQL Login if the LoginMode is ''Integrated''' {
+                    $mockLoginMode = 'Integrated'
 
-                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL_LoginModeNormal -Verifiable
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL_LoginMode -Verifiable
 
                     $setTargetResource_SqlLoginAbsent_EnsurePresent = $setTargetResource_SqlLoginAbsent.Clone()
                     $setTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
@@ -1055,6 +1062,42 @@ try
                     Assert-MockCalled -CommandName Remove-SQLServerLogin  -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Set-SQLServerLoginPassword  -Scope It -Times 0 -Exactly
                 }
+            }
+
+            It 'Should not throw an error when creating a SQL Login and the LoginMode is set to ''Normal''' {
+                $mockLoginMode = 'Normal'
+
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL_LoginMode -Verifiable
+
+                $setTargetResource_SqlLoginAbsent_EnsurePresent = $setTargetResource_SqlLoginAbsent.Clone()
+                $setTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
+                $setTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'LoginCredential', $mockSqlLoginCredential )
+
+                { Set-TargetResource @setTargetResource_SqlLoginAbsent_EnsurePresent } | Should -Not -Throw 'IncorrectLoginMode'
+
+                Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Update-SQLServerLogin  -Scope It -Times 0 -Exactly
+                Assert-MockCalled -CommandName New-SQLServerLogin  -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Remove-SQLServerLogin  -Scope It -Times 0 -Exactly
+                Assert-MockCalled -CommandName Set-SQLServerLoginPassword  -Scope It -Times 0 -Exactly
+            }
+
+            It 'Should not throw an error when creating a SQL Login and the LoginMode is set to ''Mixed''' {
+                $mockLoginMode = 'Mixed'
+
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL_LoginMode -Verifiable
+
+                $setTargetResource_SqlLoginAbsent_EnsurePresent = $setTargetResource_SqlLoginAbsent.Clone()
+                $setTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
+                $setTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'LoginCredential', $mockSqlLoginCredential )
+
+                { Set-TargetResource @setTargetResource_SqlLoginAbsent_EnsurePresent } | Should -Not -Throw 'IncorrectLoginMode'
+
+                Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Update-SQLServerLogin  -Scope It -Times 0 -Exactly
+                Assert-MockCalled -CommandName New-SQLServerLogin  -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Remove-SQLServerLogin  -Scope It -Times 0 -Exactly
+                Assert-MockCalled -CommandName Set-SQLServerLoginPassword  -Scope It -Times 0 -Exactly
             }
         }
 

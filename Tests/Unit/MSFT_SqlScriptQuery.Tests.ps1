@@ -8,11 +8,18 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
-# This is used to make sure the unit test run in a container.
-[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container1', ContainerImage = 'microsoft/windowsservercore')]
 # Suppression of this PSSA rule allowed in tests.
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 Param()
+
+$script:DSCModuleName = 'SqlServerDsc'
+$script:DSCResourceName = 'MSFT_SqlScriptQuery'
+
+if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
+{
+    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:DSCResourceName) -Verbose
+    return
+}
 
 #region HEADER
 
@@ -28,8 +35,8 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath 'SqlServerDscHelper.psm1')
 
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName 'SqlServerDsc' `
-    -DSCResourceName 'MSFT_SqlScriptQuery'  `
+    -DSCModuleName $script:DSCModuleName `
+    -DSCResourceName $script:DSCResourceName `
     -TestType Unit
 
 #endregion HEADER
@@ -49,7 +56,7 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope 'MSFT_SqlScriptQuery' {
+    InModuleScope $script:DSCResourceName {
         InModuleScope 'SqlServerDscHelper' {
             $script:DSCModuleName = 'SqlServerDsc'
             $resourceName = 'MSFT_SqlScriptQuery'

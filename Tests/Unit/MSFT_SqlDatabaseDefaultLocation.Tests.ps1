@@ -8,9 +8,14 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
-# This is used to make sure the unit test run in a container.
-[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container1', ContainerImage = 'microsoft/windowsservercore')]
-param()
+$script:DSCModuleName = 'SqlServerDsc'
+$script:DSCResourceName = 'MSFT_SqlDatabaseDefaultLocation'
+
+if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
+{
+    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:DSCResourceName) -Verbose
+    return
+}
 
 #region Header
 
@@ -27,8 +32,8 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SMO.cs )
 
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName 'SqlServerDsc' `
-    -DSCResourceName 'MSFT_SqlDatabaseDefaultLocation' `
+    -DSCModuleName $script:DSCModuleName `
+    -DSCResourceName $script:DSCResourceName `
     -TestType Unit
 
 #endregion HEADER
@@ -48,7 +53,7 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope 'MSFT_SqlDatabaseDefaultLocation' {
+    InModuleScope $script:DSCResourceName {
         $mockServerName = 'localhost'
         $mockInstanceName = 'MSSQLSERVER'
         $mockSQLDataPath = 'C:\Program Files\Data\'

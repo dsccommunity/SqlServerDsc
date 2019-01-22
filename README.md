@@ -1123,6 +1123,9 @@ No description.
 
 * Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
+* When the `LoginType` `'SqlLogin'` is used, then the login authentication
+  mode must have been set to `Mixed` or `Normal`. If set to `Integrated`
+  and error will be thrown.
 
 #### Parameters
 

@@ -8,12 +8,14 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
-# This is used to make sure the unit test run in a container.
-[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container2', ContainerImage = 'microsoft/windowsservercore')]
-param()
-
 $script:DSCModuleName = 'SqlServerDsc'
 $script:DSCResourceName = 'MSFT_SqlServiceAccount'
+
+if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
+{
+    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:DSCResourceName) -Verbose
+    return
+}
 
 #region HEADER
 
@@ -177,7 +179,7 @@ try
             $managedComputerObject = New-Object -TypeName PSObject -Property @{
                 Name           = $mockDefaultInstanceName
                 ServiceAccount = $mockManagedServiceAccountName
-                Type           = 'SqlServer'      
+                Type           = 'SqlServer'
             }
 
             $managedComputerObject | Add-Member @mockAddMemberParameters_SetServiceAccount
@@ -498,7 +500,7 @@ try
                     )
 
                     # Get the service name
-                    Get-SqlServiceName -InstanceName $mockDefaultInstanceName -ServiceType $ServiceType  | Should -Be $ExpectedServiceName                        
+                    Get-SqlServiceName -InstanceName $mockDefaultInstanceName -ServiceType $ServiceType  | Should -Be $ExpectedServiceName
 
                     # Ensure the mock is utilized
                     Assert-MockCalled -CommandName Get-ChildItem -ParameterFilter $mockGetChildItem_ParameterFilter -Scope It -Exactly -Times 1
@@ -806,7 +808,7 @@ try
                     ServerName     = $mockSqlServer
                     InstanceName   = $mockDefaultInstanceName
                     ServiceType    = $mockServiceType
-                    ServiceAccount = $mockManagedServiceAccountCredential                   
+                    ServiceAccount = $mockManagedServiceAccountCredential
                 }
 
                 It 'Should have the Managed Service Account' {
