@@ -37,9 +37,9 @@ function Get-TargetResource
         ServerName   = $ServerName
         InstanceName = $InstanceName
         Ensure       = 'Absent'
-        EndpointName = ''
-        Port         = ''
-        IpAddress    = ''
+        EndpointName = $null
+        Port         = $null
+        IpAddress    = $null
     }
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
@@ -65,9 +65,6 @@ function Get-TargetResource
         else
         {
             $getTargetResourceReturnValues.Ensure = 'Absent'
-            $getTargetResourceReturnValues.EndpointName = ''
-            $getTargetResourceReturnValues.Port = ''
-            $getTargetResourceReturnValues.IpAddress = ''
         }
     }
     else
