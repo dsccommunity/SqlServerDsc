@@ -50,6 +50,8 @@ function Get-TargetResource
         $endpointObject = $sqlServerObject.Endpoints[$EndpointName]
         if ($endpointObject.Name -eq $EndpointName)
         {
+			Write-Verbose 'Get-DscConfiguration : if path true'
+			
             if ($sqlServerObject.Endpoints[$EndPointName].EndpointType -ne 'DatabaseMirroring')
             {
                 throw New-TerminatingError -ErrorType EndpointFoundButWrongType `
@@ -61,13 +63,26 @@ function Get-TargetResource
             $getTargetResourceReturnValues.EndpointName = $endpointObject.Name
             $getTargetResourceReturnValues.Port = $endpointObject.Protocol.Tcp.ListenerPort
             $getTargetResourceReturnValues.IpAddress = $endpointObject.Protocol.Tcp.ListenerIPAddress
+
+			Write-Verbose '$getTargetResourceReturnValues.Ensure = {0}' -f $getTargetResourceReturnValues.Ensure
+			Write-Verbose '$getTargetResourceReturnValues.EndpointName = {0}' -f $getTargetResourceReturnValues.EndpointName
+			Write-Verbose '$getTargetResourceReturnValues.Port = {0}' -f $getTargetResourceReturnValues.Port
+			Write-Verbose '$getTargetResourceReturnValues.IpAddress = {0}' -f $getTargetResourceReturnValues.IpAddress
+
         }
         else
         {
+			Write-Verbose 'Get-DscConfiguration : if path false'
+
             $getTargetResourceReturnValues.Ensure = 'Absent'
             $getTargetResourceReturnValues.EndpointName = ''
             $getTargetResourceReturnValues.Port = ''
             $getTargetResourceReturnValues.IpAddress = ''
+
+			Write-Verbose '$getTargetResourceReturnValues.Ensure = {0}' -f $getTargetResourceReturnValues.Ensure
+			Write-Verbose '$getTargetResourceReturnValues.EndpointName = {0}' -f $getTargetResourceReturnValues.EndpointName
+			Write-Verbose '$getTargetResourceReturnValues.Port = {0}' -f $getTargetResourceReturnValues.Port
+			Write-Verbose '$getTargetResourceReturnValues.IpAddress = {0}' -f $getTargetResourceReturnValues.IpAddress
         }
     }
     else
