@@ -181,9 +181,9 @@ try
 
                 It 'Should not return any values in the properties for the endpoint' {
                     $result = Get-TargetResource @testParameters
-                    $result.EndpointName | Should -Be -BeNullOrEmpty
-                    $result.Port | Should -Be -BeNullOrEmpty
-                    $result.IpAddress | Should -Be -BeNullOrEmpty
+                    $result.EndpointName | Should -Be ''
+                    $result.Port | Should -Be ''
+                    $result.IpAddress | Should -Be ''
                 }
 
                 It 'Should call the mock function Connect-SQL' {
