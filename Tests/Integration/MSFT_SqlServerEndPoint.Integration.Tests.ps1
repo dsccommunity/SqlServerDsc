@@ -93,7 +93,7 @@ try
                 $resourceCurrentState.EndpointName | Should -Be $mockEndpointName
                 $resourceCurrentState.Port | Should -Be $mockPort
                 $resourceCurrentState.IpAddress | Should -Be $mockIpAddress
-                #$resourceCurrentState.Owner | Should -Be $mockOwner ## NOT UNCOMMENT WHEN ISSUE 1251 FIXED
+                #$resourceCurrentState.Owner | Should -Be $mockOwner ## TO UNCOMMENT WHEN ISSUE 1251 IS FIXED
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
