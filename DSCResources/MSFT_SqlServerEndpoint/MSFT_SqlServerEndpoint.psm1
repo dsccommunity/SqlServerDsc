@@ -299,7 +299,9 @@ function Test-TargetResource
         {
             $result = $false
         }
-        elseif ($getTargetResourceResult.Ensure -eq 'Present' -and $Owner)
+        elseif ($getTargetResourceResult.Ensure -eq 'Present' -and $Owner `
+                -and $getTargetResourceResult.Owner -ne $Owner
+        )
         {
             $result = $false
         }

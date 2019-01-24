@@ -330,7 +330,7 @@ try
                 # Make sure the mock do return the correct endpoint listener IP address
                 $mockDynamicEndpointListenerIpAddress = $mockEndpointListenerIpAddress
 
-                # Make sure the mock do return the correct endpoint, but does not return the correct endpoint listener IP address
+                # Make sure the mock do return the correct endpoint, but does not return the correct endpoint owner
                 $mockDynamicEndpointName = $mockEndpointName
                 $mockDynamicEndpointOwner = $mockOtherEndpointOwner
 
@@ -347,7 +347,7 @@ try
                     }
                 }
 
-                # Make sure the mock do return the correct endpoint listener IP address
+                # Make sure the mock do return the correct endpoint owner
                 $mockDynamicEndpointOwner = $mockEndpointOwner
             }
 
