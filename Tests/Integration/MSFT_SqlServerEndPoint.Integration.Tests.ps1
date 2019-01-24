@@ -140,9 +140,6 @@ try
 
                 $resourceCurrentState.Ensure | Should -Be 'Absent'
                 $resourceCurrentState.EndpointName | Should -BeNullOrEmpty
-                $resourceCurrentState.Port | Should -BeNullOrEmpty
-                $resourceCurrentState.IpAddress | Should -BeNullOrEmpty
-                $resourceCurrentState.Owner | Should -BeNullOrEmpty
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
