@@ -38,6 +38,10 @@
   - Updated the integration test to stop the named instance while installing
     the other instances to mitigate
     [issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260).
+- Changes to SqlServerEndpoint
+  - Add integration tests.
+    ([issue #744](https://github.com/PowerShell/SqlServerDsc/issues/744).
+    [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
 
 ## 12.2.0.0
 
