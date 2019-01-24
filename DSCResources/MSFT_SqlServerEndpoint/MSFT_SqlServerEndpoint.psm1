@@ -61,6 +61,15 @@ function Get-TargetResource
             $getTargetResourceReturnValues.EndpointName = $endpointObject.Name
             $getTargetResourceReturnValues.Port = $endpointObject.Protocol.Tcp.ListenerPort
             $getTargetResourceReturnValues.IpAddress = $endpointObject.Protocol.Tcp.ListenerIPAddress
+
+            $message = '$getTargetResourceReturnValues.Ensure = {0}' -f $getTargetResourceReturnValues.Ensure
+            Write-Verbose $message
+            $message = '$getTargetResourceReturnValues.EndpointName = {0}' -f $getTargetResourceReturnValues.EndpointName
+            Write-Verbose $message
+            $message = '$getTargetResourceReturnValues.Port = {0}' -f $getTargetResourceReturnValues.Port
+            Write-Verbose $message
+            $message = '$getTargetResourceReturnValues.IpAddress = {0}' -f $getTargetResourceReturnValues.IpAddress
+            Write-Verbose $message
         }
         else
         {
@@ -68,6 +77,15 @@ function Get-TargetResource
             $getTargetResourceReturnValues.EndpointName = ''
             $getTargetResourceReturnValues.Port = ''
             $getTargetResourceReturnValues.IpAddress = ''
+
+            $message = '$getTargetResourceReturnValues.Ensure = {0}' -f $getTargetResourceReturnValues.Ensure
+            Write-Verbose $message
+            $message = '$getTargetResourceReturnValues.EndpointName = {0}' -f $getTargetResourceReturnValues.EndpointName
+            Write-Verbose $message
+            $message = '$getTargetResourceReturnValues.Port = {0}' -f $getTargetResourceReturnValues.Port
+            Write-Verbose $message
+            $message = '$getTargetResourceReturnValues.IpAddress = {0}' -f $getTargetResourceReturnValues.IpAddress
+            Write-Verbose $message
         }
     }
     else
