@@ -58,7 +58,7 @@ try
         $mockInvalidOperationForDropMethod = $false
         $mockInvalidOperationForAlterMethod = $false
         $mockExpectedSqlAgentOperatorToCreate = 'Bob'
-        $mockExpectedSqlAgentOperatorToDrop = 'Bill'
+        $mockExpectedSqlAgentOperatorToDrop = 'Fred'
 
         # Default parameters that are used for the It-blocks
         $mockDefaultParameters = @{
@@ -111,17 +111,17 @@ try
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlAgentOperatorName -PassThru |
                         Add-Member -MemberType ScriptMethod -Name Create -Value {
-                        if ($mockInvalidOperationForCreateMethod)
-                        {
-                            throw 'Mock Create Method was called with invalid operation.'
-                        }
+                            if ($mockInvalidOperationForCreateMethod)
+                            {
+                                throw 'Mock Create Method was called with invalid operation.'
+                            }
 
-                        if ( $this.Name -ne $mockExpectedSqlAgentOperatorToCreate )
-                        {
-                            throw "Called mocked Create() method without adding the right sql agent operator. Expected '{0}'. But was '{1}'." `
-                                -f $mockExpectedSqlAgentOperatorToCreate, $this.Name
-                        }
-                    } -PassThru -Force
+                            if ( $this.Name -ne $mockExpectedSqlAgentOperatorToCreate )
+                            {
+                                throw "Called mocked Create() method without adding the right sql agent operator. Expected '{0}'. But was '{1}'." `
+                                    -f $mockExpectedSqlAgentOperatorToCreate, $this.Name
+                            }
+                        } -PassThru -Force
                 )
             )
         }
@@ -299,21 +299,19 @@ Describe "MSFT_SqlAgentOperator\Test-TargetResource" -Tag 'Test' {
                 It 'Should not throw when creating the sql agent operator' {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
-                        Name   = 'Bob'
+                        Name   = 'Fred'
                         Ensure = 'Present'
                     }
-
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should not throw when changing the email address' {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
-                        Name      = 'Nancy'
+                        Name      = 'Fred'
                         Ensure    = 'Present'
                         EmailAddress = 'newemail@contoso.com'
                     }
-
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
@@ -322,7 +320,7 @@ Describe "MSFT_SqlAgentOperator\Test-TargetResource" -Tag 'Test' {
                 }
 
                 It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Agent.Operator' {
-                    Assert-MockCalled New-Object -Exactly -Times 4 -ParameterFilter {
+                    Assert-MockCalled New-Object -Exactly -Times 2 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
                     } -Scope Context
                 }
@@ -332,10 +330,9 @@ Describe "MSFT_SqlAgentOperator\Test-TargetResource" -Tag 'Test' {
                 It 'Should not throw when dropping the sql agent operator' {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
-                        Name   = 'Bob'
+                        Name   = 'Bill'
                         Ensure = 'Absent'
                     }
-
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
@@ -372,15 +369,13 @@ Describe "MSFT_SqlAgentOperator\Test-TargetResource" -Tag 'Test' {
                 }
             }
 
-            #$mockSqlAgentOperatorName = 'Bill'
             $mockInvalidOperationForDropMethod = $true
 
             Context 'When the system is not in the desired state and Ensure is set to Absent' {
 
-                write-host ("mockInvalidOperationForDropMethod set to {0}" -f $mockInvalidOperationForDropMethod)
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
-                    Name      = 'Nancy'
+                    Name      = 'Fred'
                     Ensure    = 'Absent'
                 }
                 $throwInvalidOperation = ('InnerException: Exception calling "Drop" ' + `
