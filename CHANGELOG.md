@@ -43,6 +43,9 @@
   for the creation of the endpoint
     ([issue #1251](https://github.com/PowerShell/SqlServerDsc/issues/1251).
     [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
+  - Add integration tests.
+    ([issue #744](https://github.com/PowerShell/SqlServerDsc/issues/744).
+    [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
 
 ## 12.2.0.0
 
