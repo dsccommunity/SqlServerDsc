@@ -1572,6 +1572,13 @@ Installs SQL Server on the target node.
   * Additional parameters need when installing Analysis Services.
     * ASSysAdminAccounts
     * AsSvcAccount
+* The parameters below should be used from install Sql Server version 2016 or
+  later only :
+    * SqlTempdbFileCount
+    * SqlTempdbFileSize
+    * SqlTempdbFileGrowth
+    * SqlTempdbLogFileSize
+    * SqlTempdbLogFileGrowth
 
 > **Note:** It is not possible to add or remove features to a SQL Server failover
 cluster. This is a limitation of SQL Server. See article
@@ -1740,6 +1747,7 @@ need a '*SVCPASSWORD' argument in the setup arguments.
 * [Install a named instance as the first node in SQL Server Failover Cluster](/Examples/Resources/SqlSetup/4-InstallNamedInstanceInFailoverClusterFirstNode.ps1)
 * [Install a named instance as the second node in SQL Server Failover Cluster](/Examples/Resources/SqlSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1)
 * [Install a named instance with the Agent Service set to Disabled](/Examples/Resources/SqlSetup/6-InstallNamedInstanceSingleServerWithAgtSvcStartupTypeDisabled.ps1)
+* [Install a default instance on a single server (Sql Server 2016 or Later)](/Examples/Resources/SqlSetup/7-InstallDefaultInstanceSingleServer2016OrLater.ps1)
 
 #### Known issues
 

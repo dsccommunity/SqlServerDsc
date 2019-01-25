@@ -45,6 +45,13 @@ $ConfigurationData = @{
             ImagePath                             = "$env:TEMP\SQL2016.iso"
             DriveLetter                           = $mockIsoMediaDriveLetter
 
+            # Parameters to configure Tempdb
+            SqlTempdbFileCount                    = '2'
+            SqlTempdbFileSize                     = '128'
+            SqlTempdbFileGrowth                   = '128'
+            SqlTempdbLogFileSize                  = '128'
+            SqlTempdbLogFileGrowth                = '128'
+
             CertificateFile                       = $env:DscPublicCertificatePath
         }
     )
@@ -212,11 +219,11 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
             UpdateEnabled          = $Node.UpdateEnabled
             SuppressReboot         = $Node.SuppressReboot
             ForceReboot            = $Node.ForceReboot
-            SqlTempdbFileCount     = '2'
-            SqlTempdbFileSize      = '128'
-            SqlTempdbFileGrowth    = '128'
-            SqlTempdbLogFileSize   = '128'
-            SqlTempdbLogFileGrowth = '128'
+            SqlTempdbFileCount     = $Node.SqlTempdbFileCount
+            SqlTempdbFileSize      = $Node.SqlTempdbFileSize
+            SqlTempdbFileGrowth    = $Node.SqlTempdbFileGrowth
+            SqlTempdbLogFileSize   = $Node.SqlTempdbLogFileSize
+            SqlTempdbLogFileGrowth = $Node.SqlTempdbLogFileGrowth
 
             # This must be set if using SYSTEM account to install.
             SQLSysAdminAccounts   = @(

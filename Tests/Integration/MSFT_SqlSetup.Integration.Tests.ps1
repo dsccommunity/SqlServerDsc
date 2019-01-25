@@ -91,22 +91,27 @@ try
     . $configFile
 
     # These sets variables used for verification from the dot-sourced $ConfigurationData variable.
-    $mockDatabaseEngineNamedInstanceName = $ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName
-    $mockDatabaseEngineNamedInstanceFeatures = $ConfigurationData.AllNodes.DatabaseEngineNamedInstanceFeatures
-    $mockDatabaseEngineDefaultInstanceName = $ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName
+    $mockDatabaseEngineNamedInstanceName       = $ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName
+    $mockDatabaseEngineNamedInstanceFeatures   = $ConfigurationData.AllNodes.DatabaseEngineNamedInstanceFeatures
+    $mockDatabaseEngineDefaultInstanceName     = $ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName
     $mockDatabaseEngineDefaultInstanceFeatures = $ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceFeatures
-    $mockAnalysisServicesTabularInstanceName = $ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName
-    $mockAnalysisServicesTabularFeatures = $ConfigurationData.AllNodes.AnalysisServicesTabularFeatures
-    $mockAnalysisServicesTabularServerMode = $ConfigurationData.AllNodes.AnalysisServicesTabularServerMode
-    $mockAnalysisServicesMultiServerMode = $ConfigurationData.AllNodes.AnalysisServicesMultiServerMode
-    $mockCollation = $ConfigurationData.AllNodes.Collation
-    $mockInstallSharedDir = $ConfigurationData.AllNodes.InstallSharedDir
-    $mockInstallSharedWOWDir = $ConfigurationData.AllNodes.InstallSharedWOWDir
-    $mockUpdateEnable = $ConfigurationData.AllNodes.UpdateEnabled
-    $mockSuppressReboot = $ConfigurationData.AllNodes.SuppressReboot
-    $mockForceReboot = $ConfigurationData.AllNodes.ForceReboot
-    $mockIsoMediaFilePath = $ConfigurationData.AllNodes.ImagePath
-    $mockIsoMediaDriveLetter = $ConfigurationData.AllNodes.DriveLetter
+    $mockAnalysisServicesTabularInstanceName   = $ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName
+    $mockAnalysisServicesTabularFeatures       = $ConfigurationData.AllNodes.AnalysisServicesTabularFeatures
+    $mockAnalysisServicesTabularServerMode     = $ConfigurationData.AllNodes.AnalysisServicesTabularServerMode
+    $mockAnalysisServicesMultiServerMode       = $ConfigurationData.AllNodes.AnalysisServicesMultiServerMode
+    $mockCollation                             = $ConfigurationData.AllNodes.Collation
+    $mockInstallSharedDir                      = $ConfigurationData.AllNodes.InstallSharedDir
+    $mockInstallSharedWOWDir                   = $ConfigurationData.AllNodes.InstallSharedWOWDir
+    $mockUpdateEnable                          = $ConfigurationData.AllNodes.UpdateEnabled
+    $mockSuppressReboot                        = $ConfigurationData.AllNodes.SuppressReboot
+    $mockForceReboot                           = $ConfigurationData.AllNodes.ForceReboot
+    $mockIsoMediaFilePath                      = $ConfigurationData.AllNodes.ImagePath
+    $mockIsoMediaDriveLetter                   = $ConfigurationData.AllNodes.DriveLetter
+    $mockSqlTempdbFileCount                    = $ConfigurationData.AllNodes.SqlTempdbFileCount
+    $mockSqlTempdbFileSize                     = $ConfigurationData.AllNodes.SqlTempdbFileSize
+    $mockSqlTempdbFileGrowth                   = $ConfigurationData.AllNodes.SqlTempdbFileGrowth
+    $mockSqlTempdbLogFileSize                  = $ConfigurationData.AllNodes.SqlTempdbLogFileSize
+    $mockSqlTempdbLogFileGrowth                = $ConfigurationData.AllNodes.SqlTempdbLogFileGrowth
 
     $mockSourceMediaUrl = 'https://download.microsoft.com/download/9/0/7/907AD35F-9F9C-43A5-9789-52470555DB90/ENU/SQLServer2016SP1-FullSlipstream-x64-ENU.iso'
 
@@ -311,12 +316,12 @@ try
                     'sa'
                 )
                 $resourceCurrentState.SQLTempDBDir               | Should -BeNullOrEmpty
-                $resourceCurrentState.SqlTempdbFileCount         | Should -Be '2'
-                $resourceCurrentState.SqlTempdbFileSize          | Should -Be '128'
-                $resourceCurrentState.SqlTempdbFileGrowth        | Should -Be '128'
+                $resourceCurrentState.SqlTempdbFileCount         | Should -Be $mockSqlTempdbFileCount
+                $resourceCurrentState.SqlTempdbFileSize          | Should -Be $mockSqlTempdbFileSize
+                $resourceCurrentState.SqlTempdbFileGrowth        | Should -Be $mockSqlTempdbFileGrowth
                 $resourceCurrentState.SQLTempDBLogDir            | Should -BeNullOrEmpty
-                $resourceCurrentState.SqlTempdbLogFileSize       | Should -Be '128'
-                $resourceCurrentState.SqlTempdbLogFileGrowth     | Should -Be '128'
+                $resourceCurrentState.SqlTempdbLogFileSize       | Should -Be $mockSqlTempdbLogFileSize
+                $resourceCurrentState.SqlTempdbLogFileGrowth     | Should -Be $mockSqlTempdbLogFileGrowth
                 $resourceCurrentState.SQLUserDBDir               | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineNamedInstanceName\MSSQL\DATA\")
                 $resourceCurrentState.SQLUserDBLogDir            | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineNamedInstanceName\MSSQL\DATA\")
                 $resourceCurrentState.SQMReporting               | Should -BeNullOrEmpty
