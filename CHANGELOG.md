@@ -38,6 +38,11 @@
   - Updated the integration test to stop the named instance while installing
     the other instances to mitigate
     [issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260).
+- Changes to SqlServerEndpoint
+  - Add the optional parameter Owner. The default owner remains the login used
+  for the creation of the endpoint
+    ([issue #1251](https://github.com/PowerShell/SqlServerDsc/issues/1251).
+    [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
 
 ## 12.2.0.0
 
