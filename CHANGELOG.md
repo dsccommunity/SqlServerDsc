@@ -9,12 +9,12 @@
     solve the issue.
   - Removed the container testing since that broke the integration tests,
     possible due to using excessive amount of memory on the AppVeyor build
-    worker. This will make the unit tests to take a bit longer to run.
+    worker. This will make the unit tests to take a bit longer to run
     ([issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260)).
   - The unit tests and the integration tests are now run in two separate
     build workers in AppVeyor. One build worker runs the integration tests,
     while a second build worker runs the unit tests. The build workers runs
-    in parallel on paid accounts, but sequentially on free accounts.
+    in parallel on paid accounts, but sequentially on free accounts
     ([issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260)).
   - Clean up error handling in some of the integration tests that was
     part of a workaround for a bug in Pester. The bug is resolved, and
@@ -29,7 +29,7 @@
     service name.
   - Added code to allow for using Managed Service Accounts.
 - Changes to SqlServerLogin
-  - Fixed issue in Test-TargetResource to valid password on disabled accounts.
+  - Fixed issue in Test-TargetResource to valid password on disabled accounts
     ([issue #915](https://github.com/PowerShell/SqlServerDsc/issues/915)).
   - Now when adding a login of type SqlLogin, and the SQL Server login mode
     is set to `'Integrated'`, an error is correctly thrown
