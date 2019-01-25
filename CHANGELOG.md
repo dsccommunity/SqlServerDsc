@@ -38,6 +38,7 @@
   - Updated the integration test to stop the named instance while installing
     the other instances to mitigate
     [issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260).
+- Added SqlAgentOperator Resource
 
 ## 12.2.0.0
 
@@ -108,7 +109,6 @@
   - Fix unit tests that didn't mock some of the calls. It no longer fail
     when a SQL Server installation is not present on the node running the
     unit test ([issue #983](https://github.com/PowerShell/SqlServerDsc/issues/983)).
-- Added SqlAgentOperator Resource
 
 ## 12.0.0.0
 

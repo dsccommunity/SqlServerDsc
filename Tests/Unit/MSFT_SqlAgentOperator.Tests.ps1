@@ -8,13 +8,14 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
-# This is used to make sure the unit test run in a container.
-[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container1', ContainerImage = 'microsoft/windowsservercore')]
-param()
-
 $script:DSCModuleName = 'SqlServerDsc'
 $script:DSCResourceName = 'MSFT_SqlAgentOperator'
 
+if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
+{
+    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:DSCResourceName) -Verbose
+    return
+}
 #region HEADER
 
 # Unit Test Template Version: 1.2.0
@@ -184,9 +185,9 @@ try
             Assert-VerifiableMock
         }
 
-Describe "MSFT_SqlAgentOperator\Test-TargetResource" -Tag 'Test' {
-    BeforeEach {
-        Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+        Describe "MSFT_SqlAgentOperator\Test-TargetResource" -Tag 'Test' {
+            BeforeEach {
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
 
             Context 'When the system is not in the desired state and Ensure is set to Present' {
@@ -390,7 +391,7 @@ Describe "MSFT_SqlAgentOperator\Test-TargetResource" -Tag 'Test' {
                 }
             }
 
-                    Assert-VerifiableMock
+            Assert-VerifiableMock
         }
     }
 }
