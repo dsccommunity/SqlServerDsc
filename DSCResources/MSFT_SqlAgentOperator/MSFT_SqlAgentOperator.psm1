@@ -11,9 +11,6 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlAgentOperator'
     .SYNOPSIS
     This function gets the SQL Agent Operator.
 
-    .PARAMETER Ensure
-    Specifies if the SQL Agent Operator should be present or absent. Default is Present
-
     .PARAMETER Name
     The name of the SQL Agent Operator.
 
@@ -23,8 +20,6 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlAgentOperator'
     .PARAMETER InstanceName
     The name of the SQL instance to be configured.
 
-    .PARAMETER EmailAddress
-    The email address to be used for the SQL Agent Operator.
 #>
 function Get-TargetResource
 {
@@ -45,11 +40,8 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $InstanceName,
+        $InstanceName
 
-        [Parameter()]
-        [System.String]
-        $EmailAddress
     )
 
     $returnValue = @{
@@ -89,9 +81,9 @@ function Get-TargetResource
     }
     else
     {
-        throw New-TerminatingError -ErrorType ConnectServerFailed `
-            -FormatArgs @($ServerName, $InstanceName) `
-            -ErrorCategory ConnectionError
+
+        $errorMessage = $script:localizedData.ConnectServerFailed -f $ServerName, $InstanceName
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
 
     return $returnValue
@@ -164,17 +156,15 @@ function Set-TargetResource
                         {
                             Write-Verbose -Message (
                                 $script:localizedData.UpdateEmailAddress `
-                                    -f $Name, $EmailAddress
+                                    -f $EmailAddress, $Name
                             )
                             $sqlOperatorObject.EmailAddress = $EmailAddress
                             $sqlOperatorObject.Alter()
                         }
                         catch
                         {
-                            throw New-TerminatingError -ErrorType UpdateOperatorSetError `
-                                -FormatArgs @($ServerName, $InstanceName, $Name, $EmailAddress) `
-                                -ErrorCategory InvalidOperation `
-                                -InnerException $_.Exception
+                            $errorMessage = $script:localizedData.UpdateOperatorSetError -f $ServerName, $InstanceName, $Name, $EmailAddress
+                            New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                         }
                     }
                 }
@@ -203,10 +193,8 @@ function Set-TargetResource
                     }
                     catch
                     {
-                        throw New-TerminatingError -ErrorType CreateOperatorSetError `
-                            -FormatArgs @($Name, $ServerName, $InstanceName) `
-                            -ErrorCategory InvalidOperation `
-                            -InnerException $_.Exception
+                        $errorMessage = $script:localizedData.CreateOperatorSetError -f $Name, $ServerName, $InstanceName
+                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                     }
                 }
             }
@@ -227,19 +215,16 @@ function Set-TargetResource
                 }
                 catch
                 {
-                    throw New-TerminatingError -ErrorType DropOperatorSetError `
-                        -FormatArgs @($Name, $ServerName, $InstanceName) `
-                        -ErrorCategory InvalidOperation `
-                        -InnerException $_.Exception
+                    $errorMessage = $script:localizedData.DropOperatorSetError -f $Name, $ServerName, $InstanceName
+                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                 }
             }
         }
     }
     else
     {
-        throw New-TerminatingError -ErrorType ConnectServerFailed `
-            -FormatArgs @($ServerName, $InstanceName) `
-            -ErrorCategory ConnectionError
+        $errorMessage = $script:localizedData.ConnectServerFailed -f $ServerName, $InstanceName
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
 }
 
@@ -314,9 +299,9 @@ function Test-TargetResource
         {
             if ($getTargetResourceResult.Ensure -ne 'Absent')
             {
-                New-VerboseMessage -Message (
+                Write-Verbose -Message (
                     $script:localizedData.SqlAgentOperatorExistsButShouldNot `
-                        -f $name
+                        -f $Name
                 )
                 $isOperatorInDesiredState = $false
             }
@@ -326,17 +311,17 @@ function Test-TargetResource
         {
             if ($getTargetResourceResult.EmailAddress -ne $EmailAddress -and $PSBoundParameters.ContainsKey('EmailAddress'))
             {
-                New-VerboseMessage -Message (
+                Write-Verbose -Message (
                     $script:localizedData.SqlAgentOperatorExistsButEmailWrong `
-                        -f $name, $getTargetResourceResult.EmailAddress, $EmailAddress
+                        -f $Name, $getTargetResourceResult.EmailAddress, $EmailAddress
                 )
                 $isOperatorInDesiredState = $false
             }
             elseif ($getTargetResourceResult.Ensure -ne 'Present')
             {
-                New-VerboseMessage -Message (
+                Write-Verbose -Message (
                     $script:localizedData.SqlAgentOperatorDoesNotExistButShould `
-                        -f $name
+                        -f $Name
                 )
                 $isOperatorInDesiredState = $false
             }
