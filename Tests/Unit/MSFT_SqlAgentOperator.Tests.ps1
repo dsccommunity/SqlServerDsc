@@ -137,7 +137,6 @@ try
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     Name         = 'MissingOperator'
-                    EmailAddress = 'missing@operator.com'
                 }
 
                 It 'Should return the state as absent' {
@@ -161,7 +160,6 @@ try
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     Name         = 'Nancy'
-                    EmailAddress = 'nancy@contoso.com'
                 }
 
                 It 'Should return the state as present' {
@@ -174,7 +172,6 @@ try
                     $result.ServerName | Should -Be $testParameters.ServerName
                     $result.InstanceName | Should -Be $testParameters.InstanceName
                     $result.Name | Should -Be $testParameters.Name
-                    $result.EmailAddress | Should -Be $testParameters.EmailAddress
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -352,12 +349,9 @@ try
                         Name   = 'NewOperator'
                         Ensure = 'Present'
                     }
-
-                    $throwInvalidOperation = ('InnerException: Exception calling "Create" ' + `
-                            'with "0" argument(s): "Mock Create Method was called with invalid operation."')
-
-                            { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
-                        }
+                    $errorMessage = ($script:localizedData.CreateOperatorSetError -f $testParameters.Name, $testParameters.ServerName, $testParameters.InstanceName)
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
+                }
 
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
@@ -369,7 +363,6 @@ try
                     } -Scope Context
                 }
             }
-
             $mockInvalidOperationForDropMethod = $true
 
             Context 'When the system is not in the desired state and Ensure is set to Absent' {
@@ -379,18 +372,16 @@ try
                     Name      = 'Fred'
                     Ensure    = 'Absent'
                 }
-                $throwInvalidOperation = ('InnerException: Exception calling "Drop" ' + `
-                        'with "0" argument(s): "Mock Drop Method was called with invalid operation."')
 
+                $errorMessage = ($script:localizedData.DropOperatorSetError -f $testParameters.Name, $testParameters.ServerName, $testParameters.InstanceName)
                 It 'Should throw the correct error when Drop() method was called with invalid operation' {
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
-
             Assert-VerifiableMock
         }
     }

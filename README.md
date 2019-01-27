@@ -320,6 +320,7 @@ the operators email address.
 * Target machine must be running SQL Server Database Engine 2008 or later.
 
 #### Parameters
+
 * **`[String]` Name** _(Key)_: The name of the SQL Agent Operator.
 * **`[String]` Ensure** _(Write)_: Specifies if the SQL Agent Operator should
   be present or absent. Default is Present. { *Present* | Absent }

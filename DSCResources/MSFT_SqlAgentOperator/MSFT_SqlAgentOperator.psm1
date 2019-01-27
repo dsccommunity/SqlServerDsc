@@ -287,7 +287,6 @@ function Test-TargetResource
         Name           = $Name
         ServerName     = $ServerName
         InstanceName   = $InstanceName
-        EmailAddress   = $EmailAddress
     }
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
