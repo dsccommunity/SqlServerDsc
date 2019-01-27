@@ -19,6 +19,8 @@
   - Clean up error handling in some of the integration tests that was
     part of a workaround for a bug in Pester. The bug is resolved, and
     the error handling is not again built into Pester.
+  - Speeding up the AppVeyor tests by splitting the common tests in a
+    separate build job.
 - Changes to SqlServiceAccount
   - Fixed Get-ServiceObject when searching for Integration Services service.
     Unlike the rest of SQL Server services, the Integration Services service
