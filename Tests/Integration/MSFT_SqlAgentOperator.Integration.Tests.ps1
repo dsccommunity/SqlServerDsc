@@ -139,9 +139,8 @@ try
                 }
 
                 $resourceCurrentState.Ensure | Should -Be 'Absent'
-                $resourceCurrentState.Name | Should -Be $mockName
-                $resourceCurrentState.EmailAddress | Should -Be $mockEmailAddress
-
+                $resourceCurrentState.Name | Should -BeNullOrEmpty
+                $resourceCurrentState.EmailAddress | Should -BeNullOrEmpty
             }
         }
     }
