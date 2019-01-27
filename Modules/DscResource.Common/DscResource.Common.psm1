@@ -772,13 +772,16 @@ function Connect-SQLAnalysis
         {
             $analysisServicesObject.Connect($analysisServicesDataSource)
         }
-        else
+
+        if ((-not $analysisServicesObject) -or ($analysisServicesObject -and $analysisServicesObject.Connected -eq $false))
         {
             $errorMessage = $script:localizedData.FailedToConnectToAnalysisServicesInstance -f $analysisServiceInstance
             New-InvalidOperationException -Message $errorMessage
         }
-
-        Write-Verbose -Message ($script:localizedData.ConnectedToAnalysisServicesInstance -f $analysisServiceInstance) -Verbose
+        else
+        {
+            Write-Verbose -Message ($script:localizedData.ConnectedToAnalysisServicesInstance -f $analysisServiceInstance) -Verbose
+        }
     }
     catch
     {
