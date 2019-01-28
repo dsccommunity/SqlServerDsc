@@ -1041,13 +1041,11 @@ the resource [**SqlServerEndpointPermission**](#sqlserverendpointpermission).
 * **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
 * **`[String]` IpAddress** _(Write)_: The network IP address the endpoint is listening
   on. Defaults to '0.0.0.0' which means listen on any valid IP address.
-* **`[String]` Owner** _(Write)_: The owner of the endpoint. Default is the
-  login used for the creation.
 
 #### Examples
 
 * [Create an endpoint with default values](/Examples/Resources/SqlServerEndpoint/1-CreateEndpointWithDefaultValues.ps1)
-* [Create an endpoint with specific port and IP address](/Examples/Resources/SqlServerEndpoint/2-CreateEndpointWithSpecificPortIPAddressOwner.ps1)
+* [Create an endpoint with specific port and IP address](/Examples/Resources/SqlServerEndpoint/2-CreateEndpointWithSpecificPortAndIPAddress.ps1)
 * [Remove an endpoint](/Examples/Resources/SqlServerEndpoint/3-RemoveEndpoint.ps1)
 
 #### Known issues
