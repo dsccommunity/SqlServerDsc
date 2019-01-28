@@ -38,6 +38,11 @@
   - Updated the integration test to stop the named instance while installing
     the other instances to mitigate
     [issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260).
+- Changes to SqlSetup
+  - Add parameters to configure the Tempdb files during the installation of
+    the instance. The new parameters are SqlTempdbFileCount, SqlTempdbFileSize,
+    SqlTempdbFileGrowth, SqlTempdbLogFileSize and SqlTempdbLogFileGrowth
+    ([issue #1167](https://github.com/PowerShell/SqlServerDsc/issues/1167)).
 - Changes to SqlServerEndpoint
   - Add the optional parameter Owner. The default owner remains the login
     used for the creation of the endpoint
