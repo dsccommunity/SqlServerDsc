@@ -1574,13 +1574,13 @@ Installs SQL Server on the target node.
   * Additional parameters need when installing Analysis Services.
     * ASSysAdminAccounts
     * AsSvcAccount
-* The parameters below should be used from install Sql Server version 2016 or
-  later only :
-    * SqlTempdbFileCount
-    * SqlTempdbFileSize
-    * SqlTempdbFileGrowth
-    * SqlTempdbLogFileSize
-    * SqlTempdbLogFileGrowth
+* The parameters below can only be used when installing SQL Server 2016 or
+  later:
+  * SqlTempdbFileCount
+  * SqlTempdbFileSize
+  * SqlTempdbFileGrowth
+  * SqlTempdbLogFileSize
+  * SqlTempdbLogFileGrowth
 
 > **Note:** It is not possible to add or remove features to a SQL Server failover
 cluster. This is a limitation of SQL Server. See article
