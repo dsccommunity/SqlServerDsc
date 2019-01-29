@@ -21,6 +21,7 @@
     the error handling is not again built into Pester.
   - Speeding up the AppVeyor tests by splitting the common tests in a
     separate build job.
+  - Added SqlAgentOperator resource.
 - Changes to SqlServiceAccount
   - Fixed Get-ServiceObject when searching for Integration Services service.
     Unlike the rest of SQL Server services, the Integration Services service
