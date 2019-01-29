@@ -107,6 +107,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   resource to ensure an availability group is present or absent.
 * [**SqlAGDatabase**](#sqlagdatabase)
   to manage the database membership in Availability Groups.
+* [**SqlAgentOperator**](#sqlagentoperator)
+  resource to manage SQL Agent Operators.
 * [**SqlAGListener**](#sqlaglistener)
   Create or remove an availability group listener.
 * [**SqlAGReplica**](#sqlagreplica)
@@ -306,6 +308,36 @@ group.
 #### Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAGDatabase).
+
+### SqlAgentOperator
+
+This resource is used to add/remove SQL Agent Operators. You can also update
+the operators email address.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2008 or later.
+
+#### Parameters
+
+* **`[String]` Name** _(Key)_: The name of the SQL Agent Operator.
+* **`[String]` Ensure** _(Write)_: Specifies if the SQL Agent Operator should
+  be present or absent. Default is Present. { *Present* | Absent }
+* **`[String]` ServerName** _(Key)_: The host name of the SQL Server to be
+  configured. Default is $env:COMPUTERNAME.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` EmailAddress** _(Write)_: The email address to be used for
+  the SQL Agent Operator.
+
+#### Examples
+
+* [Add a SQL Agent Operator](/Examples/Resources/SqlAgentOperator/1-AddOperator.ps1)
+* [Remove a SQL Agent Operator](/Examples/Resources/SqlAgentOperator/2-RemoveOperator.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAgentOperator).
 
 ### SqlAGListener
 
@@ -1534,7 +1566,7 @@ Manage the service account for SQL Server services.
   each consecutive run.
 * **`[String]` VersionNumber** (Write): The version number of the SQL Server,
   mandatory for when IntegrationServices is used as **ServiceType**.
-  Eg. 130 for SQL 2016.  
+  Eg. 130 for SQL 2016.
 
 #### Read-Only Properties from Get-TargetResource
 

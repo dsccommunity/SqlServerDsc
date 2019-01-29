@@ -50,6 +50,7 @@
     used for the creation of the endpoint
     ([issue #1251](https://github.com/PowerShell/SqlServerDsc/issues/1251)).
     [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
+- Added SqlAgentOperator Resource
 
 ## 12.2.0.0
 
