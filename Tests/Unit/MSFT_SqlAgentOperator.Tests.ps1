@@ -131,6 +131,9 @@ try
         Describe "MSFT_SqlAgentOperator\Get-TargetResource" -Tag 'Get' {
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+                Mock -CommandName New-Object -MockWith $mockNewSqlAgentOperator -ParameterFilter {
+                    $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
+                } -Verifiable
             }
 
             Context 'When the system is not in the desired state' {
@@ -151,7 +154,13 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
+                }
+
+                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Agent.Operator' {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 2 -ParameterFilter {
+                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
+                    } -Scope Context
                 }
             }
 
@@ -175,7 +184,13 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
+                }
+
+                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Agent.Operator' {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 2 -ParameterFilter {
+                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
+                    } -Scope Context
                 }
             }
 
@@ -185,6 +200,9 @@ try
         Describe "MSFT_SqlAgentOperator\Test-TargetResource" -Tag 'Test' {
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+                Mock -CommandName New-Object -MockWith $mockNewSqlAgentOperator -ParameterFilter {
+                    $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
+                } -Verifiable
             }
 
             Context 'When the system is not in the desired state and Ensure is set to Present' {
@@ -213,7 +231,13 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
+                }
+
+                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Agent.Operator' {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 2 -ParameterFilter {
+                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
+                    } -Scope Context
                 }
             }
 
@@ -230,7 +254,13 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+
+                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Agent.Operator' {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -ParameterFilter {
+                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
+                    } -Scope Context
                 }
             }
 
@@ -259,7 +289,13 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
+                }
+
+                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Agent.Operator' {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 2 -ParameterFilter {
+                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
+                    } -Scope Context
                 }
             }
 
@@ -276,7 +312,13 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+
+                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Agent.Operator' {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -ParameterFilter {
+                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
+                    } -Scope Context
                 }
             }
 
@@ -314,11 +356,11 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
                 }
 
                 It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Agent.Operator' {
-                    Assert-MockCalled New-Object -Exactly -Times 2 -ParameterFilter {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 2 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
                     } -Scope Context
                 }
@@ -335,7 +377,13 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+
+                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Agent.Operator' {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -ParameterFilter {
+                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
+                    } -Scope Context
                 }
             }
 
@@ -354,11 +402,11 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Agent.Operator' {
-                    Assert-MockCalled New-Object -Exactly -Times 2 -ParameterFilter {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 2 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
                     } -Scope Context
                 }
@@ -379,7 +427,13 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+
+                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Agent.Operator' {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -ParameterFilter {
+                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
+                    } -Scope Context
                 }
             }
             Assert-VerifiableMock
