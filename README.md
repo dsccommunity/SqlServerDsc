@@ -1606,6 +1606,13 @@ Installs SQL Server on the target node.
   * Additional parameters need when installing Analysis Services.
     * ASSysAdminAccounts
     * AsSvcAccount
+* The parameters below can only be used when installing SQL Server 2016 or
+  later:
+  * SqlTempdbFileCount
+  * SqlTempdbFileSize
+  * SqlTempdbFileGrowth
+  * SqlTempdbLogFileSize
+  * SqlTempdbLogFileGrowth
 
 > **Note:** It is not possible to add or remove features to a SQL Server failover
 cluster. This is a limitation of SQL Server. See article
@@ -1738,6 +1745,16 @@ need a '*SVCPASSWORD' argument in the setup arguments.
   this setup parameter.
 * **`[String]` FailoverClusterNetworkName** _(Write)_: Host name to be assigned to
   the clustered SQL Server instance.
+* **`[UInt32]` SqlTempdbFileCount** _(Write)_: Specifies the number of tempdb
+  data files to be added by setup.
+* **`[UInt32]` SqlTempdbFileSize** _(Write)_: Specifies the initial size of
+  each tempdb data file in MB.
+* **`[UInt32]` SqlTempdbFileGrowth** _(Write)_: Specifies the file growth
+  increment of each tempdb data file in MB.
+* **`[UInt32]` SqlTempdbLogFileSize** _(Write)_: Specifies the initial size
+  of each tempdb log file in MB.
+* **`[UInt32]` SqlTempdbLogFileGrowth** _(Write)_: Specifies the file growth
+  increment of each tempdb data file in MB.
 * **`[UInt32]` SetupProcessTimeout** _(Write)_: The timeout, in seconds, to wait
   for the setup process to finish. Default value is 7200 seconds (2 hours). If
   the setup process does not finish before this time, and error will be thrown.
@@ -1764,6 +1781,7 @@ need a '*SVCPASSWORD' argument in the setup arguments.
 * [Install a named instance as the first node in SQL Server Failover Cluster](/Examples/Resources/SqlSetup/4-InstallNamedInstanceInFailoverClusterFirstNode.ps1)
 * [Install a named instance as the second node in SQL Server Failover Cluster](/Examples/Resources/SqlSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1)
 * [Install a named instance with the Agent Service set to Disabled](/Examples/Resources/SqlSetup/6-InstallNamedInstanceSingleServerWithAgtSvcStartupTypeDisabled.ps1)
+* [Install a default instance on a single server (Sql Server 2016 or Later)](/Examples/Resources/SqlSetup/7-InstallDefaultInstanceSingleServer2016OrLater.ps1)
 
 #### Known issues
 

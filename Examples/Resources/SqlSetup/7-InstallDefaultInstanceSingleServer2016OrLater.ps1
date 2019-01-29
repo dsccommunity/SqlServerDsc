@@ -2,10 +2,13 @@
     .EXAMPLE
         This example shows how to install a default instance of SQL Server, and
         Analysis Services in Tabular mode, on a single server.
+        It contains configurations that apply to Sql Server 2016 or later only.
+
     .NOTES
         SQL Server setup is run using the SYSTEM account. Even if SetupCredential is provided
         it is not used to install SQL Server at this time (see issue #139).
 #>
+
 Configuration Example
 {
     [CmdletBinding()]
@@ -80,6 +83,11 @@ Configuration Example
             SourcePath             = 'C:\InstallMedia\SQL2016RTM'
             UpdateEnabled          = 'False'
             ForceReboot            = $false
+            SqlTempdbFileCount     = 4
+            SqlTempdbFileSize      = 1024
+            SqlTempdbFileGrowth    = 512
+            SqlTempdbLogFileSize   = 128
+            SqlTempdbLogFileGrowth = 64
 
             PsDscRunAsCredential = $SqlInstallCredential
 
