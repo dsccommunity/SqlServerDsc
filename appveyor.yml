@@ -4,8 +4,10 @@
 version: 9.0.{build}.0
 image: Visual Studio 2017
 configuration:
+  - Meta
   - Unit
   - Integration
+
 install:
     - git clone https://github.com/PowerShell/DscResource.Tests
     - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
@@ -26,7 +28,18 @@ for:
 -
   matrix:
     only:
+      - configuration: Meta
+
+  test_script:
+    - ps: |
+        Invoke-AppveyorTestScriptTask -ExcludeTag @()
+
+-
+  matrix:
+    only:
       - configuration: Integration
+  environment:
+    SkipAllCommonTests: True
 
   test_script:
     - ps: |
@@ -56,6 +69,8 @@ for:
   matrix:
     only:
       - configuration: Unit
+  environment:
+    SkipAllCommonTests: True
 
   test_script:
     - ps: |
