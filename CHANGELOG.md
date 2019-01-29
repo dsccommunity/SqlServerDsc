@@ -21,6 +21,7 @@
     the error handling is not again built into Pester.
   - Speeding up the AppVeyor tests by splitting the common tests in a
     separate build job.
+  - Added SqlAgentOperator resource.
 - Changes to SqlServiceAccount
   - Fixed Get-ServiceObject when searching for Integration Services service.
     Unlike the rest of SQL Server services, the Integration Services service
@@ -46,11 +47,13 @@
     SqlTempdbFileGrowth, SqlTempdbLogFileSize and SqlTempdbLogFileGrowth
     ([issue #1167](https://github.com/PowerShell/SqlServerDsc/issues/1167)).
 - Changes to SqlServerEndpoint
-  - Add the optional parameter Owner. The default owner remains the login
-    used for the creation of the endpoint
+  - Add the optional parameter Owner. The default owner remains the login used
+    for the creation of the endpoint
     ([issue #1251](https://github.com/PowerShell/SqlServerDsc/issues/1251)).
     [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
-- Added SqlAgentOperator Resource
+  - Add integration tests
+    ([issue #744](https://github.com/PowerShell/SqlServerDsc/issues/744)).
+    [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
 
 ## 12.2.0.0
 
