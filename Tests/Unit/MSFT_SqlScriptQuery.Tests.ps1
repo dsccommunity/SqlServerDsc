@@ -12,7 +12,7 @@
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 Param()
 
-Import-Module -Name '..\TestHelpers\CommonTestHelper.psm1'
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
 if (Test-SkipContinuousIntegrationTask -Type 'Unit')
 {

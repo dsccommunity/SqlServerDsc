@@ -7,7 +7,7 @@
         script. Read more at
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
-Import-Module -Name '..\TestHelpers\CommonTestHelper.psm1'
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
 if (Test-SkipContinuousIntegrationTask -Type 'Unit')
 {
