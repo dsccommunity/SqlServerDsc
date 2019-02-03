@@ -12,14 +12,15 @@
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
 param()
 
-$script:DSCModuleName   = 'SqlServerDSC'
-$script:DSCResourceName = 'MSFT_SqlServerReplication'
+Import-Module -Name '..\TestHelpers\CommonTestHelper.psm1'
 
-if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
+if (Test-SkipContinuousIntegrationTask -Type 'Unit')
 {
-    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:DSCResourceName) -Verbose
     return
 }
+
+$script:DSCModuleName   = 'SqlServerDSC'
+$script:DSCResourceName = 'MSFT_SqlServerReplication'
 
 #region HEADER
 # Unit Test Template Version: 1.1.0
