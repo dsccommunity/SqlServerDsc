@@ -20,10 +20,6 @@ configuration:
   - Unit
   - Integration
 
-matrix:
-  # If one job in the matrix fails, the build will stop (fast_finish).
-  fast_finish: true
-
 install:
     - git clone https://github.com/PowerShell/DscResource.Tests
     - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
