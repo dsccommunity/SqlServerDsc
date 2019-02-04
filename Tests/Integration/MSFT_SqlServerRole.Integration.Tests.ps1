@@ -9,9 +9,9 @@ if (Test-SkipContinuousIntegrationTask -Type 'Integration')
     return
 }
 
-$script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceFriendlyName = 'SqlServerRole'
-$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+$script:dscModuleName = 'SqlServerDsc'
+$script:dscResourceFriendlyName = 'SqlServerRole'
+$script:dscResourceName = "MSFT_$($script:dscResourceFriendlyName)"
 
 #region HEADER
 # Integration Test Template Version: 1.1.2
@@ -24,8 +24,8 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Integration
 
 #endregion
@@ -36,7 +36,7 @@ $mockSqlAdminCredential = New-Object -TypeName System.Management.Automation.PSCr
 
 try
 {
-    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
+    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $configFile
 
     $mockRole1Name = $ConfigurationData.AllNodes.Role1Name
@@ -46,12 +46,12 @@ try
     $mockUser2Name = $ConfigurationData.AllNodes.User2Name
     $mockUser4Name = $ConfigurationData.AllNodes.User4Name
 
-    Describe "$($script:DSCResourceName)_Integration" {
+    Describe "$($script:dscResourceName)_Integration" {
         BeforeAll {
-            $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
+            $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
         }
 
-        $configurationName = "$($script:DSCResourceName)_AddRole1_Config"
+        $configurationName = "$($script:dscResourceName)_AddRole1_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -99,7 +99,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_AddRole2_Config"
+        $configurationName = "$($script:dscResourceName)_AddRole2_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -147,7 +147,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_AddRole3_Config"
+        $configurationName = "$($script:dscResourceName)_AddRole3_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -198,7 +198,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_Role1_ChangeMembers_Config"
+        $configurationName = "$($script:dscResourceName)_Role1_ChangeMembers_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -249,7 +249,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_Role2_AddMembers_Config"
+        $configurationName = "$($script:dscResourceName)_Role2_AddMembers_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -305,7 +305,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_Role2_RemoveMembers_Config"
+        $configurationName = "$($script:dscResourceName)_Role2_RemoveMembers_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -356,7 +356,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_RemoveRole3_Config"
+        $configurationName = "$($script:dscResourceName)_RemoveRole3_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {

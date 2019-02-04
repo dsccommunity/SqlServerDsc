@@ -9,9 +9,9 @@ if (Test-SkipContinuousIntegrationTask -Type 'Integration')
     return
 }
 
-$script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceFriendlyName = 'SqlServerLogin'
-$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+$script:dscModuleName = 'SqlServerDsc'
+$script:dscResourceFriendlyName = 'SqlServerLogin'
+$script:dscResourceName = "MSFT_$($script:dscResourceFriendlyName)"
 
 #region HEADER
 # Integration Test Template Version: 1.1.2
@@ -24,8 +24,8 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Integration
 
 #endregion
@@ -39,7 +39,7 @@ $mockUserCredential = New-Object -TypeName System.Management.Automation.PSCreden
 
 try
 {
-    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
+    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $configFile
 
     $mockDscUser1Name = $ConfigurationData.AllNodes.DscUser1Name
@@ -53,12 +53,12 @@ try
     $mockDscSqlUsers1Name = $ConfigurationData.AllNodes.DscSqlUsers1Name
     $mockDscSqlUsers1Type = $ConfigurationData.AllNodes.DscSqlUsers1Type
 
-    Describe "$($script:DSCResourceName)_Integration" {
+    Describe "$($script:dscResourceName)_Integration" {
         BeforeAll {
-            $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
+            $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
         }
 
-        $configurationName = "$($script:DSCResourceName)_CreateDependencies_Config"
+        $configurationName = "$($script:dscResourceName)_CreateDependencies_Config"
 
         <#
             This will install dependencies using other resource modules, and is
@@ -91,7 +91,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_AddLoginDscUser1_Config"
+        $configurationName = "$($script:dscResourceName)_AddLoginDscUser1_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -138,7 +138,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_AddLoginDscUser2_Config"
+        $configurationName = "$($script:dscResourceName)_AddLoginDscUser2_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -185,7 +185,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_AddLoginDscUser3_Disabled_Config"
+        $configurationName = "$($script:dscResourceName)_AddLoginDscUser3_Disabled_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -232,7 +232,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_AddLoginDscUser4_Config"
+        $configurationName = "$($script:dscResourceName)_AddLoginDscUser4_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -280,7 +280,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_AddLoginDscSqlUsers1_Config"
+        $configurationName = "$($script:dscResourceName)_AddLoginDscSqlUsers1_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -327,7 +327,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_RemoveLoginDscUser3_Config"
+        $configurationName = "$($script:dscResourceName)_RemoveLoginDscUser3_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {

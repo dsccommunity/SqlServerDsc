@@ -9,9 +9,9 @@ if (Test-SkipContinuousIntegrationTask -Type 'Integration')
     return
 }
 
-$script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceFriendlyName = 'SqlAlwaysOnService'
-$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+$script:dscModuleName = 'SqlServerDsc'
+$script:dscResourceFriendlyName = 'SqlAlwaysOnService'
+$script:dscResourceName = "MSFT_$($script:dscResourceFriendlyName)"
 
 #region HEADER
 # Integration Test Template Version: 1.1.2
@@ -24,8 +24,8 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Integration
 
 #endregion
@@ -39,7 +39,7 @@ $mockSqlInstallCredential = New-Object -TypeName System.Management.Automation.PS
 
 try
 {
-    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
+    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $configFile
 
     # These sets variables used for verification from the dot-sourced $ConfigurationData variable.
@@ -54,12 +54,12 @@ try
     #>
     New-IntegrationLoopbackAdapter -AdapterName $mockLoopbackAdapterName
 
-    Describe "$($script:DSCResourceName)_Integration" {
+    Describe "$($script:dscResourceName)_Integration" {
         BeforeAll {
-            $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
+            $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
         }
 
-        $configurationName = "$($script:DSCResourceName)_CreateDependencies_Config"
+        $configurationName = "$($script:dscResourceName)_CreateDependencies_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -86,7 +86,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_EnableAlwaysOn_Config"
+        $configurationName = "$($script:dscResourceName)_EnableAlwaysOn_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -130,7 +130,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_DisableAlwaysOn_Config"
+        $configurationName = "$($script:dscResourceName)_DisableAlwaysOn_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -174,7 +174,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_CleanupDependencies_Config"
+        $configurationName = "$($script:dscResourceName)_CleanupDependencies_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {

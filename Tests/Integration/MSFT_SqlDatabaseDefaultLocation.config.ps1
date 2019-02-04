@@ -1,6 +1,14 @@
+#region HEADER
+# Integration Test Config Template Version: 1.2.0
+#endregion
+
 $configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
 if (Test-Path -Path $configFile)
 {
+    <#
+        Allows reading the configuration data from a JSON file,
+        for real testing scenarios outside of the CI.
+    #>
     $ConfigurationData = Get-Content -Path $configFile | ConvertFrom-Json
 }
 else
@@ -27,6 +35,11 @@ else
     }
 }
 
+<#
+    .SYNOPSIS
+        TODO: Add a short but clear description of what this configuration does.
+        (e.g. Enables the TCP port for Remote Desktop Connection on the profile Public.)
+#>
 Configuration MSFT_SqlDatabaseDefaultLocation_Data_Config
 {
     Import-DscResource -ModuleName 'PSDesiredStateConfiguration'

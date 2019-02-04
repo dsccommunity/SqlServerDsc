@@ -9,9 +9,9 @@ if (Test-SkipContinuousIntegrationTask -Type 'Integration')
     return
 }
 
-$script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceFriendlyName = 'SqlSetup'
-$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+$script:dscModuleName = 'SqlServerDsc'
+$script:dscResourceFriendlyName = 'SqlSetup'
+$script:dscResourceName = "MSFT_$($script:dscResourceFriendlyName)"
 
 #region HEADER
 # Integration Test Template Version: 1.1.2
@@ -24,8 +24,8 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Integration
 #endregion
 
@@ -82,7 +82,7 @@ $sqlModulePath | ForEach-Object -Process {
 
 try
 {
-    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
+    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $configFile
 
     # These sets variables used for verification from the dot-sourced $ConfigurationData variable.
@@ -166,12 +166,12 @@ try
     $mockSqlAgentServiceSecondaryAccountUserName = "$env:COMPUTERNAME\svc-SqlAgentSec"
     $mockSqlAgentServiceSecondaryCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAgentServiceSecondaryAccountUserName, $mockSqlAgentServiceSecondaryAccountPassword
 
-    Describe "$($script:DSCResourceName)_Integration" {
+    Describe "$($script:dscResourceName)_Integration" {
         BeforeAll {
-            $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
+            $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
         }
 
-        $configurationName = "$($script:DSCResourceName)_CreateDependencies_Config"
+        $configurationName = "$($script:dscResourceName)_CreateDependencies_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -204,7 +204,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_InstallDatabaseEngineNamedInstanceAsSystem_Config"
+        $configurationName = "$($script:dscResourceName)_InstallDatabaseEngineNamedInstanceAsSystem_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -327,7 +327,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_StopServicesInstance_Config"
+        $configurationName = "$($script:dscResourceName)_StopServicesInstance_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -354,7 +354,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_InstallDatabaseEngineDefaultInstanceAsUser_Config"
+        $configurationName = "$($script:dscResourceName)_InstallDatabaseEngineDefaultInstanceAsUser_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -466,7 +466,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_StopSqlServerDefaultInstance_Config"
+        $configurationName = "$($script:dscResourceName)_StopSqlServerDefaultInstance_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -493,7 +493,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_InstallTabularAnalysisServicesAsSystem_Config"
+        $configurationName = "$($script:dscResourceName)_InstallTabularAnalysisServicesAsSystem_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -598,7 +598,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_StopTabularAnalysisServices_Config"
+        $configurationName = "$($script:dscResourceName)_StopTabularAnalysisServices_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -625,7 +625,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_StartServicesInstance_Config"
+        $configurationName = "$($script:dscResourceName)_StartServicesInstance_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {

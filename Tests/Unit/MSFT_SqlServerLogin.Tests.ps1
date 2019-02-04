@@ -19,8 +19,8 @@ if (Test-SkipContinuousIntegrationTask -Type 'Unit')
     return
 }
 
-$script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceName = 'MSFT_SqlServerLogin'
+$script:dscModuleName = 'SqlServerDsc'
+$script:dscResourceName = 'MSFT_SqlServerLogin'
 
 #region HEADER
 
@@ -35,8 +35,8 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Unit
 
 #endregion HEADER
@@ -57,7 +57,7 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope $script:DSCResourceName {
+    InModuleScope $script:dscResourceName {
         # Create PSCredential object for SQL Logins
         $mockSqlLoginUser = 'dba'
         $mockSqlLoginPassword = 'P@ssw0rd-12P@ssw0rd-12' | ConvertTo-SecureString -AsPlainText -Force
@@ -693,11 +693,11 @@ try
         }
 
         Describe 'MSFT_SqlServerLogin\Set-TargetResource' {
-            Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:DSCResourceName
-            Mock -CommandName Update-SQLServerLogin -ModuleName $script:DSCResourceName
-            Mock -CommandName New-SQLServerLogin -ModuleName $script:DSCResourceName
-            Mock -CommandName Remove-SQLServerLogin -ModuleName $script:DSCResourceName
-            Mock -CommandName Set-SQLServerLoginPassword -ModuleName $script:DSCResourceName
+            Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:dscResourceName
+            Mock -CommandName Update-SQLServerLogin -ModuleName $script:dscResourceName
+            Mock -CommandName New-SQLServerLogin -ModuleName $script:dscResourceName
+            Mock -CommandName Remove-SQLServerLogin -ModuleName $script:dscResourceName
+            Mock -CommandName Set-SQLServerLoginPassword -ModuleName $script:dscResourceName
 
             Context 'When the desired state is Absent' {
                 BeforeEach {
@@ -1103,7 +1103,7 @@ try
         }
 
         Describe 'MSFT_SqlServerLogin\Update-SQLServerLogin' {
-            Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:DSCResourceName
+            Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:dscResourceName
 
             Context 'When the Login is altered' {
                 It 'Should silently alter the login' {
@@ -1124,7 +1124,7 @@ try
         }
 
         Describe 'MSFT_SqlServerLogin\New-SQLServerLogin' {
-            Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:DSCResourceName
+            Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:dscResourceName
 
             Context 'When the Login is created' {
                 It 'Should silently create a Windows login' {
@@ -1199,7 +1199,7 @@ try
         }
 
         Describe 'MSFT_SqlServerLogin\Remove-SQLServerLogin' {
-            Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:DSCResourceName
+            Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:dscResourceName
 
             Context 'When the Login is dropped' {
                 It 'Should silently drop the login' {
@@ -1220,7 +1220,7 @@ try
         }
 
         Describe 'MSFT_SqlServerLogin\Set-SQLServerLoginPassword' {
-            Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:DSCResourceName
+            Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:dscResourceName
 
             Context 'When the password is set on an existing login' {
                 It 'Should silently set the password' {

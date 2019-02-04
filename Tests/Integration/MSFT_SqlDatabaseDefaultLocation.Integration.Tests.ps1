@@ -9,44 +9,43 @@ if (Test-SkipContinuousIntegrationTask -Type 'Integration')
     return
 }
 
-$script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceFriendlyName = 'SqlDatabaseDefaultLocation'
-$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+$script:dscModuleName = 'SqlServerDsc'
+$script:dscResourceFriendlyName = 'SqlDatabaseDefaultLocation'
+$script:dscResourceName = "MSFT_$($script:dscResourceFriendlyName)"
 
 #region HEADER
-# Integration Test Template Version: 1.1.2
-[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+# Integration Test Template Version: 1.3.1
+[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))
+    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DscResource.Tests'))
 }
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dcsResourceName `
     -TestType Integration
-
 #endregion
 
 try
 {
-    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
+    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $configFile
 
-    Describe "$($script:DSCResourceName)_Integration" {
+    Describe "$($script:dscResourceName)_Integration" {
         BeforeAll {
-            $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
+            $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
         }
 
-        $configurationName = "$($script:DSCResourceName)_Data_Config"
+        $configurationName = "$($script:dscResourceName)_Data_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        OutputPath = $TestDrive
+                        OutputPath        = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData = $ConfigurationData
                     }
@@ -54,12 +53,12 @@ try
                     & $configurationName @configurationParameters
 
                     $startDscConfigurationParameters = @{
-                        Path = $TestDrive
+                        Path         = $TestDrive
                         ComputerName = 'localhost'
-                        Wait = $true
-                        Verbose = $true
-                        Force = $true
-                        ErrorAction = 'Stop'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
                     }
 
                     Start-DscConfiguration @startDscConfigurationParameters
@@ -74,23 +73,26 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
                 $resourceCurrentState.Type | Should -Be 'Data'
                 ( Join-Path -Path $resourceCurrentState.Path -ChildPath '' ) | Should -Be ( Join-Path -Path $ConfigurationData.AllNodes.DataFilePath -ChildPath '' )
             }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
+            }
         }
 
-        $configurationName = "$($script:DSCResourceName)_Log_Config"
+        $configurationName = "$($script:dscResourceName)_Log_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        OutputPath = $TestDrive
+                        OutputPath        = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData = $ConfigurationData
                     }
@@ -98,12 +100,12 @@ try
                     & $configurationName @configurationParameters
 
                     $startDscConfigurationParameters = @{
-                        Path = $TestDrive
+                        Path         = $TestDrive
                         ComputerName = 'localhost'
-                        Wait = $true
-                        Verbose = $true
-                        Force = $true
-                        ErrorAction = 'Stop'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
                     }
 
                     Start-DscConfiguration @startDscConfigurationParameters
@@ -118,23 +120,26 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
                 $resourceCurrentState.Type | Should -Be 'Log'
                 ( Join-Path -Path $resourceCurrentState.Path -ChildPath '' ) | Should -Be ( Join-Path -Path $ConfigurationData.AllNodes.LogFilePath -ChildPath '' )
             }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
+            }
         }
 
-        $configurationName = "$($script:DSCResourceName)_Backup_Config"
+        $configurationName = "$($script:dscResourceName)_Backup_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        OutputPath = $TestDrive
+                        OutputPath        = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData = $ConfigurationData
                     }
@@ -142,12 +147,12 @@ try
                     & $configurationName @configurationParameters
 
                     $startDscConfigurationParameters = @{
-                        Path = $TestDrive
+                        Path         = $TestDrive
                         ComputerName = 'localhost'
-                        Wait = $true
-                        Verbose = $true
-                        Force = $true
-                        ErrorAction = 'Stop'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
                     }
 
                     Start-DscConfiguration @startDscConfigurationParameters
@@ -162,13 +167,16 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
                 $resourceCurrentState.Type | Should -Be 'Backup'
                 ( Join-Path -Path $resourceCurrentState.Path -ChildPath '' ) | Should -Be ( Join-Path -Path $ConfigurationData.AllNodes.BackupFilePath -ChildPath '' )
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
             }
         }
     }
@@ -176,8 +184,6 @@ try
 finally
 {
     #region FOOTER
-
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
-
     #endregion
 }

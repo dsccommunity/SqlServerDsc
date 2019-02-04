@@ -19,8 +19,8 @@ if (Test-SkipContinuousIntegrationTask -Type 'Unit')
     return
 }
 
-$script:DSCModuleName   = 'SqlServerDSC'
-$script:DSCResourceName = 'MSFT_SqlServerReplication'
+$script:dscModuleName   = 'SqlServerDSC'
+$script:dscResourceName = 'MSFT_SqlServerReplication'
 
 #region HEADER
 # Unit Test Template Version: 1.1.0
@@ -33,15 +33,15 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Unit
 
 #endregion HEADER
 # Begin Testing
 try
 {
-    InModuleScope $script:DSCResourceName {
+    InModuleScope $script:dscResourceName {
 
         Describe 'Helper functions' {
             Context 'Get-SqlServerMajorVersion' {
