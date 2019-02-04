@@ -21,6 +21,8 @@
     the error handling is not again built into Pester.
   - Speeding up the AppVeyor tests by splitting the common tests in a
     separate build job.
+  - Updated the appveyor.yml to have the correct build step, and also
+    correct run the build step only in one of the jobs.
   - Added SqlAgentOperator resource.
 - Changes to SqlServiceAccount
   - Fixed Get-ServiceObject when searching for Integration Services service.

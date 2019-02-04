@@ -2,21 +2,16 @@
 [Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 2)]
 param()
 
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
+if (Test-SkipContinuousIntegrationTask -Type 'Integration')
+{
+    return
+}
+
 $script:DSCModuleName = 'SqlServerDsc'
 $script:DSCResourceFriendlyName = 'SqlDatabaseDefaultLocation'
 $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
-
-if (-not $env:APPVEYOR -eq $true)
-{
-    Write-Warning -Message ('Integration test for {0} will be skipped unless $env:APPVEYOR equals $true' -f $script:DSCResourceName)
-    return
-}
-
-if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Integration')
-{
-    Write-Verbose -Message ('Integration test for {0} will be skipped unless $env:CONFIGURATION is set to ''Integration''.' -f $script:DSCResourceName) -Verbose
-    return
-}
 
 #region HEADER
 # Integration Test Template Version: 1.1.2

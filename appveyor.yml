@@ -2,7 +2,19 @@
 #      environment configuration  #
 #---------------------------------#
 version: 9.0.{build}.0
+environment:
+  gallery_api:
+    secure: 9ekJzfsPCDBkyLrfmov83XbbhZ6E2N3z+B/Io8NbDetbHc6hWS19zsDmy7t0Vvxv
+  # The job where deploy step should run (normally the last job)
+  DeployInJobNumber: 3
+
+# The image that will be used when building the job matrix.
 image: Visual Studio 2017
+
+# The configuration that will be used when building the job matrix.
+# Meta = Test Framework Common Test
+# Unit = Module Unit Tests.
+# Integration = Module Integration Tests.
 configuration:
   - Meta
   - Unit
@@ -23,6 +35,12 @@ build: false
 #---------------------------------#
 #      test configuration         #
 #---------------------------------#
+
+# This will build the job matrix
+#
+# Job 1: Run meta test (common tests) on image Visual Studio 2017.
+# Job 2: Run unit tests on image Visual Studio 2017, including Codecov report.
+# Job 3: Run integration tests on image Visual Studio 2017.
 
 for:
 -
@@ -87,11 +105,24 @@ for:
 
         Invoke-AppveyorTestScriptTask -CodeCoverage -CodeCovIo -ExcludeTag @() -RunTestInOrder
 
+# Runs for all jobs.
+after_test:
+  - ps: |
+        Import-Module -Name "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
+        Invoke-AppveyorAfterTestTask
+
 #---------------------------------#
 #      deployment configuration   #
 #---------------------------------#
 
-# scripts to run before deployment
+# Runs only in a branch (not in PR).
 deploy_script:
-    - ps: |
-        Invoke-AppveyorAfterTestTask
+  - ps: |
+        if ($env:APPVEYOR_JOB_NUMBER -eq $env:DeployInJobNumber)
+        {
+            Invoke-AppVeyorDeployTask
+        }
+        else
+        {
+            Write-Verbose -Message ('Skipping deploy step. Deploy step was requested to run in job number {0}. Current job number is {1}.' -f $env:DeployInJobNumber, $env:APPVEYOR_JOB_NUMBER) -Verbose
+        }

@@ -8,14 +8,14 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-$script:helperModuleName = 'CommonResourceHelper'
-
-if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne 'Unit')
+if (Test-SkipContinuousIntegrationTask -Type 'Unit')
 {
-    Write-Verbose -Message ('Unit test for {0} will be skipped unless $env:CONFIGURATION is set to ''Unit''.' -f $script:helperModuleName) -Verbose
     return
 }
+
+$script:helperModuleName = 'CommonResourceHelper'
 
 Describe "$script:helperModuleName Unit Tests" {
     BeforeAll {
