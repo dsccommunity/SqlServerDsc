@@ -11,7 +11,7 @@ if (Test-SkipContinuousIntegrationTask -Type 'Integration')
 
 $script:dscModuleName = 'SqlServerDsc'
 $script:dscResourceFriendlyName = 'SqlServerEndpoint'
-$script:dcsResourceName = "MSFT_$($script:dscResourceFriendlyName)"
+$script:dscResourceName = "MSFT_$($script:dscResourceFriendlyName)"
 
 #region HEADER
 # Integration Test Template Version: 1.3.1
@@ -25,7 +25,7 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:dscModuleName `
-    -DSCResourceName $script:dcsResourceName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Integration
 #endregion
 
@@ -37,7 +37,7 @@ $mockSqlInstallCredential = New-Object -TypeName System.Management.Automation.PS
 try
 {
     #region Integration Tests
-    $configurationFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dcsResourceName).config.ps1"
+    $configurationFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $configurationFile
 
     $mockEndpointName = $ConfigurationData.AllNodes.EndpointName
@@ -45,9 +45,9 @@ try
     $mockIpAddress = $ConfigurationData.AllNodes.IpAddress
     $mockOwner = $ConfigurationData.AllNodes.Owner
 
-    Describe "$($script:dcsResourceName)_Integration" {
+    Describe "$($script:dscResourceName)_Integration" {
 
-        $configurationName = "$($script:dcsResourceName)_Add_Config"
+        $configurationName = "$($script:dscResourceName)_Add_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -96,7 +96,7 @@ try
             }
         }
 
-        $configurationName = "$($script:dcsResourceName)_Remove_Config"
+        $configurationName = "$($script:dscResourceName)_Remove_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {

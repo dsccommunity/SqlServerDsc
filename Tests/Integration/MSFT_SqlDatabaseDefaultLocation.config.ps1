@@ -37,8 +37,7 @@ else
 
 <#
     .SYNOPSIS
-        TODO: Add a short but clear description of what this configuration does.
-        (e.g. Enables the TCP port for Remote Desktop Connection on the profile Public.)
+        Changes the DATA default location
 #>
 Configuration MSFT_SqlDatabaseDefaultLocation_Data_Config
 {
@@ -73,6 +72,10 @@ Configuration MSFT_SqlDatabaseDefaultLocation_Data_Config
     }
 }
 
+<#
+    .SYNOPSIS
+        Changes the LOG default location
+#>
 Configuration MSFT_SqlDatabaseDefaultLocation_Log_Config
 {
     Import-DscResource -ModuleName 'PSDesiredStateConfiguration'
@@ -106,6 +109,10 @@ Configuration MSFT_SqlDatabaseDefaultLocation_Log_Config
     }
 }
 
+<#
+    .SYNOPSIS
+        Changes the BACKUP default location
+#>
 Configuration MSFT_SqlDatabaseDefaultLocation_Backup_Config
 {
     Import-DscResource -ModuleName 'PSDesiredStateConfiguration'
