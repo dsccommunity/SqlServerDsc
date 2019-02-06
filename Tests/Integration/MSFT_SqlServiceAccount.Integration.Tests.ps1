@@ -114,8 +114,8 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeDatabaseEngine
-                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlServiceSecondaryAccountUserName -Leaf))
+                $resourceCurrentState.ServiceType | Should -Be $ConfigurationData.AllNodes.ServiceTypeDatabaseEngine
+                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $ConfigurationData.AllNodes.SqlSecondary_UserName -Leaf))
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -161,8 +161,8 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeSqlServerAgent
-                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlAgentServiceSecondaryAccountUserName -Leaf))
+                $resourceCurrentState.ServiceType | Should -Be $ConfigurationData.AllNodes.ServiceTypeSqlServerAgent
+                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $ConfigurationData.AllNodes.SqlAgentSecondary_UserName -Leaf))
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -208,8 +208,8 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeDatabaseEngine
-                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlServicePrimaryAccountUserName -Leaf))
+                $resourceCurrentState.ServiceType | Should -Be $ConfigurationData.AllNodes.ServiceTypeDatabaseEngine
+                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $ConfigurationData.AllNodes.SqlPrimary_UserName -Leaf))
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -255,8 +255,8 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeSqlServerAgent
-                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlAgentServicePrimaryAccountUserName -Leaf))
+                $resourceCurrentState.ServiceType | Should -Be $ConfigurationData.AllNodes.ServiceTypeSqlServerAgent
+                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $ConfigurationData.AllNodes.SqlAgentPrimary_UserName -Leaf))
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -329,8 +329,8 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeDatabaseEngine
-                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlServiceSecondaryAccountUserName -Leaf))
+                $resourceCurrentState.ServiceType | Should -Be $ConfigurationData.AllNodes.ServiceTypeDatabaseEngine
+                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $ConfigurationData.AllNodes.SqlSecondary_UserName -Leaf))
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -376,8 +376,8 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeSqlServerAgent
-                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlAgentServiceSecondaryAccountUserName -Leaf))
+                $resourceCurrentState.ServiceType | Should -Be $ConfigurationData.AllNodes.ServiceTypeSqlServerAgent
+                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $ConfigurationData.AllNodes.SqlAgentSecondary_UserName -Leaf))
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -423,8 +423,8 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeDatabaseEngine
-                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlServicePrimaryAccountUserName -Leaf))
+                $resourceCurrentState.ServiceType | Should -Be $ConfigurationData.AllNodes.ServiceTypeDatabaseEngine
+                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $ConfigurationData.AllNodes.SqlPrimary_UserName -Leaf))
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -470,8 +470,8 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.ServiceType | Should -Be $mockServiceTypeSqlServerAgent
-                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $mockSqlAgentServicePrimaryAccountUserName -Leaf))
+                $resourceCurrentState.ServiceType | Should -Be $ConfigurationData.AllNodes.ServiceTypeSqlServerAgent
+                $resourceCurrentState.ServiceAccountName | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $ConfigurationData.AllNodes.SqlAgentPrimary_UserName -Leaf))
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -483,8 +483,6 @@ try
 finally
 {
     #region FOOTER
-
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
-
     #endregion
 }
