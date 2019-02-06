@@ -53,32 +53,36 @@ Configuration MSFT_SqlServerLogin_CreateDependencies_Config
 {
     Import-DscResource -ModuleName 'PSDscResources'
 
-    # Only the password will be used of this.
-    $userCredential = New-Object `
-        -TypeName System.Management.Automation.PSCredential `
-        -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
-
     node $AllNodes.NodeName
     {
         User 'CreateDscUser1'
         {
             Ensure   = 'Present'
             UserName = Split-Path -Path $Node.DscUser1Name -Leaf
-            Password = $userCredential
+            # Only the password will be used of this credential object.
+            Password = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
 
         User 'CreateDscUser2'
         {
             Ensure   = 'Present'
             UserName = Split-Path -Path $Node.DscUser2Name -Leaf
-            Password = $userCredential
+            # Only the password will be used of this credential object.
+            Password = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
 
         User 'CreateDscUser3'
         {
             Ensure   = 'Present'
             UserName = Split-Path -Path $Node.DscUser3Name -Leaf
-            Password = $userCredential
+            # Only the password will be used of this credential object.
+            Password = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
 
         Group 'CreateDscSqlUsers1'
@@ -185,11 +189,6 @@ Configuration MSFT_SqlServerLogin_AddLoginDscUser4_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    # Only the password will be used of this.
-    $userCredential = New-Object `
-        -TypeName System.Management.Automation.PSCredential `
-        -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
-
     node $AllNodes.NodeName
     {
         SqlServerLogin 'Integration_Test'
@@ -197,10 +196,12 @@ Configuration MSFT_SqlServerLogin_AddLoginDscUser4_Config
             Ensure                         = 'Present'
             Name                           = $Node.DscUser4Name
             LoginType                      = $Node.DscUser4Type
-            LoginCredential                = $userCredential
             LoginMustChangePassword        = $false
             LoginPasswordExpirationEnabled = $true
             LoginPasswordPolicyEnforced    = $true
+            LoginCredential                = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
 
             ServerName                     = $Node.ServerName
             InstanceName                   = $Node.InstanceName
@@ -263,5 +264,3 @@ Configuration MSFT_SqlServerLogin_RemoveLoginDscUser3_Config
         }
     }
 }
-
-
