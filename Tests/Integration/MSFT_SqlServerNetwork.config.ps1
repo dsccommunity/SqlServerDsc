@@ -1,34 +1,47 @@
-$ConfigurationData = @{
-    AllNodes = @(
-        @{
-            NodeName        = 'localhost'
-            ServerName      = $env:COMPUTERNAME
-            InstanceName    = 'DSCSQL2016'
+#region HEADER
+# Integration Test Config Template Version: 1.2.0
+#endregion
 
-            ProtocolName    = 'Tcp'
-            Enabled         = $true
-            Disabled        = $false
-            TcpDynamicPort  = $true
-            RestartService  = $true
+$configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
+if (Test-Path -Path $configFile)
+{
+    <#
+        Allows reading the configuration data from a JSON file,
+        for real testing scenarios outside of the CI.
+    #>
+    $ConfigurationData = Get-Content -Path $configFile | ConvertFrom-Json
+}
+else
+{
+    $ConfigurationData = @{
+        AllNodes = @(
+            @{
+                NodeName        = 'localhost'
 
-            CertificateFile = $env:DscPublicCertificatePath
-        }
-    )
+                UserName        = "$env:COMPUTERNAME\SqlInstall"
+                Password        = 'P@ssw0rd1'
+
+                ServerName      = $env:COMPUTERNAME
+                InstanceName    = 'DSCSQL2016'
+
+                ProtocolName    = 'Tcp'
+                Enabled         = $true
+                Disabled        = $false
+                TcpDynamicPort  = $true
+                RestartService  = $true
+
+                CertificateFile = $env:DscPublicCertificatePath
+            }
+        )
+    }
 }
 
 Configuration MSFT_SqlServerNetwork_SetDisabled_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServerNetwork 'Integration_Test'
         {
             ServerName           = $Node.ServerName
@@ -37,24 +50,19 @@ Configuration MSFT_SqlServerNetwork_SetDisabled_Config
             IsEnabled            = $Node.Disabled
             TcpDynamicPort       = $Node.TcpDynamicPort
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
 
 Configuration MSFT_SqlServerNetwork_SetEnabled_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServerNetwork 'Integration_Test'
         {
             ServerName           = $Node.ServerName
@@ -63,7 +71,9 @@ Configuration MSFT_SqlServerNetwork_SetEnabled_Config
             IsEnabled            = $Node.Enabled
             TcpDynamicPort       = $Node.TcpDynamicPort
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }

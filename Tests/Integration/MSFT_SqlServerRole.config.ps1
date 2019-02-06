@@ -1,21 +1,41 @@
-$ConfigurationData = @{
-    AllNodes = @(
-        @{
-            NodeName        = 'localhost'
-            ServerName      = $env:COMPUTERNAME
-            InstanceName    = 'DSCSQL2016'
+#region HEADER
+# Integration Test Config Template Version: 1.2.0
+#endregion
 
-            Role1Name       = 'DscServerRole1'
-            Role2Name       = 'DscServerRole2'
-            Role3Name       = 'DscServerRole3'
+$configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
+if (Test-Path -Path $configFile)
+{
+    <#
+        Allows reading the configuration data from a JSON file,
+        for real testing scenarios outside of the CI.
+    #>
+    $ConfigurationData = Get-Content -Path $configFile | ConvertFrom-Json
+}
+else
+{
+    $ConfigurationData = @{
+        AllNodes = @(
+            @{
+                NodeName        = 'localhost'
 
-            User1Name       = '{0}\{1}' -f $env:COMPUTERNAME, 'DscUser1'
-            User2Name       = '{0}\{1}' -f $env:COMPUTERNAME, 'DscUser2'
-            User4Name       = 'DscUser4'
+                UserName        = "$env:COMPUTERNAME\SqlAdmin"
+                Password        = 'P@ssw0rd1'
 
-            CertificateFile = $env:DscPublicCertificatePath
-        }
-    )
+                ServerName      = $env:COMPUTERNAME
+                InstanceName    = 'DSCSQL2016'
+
+                Role1Name       = 'DscServerRole1'
+                Role2Name       = 'DscServerRole2'
+                Role3Name       = 'DscServerRole3'
+
+                User1Name       = '{0}\{1}' -f $env:COMPUTERNAME, 'DscUser1'
+                User2Name       = '{0}\{1}' -f $env:COMPUTERNAME, 'DscUser2'
+                User4Name       = 'DscUser4'
+
+                CertificateFile = $env:DscPublicCertificatePath
+            }
+        )
+    }
 }
 
 <#
@@ -24,17 +44,10 @@ $ConfigurationData = @{
 #>
 Configuration MSFT_SqlServerRole_AddRole1_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServerRole 'Integration_Test'
         {
             Ensure               = 'Present'
@@ -45,7 +58,9 @@ Configuration MSFT_SqlServerRole_AddRole1_Config
                 $Node.User4Name
             )
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
@@ -56,17 +71,10 @@ Configuration MSFT_SqlServerRole_AddRole1_Config
 #>
 Configuration MSFT_SqlServerRole_AddRole2_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServerRole 'Integration_Test'
         {
             Ensure               = 'Present'
@@ -74,7 +82,9 @@ Configuration MSFT_SqlServerRole_AddRole2_Config
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
@@ -85,17 +95,10 @@ Configuration MSFT_SqlServerRole_AddRole2_Config
 #>
 Configuration MSFT_SqlServerRole_AddRole3_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServerRole 'Integration_Test'
         {
             Ensure               = 'Present'
@@ -107,7 +110,9 @@ Configuration MSFT_SqlServerRole_AddRole3_Config
                 $Node.User2Name
             )
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
@@ -121,17 +126,10 @@ Configuration MSFT_SqlServerRole_AddRole3_Config
 #>
 Configuration MSFT_SqlServerRole_Role1_ChangeMembers_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServerRole 'Integration_Test'
         {
             Ensure               = 'Present'
@@ -143,7 +141,9 @@ Configuration MSFT_SqlServerRole_Role1_ChangeMembers_Config
                 $Node.User2Name
             )
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
@@ -154,17 +154,10 @@ Configuration MSFT_SqlServerRole_Role1_ChangeMembers_Config
 #>
 Configuration MSFT_SqlServerRole_Role2_AddMembers_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServerRole 'Integration_Test'
         {
             Ensure               = 'Present'
@@ -177,7 +170,9 @@ Configuration MSFT_SqlServerRole_Role2_AddMembers_Config
                 $Node.User4Name
             )
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
@@ -188,17 +183,10 @@ Configuration MSFT_SqlServerRole_Role2_AddMembers_Config
 #>
 Configuration MSFT_SqlServerRole_Role2_RemoveMembers_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServerRole 'Integration_Test'
         {
             Ensure               = 'Present'
@@ -210,25 +198,23 @@ Configuration MSFT_SqlServerRole_Role2_RemoveMembers_Config
                 $Node.User2Name
             )
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
 
-
+<#
+    .SYNOPSIS
+        Removes an existing group.
+#>
 Configuration MSFT_SqlServerRole_RemoveRole3_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServerRole 'Integration_Test'
         {
             Ensure               = 'Absent'
@@ -236,7 +222,9 @@ Configuration MSFT_SqlServerRole_RemoveRole3_Config
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }

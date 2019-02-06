@@ -19,12 +19,12 @@ $script:dscResourceFriendlyName = 'SqlScript'
 $script:dscResourceName = "MSFT_$($script:dscResourceFriendlyName)"
 
 #region HEADER
-# Integration Test Template Version: 1.1.2
+# Integration Test Template Version: 1.3.2
 [String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))
+    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DscResource.Tests'))
 }
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
@@ -32,26 +32,13 @@ $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:dscModuleName `
     -DSCResourceName $script:dscResourceName `
     -TestType Integration
-
 #endregion
 
-$mockSqlAdminAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-$mockSqlAdminAccountUserName = "$env:COMPUTERNAME\SqlAdmin"
-$mockSqlAdminCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAdminAccountUserName, $mockSqlAdminAccountPassword
-
-$mockUserAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-$mockUserCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'DscAdmin1', $mockUserAccountPassword
-
+# Using try/finally to always cleanup.
 try
 {
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $configFile
-
-    $mockGetSqlScriptPath  = $ConfigurationData.AllNodes.GetSqlScriptPath
-    $mockTestSqlScriptPath = $ConfigurationData.AllNodes.TestSqlScriptPath
-    $mockSetSqlScriptPath  = $ConfigurationData.AllNodes.SetSqlScriptPath
-    $mockDatabase1Name     = $ConfigurationData.AllNodes.Database1Name
-    $mockDatabase2Name     = $ConfigurationData.AllNodes.Database2Name
 
     Describe "$($script:dscResourceName)_Integration" {
         BeforeAll {
@@ -64,8 +51,6 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlAdministratorCredential = $mockSqlAdminCredential
-                        UserCredential             = $mockUserCredential
                         OutputPath                 = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData          = $ConfigurationData
@@ -98,7 +83,6 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlAdministratorCredential = $mockSqlAdminCredential
                         OutputPath                 = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData          = $ConfigurationData
@@ -127,9 +111,8 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
                 <#
@@ -160,7 +143,6 @@ try
 
                 try
                 {
-
                     $resultObject = $regularExpressionMatch | ConvertFrom-Json
                 }
                 catch
@@ -170,10 +152,14 @@ try
                     throw $_
                 }
 
-                $resultObject.Name | Should -Be $mockDatabase1Name
-                $resourceCurrentState.GetFilePath | Should -Be $mockGetSqlScriptPath
-                $resourceCurrentState.TestFilePath | Should -Be $mockTestSqlScriptPath
-                $resourceCurrentState.SetFilePath | Should -Be $mockSetSqlScriptPath
+                $resultObject.Name | Should -Be $ConfigurationData.AllNodes.Database1Name
+                $resourceCurrentState.GetFilePath | Should -Be $ConfigurationData.AllNodes.GetSqlScriptPath
+                $resourceCurrentState.TestFilePath | Should -Be $ConfigurationData.AllNodes.TestSqlScriptPath
+                $resourceCurrentState.SetFilePath | Should -Be $ConfigurationData.AllNodes.SetSqlScriptPath
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
             }
         }
 
@@ -183,7 +169,6 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        UserCredential    = $mockUserCredential
                         OutputPath        = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData = $ConfigurationData
@@ -212,15 +197,18 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.GetResult | Should -Match $mockDatabase2Name
-                $resourceCurrentState.GetFilePath | Should -Be $mockGetSqlScriptPath
-                $resourceCurrentState.TestFilePath | Should -Be $mockTestSqlScriptPath
-                $resourceCurrentState.SetFilePath | Should -Be $mockSetSqlScriptPath
+                $resourceCurrentState.GetResult | Should -Match $ConfigurationData.AllNodes.Database2Name
+                $resourceCurrentState.GetFilePath | Should -Be $ConfigurationData.AllNodes.GetSqlScriptPath
+                $resourceCurrentState.TestFilePath | Should -Be $ConfigurationData.AllNodes.TestSqlScriptPath
+                $resourceCurrentState.SetFilePath | Should -Be $ConfigurationData.AllNodes.SetSqlScriptPath
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
             }
         }
     }
@@ -228,8 +216,6 @@ try
 finally
 {
     #region FOOTER
-
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
-
     #endregion
 }

@@ -1,62 +1,84 @@
-$ConfigurationData = @{
-    AllNodes = @(
-        @{
-            NodeName         = 'localhost'
-            ServerName       = $env:COMPUTERNAME
-            InstanceName     = 'DSCSQL2016'
+#region HEADER
+# Integration Test Config Template Version: 1.2.0
+#endregion
 
-            DscUser1Name     = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscUser1')
-            DscUser1Type     = 'WindowsUser'
+$configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
+if (Test-Path -Path $configFile)
+{
+    <#
+        Allows reading the configuration data from a JSON file,
+        for real testing scenarios outside of the CI.
+    #>
+    $ConfigurationData = Get-Content -Path $configFile | ConvertFrom-Json
+}
+else
+{
+    $ConfigurationData = @{
+        AllNodes = @(
+            @{
+                NodeName         = 'localhost'
 
-            DscUser2Name     = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscUser2')
-            DscUser2Type     = 'WindowsUser'
+                Admin_UserName   = "$env:COMPUTERNAME\SqlAdmin"
+                Admin_Password   = 'P@ssw0rd1'
 
-            DscUser3Name     = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscUser3')
-            DscUser3Type     = 'WindowsUser'
+                ServerName       = $env:COMPUTERNAME
+                InstanceName     = 'DSCSQL2016'
 
-            DscUser4Name     = 'DscUser4'
-            DscUser4Type     = 'SqlLogin'
+                DscUser1Name     = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscUser1')
+                DscUser1Type     = 'WindowsUser'
 
-            DscSqlUsers1Name = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscSqlUsers1')
-            DscSqlUsers1Type = 'WindowsGroup'
+                DscUser2Name     = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscUser2')
+                DscUser2Type     = 'WindowsUser'
 
-            CertificateFile  = $env:DscPublicCertificatePath
-        }
-    )
+                DscUser3Name     = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscUser3')
+                DscUser3Type     = 'WindowsUser'
+
+                DscUser4Name     = 'DscUser4'
+                DscUser4Type     = 'SqlLogin'
+
+                DscSqlUsers1Name = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscSqlUsers1')
+                DscSqlUsers1Type = 'WindowsGroup'
+
+                CertificateFile  = $env:DscPublicCertificatePath
+            }
+        )
+    }
 }
 
+<#
+    .SYNOPSIS
+        Creates the logins that are dependencies.
+#>
 Configuration MSFT_SqlServerLogin_CreateDependencies_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $UserCredential
-    )
-
     Import-DscResource -ModuleName 'PSDscResources'
 
-    node localhost {
+    # Only the password will be used of this.
+    $userCredential = New-Object `
+        -TypeName System.Management.Automation.PSCredential `
+        -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+
+    node $AllNodes.NodeName
+    {
         User 'CreateDscUser1'
         {
             Ensure   = 'Present'
             UserName = Split-Path -Path $Node.DscUser1Name -Leaf
-            Password = $UserCredential
+            Password = $userCredential
         }
 
         User 'CreateDscUser2'
         {
             Ensure   = 'Present'
             UserName = Split-Path -Path $Node.DscUser2Name -Leaf
-            Password = $UserCredential
+            Password = $userCredential
         }
 
         User 'CreateDscUser3'
         {
             Ensure   = 'Present'
             UserName = Split-Path -Path $Node.DscUser3Name -Leaf
-            Password = $UserCredential
+            Password = $userCredential
         }
 
         Group 'CreateDscSqlUsers1'
@@ -76,19 +98,16 @@ Configuration MSFT_SqlServerLogin_CreateDependencies_Config
     }
 }
 
+<#
+    .SYNOPSIS
+        Adds a Windows User login.
+#>
 Configuration MSFT_SqlServerLogin_AddLoginDscUser1_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServerLogin 'Integration_Test'
         {
             Ensure               = 'Present'
@@ -98,24 +117,23 @@ Configuration MSFT_SqlServerLogin_AddLoginDscUser1_Config
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
     }
 }
 
+<#
+    .SYNOPSIS
+        Adds a second Windows User login.
+#>
 Configuration MSFT_SqlServerLogin_AddLoginDscUser2_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServerLogin 'Integration_Test'
         {
             Ensure               = 'Present'
@@ -125,24 +143,23 @@ Configuration MSFT_SqlServerLogin_AddLoginDscUser2_Config
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
     }
 }
 
+<#
+    .SYNOPSIS
+        Adds a third Windows User login, and creates it as disabled.
+#>
 Configuration MSFT_SqlServerLogin_AddLoginDscUser3_Disabled_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServerLogin 'Integration_Test'
         {
             Ensure               = 'Present'
@@ -153,35 +170,34 @@ Configuration MSFT_SqlServerLogin_AddLoginDscUser3_Disabled_Config
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
     }
 }
 
+<#
+    .SYNOPSIS
+        Adds a SQL login.
+#>
 Configuration MSFT_SqlServerLogin_AddLoginDscUser4_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $UserCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    # Only the password will be used of this.
+    $userCredential = New-Object `
+        -TypeName System.Management.Automation.PSCredential `
+        -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+
+    node $AllNodes.NodeName
+    {
         SqlServerLogin 'Integration_Test'
         {
             Ensure                         = 'Present'
             Name                           = $Node.DscUser4Name
             LoginType                      = $Node.DscUser4Type
-            LoginCredential                = $UserCredential
+            LoginCredential                = $userCredential
             LoginMustChangePassword        = $false
             LoginPasswordExpirationEnabled = $true
             LoginPasswordPolicyEnforced    = $true
@@ -189,24 +205,23 @@ Configuration MSFT_SqlServerLogin_AddLoginDscUser4_Config
             ServerName                     = $Node.ServerName
             InstanceName                   = $Node.InstanceName
 
-            PsDscRunAsCredential           = $SqlAdministratorCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
     }
 }
 
+<#
+    .SYNOPSIS
+        Adds a Windows Group login.
+#>
 Configuration MSFT_SqlServerLogin_AddLoginDscSqlUsers1_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServerLogin 'Integration_Test'
         {
             Ensure               = 'Present'
@@ -216,24 +231,23 @@ Configuration MSFT_SqlServerLogin_AddLoginDscSqlUsers1_Config
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
     }
 }
 
+<#
+    .SYNOPSIS
+        Removes the third Windows User login that was created.
+#>
 Configuration MSFT_SqlServerLogin_RemoveLoginDscUser3_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServerLogin 'Integration_Test'
         {
             Ensure               = 'Absent'
@@ -243,7 +257,9 @@ Configuration MSFT_SqlServerLogin_RemoveLoginDscUser3_Config
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
     }
 }

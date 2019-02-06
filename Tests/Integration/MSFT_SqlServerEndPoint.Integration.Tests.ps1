@@ -14,7 +14,7 @@ $script:dscResourceFriendlyName = 'SqlServerEndpoint'
 $script:dscResourceName = "MSFT_$($script:dscResourceFriendlyName)"
 
 #region HEADER
-# Integration Test Template Version: 1.3.1
+# Integration Test Template Version: 1.3.2
 [String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
@@ -29,10 +29,6 @@ $TestEnvironment = Initialize-TestEnvironment `
     -TestType Integration
 #endregion
 
-$mockSqlInstallAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-$mockSqlInstallAccountUserName = "$env:COMPUTERNAME\SqlInstall"
-$mockSqlInstallCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlInstallAccountUserName, $mockSqlInstallAccountPassword
-
 # Using try/finally to always cleanup.
 try
 {
@@ -40,12 +36,10 @@ try
     $configurationFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $configurationFile
 
-    $mockEndpointName = $ConfigurationData.AllNodes.EndpointName
-    $mockPort = $ConfigurationData.AllNodes.Port
-    $mockIpAddress = $ConfigurationData.AllNodes.IpAddress
-    $mockOwner = $ConfigurationData.AllNodes.Owner
-
     Describe "$($script:dscResourceName)_Integration" {
+        BeforeAll {
+            $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
+        }
 
         $configurationName = "$($script:dscResourceName)_Add_Config"
 
@@ -81,14 +75,14 @@ try
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
                     $_.ConfigurationName -eq $configurationName `
-                    -and $_.ResourceId -eq "[$($script:dscResourceFriendlyName)]Integration_Test"
+                    -and $_.ResourceId -eq $resourceId
                 }
 
                 $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.EndpointName | Should -Be $mockEndpointName
-                $resourceCurrentState.Port | Should -Be $mockPort
-                $resourceCurrentState.IpAddress | Should -Be $mockIpAddress
-                $resourceCurrentState.Owner | Should -Be $mockOwner
+                $resourceCurrentState.EndpointName | Should -Be $ConfigurationData.AllNodes.EndpointName
+                $resourceCurrentState.Port | Should -Be $ConfigurationData.AllNodes.Port
+                $resourceCurrentState.IpAddress | Should -Be $ConfigurationData.AllNodes.IpAddress
+                $resourceCurrentState.Owner | Should -Be $ConfigurationData.AllNodes.Owner
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -130,7 +124,7 @@ try
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
                     $_.ConfigurationName -eq $configurationName `
-                    -and $_.ResourceId -eq "[$($script:dscResourceFriendlyName)]Integration_Test"
+                    -and $_.ResourceId -eq $resourceId
                 }
 
                 $resourceCurrentState.Ensure | Should -Be 'Absent'
@@ -141,10 +135,8 @@ try
                 Test-DscConfiguration -Verbose | Should -Be $true
             }
         }
-
     }
     #endregion
-
 }
 finally
 {

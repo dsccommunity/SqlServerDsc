@@ -14,12 +14,12 @@ $script:dscResourceFriendlyName = 'SqlServerLogin'
 $script:dscResourceName = "MSFT_$($script:dscResourceFriendlyName)"
 
 #region HEADER
-# Integration Test Template Version: 1.1.2
-[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+# Integration Test Template Version: 1.3.2
+[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))
+    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DscResource.Tests'))
 }
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
@@ -27,33 +27,15 @@ $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:dscModuleName `
     -DSCResourceName $script:dscResourceName `
     -TestType Integration
-
 #endregion
 
-$mockSqlAdminAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-$mockSqlAdminAccountUserName = "$env:COMPUTERNAME\SqlAdmin"
-$mockSqlAdminCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAdminAccountUserName, $mockSqlAdminAccountPassword
-
-$mockUserAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-$mockUserCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'OnlyPasswordIsUsed', $mockUserAccountPassword
-
+# Using try/finally to always cleanup.
 try
 {
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $configFile
 
-    $mockDscUser1Name = $ConfigurationData.AllNodes.DscUser1Name
-    $mockDscUser1Type = $ConfigurationData.AllNodes.DscUser1Type
-    $mockDscUser2Name = $ConfigurationData.AllNodes.DscUser2Name
-    $mockDscUser2Type = $ConfigurationData.AllNodes.DscUser2Type
-    $mockDscUser3Name = $ConfigurationData.AllNodes.DscUser3Name
-    $mockDscUser3Type = $ConfigurationData.AllNodes.DscUser3Type
-    $mockDscUser4Name = $ConfigurationData.AllNodes.DscUser4Name
-    $mockDscUser4Type = $ConfigurationData.AllNodes.DscUser4Type
-    $mockDscSqlUsers1Name = $ConfigurationData.AllNodes.DscSqlUsers1Name
-    $mockDscSqlUsers1Type = $ConfigurationData.AllNodes.DscSqlUsers1Type
-
-    Describe "$($script:dscResourceName)_Integration" {
+     Describe "$($script:dscResourceName)_Integration" {
         BeforeAll {
             $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
         }
@@ -69,7 +51,6 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        UserCredential    = $mockUserCredential
                         OutputPath        = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData = $ConfigurationData
@@ -97,7 +78,6 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlAdministratorCredential = $mockSqlAdminCredential
                         OutputPath                 = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData          = $ConfigurationData
@@ -126,15 +106,18 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
                 $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.Name | Should -Be $mockDscUser1Name
-                $resourceCurrentState.LoginType | Should -Be $mockDscUser1Type
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser1Name
+                $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser1Type
                 $resourceCurrentState.Disabled | Should -Be $false
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
             }
         }
 
@@ -144,7 +127,6 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlAdministratorCredential = $mockSqlAdminCredential
                         OutputPath                 = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData          = $ConfigurationData
@@ -173,15 +155,18 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
                 $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.Name | Should -Be $mockDscUser2Name
-                $resourceCurrentState.LoginType | Should -Be $mockDscUser2Type
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser2Name
+                $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser2Type
                 $resourceCurrentState.Disabled | Should -Be $false
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
             }
         }
 
@@ -191,7 +176,6 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlAdministratorCredential = $mockSqlAdminCredential
                         OutputPath                 = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData          = $ConfigurationData
@@ -220,15 +204,18 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
                 $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.Name | Should -Be $mockDscUser3Name
-                $resourceCurrentState.LoginType | Should -Be $mockDscUser3Type
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser3Name
+                $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser3Type
                 $resourceCurrentState.Disabled | Should -Be $true
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
             }
         }
 
@@ -238,8 +225,6 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlAdministratorCredential = $mockSqlAdminCredential
-                        UserCredential             = $mockUserCredential
                         OutputPath                 = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData          = $ConfigurationData
@@ -268,15 +253,18 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
                 $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.Name | Should -Be $mockDscUser4Name
-                $resourceCurrentState.LoginType | Should -Be $mockDscUser4Type
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser4Name
+                $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser4Type
                 $resourceCurrentState.Disabled | Should -Be $false
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
             }
         }
 
@@ -286,7 +274,6 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlAdministratorCredential = $mockSqlAdminCredential
                         OutputPath                 = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData          = $ConfigurationData
@@ -315,15 +302,18 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
                 $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.Name | Should -Be $mockDscSqlUsers1Name
-                $resourceCurrentState.LoginType | Should -Be $mockDscSqlUsers1Type
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscSqlUsers1Name
+                $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscSqlUsers1Type
                 $resourceCurrentState.Disabled | Should -Be $false
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
             }
         }
 
@@ -333,7 +323,6 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlAdministratorCredential = $mockSqlAdminCredential
                         OutputPath                 = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData          = $ConfigurationData
@@ -362,14 +351,17 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
                 $resourceCurrentState.Ensure | Should -Be 'Absent'
-                $resourceCurrentState.Name | Should -Be $mockDscUser3Name
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser3Name
                 $resourceCurrentState.LoginType | Should -BeNullOrEmpty
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
             }
         }
     }
@@ -377,8 +369,6 @@ try
 finally
 {
     #region FOOTER
-
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
-
     #endregion
 }

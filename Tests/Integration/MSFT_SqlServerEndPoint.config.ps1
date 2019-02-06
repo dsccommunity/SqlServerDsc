@@ -2,22 +2,33 @@
 # Integration Test Config Template Version: 1.2.0
 #endregion
 
+$configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
+if (Test-Path -Path $configFile)
+{
+    <#
+        Allows reading the configuration data from a JSON file,
+        for real testing scenarios outside of the CI.
+    #>
+    $ConfigurationData = Get-Content -Path $configFile | ConvertFrom-Json
+}
+else
+{
+    $ConfigurationData = @{
+        AllNodes = @(
+            @{
+                NodeName             = 'localhost'
+                ServerName           = $env:COMPUTERNAME
+                InstanceName         = 'DSCSQL2016'
 
-$ConfigurationData = @{
-    AllNodes = @(
-        @{
-            NodeName             = 'localhost'
-            ServerName           = $env:COMPUTERNAME
-            InstanceName         = 'DSCSQL2016'
+                EndpointName         = 'HADR'
+                Port                 = 5023
+                IpAddress            = '0.0.0.0'
+                Owner                = 'sa'
 
-            EndpointName         = 'HADR'
-            Port                 = 5023
-            IpAddress            = '0.0.0.0'
-            Owner                = 'sa'
-
-            CertificateFile      = $env:DscPublicCertificatePath
-        }
-    )
+                CertificateFile      = $env:DscPublicCertificatePath
+            }
+        )
+    }
 }
 
 <#
@@ -28,9 +39,9 @@ Configuration MSFT_SqlServerEndpoint_Add_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost
+    node $AllNodes.NodeName
     {
-        SqlServerEndpoint Integration_Test
+        SqlServerEndpoint 'Integration_Test'
         {
             Ensure               = 'Present'
 
@@ -53,9 +64,9 @@ Configuration MSFT_SqlServerEndpoint_Remove_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost
+    node $AllNodes.NodeName
     {
-        SqlServerEndpoint Integration_Test
+        SqlServerEndpoint 'Integration_Test'
         {
             Ensure               = 'Absent'
 
