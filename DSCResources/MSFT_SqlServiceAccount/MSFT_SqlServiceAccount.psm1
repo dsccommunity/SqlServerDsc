@@ -74,11 +74,13 @@ function Get-TargetResource
     # Replace a domain of '.' with the value for $ServerName
     $serviceAccountName = $serviceObject.ServiceAccount -ireplace '^([\.])\\(.*)$', "$ServerName\`$2"
 
+    $serviceType = ConvertTo-ResourceServiceType -ServiceType $serviceObject.Type
+
     # Return a hash table with the service information
     return @{
         ServerName         = $ServerName
         InstanceName       = $InstanceName
-        ServiceType        = $serviceObject.Type
+        ServiceType        = $serviceType
         ServiceAccountName = $serviceAccountName
     }
 }
@@ -271,7 +273,7 @@ function Set-TargetResource
     .PARAMETER ServiceType
         Type of service to be managed. Must be one of the following:
         DatabaseEngine, SQLServerAgent, Search, IntegrationServices, AnalysisServices, ReportingServices, SQLServerBrowser, NotificationServices.
-    
+
     .PARAMETER VersionNumber
         Version number of IntegrationServices.
 
@@ -306,7 +308,7 @@ function Get-ServiceObject
     if (($ServiceType -eq 'IntegrationServices') -and ([String]::IsNullOrEmpty($VersionNumber)))
     {
         $errorMessage = $script:localizedData.MissingParameter -f $ServiceType
-        New-InvalidArgumentException -Message $errorMessage -ArgumentName 'VersionNumber'        
+        New-InvalidArgumentException -Message $errorMessage -ArgumentName 'VersionNumber'
     }
 
     # Load the SMO libraries
@@ -403,6 +405,89 @@ function ConvertTo-ManagedServiceType
     }
 
     return $serviceTypeValue -as [Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType]
+}
+
+<#
+    .SYNOPSIS
+        Converts from the string value, that was returned from the type
+        Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType, to the
+        appropriate project's standard SQL Service type string values.
+
+    .PARAMETER ServiceType
+        The string value of the Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType.
+        Must be one of the following:
+        SqlServer, SqlAgent, Search, SqlServerIntegrationService, AnalysisServer,
+        ReportServer, SqlBrowser, NotificationServer.
+
+    .NOTES
+        If an unknown type is passed in parameter ServiceType, the same type will
+        be returned.
+
+    .EXAMPLE
+        ConvertTo-ResourceServiceType -ServiceType 'SqlServer'
+#>
+function ConvertTo-ResourceServiceType
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty]
+        [System.String]
+        $ServiceType
+    )
+
+    # Map the project-specific ServiceType to a valid value from the ManagedServiceType enumeration
+    switch ($ServiceType)
+    {
+        'SqlServer'
+        {
+            $serviceTypeValue = 'DatabaseEngine'
+        }
+
+        'SqlAgent'
+        {
+            $serviceTypeValue = 'SQLServerAgent'
+        }
+
+        'Search'
+        {
+            $serviceTypeValue = 'Search'
+        }
+
+        'SqlServerIntegrationService'
+        {
+            $serviceTypeValue = 'IntegrationServices'
+        }
+
+        'AnalysisServer'
+        {
+            $serviceTypeValue = 'AnalysisServices'
+        }
+
+        'ReportServer'
+        {
+            $serviceTypeValue = 'ReportingServices'
+        }
+
+        'SqlBrowser'
+        {
+            $serviceTypeValue = 'SQLServerBrowser'
+        }
+
+        'NotificationServer'
+        {
+            $serviceTypeValue = 'NotificationServices'
+        }
+
+        default
+        {
+            $serviceTypeValue = $ServiceType
+        }
+    }
+
+    return $serviceTypeValue
 }
 
 <#
