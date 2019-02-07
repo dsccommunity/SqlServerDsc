@@ -86,7 +86,6 @@ else
     }
 }
 
-
 <#
     Creating all the credential objects to save some repeating code.
 #>
