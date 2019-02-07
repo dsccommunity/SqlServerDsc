@@ -114,7 +114,7 @@ function Get-TargetResource
 
     .EXAMPLE
         Test-TargetResource -ServerName $env:COMPUTERNAME -InstanceName MSSQLSERVER -ServiceType DatabaseEngine -ServiceAccount $account
-        Test-TargetResource -ServerName $env:COMPUTERNAME -InstanceName MSSQLSERVER -SerticeType IntegrationServices -ServiceAccount $account -VersionNumber 130
+        Test-TargetResource -ServerName $env:COMPUTERNAME -InstanceName MSSQLSERVER -ServiceType IntegrationServices -ServiceAccount $account -VersionNumber 130
 
 #>
 function Test-TargetResource
