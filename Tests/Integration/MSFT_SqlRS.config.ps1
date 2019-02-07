@@ -78,7 +78,7 @@ Configuration MSFT_SqlRS_CreateDependencies_Config
         User 'CreateReportingServicesServiceAccount'
         {
             Ensure   = 'Present'
-            UserName = $Node.Service_UserName
+            UserName = Split-Path -Path $Node.Service_UserName -Leaf
             Password = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.Service_UserName, (ConvertTo-SecureString -String $Node.Service_Password -AsPlainText -Force))

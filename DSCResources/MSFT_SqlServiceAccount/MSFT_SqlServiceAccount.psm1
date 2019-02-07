@@ -433,7 +433,6 @@ function ConvertTo-ResourceServiceType
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty]
         [System.String]
         $ServiceType
     )
