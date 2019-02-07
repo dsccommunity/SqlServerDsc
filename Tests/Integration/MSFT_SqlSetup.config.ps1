@@ -97,8 +97,8 @@ $SqlInstallCredential = New-Object `
 
 $SqlAdministratorCredential = New-Object `
     -TypeName System.Management.Automation.PSCredential `
-    -ArgumentList @($ConfigurationData.AllNodes.SqlAdminAccountUserName,
-        (ConvertTo-SecureString -String $ConfigurationData.AllNodes.SqlAdminAccountPassword -AsPlainText -Force))
+    -ArgumentList @($ConfigurationData.AllNodes.SqlAdministratorAccountUserName,
+        (ConvertTo-SecureString -String $ConfigurationData.AllNodes.SqlAdministratorAccountPassword -AsPlainText -Force))
 
 $SqlServicePrimaryCredential = New-Object `
     -TypeName System.Management.Automation.PSCredential `
