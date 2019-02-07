@@ -59,11 +59,6 @@ Configuration MSFT_SqlRS_CreateDependencies_Config
     Import-DscResource -ModuleName 'StorageDsc'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    $reportingServicesServiceCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @(
-                    $Node.Service_UserName, (ConvertTo-SecureString -String $Node.Service_Password -AsPlainText -Force))
-
     node $AllNodes.NodeName
     {
         MountImage 'MountIsoMedia'
@@ -83,8 +78,10 @@ Configuration MSFT_SqlRS_CreateDependencies_Config
         User 'CreateReportingServicesServiceAccount'
         {
             Ensure   = 'Present'
-            UserName = Split-Path -Path $reportingServicesServiceCredential.UserName -Leaf
-            Password = $reportingServicesServiceCredential
+            UserName = $Node.Service_UserName
+            Password = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Service_UserName, (ConvertTo-SecureString -String $Node.Service_Password -AsPlainText -Force))
         }
 
         WindowsFeature 'NetFramework45'
@@ -99,12 +96,14 @@ Configuration MSFT_SqlRS_CreateDependencies_Config
             Features              = $Node.Features
             SourcePath            = "$($Node.DriveLetter):\"
             BrowserSvcStartupType = 'Automatic'
-            RSSvcAccount          = $reportingServicesServiceCredential
             InstallSharedDir      = $Node.InstallSharedDir
             InstallSharedWOWDir   = $Node.InstallSharedWOWDir
             UpdateEnabled         = $Node.UpdateEnabled
             SuppressReboot        = $Node.SuppressReboot
             ForceReboot           = $Node.ForceReboot
+            RSSvcAccount          = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Service_UserName, (ConvertTo-SecureString -String $Node.Service_Password -AsPlainText -Force))
 
             DependsOn             = @(
                 '[WaitForVolume]WaitForMountOfIsoMedia'
