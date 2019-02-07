@@ -446,6 +446,74 @@ try
             }
         }
 
+        Describe 'MSFT_SqlServerServiceAccount\ConvertTo-ResourceServiceType' -Tag 'Helper' {
+            Context 'Translating service types' {
+                $testCases = @(
+                    @{
+                        ServiceType  = 'SqlServer'
+                        ExpectedType = 'DatabaseEngine'
+                    }
+
+                    @{
+                        ServiceType  = 'SqlAgent'
+                        ExpectedType = 'SQLServerAgent'
+                    }
+
+                    @{
+                        ServiceType  = 'Search'
+                        ExpectedType = 'Search'
+                    }
+
+                    @{
+                        ServiceType  = 'SqlServerIntegrationService'
+                        ExpectedType = 'IntegrationServices'
+                    }
+
+                    @{
+                        ServiceType  = 'AnalysisServer'
+                        ExpectedType = 'AnalysisServices'
+                    }
+
+                    @{
+                        ServiceType  = 'ReportServer'
+                        ExpectedType = 'ReportingServices'
+                    }
+
+                    @{
+                        ServiceType  = 'SqlBrowser'
+                        ExpectedType = 'SQLServerBrowser'
+                    }
+
+                    @{
+                        ServiceType  = 'NotificationServer'
+                        ExpectedType = 'NotificationServices'
+                    }
+
+                    @{
+                        ServiceType  = 'UnknownTypeShouldReturnTheSame'
+                        ExpectedType = 'UnknownTypeShouldReturnTheSame'
+                    }
+                )
+
+                It 'Should properly map <ServiceType> to resource type <ExpectedType>' -TestCases $testCases {
+                    param
+                    (
+                        [System.String]
+                        $ServiceType,
+
+                        [System.String]
+                        $ExpectedType
+                    )
+
+                    # Get the ManagedServiceType
+                    $managedServiceType = ConvertTo-ResourceServiceType -ServiceType $ServiceType
+
+                    $managedServiceType | Should -BeOfType [System.String]
+                    $managedServiceType | Should -Be $ExpectedType
+                }
+            }
+        }
+
         Describe 'MSFT_SqlServerServiceAccount\Get-SqlServiceName' -Tag 'Helper' {
             BeforeAll {
                 Mock @mockGetChildItemParameters
@@ -711,7 +779,7 @@ try
                     # Validate the hashtable returned
                     $testServiceInformation.ServerName | Should -Be $mockSqlServer
                     $testServiceInformation.InstanceName | Should -Be $mockDefaultInstanceName
-                    $testServiceInformation.ServiceType | Should -Be 'SqlServer'
+                    $testServiceInformation.ServiceType | Should -Be 'DatabaseEngine'
                     $testServiceInformation.ServiceAccountName | Should -Be $mockDefaultServiceAccountName
 
                     # Ensure mocks were properly used
@@ -758,7 +826,7 @@ try
                     # Validate the hashtable returned
                     $testServiceInformation.ServerName | Should -Be $mockSqlServer
                     $testServiceInformation.InstanceName | Should -Be $mockNamedInstance
-                    $testServiceInformation.ServiceType | Should -Be 'SqlServer'
+                    $testServiceInformation.ServiceType | Should -Be 'DatabaseEngine'
                     $testServiceInformation.ServiceAccountName | Should -Be $mockDesiredServiceAccountName
 
                     # Ensure mocks were properly used
