@@ -107,7 +107,7 @@ try
 
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.DatabaseServerName | Should -Be $ConfigurationData.AllNodes.DatabaseServerName
-                $resourceCurrentState.DatabaseInstanceName | Should -Be $ConfigurationData.AllNodes.DatabaseServerName
+                $resourceCurrentState.DatabaseInstanceName | Should -Be $ConfigurationData.AllNodes.DatabaseInstanceName
                 $resourceCurrentState.IsInitialized | Should -Be $true
                 $resourceCurrentState.UseSsl | Should -Be $false
             }

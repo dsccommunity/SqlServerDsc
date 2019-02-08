@@ -209,7 +209,7 @@ try
                 $resourceCurrentState.ASSvcAccountUsername       | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.AsSvcStartupType           | Should -Be 'Automatic'
                 $resourceCurrentState.ASSysAdminAccounts         | Should -Be @(
-                    $mockSqlAdminAccountUserName,
+                    $ConfigurationData.AllNodes.SqlAdministratorAccountUserName,
                     "NT SERVICE\SSASTELEMETRY`$$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)"
                 )
                 $resourceCurrentState.BrowserSvcStartupType      | Should -BeNullOrEmpty
@@ -243,8 +243,8 @@ try
                 $resourceCurrentState.SQLSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.SqlSvcStartupType          | Should -Be 'Automatic'
                 $resourceCurrentState.SQLSysAdminAccounts        | Should -Be @(
-                    $mockSqlAdminAccountUserName,
-                    $mockSqlInstallAccountUserName,
+                    $ConfigurationData.AllNodes.SqlAdministratorAccountUserName,
+                    $ConfigurationData.AllNodes.SqlInstallAccountUserName,
                     "NT SERVICE\MSSQL`$$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)",
                     "NT SERVICE\SQLAgent`$$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)",
                     'NT SERVICE\SQLWriter',
@@ -385,8 +385,8 @@ try
                 $resourceCurrentState.SQLSvcAccount              | Should -BeNullOrEmpty
                 $resourceCurrentState.SQLSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.SQLSysAdminAccounts        | Should -Be @(
-                    $mockSqlAdminAccountUserName,
-                    $mockSqlInstallAccountUserName,
+                    $ConfigurationData.AllNodes.SqlAdministratorAccountUserName,
+                    $ConfigurationData.AllNodes.SqlInstallAccountUserName,
                     "NT SERVICE\$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)",
                     "NT SERVICE\SQLSERVERAGENT",
                     'NT SERVICE\SQLWriter',
@@ -492,7 +492,7 @@ try
                 $resourceCurrentState.ASSvcAccount               | Should -BeNullOrEmpty
                 $resourceCurrentState.ASSvcAccountUsername       | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.ASSysAdminAccounts         | Should -Be @(
-                    $mockSqlAdminAccountUserName,
+                    $ConfigurationData.AllNodes.SqlAdministratorAccountUserName,
                     "NT SERVICE\SSASTELEMETRY`$$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)"
                 )
                 $resourceCurrentState.BrowserSvcStartupType      | Should -BeNullOrEmpty
