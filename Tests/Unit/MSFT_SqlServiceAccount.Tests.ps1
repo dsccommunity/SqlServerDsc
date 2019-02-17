@@ -15,8 +15,8 @@ if (Test-SkipContinuousIntegrationTask -Type 'Unit')
     return
 }
 
-$script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceName = 'MSFT_SqlServiceAccount'
+$script:dscModuleName = 'SqlServerDsc'
+$script:dscResourceName = 'MSFT_SqlServiceAccount'
 
 #region HEADER
 
@@ -31,8 +31,8 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
 
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Unit
 
 #endregion HEADER
@@ -53,7 +53,7 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope $script:DSCResourceName {
+    InModuleScope $script:dscResourceName {
 
         $mockSqlServer = 'TestServer'
         $mockDefaultInstanceName = 'MSSQLSERVER'
@@ -446,6 +446,74 @@ try
             }
         }
 
+        Describe 'MSFT_SqlServerServiceAccount\ConvertTo-ResourceServiceType' -Tag 'Helper' {
+            Context 'Translating service types' {
+                $testCases = @(
+                    @{
+                        ServiceType  = 'SqlServer'
+                        ExpectedType = 'DatabaseEngine'
+                    }
+
+                    @{
+                        ServiceType  = 'SqlAgent'
+                        ExpectedType = 'SQLServerAgent'
+                    }
+
+                    @{
+                        ServiceType  = 'Search'
+                        ExpectedType = 'Search'
+                    }
+
+                    @{
+                        ServiceType  = 'SqlServerIntegrationService'
+                        ExpectedType = 'IntegrationServices'
+                    }
+
+                    @{
+                        ServiceType  = 'AnalysisServer'
+                        ExpectedType = 'AnalysisServices'
+                    }
+
+                    @{
+                        ServiceType  = 'ReportServer'
+                        ExpectedType = 'ReportingServices'
+                    }
+
+                    @{
+                        ServiceType  = 'SqlBrowser'
+                        ExpectedType = 'SQLServerBrowser'
+                    }
+
+                    @{
+                        ServiceType  = 'NotificationServer'
+                        ExpectedType = 'NotificationServices'
+                    }
+
+                    @{
+                        ServiceType  = 'UnknownTypeShouldReturnTheSame'
+                        ExpectedType = 'UnknownTypeShouldReturnTheSame'
+                    }
+                )
+
+                It 'Should properly map <ServiceType> to resource type <ExpectedType>' -TestCases $testCases {
+                    param
+                    (
+                        [System.String]
+                        $ServiceType,
+
+                        [System.String]
+                        $ExpectedType
+                    )
+
+                    # Get the ManagedServiceType
+                    $managedServiceType = ConvertTo-ResourceServiceType -ServiceType $ServiceType
+
+                    $managedServiceType | Should -BeOfType [System.String]
+                    $managedServiceType | Should -Be $ExpectedType
+                }
+            }
+        }
+
         Describe 'MSFT_SqlServerServiceAccount\Get-SqlServiceName' -Tag 'Helper' {
             BeforeAll {
                 Mock @mockGetChildItemParameters
@@ -711,7 +779,7 @@ try
                     # Validate the hashtable returned
                     $testServiceInformation.ServerName | Should -Be $mockSqlServer
                     $testServiceInformation.InstanceName | Should -Be $mockDefaultInstanceName
-                    $testServiceInformation.ServiceType | Should -Be 'SqlServer'
+                    $testServiceInformation.ServiceType | Should -Be 'DatabaseEngine'
                     $testServiceInformation.ServiceAccountName | Should -Be $mockDefaultServiceAccountName
 
                     # Ensure mocks were properly used
@@ -758,7 +826,7 @@ try
                     # Validate the hashtable returned
                     $testServiceInformation.ServerName | Should -Be $mockSqlServer
                     $testServiceInformation.InstanceName | Should -Be $mockNamedInstance
-                    $testServiceInformation.ServiceType | Should -Be 'SqlServer'
+                    $testServiceInformation.ServiceType | Should -Be 'DatabaseEngine'
                     $testServiceInformation.ServiceAccountName | Should -Be $mockDesiredServiceAccountName
 
                     # Ensure mocks were properly used

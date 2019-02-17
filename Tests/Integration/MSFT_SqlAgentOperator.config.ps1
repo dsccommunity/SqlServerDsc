@@ -1,31 +1,48 @@
-$ConfigurationData = @{
-    AllNodes = @(
-        @{
-            NodeName        = 'localhost'
-            ServerName      = $env:COMPUTERNAME
-            InstanceName    = 'DSCSQL2016'
+#region HEADER
+# Integration Test Config Template Version: 1.2.0
+#endregion
 
-            Name            = 'MyOperator'
-            EmailAddress    = 'MyEmail@company.local'
+$configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
+if (Test-Path -Path $configFile)
+{
+    <#
+        Allows reading the configuration data from a JSON file,
+        for real testing scenarios outside of the CI.
+    #>
+    $ConfigurationData = Get-Content -Path $configFile | ConvertFrom-Json
+}
+else
+{
+    $ConfigurationData = @{
+        AllNodes = @(
+            @{
+                NodeName        = 'localhost'
 
-            CertificateFile = $env:DscPublicCertificatePath
-        }
-    )
+                UserName        = "$env:COMPUTERNAME\SqlInstall"
+                Password        = 'P@ssw0rd1'
+
+                ServerName      = $env:COMPUTERNAME
+                InstanceName    = 'DSCSQL2016'
+
+                Name            = 'MyOperator'
+                EmailAddress    = 'MyEmail@company.local'
+
+                CertificateFile = $env:DscPublicCertificatePath
+            }
+        )
+    }
 }
 
+<#
+    .SYNOPSIS
+        Adds a SQL Agent operator.
+#>
 Configuration MSFT_SqlAgentOperator_Add_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlAgentOperator 'Integration_Test'
         {
             Ensure               = 'Present'
@@ -34,24 +51,23 @@ Configuration MSFT_SqlAgentOperator_Add_Config
             Name                 = $Node.Name
             EmailAddress         = $Node.EmailAddress
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
 
+<#
+    .SYNOPSIS
+        Removes a SQL Agent operator.
+#>
 Configuration MSFT_SqlAgentOperator_Remove_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlAgentOperator 'Integration_Test'
         {
             Ensure               = 'Absent'
@@ -60,7 +76,9 @@ Configuration MSFT_SqlAgentOperator_Remove_Config
             Name                 = $Node.Name
             EmailAddress         = $Node.EmailAddress
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }

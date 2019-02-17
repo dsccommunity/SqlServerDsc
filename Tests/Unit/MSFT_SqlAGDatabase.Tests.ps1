@@ -15,8 +15,8 @@ if (Test-SkipContinuousIntegrationTask -Type 'Unit')
     return
 }
 
-$script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceName = 'MSFT_SqlAGDatabase'
+$script:dscModuleName = 'SqlServerDsc'
+$script:dscResourceName = 'MSFT_SqlAGDatabase'
 
 #region HEADER
 
@@ -36,8 +36,8 @@ Import-Module -Name ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath
 Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SMO.cs )
 
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Unit
 
 #endregion HEADER
@@ -58,7 +58,7 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope $script:DSCResourceName {
+    InModuleScope $script:dscResourceName {
 
         #region Parameter Mocks
 

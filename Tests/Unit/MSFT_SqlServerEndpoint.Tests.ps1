@@ -15,8 +15,8 @@ if (Test-SkipContinuousIntegrationTask -Type 'Unit')
     return
 }
 
-$script:DSCModuleName      = 'SqlServerDsc'
-$script:DSCResourceName    = 'MSFT_SqlServerEndpoint'
+$script:dscModuleName      = 'SqlServerDsc'
+$script:dscResourceName    = 'MSFT_SqlServerEndpoint'
 
 #region HEADER
 
@@ -31,8 +31,8 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Unit
 
 #endregion HEADER
@@ -51,7 +51,7 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope $script:DSCResourceName {
+    InModuleScope $script:dscResourceName {
         $mockServerName = 'localhost'
         $mockInstanceName = 'INSTANCE1'
         $mockPrincipal = 'COMPANY\SqlServiceAcct'

@@ -23,6 +23,7 @@
     separate build job.
   - Updated the appveyor.yml to have the correct build step, and also
     correct run the build step only in one of the jobs.
+  - Update integration tests to use the new integration test template.
   - Added SqlAgentOperator resource.
 - Changes to SqlServiceAccount
   - Fixed Get-ServiceObject when searching for Integration Services service.
@@ -56,6 +57,13 @@
   - Add integration tests
     ([issue #744](https://github.com/PowerShell/SqlServerDsc/issues/744)).
     [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
+- Changes to SqlServiceAccount
+  - Now the correct service type string value is returned by the function
+    `Get-TargetResource`. Previously one value was passed in as a parameter
+    (e.g. `DatabaseEngine`), but a different string value as returned
+    (e.g. `SqlServer`). Now `Get-TargetResource` return the same values
+    that can be passed as values in the parameter `ServiceType`
+    ([issue #981](https://github.com/PowerShell/SqlServerDsc/issues/981)).
 
 ## 12.2.0.0
 

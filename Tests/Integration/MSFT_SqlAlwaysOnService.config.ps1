@@ -1,52 +1,79 @@
-<#
-    Get all adapters with static IP addresses, all of which should be ignored
-    when creating the cluster.
-#>
+#region HEADER
+# Integration Test Config Template Version: 1.2.0
+#endregion
 
-$ignoreAdapterIpAddress = Get-NetAdapter |
-    Get-NetIPInterface |
-    Where-Object -FilterScript {
-    $_.AddressFamily -eq 'IPv4' `
-        -and $_.Dhcp -eq 'Disabled'
-} | Get-NetIPAddress
-
-$ignoreIpNetwork = @()
-foreach ($adapterIpAddress in $ignoreAdapterIpAddress)
+$configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
+if (Test-Path -Path $configFile)
 {
     <#
-        Get-NetIPAddressNetwork is in CommonTestHelper.psm1 which is imported
-        withing the integration test before this file is dot-sourced.
+        Allows reading the configuration data from a JSON file,
+        for real testing scenarios outside of the CI.
     #>
-    $ipNetwork = (Get-NetIPAddressNetwork -IPAddress $adapterIpAddress.IPAddress -PrefixLength $adapterIpAddress.PrefixLength).NetworkAddress
-    $ignoreIpNetwork += ('{0}/{1}' -f $ipNetwork, $adapterIpAddress.PrefixLength)
+    $ConfigurationData = Get-Content -Path $configFile | ConvertFrom-Json
+}
+else
+{
+    <#
+        Get all adapters with static IP addresses, all of which should be ignored
+        when creating the cluster.
+    #>
+    $ignoreAdapterIpAddress = Get-NetAdapter |
+        Get-NetIPInterface |
+        Where-Object -FilterScript {
+        $_.AddressFamily -eq 'IPv4' `
+            -and $_.Dhcp -eq 'Disabled'
+    } | Get-NetIPAddress
+
+    $ignoreIpNetwork = @()
+    foreach ($adapterIpAddress in $ignoreAdapterIpAddress)
+    {
+        <#
+            Get-NetIPAddressNetwork is in CommonTestHelper.psm1 which is imported
+            withing the integration test before this file is dot-sourced.
+        #>
+        $ipNetwork = (Get-NetIPAddressNetwork -IPAddress $adapterIpAddress.IPAddress -PrefixLength $adapterIpAddress.PrefixLength).NetworkAddress
+        $ignoreIpNetwork += ('{0}/{1}' -f $ipNetwork, $adapterIpAddress.PrefixLength)
+    }
+
+    $ConfigurationData = @{
+        AllNodes = @(
+            @{
+                NodeName                 = 'localhost'
+                ComputerName             = $env:COMPUTERNAME
+                InstanceName             = 'DSCSQL2016'
+                RestartTimeout           = 120
+
+                UserName                 = "$env:COMPUTERNAME\SqlInstall"
+                Password                 = 'P@ssw0rd1'
+
+                LoopbackAdapterName      = 'ClusterNetwork'
+                LoopbackAdapterIpAddress = '192.168.40.10'
+                LoopbackAdapterGateway   = '192.168.40.254'
+
+                ClusterStaticIpAddress   = '192.168.40.11'
+                IgnoreNetwork            = $ignoreIpNetwork
+
+                CertificateFile          = $env:DscPublicCertificatePath
+            }
+        )
+    }
 }
 
-$ConfigurationData = @{
-    AllNodes = @(
-        @{
-            NodeName                 = 'localhost'
-            ComputerName             = $env:COMPUTERNAME
-            InstanceName             = 'DSCSQL2016'
-            RestartTimeout           = 120
+<#
+    .SYNOPSIS
+        Prerequisites for AlwaysOn.
 
-            LoopbackAdapterName      = 'ClusterNetwork'
-            LoopbackAdapterIpAddress = '192.168.40.10'
-            LoopbackAdapterGateway   = '192.168.40.254'
-
-            ClusterStaticIpAddress   = '192.168.40.11'
-            IgnoreNetwork            = $ignoreIpNetwork
-
-            CertificateFile          = $env:DscPublicCertificatePath
-        }
-    )
-}
-
+    .NOTES
+        Configures the loopback adapter (that was installed prior in the
+        integration tests), and then configures Failover Clustering as a
+        detached cluster.
+#>
 Configuration MSFT_SqlAlwaysOnService_CreateDependencies_Config
 {
     Import-DscResource -ModuleName 'PSDscResources'
     Import-DscResource -ModuleName 'NetworkingDsc'
 
-    node localhost
+    node $AllNodes.NodeName
     {
         WindowsFeature 'AddFeatureFailoverClustering'
         {
@@ -60,7 +87,7 @@ Configuration MSFT_SqlAlwaysOnService_CreateDependencies_Config
             Name   = 'RSAT-Clustering-PowerShell'
         }
 
-        IPAddress LoopbackAdapterIPv4Address
+        IPAddress 'LoopbackAdapterIPv4Address'
         {
             IPAddress      = $Node.LoopbackAdapterIpAddress
             InterfaceAlias = $Node.LoopbackAdapterName
@@ -72,7 +99,7 @@ Configuration MSFT_SqlAlwaysOnService_CreateDependencies_Config
             loopback adapter as clustered network.
             This will be removed directly after the cluster has been created.
         #>
-        DefaultGatewayAddress LoopbackAdapterIPv4DefaultGateway
+        DefaultGatewayAddress 'LoopbackAdapterIPv4DefaultGateway'
         {
             Address        = $Node.LoopbackAdapterGateway
             InterfaceAlias = $Node.LoopbackAdapterName
@@ -164,16 +191,21 @@ Configuration MSFT_SqlAlwaysOnService_CreateDependencies_Config
     }
 }
 
+<#
+    .SYNOPSIS
+        Clean up settings on the loopback adapter so it is not interfering
+        with the other integration tests.
+#>
 Configuration MSFT_SqlAlwaysOnService_CleanupDependencies_Config
 {
     Import-DscResource -ModuleName 'NetworkingDsc'
 
-    node localhost
+    node $AllNodes.NodeName
     {
         <#
             Removing the default gateway from the loopback adapter.
         #>
-        DefaultGatewayAddress LoopbackAdapterIPv4DefaultGateway
+        DefaultGatewayAddress 'LoopbackAdapterIPv4DefaultGateway'
         {
             InterfaceAlias = $Node.LoopbackAdapterName
             AddressFamily  = 'IPv4'
@@ -181,19 +213,16 @@ Configuration MSFT_SqlAlwaysOnService_CleanupDependencies_Config
     }
 }
 
+<#
+    .SYNOPSIS
+        Enables AlwaysOn.
+#>
 Configuration MSFT_SqlAlwaysOnService_EnableAlwaysOn_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlAlwaysOnService 'Integration_Test'
         {
             Ensure               = 'Present'
@@ -201,24 +230,24 @@ Configuration MSFT_SqlAlwaysOnService_EnableAlwaysOn_Config
             InstanceName         = $Node.InstanceName
             RestartTimeout       = $Node.RestartTimeout
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+
         }
     }
 }
 
+<#
+    .SYNOPSIS
+        Disables AlwaysOn.
+#>
 Configuration MSFT_SqlAlwaysOnService_DisableAlwaysOn_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlAlwaysOnService 'Integration_Test'
         {
             Ensure               = 'Absent'
@@ -226,7 +255,9 @@ Configuration MSFT_SqlAlwaysOnService_DisableAlwaysOn_Config
             InstanceName         = $Node.InstanceName
             RestartTimeout       = $Node.RestartTimeout
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }

@@ -246,7 +246,7 @@ function New-SQLSelfSignedCertificate
 {
     $sqlPublicCertificatePath = Join-Path -Path $env:temp -ChildPath 'SqlPublicKey.cer'
     $sqlPrivateCertificatePath = Join-Path -Path $env:temp -ChildPath 'SqlPrivateKey.cer'
-    $sqlPriavteKeyPassword = ConvertTo-SecureString -String "1234" -Force -AsPlainText
+    $sqlPrivateKeyPassword = ConvertTo-SecureString -String "1234" -Force -AsPlainText
 
     $certificateSubject = $env:COMPUTERNAME
 
@@ -254,8 +254,8 @@ function New-SQLSelfSignedCertificate
         There are build workers still on Windows Server 2012 R2 so let's
         use the alternate method of New-SelfSignedCertificate.
     #>
-    Install-Module -Name PSPKI -Scope CurrentUser -Force
-    Import-Module -Name PSPKI
+    Install-Module -Name 'PSPKI' -Scope 'CurrentUser' -Force
+    Import-Module -Name 'PSPKI'
 
     $newSelfSignedCertificateExParameters = @{
         Subject            = "CN=$certificateSubject"
@@ -264,7 +264,7 @@ function New-SQLSelfSignedCertificate
         SAN                = "dns:$certificateSubject"
         FriendlyName       = 'Sql Encryption certificate'
         Path               = $sqlPrivateCertificatePath
-        Password           = $sqlPriavteKeyPassword
+        Password           = $sqlPrivateKeyPassword
         Exportable         = $true
         KeyLength          = 2048
         ProviderName       = 'Microsoft Enhanced Cryptographic Provider v1.0'

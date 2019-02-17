@@ -15,8 +15,8 @@ if (Test-SkipContinuousIntegrationTask -Type 'Unit')
     return
 }
 
-$script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceName = 'MSFT_SqlServerConfiguration'
+$script:dscModuleName = 'SqlServerDsc'
+$script:dscResourceName = 'MSFT_SqlServerConfiguration'
 
 # Unit Test Template Version: 1.1.0
 [System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
@@ -28,8 +28,8 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Unit
 
 $defaultState = @{
@@ -79,7 +79,7 @@ $invalidOption = @{
 
 try
 {
-    Describe "$($script:DSCResourceName)\Get-TargetResource" {
+    Describe "$($script:dscResourceName)\Get-TargetResource" {
         Context 'The system is not in the desired state' {
             Mock -CommandName Connect-SQL -MockWith {
                 $mock = New-Object -TypeName PSObject -Property @{
@@ -97,7 +97,7 @@ try
                 $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
 
                 return $mock
-            } -ModuleName $script:DSCResourceName -Verifiable
+            } -ModuleName $script:dscResourceName -Verifiable
 
             # Get the current state.
             $result = Get-TargetResource @desiredState
@@ -112,7 +112,7 @@ try
             }
 
             It 'Should call Connect-SQL mock when getting the current state' {
-                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope Context -Times 1
+                Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Connect-SQL -Scope Context -Times 1
             }
         }
 
@@ -133,7 +133,7 @@ try
                 $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
 
                 return $mock
-            } -ModuleName $script:DSCResourceName -Verifiable
+            } -ModuleName $script:dscResourceName -Verifiable
 
             # Get the current state.
             $result = Get-TargetResource @desiredState
@@ -148,7 +148,7 @@ try
             }
 
             It 'Should call Connect-SQL mock when getting the current state' {
-                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope Context -Times 1
+                Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Connect-SQL -Scope Context -Times 1
             }
         }
 
@@ -169,7 +169,7 @@ try
                 $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
 
                 return $mock
-            } -ModuleName $script:DSCResourceName -Verifiable
+            } -ModuleName $script:dscResourceName -Verifiable
 
             It 'Should throw the correct error message' {
                 $errorMessage = ($script:localizedData.ConfigurationOptionNotFound -f $invalidOption.OptionName)
@@ -178,7 +178,7 @@ try
         }
     }
 
-    Describe "$($script:DSCResourceName)\Test-TargetResource" {
+    Describe "$($script:dscResourceName)\Test-TargetResource" {
         Mock -CommandName Connect-SQL -MockWith {
             $mock = New-Object -TypeName PSObject -Property @{
                 Configuration = @{
@@ -195,7 +195,7 @@ try
             $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
 
             return $mock
-        } -ModuleName $script:DSCResourceName -Verifiable
+        } -ModuleName $script:dscResourceName -Verifiable
 
         It 'Should cause Test-TargetResource to return false when not in the desired state' {
             Test-TargetResource @defaultState | Should -Be $false
@@ -206,8 +206,8 @@ try
         }
     }
 
-    Describe "$($script:DSCResourceName)\Set-TargetResource" {
-        Mock -CommandName New-TerminatingError -ModuleName $script:DSCResourceName
+    Describe "$($script:dscResourceName)\Set-TargetResource" {
+        Mock -CommandName New-TerminatingError -ModuleName $script:dscResourceName
         Mock -CommandName Connect-SQL -MockWith {
             $mock = New-Object -TypeName PSObject -Property @{
                 Configuration = @{
@@ -225,7 +225,7 @@ try
             $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
 
             return $mock
-        } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { $ServerName -eq 'CLU01' }
+        } -ModuleName $script:dscResourceName -Verifiable -ParameterFilter { $ServerName -eq 'CLU01' }
 
         Mock -CommandName Connect-SQL -MockWith {
             $mock = New-Object -TypeName PSObject -Property @{
@@ -244,31 +244,31 @@ try
             $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
 
             return $mock
-        } -ModuleName $script:DSCResourceName -Verifiable -ParameterFilter { $ServerName -eq 'CLU02' }
+        } -ModuleName $script:dscResourceName -Verifiable -ParameterFilter { $ServerName -eq 'CLU02' }
 
-        Mock -CommandName Restart-SqlService -ModuleName $script:DSCResourceName -Verifiable
-        Mock -CommandName Write-Warning -ModuleName $script:DSCResourceName -Verifiable
+        Mock -CommandName Restart-SqlService -ModuleName $script:dscResourceName -Verifiable
+        Mock -CommandName Write-Warning -ModuleName $script:dscResourceName -Verifiable
 
         Context 'Change the system to the desired state' {
             It 'Should not restart SQL for a dynamic option' {
                 Set-TargetResource @dynamicOption
-                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Restart-SqlService -Scope It -Times 0 -Exactly
+                Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Restart-SqlService -Scope It -Times 0 -Exactly
             }
 
             It 'Should restart SQL for a non-dynamic option' {
                 Set-TargetResource @desiredStateRestart
-                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Restart-SqlService -Scope It -Times 1 -Exactly
+                Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Restart-SqlService -Scope It -Times 1 -Exactly
             }
 
             It 'Should warn about restart when required, but not requested' {
                 Set-TargetResource @desiredState
 
-                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Write-Warning -Scope It -Times 1 -Exactly
-                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Restart-SqlService -Scope It -Times 0 -Exactly
+                Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Write-Warning -Scope It -Times 1 -Exactly
+                Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Restart-SqlService -Scope It -Times 0 -Exactly
             }
 
             It 'Should call Connect-SQL to get option values' {
-                Assert-MockCalled -ModuleName $script:DSCResourceName -CommandName Connect-SQL -Scope Context -Times 3
+                Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Connect-SQL -Scope Context -Times 3
             }
         }
 
@@ -289,7 +289,7 @@ try
                 $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
 
                 return $mock
-            } -ModuleName $script:DSCResourceName -Verifiable
+            } -ModuleName $script:dscResourceName -Verifiable
 
             It 'Should throw the correct error message' {
                 $errorMessage = ($script:localizedData.ConfigurationOptionNotFound -f $invalidOption.OptionName)

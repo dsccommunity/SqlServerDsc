@@ -1,17 +1,38 @@
-$ConfigurationData = @{
-    AllNodes = @(
-        @{
-            NodeName        = 'localhost'
-            ServerName      = $env:COMPUTERNAME
-            InstanceName    = 'DSCSQL2016'
-            Database1Name   = 'ScriptDatabase3'
-            Database2Name   = 'ScriptDatabase4'
+#region HEADER
+# Integration Test Config Template Version: 1.2.0
+#endregion
 
-            GetQuery        = @'
+$configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
+if (Test-Path -Path $configFile)
+{
+    <#
+        Allows reading the configuration data from a JSON file,
+        for real testing scenarios outside of the CI.
+    #>
+    $ConfigurationData = Get-Content -Path $configFile | ConvertFrom-Json
+}
+else
+{
+    $ConfigurationData = @{
+        AllNodes = @(
+            @{
+                NodeName        = 'localhost'
+
+                Admin_UserName    = "$env:COMPUTERNAME\SqlAdmin"
+                Admin_Password    = 'P@ssw0rd1'
+                SqlLogin_UserName = "DscAdmin1"
+                SqlLogin_Password = 'P@ssw0rd1'
+
+                ServerName      = $env:COMPUTERNAME
+                InstanceName    = 'DSCSQL2016'
+                Database1Name   = 'ScriptDatabase3'
+                Database2Name   = 'ScriptDatabase4'
+
+                GetQuery        = @'
 SELECT Name FROM sys.databases WHERE Name = '$(DatabaseName)' FOR JSON AUTO
 '@
 
-            TestQuery       = @'
+                TestQuery       = @'
 if (select count(name) from sys.databases where name = '$(DatabaseName)') = 0
 BEGIN
     RAISERROR ('Did not find database [$(DatabaseName)]', 16, 1)
@@ -22,28 +43,25 @@ BEGIN
 END
 '@
 
-            SetQuery        = @'
+                SetQuery        = @'
 CREATE DATABASE [$(DatabaseName)]
 '@
 
-            CertificateFile = $env:DscPublicCertificatePath
-        }
-    )
+                CertificateFile = $env:DscPublicCertificatePath
+            }
+        )
+    }
 }
 
+<#
+    .SYNOPSIS
+        Runs the SQL query as a Windows User.
+#>
 Configuration MSFT_SqlScriptQuery_RunSqlScriptQueryAsWindowsUser_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost
+    node $AllNodes.NodeName
     {
         SqlScriptQuery 'Integration_Test'
         {
@@ -51,29 +69,27 @@ Configuration MSFT_SqlScriptQuery_RunSqlScriptQueryAsWindowsUser_Config
             GetQuery             = $Node.GetQuery
             TestQuery            = $Node.TestQuery
             SetQuery             = $Node.SetQuery
+            QueryTimeout         = 30
             Variable             = @(
                 ('DatabaseName={0}' -f $Node.Database1Name)
             )
 
-            QueryTimeout         = 30
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_Username, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
     }
 }
 
+<#
+    .SYNOPSIS
+        Runs the SQL query as a SQL login.
+#>
 Configuration MSFT_SqlScriptQuery_RunSqlScriptQueryAsSqlUser_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $UserCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost
+    node $AllNodes.NodeName
     {
         SqlScriptQuery 'Integration_Test'
         {
@@ -81,11 +97,13 @@ Configuration MSFT_SqlScriptQuery_RunSqlScriptQueryAsSqlUser_Config
             GetQuery       = $Node.GetQuery
             TestQuery      = $Node.TestQuery
             SetQuery       = $Node.SetQuery
+            QueryTimeout   = 30
             Variable       = @(
                 ('DatabaseName={0}' -f $Node.Database2Name)
             )
-            QueryTimeout   = 30
-            Credential     = $UserCredential
+            Credential     = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.SqlLogin_Username, (ConvertTo-SecureString -String $Node.SqlLogin_Password -AsPlainText -Force))
         }
     }
 }

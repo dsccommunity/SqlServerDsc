@@ -9,57 +9,43 @@ if (Test-SkipContinuousIntegrationTask -Type 'Integration')
     return
 }
 
-$script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceFriendlyName = 'SqlRS'
-$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+$script:dscModuleName = 'SqlServerDsc'
+$script:dscResourceFriendlyName = 'SqlRS'
+$script:dscResourceName = "MSFT_$($script:dscResourceFriendlyName)"
 
 #region HEADER
-# Integration Test Template Version: 1.1.2
-[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+# Integration Test Template Version: 1.3.2
+[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))
+    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DscResource.Tests'))
 }
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Integration
-
 #endregion
 
-$mockSqlInstallAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-$mockSqlInstallAccountUserName = "$env:COMPUTERNAME\SqlInstall"
-$mockSqlInstallCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlInstallAccountUserName, $mockSqlInstallAccountPassword
-
-$mockReportingServicesServiceAccountPassword = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
-$mockReportingServicesServiceAccountUserName = "$env:COMPUTERNAME\svc-Reporting"
-$mockReportingServicesServiceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockReportingServicesServiceAccountUserName, $mockReportingServicesServiceAccountPassword
-
+# Using try/finally to always cleanup.
 try
 {
-    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
+    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $configFile
 
-    $mockInstanceName = $ConfigurationData.AllNodes.InstanceName
-    $mockDatabaseServerName = $ConfigurationData.AllNodes.DatabaseServerName
-    $mockDatabaseInstanceName = $ConfigurationData.AllNodes.DatabaseInstanceName
-
-    Describe "$($script:DSCResourceName)_Integration" {
+    Describe "$($script:dscResourceName)_Integration" {
         BeforeAll {
-            $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
+            $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
         }
 
-        $configurationName = "$($script:DSCResourceName)_CreateDependencies_Config"
+        $configurationName = "$($script:dscResourceName)_CreateDependencies_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlInstallCredential               = $mockSqlInstallCredential
-                        ReportingServicesServiceCredential = $mockReportingServicesServiceCredential
                         OutputPath                         = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData                  = $ConfigurationData
@@ -81,13 +67,12 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_InstallReportingServices_Config"
+        $configurationName = "$($script:dscResourceName)_InstallReportingServices_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlInstallCredential               = $mockSqlInstallCredential
                         OutputPath                         = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData                  = $ConfigurationData
@@ -116,20 +101,23 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.InstanceName | Should -Be $mockInstanceName
-                $resourceCurrentState.DatabaseServerName | Should -Be $mockDatabaseServerName
-                $resourceCurrentState.DatabaseInstanceName | Should -Be $mockDatabaseInstanceName
+                $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+                $resourceCurrentState.DatabaseServerName | Should -Be $ConfigurationData.AllNodes.DatabaseServerName
+                $resourceCurrentState.DatabaseInstanceName | Should -Be $ConfigurationData.AllNodes.DatabaseInstanceName
                 $resourceCurrentState.IsInitialized | Should -Be $true
                 $resourceCurrentState.UseSsl | Should -Be $false
             }
 
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
+            }
+
             It 'Should be able to access the ReportServer site without any error' {
-                $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $mockInstanceName
+                $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
 
                 try
                 {
@@ -151,7 +139,7 @@ try
             }
 
             It 'Should be able to access the Reports site without any error' {
-                $reportsUri = 'http://{0}/Reports_{1}' -f $env:COMPUTERNAME, $mockInstanceName
+                $reportsUri = 'http://{0}/Reports_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
 
                 try
                 {
@@ -173,13 +161,12 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_InstallReportingServices_ConfigureSsl_Config"
+        $configurationName = "$($script:dscResourceName)_InstallReportingServices_ConfigureSsl_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlInstallCredential               = $mockSqlInstallCredential
                         OutputPath                         = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData                  = $ConfigurationData
@@ -208,12 +195,15 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
                 $resourceCurrentState.UseSsl | Should -Be $true
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
             }
 
             <#
@@ -223,19 +213,18 @@ try
                 as this without testing for the correct error message on purpose.
             #>
             It 'Should not be able to access the ReportServer site and throw an error message' {
-                $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $mockInstanceName
+                $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
 
                 { Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials } | Should -Throw
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_InstallReportingServices_RestoreToNoSsl_Config"
+        $configurationName = "$($script:dscResourceName)_InstallReportingServices_RestoreToNoSsl_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlInstallCredential               = $mockSqlInstallCredential
                         OutputPath                         = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData                  = $ConfigurationData
@@ -264,16 +253,19 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
                 $resourceCurrentState.UseSsl | Should -Be $false
             }
 
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
+            }
+
             It 'Should be able to access the ReportServer site without any error' {
-                $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $mockInstanceName
+                $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
 
                 try
                 {
@@ -295,7 +287,7 @@ try
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_StopReportingServicesInstance_Config"
+        $configurationName = "$($script:dscResourceName)_StopReportingServicesInstance_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -321,14 +313,11 @@ try
                 } | Should -Not -Throw
             }
         }
-
     }
 }
 finally
 {
     #region FOOTER
-
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
-
     #endregion
 }

@@ -19,8 +19,8 @@ if (Test-SkipContinuousIntegrationTask -Type 'Unit')
     return
 }
 
-$script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceName = 'MSFT_SqlScriptQuery'
+$script:dscModuleName = 'SqlServerDsc'
+$script:dscResourceName = 'MSFT_SqlScriptQuery'
 
 #region HEADER
 
@@ -36,8 +36,8 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath 'SqlServerDscHelper.psm1')
 
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Unit
 
 #endregion HEADER
@@ -57,9 +57,9 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope $script:DSCResourceName {
+    InModuleScope $script:dscResourceName {
         InModuleScope 'SqlServerDscHelper' {
-            $script:DSCModuleName = 'SqlServerDsc'
+            $script:dscModuleName = 'SqlServerDsc'
             $resourceName = 'MSFT_SqlScriptQuery'
 
             $testParameters = @{

@@ -9,103 +9,43 @@ if (Test-SkipContinuousIntegrationTask -Type 'Integration')
     return
 }
 
-$script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceFriendlyName = 'SqlServerRole'
-$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+$script:dscModuleName = 'SqlServerDsc'
+$script:dscResourceFriendlyName = 'SqlServerRole'
+$script:dscResourceName = "MSFT_$($script:dscResourceFriendlyName)"
 
 #region HEADER
-# Integration Test Template Version: 1.1.2
-[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+# Integration Test Template Version: 1.3.2
+[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))
+    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DscResource.Tests'))
 }
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Integration
-
 #endregion
 
-$mockSqlAdminAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-$mockSqlAdminAccountUserName = "$env:COMPUTERNAME\SqlAdmin"
-$mockSqlAdminCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAdminAccountUserName, $mockSqlAdminAccountPassword
-
+# Using try/finally to always cleanup.
 try
 {
-    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
+    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $configFile
 
-    $mockRole1Name = $ConfigurationData.AllNodes.Role1Name
-    $mockRole2Name = $ConfigurationData.AllNodes.Role2Name
-    $mockRole3Name = $ConfigurationData.AllNodes.Role3Name
-    $mockUser1Name = $ConfigurationData.AllNodes.User1Name
-    $mockUser2Name = $ConfigurationData.AllNodes.User2Name
-    $mockUser4Name = $ConfigurationData.AllNodes.User4Name
-
-    Describe "$($script:DSCResourceName)_Integration" {
+    Describe "$($script:dscResourceName)_Integration" {
         BeforeAll {
-            $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
+            $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
         }
 
-        $configurationName = "$($script:DSCResourceName)_AddRole1_Config"
+        $configurationName = "$($script:dscResourceName)_AddRole1_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlAdministratorCredential = $mockSqlAdminCredential
-                        OutputPath                 = $TestDrive
-                        # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData          = $ConfigurationData
-                    }
-
-                    & $configurationName @configurationParameters
-
-                    $startDscConfigurationParameters = @{
-                        Path         = $TestDrive
-                        ComputerName = 'localhost'
-                        Wait         = $true
-                        Verbose      = $true
-                        Force        = $true
-                        ErrorAction  = 'Stop'
-                    }
-
-                    Start-DscConfiguration @startDscConfigurationParameters
-                } | Should -Not -Throw
-            }
-
-            It 'Should be able to call Get-DscConfiguration without throwing' {
-                {
-                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-                } | Should -Not -Throw
-            }
-
-            It 'Should have set the resource and all the parameters should match' {
-                $resourceCurrentState =  $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
-                }
-
-                $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.ServerRoleName | Should -Be $mockRole1Name
-                $resourceCurrentState.Members | Should -Be $mockUser4Name
-                $resourceCurrentState.MembersToInclude | Should -Be $mockUser4Name
-                $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
-            }
-        }
-
-        $configurationName = "$($script:DSCResourceName)_AddRole2_Config"
-
-        Context ('When using configuration {0}' -f $configurationName) {
-            It 'Should compile and apply the MOF without throwing' {
-                {
-                    $configurationParameters = @{
-                        SqlAdministratorCredential = $mockSqlAdminCredential
                         OutputPath                 = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData          = $ConfigurationData
@@ -134,26 +74,80 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
+
                 $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.ServerRoleName | Should -Be $mockRole2Name
+                $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role1Name
+                $resourceCurrentState.Members | Should -Be $ConfigurationData.AllNodes.User4Name
+                $resourceCurrentState.MembersToInclude | Should -Be $ConfigurationData.AllNodes.User4Name
+                $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
+            }
+        }
+
+        $configurationName = "$($script:dscResourceName)_AddRole2_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath                 = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData          = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                {
+                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                } | Should -Not -Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
+                }
+
+
+                $resourceCurrentState.Ensure | Should -Be 'Present'
+                $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role2Name
                 $resourceCurrentState.Members | Should -BeNullOrEmpty
                 $resourceCurrentState.MembersToInclude | Should -BeNullOrEmpty
                 $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
             }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
+            }
         }
 
-        $configurationName = "$($script:DSCResourceName)_AddRole3_Config"
+        $configurationName = "$($script:dscResourceName)_AddRole3_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlAdministratorCredential = $mockSqlAdminCredential
                         OutputPath                 = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData          = $ConfigurationData
@@ -182,29 +176,32 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
+
                 $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.ServerRoleName | Should -Be $mockRole3Name
+                $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role3Name
                 $resourceCurrentState.Members | Should -Be @(
-                    $mockUser1Name
-                    $mockUser2Name
+                    $ConfigurationData.AllNodes.User1Name
+                    $ConfigurationData.AllNodes.User2Name
                 )
                 $resourceCurrentState.MembersToInclude | Should -BeNullOrEmpty
                 $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
             }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
+            }
         }
 
-        $configurationName = "$($script:DSCResourceName)_Role1_ChangeMembers_Config"
+        $configurationName = "$($script:dscResourceName)_Role1_ChangeMembers_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlAdministratorCredential = $mockSqlAdminCredential
                         OutputPath                 = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData          = $ConfigurationData
@@ -233,29 +230,32 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
+
                 $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.ServerRoleName | Should -Be $mockRole1Name
+                $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role1Name
                 $resourceCurrentState.Members | Should -Be @(
-                    $mockUser1Name
-                    $mockUser2Name
+                    $ConfigurationData.AllNodes.User1Name
+                    $ConfigurationData.AllNodes.User2Name
                 )
                 $resourceCurrentState.MembersToInclude | Should -BeNullOrEmpty
                 $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
             }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
+            }
         }
 
-        $configurationName = "$($script:DSCResourceName)_Role2_AddMembers_Config"
+        $configurationName = "$($script:dscResourceName)_Role2_AddMembers_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlAdministratorCredential = $mockSqlAdminCredential
                         OutputPath                 = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData          = $ConfigurationData
@@ -284,34 +284,37 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
+
                 $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.ServerRoleName | Should -Be $mockRole2Name
+                $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role2Name
                 $resourceCurrentState.Members | Should -Be @(
-                    $mockUser1Name
-                    $mockUser2Name
-                    $mockUser4Name
+                    $ConfigurationData.AllNodes.User1Name
+                    $ConfigurationData.AllNodes.User2Name
+                    $ConfigurationData.AllNodes.User4Name
                 )
                 $resourceCurrentState.MembersToInclude | Should -Be @(
-                    $mockUser1Name
-                    $mockUser2Name
-                    $mockUser4Name
+                    $ConfigurationData.AllNodes.User1Name
+                    $ConfigurationData.AllNodes.User2Name
+                    $ConfigurationData.AllNodes.User4Name
                 )
                 $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
             }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
+            }
         }
 
-        $configurationName = "$($script:DSCResourceName)_Role2_RemoveMembers_Config"
+        $configurationName = "$($script:dscResourceName)_Role2_RemoveMembers_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlAdministratorCredential = $mockSqlAdminCredential
                         OutputPath                 = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData          = $ConfigurationData
@@ -340,29 +343,32 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
+
 
                 $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.ServerRoleName | Should -Be $mockRole2Name
-                $resourceCurrentState.Members | Should -Be $mockUser4Name
+                $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role2Name
+                $resourceCurrentState.Members | Should -Be $ConfigurationData.AllNodes.User4Name
                 $resourceCurrentState.MembersToInclude | Should -BeNullOrEmpty
                 $resourceCurrentState.MembersToExclude | Should -Be @(
-                    $mockUser1Name
-                    $mockUser2Name
+                    $ConfigurationData.AllNodes.User1Name
+                    $ConfigurationData.AllNodes.User2Name
                 )
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
             }
         }
 
-        $configurationName = "$($script:DSCResourceName)_RemoveRole3_Config"
+        $configurationName = "$($script:dscResourceName)_RemoveRole3_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        SqlAdministratorCredential = $mockSqlAdminCredential
                         OutputPath                 = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
                         ConfigurationData          = $ConfigurationData
@@ -391,16 +397,20 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName
-                } | Where-Object -FilterScript {
-                    $_.ResourceId -eq $resourceId
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
                 }
 
+
                 $resourceCurrentState.Ensure | Should -Be 'Absent'
-                $resourceCurrentState.ServerRoleName | Should -Be $mockRole3Name
+                $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role3Name
                 $resourceCurrentState.Members | Should -BeNullOrEmpty
                 $resourceCurrentState.MembersToInclude | Should -BeNullOrEmpty
                 $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be $true
             }
         }
     }
@@ -408,8 +418,6 @@ try
 finally
 {
     #region FOOTER
-
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
-
     #endregion
 }
