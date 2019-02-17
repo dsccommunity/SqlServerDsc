@@ -34,6 +34,12 @@
     parameter VersionNumber so the search would return the correct
     service name.
   - Added code to allow for using Managed Service Accounts.
+  - Now the correct service type string value is returned by the function
+    `Get-TargetResource`. Previously one value was passed in as a parameter
+    (e.g. `DatabaseEngine`), but a different string value as returned
+    (e.g. `SqlServer`). Now `Get-TargetResource` return the same values
+    that can be passed as values in the parameter `ServiceType`
+    ([issue #981](https://github.com/PowerShell/SqlServerDsc/issues/981)).
 - Changes to SqlServerLogin
   - Fixed issue in Test-TargetResource to valid password on disabled accounts
     ([issue #915](https://github.com/PowerShell/SqlServerDsc/issues/915)).
@@ -44,7 +50,6 @@
   - Updated the integration test to stop the named instance while installing
     the other instances to mitigate
     [issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260).
-- Changes to SqlSetup
   - Add parameters to configure the Tempdb files during the installation of
     the instance. The new parameters are SqlTempdbFileCount, SqlTempdbFileSize,
     SqlTempdbFileGrowth, SqlTempdbLogFileSize and SqlTempdbLogFileGrowth
@@ -57,13 +62,6 @@
   - Add integration tests
     ([issue #744](https://github.com/PowerShell/SqlServerDsc/issues/744)).
     [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
-- Changes to SqlServiceAccount
-  - Now the correct service type string value is returned by the function
-    `Get-TargetResource`. Previously one value was passed in as a parameter
-    (e.g. `DatabaseEngine`), but a different string value as returned
-    (e.g. `SqlServer`). Now `Get-TargetResource` return the same values
-    that can be passed as values in the parameter `ServiceType`
-    ([issue #981](https://github.com/PowerShell/SqlServerDsc/issues/981)).
 
 ## 12.2.0.0
 
