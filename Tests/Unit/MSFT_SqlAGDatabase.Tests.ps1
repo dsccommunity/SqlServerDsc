@@ -88,6 +88,8 @@ try
         $mockAvailabilityGroupObjectName = 'AvailabilityGroup1'
         $mockAvailabilityGroupWithoutDatabasesObjectName = 'AvailabilityGroupWithoutDatabases'
         $mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServerName = 'AvailabilityGroup2'
+        $mockTrueLogin = 'Login1'
+        $mockDatabaseOwner = 'DatabaseOwner1'
 
         #endregion mock names
 
@@ -279,6 +281,7 @@ try
             $newDatabaseObject.LogFiles = @{
                 FileName = ( [IO.Path]::Combine( $mockLogFilePath, "$($mockPresentDatabaseName).ldf" ) )
             }
+            $newDatabaseObject.Owner = $mockDatabaseOwner
 
             # Add the database object to the database collection
             $mockDatabaseObjects.Add($newDatabaseObject)
@@ -299,6 +302,7 @@ try
             $newDatabaseObject.LogFiles = @{
                 FileName = ( [IO.Path]::Combine( $mockLogFilePathIncorrect, "$($mockPresentDatabaseName).ldf" ) )
             }
+            $newDatabaseObject.Owner = $mockDatabaseOwner
 
             # Add the database object to the database collection
             $mockDatabaseObjectsWithIncorrectFileNames.Add($newDatabaseObject)
@@ -315,6 +319,9 @@ try
         $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupObject.Clone())
         $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
         $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
+        $mockServerObject.ComputerNamePhysicalNetBIOS = $mockServerObjectDomainInstanceName
+        $mockServerObject.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ConnectionContext
+        $mockServerObject.ConnectionContext.TrueLogin = $mockTrueLogin
         $mockServerObject.Databases = $mockDatabaseObjects
         $mockServerObject.DomainInstanceName = $mockServerObjectDomainInstanceName
         $mockServerObject.NetName = $mockServerObjectDomainInstanceName
@@ -328,6 +335,9 @@ try
         $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupObject.Clone())
         $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
         $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
+        $mockServer2Object.ComputerNamePhysicalNetBIOS = $mockPrimaryServerObjectDomainInstanceName
+        $mockServer2Object.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ConnectionContext
+        $mockServer2Object.ConnectionContext.TrueLogin = $mockTrueLogin
         $mockServer2Object.Databases = $mockDatabaseObjects
         $mockServer2Object.DomainInstanceName = $mockPrimaryServerObjectDomainInstanceName
         $mockServer2Object.NetName = $mockPrimaryServerObjectDomainInstanceName
