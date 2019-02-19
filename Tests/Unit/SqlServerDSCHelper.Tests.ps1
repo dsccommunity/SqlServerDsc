@@ -1238,23 +1238,68 @@ InModuleScope $script:helperModuleName {
         $mockServerObject.ServiceName = 'MSSQLSERVER'
         $mockServerObject.ConnectionContext = $mockConnectionContextObject
 
-        Context 'When impersonate permissions are present for the login' {
-            Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true }
+        $mockImpersonateAnyLoginPermissionsPresent = @(
+            'IMPERSONATE ANY LOGIN'
+        )
 
-            It 'Should return true when the impersonate permissions are present for the login'{
-                Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $true
+         $mockControlServerPermissionsPresent = @(
+            'CONTROL SERVER'
+        )
 
-                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly
+        $mockImpersonateLoginPermissionsPresent = @(
+            'IMPERSONATE'
+        )
+
+        $mockPermissionsMissing = @(
+        )
+
+        $mockInvokeQueryImpersonatePermissionsSet = @() # Will be set dynamically in the check
+
+        $mockInvokeQueryImpersonatePermissionsResult = {
+            return New-Object -TypeName PSObject -Property @{
+                Tables = @{
+                    Rows = @{
+                        permission_name = $mockInvokeQueryImpersonatePermissionsSet
+                    }
+                }
             }
         }
 
-        Context 'When impersonate permissions are missing for the login' {
-            Mock -CommandName Test-LoginEffectivePermissions -MockWith { $false } -Verifiable
+        BeforeEach {
+            Mock -CommandName Invoke-Query -MockWith $mockInvokeQueryImpersonatePermissionsResult -Verifiable
+        }
 
-            It 'Should return false when the impersonate permissions are missing for the login'{
+        Context 'When impersonate permissions are present for the login' {
+            Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true }
+
+            It 'Should return true when impersonate any login permissions are present for the login' {
+                $mockInvokeQueryImpersonatePermissionsSet = $mockImpersonateAnyLoginPermissionsPresent.Clone()
+                Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $true
+                # It's called once because it short-circuits when the IMPERSONATE ANY LOGIN permission is present
+                Assert-MockCalled -CommandName Invoke-Query -Exactly -Times 1 -Scope It
+            }
+
+            It 'Should return true when control server login permissions are present for the login' {
+                $mockInvokeQueryImpersonatePermissionsSet = $mockControlServerPermissionsPresent.Clone()
+                Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $true
+                # It's called twice because IMPERSONATE ANY LOGIN is checked first then it short-circuits
+                Assert-MockCalled -CommandName Invoke-Query -Exactly -Times 2 -Scope It
+            }
+
+            It 'Should return true when impersonate login permissions are present for the login' {
+                $mockInvokeQueryImpersonatePermissionsSet = $mockImpersonateLoginPermissionsPresent.Clone()
+                Test-ImpersonatePermissions -ServerObject $mockServerObject-Securable 'DatabaseOwner1' | Should -Be $true
+                # It's called three times because IMPERSONATE ANY LOGIN and CONTROL SERVER permissions have been checked first
+                Assert-MockCalled -CommandName Invoke-Query -Exactly -Times 3 -Scope It
+            }
+        }
+
+        Context 'When impersonate any, control server, and impersonate permissions are missing for the login' {
+            It 'Should return false when all of the needed permissions are missing for the login'{
+                $mockInvokeQueryImpersonatePermissionsSet = $mockPermissionsMissing.Clone()
                 Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $false
-
-                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly
+                # It's called three times because IMPERSONATE ANY LOGIN and CONTROL SERVER and IMPERSONATE permissions have been checked
+                Assert-MockCalled -CommandName Invoke-Query -Exactly -Times 3 -Scope It
             }
         }
     }
