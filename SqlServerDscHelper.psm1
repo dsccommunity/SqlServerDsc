@@ -1105,7 +1105,8 @@ function Test-LoginEffectivePermissions
         WithResults     = $true
     }
 
-    if ([System.String]::IsNullOrEmpty($SecurableName))
+    if ( [System.String]::IsNullOrEmpty($SecurableName) )
+    {
         $queryToGetEffectivePermissionsForLogin = "
             EXECUTE AS LOGIN = '$LoginName'
             SELECT DISTINCT permission_name
@@ -1286,20 +1287,33 @@ function Test-ImpersonatePermissions
     }
 
     $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
-
-    if ( -not $impersonatePermissionsPresent )
+    if ($impersonatePermissionsPresent)
     {
-        # Check for sysadmin / control server permission which allows impersonation
-        $testLoginEffectivePermissionsParams = @{
-            SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
-            SQLInstanceName = $ServerObject.ServiceName
-            LoginName       = $ServerObject.ConnectionContext.TrueLogin
-            Permissions     = @('CONTROL SERVER')
-        }
-        $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+        return $impersonatePermissionsPresent
+    }
+    else
+    {
+        New-VerboseMessage -Message ( 'The login "{0}" does not have impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
     }
 
-    if ( -not $impersonatePermissionsPresent -and -not [System.String]::IsNullOrEmpty($SecurableName) ) {
+    # Check for sysadmin / control server permission which allows impersonation
+    $testLoginEffectivePermissionsParams = @{
+        SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
+        SQLInstanceName = $ServerObject.ServiceName
+        LoginName       = $ServerObject.ConnectionContext.TrueLogin
+        Permissions     = @('CONTROL SERVER')
+    }
+    $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+    if ($impersonatePermissionsPresent)
+    {
+        return $impersonatePermissionsPresent
+    }
+    else
+    {
+        New-VerboseMessage -Message ( 'The login "{0}" does not have control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
+    }
+
+    if ( [System.String]::IsNullOrEmpty($SecurableName) ) {
         # Check for login-specific impersonation permissions
         $testLoginEffectivePermissionsParams = @{
             SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
@@ -1310,11 +1324,14 @@ function Test-ImpersonatePermissions
             SecurableName   = $SecurableName
         }
         $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
-    }
-
-    if ( -not $impersonatePermissionsPresent )
-    {
-        New-VerboseMessage -Message ( 'The login "{0}" does not have impersonate permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
+        if ($impersonatePermissionsPresent)
+        {
+            return $impersonatePermissionsPresent
+        }
+        else
+        {
+            New-VerboseMessage -Message ( 'The login "{0}" does not have impersonate permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName )
+        }
     }
 
     return $impersonatePermissionsPresent

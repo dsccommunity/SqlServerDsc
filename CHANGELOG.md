@@ -65,7 +65,7 @@
 - Changes to SqlAGDatabase
   - Fix MatchDatabaseOwner to check for CONTROL SERVER and IMPERSONATE LOGIN
     permission in addition to IMPERSONATE ANY LOGIN.
-  - Fix MatchDatabaseOwner help text.
+  - Update and fix MatchDatabaseOwner help text.
 
 ## 12.2.0.0
 
