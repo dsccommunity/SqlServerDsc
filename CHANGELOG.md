@@ -66,6 +66,10 @@
   - Fix MatchDatabaseOwner to check for CONTROL SERVER and IMPERSONATE LOGIN
     permission in addition to IMPERSONATE ANY LOGIN.
   - Update and fix MatchDatabaseOwner help text.
+- Changes to xSQLServerHelper
+  - New-TerminatingError error text for a missing localized message now matches
+    the output even if the "missing localized message" localized message is
+    also missing.
 
 ## 12.2.0.0
 
