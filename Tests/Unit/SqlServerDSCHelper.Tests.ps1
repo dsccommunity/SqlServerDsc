@@ -8,15 +8,20 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
-# This is used to make sure the unit test run in a container.
-[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container1', ContainerImage = 'microsoft/windowsservercore')]
 # To run these tests, we have to fake login credentials
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param ()
 
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
+if (Test-SkipContinuousIntegrationTask -Type 'Unit')
+{
+    return
+}
+
 # Unit Test Template Version: 1.1.0
 
-$script:moduleName = 'SqlServerDscHelper'
+$script:helperModuleName = 'SqlServerDscHelper'
 
 [System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
@@ -26,7 +31,7 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 }
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
-Import-Module (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent | Split-Path -Parent) -ChildPath 'SqlServerDscHelper.psm1') -Scope Global -Force
+Import-Module (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent | Split-Path -Parent) -ChildPath "$script:helperModuleName.psm1") -Scope Global -Force
 
 # Loading mocked classes
 Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SMO.cs )
@@ -35,7 +40,7 @@ Add-Type -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Pa
 Import-Module -Name (Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests') -ChildPath 'Unit') -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Global -Force
 
 # Begin Testing
-InModuleScope $script:moduleName {
+InModuleScope $script:helperModuleName {
     $mockNewObject_MicrosoftAnalysisServicesServer = {
         return New-Object -TypeName Object |
                     Add-Member -MemberType ScriptMethod -Name Connect -Value {
@@ -142,6 +147,20 @@ InModuleScope $script:moduleName {
     $mockSetupCredentialSecurePassword = ConvertTo-SecureString -String $mockSetupCredentialPassword -AsPlainText -Force
     $mockSetupCredential = New-Object -TypeName PSCredential -ArgumentList ($mockSetupCredentialUserName, $mockSetupCredentialSecurePassword)
 
+    $mockLocalSystemAccountUserName = 'NT AUTHORITY\SYSTEM'
+    $mockLocalSystemAccountCredential = New-Object System.Management.Automation.PSCredential $mockLocalSystemAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
+    $mockManagedServiceAccountUserName = 'CONTOSO\msa$'
+    $mockManagedServiceAccountCredential = New-Object System.Management.Automation.PSCredential $mockManagedServiceAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
+    $mockDomainAccountUserName = 'CONTOSO\User1'
+    $mockLocalServiceAccountUserName = 'NT SERVICE\MyService'
+    $mockLocalServiceAccountCredential = New-Object System.Management.Automation.PSCredential $mockLocalServiceAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
+    $mockDomainAccountCredential = New-Object System.Management.Automation.PSCredential $mockDomainAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
+    $mockInnerException = New-Object System.Exception "This is a mock inner excpetion object"
+    $mockInnerException | Add-Member -Name 'Number' -Value 2 -MemberType NoteProperty
+    $mockException = New-Object System.Exception "This is a mock exception object", $mockInnerException
+    $mockException | Add-Member -Name 'Number' -Value 1 -MemberType NoteProperty
+
+
     Describe 'Testing Restart-SqlService' {
         Context 'Restart-SqlService standalone instance' {
             BeforeEach {
@@ -153,7 +172,7 @@ InModuleScope $script:moduleName {
                         Status = $mockDynamicStatus
                         IsClustered = $false
                     }
-                } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'MSSQLSERVER' }
+                } -Verifiable -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
@@ -163,7 +182,7 @@ InModuleScope $script:moduleName {
                         Status = $mockDynamicStatus
                         IsClustered = $true
                     }
-                } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'NOCLUSTERCHECK' }
+                } -Verifiable -ParameterFilter { $InstanceName -eq 'NOCLUSTERCHECK' }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
@@ -173,7 +192,7 @@ InModuleScope $script:moduleName {
                         Status = $mockDynamicStatus
                         IsClustered = $true
                     }
-                } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'NOCONNECT' }
+                } -Verifiable -ParameterFilter { $InstanceName -eq 'NOCONNECT' }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
@@ -182,7 +201,7 @@ InModuleScope $script:moduleName {
                         ServiceName = 'NOAGENT'
                         Status = $mockDynamicStatus
                     }
-                } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'NOAGENT' }
+                } -Verifiable -ParameterFilter { $InstanceName -eq 'NOAGENT' }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
@@ -191,7 +210,7 @@ InModuleScope $script:moduleName {
                         ServiceName = 'STOPPEDAGENT'
                         Status = $mockDynamicStatus
                     }
-                } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'STOPPEDAGENT' }
+                } -Verifiable -ParameterFilter { $InstanceName -eq 'STOPPEDAGENT' }
             }
 
             BeforeAll {
@@ -326,7 +345,7 @@ InModuleScope $script:moduleName {
                             ServiceName = 'MSSQLSERVER'
                             Status = $mockDynamicStatus
                         }
-                    } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'MSSQLSERVER' }
+                    } -Verifiable -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
                 }
 
                 $mockDynamicStatus = 'Offline'
@@ -359,7 +378,7 @@ InModuleScope $script:moduleName {
                         IsClustered = $true
                         Status = $mockDynamicStatus
                     }
-                } -Verifiable -ParameterFilter { ($SQLServer -eq 'CLU01') -and ($SQLInstanceName -eq 'MSSQLSERVER') }
+                } -Verifiable -ParameterFilter { ($ServerName -eq 'CLU01') -and ($InstanceName -eq 'MSSQLSERVER') }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
@@ -369,7 +388,7 @@ InModuleScope $script:moduleName {
                         IsClustered = $true
                         Status = $mockDynamicStatus
                     }
-                } -Verifiable -ParameterFilter { ($SQLServer -eq 'CLU01') -and ($SQLInstanceName -eq 'NAMEDINSTANCE') }
+                } -Verifiable -ParameterFilter { ($ServerName -eq 'CLU01') -and ($InstanceName -eq 'NAMEDINSTANCE') }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
@@ -379,7 +398,7 @@ InModuleScope $script:moduleName {
                         IsClustered = $true
                         Status = $mockDynamicStatus
                     }
-                } -Verifiable -ParameterFilter { ($SQLServer -eq 'CLU01') -and ($SQLInstanceName -eq 'STOPPEDAGENT') }
+                } -Verifiable -ParameterFilter { ($ServerName -eq 'CLU01') -and ($InstanceName -eq 'STOPPEDAGENT') }
             }
 
             BeforeAll {
@@ -592,7 +611,7 @@ InModuleScope $script:moduleName {
         }
 
         BeforeEach {
-            Mock -CommandName Connect-SQL -MockWith $mockConnectSql -ModuleName $script:DSCResourceName -Verifiable
+            Mock -CommandName Connect-SQL -MockWith $mockConnectSql -ModuleName $script:dscResourceName -Verifiable
             Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
         }
 
@@ -1056,17 +1075,17 @@ InModuleScope $script:moduleName {
             (
                 [Parameter()]
                 [System.String]
-                $SQLServer,
+                $ServerName,
 
                 [Parameter()]
                 [System.String]
-                $SQLInstanceName
+                $InstanceName
             )
 
             $mock = @(
                 (
                     New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name 'DomainInstanceName' -Value $SQLServer -PassThru
+                        Add-Member -MemberType NoteProperty -Name 'DomainInstanceName' -Value $ServerName -PassThru
                 )
             )
 
@@ -1123,11 +1142,11 @@ InModuleScope $script:moduleName {
                 (
                     [Parameter()]
                     [System.String]
-                    $SQLServer,
+                    $ServerName,
 
                     [Parameter()]
                     [System.String]
-                    $SQLInstanceName
+                    $InstanceName
                 )
 
                 $mock = @(
@@ -1285,7 +1304,7 @@ InModuleScope $script:moduleName {
         }
     }
 
-    Describe 'Testing Connect-SQL' -Tag ConnectSql {
+    Describe 'Testing Connect-SQL' -Tag 'ConnectSql' {
         BeforeEach {
             Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
             Mock -CommandName Import-SQLPSModule
@@ -1300,7 +1319,7 @@ InModuleScope $script:moduleName {
                 $mockExpectedDatabaseEngineServer = 'TestServer'
                 $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
 
-                $databaseEngineServerObject = Connect-SQL -SQLServer $mockExpectedDatabaseEngineServer
+                $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer
                 $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly $mockExpectedDatabaseEngineServer
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
@@ -1314,7 +1333,7 @@ InModuleScope $script:moduleName {
                 $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
                 $mockExpectedDatabaseEngineLoginSecure = $false
 
-                $databaseEngineServerObject = Connect-SQL -SQLServer $mockExpectedDatabaseEngineServer -SetupCredential $mockSetupCredential -LoginType 'SqlLogin'
+                $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -SetupCredential $mockSetupCredential -LoginType 'SqlLogin'
                 $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $false
                 $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSetupCredentialUserName
                 $databaseEngineServerObject.ConnectionContext.SecurePassword | Should -Be $mockSetupCredentialSecurePassword
@@ -1330,7 +1349,7 @@ InModuleScope $script:moduleName {
                 $mockExpectedDatabaseEngineServer = $env:COMPUTERNAME
                 $mockExpectedDatabaseEngineInstance = $mockInstanceName
 
-                $databaseEngineServerObject = Connect-SQL -SQLInstanceName $mockExpectedDatabaseEngineInstance
+                $databaseEngineServerObject = Connect-SQL -InstanceName $mockExpectedDatabaseEngineInstance
                 $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
@@ -1344,7 +1363,7 @@ InModuleScope $script:moduleName {
                 $mockExpectedDatabaseEngineInstance = $mockInstanceName
                 $mockExpectedDatabaseEngineLoginSecure = $false
 
-                $databaseEngineServerObject = Connect-SQL -SQLInstanceName $mockExpectedDatabaseEngineInstance -SetupCredential $mockSetupCredential -LoginType 'SqlLogin'
+                $databaseEngineServerObject = Connect-SQL -InstanceName $mockExpectedDatabaseEngineInstance -SetupCredential $mockSetupCredential -LoginType 'SqlLogin'
                 $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $false
                 $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSetupCredentialUserName
                 $databaseEngineServerObject.ConnectionContext.SecurePassword | Should -Be $mockSetupCredentialSecurePassword
@@ -1360,7 +1379,7 @@ InModuleScope $script:moduleName {
                 $mockExpectedDatabaseEngineServer = 'SERVER'
                 $mockExpectedDatabaseEngineInstance = $mockInstanceName
 
-                $databaseEngineServerObject = Connect-SQL -SQLServer $mockExpectedDatabaseEngineServer -SQLInstanceName $mockExpectedDatabaseEngineInstance
+                $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -InstanceName $mockExpectedDatabaseEngineInstance
                 $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
@@ -1374,8 +1393,8 @@ InModuleScope $script:moduleName {
                 $mockExpectedDatabaseEngineInstance = $mockInstanceName
 
                 $testParameters = @{
-                    SQLServer = $mockExpectedDatabaseEngineServer
-                    SQLInstanceName = $mockExpectedDatabaseEngineInstance
+                    ServerName = $mockExpectedDatabaseEngineServer
+                    InstanceName = $mockExpectedDatabaseEngineInstance
                     SetupCredential = $mockSetupCredential
                 }
 
@@ -1761,16 +1780,16 @@ InModuleScope $script:moduleName {
                 $result = Split-FullSQLInstanceName -FullSQLInstanceName 'ServerName'
 
                 $result.Count | Should -Be 2
-                $result.SQLServer | Should -Be 'ServerName'
-                $result.SQLInstanceName | Should -Be 'MSSQLSERVER'
+                $result.ServerName | Should -Be 'ServerName'
+                $result.InstanceName | Should -Be 'MSSQLSERVER'
             }
 
             It 'Should throw when the "FullSQLInstanceName" parameter is "ServerName\InstanceName"' {
                 $result = Split-FullSQLInstanceName -FullSQLInstanceName 'ServerName\InstanceName'
 
                 $result.Count | Should -Be 2
-                $result.SQLServer | Should -Be 'ServerName'
-                $result.SQLInstanceName | Should -Be 'InstanceName'
+                $result.ServerName | Should -Be 'ServerName'
+                $result.InstanceName | Should -Be 'InstanceName'
             }
         }
     }
@@ -2070,6 +2089,53 @@ InModuleScope $script:moduleName {
 
             It 'Should throw the correct error from Query parameterset Invoke-Sqlcmd' {
                 { Invoke-SqlScript @invokeScriptQueryParameters } | Should Throw $errorMessage
+            }
+        }
+    }
+
+    Describe 'Testing Get-ServiceAccount'{
+        Context 'When getting service account' {
+            It 'Should return NT AUTHORITY\SYSTEM' {
+                $returnValue = Get-ServiceAccount -ServiceAccount $mockLocalSystemAccountCredential
+
+                $returnValue.UserName | Should -Be $mockLocalSystemAccountUserName
+                $returnValue.Password | Should -BeNullOrEmpty
+            }
+
+            It 'Should return Domain Account and Password' {
+                $returnValue = Get-ServiceAccount -ServiceAccount $mockDomainAccountCredential
+
+                $returnValue.UserName | Should -Be $mockDomainAccountUserName
+                $returnValue.Password | Should -Be $mockDomainAccountCredential.GetNetworkCredential().Password
+            }
+
+            It 'Should return managed service account' {
+                $returnValue = Get-ServiceAccount -ServiceAccount $mockManagedServiceAccountCredential
+
+                $returnValue.UserName | Should -Be $mockManagedServiceAccountUserName
+            }
+
+            It 'Should return local service account' {
+                $returnValue= Get-ServiceAccount -ServiceAccount $mockLocalServiceAccountCredential
+
+                $returnValue.UserName | Should -Be $mockLocalServiceAccountUserName
+                $returnValue.Password | Should -BeNullOrEmpty
+            }
+        }
+    }
+
+    Describe 'Testing Find-ExceptionByNumber'{
+        Context 'When searching Exception objects'{
+            It 'Should return true for main exception' {
+                Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 1 | Should -Be $true
+            }
+
+            It 'Should return true for inner exception' {
+                Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 2 | Should -Be $true
+            }
+
+            It 'Should return false when message not found' {
+                Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 3 | Should -Be $false
             }
         }
     }

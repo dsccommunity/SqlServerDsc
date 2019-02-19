@@ -107,6 +107,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   resource to ensure an availability group is present or absent.
 * [**SqlAGDatabase**](#sqlagdatabase)
   to manage the database membership in Availability Groups.
+* [**SqlAgentOperator**](#sqlagentoperator)
+  resource to manage SQL Agent Operators.
 * [**SqlAGListener**](#sqlaglistener)
   Create or remove an availability group listener.
 * [**SqlAGReplica**](#sqlagreplica)
@@ -306,6 +308,36 @@ group.
 #### Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAGDatabase).
+
+### SqlAgentOperator
+
+This resource is used to add/remove SQL Agent Operators. You can also update
+the operators email address.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2008 or later.
+
+#### Parameters
+
+* **`[String]` Name** _(Key)_: The name of the SQL Agent Operator.
+* **`[String]` Ensure** _(Write)_: Specifies if the SQL Agent Operator should
+  be present or absent. Default is Present. { *Present* | Absent }
+* **`[String]` ServerName** _(Key)_: The host name of the SQL Server to be
+  configured. Default is $env:COMPUTERNAME.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` EmailAddress** _(Write)_: The email address to be used for
+  the SQL Agent Operator.
+
+#### Examples
+
+* [Add a SQL Agent Operator](/Examples/Resources/SqlAgentOperator/1-AddOperator.ps1)
+* [Remove a SQL Agent Operator](/Examples/Resources/SqlAgentOperator/2-RemoveOperator.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAgentOperator).
 
 ### SqlAGListener
 
@@ -1041,11 +1073,13 @@ the resource [**SqlServerEndpointPermission**](#sqlserverendpointpermission).
 * **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
 * **`[String]` IpAddress** _(Write)_: The network IP address the endpoint is listening
   on. Defaults to '0.0.0.0' which means listen on any valid IP address.
+* **`[String]` Owner** _(Write)_: The owner of the endpoint. Default is the
+  login used for the creation.
 
 #### Examples
 
 * [Create an endpoint with default values](/Examples/Resources/SqlServerEndpoint/1-CreateEndpointWithDefaultValues.ps1)
-* [Create an endpoint with specific port and IP address](/Examples/Resources/SqlServerEndpoint/2-CreateEndpointWithSpecificPortAndIPAddress.ps1)
+* [Create an endpoint with specific port and IP address](/Examples/Resources/SqlServerEndpoint/2-CreateEndpointWithSpecificPortIPAddressOwner.ps1)
 * [Remove an endpoint](/Examples/Resources/SqlServerEndpoint/3-RemoveEndpoint.ps1)
 
 #### Known issues
@@ -1123,6 +1157,9 @@ No description.
 
 * Target machine must be running Windows Server 2008 R2 or later.
 * Target machine must be running SQL Server Database Engine 2008 or later.
+* When the `LoginType` `'SqlLogin'` is used, then the login authentication
+  mode must have been set to `Mixed` or `Normal`. If set to `Integrated`
+  and error will be thrown.
 
 #### Parameters
 
@@ -1527,6 +1564,9 @@ Manage the service account for SQL Server services.
 * **`[Boolean]` Force** (Write): Forces the service account to be updated.
   Useful for password changes. This will cause `Set-TargetResource` to be run on
   each consecutive run.
+* **`[String]` VersionNumber** (Write): The version number of the SQL Server,
+  mandatory for when IntegrationServices is used as **ServiceType**.
+  Eg. 130 for SQL 2016.
 
 #### Read-Only Properties from Get-TargetResource
 
@@ -1566,6 +1606,13 @@ Installs SQL Server on the target node.
   * Additional parameters need when installing Analysis Services.
     * ASSysAdminAccounts
     * AsSvcAccount
+* The parameters below can only be used when installing SQL Server 2016 or
+  later:
+  * SqlTempdbFileCount
+  * SqlTempdbFileSize
+  * SqlTempdbFileGrowth
+  * SqlTempdbLogFileSize
+  * SqlTempdbLogFileGrowth
 
 > **Note:** It is not possible to add or remove features to a SQL Server failover
 cluster. This is a limitation of SQL Server. See article
@@ -1698,6 +1745,16 @@ need a '*SVCPASSWORD' argument in the setup arguments.
   this setup parameter.
 * **`[String]` FailoverClusterNetworkName** _(Write)_: Host name to be assigned to
   the clustered SQL Server instance.
+* **`[UInt32]` SqlTempdbFileCount** _(Write)_: Specifies the number of tempdb
+  data files to be added by setup.
+* **`[UInt32]` SqlTempdbFileSize** _(Write)_: Specifies the initial size of
+  each tempdb data file in MB.
+* **`[UInt32]` SqlTempdbFileGrowth** _(Write)_: Specifies the file growth
+  increment of each tempdb data file in MB.
+* **`[UInt32]` SqlTempdbLogFileSize** _(Write)_: Specifies the initial size
+  of each tempdb log file in MB.
+* **`[UInt32]` SqlTempdbLogFileGrowth** _(Write)_: Specifies the file growth
+  increment of each tempdb data file in MB.
 * **`[UInt32]` SetupProcessTimeout** _(Write)_: The timeout, in seconds, to wait
   for the setup process to finish. Default value is 7200 seconds (2 hours). If
   the setup process does not finish before this time, and error will be thrown.
@@ -1724,6 +1781,7 @@ need a '*SVCPASSWORD' argument in the setup arguments.
 * [Install a named instance as the first node in SQL Server Failover Cluster](/Examples/Resources/SqlSetup/4-InstallNamedInstanceInFailoverClusterFirstNode.ps1)
 * [Install a named instance as the second node in SQL Server Failover Cluster](/Examples/Resources/SqlSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1)
 * [Install a named instance with the Agent Service set to Disabled](/Examples/Resources/SqlSetup/6-InstallNamedInstanceSingleServerWithAgtSvcStartupTypeDisabled.ps1)
+* [Install a default instance on a single server (Sql Server 2016 or Later)](/Examples/Resources/SqlSetup/7-InstallDefaultInstanceSingleServer2016OrLater.ps1)
 
 #### Known issues
 

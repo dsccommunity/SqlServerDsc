@@ -24,8 +24,13 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServiceAccount'
         ** Not used in this function **
          Credential of the service account that should be used.
 
+    .PARAMETER VersionNumber
+        ** Only used when specifying IntegrationServices **
+        Version number of IntegrationServices.
+
     .EXAMPLE
         Get-TargetResource -ServerName $env:COMPUTERNAME -InstanceName MSSQLSERVER -ServiceType DatabaseEngine -ServiceAccount $account
+        Get-TargetResource -ServerName $env:COMPUTERNAME -InstanceName MSSQLSERVER -ServiceType IntegrationServices -ServiceAccount $account -VersionNumber 130
 #>
 function Get-TargetResource
 {
@@ -48,11 +53,15 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        $ServiceAccount
+        $ServiceAccount,
+
+        [Parameter()]
+        [System.String]
+        $VersionNumber
     )
 
     # Get the SMO Service object instance
-    $serviceObject = Get-ServiceObject -ServerName $ServerName -InstanceName $InstanceName -ServiceType $ServiceType
+    $serviceObject = Get-ServiceObject -ServerName $ServerName -InstanceName $InstanceName -ServiceType $ServiceType -VersionNumber $VersionNumber
 
     # If no service was found, throw an exception
     if (-not $serviceObject)
@@ -65,11 +74,13 @@ function Get-TargetResource
     # Replace a domain of '.' with the value for $ServerName
     $serviceAccountName = $serviceObject.ServiceAccount -ireplace '^([\.])\\(.*)$', "$ServerName\`$2"
 
+    $serviceType = ConvertTo-ResourceServiceType -ServiceType $serviceObject.Type
+
     # Return a hash table with the service information
     return @{
         ServerName         = $ServerName
         InstanceName       = $InstanceName
-        ServiceType        = $serviceObject.Type
+        ServiceType        = $serviceType
         ServiceAccountName = $serviceAccountName
     }
 }
@@ -98,8 +109,12 @@ function Get-TargetResource
     .PARAMETER Force
         Forces the service account to be updated.
 
+    .PARAMETER VersionNumber
+        Version number of IntegrationServices
+
     .EXAMPLE
         Test-TargetResource -ServerName $env:COMPUTERNAME -InstanceName MSSQLSERVER -ServiceType DatabaseEngine -ServiceAccount $account
+        Test-TargetResource -ServerName $env:COMPUTERNAME -InstanceName MSSQLSERVER -ServiceType IntegrationServices -ServiceAccount $account -VersionNumber 130
 
 #>
 function Test-TargetResource
@@ -131,7 +146,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $Force
+        $Force,
+
+        [Parameter()]
+        [System.String]
+        $VersionNumber
     )
 
     if ($Force)
@@ -141,7 +160,7 @@ function Test-TargetResource
     }
 
     # Get the current state
-    $currentState = Get-TargetResource -ServerName $ServerName -InstanceName $InstanceName -ServiceType $ServiceType -ServiceAccount $ServiceAccount
+    $currentState = Get-TargetResource -ServerName $ServerName -InstanceName $InstanceName -ServiceType $ServiceType -ServiceAccount $ServiceAccount -VersionNumber $VersionNumber
     New-VerboseMessage -Message ($script:localizedData.CurrentServiceAccount -f $currentState.ServiceAccountName, $ServerName, $InstanceName)
 
     return ($currentState.ServiceAccountName -ieq $ServiceAccount.UserName)
@@ -170,6 +189,9 @@ function Test-TargetResource
 
     .PARAMETER Force
         Forces the service account to be updated.
+
+    .PARAMETER VersionNumber
+        Version number of IntegrationServices
 
     .EXAMPLE
         Set-TargetResource -ServerName $env:COMPUTERNAME -InstanceName MSSQLSERVER -ServiceType DatabaseEngine -ServiceAccount $account
@@ -202,11 +224,15 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $Force
+        $Force,
+
+        [Parameter()]
+        [System.String]
+        $VersionNumber
     )
 
     # Get the Service object
-    $serviceObject = Get-ServiceObject -ServerName $ServerName -InstanceName $InstanceName -ServiceType $ServiceType
+    $serviceObject = Get-ServiceObject -ServerName $ServerName -InstanceName $InstanceName -ServiceType $ServiceType -VersionNumber $VersionNumber
 
     # If no service was found, throw an exception
     if (-not $serviceObject)
@@ -218,7 +244,8 @@ function Set-TargetResource
     try
     {
         New-VerboseMessage -Message ($script:localizedData.UpdatingServiceAccount -f $ServiceAccount.UserName, $serviceObject.Name)
-        $serviceObject.SetServiceAccount($ServiceAccount.UserName, $ServiceAccount.GetNetworkCredential().Password)
+        $account = Get-ServiceAccount -ServiceAccount $ServiceAccount
+        $serviceObject.SetServiceAccount($account.UserName, $account.Password)
     }
     catch
     {
@@ -247,8 +274,12 @@ function Set-TargetResource
         Type of service to be managed. Must be one of the following:
         DatabaseEngine, SQLServerAgent, Search, IntegrationServices, AnalysisServices, ReportingServices, SQLServerBrowser, NotificationServices.
 
+    .PARAMETER VersionNumber
+        Version number of IntegrationServices.
+
     .EXAMPLE
         Get-ServiceObject -ServerName $env:COMPUTERNAME -InstanceName MSSQLSERVER -ServiceType DatabaseEngine
+        Get-ServiceObject -ServerName $env:COMPUTERNAME -InstanceName MSSQLSERVER -ServiceType IntegrationServices -VersionNumber 130
 #>
 function Get-ServiceObject
 {
@@ -266,8 +297,19 @@ function Get-ServiceObject
         [Parameter(Mandatory = $true)]
         [ValidateSet('DatabaseEngine', 'SQLServerAgent', 'Search', 'IntegrationServices', 'AnalysisServices', 'ReportingServices', 'SQLServerBrowser', 'NotificationServices')]
         [System.String]
-        $ServiceType
+        $ServiceType,
+
+        [Parameter()]
+        [System.String]
+        $VersionNumber
     )
+
+    # Check to see if Integration services was specified, but no version specified
+    if (($ServiceType -eq 'IntegrationServices') -and ([String]::IsNullOrEmpty($VersionNumber)))
+    {
+        $errorMessage = $script:localizedData.MissingParameter -f $ServiceType
+        New-InvalidArgumentException -Message $errorMessage -ArgumentName 'VersionNumber'
+    }
 
     # Load the SMO libraries
     Import-SQLPSModule
@@ -281,9 +323,16 @@ function Get-ServiceObject
     # Get the service name for the specified instance and type
     $serviceNameFilter = Get-SqlServiceName -InstanceName $InstanceName -ServiceType $ServiceType
 
+    # Check the service type and append version number if IntegrationServices
+    if ($ServiceType -eq 'IntegrationServices')
+    {
+        # Append version number
+        $serviceNameFilter = '{0}{1}' -f $serviceNameFilter, $VersionNumber
+    }
+
     # Get the Service object for the specified instance/type
     $serviceObject = $managedComputer.Services | Where-Object -FilterScript {
-        $_.Name -eq $serviceNameFilter
+        $_.Name -eq "$serviceNameFilter"
     }
 
     return $serviceObject
@@ -356,6 +405,88 @@ function ConvertTo-ManagedServiceType
     }
 
     return $serviceTypeValue -as [Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType]
+}
+
+<#
+    .SYNOPSIS
+        Converts from the string value, that was returned from the type
+        Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType, to the
+        appropriate project's standard SQL Service type string values.
+
+    .PARAMETER ServiceType
+        The string value of the Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType.
+        Must be one of the following:
+        SqlServer, SqlAgent, Search, SqlServerIntegrationService, AnalysisServer,
+        ReportServer, SqlBrowser, NotificationServer.
+
+    .NOTES
+        If an unknown type is passed in parameter ServiceType, the same type will
+        be returned.
+
+    .EXAMPLE
+        ConvertTo-ResourceServiceType -ServiceType 'SqlServer'
+#>
+function ConvertTo-ResourceServiceType
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ServiceType
+    )
+
+    # Map the project-specific ServiceType to a valid value from the ManagedServiceType enumeration
+    switch ($ServiceType)
+    {
+        'SqlServer'
+        {
+            $serviceTypeValue = 'DatabaseEngine'
+        }
+
+        'SqlAgent'
+        {
+            $serviceTypeValue = 'SQLServerAgent'
+        }
+
+        'Search'
+        {
+            $serviceTypeValue = 'Search'
+        }
+
+        'SqlServerIntegrationService'
+        {
+            $serviceTypeValue = 'IntegrationServices'
+        }
+
+        'AnalysisServer'
+        {
+            $serviceTypeValue = 'AnalysisServices'
+        }
+
+        'ReportServer'
+        {
+            $serviceTypeValue = 'ReportingServices'
+        }
+
+        'SqlBrowser'
+        {
+            $serviceTypeValue = 'SQLServerBrowser'
+        }
+
+        'NotificationServer'
+        {
+            $serviceTypeValue = 'NotificationServices'
+        }
+
+        default
+        {
+            $serviceTypeValue = $ServiceType
+        }
+    }
+
+    return $serviceTypeValue
 }
 
 <#
@@ -440,3 +571,4 @@ function Get-SqlServiceName
     # Build the name of the service and return it
     return ($returnValue -f $serviceNamingScheme, $InstanceName)
 }
+

@@ -1,23 +1,43 @@
-$ConfigurationData = @{
-    AllNodes = @(
-        @{
-            NodeName          = 'localhost'
+#region HEADER
+# Integration Test Config Template Version: 1.2.0
+#endregion
 
-            ServerName        = $env:COMPUTERNAME
-            InstanceName      = 'DSCSQL2016'
+$configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
+if (Test-Path -Path $configFile)
+{
+    <#
+        Allows reading the configuration data from a JSON file,
+        for real testing scenarios outside of the CI.
+    #>
+    $ConfigurationData = Get-Content -Path $configFile | ConvertFrom-Json
+}
+else
+{
+    $ConfigurationData = @{
+        AllNodes = @(
+            @{
+                NodeName          = 'localhost'
 
-            Database1Name     = 'ScriptDatabase1'
-            Database2Name     = 'ScriptDatabase2'
+                Admin_UserName    = "$env:COMPUTERNAME\SqlAdmin"
+                Admin_Password    = 'P@ssw0rd1'
+                SqlLogin_UserName = "DscAdmin1"
+                SqlLogin_Password = 'P@ssw0rd1'
 
-            GetSqlScriptPath  = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
-            SetSqlScriptPath  = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
-            TestSqlScriptPath = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+                ServerName        = $env:COMPUTERNAME
+                InstanceName      = 'DSCSQL2016'
 
-            GetSqlScript      = @'
+                Database1Name     = 'ScriptDatabase1'
+                Database2Name     = 'ScriptDatabase2'
+
+                GetSqlScriptPath  = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+                SetSqlScriptPath  = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+                TestSqlScriptPath = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+
+                GetSqlScript      = @'
 SELECT Name FROM sys.databases WHERE Name = '$(DatabaseName)' FOR JSON AUTO
 '@
 
-            TestSqlScript     = @'
+                TestSqlScript     = @'
 if (select count(name) from sys.databases where name = '$(DatabaseName)') = 0
 BEGIN
     RAISERROR ('Did not find database [$(DatabaseName)]', 16, 1)
@@ -28,34 +48,28 @@ BEGIN
 END
 '@
 
-            SetSqlScript      = @'
+                SetSqlScript      = @'
 CREATE DATABASE [$(DatabaseName)]
 '@
 
-            CertificateFile   = $env:DscPublicCertificatePath
-        }
-    )
+                CertificateFile   = $env:DscPublicCertificatePath
+            }
+        )
+    }
 }
 
+<#
+    .SYNOPSIS
+        Dependencies for testing the SqlScript resource.
+        - Creates the script files, Get, Test, and Set.
+        - Creates the SqlLogin and adds it to db_creator role.
+#>
 Configuration MSFT_SqlScript_CreateDependencies_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $UserCredential
-    )
-
     Import-DscResource -ModuleName 'PSDscResources'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost
+    node $AllNodes.NodeName
     {
         Script 'CreateFile_GetSqlScript'
         {
@@ -140,54 +154,57 @@ Configuration MSFT_SqlScript_CreateDependencies_Config
             }
         }
 
-        SqlServerLogin ('Create{0}' -f $UserCredential.UserName)
+        SqlServerLogin ('Create{0}' -f $Node.SqlLogin_UserName)
         {
             Ensure                         = 'Present'
-            Name                           = $UserCredential.UserName
+            Name                           = $Node.SqlLogin_UserName
             LoginType                      = 'SqlLogin'
-            LoginCredential                = $UserCredential
             LoginMustChangePassword        = $false
             LoginPasswordExpirationEnabled = $true
             LoginPasswordPolicyEnforced    = $true
 
+            LoginCredential                = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.SqlLogin_UserName, (ConvertTo-SecureString -String $Node.SqlLogin_Password -AsPlainText -Force))
+
             ServerName                     = $Node.ServerName
             InstanceName                   = $Node.InstanceName
 
-            PsDscRunAsCredential           = $SqlAdministratorCredential
+            PsDscRunAsCredential           = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
 
-        SqlServerRole ('Add{0}ToDbCreator' -f $UserCredential.UserName)
+        SqlServerRole ('Add{0}ToDbCreator' -f $Node.SqlLogin_UserName)
         {
             Ensure               = 'Present'
             ServerRoleName       = 'dbcreator'
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
             Members              = @(
-                $UserCredential.UserName
+                $Node.SqlLogin_UserName
             )
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
 
             DependsOn            = @(
-                ('[SqlServerLogin]Create{0}' -f $UserCredential.UserName)
+                ('[SqlServerLogin]Create{0}' -f $Node.SqlLogin_UserName)
             )
         }
     }
 }
 
+<#
+    .SYNOPSIS
+        Runs the SQL script as a Windows User.
+#>
 Configuration MSFT_SqlScript_RunSqlScriptAsWindowsUser_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost
+    node $AllNodes.NodeName
     {
         SqlScript 'Integration_Test'
         {
@@ -201,24 +218,22 @@ Configuration MSFT_SqlScript_RunSqlScriptAsWindowsUser_Config
             )
             QueryTimeout         = 30
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
     }
 }
 
+<#
+    .SYNOPSIS
+        Runs the SQL script as a SQL login.
+#>
 Configuration MSFT_SqlScript_RunSqlScriptAsSqlUser_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $UserCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost
+    node $AllNodes.NodeName
     {
         SqlScript 'Integration_Test'
         {
@@ -231,7 +246,9 @@ Configuration MSFT_SqlScript_RunSqlScriptAsSqlUser_Config
                 ('DatabaseName={0}' -f $Node.Database2Name)
             )
             QueryTimeout   = 30
-            Credential     = $UserCredential
+            Credential     = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.SqlLogin_UserName, (ConvertTo-SecureString -String $Node.SqlLogin_Password -AsPlainText -Force))
         }
     }
 }

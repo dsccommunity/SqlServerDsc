@@ -1,6 +1,6 @@
 <#
     .EXAMPLE
-        This example will add a Database Mirror endpoint with a specific listener port and a specific listener IP address.
+        This example will add a Database Mirror endpoint with specific listener port, listener IP address and owner.
 #>
 Configuration Example
 {
@@ -22,6 +22,7 @@ Configuration Example
             EndpointName         = 'HADR'
             Port                 = 9001
             IpAddress            = '192.168.0.20'
+            Owner                = 'sa'
 
             ServerName           = 'server1.company.local'
             InstanceName         = 'INST1'

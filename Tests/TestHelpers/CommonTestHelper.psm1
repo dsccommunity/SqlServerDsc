@@ -246,7 +246,7 @@ function New-SQLSelfSignedCertificate
 {
     $sqlPublicCertificatePath = Join-Path -Path $env:temp -ChildPath 'SqlPublicKey.cer'
     $sqlPrivateCertificatePath = Join-Path -Path $env:temp -ChildPath 'SqlPrivateKey.cer'
-    $sqlPriavteKeyPassword = ConvertTo-SecureString -String "1234" -Force -AsPlainText
+    $sqlPrivateKeyPassword = ConvertTo-SecureString -String "1234" -Force -AsPlainText
 
     $certificateSubject = $env:COMPUTERNAME
 
@@ -254,8 +254,8 @@ function New-SQLSelfSignedCertificate
         There are build workers still on Windows Server 2012 R2 so let's
         use the alternate method of New-SelfSignedCertificate.
     #>
-    Install-Module -Name PSPKI -Scope CurrentUser -Force
-    Import-Module -Name PSPKI
+    Install-Module -Name 'PSPKI' -Scope 'CurrentUser' -Force
+    Import-Module -Name 'PSPKI'
 
     $newSelfSignedCertificateExParameters = @{
         Subject            = "CN=$certificateSubject"
@@ -264,7 +264,7 @@ function New-SQLSelfSignedCertificate
         SAN                = "dns:$certificateSubject"
         FriendlyName       = 'Sql Encryption certificate'
         Path               = $sqlPrivateCertificatePath
-        Password           = $sqlPriavteKeyPassword
+        Password           = $sqlPrivateKeyPassword
         Exportable         = $true
         KeyLength          = 2048
         ProviderName       = 'Microsoft Enhanced Cryptographic Provider v1.0'
@@ -285,4 +285,51 @@ function New-SQLSelfSignedCertificate
     Write-Info -Message ('Environment variable $env:SqlCertificateThumbprint set to ''{0}''' -f $env:SqlCertificateThumbprint)
 
     return $certificate
+}
+
+<#
+    .SYNOPSIS
+        Returns $true if the the environment variable APPVEYOR is set to $true,
+        and the environment variable CONFIGURATION is set to the value passed
+        in the parameter Type.
+
+    .PARAMETER Name
+        Name of the test script that is called. Defaults to the name of the
+        calling script.
+
+    .PARAMETER Type
+        Type of tests in the test file. Can be set to Unit or Integration.
+#>
+function Test-SkipContinuousIntegrationTask
+{
+    [OutputType([System.Boolean])]
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $Name = $MyInvocation.PSCommandPath.Split('\')[-1],
+
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Unit', 'Integration')]
+        [System.String]
+        $Type
+    )
+
+    $result = $false
+
+    if ($Type -eq 'Integration' -and -not $env:APPVEYOR -eq $true)
+    {
+        Write-Warning -Message ('{1} test for {0} will be skipped unless $env:APPVEYOR is set to $true' -f $Name, $Type)
+        $result = $true
+    }
+
+    if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne $Type)
+    {
+        Write-Verbose -Message ('{1} tests in {0} will be skipped unless $env:CONFIGURATION is set to ''{1}''.' -f $Name, $Type) -Verbose
+        $result = $true
+    }
+
+    return $result
 }

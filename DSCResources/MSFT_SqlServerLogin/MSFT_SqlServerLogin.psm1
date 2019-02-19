@@ -34,7 +34,7 @@ function Get-TargetResource
         $InstanceName
     )
 
-    $serverObject = Connect-SQL -SQLServer $ServerName -SQLInstanceName $InstanceName
+    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
 
     Write-Verbose 'Getting SQL logins'
     New-VerboseMessage -Message "Getting the login '$Name' from '$ServerName\$InstanceName'"
@@ -161,7 +161,7 @@ function Set-TargetResource
         $Disabled
     )
 
-    $serverObject = Connect-SQL -SQLServer $ServerName -SQLInstanceName $InstanceName
+    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
 
     switch ( $Ensure )
     {
@@ -227,10 +227,10 @@ function Set-TargetResource
 
                 switch ($LoginType)
                 {
-                    SqlLogin
+                    'SqlLogin'
                     {
                         # Verify the instance is in Mixed authentication mode
-                        if ( $serverObject.LoginMode -notmatch 'Mixed|Integrated' )
+                        if ( $serverObject.LoginMode -notmatch 'Mixed|Normal' )
                         {
                             throw New-TerminatingError -ErrorType IncorrectLoginMode -FormatArgs $ServerName, $InstanceName, $serverObject.LoginMode -ErrorCategory NotImplemented
                         }
@@ -381,7 +381,7 @@ function Test-TargetResource
         $testPassed = $false
     }
 
-    if ( $Ensure -eq 'Present' )
+    if ( $Ensure -eq 'Present' -and $($loginInfo.Ensure) -eq 'Present' )
     {
         if ( $LoginType -ne $loginInfo.LoginType )
         {
@@ -416,12 +416,46 @@ function Test-TargetResource
 
                 try
                 {
-                    Connect-SQL -SQLServer $ServerName -SQLInstanceName $InstanceName -SetupCredential $userCredential -LoginType 'SqlLogin' | Out-Null
+                    Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -SetupCredential $userCredential -LoginType 'SqlLogin' | Out-Null
                 }
                 catch
                 {
-                    New-VerboseMessage -Message "Password validation failed for the login '$Name'."
-                    $testPassed = $false
+                    # Check to see if the parameter of $Disabled is true
+                    if ($Disabled)
+                    {
+                        <#
+                            An exception occurred and $Disabled is true, we neeed
+                            to check the error codes for expected error numbers.
+                            Recursively search the Exception variable and inner
+                            Exceptions for the specific numbers.
+                            18470 - Username and password are correct, but
+                            account is disabled.
+                            18456 - Login failed for user.
+                        #>
+                        if ((Find-ExceptionByNumber -ExceptionToSearch $_.Exception -ErrorNumber 18470))
+                        {
+                            New-VerboseMessage -Message "Password valid, but '$Name' is disabled."                            
+                        }
+                        elseif ((Find-ExceptionByNumber -ExceptionToSearch $_.Exception -ErrorNumber 18456))
+                        {
+                            New-VerboseMessage -Message $_.Exception.message
+                            
+                            # The password was not correct, password validation failed
+                            $testPassed = $false
+                        }
+                        else 
+                        {
+                            New-VerboseMessage -Message "Unknown error: $($_.Exception.message)"
+                            
+                            # Something else went wrong, rethrow error
+                            throw
+                        }
+                    }
+                    else 
+                    {
+                        New-VerboseMessage -Message "Password validation failed for the login '$Name'."
+                        $testPassed = $false
+                    }
                 }
             }
         }

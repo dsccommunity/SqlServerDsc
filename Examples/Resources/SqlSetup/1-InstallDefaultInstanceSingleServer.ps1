@@ -54,32 +54,32 @@ Configuration Example
         #region Install SQL Server
         SqlSetup 'InstallDefaultInstance'
         {
-            InstanceName         = 'MSSQLSERVER'
-            Features             = 'SQLENGINE,AS'
-            SQLCollation         = 'SQL_Latin1_General_CP1_CI_AS'
-            SQLSvcAccount        = $SqlServiceCredential
-            AgtSvcAccount        = $SqlAgentServiceCredential
-            ASSvcAccount         = $SqlServiceCredential
-            SQLSysAdminAccounts  = 'COMPANY\SQL Administrators', $SqlAdministratorCredential.UserName
-            ASSysAdminAccounts   = 'COMPANY\SQL Administrators', $SqlAdministratorCredential.UserName
-            InstallSharedDir     = 'C:\Program Files\Microsoft SQL Server'
-            InstallSharedWOWDir  = 'C:\Program Files (x86)\Microsoft SQL Server'
-            InstanceDir          = 'C:\Program Files\Microsoft SQL Server'
-            InstallSQLDataDir    = 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\Data'
-            SQLUserDBDir         = 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\Data'
-            SQLUserDBLogDir      = 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\Data'
-            SQLTempDBDir         = 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\Data'
-            SQLTempDBLogDir      = 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\Data'
-            SQLBackupDir         = 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\Backup'
-            ASServerMode         = 'TABULAR'
-            ASConfigDir          = 'C:\MSOLAP\Config'
-            ASDataDir            = 'C:\MSOLAP\Data'
-            ASLogDir             = 'C:\MSOLAP\Log'
-            ASBackupDir          = 'C:\MSOLAP\Backup'
-            ASTempDir            = 'C:\MSOLAP\Temp'
-            SourcePath           = 'C:\InstallMedia\SQL2016RTM'
-            UpdateEnabled        = 'False'
-            ForceReboot          = $false
+            InstanceName           = 'MSSQLSERVER'
+            Features               = 'SQLENGINE,AS'
+            SQLCollation           = 'SQL_Latin1_General_CP1_CI_AS'
+            SQLSvcAccount          = $SqlServiceCredential
+            AgtSvcAccount          = $SqlAgentServiceCredential
+            ASSvcAccount           = $SqlServiceCredential
+            SQLSysAdminAccounts    = 'COMPANY\SQL Administrators', $SqlAdministratorCredential.UserName
+            ASSysAdminAccounts     = 'COMPANY\SQL Administrators', $SqlAdministratorCredential.UserName
+            InstallSharedDir       = 'C:\Program Files\Microsoft SQL Server'
+            InstallSharedWOWDir    = 'C:\Program Files (x86)\Microsoft SQL Server'
+            InstanceDir            = 'C:\Program Files\Microsoft SQL Server'
+            InstallSQLDataDir      = 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\Data'
+            SQLUserDBDir           = 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\Data'
+            SQLUserDBLogDir        = 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\Data'
+            SQLTempDBDir           = 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\Data'
+            SQLTempDBLogDir        = 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\Data'
+            SQLBackupDir           = 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\Backup'
+            ASServerMode           = 'TABULAR'
+            ASConfigDir            = 'C:\MSOLAP\Config'
+            ASDataDir              = 'C:\MSOLAP\Data'
+            ASLogDir               = 'C:\MSOLAP\Log'
+            ASBackupDir            = 'C:\MSOLAP\Backup'
+            ASTempDir              = 'C:\MSOLAP\Temp'
+            SourcePath             = 'C:\InstallMedia\SQL2016RTM'
+            UpdateEnabled          = 'False'
+            ForceReboot            = $false
 
             PsDscRunAsCredential = $SqlInstallCredential
 

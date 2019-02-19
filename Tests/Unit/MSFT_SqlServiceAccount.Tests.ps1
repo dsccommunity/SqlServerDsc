@@ -8,12 +8,15 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
-# This is used to make sure the unit test run in a container.
-[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container2', ContainerImage = 'microsoft/windowsservercore')]
-param()
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-$script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceName = 'MSFT_SqlServiceAccount'
+if (Test-SkipContinuousIntegrationTask -Type 'Unit')
+{
+    return
+}
+
+$script:dscModuleName = 'SqlServerDsc'
+$script:dscResourceName = 'MSFT_SqlServiceAccount'
 
 #region HEADER
 
@@ -28,8 +31,8 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
 
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Unit
 
 #endregion HEADER
@@ -50,7 +53,7 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope $script:DSCResourceName {
+    InModuleScope $script:dscResourceName {
 
         $mockSqlServer = 'TestServer'
         $mockDefaultInstanceName = 'MSSQLSERVER'
@@ -60,8 +63,11 @@ try
         $mockServiceAccountCredential = (New-Object -TypeName System.Management.Automation.PSCredential $mockDesiredServiceAccountName, (New-Object -TypeName System.Security.SecureString))
         $mockDefaultServiceAccountName = 'NT SERVICE\MSSQLSERVER'
         $mockDefaultServiceAccountCredential = (New-Object -TypeName System.Management.Automation.PSCredential $mockDefaultServiceAccountName, (New-Object -TypeName System.Security.SecureString))
-        $mockLocalServiceAccountName = "$($mockSqlServer)\SqlService"
+        $mockLocalServiceAccountName = '$($mockSqlServer)\SqlService'
         $mockLocalServiceAccountCredential = (New-Object -TypeName System.Management.Automation.PSCredential $mockLocalServiceAccountName, (New-Object -TypeName System.Security.SecureString))
+        $mockManagedServiceAccountName = 'CONTOSO\sqlservice$'
+        $mockManagedServiceAccountCredential = (New-Object -TypeName System.Management.Automation.PSCredential $mockManagedServiceAccountName, (New-Object -TypeName System.Security.SecureString))
+        $mockIntegrationServicesObject = @{Name = 'MsDtsServer130'}
 
         # Stores the result of SetServiceAccount calls
         $testServiceAccountUpdated = @{
@@ -164,6 +170,18 @@ try
                         ServiceAccount = ($mockLocalServiceAccountName -replace $mockSqlServer, '.')
                         Type           = 'SqlServer'
                     }
+
+            $managedComputerObject | Add-Member @mockAddMemberParameters_SetServiceAccount
+
+            return $managedComputerObject
+        }
+
+        $mockGetServiceObject_DefaultInstance_ManagedServiceAccount = {
+            $managedComputerObject = New-Object -TypeName PSObject -Property @{
+                Name           = $mockDefaultInstanceName
+                ServiceAccount = $mockManagedServiceAccountName
+                Type           = 'SqlServer'
+            }
 
             $managedComputerObject | Add-Member @mockAddMemberParameters_SetServiceAccount
 
@@ -428,6 +446,74 @@ try
             }
         }
 
+        Describe 'MSFT_SqlServerServiceAccount\ConvertTo-ResourceServiceType' -Tag 'Helper' {
+            Context 'Translating service types' {
+                $testCases = @(
+                    @{
+                        ServiceType  = 'SqlServer'
+                        ExpectedType = 'DatabaseEngine'
+                    }
+
+                    @{
+                        ServiceType  = 'SqlAgent'
+                        ExpectedType = 'SQLServerAgent'
+                    }
+
+                    @{
+                        ServiceType  = 'Search'
+                        ExpectedType = 'Search'
+                    }
+
+                    @{
+                        ServiceType  = 'SqlServerIntegrationService'
+                        ExpectedType = 'IntegrationServices'
+                    }
+
+                    @{
+                        ServiceType  = 'AnalysisServer'
+                        ExpectedType = 'AnalysisServices'
+                    }
+
+                    @{
+                        ServiceType  = 'ReportServer'
+                        ExpectedType = 'ReportingServices'
+                    }
+
+                    @{
+                        ServiceType  = 'SqlBrowser'
+                        ExpectedType = 'SQLServerBrowser'
+                    }
+
+                    @{
+                        ServiceType  = 'NotificationServer'
+                        ExpectedType = 'NotificationServices'
+                    }
+
+                    @{
+                        ServiceType  = 'UnknownTypeShouldReturnTheSame'
+                        ExpectedType = 'UnknownTypeShouldReturnTheSame'
+                    }
+                )
+
+                It 'Should properly map <ServiceType> to resource type <ExpectedType>' -TestCases $testCases {
+                    param
+                    (
+                        [System.String]
+                        $ServiceType,
+
+                        [System.String]
+                        $ExpectedType
+                    )
+
+                    # Get the ManagedServiceType
+                    $managedServiceType = ConvertTo-ResourceServiceType -ServiceType $ServiceType
+
+                    $managedServiceType | Should -BeOfType [System.String]
+                    $managedServiceType | Should -Be $ExpectedType
+                }
+            }
+        }
+
         Describe 'MSFT_SqlServerServiceAccount\Get-SqlServiceName' -Tag 'Helper' {
             BeforeAll {
                 Mock @mockGetChildItemParameters
@@ -483,7 +569,7 @@ try
                     )
 
                     # Get the service name
-                    Get-SqlServiceName -InstanceName $mockDefaultInstanceName -ServiceType $ServiceType | Should -Be $ExpectedServiceName
+                    Get-SqlServiceName -InstanceName $mockDefaultInstanceName -ServiceType $ServiceType  | Should -Be $ExpectedServiceName
 
                     # Ensure the mock is utilized
                     Assert-MockCalled -CommandName Get-ChildItem -ParameterFilter $mockGetChildItem_ParameterFilter -Scope It -Exactly -Times 1
@@ -633,6 +719,36 @@ try
                     Assert-MockCalled -CommandName New-Object -Scope It -Exactly -Times 1
                 }
             }
+
+            Context 'When getting service IntegrationServices' {
+                Mock @mockNewObjectParameters_DefaultInstance
+                Mock -CommandName Get-SqlServiceName -MockWith {
+                    return 'MsDtsServer'
+                }
+                Mock -CommandName New-Object -MockWith {
+                    return @{
+                        Services = $mockIntegrationServicesObject
+                    }
+                }
+                It 'Should throw an exception when VersionNumber is not specified'{
+                    $getServiceObjectParameters = $defaultGetServiceObjectParameters.Clone()
+                    $getServiceObjectParameters.ServiceType = 'IntegrationServices'
+                    $getServiceObjectParameters.InstanceName = 'MSSQLSERVER'
+
+                    $testErrorMessage = $script:localizedData.MissingParameter -f 'IntegrationServices'
+
+                    {Get-ServiceObject @getServiceObjectParameters} | Should -Throw $testErrorMessage
+                }
+
+                It 'Should return service when VersionNumber is specified'{
+                    $getServiceObjectParameters = $defaultGetServiceObjectParameters.Clone()
+                    $getServiceObjectParameters.ServiceType = 'IntegrationServices'
+                    $getServiceObjectParameters.InstanceName = 'MSSQLSERVER'
+                    $getServiceObjectParameters.VersionNumber = '130'
+
+                    Get-ServiceObject @getServiceObjectParameters | Should -Be $mockIntegrationServicesObject
+                }
+            }
         }
 
         Describe 'MSFT_SqlServerServiceAccount\Get-TargetResource' -Tag 'Get' {
@@ -663,7 +779,7 @@ try
                     # Validate the hashtable returned
                     $testServiceInformation.ServerName | Should -Be $mockSqlServer
                     $testServiceInformation.InstanceName | Should -Be $mockDefaultInstanceName
-                    $testServiceInformation.ServiceType | Should -Be 'SqlServer'
+                    $testServiceInformation.ServiceType | Should -Be 'DatabaseEngine'
                     $testServiceInformation.ServiceAccountName | Should -Be $mockDefaultServiceAccountName
 
                     # Ensure mocks were properly used
@@ -710,7 +826,7 @@ try
                     # Validate the hashtable returned
                     $testServiceInformation.ServerName | Should -Be $mockSqlServer
                     $testServiceInformation.InstanceName | Should -Be $mockNamedInstance
-                    $testServiceInformation.ServiceType | Should -Be 'SqlServer'
+                    $testServiceInformation.ServiceType | Should -Be 'DatabaseEngine'
                     $testServiceInformation.ServiceAccountName | Should -Be $mockDesiredServiceAccountName
 
                     # Ensure mocks were properly used
@@ -748,6 +864,29 @@ try
                     $currentState.ServiceAccountName | Should -Be $mockLocalServiceAccountName
 
                     # Ensure mocks were properly used
+                    Assert-MockCalled -CommandName Get-ServiceObject -Scope It -Exactly -Times 1
+                }
+            }
+
+            Context 'When the service account is a Managed Service Account' {
+                BeforeAll {
+                    Mock -CommandName Get-ServiceObject -MockWith $mockGetServiceObject_DefaultInstance_ManagedServiceAccount
+                }
+
+                $defaultGetTargetResourceParameters = @{
+                    ServerName     = $mockSqlServer
+                    InstanceName   = $mockDefaultInstanceName
+                    ServiceType    = $mockServiceType
+                    ServiceAccount = $mockManagedServiceAccountCredential
+                }
+
+                It 'Should have the Managed Service Account' {
+                    $currentState = Get-TargetResource @defaultGetTargetResourceParameters
+
+                    # Validate the managed service account
+                    $currentState.ServiceAccountName | Should -Be $mockManagedServiceAccountName
+
+                    # Ensure the mocks were properly used
                     Assert-MockCalled -CommandName Get-ServiceObject -Scope It -Exactly -Times 1
                 }
             }

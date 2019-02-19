@@ -1,39 +1,58 @@
-$ConfigurationData = @{
-    AllNodes = @(
-        @{
-            NodeName        = 'localhost'
-            ServerName      = $env:COMPUTERNAME
-            InstanceName    = 'DSCSQL2016'
+#region HEADER
+# Integration Test Config Template Version: 1.2.0
+#endregion
 
-            MailServerName  = 'mail.company.local'
-            AccountName     = 'MyMail'
-            ProfileName     = 'MyMailProfile'
-            EmailAddress    = 'NoReply@company.local'
-            Description     = 'Default mail account and profile.'
-            LoggingLevel    = 'Normal'
-            TcpPort         = 25
+$configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
+if (Test-Path -Path $configFile)
+{
+    <#
+        Allows reading the configuration data from a JSON file,
+        for real testing scenarios outside of the CI.
+    #>
+    $ConfigurationData = Get-Content -Path $configFile | ConvertFrom-Json
+}
+else
+{
+    $ConfigurationData = @{
+        AllNodes = @(
+            @{
+                NodeName        = 'localhost'
 
-            CertificateFile = $env:DscPublicCertificatePath
-        }
-    )
+                UserName        = "$env:COMPUTERNAME\SqlInstall"
+                Password        = 'P@ssw0rd1'
+
+                ServerName      = $env:COMPUTERNAME
+                InstanceName    = 'DSCSQL2016'
+
+                MailServerName  = 'mail.company.local'
+                AccountName     = 'MyMail'
+                ProfileName     = 'MyMailProfile'
+                EmailAddress    = 'NoReply@company.local'
+                Description     = 'Default mail account and profile.'
+                LoggingLevel    = 'Normal'
+                TcpPort         = 25
+
+                CertificateFile = $env:DscPublicCertificatePath
+            }
+        )
+    }
 }
 
+<#
+    .SYNOPSIS
+        Configures database mail.
+
+    .NOTES
+        This also enables the option 'Database Mail XPs'.
+#>
 Configuration MSFT_SqlServerDatabaseMail_Add_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServerConfiguration 'EnableDatabaseMailXPs'
         {
-
             ServerName     = $Node.ServerName
             InstanceName   = $Node.InstanceName
             OptionName     = 'Database Mail XPs'
@@ -56,24 +75,26 @@ Configuration MSFT_SqlServerDatabaseMail_Add_Config
             LoggingLevel         = $Node.LoggingLevel
             TcpPort              = $Node.TcpPort
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
 
+<#
+    .SYNOPSIS
+        Removes database mail.
+
+    .NOTES
+        This also disables the option 'Database Mail XPs'.
+#>
 Configuration MSFT_SqlServerDatabaseMail_Remove_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServerDatabaseMail 'Integration_Test'
         {
             Ensure               = 'Absent'
@@ -84,12 +105,13 @@ Configuration MSFT_SqlServerDatabaseMail_Remove_Config
             EmailAddress         = $Node.EmailAddress
             MailServerName       = $Node.MailServerName
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
 
         SqlServerConfiguration 'DisableDatabaseMailXPs'
         {
-
             ServerName     = $Node.ServerName
             InstanceName   = $Node.InstanceName
             OptionName     = 'Database Mail XPs'
