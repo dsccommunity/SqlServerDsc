@@ -1313,7 +1313,7 @@ function Test-ImpersonatePermissions
         New-VerboseMessage -Message ( 'The login "{0}" does not have control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
     }
 
-    if ( [System.String]::IsNullOrEmpty($SecurableName) ) {
+    if ( -not [System.String]::IsNullOrEmpty($SecurableName) ) {
         # Check for login-specific impersonation permissions
         $testLoginEffectivePermissionsParams = @{
             SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
