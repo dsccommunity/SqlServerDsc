@@ -289,7 +289,7 @@ function New-TerminatingError
 
         if (!$errorMessage)
         {
-            $errorMessage = ("No Localization key found for key: {0}" -f $ErrorType)
+            $errorMessage = ("No Localization key found for ErrorType: '{0}'." -f $ErrorType)
         }
     }
 
