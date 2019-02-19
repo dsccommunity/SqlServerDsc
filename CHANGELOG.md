@@ -62,6 +62,10 @@
   - Add integration tests
     ([issue #744](https://github.com/PowerShell/SqlServerDsc/issues/744)).
     [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
+- Changes to SqlAGDatabase
+  - Fix MatchDatabaseOwner to check for CONTROL SERVER and IMPERSONATE LOGIN
+    permission in addition to IMPERSONATE ANY LOGIN.
+  - Fix MatchDatabaseOwner help text.
 
 ## 12.2.0.0
 

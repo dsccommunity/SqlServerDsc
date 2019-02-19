@@ -1079,7 +1079,20 @@ function Test-LoginEffectivePermissions
 
         [Parameter(Mandatory = $true)]
         [System.String[]]
-        $Permissions
+        $Permissions,
+
+        # Other types are not used here and so not implemented:
+        # 'APPLICATION ROLE', 'ASSEMBLY', 'ASYMMETRIC KEY', 'CERTIFICATE', 'CONTRACT', 'DATABASE', 'ENDPOINT', 'FULLTEXT CATALOG',
+        # 'MESSAGE TYPE', 'OBJECT', 'REMOTE SERVICE BINDING', 'ROLE', 'ROUTE', 'SCHEMA', 'SERVICE', 'SYMMETRIC KEY',
+        # 'TYPE', 'USER', 'XML SCHEMA COLLECTION'
+        [ValidateSet('SERVER', 'LOGIN')]
+        [Parameter()]
+        [System.String]
+        $SecurableClass = 'SERVER',
+
+        [Parameter()]
+        [System.String]
+        $SecurableName
     )
 
     # Assume the permissions are not present
@@ -1092,12 +1105,23 @@ function Test-LoginEffectivePermissions
         WithResults     = $true
     }
 
-    $queryToGetEffectivePermissionsForLogin = "
-        EXECUTE AS LOGIN = '$LoginName'
-        SELECT DISTINCT permission_name
-        FROM fn_my_permissions(null,'SERVER')
-        REVERT
-    "
+    if ([System.String]::IsNullOrEmpty($SecurableName))
+        $queryToGetEffectivePermissionsForLogin = "
+            EXECUTE AS LOGIN = '$LoginName'
+            SELECT DISTINCT permission_name
+            FROM fn_my_permissions(null,'$SecurableClass')
+            REVERT
+        "
+    }
+    else
+    {
+        $queryToGetEffectivePermissionsForLogin = "
+            EXECUTE AS LOGIN = '$LoginName'
+            SELECT DISTINCT permission_name
+            FROM fn_my_permissions('$SecurableName','$SecurableClass')
+            REVERT
+        "
+    }
 
     Write-Verbose -Message ($script:localizedData.GetEffectivePermissionForLogin -f $LoginName, $sqlInstanceName) -Verbose
 
@@ -1233,6 +1257,10 @@ function Get-PrimaryReplicaServerObject
 
     .PARAMETER ServerObject
         The server object on which to perform the test.
+
+    .PARAMETER SecurableName
+        If set then impersonate permission on tihs specific securable (e.g. login) is also checked.
+
 #>
 function Test-ImpersonatePermissions
 {
@@ -1240,9 +1268,16 @@ function Test-ImpersonatePermissions
     (
         [Parameter(Mandatory = $true)]
         [Microsoft.SqlServer.Management.Smo.Server]
-        $ServerObject
+        $ServerObject,
+
+        [Parameter()]
+        [System.String]
+        $SecurableName
     )
 
+    $impersonatePermissionsPresent = $false
+
+    # This permission only exists in SQL 2014 and above
     $testLoginEffectivePermissionsParams = @{
         SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
         SQLInstanceName = $ServerObject.ServiceName
@@ -1251,6 +1286,31 @@ function Test-ImpersonatePermissions
     }
 
     $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+
+    if ( -not $impersonatePermissionsPresent )
+    {
+        # Check for sysadmin / control server permission which allows impersonation
+        $testLoginEffectivePermissionsParams = @{
+            SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
+            SQLInstanceName = $ServerObject.ServiceName
+            LoginName       = $ServerObject.ConnectionContext.TrueLogin
+            Permissions     = @('CONTROL SERVER')
+        }
+        $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+    }
+
+    if ( -not $impersonatePermissionsPresent -and -not [System.String]::IsNullOrEmpty($SecurableName) ) {
+        # Check for login-specific impersonation permissions
+        $testLoginEffectivePermissionsParams = @{
+            SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
+            SQLInstanceName = $ServerObject.ServiceName
+            LoginName       = $ServerObject.ConnectionContext.TrueLogin
+            Permissions     = @('IMPERSONATE')
+            SecurableClass  = 'LOGIN'
+            SecurableName   = $SecurableName
+        }
+        $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+    }
 
     if ( -not $impersonatePermissionsPresent )
     {
@@ -1572,7 +1632,7 @@ function Get-ServiceAccount
 function Find-ExceptionByNumber
 {
     # Define parameters
-    param 
+    param
     (
         [Parameter(Mandatory = $true)]
         [System.Exception]
