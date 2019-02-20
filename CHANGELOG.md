@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 12.3.0.0
+
 - Changes to SqlServerDsc
   - Reverting the change that was made as part of the
     [issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260)
