@@ -1,6 +1,6 @@
 @{
   # Version number of this module.
-  moduleVersion = '12.2.0.0'
+  moduleVersion = '12.3.0.0'
 
   # ID used to uniquely identify this module
   GUID = '693ee082-ed36-45a7-b490-88b07c86b42f'
@@ -50,17 +50,65 @@
 
           # ReleaseNotes of this module
         ReleaseNotes = '- Changes to SqlServerDsc
-  - During testing in AppVeyor the Build Worker is restarted in the install
-    step to make sure the are no residual changes left from a previous SQL
-    Server install on the Build Worker done by the AppVeyor Team
+  - Reverting the change that was made as part of the
+    [issue 1260](https://github.com/PowerShell/SqlServerDsc/issues/1260)
+    in the previous release, as it only mitigated the issue, it did not
+    solve the issue.
+  - Removed the container testing since that broke the integration tests,
+    possible due to using excessive amount of memory on the AppVeyor build
+    worker. This will make the unit tests to take a bit longer to run
     ([issue 1260](https://github.com/PowerShell/SqlServerDsc/issues/1260)).
-  - Code cleanup: Change parameter names of Connect-SQL to align with resources.
-  - Updated README.md in the Examples folder.
-    - Added a link to the new xADObjectPermissionEntry examples in
-      ActiveDirectory, fixed a broken link and a typo.
-      [Adam Rush (@adamrushuk)](https://github.com/adamrushuk)
-- Change to SqlServerLogin so it doesn"t check properties for absent logins.
-  - Fix for ([issue 1096](https://github.com/PowerShell/SqlServerDsc/issues/1096))
+  - The unit tests and the integration tests are now run in two separate
+    build workers in AppVeyor. One build worker runs the integration tests,
+    while a second build worker runs the unit tests. The build workers runs
+    in parallel on paid accounts, but sequentially on free accounts
+    ([issue 1260](https://github.com/PowerShell/SqlServerDsc/issues/1260)).
+  - Clean up error handling in some of the integration tests that was
+    part of a workaround for a bug in Pester. The bug is resolved, and
+    the error handling is not again built into Pester.
+  - Speeding up the AppVeyor tests by splitting the common tests in a
+    separate build job.
+  - Updated the appveyor.yml to have the correct build step, and also
+    correct run the build step only in one of the jobs.
+  - Update integration tests to use the new integration test template.
+  - Added SqlAgentOperator resource.
+- Changes to SqlServiceAccount
+  - Fixed Get-ServiceObject when searching for Integration Services service.
+    Unlike the rest of SQL Server services, the Integration Services service
+    cannot be instanced, however you can have multiple versions installed.
+    Get-Service object would return the correct service name that you
+    are looking for, but it appends the version number at the end. Added
+    parameter VersionNumber so the search would return the correct
+    service name.
+  - Added code to allow for using Managed Service Accounts.
+  - Now the correct service type string value is returned by the function
+    `Get-TargetResource`. Previously one value was passed in as a parameter
+    (e.g. `DatabaseEngine`), but a different string value as returned
+    (e.g. `SqlServer`). Now `Get-TargetResource` return the same values
+    that can be passed as values in the parameter `ServiceType`
+    ([issue 981](https://github.com/PowerShell/SqlServerDsc/issues/981)).
+- Changes to SqlServerLogin
+  - Fixed issue in Test-TargetResource to valid password on disabled accounts
+    ([issue 915](https://github.com/PowerShell/SqlServerDsc/issues/915)).
+  - Now when adding a login of type SqlLogin, and the SQL Server login mode
+    is set to `"Integrated"`, an error is correctly thrown
+    ([issue 1179](https://github.com/PowerShell/SqlServerDsc/issues/1179)).
+- Changes to SqlSetup
+  - Updated the integration test to stop the named instance while installing
+    the other instances to mitigate
+    [issue 1260](https://github.com/PowerShell/SqlServerDsc/issues/1260).
+  - Add parameters to configure the Tempdb files during the installation of
+    the instance. The new parameters are SqlTempdbFileCount, SqlTempdbFileSize,
+    SqlTempdbFileGrowth, SqlTempdbLogFileSize and SqlTempdbLogFileGrowth
+    ([issue 1167](https://github.com/PowerShell/SqlServerDsc/issues/1167)).
+- Changes to SqlServerEndpoint
+  - Add the optional parameter Owner. The default owner remains the login used
+    for the creation of the endpoint
+    ([issue 1251](https://github.com/PowerShell/SqlServerDsc/issues/1251)).
+    [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
+  - Add integration tests
+    ([issue 744](https://github.com/PowerShell/SqlServerDsc/issues/744)).
+    [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
 
 '
 
@@ -68,6 +116,7 @@
 
   } # End of PrivateData hashtable
   }
+
 
 
 

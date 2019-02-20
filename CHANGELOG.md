@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 12.3.0.0
+
 - Changes to SqlServerDsc
   - Updated Cim Class to Win32_ComputerSystem (instead of Win32_PhysicalMemory)
     because the correct memory size was not being detected correctly on Azure VMs
