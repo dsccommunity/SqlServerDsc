@@ -8,9 +8,15 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
-# This is used to make sure the unit test run in a container.
-[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container2', ContainerImage = 'microsoft/windowsservercore')]
-param()
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
+if (Test-SkipContinuousIntegrationTask -Type 'Unit')
+{
+    return
+}
+
+$script:dscModuleName      = 'SqlServerDsc'
+$script:dscResourceName    = 'MSFT_SqlWindowsFirewall'
 
 #region HEADER
 
@@ -25,8 +31,8 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
 
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName 'SqlServerDsc' `
-    -DSCResourceName 'MSFT_SqlWindowsFirewall' `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Unit
 
 #endregion HEADER
@@ -43,7 +49,7 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope 'MSFT_SqlWindowsFirewall' {
+    InModuleScope $script:dscResourceName {
         <#
             Testing two major versions to verify Integration Services differences (i.e service name).
             No point in testing each supported SQL Server version, since there are no difference

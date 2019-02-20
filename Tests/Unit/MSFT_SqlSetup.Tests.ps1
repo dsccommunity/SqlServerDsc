@@ -8,14 +8,19 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
-# This is used to make sure the unit test run in a container.
-[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container2', ContainerImage = 'microsoft/windowsservercore')]
 # Suppressing this rule because PlainText is required for one of the functions used in this test
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param()
 
-$script:DSCModuleName      = 'SqlServerDsc'
-$script:DSCResourceName    = 'MSFT_SqlSetup'
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
+if (Test-SkipContinuousIntegrationTask -Type 'Unit')
+{
+    return
+}
+
+$script:dscModuleName      = 'SqlServerDsc'
+$script:dscResourceName    = 'MSFT_SqlSetup'
 
 #region HEADER
 
@@ -30,8 +35,8 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Unit
 
 #endregion HEADER
@@ -48,7 +53,7 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope $script:DSCResourceName {
+    InModuleScope $script:dscResourceName {
         <#
             .SYNOPSIS
                 Used to test arguments passed to Start-SqlSetupProcess while inside and It-block.
@@ -3150,6 +3155,11 @@ try
                             AsSvcStartupType = $mockAsSvcStartupType
                             IsSvcStartupType = $mockIsSvcStartupType
                             RsSvcStartupType = $mockRsSvcStartupType
+                            SqlTempdbFileCount = 2
+                            SqlTempdbFileSize = 128
+                            SqlTempdbFileGrowth = 128
+                            SqlTempdbLogFileSize = 128
+                            SqlTempdbLogFileGrowth = 128
                         }
 
                         if ( $mockSqlMajorVersion -in (13,14) )
@@ -3178,6 +3188,11 @@ try
                             AsSvcStartupType = $mockAsSvcStartupType
                             IsSvcStartupType = $mockIsSvcStartupType
                             RsSvcStartupType = $mockRsSvcStartupType
+                            SqlTempdbFileCount = 2
+                            SqlTempdbFileSize = 128
+                            SqlTempdbFileGrowth = 128
+                            SqlTempdbLogFileSize = 128
+                            SqlTempdbLogFileGrowth = 128
                         }
 
                         { Set-TargetResource @testParameters } | Should -Not -Throw

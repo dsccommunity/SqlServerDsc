@@ -9,13 +9,18 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
-# This is used to make sure the unit test run in a container.
-[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container2', ContainerImage = 'microsoft/windowsservercore')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
 param()
 
-$script:DSCModuleName   = 'SqlServerDSC'
-$script:DSCResourceName = 'MSFT_SqlServerReplication'
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
+if (Test-SkipContinuousIntegrationTask -Type 'Unit')
+{
+    return
+}
+
+$script:dscModuleName   = 'SqlServerDSC'
+$script:dscResourceName = 'MSFT_SqlServerReplication'
 
 #region HEADER
 # Unit Test Template Version: 1.1.0
@@ -28,15 +33,15 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Unit
 
 #endregion HEADER
 # Begin Testing
 try
 {
-    InModuleScope $script:DSCResourceName {
+    InModuleScope $script:dscResourceName {
 
         Describe 'Helper functions' {
             Context 'Get-SqlServerMajorVersion' {

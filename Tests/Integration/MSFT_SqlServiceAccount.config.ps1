@@ -1,17 +1,43 @@
-$ConfigurationData = @{
-    AllNodes = @(
-        @{
-            NodeName                  = 'localhost'
-            ServerName                = $env:COMPUTERNAME
-            DefaultInstanceName       = 'MSSQLSERVER'
-            NamedInstanceName         = 'DSCSQL2016'
+#region HEADER
+# Integration Test Config Template Version: 1.2.0
+#endregion
 
-            ServiceTypeDatabaseEngine = 'DatabaseEngine'
-            ServiceTypeSqlServerAgent = 'SqlServerAgent'
+$configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
+if (Test-Path -Path $configFile)
+{
+    <#
+        Allows reading the configuration data from a JSON file,
+        for real testing scenarios outside of the CI.
+    #>
+    $ConfigurationData = Get-Content -Path $configFile | ConvertFrom-Json
+}
+else
+{
+    $ConfigurationData = @{
+        AllNodes = @(
+            @{
+                NodeName                   = 'localhost'
 
-            CertificateFile           = $env:DscPublicCertificatePath
-        }
-    )
+                Install_UserName           = "$env:COMPUTERNAME\SqlInstall"
+                Install_Password           = 'P@ssw0rd1'
+
+                SqlPrimary_UserName        = "$env:COMPUTERNAME\svc-SqlPrimary"
+                SqlSecondary_UserName      = "$env:COMPUTERNAME\svc-SqlSecondary"
+                SqlAgentPrimary_UserName   = "$env:COMPUTERNAME\svc-SqlAgentPri"
+                SqlAgentSecondary_UserName = "$env:COMPUTERNAME\svc-SqlAgentSec"
+                Password                   = 'yig-C^Equ3'
+
+                ServerName                 = $env:COMPUTERNAME
+                DefaultInstanceName        = 'MSSQLSERVER'
+                NamedInstanceName          = 'DSCSQL2016'
+
+                ServiceTypeDatabaseEngine  = 'DatabaseEngine'
+                ServiceTypeSqlServerAgent  = 'SqlServerAgent'
+
+                CertificateFile            = $env:DscPublicCertificatePath
+            }
+        )
+    }
 }
 
 <#
@@ -26,7 +52,7 @@ Configuration MSFT_SqlServiceAccount_CreateDependencies_Config
 {
     Import-DscResource -ModuleName 'PSDscResources'
 
-    node localhost
+    node $AllNodes.NodeName
     {
         Service ('StartSqlServerDefaultInstance{0}' -f $Node.DefaultInstanceName)
         {
@@ -52,24 +78,19 @@ Configuration MSFT_SqlServiceAccount_CreateDependencies_Config
 #>
 Configuration MSFT_SqlServiceAccount_DatabaseEngine_DefaultInstance_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlServiceSecondaryCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServiceAccount Integration_Test
         {
             ServerName     = $Node.ServerName
             InstanceName   = $Node.DefaultInstanceName
             ServiceType    = $Node.ServiceTypeDatabaseEngine
-            ServiceAccount = $SqlServiceSecondaryCredential
             RestartService = $true
+            ServiceAccount = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.SqlSecondary_UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
@@ -85,31 +106,23 @@ Configuration MSFT_SqlServiceAccount_DatabaseEngine_DefaultInstance_Config
 #>
 Configuration MSFT_SqlServiceAccount_SqlServerAgent_DefaultInstance_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAgentServiceSecondaryCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServiceAccount Integration_Test
         {
             ServerName           = $Node.ServerName
             InstanceName         = $Node.DefaultInstanceName
             ServiceType          = $Node.ServiceTypeSQLServerAgent
-            ServiceAccount       = $SqlAgentServiceSecondaryCredential
             RestartService       = $true
+            ServiceAccount       = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.SqlAgentSecondary_UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Install_UserName, (ConvertTo-SecureString -String $Node.Install_Password -AsPlainText -Force))
         }
     }
 }
@@ -124,24 +137,19 @@ Configuration MSFT_SqlServiceAccount_SqlServerAgent_DefaultInstance_Config
 #>
 Configuration MSFT_SqlServiceAccount_DatabaseEngine_DefaultInstance_Restore_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlServicePrimaryCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServiceAccount Integration_Test
         {
             ServerName     = $Node.ServerName
             InstanceName   = $Node.DefaultInstanceName
             ServiceType    = $Node.ServiceTypeDatabaseEngine
-            ServiceAccount = $SqlServicePrimaryCredential
             RestartService = $true
+            ServiceAccount = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.SqlPrimary_UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
@@ -157,31 +165,23 @@ Configuration MSFT_SqlServiceAccount_DatabaseEngine_DefaultInstance_Restore_Conf
 #>
 Configuration MSFT_SqlServiceAccount_SqlServerAgent_DefaultInstance_Restore_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAgentServicePrimaryCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServiceAccount Integration_Test
         {
             ServerName           = $Node.ServerName
             InstanceName         = $Node.DefaultInstanceName
             ServiceType          = $Node.ServiceTypeSQLServerAgent
-            ServiceAccount       = $SqlAgentServicePrimaryCredential
             RestartService       = $true
+            ServiceAccount       = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.SqlAgentPrimary_UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Install_UserName, (ConvertTo-SecureString -String $Node.Install_Password -AsPlainText -Force))
         }
     }
 }
@@ -194,7 +194,7 @@ Configuration MSFT_SqlServiceAccount_StopSqlServerDefaultInstance_Config
 {
     Import-DscResource -ModuleName 'PSDscResources'
 
-    node localhost
+    node $AllNodes.NodeName
     {
         Service ('StartSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
         {
@@ -220,24 +220,19 @@ Configuration MSFT_SqlServiceAccount_StopSqlServerDefaultInstance_Config
 #>
 Configuration MSFT_SqlServiceAccount_DatabaseEngine_NamedInstance_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlServiceSecondaryCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServiceAccount Integration_Test
         {
             ServerName     = $Node.ServerName
             InstanceName   = $Node.NamedInstanceName
             ServiceType    = $Node.ServiceTypeDatabaseEngine
-            ServiceAccount = $SqlServiceSecondaryCredential
             RestartService = $true
+            ServiceAccount = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.SqlSecondary_UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
@@ -253,31 +248,23 @@ Configuration MSFT_SqlServiceAccount_DatabaseEngine_NamedInstance_Config
 #>
 Configuration MSFT_SqlServiceAccount_SqlServerAgent_NamedInstance_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAgentServiceSecondaryCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServiceAccount Integration_Test
         {
             ServerName           = $Node.ServerName
             InstanceName         = $Node.NamedInstanceName
             ServiceType          = $Node.ServiceTypeSQLServerAgent
-            ServiceAccount       = $SqlAgentServiceSecondaryCredential
             RestartService       = $true
+            ServiceAccount       = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.SqlAgentSecondary_UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Install_UserName, (ConvertTo-SecureString -String $Node.Install_Password -AsPlainText -Force))
         }
     }
 }
@@ -292,24 +279,19 @@ Configuration MSFT_SqlServiceAccount_SqlServerAgent_NamedInstance_Config
 #>
 Configuration MSFT_SqlServiceAccount_DatabaseEngine_NamedInstance_Restore_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlServicePrimaryCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServiceAccount Integration_Test
         {
             ServerName     = $Node.ServerName
             InstanceName   = $Node.NamedInstanceName
             ServiceType    = $Node.ServiceTypeDatabaseEngine
-            ServiceAccount = $SqlServicePrimaryCredential
             RestartService = $true
+            ServiceAccount = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.SqlPrimary_UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
@@ -325,31 +307,23 @@ Configuration MSFT_SqlServiceAccount_DatabaseEngine_NamedInstance_Restore_Config
 #>
 Configuration MSFT_SqlServiceAccount_SqlServerAgent_NamedInstance_Restore_Config
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlInstallCredential,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAgentServicePrimaryCredential
-    )
-
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node $AllNodes.NodeName
+    {
         SqlServiceAccount Integration_Test
         {
             ServerName           = $Node.ServerName
             InstanceName         = $Node.NamedInstanceName
             ServiceType          = $Node.ServiceTypeSQLServerAgent
-            ServiceAccount       = $SqlAgentServicePrimaryCredential
             RestartService       = $true
+            ServiceAccount       = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.SqlAgentPrimary_UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
 
-            PsDscRunAsCredential = $SqlInstallCredential
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Install_UserName, (ConvertTo-SecureString -String $Node.Install_Password -AsPlainText -Force))
         }
     }
 }

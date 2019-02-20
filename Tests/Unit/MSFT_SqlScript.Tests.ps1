@@ -8,11 +8,19 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
-# This is used to make sure the unit test run in a container.
-[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container2', ContainerImage = 'microsoft/windowsservercore')]
 # Suppression of this PSSA rule allowed in tests.
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param()
+
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
+if (Test-SkipContinuousIntegrationTask -Type 'Unit')
+{
+    return
+}
+
+$script:dscModuleName = 'SqlServerDsc'
+$script:dscResourceName = 'MSFT_SqlScript'
 
 #region HEADER
 
@@ -29,8 +37,8 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath 'SqlServerDsc
 
 
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName 'SqlServerDsc' `
-    -DSCResourceName 'MSFT_SqlScript'  `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Unit
 
 #endregion HEADER
@@ -50,9 +58,9 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope 'MSFT_SqlScript' {
+    InModuleScope $script:dscResourceName {
         InModuleScope 'SqlServerDscHelper' {
-            $script:DSCModuleName = 'SqlServerDsc'
+            $script:dscModuleName = 'SqlServerDsc'
             $resourceName = 'MSFT_SqlScript'
 
             $testParameters = @{

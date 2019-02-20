@@ -8,15 +8,20 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
-# This is used to make sure the unit test run in a container.
-[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container1', ContainerImage = 'microsoft/windowsservercore')]
 # To run these tests, we have to fake login credentials
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param ()
 
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
+if (Test-SkipContinuousIntegrationTask -Type 'Unit')
+{
+    return
+}
+
 # Unit Test Template Version: 1.1.0
 
-$script:moduleName = 'SqlServerDscHelper'
+$script:helperModuleName = 'SqlServerDscHelper'
 
 [System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
@@ -26,7 +31,7 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 }
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
-Import-Module (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent | Split-Path -Parent) -ChildPath 'SqlServerDscHelper.psm1') -Scope Global -Force
+Import-Module (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent | Split-Path -Parent) -ChildPath "$script:helperModuleName.psm1") -Scope Global -Force
 
 # Loading mocked classes
 Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SMO.cs )
@@ -35,7 +40,7 @@ Add-Type -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Pa
 Import-Module -Name (Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests') -ChildPath 'Unit') -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Global -Force
 
 # Begin Testing
-InModuleScope $script:moduleName {
+InModuleScope $script:helperModuleName {
     $mockNewObject_MicrosoftAnalysisServicesServer = {
         return New-Object -TypeName Object |
                     Add-Member -MemberType ScriptMethod -Name Connect -Value {
@@ -141,6 +146,20 @@ InModuleScope $script:moduleName {
     $mockSetupCredentialPassword = 'StrongOne7.'
     $mockSetupCredentialSecurePassword = ConvertTo-SecureString -String $mockSetupCredentialPassword -AsPlainText -Force
     $mockSetupCredential = New-Object -TypeName PSCredential -ArgumentList ($mockSetupCredentialUserName, $mockSetupCredentialSecurePassword)
+
+    $mockLocalSystemAccountUserName = 'NT AUTHORITY\SYSTEM'
+    $mockLocalSystemAccountCredential = New-Object System.Management.Automation.PSCredential $mockLocalSystemAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
+    $mockManagedServiceAccountUserName = 'CONTOSO\msa$'
+    $mockManagedServiceAccountCredential = New-Object System.Management.Automation.PSCredential $mockManagedServiceAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
+    $mockDomainAccountUserName = 'CONTOSO\User1'
+    $mockLocalServiceAccountUserName = 'NT SERVICE\MyService'
+    $mockLocalServiceAccountCredential = New-Object System.Management.Automation.PSCredential $mockLocalServiceAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
+    $mockDomainAccountCredential = New-Object System.Management.Automation.PSCredential $mockDomainAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
+    $mockInnerException = New-Object System.Exception "This is a mock inner excpetion object"
+    $mockInnerException | Add-Member -Name 'Number' -Value 2 -MemberType NoteProperty
+    $mockException = New-Object System.Exception "This is a mock exception object", $mockInnerException
+    $mockException | Add-Member -Name 'Number' -Value 1 -MemberType NoteProperty
+
 
     Describe 'Testing Restart-SqlService' {
         Context 'Restart-SqlService standalone instance' {
@@ -592,7 +611,7 @@ InModuleScope $script:moduleName {
         }
 
         BeforeEach {
-            Mock -CommandName Connect-SQL -MockWith $mockConnectSql -ModuleName $script:DSCResourceName -Verifiable
+            Mock -CommandName Connect-SQL -MockWith $mockConnectSql -ModuleName $script:dscResourceName -Verifiable
             Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
         }
 
@@ -2025,6 +2044,53 @@ InModuleScope $script:moduleName {
 
             It 'Should throw the correct error from Query parameterset Invoke-Sqlcmd' {
                 { Invoke-SqlScript @invokeScriptQueryParameters } | Should Throw $errorMessage
+            }
+        }
+    }
+
+    Describe 'Testing Get-ServiceAccount'{
+        Context 'When getting service account' {
+            It 'Should return NT AUTHORITY\SYSTEM' {
+                $returnValue = Get-ServiceAccount -ServiceAccount $mockLocalSystemAccountCredential
+
+                $returnValue.UserName | Should -Be $mockLocalSystemAccountUserName
+                $returnValue.Password | Should -BeNullOrEmpty
+            }
+
+            It 'Should return Domain Account and Password' {
+                $returnValue = Get-ServiceAccount -ServiceAccount $mockDomainAccountCredential
+
+                $returnValue.UserName | Should -Be $mockDomainAccountUserName
+                $returnValue.Password | Should -Be $mockDomainAccountCredential.GetNetworkCredential().Password
+            }
+
+            It 'Should return managed service account' {
+                $returnValue = Get-ServiceAccount -ServiceAccount $mockManagedServiceAccountCredential
+
+                $returnValue.UserName | Should -Be $mockManagedServiceAccountUserName
+            }
+
+            It 'Should return local service account' {
+                $returnValue= Get-ServiceAccount -ServiceAccount $mockLocalServiceAccountCredential
+
+                $returnValue.UserName | Should -Be $mockLocalServiceAccountUserName
+                $returnValue.Password | Should -BeNullOrEmpty
+            }
+        }
+    }
+
+    Describe 'Testing Find-ExceptionByNumber'{
+        Context 'When searching Exception objects'{
+            It 'Should return true for main exception' {
+                Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 1 | Should -Be $true
+            }
+
+            It 'Should return true for inner exception' {
+                Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 2 | Should -Be $true
+            }
+
+            It 'Should return false when message not found' {
+                Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 3 | Should -Be $false
             }
         }
     }

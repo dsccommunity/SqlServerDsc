@@ -8,9 +8,15 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
-# This is used to make sure the unit test run in a container.
-[Microsoft.DscResourceKit.UnitTest(ContainerName = 'Container1', ContainerImage = 'microsoft/windowsservercore')]
-param()
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
+if (Test-SkipContinuousIntegrationTask -Type 'Unit')
+{
+    return
+}
+
+$script:dscModuleName = 'SqlServerDsc'
+$script:dscResourceName = 'MSFT_SqlAG'
 
 #region HEADER
 
@@ -23,16 +29,16 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 }
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'CommonTestHelper.psm1'))) -Force -Global
 
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName 'SqlServerDsc' `
-    -DSCResourceName 'MSFT_SqlAG' `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
     -TestType Unit
 
 #endregion HEADER
 
-function Invoke-TestSetup {
+function Invoke-TestSetup
+{
     # Load the SMO stubs
     Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SMO.cs )
 
@@ -40,7 +46,8 @@ function Invoke-TestSetup {
     Import-SQLModuleStub
 }
 
-function Invoke-TestCleanup {
+function Invoke-TestCleanup
+{
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
 }
 
@@ -49,7 +56,10 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope 'MSFT_SqlAG' {
+    InModuleScope $script:dscResourceName {
+        # This is relative to the path of the resource module script, not test test script.
+        $script:moduleRoot = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+        Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'CommonTestHelper.psm1'))) -Force -Global
 
         #region parameter mocks
 
