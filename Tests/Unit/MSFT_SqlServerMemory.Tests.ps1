@@ -157,13 +157,11 @@ try
             }
 
             Mock -CommandName Get-CimInstance -MockWith {
-                $mockGetCimInstanceMem = @()
 
-                $mockGetCimInstanceMem += New-Object -TypeName PSObject -Property @{
+                New-Object -TypeName PSObject -Property @{
                     TotalPhysicalMemory = 17179869184
                 }
 
-                $mockGetCimInstanceMem
             } -ParameterFilter { $ClassName -eq 'Win32_ComputerSystem' } -Verifiable
 
             Mock -CommandName Get-CimInstance -MockWith {
@@ -489,21 +487,11 @@ try
             }
 
             Mock -CommandName Get-CimInstance -MockWith {
-                $mockGetCimInstanceMem = @()
 
-                $mockGetCimInstanceMem += New-Object -TypeName PSObject -Property @{
-                    Name     = 'Physical Memory'
-                    Tag      = 'Physical Memory 0'
-                    Capacity = 17179869184
+                New-Object -TypeName PSObject -Property @{
+                    TotalPhysicalMemory = 17179869184
                 }
 
-                $mockGetCimInstanceMem += New-Object -TypeName PSObject -Property @{
-                    Name     = 'Physical Memory'
-                    Tag      = 'Physical Memory 1'
-                    Capacity = 17179869184
-                }
-
-                $mockGetCimInstanceMem
             } -ParameterFilter { $ClassName -eq 'Win32_ComputerSystem' } -Verifiable
 
             Mock -CommandName Get-CimInstance -MockWith {
