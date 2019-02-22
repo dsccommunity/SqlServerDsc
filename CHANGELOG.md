@@ -5,6 +5,10 @@
 ## 12.3.0.0
 
 - Changes to SqlServerDsc
+  - Updated Cim Class to Win32_ComputerSystem (instead of Win32_PhysicalMemory)
+    because the correct memory size was not being detected correctly on Azure VMs
+    [issue #914](https://github.com/PowerShell/SqlServerDsc/issues/914)
+    [issue #1154](https://github.com/PowerShell/SqlServerDsc/issues/1154)
   - Reverting the change that was made as part of the
     [issue #1260](https://github.com/PowerShell/SqlServerDsc/issues/1260)
     in the previous release, as it only mitigated the issue, it did not
