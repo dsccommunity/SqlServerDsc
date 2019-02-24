@@ -24,50 +24,29 @@ else
 
                 # Database Engine properties.
                 DatabaseEngineNamedInstanceName         = 'DSCSQLTEST'
-
-                <#
-                    CONN feature:
-                    Due to issue #1105 the feature CONN was removed.
-                    It cannot be used here if CONN is already installed
-                    in the AppVeyor build worker.
-                #>
-                DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,AS,BC,SDK'
+                DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,AS,CONN,BC,SDK'
                 AnalysisServicesMultiServerMode         = 'MULTIDIMENSIONAL'
 
                 <#
                     Analysis Services Tabular properties.
-                    The features CONN,BC,SDK is installed with the DSCSQL2016 so those
+                    The features CONN,BC,SDK is installed with the DSCSQLTEST so those
                     features will found for DSCTABULAR instance as well.
                     The features is added here so the same property can be used to
                     evaluate the result in the test.
                 #>
                 AnalysisServicesTabularInstanceName     = 'DSCTABULAR'
-
-                <#
-                    CONN feature:
-                    Due to issue #1105 the feature CONN was removed.
-                    It cannot be used here if CONN is already installed
-                    in the AppVeyor build worker.
-                #>
-                AnalysisServicesTabularFeatures         = 'AS,BC,SDK'
+                AnalysisServicesTabularFeatures         = 'AS,CONN,BC,SDK'
                 AnalysisServicesTabularServerMode       = 'TABULAR'
 
                 <#
                     Database Engine default instance properties.
-                    The features CONN,BC,SDK is installed with the DSCSQL2016 so those
+                    The features CONN,BC,SDK is installed with the DSCSQLTEST so those
                     features will found for DSCTABULAR instance as well.
                     The features is added here so the same property can be used to
                     evaluate the result in the test.
                 #>
                 DatabaseEngineDefaultInstanceName       = 'MSSQLSERVER'
-
-                <#
-                    CONN feature:
-                    Due to issue #1105 the feature CONN was removed.
-                    It cannot be used here if CONN is already installed
-                    in the AppVeyor build worker.
-                #>
-                DatabaseEngineDefaultInstanceFeatures   = 'SQLENGINE,BC,SDK'
+                DatabaseEngineDefaultInstanceFeatures   = 'SQLENGINE,CONN,BC,SDK'
 
                 # General SqlSetup properties
                 Collation                               = 'Finnish_Swedish_CI_AS'
@@ -239,6 +218,8 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
     {
         SqlSetup 'Integration_Test'
         {
+            FeatureFlag            = @('DetectionSharedFeatures')
+
             InstanceName           = $Node.DatabaseEngineNamedInstanceName
             Features               = $Node.DatabaseEngineNamedInstanceFeatures
             SourcePath             = "$($Node.DriveLetter):\"
@@ -336,6 +317,8 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineDefaultInstanceAsUser_Config
     {
         SqlSetup 'Integration_Test'
         {
+            FeatureFlag            = @('DetectionSharedFeatures')
+
             InstanceName         = $Node.DatabaseEngineDefaultInstanceName
             Features             = $Node.DatabaseEngineDefaultInstanceFeatures
             SourcePath           = "$($Node.DriveLetter):\"
@@ -393,6 +376,8 @@ Configuration MSFT_SqlSetup_InstallTabularAnalysisServicesAsSystem_Config
     {
         SqlSetup 'Integration_Test'
         {
+            FeatureFlag            = @('DetectionSharedFeatures')
+
             InstanceName        = $Node.AnalysisServicesTabularInstanceName
             Features            = $Node.AnalysisServicesTabularFeatures
             SourcePath          = "$($Node.DriveLetter):\"

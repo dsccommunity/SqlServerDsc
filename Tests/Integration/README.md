@@ -202,7 +202,7 @@ ScriptDatabase2 | DscAdmin1
 **Depends on:** SqlScript
 
 The integration test will leave the following databases on the SQL Server instance
-**DSCSQL2016**.
+**DSCSQLTEST**.
 
 Database name | Owner
 --- | ---

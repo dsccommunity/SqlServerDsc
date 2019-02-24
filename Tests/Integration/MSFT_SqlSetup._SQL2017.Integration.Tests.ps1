@@ -4,7 +4,7 @@ param()
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-if (Test-SkipContinuousIntegrationTask -Type 'Integration')
+if (Test-SkipContinuousIntegrationTask -Type 'Integration' -Category @('Integration_SQL2017'))
 {
     return
 }
@@ -72,7 +72,7 @@ function Show-SqlBootstrapLog
     here we rename back the folder to the correct name. Only the version need
     for our tests are renamed.
 #>
-$sqlModulePath = Get-ChildItem -Path 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\*.old'
+$sqlModulePath = Get-ChildItem -Path 'C:\Program Files (x86)\Microsoft SQL Server\140\Tools\PowerShell\*.old'
 $sqlModulePath | ForEach-Object -Process {
     $newFolderName = (Split-Path -Path $_ -Leaf) -replace '\.old'
     Write-Verbose ('Renaming ''{0}'' to ''..\{1}''' -f $_, $newFolderName) -Verbose
@@ -82,7 +82,7 @@ $sqlModulePath | ForEach-Object -Process {
 # Using try/finally to always cleanup.
 try
 {
-    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
+    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName)_SQL2017.config.ps1"
     . $configFile
 
     $mockSourceMediaUrl = 'https://download.microsoft.com/download/E/F/2/EF23C21D-7860-4F05-88CE-39AA114B014B/SQLServer2017-x64-ENU.iso'

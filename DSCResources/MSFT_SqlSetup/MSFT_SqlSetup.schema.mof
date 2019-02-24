@@ -62,4 +62,5 @@ class MSFT_SqlSetup : OMI_BaseResource
     [Write, Description("Specifies the initial size of each tempdb log file in MB.")] UInt32 SqlTempdbLogFileSize;
     [Write, Description("Specifies the file growth increment of each tempdb data file in MB.")] UInt32 SqlTempdbLogFileGrowth;
     [Write, Description("The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.")] UInt32 SetupProcessTimeout;
+    [Write, Description("Feature flags are used to toggle functionality on or off. See the documentation for what additional functionality exist through a feature flag.")] String FeatureFlag[];
 };

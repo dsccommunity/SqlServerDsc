@@ -75,4 +75,5 @@ ConvertFrom-StringData @'
     MasterDataServicesFeatureFound = Master Data Services (MDS) feature detected.
     MasterDataServicesFeatureNotFound = Master Data Services (MDS) feature not detected.
     FeatureAlreadyInstalled = The feature '{0}' is already installed so it will not be installed again.
+    FeatureFlag = Using feature flag '{0}'
 '@

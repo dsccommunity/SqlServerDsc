@@ -314,8 +314,18 @@ function Test-SkipContinuousIntegrationTask
         [Parameter(Mandatory = $true)]
         [ValidateSet('Unit', 'Integration')]
         [System.String]
-        $Type
+        $Type,
+
+        [Parameter()]
+        [System.String[]]
+        $Category
     )
+
+    # Support using only the Type parameter as category names.
+    if (-not $Category)
+    {
+        $Category = @($Type)
+    }
 
     $result = $false
 
@@ -325,9 +335,9 @@ function Test-SkipContinuousIntegrationTask
         $result = $true
     }
 
-    if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -ne $Type)
+    if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -notin $Category)
     {
-        Write-Verbose -Message ('{1} tests in {0} will be skipped unless $env:CONFIGURATION is set to ''{1}''.' -f $Name, $Type) -Verbose
+        Write-Verbose -Message ('{1} tests in {0} will be skipped unless $env:CONFIGURATION is set to ''{1}''.' -f $Name, ($Category -join ''', or ''')) -Verbose
         $result = $true
     }
 

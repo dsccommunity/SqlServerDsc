@@ -35,7 +35,7 @@ else
                 SuppressReboot       = $true # Make sure we don't reboot during testing.
                 ForceReboot          = $false
 
-                ImagePath            = "$env:TEMP\SQL2017.iso"
+                ImagePath            = "$env:TEMP\SQL2016.iso"
                 DriveLetter          = $mockIsoMediaDriveLetter
 
                 DatabaseServerName   = $env:COMPUTERNAME
