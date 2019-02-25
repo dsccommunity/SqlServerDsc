@@ -6,7 +6,7 @@ environment:
   gallery_api:
     secure: 9ekJzfsPCDBkyLrfmov83XbbhZ6E2N3z+B/Io8NbDetbHc6hWS19zsDmy7t0Vvxv
   # The job where deploy step should run (normally the last job)
-  DeployInJobNumber: 3
+  DeployInJobNumber: 4
 
 # The image that will be used when building the job matrix.
 image: Visual Studio 2017
@@ -18,7 +18,8 @@ image: Visual Studio 2017
 configuration:
   - Meta
   - Unit
-  - Integration
+  - Integration_SQL2016
+  - Integration_SQL2017
 
 install:
     - git clone https://github.com/PowerShell/DscResource.Tests
@@ -55,7 +56,8 @@ for:
 -
   matrix:
     only:
-      - configuration: Integration
+      - configuration: Integration_SQL2016
+      - configuration: Integration_SQL2017
   environment:
     SkipAllCommonTests: True
 

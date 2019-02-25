@@ -40,7 +40,7 @@ else
             @{
                 NodeName                 = 'localhost'
                 ComputerName             = $env:COMPUTERNAME
-                InstanceName             = 'DSCSQL2016'
+                InstanceName             = 'DSCSQLTEST'
                 RestartTimeout           = 120
 
                 UserName                 = "$env:COMPUTERNAME\SqlInstall"

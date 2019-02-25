@@ -1619,6 +1619,22 @@ cluster. This is a limitation of SQL Server. See article
 [You cannot add or remove features to a SQL Server 2008, SQL Server 2008 R2, or
 SQL Server 2012 failover cluster](https://support.microsoft.com/en-us/help/2547273/you-cannot-add-or-remove-features-to-a-sql-server-2008,-sql-server-2008-r2,-or-sql-server-2012-failover-cluster).
 
+#### Feature flags
+
+Feature flags are used to toggle functionality on or off. One or more
+feature flags can be added to the parameter `FeatureFlag`, i.e.
+`FeatureFlag = @('DetectionSharedFeatures')`.
+
+>**NOTE:** The functionality, exposed
+with a feature flag, can be changed from one release to another, including
+having breaking changes.
+
+<!-- markdownlint-disable MD013 -->
+Feature flag | Description
+--- | ---
+DetectionSharedFeatures | A new way of detecting if the shared features is installed or not. This was implemented because the previous implementation did not work fully with SQL Server 2017.
+<!-- markdownlint-enable MD013 -->
+
 #### Credentials for running the resource
 
 ##### PsDscRunAsCredential
@@ -1758,6 +1774,9 @@ need a '*SVCPASSWORD' argument in the setup arguments.
 * **`[UInt32]` SetupProcessTimeout** _(Write)_: The timeout, in seconds, to wait
   for the setup process to finish. Default value is 7200 seconds (2 hours). If
   the setup process does not finish before this time, and error will be thrown.
+* **`[String[]]` FeatureFlag** _(Write)_: Feature flags are used to toggle
+  functionality on or off. See the documentation for what additional
+  functionality exist through a feature flag.
 
 #### Read-Only Properties from Get-TargetResource
 

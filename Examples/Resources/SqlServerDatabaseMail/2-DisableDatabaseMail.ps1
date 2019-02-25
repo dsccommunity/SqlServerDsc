@@ -9,7 +9,7 @@ $ConfigurationData = @{
         @{
             NodeName       = 'localhost'
             ServerName     = $env:COMPUTERNAME
-            InstanceName   = 'DSCSQL2016'
+            InstanceName   = 'DSCSQLTEST'
 
             MailServerName = 'mail.company.local'
             AccountName    = 'MyMail'
