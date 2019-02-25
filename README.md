@@ -1623,7 +1623,11 @@ SQL Server 2012 failover cluster](https://support.microsoft.com/en-us/help/25472
 
 Feature flags are used to toggle functionality on or off. One or more
 feature flags can be added to the parameter `FeatureFlag`, i.e.
-`FeatureFlag = @('DetectionSharedFeatures')`
+`FeatureFlag = @('DetectionSharedFeatures')`.
+
+>**NOTE:** The functionality, exposed
+with a feature flag, can be changed from one release to another, including
+having breaking changes.
 
 <!-- markdownlint-disable MD013 -->
 Feature flag | Description
