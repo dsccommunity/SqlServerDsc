@@ -76,7 +76,7 @@ Configuration Example
             Action                     = 'AddNode'
             ForceReboot                = $false
             UpdateEnabled              = 'False'
-            SourcePath                 = '\\fileserver.compant.local\images$\SQL2016RTM'
+            SourcePath                 = '\\fileserver.company.local\images$\SQL2016RTM'
             SourceCredential           = $SqlInstallCredential
 
             InstanceName               = 'INST2016'

@@ -22,13 +22,13 @@ AppVeyor build worker for other integration tests to use.
 
 Instance | Feature | AS server mode | State
 --- | --- | --- | ---
-DSCSQL2016 | SQLENGINE,AS,CONN,BC,SDK | MULTIDIMENSIONAL | Running
+DSCSQLTEST | SQLENGINE,AS,CONN,BC,SDK | MULTIDIMENSIONAL | Running
 DSCTABULAR | AS,CONN,BC,SDK | TABULAR | Stopped
 MSSQLSERVER | SQLENGINE,CONN,BC,SDK | - | Stopped
 
 All running Database Engine instances also have a SQL Server Agent that is started.
 
-The instance DSCSQL2016 support mixed authentication mode.
+The instance DSCSQLTEST support mixed authentication mode.
 
 >**Note:** Some services are stopped to save memory on the build worker. See the
 >column *State*.
@@ -48,13 +48,13 @@ be used by other integration tests.
 
 User | Password | Permission | Description
 --- | --- | --- | ---
-.\SqlInstall | P@ssw0rd1 | Local Windows administrator. Administrator of Database Engine instance DSCSQL2016\*. | Runs Setup for the default instance.
+.\SqlInstall | P@ssw0rd1 | Local Windows administrator. Administrator of Database Engine instance DSCSQLTEST\*. | Runs Setup for the default instance.
 .\SqlAdmin | P@ssw0rd1 | Administrator of all SQL Server instances. |
 .\svc-SqlPrimary | yig-C^Equ3 | Local user. | Runs the SQL Server Agent service.
 .\svc-SqlAgentPri | yig-C^Equ3 | Local user. | Runs the SQL Server Agent service.
 .\svc-SqlSecondary | yig-C^Equ3 | Local user. | Used by other tests, but created here.
 .\svc-SqlAgentSec | yig-C^Equ3 | Local user. | Used by other tests.
-sa | P@ssw0rd1 | Administrator of the Database Engine instances DSCSQL2016. |
+sa | P@ssw0rd1 | Administrator of the Database Engine instances DSCSQLTEST. |
 
 *\* This is due to that the integration tests runs the resource SqlAlwaysOnService
 with this user and that means that this user must have permission to access the
@@ -104,7 +104,7 @@ DSCRS2016 | RS | The Reporting Services is initialized, and in a working state.
 - **InstallSharedDir:** C:\Program Files\Microsoft SQL Server
 - **InstallSharedWOWDir:** C:\Program Files (x86)\Microsoft SQL Server
 - **DatabaseServerName:** `$env:COMPUTERNAME`
-- **DatabaseInstanceName:** DSCSQL2016
+- **DatabaseInstanceName:** DSCSQLTEST
 
 ## SqlDatabaseDefaultLocation
 
@@ -113,7 +113,7 @@ DSCRS2016 | RS | The Reporting Services is initialized, and in a working state.
 **Depends on:** SqlSetup
 
 The integration test will change the data, log and backup path of instance
-**DSCSQL2016** to the following.
+**DSCSQLTEST** to the following.
 
 Data | Log | Backup
 --- | --- | ---
@@ -142,7 +142,7 @@ Username | Members | Member of | Permission
 DscSqlUsers1 | DscUser1, DscUser2 | *None* | *None*
 
 The integration tests will leave the following logins on the SQL Server instance
-**DSCSQL2016**.
+**DSCSQLTEST**.
 
 Login | Type | Password | Permission
 --- | --- | --- | ---
@@ -160,7 +160,7 @@ DscUser4 | SQL | P@ssw0rd1 | *None*
 **Depends on:** SqlSetup, SqlServerLogin
 
 The integration test will keep the following server roles on the SQL Server instance
-**DSCSQL2016**.
+**DSCSQLTEST**.
 
 Server Role | Members
 --- | ---
@@ -174,21 +174,21 @@ DscServerRole2 | DscUser4
 **Depends on:** SqlSetup
 
 The integration tests will leave the following logins on the SQL Server instance
-**DSCSQL2016**.
+**DSCSQLTEST**.
 
 Login | Type | Password | Permission
 --- | --- | --- | ---
 DscAdmin1 | SQL | P@ssw0rd1 | dbcreator
 
 The integration test will change the following server roles on the SQL Server instance
-**DSCSQL2016**.
+**DSCSQLTEST**.
 
 Server Role | Members
 --- | ---
 dbcreator | DscAdmin1
 
 The integration test will leave the following databases on the SQL Server instance
-**DSCSQL2016**.
+**DSCSQLTEST**.
 
 Database name | Owner
 --- | ---
@@ -202,7 +202,7 @@ ScriptDatabase2 | DscAdmin1
 **Depends on:** SqlScript
 
 The integration test will leave the following databases on the SQL Server instance
-**DSCSQL2016**.
+**DSCSQLTEST**.
 
 Database name | Owner
 --- | ---

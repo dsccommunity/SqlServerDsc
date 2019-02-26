@@ -72,6 +72,8 @@ ConvertFrom-StringData @'
     RobocopyAllFilesPresent = Robocopy reported that all files already present.
     StartSetupProcess = Started the process with id {0} using the path '{1}', and with a timeout value of {2} seconds.
     EvaluateMasterDataServicesFeature = Detecting Master Data Services (MDS) feature ({0}).
-    MasterDataServicesFeatureFound = 'Master Data Services (MDS) feature detected.'
-    MasterDataServicesFeatureNotFound = 'Master Data Services (MDS) feature not detected.'
+    MasterDataServicesFeatureFound = Master Data Services (MDS) feature detected.
+    MasterDataServicesFeatureNotFound = Master Data Services (MDS) feature not detected.
+    FeatureAlreadyInstalled = The feature '{0}' is already installed so it will not be installed again.
+    FeatureFlag = Using feature flag '{0}'
 '@

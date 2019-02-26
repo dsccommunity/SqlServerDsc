@@ -79,7 +79,7 @@ Configuration Example
             ASLogDir              = 'C:\MSOLAP13.INST2016\Log'
             ASBackupDir           = 'C:\MSOLAP13.INST2016\Backup'
             ASTempDir             = 'C:\MSOLAP13.INST2016\Temp'
-            SourcePath            = '\\fileserver.compant.local\images$\SQL2016RTM'
+            SourcePath            = '\\fileserver.company.local\images$\SQL2016RTM'
             SourceCredential      = $SqlInstallCredential
             UpdateEnabled         = 'False'
             ForceReboot           = $false

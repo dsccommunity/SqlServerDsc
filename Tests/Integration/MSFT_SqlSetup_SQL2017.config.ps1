@@ -23,13 +23,13 @@ else
                 NodeName                                = 'localhost'
 
                 # Database Engine properties.
-                DatabaseEngineNamedInstanceName         = 'DSCSQL2016'
+                DatabaseEngineNamedInstanceName         = 'DSCSQLTEST'
                 DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,AS,CONN,BC,SDK'
                 AnalysisServicesMultiServerMode         = 'MULTIDIMENSIONAL'
 
                 <#
                     Analysis Services Tabular properties.
-                    The features CONN,BC,SDK is installed with the DSCSQL2016 so those
+                    The features CONN,BC,SDK is installed with the DSCSQLTEST so those
                     features will found for DSCTABULAR instance as well.
                     The features is added here so the same property can be used to
                     evaluate the result in the test.
@@ -40,7 +40,7 @@ else
 
                 <#
                     Database Engine default instance properties.
-                    The features CONN,BC,SDK is installed with the DSCSQL2016 so those
+                    The features CONN,BC,SDK is installed with the DSCSQLTEST so those
                     features will found for DSCTABULAR instance as well.
                     The features is added here so the same property can be used to
                     evaluate the result in the test.
@@ -57,7 +57,7 @@ else
                 ForceReboot                             = $false
 
                 # Properties for mounting media
-                ImagePath                               = "$env:TEMP\SQL2016.iso"
+                ImagePath                               = "$env:TEMP\SQL2017.iso"
                 DriveLetter                             = $mockIsoMediaDriveLetter
 
                 # Parameters to configure Tempdb
@@ -218,6 +218,8 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
     {
         SqlSetup 'Integration_Test'
         {
+            FeatureFlag            = @('DetectionSharedFeatures')
+
             InstanceName           = $Node.DatabaseEngineNamedInstanceName
             Features               = $Node.DatabaseEngineNamedInstanceFeatures
             SourcePath             = "$($Node.DriveLetter):\"
@@ -315,6 +317,8 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineDefaultInstanceAsUser_Config
     {
         SqlSetup 'Integration_Test'
         {
+            FeatureFlag            = @('DetectionSharedFeatures')
+
             InstanceName         = $Node.DatabaseEngineDefaultInstanceName
             Features             = $Node.DatabaseEngineDefaultInstanceFeatures
             SourcePath           = "$($Node.DriveLetter):\"
@@ -372,6 +376,8 @@ Configuration MSFT_SqlSetup_InstallTabularAnalysisServicesAsSystem_Config
     {
         SqlSetup 'Integration_Test'
         {
+            FeatureFlag            = @('DetectionSharedFeatures')
+
             InstanceName        = $Node.AnalysisServicesTabularInstanceName
             Features            = $Node.AnalysisServicesTabularFeatures
             SourcePath          = "$($Node.DriveLetter):\"

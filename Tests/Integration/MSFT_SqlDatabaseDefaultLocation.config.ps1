@@ -22,7 +22,7 @@ else
                 Password        = 'P@ssw0rd1'
 
                 ComputerName    = $env:COMPUTERNAME
-                InstanceName    = 'DSCSQL2016'
+                InstanceName    = 'DSCSQLTEST'
                 RestartTimeout  = 120
 
                 DataFilePath    = 'C:\SQLData\'
