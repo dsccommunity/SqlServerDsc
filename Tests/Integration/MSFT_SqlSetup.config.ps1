@@ -17,10 +17,38 @@ else
     $mockLastDrive = ((Get-Volume).DriveLetter | Sort-Object | Select-Object -Last 1)
     $mockIsoMediaDriveLetter = [char](([int][char]$mockLastDrive) + 1)
 
+    <#
+        The variable $script:sqlVersion is set in the integration script file,
+        which is available once this script is dot-sourced.
+    #>
+    switch ($script:sqlVersion)
+    {
+        '140'
+        {
+            $versionSpecificData = @{
+                SqlServerInstanceIdPrefix = 'MSSQL14'
+                AnalysisServiceInstanceIdPrefix = 'MSAS14'
+                IsoImageName = 'SQL2017.iso'
+            }
+        }
+
+        '130'
+        {
+            $versionSpecificData = @{
+                SqlServerInstanceIdPrefix = 'MSSQL13'
+                AnalysisServiceInstanceIdPrefix = 'MSAS13'
+                IsoImageName = 'SQL2016.iso'
+            }
+        }
+    }
+
     $ConfigurationData = @{
         AllNodes = @(
             @{
                 NodeName                                = 'localhost'
+
+                SqlServerInstanceIdPrefix               = $versionSpecificData.SqlServerInstanceIdPrefix
+                AnalysisServiceInstanceIdPrefix         = $versionSpecificData.AnalysisServiceInstanceIdPrefix
 
                 # Database Engine properties.
                 DatabaseEngineNamedInstanceName         = 'DSCSQLTEST'
@@ -50,22 +78,27 @@ else
 
                 # General SqlSetup properties
                 Collation                               = 'Finnish_Swedish_CI_AS'
+                InstanceDir                             = 'C:\Program Files\Microsoft SQL Server'
                 InstallSharedDir                        = 'C:\Program Files\Microsoft SQL Server'
                 InstallSharedWOWDir                     = 'C:\Program Files (x86)\Microsoft SQL Server'
+                InstallSQLDataDir                       = "C:\Db\$($script:sqlVersion)\System"
+                SQLUserDBDir                            = "C:\Db\$($script:sqlVersion)\Data\"
+                SQLUserDBLogDir                         = "C:\Db\$($script:sqlVersion)\Log\"
+                SQLBackupDir                            = "C:\Db\$($script:sqlVersion)\Backup"
                 UpdateEnabled                           = 'False'
                 SuppressReboot                          = $true # Make sure we don't reboot during testing.
                 ForceReboot                             = $false
 
                 # Properties for mounting media
-                ImagePath                               = "$env:TEMP\SQL2017.iso"
+                ImagePath                               = Join-Path -Path $env:TEMP -ChildPath $versionSpecificData.IsoImageName
                 DriveLetter                             = $mockIsoMediaDriveLetter
 
-                # Parameters to configure Tempdb
-                SqlTempdbFileCount                      = '2'
-                SqlTempdbFileSize                       = '128'
-                SqlTempdbFileGrowth                     = '128'
-                SqlTempdbLogFileSize                    = '128'
-                SqlTempdbLogFileGrowth                  = '128'
+                # Parameters to configure TempDb
+                SqlTempDbFileCount                      = '2'
+                SqlTempDbFileSize                       = '128'
+                SqlTempDbFileGrowth                     = '128'
+                SqlTempDbLogFileSize                    = '128'
+                SqlTempDbLogFileGrowth                  = '128'
 
                 SqlInstallAccountUserName               = "$env:COMPUTERNAME\SqlInstall"
                 SqlInstallAccountPassword               = 'P@ssw0rd1'
@@ -235,16 +268,21 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
             AsSvcStartupType       = 'Automatic'
             ASCollation            = $Node.Collation
             ASSvcAccount           = $SqlServicePrimaryCredential
+            InstanceDir            = $Node.InstanceDir
             InstallSharedDir       = $Node.InstallSharedDir
             InstallSharedWOWDir    = $Node.InstallSharedWOWDir
+            InstallSQLDataDir      = $Node.InstallSQLDataDir
+            SQLUserDBDir           = $Node.SQLUserDBDir
+            SQLUserDBLogDir        = $Node.SQLUserDBLogDir
+            SQLBackupDir           = $Node.SQLBackupDir
             UpdateEnabled          = $Node.UpdateEnabled
             SuppressReboot         = $Node.SuppressReboot
             ForceReboot            = $Node.ForceReboot
-            SqlTempdbFileCount     = $Node.SqlTempdbFileCount
-            SqlTempdbFileSize      = $Node.SqlTempdbFileSize
-            SqlTempdbFileGrowth    = $Node.SqlTempdbFileGrowth
-            SqlTempdbLogFileSize   = $Node.SqlTempdbLogFileSize
-            SqlTempdbLogFileGrowth = $Node.SqlTempdbLogFileGrowth
+            SqlTempDbFileCount     = $Node.SqlTempDbFileCount
+            SqlTempDbFileSize      = $Node.SqlTempDbFileSize
+            SqlTempDbFileGrowth    = $Node.SqlTempDbFileGrowth
+            SqlTempDbLogFileSize   = $Node.SqlTempDbLogFileSize
+            SqlTempDbLogFileGrowth = $Node.SqlTempDbLogFileGrowth
 
             # This must be set if using SYSTEM account to install.
             SQLSysAdminAccounts   = @(
