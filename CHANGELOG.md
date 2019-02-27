@@ -30,6 +30,14 @@
   - Added a new helper function `Get-InstalledSharedFeatures` to move out
     some of the code from the `Get-TargetResource` to make unit testing
     easier and faster.
+- Changes to SqlAGDatabase
+  - Fix MatchDatabaseOwner to check for CONTROL SERVER and IMPERSONATE LOGIN
+    permission in addition to IMPERSONATE ANY LOGIN.
+  - Update and fix MatchDatabaseOwner help text.
+- Changes to xSQLServerHelper
+  - New-TerminatingError error text for a missing localized message now matches
+    the output even if the "missing localized message" localized message is
+    also missing.
 
 ## 12.3.0.0
 
@@ -93,14 +101,6 @@
   - Add integration tests
     ([issue #744](https://github.com/PowerShell/SqlServerDsc/issues/744)).
     [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
-- Changes to SqlAGDatabase
-  - Fix MatchDatabaseOwner to check for CONTROL SERVER and IMPERSONATE LOGIN
-    permission in addition to IMPERSONATE ANY LOGIN.
-  - Update and fix MatchDatabaseOwner help text.
-- Changes to xSQLServerHelper
-  - New-TerminatingError error text for a missing localized message now matches
-    the output even if the "missing localized message" localized message is
-    also missing.
 
 ## 12.2.0.0
 
