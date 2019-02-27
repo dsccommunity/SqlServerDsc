@@ -486,16 +486,29 @@ function Set-TargetResource
                 $restoreDatabaseQueryStringBuilder.Append('FROM DISK = ''') | Out-Null
                 $restoreDatabaseQueryStringBuilder.Append($databaseFullBackupFile) | Out-Null
                 $restoreDatabaseQueryStringBuilder.AppendLine('''') | Out-Null
-                $restoreDatabaseQueryStringBuilder.Append('WITH NORECOVERY') | Out-Null
+                $restoreDatabaseQueryStringBuilder.AppendLine('WITH NORECOVERY') | Out-Null
+                $restoreDatabaseQueryStringBuilder.AppendLine('REVERT') | Out-Null
                 $restoreDatabaseQueryString = $restoreDatabaseQueryStringBuilder.ToString()
 
-                # Build the parameters to restore the transaction log
-                $restoreSqlDatabaseLogParameters = @{
-                    Database      = $databaseToAddToAvailabilityGroup
-                    BackupFile    = $databaseLogBackupFile
-                    RestoreAction = 'Log'
-                    NoRecovery    = $true
+                # Need to restore the database with a query in order to impersonate the correct login
+                $restoreLogQueryStringBuilder = New-Object -TypeName System.Text.StringBuilder
+
+                if ( $MatchDatabaseOwner )
+                {
+                    $restoreLogQueryStringBuilder.Append('EXECUTE AS LOGIN = ''') | Out-Null
+                    $restoreLogQueryStringBuilder.Append($databaseObject.Owner) | Out-Null
+                    $restoreLogQueryStringBuilder.AppendLine('''') | Out-Null
                 }
+
+                $restoreLogQueryStringBuilder.Append('RESTORE DATABASE [') | Out-Null
+                $restoreLogQueryStringBuilder.Append($databaseToAddToAvailabilityGroup) | Out-Null
+                $restoreLogQueryStringBuilder.AppendLine(']') | Out-Null
+                $restoreLogQueryStringBuilder.Append('FROM DISK = ''') | Out-Null
+                $restoreLogQueryStringBuilder.Append($databaseLogBackupFile) | Out-Null
+                $restoreLogQueryStringBuilder.AppendLine('''') | Out-Null
+                $restoreLogQueryStringBuilder.AppendLine('WITH NORECOVERY') | Out-Null
+                $restoreLogQueryStringBuilder.AppendLine('REVERT') | Out-Null
+                $restoreLogQueryString = $restoreLogQueryStringBuilder.ToString()
 
                 try
                 {
@@ -508,7 +521,7 @@ function Set-TargetResource
 
                         # Restore the database
                         Invoke-Query -SQLServer $currentAvailabilityGroupReplicaServerObject.NetName -SQLInstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreDatabaseQueryString
-                        Restore-SqlDatabase -InputObject $currentAvailabilityGroupReplicaServerObject @restoreSqlDatabaseLogParameters
+                        Invoke-Query -SQLServer $currentAvailabilityGroupReplicaServerObject.NetName -SQLInstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreLogQueryString
 
                         # Add the database to the Availability Group
                         Add-SqlAvailabilityDatabase -InputObject $currentReplicaAvailabilityGroupObject -Database $databaseToAddToAvailabilityGroup
