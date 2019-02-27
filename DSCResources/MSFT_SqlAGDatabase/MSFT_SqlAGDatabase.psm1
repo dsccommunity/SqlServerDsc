@@ -487,7 +487,10 @@ function Set-TargetResource
                 $restoreDatabaseQueryStringBuilder.Append($databaseFullBackupFile) | Out-Null
                 $restoreDatabaseQueryStringBuilder.AppendLine('''') | Out-Null
                 $restoreDatabaseQueryStringBuilder.AppendLine('WITH NORECOVERY') | Out-Null
-                $restoreDatabaseQueryStringBuilder.AppendLine('REVERT') | Out-Null
+                if ( $MatchDatabaseOwner )
+                {
+                    $restoreDatabaseQueryStringBuilder.AppendLine('REVERT') | Out-Null
+                }
                 $restoreDatabaseQueryString = $restoreDatabaseQueryStringBuilder.ToString()
 
                 # Need to restore the database with a query in order to impersonate the correct login
@@ -507,7 +510,10 @@ function Set-TargetResource
                 $restoreLogQueryStringBuilder.Append($databaseLogBackupFile) | Out-Null
                 $restoreLogQueryStringBuilder.AppendLine('''') | Out-Null
                 $restoreLogQueryStringBuilder.AppendLine('WITH NORECOVERY') | Out-Null
-                $restoreLogQueryStringBuilder.AppendLine('REVERT') | Out-Null
+                if ( $MatchDatabaseOwner )
+                {
+                    $restoreLogQueryStringBuilder.AppendLine('REVERT') | Out-Null
+                }
                 $restoreLogQueryString = $restoreLogQueryStringBuilder.ToString()
 
                 try

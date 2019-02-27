@@ -780,7 +780,7 @@ namespace Microsoft.SqlServer.Management.Smo
         {}
     }
 
-    // TypeName: Microsoft.SqlServer.Management.Common.ServerConnection
+    // TypeName: Microsoft.SqlServer.Management.Smo.ConnectionContext
     // Used by:
     //  SqlAGDatabase
     public class ConnectionContext
