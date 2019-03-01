@@ -1043,8 +1043,23 @@ function Set-TargetResource
         if ($PSBoundParameters.ContainsKey($parameterName))
         {
             $parameterValue = Get-Variable -Name $parameterName -ValueOnly
-            $formattedPath = Format-Path -Path $parameterValue -TrailingSlash
-            Set-Variable -Name $parameterName -Value $formattedPath
+
+            # Trim backslash, but only if the path contains a full path and not just a qualifier.
+            if ($parameterValue -and $parameterValue -notmatch '^[a-zA-Z]:\\$')
+            {
+                Set-Variable -Name $parameterName -Value $parameterValue.TrimEnd('\')
+            }
+
+            # If the path only contains a qualifier but no backslash ('M:'), then two backslashes are added ('M:\\').
+            if ($parameterValue -match '^[a-zA-Z]:$')
+            {
+                Set-Variable -Name $parameterName -Value "$parameterValue\\"
+            }
+            # If the path only contains a qualifier add an extra backlash so that \ is not treated as an escape character in the configurationFile.ini file
+            if ($parameterValue -and $parameterValue -match '[a-zA-Z]:\\$')
+            {
+                Set-Variable -Name $parameterName -Value "$parameterValue\"  
+            }
         }
     }
 
