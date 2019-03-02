@@ -194,6 +194,7 @@
   - Added a new helper function `Get-InstalledSharedFeatures` to move out
     some of the code from the `Get-TargetResource` to make unit testing
     easier and faster.
+<<<<<<< HEAD
   - Changed the logic of 'Build the argument string to be passed to setup' to
     not quote the value if root directory is specified
     ([issue #1254](https://github.com/PowerShell/SqlServerDsc/issues/1254)).
@@ -226,6 +227,11 @@
   - No longer does the Test-TargetResource fail on the second test run
     when the backup file path was changed, and the path was ending with
     a backslash ([issue #1307](https://github.com/PowerShell/SqlServerDsc/issues/1307)).
+=======
+  - Changed the logic of 'Build the argument string to be passed to setup' to not quote the value if root directory
+    is specified ([issue #1254] (https://github.com/PowerShell/SqlServerDsc/issues/1254))
+  - 
+>>>>>>> fixes for issue #1254
 
 ## 12.3.0.0
 
