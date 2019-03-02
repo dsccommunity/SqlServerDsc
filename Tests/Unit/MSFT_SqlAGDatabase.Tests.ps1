@@ -320,7 +320,7 @@ try
         $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
         $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
         $mockServerObject.ComputerNamePhysicalNetBIOS = $mockServerObjectDomainInstanceName
-        $mockServerObject.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ConnectionContext
+        $mockServerObject.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerConnection
         $mockServerObject.ConnectionContext.TrueLogin = $mockTrueLogin
         $mockServerObject.Databases = $mockDatabaseObjects
         $mockServerObject.DomainInstanceName = $mockServerObjectDomainInstanceName
@@ -336,7 +336,7 @@ try
         $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
         $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
         $mockServer2Object.ComputerNamePhysicalNetBIOS = $mockPrimaryServerObjectDomainInstanceName
-        $mockServer2Object.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ConnectionContext
+        $mockServer2Object.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerConnection
         $mockServer2Object.ConnectionContext.TrueLogin = $mockTrueLogin
         $mockServer2Object.Databases = $mockDatabaseObjects
         $mockServer2Object.DomainInstanceName = $mockPrimaryServerObjectDomainInstanceName

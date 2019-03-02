@@ -1230,7 +1230,7 @@ InModuleScope $script:helperModuleName {
     }
 
     Describe 'Testing Test-ImpersonatePermissions' {
-        $mockConnectionContextObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ConnectionContext
+        $mockConnectionContextObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerConnection
         $mockConnectionContextObject.TrueLogin = 'Login1'
 
         $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server

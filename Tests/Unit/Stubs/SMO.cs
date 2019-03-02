@@ -238,7 +238,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public string MockGranteeName;
 
         public AvailabilityGroupCollection AvailabilityGroups = new AvailabilityGroupCollection();
-        public ConnectionContext ConnectionContext;
+        public ServerConnection ConnectionContext;
         public string ComputerNamePhysicalNetBIOS;
         public DatabaseCollection Databases = new DatabaseCollection();
         public string DisplayName;
@@ -780,10 +780,10 @@ namespace Microsoft.SqlServer.Management.Smo
         {}
     }
 
-    // TypeName: Microsoft.SqlServer.Management.Smo.ConnectionContext
+    // TypeName: Microsoft.SqlServer.Management.Common.ServerConnection
     // Used by:
     //  SqlAGDatabase
-    public class ConnectionContext
+    public class ServerConnection
     {
         public string TrueLogin;
 
