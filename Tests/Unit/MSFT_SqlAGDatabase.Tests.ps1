@@ -373,8 +373,7 @@ try
         $mockInvokeQueryParameterRestoreDatabase = {
             $Query -like 'RESTORE DATABASE *
 FROM DISK = *
-WITH NORECOVERY
-'
+WITH NORECOVERY'
         }
 
         $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs = {
