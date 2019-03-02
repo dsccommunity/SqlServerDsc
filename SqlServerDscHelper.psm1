@@ -1260,7 +1260,7 @@ function Get-PrimaryReplicaServerObject
         The server object on which to perform the test.
 
     .PARAMETER SecurableName
-        If set then impersonate permission on tihs specific securable (e.g. login) is also checked.
+        If set then impersonate permission on this specific securable (e.g. login) is also checked.
 
 #>
 function Test-ImpersonatePermissions
