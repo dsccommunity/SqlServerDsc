@@ -486,10 +486,11 @@ function Set-TargetResource
                 $restoreDatabaseQueryStringBuilder.Append('FROM DISK = ''') | Out-Null
                 $restoreDatabaseQueryStringBuilder.Append($databaseFullBackupFile) | Out-Null
                 $restoreDatabaseQueryStringBuilder.AppendLine('''') | Out-Null
-                $restoreDatabaseQueryStringBuilder.AppendLine('WITH NORECOVERY') | Out-Null
+                $restoreDatabaseQueryStringBuilder.Append('WITH NORECOVERY') | Out-Null
                 if ( $MatchDatabaseOwner )
                 {
-                    $restoreDatabaseQueryStringBuilder.AppendLine('REVERT') | Out-Null
+                    $restoreDatabaseQueryStringBuilder.AppendLine() | Out-Null
+                    $restoreDatabaseQueryStringBuilder.Append('REVERT') | Out-Null
                 }
                 $restoreDatabaseQueryString = $restoreDatabaseQueryStringBuilder.ToString()
 
@@ -509,10 +510,11 @@ function Set-TargetResource
                 $restoreLogQueryStringBuilder.Append('FROM DISK = ''') | Out-Null
                 $restoreLogQueryStringBuilder.Append($databaseLogBackupFile) | Out-Null
                 $restoreLogQueryStringBuilder.AppendLine('''') | Out-Null
-                $restoreLogQueryStringBuilder.AppendLine('WITH NORECOVERY') | Out-Null
+                $restoreLogQueryStringBuilder.Append('WITH NORECOVERY') | Out-Null
                 if ( $MatchDatabaseOwner )
                 {
-                    $restoreLogQueryStringBuilder.AppendLine('REVERT') | Out-Null
+                    $restoreLogQueryStringBuilder.AppendLine() | Out-Null
+                    $restoreLogQueryStringBuilder.Append('REVERT') | Out-Null
                 }
                 $restoreLogQueryString = $restoreLogQueryStringBuilder.ToString()
 

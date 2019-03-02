@@ -381,9 +381,8 @@ WITH NORECOVERY
             $Query -like 'EXECUTE AS LOGIN = *
 RESTORE DATABASE *
 FROM DISK = *
-WITH NORECOVERY
-REVERT
-'
+WITH NORECOVERY*
+REVERT'
         }
 
         #endregion Invoke Query Mock
