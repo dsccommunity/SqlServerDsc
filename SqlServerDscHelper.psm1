@@ -1061,7 +1061,7 @@ function Update-AvailabilityGroupReplica
 
 <#
     .SYNOPSIS
-        Impersonates a login and determines whether a permission is present.
+        Impersonates a login and determines whether required permissions are present.
 
     .PARAMETER SQLServer
         String containing the host name of the SQL Server to connect to.
