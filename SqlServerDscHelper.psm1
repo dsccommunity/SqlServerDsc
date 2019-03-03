@@ -1320,6 +1320,7 @@ function Test-ImpersonatePermissions
     $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
     if ($impersonatePermissionsPresent)
     {
+        New-VerboseMessage -Message ( 'The login "{0}" has impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
         return $impersonatePermissionsPresent
     }
     else
@@ -1337,6 +1338,7 @@ function Test-ImpersonatePermissions
     $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
     if ($impersonatePermissionsPresent)
     {
+        New-VerboseMessage -Message ( 'The login "{0}" has control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
         return $impersonatePermissionsPresent
     }
     else
@@ -1357,6 +1359,7 @@ function Test-ImpersonatePermissions
         $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
         if ($impersonatePermissionsPresent)
         {
+            New-VerboseMessage -Message ( 'The login "{0}" has impersonate permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName )
             return $impersonatePermissionsPresent
         }
         else
@@ -1365,6 +1368,7 @@ function Test-ImpersonatePermissions
         }
     }
 
+    New-VerboseMessage -Message ( 'The login "{0}" does not have any impersonate permissions required on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
     return $impersonatePermissionsPresent
 }
 
