@@ -1254,7 +1254,7 @@ InModuleScope $script:helperModuleName {
             It 'Should return false when the impersonate permissions are missing for the login' {
                 Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $false
 
-                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 2 -Exactly
             }
         }
     }
