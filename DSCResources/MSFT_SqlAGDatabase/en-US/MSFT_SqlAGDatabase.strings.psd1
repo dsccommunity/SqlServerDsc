@@ -7,7 +7,7 @@ ConvertFrom-StringData @'
     DatabaseShouldBeMember = The following databases should be a member of the availability group '{0}': {1}.
     DatabaseShouldNotBeMember = The following databases should not be a member of the availability group '{0}': {1}.
     DatabasesNotFound = The following databases were not found in the instance: {0}.
-    ImpersonatePermissionsMissing = The login '{0}' is missing impersonate any login, control server, or impersonate permissions in the instances '{1}'.
+    ImpersonatePermissionsMissing = The login '{0}' is missing impersonate any login, control server, impersonate login, or control login permissions in the instances '{1}'.
     NotActiveNode = The node '{0}' is not actively hosting the instance '{1}'. Exiting the test.
     ParameterNotOfType = The parameter '{0}' is not of the type '{1}'.
     ParameterNullOrEmpty = The parameter '{0}' is NULL or empty.

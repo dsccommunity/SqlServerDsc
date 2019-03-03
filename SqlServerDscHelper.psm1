@@ -1366,6 +1366,26 @@ function Test-ImpersonatePermissions
         {
             New-VerboseMessage -Message ( 'The login "{0}" does not have impersonate permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName )
         }
+
+        # Check for login-specific control permissions
+        $testLoginEffectivePermissionsParams = @{
+            SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
+            SQLInstanceName = $ServerObject.ServiceName
+            LoginName       = $ServerObject.ConnectionContext.TrueLogin
+            Permissions     = @('CONTROL')
+            SecurableClass  = 'LOGIN'
+            SecurableName   = $SecurableName
+        }
+        $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+        if ($impersonatePermissionsPresent)
+        {
+            New-VerboseMessage -Message ( 'The login "{0}" has control permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName )
+            return $impersonatePermissionsPresent
+        }
+        else
+        {
+            New-VerboseMessage -Message ( 'The login "{0}" does not have control permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName )
+        }
     }
 
     New-VerboseMessage -Message ( 'The login "{0}" does not have any impersonate permissions required on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )

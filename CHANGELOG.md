@@ -31,8 +31,8 @@
     some of the code from the `Get-TargetResource` to make unit testing
     easier and faster.
 - Changes to SqlAGDatabase
-  - Fix MatchDatabaseOwner to check for CONTROL SERVER and IMPERSONATE LOGIN
-    permission in addition to IMPERSONATE ANY LOGIN.
+  - Fix MatchDatabaseOwner to check for CONTROL SERVER, IMPERSONATE LOGIN, or
+    CONTROL LOGIN permission in addition to IMPERSONATE ANY LOGIN.
   - Update and fix MatchDatabaseOwner help text.
 - Changes to xSQLServerHelper
   - New-TerminatingError error text for a missing localized message now matches
