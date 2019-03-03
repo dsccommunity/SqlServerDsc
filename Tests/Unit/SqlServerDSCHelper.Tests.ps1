@@ -681,68 +681,111 @@ InModuleScope $script:helperModuleName {
 
     Describe "Testing Test-LoginEffectivePermissions" {
 
-        $mockAllPermissionsPresent = @(
+        $mockAllServerPermissionsPresent = @(
             'Connect SQL',
             'Alter Any Availability Group',
             'View Server State'
         )
 
-        $mockPermissionsMissing = @(
+        $mockServerPermissionsMissing = @(
             'Connect SQL',
             'View Server State'
         )
 
-        $mockInvokeQueryClusterServicePermissionsSet = @() # Will be set dynamically in the check
+        $mockAllLoginPermissionsPresent = @(
+            'View Definition',
+            'Impersonate'
+        )
 
-        $mockInvokeQueryClusterServicePermissionsResult = {
+        $mockLoginPermissionsMissing = @(
+            'View Definition'
+        )
+
+        $mockInvokeQueryPermissionsSet = @() # Will be set dynamically in the check
+
+        $mockInvokeQueryPermissionsResult = {
             return New-Object -TypeName PSObject -Property @{
                 Tables = @{
                     Rows = @{
-                        permission_name = $mockInvokeQueryClusterServicePermissionsSet
+                        permission_name = $mockInvokeQueryPermissionsSet
                     }
                 }
             }
         }
 
-        $testLoginEffectivePermissionsParams = @{
+        $testLoginEffectiveServerPermissionsParams = @{
             SQLServer = 'Server1'
             SQLInstanceName = 'MSSQLSERVER'
             Login = 'NT SERVICE\ClusSvc'
             Permissions = @()
         }
 
+        $testLoginEffectiveLoginPermissionsParams = @{
+            SQLServer = 'Server1'
+            SQLInstanceName = 'MSSQLSERVER'
+            Login = 'NT SERVICE\ClusSvc'
+            Permissions = @()
+            SecurableClass = 'LOGIN'
+            SecurableName = 'Login1'
+        }
+
         BeforeEach {
-            Mock -CommandName Invoke-Query -MockWith $mockInvokeQueryClusterServicePermissionsResult -Verifiable
+            Mock -CommandName Invoke-Query -MockWith $mockInvokeQueryPermissionsResult -Verifiable
         }
 
         Context 'When all of the permissions are present' {
+            It 'Should return $true when the desired server permissions are present' {
+                $mockInvokeQueryPermissionsSet = $mockAllServerPermissionsPresent.Clone()
+                $testLoginEffectiveServerPermissionsParams.Permissions = $mockAllServerPermissionsPresent.Clone()
 
-            It 'Should return $true when the desired permissions are present' {
-                $mockInvokeQueryClusterServicePermissionsSet = $mockAllPermissionsPresent.Clone()
-                $testLoginEffectivePermissionsParams.Permissions = $mockAllPermissionsPresent.Clone()
+                Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -Be $true
 
-                Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams | Should -Be $true
+                Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
+            }
 
-                Assert-MockCalled -CommandName Invoke-Query -Times 1 -Exactly
+            It 'Should return $true when the desired login permissions are present' {
+                $mockInvokeQueryPermissionsSet = $mockAllLoginPermissionsPresent.Clone()
+                $testLoginEffectiveLoginPermissionsParams.Permissions = $mockAllLoginPermissionsPresent.Clone()
+
+                Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -Be $true
+
+                Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
             }
         }
 
         Context 'When a permission is missing' {
+            It 'Should return $false when the desired server permissions are not present' {
+                $mockInvokeQueryPermissionsSet = $mockServerPermissionsMissing.Clone()
+                $testLoginEffectiveServerPermissionsParams.Permissions = $mockAllServerPermissionsPresent.Clone()
 
-            It 'Should return $false when the desired permissions are not present' {
-                $mockInvokeQueryClusterServicePermissionsSet = $mockPermissionsMissing.Clone()
-                $testLoginEffectivePermissionsParams.Permissions = $mockAllPermissionsPresent.Clone()
-
-                Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams | Should -Be $false
+                Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -Be $false
 
                 Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
             }
 
             It 'Should return $false when the specified login has no permissions assigned' {
-                $mockInvokeQueryClusterServicePermissionsSet = @()
-                $testLoginEffectivePermissionsParams.Permissions = $mockAllPermissionsPresent.Clone()
+                $mockInvokeQueryPermissionsSet = @()
+                $testLoginEffectiveServerPermissionsParams.Permissions = $mockAllServerPermissionsPresent.Clone()
 
-                Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams | Should -Be $false
+                Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -Be $false
+
+                Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
+            }
+
+            It 'Should return $false when the desired login permissions are not present' {
+                $mockInvokeQueryPermissionsSet = $mockLoginPermissionsMissing.Clone()
+                $testLoginEffectiveLoginPermissionsParams.Permissions = $mockAllLoginPermissionsPresent.Clone()
+
+                Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -Be $false
+
+                Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
+            }
+
+            It 'Should return $false when the specified login has no permissions assigned' {
+                $mockInvokeQueryPermissionsSet = @()
+                $testLoginEffectiveServerPermissionsParams.Permissions = $mockAllServerPermissionsPresent.Clone()
+
+                Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -Be $false
 
                 Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
             }
