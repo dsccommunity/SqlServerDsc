@@ -1272,6 +1272,22 @@ InModuleScope $script:helperModuleName {
         }
     }
 
+    $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter = {
+        $Permissions -eq @('IMPERSONATE ANY LOGIN')
+    }
+
+    $mockTestLoginEffectivePermissions_ControlServer_ParameterFilter = {
+        $Permissions -eq @('CONTROL SERVER')
+    }
+
+    $mockTestLoginEffectivePermissions_ImpersonateLogin_ParameterFilter = {
+        $Permissions -eq @('IMPERSONATE')
+    }
+
+    $mockTestLoginEffectivePermissions_ControlLogin_ParameterFilter = {
+        $Permissions -eq @('CONTROL')
+    }
+
     Describe 'Testing Test-ImpersonatePermissions' {
         $mockConnectionContextObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerConnection
         $mockConnectionContextObject.TrueLogin = 'Login1'
@@ -1281,23 +1297,60 @@ InModuleScope $script:helperModuleName {
         $mockServerObject.ServiceName = 'MSSQLSERVER'
         $mockServerObject.ConnectionContext = $mockConnectionContextObject
 
-        Context 'When impersonate permissions are present for the login' {
-            Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true }
+        BeforeEach {
+            Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter -MockWith { $false } -Verifiable
+            Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlServer_ParameterFilter -MockWith { $false } -Verifiable
+            Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateLogin_ParameterFilter -MockWith { $false } -Verifiable
+            Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlLogin_ParameterFilter -MockWith { $false } -Verifiable
+        }
 
-            It 'Should return true when the impersonate permissions are present for the login' {
+        Context 'When impersonate permissions are present for the login' {
+            It 'Should return true when the impersonate any login permissions are present for the login' {
+                Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter -MockWith { $true } -Verifiable
                 Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $true
 
-                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter -Scope It -Times 1 -Exactly
+            }
+
+            It 'Should return true when the control server permissions are present for the login' {
+                Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlServer_ParameterFilter -MockWith { $true } -Verifiable
+                Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $true
+
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlServer_ParameterFilter -Scope It -Times 1 -Exactly
+            }
+
+            It 'Should return true when the impersonate login permissions are present for the login' {
+                Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateLogin_ParameterFilter -MockWith { $true } -Verifiable
+                Test-ImpersonatePermissions -ServerObject $mockServerObject -SecurableName 'Login1' | Should -Be $true
+
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateLogin_ParameterFilter -Scope It -Times 1 -Exactly
+            }
+
+            It 'Should return true when the control login permissions are present for the login' {
+                Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlLogin_ParameterFilter -MockWith { $true } -Verifiable
+                Test-ImpersonatePermissions -ServerObject $mockServerObject -SecurableName 'Login1' | Should -Be $true
+
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlLogin_ParameterFilter -Scope It -Times 1 -Exactly
             }
         }
 
         Context 'When impersonate permissions are missing for the login' {
-            Mock -CommandName Test-LoginEffectivePermissions -MockWith { $false } -Verifiable
-
-            It 'Should return false when the impersonate permissions are missing for the login' {
+            It 'Should return false when the server permissions are missing for the login' {
                 Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $false
 
-                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 2 -Exactly
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlServer_ParameterFilter -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateLogin_ParameterFilter -Scope It -Times 0 -Exactly
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlLogin_ParameterFilter -Scope It -Times 0 -Exactly
+            }
+
+            It 'Should return false when the login permissions are missing for the login' {
+                Test-ImpersonatePermissions -ServerObject $mockServerObject -SecurableName 'Login1' | Should -Be $false
+
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlServer_ParameterFilter -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateLogin_ParameterFilter -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlLogin_ParameterFilter -Scope It -Times 1 -Exactly
             }
         }
     }
