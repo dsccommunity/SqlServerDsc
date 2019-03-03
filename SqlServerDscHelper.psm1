@@ -1309,8 +1309,6 @@ function Test-ImpersonatePermissions
         $SecurableName
     )
 
-    $impersonatePermissionsPresent = $false
-
     # The impersonate any login permission only exists in SQL 2014 and above
     $testLoginEffectivePermissionsParams = @{
         SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
