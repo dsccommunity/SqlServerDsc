@@ -1059,6 +1059,43 @@ function Update-AvailabilityGroupReplica
     }
 }
 
+<#
+    .SYNOPSIS
+        Impersonates a login and determines whether a permission is present.
+
+    .PARAMETER SQLServer
+        String containing the host name of the SQL Server to connect to.
+
+    .PARAMETER SQLInstanceName
+        String containing the SQL Server Database Engine instance to connect to.
+
+    .PARAMETER LoginName
+        String containing the login (user) which should be checked for a permission.
+
+    .PARAMETER Permissions
+        This is a list that represents a SQL Server set of database permissions.
+
+    .PARAMETER SecurableClass
+        String containing the class of permissions to test. It can be:
+            SERVER: A permission that is applicable against server objects.
+            LOGIN: A permission that is applicable against login objects.
+
+        Default is 'SERVER'.
+
+    .PARAMETER SecurableName
+        String containing the name of the object against which permissions exist, e.g. if SecurableClass is LOGIN this is the name of a login permissions may exist against.
+
+        Default is $null.
+
+    .NOTES
+        These SecurableClass are not yet in this module yet and so are not implemented:
+            'APPLICATION ROLE', 'ASSEMBLY', 'ASYMMETRIC KEY', 'CERTIFICATE',
+            'CONTRACT', 'DATABASE', 'ENDPOINT', 'FULLTEXT CATALOG',
+            'MESSAGE TYPE', 'OBJECT', 'REMOTE SERVICE BINDING', 'ROLE',
+            'ROUTE', 'SCHEMA', 'SERVICE', 'SYMMETRIC KEY', 'TYPE', 'USER',
+            'XML SCHEMA COLLECTION'
+
+#>
 function Test-LoginEffectivePermissions
 {
     param
@@ -1081,10 +1118,6 @@ function Test-LoginEffectivePermissions
         [System.String[]]
         $Permissions,
 
-        # Other types are not used here and so not implemented:
-        # 'APPLICATION ROLE', 'ASSEMBLY', 'ASYMMETRIC KEY', 'CERTIFICATE', 'CONTRACT', 'DATABASE', 'ENDPOINT', 'FULLTEXT CATALOG',
-        # 'MESSAGE TYPE', 'OBJECT', 'REMOTE SERVICE BINDING', 'ROLE', 'ROUTE', 'SCHEMA', 'SERVICE', 'SYMMETRIC KEY',
-        # 'TYPE', 'USER', 'XML SCHEMA COLLECTION'
         [ValidateSet('SERVER', 'LOGIN')]
         [Parameter()]
         [System.String]
