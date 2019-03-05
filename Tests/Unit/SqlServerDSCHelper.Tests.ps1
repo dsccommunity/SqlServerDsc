@@ -783,9 +783,9 @@ InModuleScope $script:helperModuleName {
 
             It 'Should return $false when the specified login has no permissions assigned' {
                 $mockInvokeQueryPermissionsSet = @()
-                $testLoginEffectiveServerPermissionsParams.Permissions = $mockAllServerPermissionsPresent.Clone()
+                $testLoginEffectiveLoginPermissionsParams.Permissions = $mockAllLoginPermissionsPresent.Clone()
 
-                Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -Be $false
+                Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -Be $false
 
                 Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
             }
