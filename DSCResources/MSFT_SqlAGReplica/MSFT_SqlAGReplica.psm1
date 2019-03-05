@@ -132,10 +132,10 @@ function Get-TargetResource
         Specifies if the availability group should be present or absent. Default is Present.
 
     .PARAMETER AvailabilityMode
-        Specifies the replica availability mode. Default is 'AsynchronousCommit'.
+        Specifies the replica availability mode. Default when creating a replica is 'AsynchronousCommit'.
 
     .PARAMETER BackupPriority
-        Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. Default is 50.
+        Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. When creating a replica the default is 50.
 
     .PARAMETER ConnectionModeInPrimaryRole
         Specifies how the availability replica handles connections when in the primary role.
@@ -147,7 +147,7 @@ function Get-TargetResource
         Specifies the hostname or IP address of the availability group replica endpoint. Default is the instance network name which is set in the code because the value can only be determined when connected to the SQL Instance.
 
     .PARAMETER FailoverMode
-        Specifies the failover mode. Default is Manual.
+        Specifies the failover mode. When creating a replica the default is 'Manual'.
 
     .PARAMETER ReadOnlyRoutingConnectionUrl
         Specifies the fully-qualified domain name (FQDN) and port to use when routing to the replica for read only connections.
@@ -196,12 +196,12 @@ function Set-TargetResource
         [Parameter()]
         [ValidateSet('AsynchronousCommit', 'SynchronousCommit')]
         [System.String]
-        $AvailabilityMode = 'AsynchronousCommit',
+        $AvailabilityMode,
 
         [Parameter()]
         [ValidateRange(0, 100)]
         [System.UInt32]
-        $BackupPriority = 50,
+        $BackupPriority,
 
         [Parameter()]
         [ValidateSet('AllowAllConnections', 'AllowReadWriteConnections')]
@@ -220,7 +220,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateSet('Automatic', 'Manual')]
         [System.String]
-        $FailoverMode = 'Manual',
+        $FailoverMode,
 
         [Parameter()]
         [System.String]
@@ -489,10 +489,10 @@ function Set-TargetResource
         Specifies if the availability group should be present or absent. Default is Present.
 
     .PARAMETER AvailabilityMode
-        Specifies the replica availability mode. Default is 'AsynchronousCommit'.
+        Specifies the replica availability mode. Default when creating a replica is 'AsynchronousCommit'.
 
     .PARAMETER BackupPriority
-        Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. Default is 50.
+        Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. When creating a replica the default is 50.
 
     .PARAMETER ConnectionModeInPrimaryRole
         Specifies how the availability replica handles connections when in the primary role.
@@ -504,7 +504,7 @@ function Set-TargetResource
         Specifies the hostname or IP address of the availability group replica endpoint. Default is the instance network name which is set in the code because the value can only be determined when connected to the SQL Instance.
 
     .PARAMETER FailoverMode
-        Specifies the failover mode. Default is Manual.
+        Specifies the failover mode. When creating a replica the default is 'Manual'.
 
     .PARAMETER ReadOnlyRoutingConnectionUrl
         Specifies the fully-qualified domain name (FQDN) and port to use when routing to the replica for read only connections.
@@ -553,12 +553,12 @@ function Test-TargetResource
         [Parameter()]
         [ValidateSet('AsynchronousCommit', 'SynchronousCommit')]
         [System.String]
-        $AvailabilityMode = 'AsynchronousCommit',
+        $AvailabilityMode,
 
         [Parameter()]
         [ValidateRange(0, 100)]
         [System.UInt32]
-        $BackupPriority = 50,
+        $BackupPriority,
 
         [Parameter()]
         [ValidateSet('AllowAllConnections', 'AllowReadWriteConnections')]
@@ -577,7 +577,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateSet('Automatic', 'Manual')]
         [System.String]
-        $FailoverMode = 'Manual',
+        $FailoverMode,
 
         [Parameter()]
         [System.String]
@@ -648,25 +648,22 @@ function Test-TargetResource
 
             if ( $getTargetResourceResult.Ensure -eq 'Present' )
             {
-                # PsBoundParameters won't work here because it doesn't account for default values
-                foreach ( $parameter in $MyInvocation.MyCommand.Parameters.GetEnumerator() )
+                foreach ( $parameter in $PSBoundParameters.GetEnumerator() )
                 {
                     $parameterName = $parameter.Key
                     $parameterValue = Get-Variable -Name $parameterName -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Value
 
                     # Make sure we don't try to validate a common parameter
-                    if ( $parametersToCheck -contains $parameterName )
+                    if ( $parametersToCheck -notcontains $parameterName )
                     {
-                        # If the parameter is Null, a value wasn't provided
-                        if ( -not [System.String]::IsNullOrEmpty($parameterValue) )
-                        {
-                            if ( $getTargetResourceResult.($parameterName) -ne $parameterValue )
-                            {
-                                New-VerboseMessage -Message "'$($parameterName)' should be '$($parameterValue)' but is '$($getTargetResourceResult.($parameterName))'"
+                        continue
+                    }
 
-                                $result = $false
-                            }
-                        }
+                    if ( $getTargetResourceResult.($parameterName) -ne $parameterValue )
+                    {
+                        New-VerboseMessage -Message "'$($parameterName)' should be '$($parameterValue)' but is '$($getTargetResourceResult.($parameterName))'"
+
+                        $result = $False
                     }
                 }
 
