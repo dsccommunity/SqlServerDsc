@@ -763,7 +763,7 @@ InModuleScope $script:helperModuleName {
                 Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
             }
 
-            It 'Should return $false when the specified login has no permissions assigned' {
+            It 'Should return $false when the specified login has no server permissions assigned' {
                 $mockInvokeQueryPermissionsSet = @()
                 $testLoginEffectiveServerPermissionsParams.Permissions = $mockAllServerPermissionsPresent.Clone()
 
@@ -781,7 +781,7 @@ InModuleScope $script:helperModuleName {
                 Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
             }
 
-            It 'Should return $false when the specified login has no permissions assigned' {
+            It 'Should return $false when the specified login has no login permissions assigned' {
                 $mockInvokeQueryPermissionsSet = @()
                 $testLoginEffectiveLoginPermissionsParams.Permissions = $mockAllLoginPermissionsPresent.Clone()
 
