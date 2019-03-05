@@ -132,7 +132,7 @@ function Get-TargetResource
         Specifies how the availability replica handles connections when in the secondary role.
 
     .PARAMETER EndpointHostName
-        Specifies the hostname or IP address of the availability group replica endpoint. Default is the instance network name.
+        Specifies the hostname or IP address of the availability group replica endpoint. When creating a group the default is the instance network name.
 
     .PARAMETER FailureConditionLevel
         Specifies the automatic failover behavior of the availability group.
@@ -288,14 +288,14 @@ function Set-TargetResource
                 throw New-TerminatingError -ErrorType DatabaseMirroringEndpointNotFound -FormatArgs $ServerName, $InstanceName -ErrorCategory ObjectNotFound
             }
 
-            if ( -not $EndpointHostName )
-            {
-                $EndpointHostName = $serverObject.NetName
-            }
-
             # If the availability group does not exist, create it
             if ( -not $availabilityGroup )
             {
+                if ( -not $EndpointHostName )
+                {
+                    $EndpointHostName = $serverObject.NetName
+                }
+
                 # Set up the parameters to create the AG Replica
                 $newReplicaParams = @{
                     Name             = $serverObject.DomainInstanceName
@@ -512,10 +512,13 @@ function Set-TargetResource
         Specifies how the availability replica handles connections when in the secondary role.
 
     .PARAMETER EndpointHostName
-        Specifies the hostname or IP address of the availability group replica endpoint. Default is the instance network name.
+        Specifies the hostname or IP address of the availability group replica endpoint. When creating a group the default is the instance network name.
 
     .PARAMETER FailureConditionLevel
         Specifies the automatic failover behavior of the availability group.
+
+    .PARAMETER FailoverMode
+        Specifies the failover mode. When creating a group the default is 'Manual'.
 
     .PARAMETER HealthCheckTimeout
         Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. When creating a group the default is 30,000.
