@@ -765,7 +765,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public string FailoverMode;
         public string Name;
         public string ReadOnlyRoutingConnectionUrl;
-        public string[] ReadOnlyRoutingList;
+        public System.Collections.Specialized.StringCollection ReadOnlyRoutingList;
         public string Role = "Secondary";
 
         public void Alter()
