@@ -144,7 +144,7 @@ function Get-TargetResource
         Specifies how the availability replica handles connections when in the secondary role.
 
     .PARAMETER EndpointHostName
-        Specifies the hostname or IP address of the availability group replica endpoint. Default is the instance network name which is set in the code because the value can only be determined when connected to the SQL Instance.
+        Specifies the hostname or IP address of the availability group replica endpoint. When creating a group the default is the instance network name which is set in the code because the value can only be determined when connected to the SQL Instance.
 
     .PARAMETER FailoverMode
         Specifies the failover mode. When creating a replica the default is 'Manual'.
@@ -309,13 +309,16 @@ function Set-TargetResource
                 $availabilityGroupReplica = $availabilityGroup.AvailabilityReplicas[$Name]
                 if ( $availabilityGroupReplica )
                 {
-                    if ( $AvailabilityMode -ne $availabilityGroupReplica.AvailabilityMode )
+                    # Get the parameters that were submitted to the function
+                    [System.Array] $submittedParameters = $PSBoundParameters.Keys
+
+                    if ( ( $submittedParameters -contains 'AvailabilityMode' ) -and (  $AvailabilityMode -ne $availabilityGroupReplica.AvailabilityMode ) )
                     {
                         $availabilityGroupReplica.AvailabilityMode = $AvailabilityMode
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
-                    if ( $BackupPriority -ne $availabilityGroupReplica.BackupPriority )
+                    if ( ( $submittedParameters -contains 'BackupPriority' ) -and ( $BackupPriority -ne $availabilityGroupReplica.BackupPriority ) )
                     {
                         $availabilityGroupReplica.BackupPriority = $BackupPriority
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
@@ -345,7 +348,7 @@ function Set-TargetResource
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
-                    if ( $EndpointHostName -ne $currentEndpointHostName )
+                    if ( ( $submittedParameters -contains 'EndpointHostName' ) -and ( $EndpointHostName -ne $currentEndpointHostName ) )
                     {
                         $newEndpointUrl = $availabilityGroupReplica.EndpointUrl.Replace($currentEndpointHostName, $EndpointHostName)
                         $availabilityGroupReplica.EndpointUrl = $newEndpointUrl
@@ -359,19 +362,19 @@ function Set-TargetResource
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
-                    if ( $FailoverMode -ne $availabilityGroupReplica.FailoverMode )
+                    if ( ( $submittedParameters -contains 'FailoverMode' ) -and ( $FailoverMode -ne $availabilityGroupReplica.FailoverMode ) )
                     {
                         $availabilityGroupReplica.FailoverMode = $FailoverMode
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
-                    if ( $ReadOnlyRoutingConnectionUrl -ne $availabilityGroupReplica.ReadOnlyRoutingConnectionUrl )
+                    if ( ( $submittedParameters -contains 'ReadOnlyRoutingConnectionUrl' ) -and ( $ReadOnlyRoutingConnectionUrl -ne $availabilityGroupReplica.ReadOnlyRoutingConnectionUrl ) )
                     {
                         $availabilityGroupReplica.ReadOnlyRoutingConnectionUrl = $ReadOnlyRoutingConnectionUrl
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
-                    if ( $ReadOnlyRoutingList -ne $availabilityGroupReplica.ReadOnlyRoutingList )
+                    if ( ( $submittedParameters -contains 'ReadOnlyRoutingList' ) -and ( $ReadOnlyRoutingList -ne $availabilityGroupReplica.ReadOnlyRoutingList ) )
                     {
                         $availabilityGroupReplica.ReadOnlyRoutingList = $ReadOnlyRoutingList
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
@@ -501,7 +504,7 @@ function Set-TargetResource
         Specifies how the availability replica handles connections when in the secondary role.
 
     .PARAMETER EndpointHostName
-        Specifies the hostname or IP address of the availability group replica endpoint. Default is the instance network name which is set in the code because the value can only be determined when connected to the SQL Instance.
+        Specifies the hostname or IP address of the availability group replica endpoint. wWhen creating a group the default is the instance network name which is set in the code because the value can only be determined when connected to the SQL Instance.
 
     .PARAMETER FailoverMode
         Specifies the failover mode. When creating a replica the default is 'Manual'.
