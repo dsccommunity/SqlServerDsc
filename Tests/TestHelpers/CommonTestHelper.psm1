@@ -299,6 +299,11 @@ function New-SQLSelfSignedCertificate
 
     .PARAMETER Type
         Type of tests in the test file. Can be set to Unit or Integration.
+
+    .PARAMETER Category
+        Optional. One or more categories to check if they are set in
+        $env:CONFIGURATION. If this are not set, the parameter Type
+        is used as category.
 #>
 function Test-SkipContinuousIntegrationTask
 {
@@ -338,6 +343,36 @@ function Test-SkipContinuousIntegrationTask
     if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -notin $Category)
     {
         Write-Verbose -Message ('{1} tests in {0} will be skipped unless $env:CONFIGURATION is set to ''{1}''.' -f $Name, ($Category -join ''', or ''')) -Verbose
+        $result = $true
+    }
+
+    return $result
+}
+
+<#
+    .SYNOPSIS
+        Returns $true if the the environment variable APPVEYOR is set to $true,
+        and the environment variable CONFIGURATION is set to the value passed
+        in the parameter Type.
+
+    .PARAMETER Category
+        One or more categories to check if they are set in $env:CONFIGURATION.
+#>
+function Test-ContinuousIntegrationTaskCategory
+{
+    [OutputType([System.Boolean])]
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String[]]
+        $Category
+    )
+
+    $result = $false
+
+    if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -in $Category)
+    {
         $result = $true
     }
 
