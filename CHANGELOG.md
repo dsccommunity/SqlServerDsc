@@ -30,6 +30,17 @@
   - Added a new helper function `Get-InstalledSharedFeatures` to move out
     some of the code from the `Get-TargetResource` to make unit testing
     easier and faster.
+  - Changed the logic of 'Build the argument string to be passed to setup' to
+    not quote the value if root directory is specified
+    ([issue #1254](https://github.com/PowerShell/SqlServerDsc/issues/1254)).
+- Changes to SqlAGDatabase
+  - Fix MatchDatabaseOwner to check for CONTROL SERVER, IMPERSONATE LOGIN, or
+    CONTROL LOGIN permission in addition to IMPERSONATE ANY LOGIN.
+  - Update and fix MatchDatabaseOwner help text.
+- Changes to xSQLServerHelper
+  - New-TerminatingError error text for a missing localized message now matches
+    the output even if the "missing localized message" localized message is
+    also missing.
 
 ## 12.3.0.0
 

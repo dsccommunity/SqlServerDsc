@@ -681,68 +681,111 @@ InModuleScope $script:helperModuleName {
 
     Describe "Testing Test-LoginEffectivePermissions" {
 
-        $mockAllPermissionsPresent = @(
+        $mockAllServerPermissionsPresent = @(
             'Connect SQL',
             'Alter Any Availability Group',
             'View Server State'
         )
 
-        $mockPermissionsMissing = @(
+        $mockServerPermissionsMissing = @(
             'Connect SQL',
             'View Server State'
         )
 
-        $mockInvokeQueryClusterServicePermissionsSet = @() # Will be set dynamically in the check
+        $mockAllLoginPermissionsPresent = @(
+            'View Definition',
+            'Impersonate'
+        )
 
-        $mockInvokeQueryClusterServicePermissionsResult = {
+        $mockLoginPermissionsMissing = @(
+            'View Definition'
+        )
+
+        $mockInvokeQueryPermissionsSet = @() # Will be set dynamically in the check
+
+        $mockInvokeQueryPermissionsResult = {
             return New-Object -TypeName PSObject -Property @{
                 Tables = @{
                     Rows = @{
-                        permission_name = $mockInvokeQueryClusterServicePermissionsSet
+                        permission_name = $mockInvokeQueryPermissionsSet
                     }
                 }
             }
         }
 
-        $testLoginEffectivePermissionsParams = @{
+        $testLoginEffectiveServerPermissionsParams = @{
             SQLServer = 'Server1'
             SQLInstanceName = 'MSSQLSERVER'
             Login = 'NT SERVICE\ClusSvc'
             Permissions = @()
         }
 
+        $testLoginEffectiveLoginPermissionsParams = @{
+            SQLServer = 'Server1'
+            SQLInstanceName = 'MSSQLSERVER'
+            Login = 'NT SERVICE\ClusSvc'
+            Permissions = @()
+            SecurableClass = 'LOGIN'
+            SecurableName = 'Login1'
+        }
+
         BeforeEach {
-            Mock -CommandName Invoke-Query -MockWith $mockInvokeQueryClusterServicePermissionsResult -Verifiable
+            Mock -CommandName Invoke-Query -MockWith $mockInvokeQueryPermissionsResult -Verifiable
         }
 
         Context 'When all of the permissions are present' {
+            It 'Should return $true when the desired server permissions are present' {
+                $mockInvokeQueryPermissionsSet = $mockAllServerPermissionsPresent.Clone()
+                $testLoginEffectiveServerPermissionsParams.Permissions = $mockAllServerPermissionsPresent.Clone()
 
-            It 'Should return $true when the desired permissions are present' {
-                $mockInvokeQueryClusterServicePermissionsSet = $mockAllPermissionsPresent.Clone()
-                $testLoginEffectivePermissionsParams.Permissions = $mockAllPermissionsPresent.Clone()
-
-                Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams | Should -Be $true
-
-                Assert-MockCalled -CommandName Invoke-Query -Times 1 -Exactly
-            }
-        }
-
-        Context 'When a permission is missing' {
-
-            It 'Should return $false when the desired permissions are not present' {
-                $mockInvokeQueryClusterServicePermissionsSet = $mockPermissionsMissing.Clone()
-                $testLoginEffectivePermissionsParams.Permissions = $mockAllPermissionsPresent.Clone()
-
-                Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams | Should -Be $false
+                Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -Be $true
 
                 Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
             }
 
-            It 'Should return $false when the specified login has no permissions assigned' {
-                $mockInvokeQueryClusterServicePermissionsSet = @()
-                $testLoginEffectivePermissionsParams.Permissions = $mockAllPermissionsPresent.Clone()
+            It 'Should return $true when the desired login permissions are present' {
+                $mockInvokeQueryPermissionsSet = $mockAllLoginPermissionsPresent.Clone()
+                $testLoginEffectiveLoginPermissionsParams.Permissions = $mockAllLoginPermissionsPresent.Clone()
 
-                Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams | Should -Be $false
+                Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -Be $true
+
+                Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
+            }
+        }
+
+        Context 'When a permission is missing' {
+            It 'Should return $false when the desired server permissions are not present' {
+                $mockInvokeQueryPermissionsSet = $mockServerPermissionsMissing.Clone()
+                $testLoginEffectiveServerPermissionsParams.Permissions = $mockAllServerPermissionsPresent.Clone()
+
+                Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -Be $false
+
+                Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
+            }
+
+            It 'Should return $false when the specified login has no server permissions assigned' {
+                $mockInvokeQueryPermissionsSet = @()
+                $testLoginEffectiveServerPermissionsParams.Permissions = $mockAllServerPermissionsPresent.Clone()
+
+                Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -Be $false
+
+                Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
+            }
+
+            It 'Should return $false when the desired login permissions are not present' {
+                $mockInvokeQueryPermissionsSet = $mockLoginPermissionsMissing.Clone()
+                $testLoginEffectiveLoginPermissionsParams.Permissions = $mockAllLoginPermissionsPresent.Clone()
+
+                Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -Be $false
+
+                Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
+            }
+
+            It 'Should return $false when the specified login has no login permissions assigned' {
+                $mockInvokeQueryPermissionsSet = @()
+                $testLoginEffectiveLoginPermissionsParams.Permissions = $mockAllLoginPermissionsPresent.Clone()
+
+                Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -Be $false
 
                 Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly
             }
@@ -1229,8 +1272,24 @@ InModuleScope $script:helperModuleName {
         }
     }
 
+    $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter = {
+        $Permissions -eq @('IMPERSONATE ANY LOGIN')
+    }
+
+    $mockTestLoginEffectivePermissions_ControlServer_ParameterFilter = {
+        $Permissions -eq @('CONTROL SERVER')
+    }
+
+    $mockTestLoginEffectivePermissions_ImpersonateLogin_ParameterFilter = {
+        $Permissions -eq @('IMPERSONATE')
+    }
+
+    $mockTestLoginEffectivePermissions_ControlLogin_ParameterFilter = {
+        $Permissions -eq @('CONTROL')
+    }
+
     Describe 'Testing Test-ImpersonatePermissions' {
-        $mockConnectionContextObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ConnectionContext
+        $mockConnectionContextObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerConnection
         $mockConnectionContextObject.TrueLogin = 'Login1'
 
         $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
@@ -1238,23 +1297,60 @@ InModuleScope $script:helperModuleName {
         $mockServerObject.ServiceName = 'MSSQLSERVER'
         $mockServerObject.ConnectionContext = $mockConnectionContextObject
 
-        Context 'When impersonate permissions are present for the login' {
-            Mock -CommandName Test-LoginEffectivePermissions -MockWith { $true }
+        BeforeEach {
+            Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter -MockWith { $false } -Verifiable
+            Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlServer_ParameterFilter -MockWith { $false } -Verifiable
+            Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateLogin_ParameterFilter -MockWith { $false } -Verifiable
+            Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlLogin_ParameterFilter -MockWith { $false } -Verifiable
+        }
 
-            It 'Should return true when the impersonate permissions are present for the login'{
+        Context 'When impersonate permissions are present for the login' {
+            It 'Should return true when the impersonate any login permissions are present for the login' {
+                Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter -MockWith { $true } -Verifiable
                 Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $true
 
-                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter -Scope It -Times 1 -Exactly
+            }
+
+            It 'Should return true when the control server permissions are present for the login' {
+                Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlServer_ParameterFilter -MockWith { $true } -Verifiable
+                Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $true
+
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlServer_ParameterFilter -Scope It -Times 1 -Exactly
+            }
+
+            It 'Should return true when the impersonate login permissions are present for the login' {
+                Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateLogin_ParameterFilter -MockWith { $true } -Verifiable
+                Test-ImpersonatePermissions -ServerObject $mockServerObject -SecurableName 'Login1' | Should -Be $true
+
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateLogin_ParameterFilter -Scope It -Times 1 -Exactly
+            }
+
+            It 'Should return true when the control login permissions are present for the login' {
+                Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlLogin_ParameterFilter -MockWith { $true } -Verifiable
+                Test-ImpersonatePermissions -ServerObject $mockServerObject -SecurableName 'Login1' | Should -Be $true
+
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlLogin_ParameterFilter -Scope It -Times 1 -Exactly
             }
         }
 
         Context 'When impersonate permissions are missing for the login' {
-            Mock -CommandName Test-LoginEffectivePermissions -MockWith { $false } -Verifiable
-
-            It 'Should return false when the impersonate permissions are missing for the login'{
+            It 'Should return false when the server permissions are missing for the login' {
                 Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $false
 
-                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlServer_ParameterFilter -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateLogin_ParameterFilter -Scope It -Times 0 -Exactly
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlLogin_ParameterFilter -Scope It -Times 0 -Exactly
+            }
+
+            It 'Should return false when the login permissions are missing for the login' {
+                Test-ImpersonatePermissions -ServerObject $mockServerObject -SecurableName 'Login1' | Should -Be $false
+
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlServer_ParameterFilter -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateLogin_ParameterFilter -Scope It -Times 1 -Exactly
+                Assert-MockCalled -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlLogin_ParameterFilter -Scope It -Times 1 -Exactly
             }
         }
     }
@@ -1703,9 +1799,28 @@ InModuleScope $script:helperModuleName {
     Describe 'Testing New-TerminatingError' -Tag NewWarningMessage {
         Context -Name 'When building a localized error message' -Fixture {
             It 'Should return the correct error record with the correct error message' {
-
                 $errorRecord = New-TerminatingError -ErrorType 'NoKeyFound' -FormatArgs 'Dummy error'
                 $errorRecord.Exception.Message | Should -Be 'No Localization key found for ErrorType: ''Dummy error''.'
+            }
+
+            It 'Should return the correct error record with the correct error message including InnerException' {
+                $errorRecord = New-TerminatingError -ErrorType 'NoKeyFound' -FormatArgs 'Dummy error' -InnerException 'Dummy exception'
+                $errorRecord.Exception.Message | Should -Be 'No Localization key found for ErrorType: ''Dummy error''. InnerException: Dummy exception'
+            }
+
+            It 'Should return the correct error record with a matching FullyQualifiedErrorId' {
+                $errorRecord = New-TerminatingError -ErrorType 'NoKeyFound' -FormatArgs 'Dummy error'
+                $errorRecord.FullyQualifiedErrorId | Should -Be 'SqlServerDSCHelper.NoKeyFound'
+            }
+
+            It 'Should return the correct error record with a matching FullyQualifiedErrorId when there is no calling module' {
+                Mock -CommandName Get-PSCallStack -MockWith {
+                    , [PSCustomObject] @{
+                        ScriptName = ''
+                    }
+                }
+                $errorRecord = New-TerminatingError -ErrorType 'NoKeyFound' -FormatArgs 'Dummy error'
+                $errorRecord.FullyQualifiedErrorId | Should -Be 'NoKeyFound'
             }
         }
 
@@ -1713,6 +1828,16 @@ InModuleScope $script:helperModuleName {
             It 'Should return the correct error record with the correct error message' {
                 $errorRecord = New-TerminatingError -ErrorType 'UnknownDummyMessage' -FormatArgs 'Dummy error'
                 $errorRecord.Exception.Message | Should -Be 'No Localization key found for ErrorType: ''UnknownDummyMessage''.'
+            }
+
+            It 'Should return the correct error record with the correct error message even if the NoKeyFound message is missing' {
+                $noKeyFound = $script:localizedData.NoKeyFound
+                $script:localizedData.Remove('NoKeyFound')
+
+                $errorRecord = New-TerminatingError -ErrorType 'UnknownDummyMessage' -FormatArgs 'Dummy error'
+                $errorRecord.Exception.Message | Should -Be 'No Localization key found for ErrorType: ''UnknownDummyMessage''.'
+
+                $script:localizedData.NoKeyFound = $noKeyFound
             }
         }
 

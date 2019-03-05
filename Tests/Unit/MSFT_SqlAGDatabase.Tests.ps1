@@ -88,6 +88,8 @@ try
         $mockAvailabilityGroupObjectName = 'AvailabilityGroup1'
         $mockAvailabilityGroupWithoutDatabasesObjectName = 'AvailabilityGroupWithoutDatabases'
         $mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServerName = 'AvailabilityGroup2'
+        $mockTrueLogin = 'Login1'
+        $mockDatabaseOwner = 'DatabaseOwner1'
 
         #endregion mock names
 
@@ -279,6 +281,7 @@ try
             $newDatabaseObject.LogFiles = @{
                 FileName = ( [IO.Path]::Combine( $mockLogFilePath, "$($mockPresentDatabaseName).ldf" ) )
             }
+            $newDatabaseObject.Owner = $mockDatabaseOwner
 
             # Add the database object to the database collection
             $mockDatabaseObjects.Add($newDatabaseObject)
@@ -299,6 +302,7 @@ try
             $newDatabaseObject.LogFiles = @{
                 FileName = ( [IO.Path]::Combine( $mockLogFilePathIncorrect, "$($mockPresentDatabaseName).ldf" ) )
             }
+            $newDatabaseObject.Owner = $mockDatabaseOwner
 
             # Add the database object to the database collection
             $mockDatabaseObjectsWithIncorrectFileNames.Add($newDatabaseObject)
@@ -315,6 +319,9 @@ try
         $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupObject.Clone())
         $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
         $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
+        $mockServerObject.ComputerNamePhysicalNetBIOS = $mockServerObjectDomainInstanceName
+        $mockServerObject.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerConnection
+        $mockServerObject.ConnectionContext.TrueLogin = $mockTrueLogin
         $mockServerObject.Databases = $mockDatabaseObjects
         $mockServerObject.DomainInstanceName = $mockServerObjectDomainInstanceName
         $mockServerObject.NetName = $mockServerObjectDomainInstanceName
@@ -328,6 +335,9 @@ try
         $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupObject.Clone())
         $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
         $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
+        $mockServer2Object.ComputerNamePhysicalNetBIOS = $mockPrimaryServerObjectDomainInstanceName
+        $mockServer2Object.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerConnection
+        $mockServer2Object.ConnectionContext.TrueLogin = $mockTrueLogin
         $mockServer2Object.Databases = $mockDatabaseObjects
         $mockServer2Object.DomainInstanceName = $mockPrimaryServerObjectDomainInstanceName
         $mockServer2Object.NetName = $mockPrimaryServerObjectDomainInstanceName
@@ -370,7 +380,8 @@ WITH NORECOVERY'
             $Query -like 'EXECUTE AS LOGIN = *
 RESTORE DATABASE *
 FROM DISK = *
-WITH NORECOVERY'
+WITH NORECOVERY*
+REVERT'
         }
 
         #endregion Invoke Query Mock
@@ -454,7 +465,6 @@ WITH NORECOVERY'
                 Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Log_$(Get-Date -Format 'yyyyMMddhhmmss').trn") } -Verifiable -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                 Mock -CommandName New-TerminatingError { $ErrorType } -Verifiable
                 Mock -CommandName Remove-Item -Verifiable
-                Mock -CommandName Restore-SqlDatabase -Verifiable
             }
 
             BeforeEach {
@@ -501,13 +511,12 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                    Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                    Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
                 }
 
@@ -530,13 +539,12 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                    Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                    Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
                 }
 
@@ -565,7 +573,6 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 0 -Exactly
                 }
 
@@ -587,21 +594,20 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                    Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                    Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should throw the correct error when "MatchDatabaseOwner" is $true and the current login does not have impersonate permissions' {
                     Mock -CommandName Test-ImpersonatePermissions -MockWith { $false } -Verifiable
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "The login '$([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)' is missing impersonate permissions in the instances 'Server2'."
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "The login '$([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)' is missing impersonate any login, control server, impersonate login, or control login permissions in the instances 'Server2'."
 
                     Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                     Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
@@ -623,7 +629,6 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
                 }
 
@@ -676,8 +681,7 @@ WITH NORECOVERY'
                         Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                         Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                         Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                            Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
 
                         $mockServerObject.Databases['DB1'].($prerequisiteCheck.Key) = $originalValue
                     }
@@ -708,7 +712,6 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
                 }
 
@@ -746,8 +749,7 @@ WITH NORECOVERY'
                         Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                         Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                         Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                            Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
 
                         $mockServerObject.Databases['DB1'].($filestreamProperty.Key) = $originalValue
                     }
@@ -779,7 +781,6 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
 
                     $mockServerObject.Databases['DB1'].ContainmentType = $originalValue
@@ -812,7 +813,6 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
 
                     $mockServer2Object.Databases['DB1'].FileGroups.Files.FileName = $originalValue
@@ -845,7 +845,6 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
 
                     $mockServer2Object.Databases['DB1'].LogFiles.FileName = $originalValue
@@ -878,7 +877,6 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
 
                     $mockServerObject.Databases['DB1'].EncryptionEnabled = $false
@@ -905,13 +903,12 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                    Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                    Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
                 }
 
@@ -940,7 +937,6 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
                 }
 
@@ -969,7 +965,6 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
                 }
 
@@ -998,7 +993,6 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
                 }
 
@@ -1021,13 +1015,12 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                    Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                    Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
                 }
             }
@@ -1060,7 +1053,6 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 2 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 0 -Exactly
                 }
 
@@ -1089,7 +1081,6 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 2 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 0 -Exactly
                 }
 
@@ -1118,7 +1109,6 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 2 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 0 -Exactly
                 }
             }
@@ -1146,13 +1136,12 @@ WITH NORECOVERY'
                     Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                    Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 1 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                    Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                     Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Restore-SqlDatabase -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
                 }
             }
