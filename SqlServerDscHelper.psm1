@@ -289,7 +289,7 @@ function New-TerminatingError
 
         if (!$errorMessage)
         {
-            $errorMessage = ("No Localization key found for key: {0}" -f $ErrorType)
+            $errorMessage = ("No Localization key found for ErrorType: '{0}'." -f $ErrorType)
         }
     }
 
@@ -1059,6 +1059,43 @@ function Update-AvailabilityGroupReplica
     }
 }
 
+<#
+    .SYNOPSIS
+        Impersonates a login and determines whether required permissions are present.
+
+    .PARAMETER SQLServer
+        String containing the host name of the SQL Server to connect to.
+
+    .PARAMETER SQLInstanceName
+        String containing the SQL Server Database Engine instance to connect to.
+
+    .PARAMETER LoginName
+        String containing the login (user) which should be checked for a permission.
+
+    .PARAMETER Permissions
+        This is a list that represents a SQL Server set of database permissions.
+
+    .PARAMETER SecurableClass
+        String containing the class of permissions to test. It can be:
+            SERVER: A permission that is applicable against server objects.
+            LOGIN: A permission that is applicable against login objects.
+
+        Default is 'SERVER'.
+
+    .PARAMETER SecurableName
+        String containing the name of the object against which permissions exist, e.g. if SecurableClass is LOGIN this is the name of a login permissions may exist against.
+
+        Default is $null.
+
+    .NOTES
+        These SecurableClass are not yet in this module yet and so are not implemented:
+            'APPLICATION ROLE', 'ASSEMBLY', 'ASYMMETRIC KEY', 'CERTIFICATE',
+            'CONTRACT', 'DATABASE', 'ENDPOINT', 'FULLTEXT CATALOG',
+            'MESSAGE TYPE', 'OBJECT', 'REMOTE SERVICE BINDING', 'ROLE',
+            'ROUTE', 'SCHEMA', 'SERVICE', 'SYMMETRIC KEY', 'TYPE', 'USER',
+            'XML SCHEMA COLLECTION'
+
+#>
 function Test-LoginEffectivePermissions
 {
     param
@@ -1079,7 +1116,16 @@ function Test-LoginEffectivePermissions
 
         [Parameter(Mandatory = $true)]
         [System.String[]]
-        $Permissions
+        $Permissions,
+
+        [ValidateSet('SERVER', 'LOGIN')]
+        [Parameter()]
+        [System.String]
+        $SecurableClass = 'SERVER',
+
+        [Parameter()]
+        [System.String]
+        $SecurableName
     )
 
     # Assume the permissions are not present
@@ -1092,12 +1138,24 @@ function Test-LoginEffectivePermissions
         WithResults     = $true
     }
 
-    $queryToGetEffectivePermissionsForLogin = "
-        EXECUTE AS LOGIN = '$LoginName'
-        SELECT DISTINCT permission_name
-        FROM fn_my_permissions(null,'SERVER')
-        REVERT
-    "
+    if ( [System.String]::IsNullOrEmpty($SecurableName) )
+    {
+        $queryToGetEffectivePermissionsForLogin = "
+            EXECUTE AS LOGIN = '$LoginName'
+            SELECT DISTINCT permission_name
+            FROM fn_my_permissions(null,'$SecurableClass')
+            REVERT
+        "
+    }
+    else
+    {
+        $queryToGetEffectivePermissionsForLogin = "
+            EXECUTE AS LOGIN = '$LoginName'
+            SELECT DISTINCT permission_name
+            FROM fn_my_permissions('$SecurableName','$SecurableClass')
+            REVERT
+        "
+    }
 
     Write-Verbose -Message ($script:localizedData.GetEffectivePermissionForLogin -f $LoginName, $sqlInstanceName) -Verbose
 
@@ -1233,6 +1291,10 @@ function Get-PrimaryReplicaServerObject
 
     .PARAMETER ServerObject
         The server object on which to perform the test.
+
+    .PARAMETER SecurableName
+        If set then impersonate permission on this specific securable (e.g. login) is also checked.
+
 #>
 function Test-ImpersonatePermissions
 {
@@ -1240,9 +1302,14 @@ function Test-ImpersonatePermissions
     (
         [Parameter(Mandatory = $true)]
         [Microsoft.SqlServer.Management.Smo.Server]
-        $ServerObject
+        $ServerObject,
+
+        [Parameter()]
+        [System.String]
+        $SecurableName
     )
 
+    # The impersonate any login permission only exists in SQL 2014 and above
     $testLoginEffectivePermissionsParams = @{
         SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
         SQLInstanceName = $ServerObject.ServiceName
@@ -1251,12 +1318,77 @@ function Test-ImpersonatePermissions
     }
 
     $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
-
-    if ( -not $impersonatePermissionsPresent )
+    if ($impersonatePermissionsPresent)
     {
-        New-VerboseMessage -Message ( 'The login "{0}" does not have impersonate permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
+        New-VerboseMessage -Message ( 'The login "{0}" has impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
+        return $impersonatePermissionsPresent
+    }
+    else
+    {
+        New-VerboseMessage -Message ( 'The login "{0}" does not have impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
     }
 
+    # Check for sysadmin / control server permission which allows impersonation
+    $testLoginEffectivePermissionsParams = @{
+        SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
+        SQLInstanceName = $ServerObject.ServiceName
+        LoginName       = $ServerObject.ConnectionContext.TrueLogin
+        Permissions     = @('CONTROL SERVER')
+    }
+    $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+    if ($impersonatePermissionsPresent)
+    {
+        New-VerboseMessage -Message ( 'The login "{0}" has control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
+        return $impersonatePermissionsPresent
+    }
+    else
+    {
+        New-VerboseMessage -Message ( 'The login "{0}" does not have control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
+    }
+
+    if ( -not [System.String]::IsNullOrEmpty($SecurableName) ) {
+        # Check for login-specific impersonation permissions
+        $testLoginEffectivePermissionsParams = @{
+            SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
+            SQLInstanceName = $ServerObject.ServiceName
+            LoginName       = $ServerObject.ConnectionContext.TrueLogin
+            Permissions     = @('IMPERSONATE')
+            SecurableClass  = 'LOGIN'
+            SecurableName   = $SecurableName
+        }
+        $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+        if ($impersonatePermissionsPresent)
+        {
+            New-VerboseMessage -Message ( 'The login "{0}" has impersonate permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName )
+            return $impersonatePermissionsPresent
+        }
+        else
+        {
+            New-VerboseMessage -Message ( 'The login "{0}" does not have impersonate permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName )
+        }
+
+        # Check for login-specific control permissions
+        $testLoginEffectivePermissionsParams = @{
+            SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
+            SQLInstanceName = $ServerObject.ServiceName
+            LoginName       = $ServerObject.ConnectionContext.TrueLogin
+            Permissions     = @('CONTROL')
+            SecurableClass  = 'LOGIN'
+            SecurableName   = $SecurableName
+        }
+        $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+        if ($impersonatePermissionsPresent)
+        {
+            New-VerboseMessage -Message ( 'The login "{0}" has control permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName )
+            return $impersonatePermissionsPresent
+        }
+        else
+        {
+            New-VerboseMessage -Message ( 'The login "{0}" does not have control permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName )
+        }
+    }
+
+    New-VerboseMessage -Message ( 'The login "{0}" does not have any impersonate permissions required on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
     return $impersonatePermissionsPresent
 }
 
@@ -1572,7 +1704,7 @@ function Get-ServiceAccount
 function Find-ExceptionByNumber
 {
     # Define parameters
-    param 
+    param
     (
         [Parameter(Mandatory = $true)]
         [System.Exception]

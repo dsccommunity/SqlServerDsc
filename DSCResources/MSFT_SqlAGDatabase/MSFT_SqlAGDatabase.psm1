@@ -138,11 +138,12 @@ function Get-TargetResource
     .PARAMETER MatchDatabaseOwner
         If set to $true, this ensures the database owner of the database on the primary replica is the
         owner of the database on all secondary replicas. This requires the database owner is available
-        as a login on all replicas and that the PSDscRunAsCredential has impersonate permissions.
+        as a login on all replicas and that the PsDscRunAsCredential has impersonate any login, control
+        server, impersonate login, or control login permissions.
 
-        If set to $false, the owner of the database will be the PSDscRunAsCredential.
+        If set to $false, the owner of the database will be the PsDscRunAsCredential.
 
-        The default is '$true'.
+        The default is '$false'.
 
     .PARAMETER ProcessOnlyOnActiveNode
         Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
@@ -232,27 +233,32 @@ function Set-TargetResource
         # Get only the secondary replicas. Some tests do not need to be performed on the primary replica
         $secondaryReplicas = $availabilityGroup.AvailabilityReplicas | Where-Object -FilterScript { $_.Role -ne 'Primary' }
 
-        # Ensure the appropriate permissions are in place on all the replicas
-        if ( $MatchDatabaseOwner )
+        foreach ( $databaseToAddToAvailabilityGroup in $databasesToAddToAvailabilityGroup )
         {
-            $impersonatePermissionsStatus = @{}
+            $databaseObject = $primaryServerObject.Databases[$databaseToAddToAvailabilityGroup]
 
-            foreach ( $availabilityGroupReplica in $secondaryReplicas )
+            # Ensure the appropriate permissions are in place on all the replicas
+            if ( $MatchDatabaseOwner )
             {
-                $currentAvailabilityGroupReplicaServerObject = Connect-SQL -ServerName $availabilityGroupReplica.Name
-                $impersonatePermissionsStatus.Add(
-                    $availabilityGroupReplica.Name,
-                    ( Test-ImpersonatePermissions -ServerObject $currentAvailabilityGroupReplicaServerObject )
-                )
-            }
+                $impersonatePermissionsStatus = @{}
 
-            if ( $impersonatePermissionsStatus.Values -contains $false )
-            {
-                $impersonatePermissionsMissingParameters = @(
-                    [System.Security.Principal.WindowsIdentity]::GetCurrent().Name,
-                    ( ( $impersonatePermissionsStatus.GetEnumerator() | Where-Object -FilterScript { -not $_.Value } | Select-Object -ExpandProperty Key ) -join ', ' )
-                )
-                throw ($script:localizedData.ImpersonatePermissionsMissing -f $impersonatePermissionsMissingParameters )
+                foreach ( $availabilityGroupReplica in $secondaryReplicas )
+                {
+                    $currentAvailabilityGroupReplicaServerObject = Connect-SQL -ServerName $availabilityGroupReplica.Name
+                    $impersonatePermissionsStatus.Add(
+                        $availabilityGroupReplica.Name,
+                        ( Test-ImpersonatePermissions -ServerObject $currentAvailabilityGroupReplicaServerObject -Securable $databaseObject.Owner )
+                    )
+                }
+
+                if ( $impersonatePermissionsStatus.Values -contains $false )
+                {
+                    $impersonatePermissionsMissingParameters = @(
+                        [System.Security.Principal.WindowsIdentity]::GetCurrent().Name,
+                        ( ( $impersonatePermissionsStatus.GetEnumerator() | Where-Object -FilterScript { -not $_.Value } | Select-Object -ExpandProperty Key ) -join ', ' )
+                    )
+                    throw ($script:localizedData.ImpersonatePermissionsMissing -f $impersonatePermissionsMissingParameters )
+                }
             }
         }
 
@@ -481,15 +487,36 @@ function Set-TargetResource
                 $restoreDatabaseQueryStringBuilder.Append($databaseFullBackupFile) | Out-Null
                 $restoreDatabaseQueryStringBuilder.AppendLine('''') | Out-Null
                 $restoreDatabaseQueryStringBuilder.Append('WITH NORECOVERY') | Out-Null
+                if ( $MatchDatabaseOwner )
+                {
+                    $restoreDatabaseQueryStringBuilder.AppendLine() | Out-Null
+                    $restoreDatabaseQueryStringBuilder.Append('REVERT') | Out-Null
+                }
                 $restoreDatabaseQueryString = $restoreDatabaseQueryStringBuilder.ToString()
 
-                # Build the parameters to restore the transaction log
-                $restoreSqlDatabaseLogParameters = @{
-                    Database      = $databaseToAddToAvailabilityGroup
-                    BackupFile    = $databaseLogBackupFile
-                    RestoreAction = 'Log'
-                    NoRecovery    = $true
+                # Need to restore the database with a query in order to impersonate the correct login
+                $restoreLogQueryStringBuilder = New-Object -TypeName System.Text.StringBuilder
+
+                if ( $MatchDatabaseOwner )
+                {
+                    $restoreLogQueryStringBuilder.Append('EXECUTE AS LOGIN = ''') | Out-Null
+                    $restoreLogQueryStringBuilder.Append($databaseObject.Owner) | Out-Null
+                    $restoreLogQueryStringBuilder.AppendLine('''') | Out-Null
                 }
+
+                $restoreLogQueryStringBuilder.Append('RESTORE DATABASE [') | Out-Null
+                $restoreLogQueryStringBuilder.Append($databaseToAddToAvailabilityGroup) | Out-Null
+                $restoreLogQueryStringBuilder.AppendLine(']') | Out-Null
+                $restoreLogQueryStringBuilder.Append('FROM DISK = ''') | Out-Null
+                $restoreLogQueryStringBuilder.Append($databaseLogBackupFile) | Out-Null
+                $restoreLogQueryStringBuilder.AppendLine('''') | Out-Null
+                $restoreLogQueryStringBuilder.Append('WITH NORECOVERY') | Out-Null
+                if ( $MatchDatabaseOwner )
+                {
+                    $restoreLogQueryStringBuilder.AppendLine() | Out-Null
+                    $restoreLogQueryStringBuilder.Append('REVERT') | Out-Null
+                }
+                $restoreLogQueryString = $restoreLogQueryStringBuilder.ToString()
 
                 try
                 {
@@ -502,7 +529,7 @@ function Set-TargetResource
 
                         # Restore the database
                         Invoke-Query -SQLServer $currentAvailabilityGroupReplicaServerObject.NetName -SQLInstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreDatabaseQueryString
-                        Restore-SqlDatabase -InputObject $currentAvailabilityGroupReplicaServerObject @restoreSqlDatabaseLogParameters
+                        Invoke-Query -SQLServer $currentAvailabilityGroupReplicaServerObject.NetName -SQLInstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreLogQueryString
 
                         # Add the database to the Availability Group
                         Add-SqlAvailabilityDatabase -InputObject $currentReplicaAvailabilityGroupObject -Database $databaseToAddToAvailabilityGroup
@@ -604,11 +631,12 @@ function Set-TargetResource
     .PARAMETER MatchDatabaseOwner
         If set to $true, this ensures the database owner of the database on the primary replica is the
         owner of the database on all secondary replicas. This requires the database owner is available
-        as a login on all replicas and that the PSDscRunAsCredential has impersonate permissions.
+        as a login on all replicas and that the PsDscRunAsCredential has impersonate any login, control
+        server, impersonate login, or control login permissions.
 
-        If set to $false, the owner of the database will be the PSDscRunAsCredential.
+        If set to $false, the owner of the database will be the PsDscRunAsCredential.
 
-        The default is '$true'.
+        The default is '$false'.
 
     .PARAMETER ProcessOnlyOnActiveNode
         Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.

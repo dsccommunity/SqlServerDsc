@@ -286,10 +286,11 @@ group.
   Availability Group. This parameter is ignored when 'Ensure' is 'Absent'.
 * **`[Boolean]` MatchDatabaseOwner** _(Write)_: If set to $true, this ensures the
   database owner of the database on the primary replica is the owner of the database
-  on all secondary replicas. This requires the database owner is available as a
-  login on all replicas and that the PsDscRunAsCredential has impersonate permissions.
+  on all secondary replicas. This requires the database owner is available
+  as a login on all replicas and that the PsDscRunAsCredential has impersonate any
+  login, control server, impersonate login, or control login permissions.
   If set to $false, the owner of the database will be the PsDscRunAsCredential.
-  The default is '$true'.
+  The default is '$false'.
 * **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
   will only determine if a change is needed if the target node is the active
   host of the SQL Server Instance.
