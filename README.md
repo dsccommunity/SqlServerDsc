@@ -187,7 +187,8 @@ It will also manage the Availability Group replica on the specified node.
   preference for the availability group. When creating a group the default is 'None'.
   { Primary | SecondaryOnly | Secondary | *None* }
 * **`[String]` AvailabilityMode** _(Write)_: Specifies the replica availability mode.
-  Default when creating a group is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
+  Default when creating a group is 'AsynchronousCommit'.
+  { *AsynchronousCommit* | SynchronousCommit }
 * **`[UInt32]` BackupPriority** _(Write)_: Specifies the desired priority of the
   replicas in performing backups. The acceptable values for this parameter are:
   integers from 0 through 100. Of the set of replicas which are online and available,
@@ -415,7 +416,8 @@ Always On Availability Group Replica.
 * **`[String]` Ensure** _(Write)_: Specifies if the availability group replica should
   be present or absent. Default is Present. { *Present* | Absent }
 * **`[String]` AvailabilityMode** _(Write)_: Specifies the replica availability mode.
-  When creating a replica the default is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
+  When creating a replica the default is 'AsynchronousCommit'.
+  { *AsynchronousCommit* | SynchronousCommit }
 * **`[UInt32]` BackupPriority** _(Write)_: Specifies the desired priority of the
   replicas in performing backups. The acceptable values for this parameter are:
   integers from 0 through 100. Of the set of replicas which are online and available,
