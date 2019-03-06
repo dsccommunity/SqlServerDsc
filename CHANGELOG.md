@@ -194,9 +194,18 @@
   - Added a new helper function `Get-InstalledSharedFeatures` to move out
     some of the code from the `Get-TargetResource` to make unit testing
     easier and faster.
+<<<<<<< HEAD
   - Changed the logic of 'Build the argument string to be passed to setup' to 
     not quote the value if root directory is specified 
     ([issue #1254] (https://github.com/PowerShell/SqlServerDsc/issues/1254))
+=======
+  - Changed the logic of 'Build the argument string to be passed to setup' to
+    not quote the value if root directory is specified
+    ([issue #1254](https://github.com/PowerShell/SqlServerDsc/issues/1254)).
+  - Changed the logic of how default value of FailoverClusterGroupName is set
+    as this was causing 
+    the ([issue #448](https://github.com/PowerShell/SqlServerDsc/issues/448)).
+>>>>>>> Fix for issue #448
 
 ## 12.3.0.0
 
