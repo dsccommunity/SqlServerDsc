@@ -21,6 +21,7 @@ These are the links to the examples for each individual resource.
 - [SqlDatabaseRecoveryModel](Resources/SqlDatabaseRecoveryModel)
 - [SqlDatabaseRole](Resources/SqlDatabaseRole)
 - [SqlRS](Resources/SqlRS)
+- [SqlRSSetup](Resources/SqlRSSetup)
 - [SqlScript](Resources/SqlScript)
 - [SqlScriptQuery](Resources/SqlScriptQuery)
 - [SqlServerConfiguration](Resources/SqlServerConfiguration)

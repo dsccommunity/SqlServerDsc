@@ -1,0 +1,19 @@
+[ClassVersion("1.0.0.0"), FriendlyName("SqlRSSetup")]
+class MSFT_SqlRSSetup : OMI_BaseResource
+{
+    [Key, Description("Name of the Microsoft SQL Server Reporting Service instance to installed. This can only be set to 'SSRS'. { 'SSRS' }"), ValueMap{"SSRS"}, Values{"SSRS"}] String InstanceName;
+    [Required, Description("Accept licens terms. This must be set to 'Yes'. { 'Yes' }"), ValueMap{"Yes"}, Values{"Yes"}] String IAcceptLicensTerms;
+    [Required, Description("The path to the root of the source file to be used for installation, e.g an UNC path to a shared resource. Environment variables can be used in the path.")] String SourcePath;
+    [Write, Description("The action to be performed. Default value is 'Install'. { *Install* | Uninstall | Repair }"), ValueMap{"Install","Uninstall","Repair"}, Values{"Install","Uninstall","Repair"}] String Action;
+    [Write, EmbeddedInstance("MSFT_Credential"), Description("Credentials used to access the path set in the parameter 'SourcePath'.")] String SourceCredential;
+    [Write, Description("Suppresses any attempts to restart.")] Boolean SuppressReboot;
+    [Write, Description("Sets the custom license key, e.g. '12345-12345-12345-12345-12345'.")] String ProductKey;
+    [Write, Description("Forces a restart after installation is finished.")] Boolean ForceReboot;
+    [Write, Description("Upgrades the edition of the installed product. Requires that either the ProductKey or the Edition parameter is also assigned. Default is $false.")] Boolean EditionUpgrade;
+    [Write, Description("Sets the custom free edition. { 'Development' | 'Evaluation' | 'ExpressAdvanced' }"), ValueMap{"Development","Evaluation","ExpressAdvanced"}, Values{"Dev","Evaluation","ExpressAdvanced"}] String Edition;
+    [Write, Description("Specifies the setup log file location, e.g. 'log.txt'. By default, log files are created under %TEMP%.")] String LogPath;
+    [Write, Description("Sets the install folder, e.g. 'C:\Program Files\SSRS'. Default value is 'C:\Program Files\Microsoft SQL Server Reporting Services'.")] String InstallFolder;
+    [Read, Description("Returns the path to error dump log files.")] String ErrorDumpDirectory;
+    [Read, Description("Returns the current version of the installed Microsoft SQL Server Reporting Service instance.")] String CurrentVersion;
+    [Read, Description("Returns the current name of the Microsoft SQL Server Reporting Service instance Windows service.")] String ServiceName;
+};

@@ -130,6 +130,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   database roles.
 * [**SqlRS**](#sqlrs) configures SQL Server Reporting.
   Services to use a database engine in another instance.
+* [**SqlRSSetup**](#sqlrssetup) Installs the standalone [Microsoft SQL Server 2017 Reporting Services](https://docs.microsoft.com/en-us/sql/reporting-services/create-deploy-and-manage-mobile-and-paginated-reports).
 * [**SqlScript**](#sqlscript) resource to extend DSC Get/Set/Test
   functionality to T-SQL.
 * [**SqlScriptQuery**](#sqlscriptquery) resource to extend DSC Get/Set/Test
@@ -810,6 +811,70 @@ already exist.
 
 This is caused when trying to add another URL using the same protocol. For example
 when trying to add 'http://+:443' when 'http://+:80' already exist.
+
+### SqlRSSetup
+
+Installs the standalone [Microsoft SQL Server 2017 Reporting Services](https://docs.microsoft.com/en-us/sql/reporting-services/create-deploy-and-manage-mobile-and-paginated-reports).
+
+>**NOTE:** To install Microsoft SQL Server 2016 or older, please use the
+>resource SqlSetup.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2012 or later.
+* If `PsDscRunAsCredential` common parameter is used to run the resource,
+  the specified credential must have permissions to connect to the location
+  where the Microsoft SQL Server Reporting Services media is placed.
+* The parameter IAcceptLicensTerms must be set to 'Yes'.
+* The parameter InstanceName can only be set to 'SSRS' since there is
+  no way to change the instance name.
+
+#### Parameters
+
+* **`[String]` InstanceName** _(Key)_: Name of the Microsoft SQL Server
+  Reporting Service instance to installed. This can only be set to 'SSRS'.
+  { 'SSRS' }
+* **`[String]` IAcceptLicensTerms** _(Required)_: Accept licens terms.
+  This must be set to 'Yes'. { 'Yes' }
+* **`[String]` Action** _(Write)_: The action to be performed. Default
+  value is 'Install'. { *Install* | Uninstall | Repair }
+* **`[String]` SourcePath** _(Write)_: The path to the root of the source
+  file to be used for installation, e.g an UNC path to a shared resource.
+  Environment variables can be used in the path.
+* **`[PSCredential]` SourceCredential** _(Write)_: Credentials used to
+  access the path set in the parameter 'SourcePath'.
+* **`[Boolean]` SuppressReboot** _(Write)_: Suppresses any attempts to
+  restart.
+* **`[String]` ProductKey** _(Write)_: Sets the custom license key, e.g.
+  '12345-12345-12345-12345-12345'.
+* **`[Boolean]` ForceReboot** _(Write)_: Forces a restart after installation
+  is finished.
+* **`[Boolean]` EditionUpgrade** _(Write)_: Upgrades the edition of the
+  installed product. Requires that either the ProductKey or the Edition
+  parameter is also assigned. No upgrade performed by default.
+* **`[String]` Edition** _(Write)_: Sets the custom free edition.
+  { 'Development' | 'Evaluation' | 'ExpressAdvanced' }
+* **`[String]` LogPath** _(Write)_: Specifies the setup log file location,
+  e.g. 'log.txt'. By default, log files are created under %TEMP%.
+* **`[String]` InstallFolder** _(Write)_: Sets the install folder, e.g.
+  'C:\Program Files\SSRS'. Default value is 'C:\Program Files\Microsoft SQL Server Reporting Services'.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[String]` ErrorDumpDirectory** _(Read)_: Returns the path to error
+  dump log files.
+* **`[String]` CurrentVersion** _(Read)_: Returns the current version
+  of the installed Microsoft SQL Server Reporting Service instance.
+* **`[String]` ServiceName** _(Read)_: Returns the current name
+  of the Microsoft SQL Server Reporting Service instance Windows service.
+
+#### Examples
+
+* [Install Reporting Services](Examples/Resources/SqlRSSetup/1-InstallReportingServices.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlRSSetup).
 
 ### SqlScript
 
