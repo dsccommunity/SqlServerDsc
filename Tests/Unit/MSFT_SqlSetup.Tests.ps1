@@ -96,26 +96,40 @@ try
                         $value = ($Matches[2] -replace '" "',' ') -replace '"',''
                     }
 
-                    $null = $argumentHashTable.Add($key, $value)
+                    $argumentHashTable.Add($key, $value)
                 }
             }
 
             $actualValues = $argumentHashTable.Clone()
 
+            # Limit the output in the console when everything is fine.
+            if ($actualValues.Count -ne $ExpectedArgument.Count)
+            {
+                Write-Warning -Message 'Verified the setup argument count (expected vs actual)'
+                Write-Warning -Message ('Expected: {0}' -f ($ExpectedArgument.Keys -join ','))
+                Write-Warning -Message ('Actual: {0}' -f ($actualValues.Keys -join ','))
+            }
+
             # Start by checking whether we have the same number of parameters
-            Write-Verbose 'Verifying setup argument count (expected vs actual)' -Verbose
-            Write-Verbose -Message ('Expected: {0}' -f ($ExpectedArgument.Keys -join ',') ) -Verbose
-            Write-Verbose -Message ('Actual: {0}' -f ($actualValues.Keys -join ',')) -Verbose
+            $actualValues.Count | Should -Be $ExpectedArgument.Count `
+                -Because ('the expected argument was: {0}' -f ($ExpectedArgument.Keys -join ','))
 
-            $actualValues.Count | Should -Be $ExpectedArgument.Count
-
-            Write-Verbose 'Verifying actual setup arguments against expected setup arguments' -Verbose
             foreach ($argumentKey in $ExpectedArgument.Keys)
             {
-                $argumentKeyName = $argumentHashTable.GetEnumerator() | Where-Object -FilterScript { $_.Name -eq $argumentKey } | Select-Object -ExpandProperty Name
+                $argumentKeyName = $actualValues.GetEnumerator() |
+                    Where-Object -FilterScript {
+                        $_.Name -eq $argumentKey
+                    } | Select-Object -ExpandProperty 'Name'
+
+                # Limit the output in the console when everything is fine.
+                if ($argumentKeyName -ne $argumentKey -or $argumentValue -ne $ExpectedArgument.$argumentKey)
+                {
+                    Write-Warning -Message 'Verified actual setup argument values against expected setup argument values'
+                }
+
                 $argumentKeyName | Should -Be $argumentKey
 
-                $argumentValue = $argumentHashTable.$argumentKey
+                $argumentValue = $actualValues.$argumentKey
                 $argumentValue | Should -Be $ExpectedArgument.$argumentKey
             }
         }
@@ -694,50 +708,50 @@ try
             )
         }
 
-        $mockRobocopyExecutableName = 'Robocopy.exe'
-        $mockRobocopyExecutableVersionWithoutUnbufferedIO = '6.2.9200.00000'
-        $mockRobocopyExecutableVersionWithUnbufferedIO = '6.3.9600.16384'
-        $mockRobocopyExecutableVersion = ''     # Set dynamically during runtime
-        $mockRobocopyArgumentSilent = '/njh /njs /ndl /nc /ns /nfl'
-        $mockRobocopyArgumentCopySubDirectoriesIncludingEmpty = '/e'
-        $mockRobocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource = '/purge'
-        $mockRobocopyArgumentUseUnbufferedIO = '/J'
-        $mockRobocopyArgumentSourcePath = 'C:\Source\SQL2016'
-        $mockRobocopyArgumentDestinationPath = 'D:\Temp'
-        $mockRobocopyArgumentSourcePathWithSpaces = 'C:\Source\SQL2016 STD SP1'
-        $mockRobocopyArgumentDestinationPathWithSpaces = 'D:\Temp\DSC SQL2016'
+        # $mockRobocopyExecutableName = 'Robocopy.exe'
+        # $mockRobocopyExecutableVersionWithoutUnbufferedIO = '6.2.9200.00000'
+        # $mockRobocopyExecutableVersionWithUnbufferedIO = '6.3.9600.16384'
+        # $mockRobocopyExecutableVersion = ''     # Set dynamically during runtime
+        # $mockRobocopyArgumentSilent = '/njh /njs /ndl /nc /ns /nfl'
+        # $mockRobocopyArgumentCopySubDirectoriesIncludingEmpty = '/e'
+        # $mockRobocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource = '/purge'
+        # $mockRobocopyArgumentUseUnbufferedIO = '/J'
+        # $mockRobocopyArgumentSourcePath = 'C:\Source\SQL2016'
+        # $mockRobocopyArgumentDestinationPath = 'D:\Temp'
+        # $mockRobocopyArgumentSourcePathWithSpaces = 'C:\Source\SQL2016 STD SP1'
+        # $mockRobocopyArgumentDestinationPathWithSpaces = 'D:\Temp\DSC SQL2016'
 
-        $mockGetCommand = {
-            return @(
-                (
-                    New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockRobocopyExecutableName -PassThru |
-                        Add-Member -MemberType ScriptProperty -Name FileVersionInfo -Value {
-                            return @( ( New-Object -TypeName Object |
-                                    Add-Member -MemberType NoteProperty -Name 'ProductVersion' -Value $mockRobocopyExecutableVersion -PassThru -Force
-                                ) )
-                        } -PassThru -Force
-                )
-            )
-        }
+        # $mockGetCommand = {
+        #     return @(
+        #         (
+        #             New-Object -TypeName Object |
+        #                 Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockRobocopyExecutableName -PassThru |
+        #                 Add-Member -MemberType ScriptProperty -Name FileVersionInfo -Value {
+        #                     return @( ( New-Object -TypeName Object |
+        #                             Add-Member -MemberType NoteProperty -Name 'ProductVersion' -Value $mockRobocopyExecutableVersion -PassThru -Force
+        #                         ) )
+        #                 } -PassThru -Force
+        #         )
+        #     )
+        # }
 
-        $mockStartSqlSetupProcessExpectedArgument = ''  # Set dynamically during runtime
-        $mockStartSqlSetupProcessExitCode = 0  # Set dynamically during runtime
+        # $mockStartSqlSetupProcessExpectedArgument = ''  # Set dynamically during runtime
+        # $mockStartSqlSetupProcessExitCode = 0  # Set dynamically during runtime
 
-        $mockStartSqlSetupProcess_Robocopy = {
-            if ( $ArgumentList -cne $mockStartSqlSetupProcessExpectedArgument )
-            {
-                throw "Expected arguments was not the same as the arguments in the function call.`nExpected: '$mockStartSqlSetupProcessExpectedArgument' `n But was: '$ArgumentList'"
-            }
+        # $mockStartSqlSetupProcess_Robocopy = {
+        #     if ( $ArgumentList -cne $mockStartSqlSetupProcessExpectedArgument )
+        #     {
+        #         throw "Expected arguments was not the same as the arguments in the function call.`nExpected: '$mockStartSqlSetupProcessExpectedArgument' `n But was: '$ArgumentList'"
+        #     }
 
-            return New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name 'ExitCode' -Value 0 -PassThru -Force
-        }
+        #     return New-Object -TypeName Object |
+        #                 Add-Member -MemberType NoteProperty -Name 'ExitCode' -Value 0 -PassThru -Force
+        # }
 
-        $mockStartSqlSetupProcess_Robocopy_WithExitCode = {
-            return New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name 'ExitCode' -Value $mockStartSqlSetupProcessExitCode -PassThru -Force
-        }
+        # $mockStartSqlSetupProcess_Robocopy_WithExitCode = {
+        #     return New-Object -TypeName Object |
+        #                 Add-Member -MemberType NoteProperty -Name 'ExitCode' -Value $mockStartSqlSetupProcessExitCode -PassThru -Force
+        # }
 
         $mockSourcePathUNCWithoutLeaf = '\\server\share'
         $mockSourcePathGuid = 'cc719562-0f46-4a16-8605-9f8a47c70402'
@@ -4806,215 +4820,6 @@ try
             Assert-VerifiableMock
         }
 
-        # Tests only the parts of the code that does not already get tested thru the other tests.
-        Describe 'Copy-ItemWithRobocopy' -Tag 'Helper' {
-            Context 'When Copy-ItemWithRobocopy is called it should return the correct arguments' {
-                BeforeEach {
-                    Mock -CommandName Get-Command -MockWith $mockGetCommand -Verifiable
-                    Mock -CommandName Start-Process -MockWith $mockStartSqlSetupProcess_Robocopy -Verifiable
-                    $mockRobocopyArgumentSourcePathQuoted = '"{0}"' -f $mockRobocopyArgumentSourcePath
-                    $mockRobocopyArgumentDestinationPathQuoted = '"{0}"' -f $mockRobocopyArgumentDestinationPath
-                }
-
-
-                It 'Should use Unbuffered IO when copying' {
-                    $mockRobocopyExecutableVersion = $mockRobocopyExecutableVersionWithUnbufferedIO
-
-                    $mockStartSqlSetupProcessExpectedArgument =
-                        $mockRobocopyArgumentSourcePathQuoted,
-                        $mockRobocopyArgumentDestinationPathQuoted,
-                        $mockRobocopyArgumentCopySubDirectoriesIncludingEmpty,
-                        $mockRobocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource,
-                        $mockRobocopyArgumentUseUnbufferedIO,
-                        $mockRobocopyArgumentSilent -join ' '
-
-                    $copyItemWithRobocopyParameter = @{
-                        Path = $mockRobocopyArgumentSourcePath
-                        DestinationPath = $mockRobocopyArgumentDestinationPath
-                    }
-
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
-
-                    Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
-                    Assert-MockCalled -CommandName Start-Process  -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should not use Unbuffered IO when copying' {
-                    $mockRobocopyExecutableVersion = $mockRobocopyExecutableVersionWithoutUnbufferedIO
-
-                    $mockStartSqlSetupProcessExpectedArgument =
-                        $mockRobocopyArgumentSourcePathQuoted,
-                        $mockRobocopyArgumentDestinationPathQuoted,
-                        $mockRobocopyArgumentCopySubDirectoriesIncludingEmpty,
-                        $mockRobocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource,
-                        '',
-                        $mockRobocopyArgumentSilent -join ' '
-
-                    $copyItemWithRobocopyParameter = @{
-                        Path = $mockRobocopyArgumentSourcePath
-                        DestinationPath = $mockRobocopyArgumentDestinationPath
-                    }
-
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
-
-                    Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
-                    Assert-MockCalled -CommandName Start-Process -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When Copy-ItemWithRobocopy throws an exception it should return the correct error messages' {
-                BeforeEach {
-                    $mockRobocopyExecutableVersion = $mockRobocopyExecutableVersionWithUnbufferedIO
-
-                    Mock -CommandName Get-Command -MockWith $mockGetCommand -Verifiable
-                    Mock -CommandName Start-Process -MockWith $mockStartSqlSetupProcess_Robocopy_WithExitCode -Verifiable
-                }
-
-                It 'Should throw the correct error message when error code is 8' {
-                    $mockStartSqlSetupProcessExitCode = 8
-
-                    $copyItemWithRobocopyParameter = @{
-                        Path = $mockRobocopyArgumentSourcePath
-                        DestinationPath = $mockRobocopyArgumentDestinationPath
-                    }
-
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Throw "Robocopy reported errors when copying files. Error code: $mockStartSqlSetupProcessExitCode."
-
-                    Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
-                    Assert-MockCalled -CommandName Start-Process -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should throw the correct error message when error code is 16' {
-                    $mockStartSqlSetupProcessExitCode = 16
-
-                    $copyItemWithRobocopyParameter = @{
-                        Path = $mockRobocopyArgumentSourcePath
-                        DestinationPath = $mockRobocopyArgumentDestinationPath
-                    }
-
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Throw "Robocopy reported errors when copying files. Error code: $mockStartSqlSetupProcessExitCode."
-
-                    Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
-                    Assert-MockCalled -CommandName Start-Process -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should throw the correct error message when error code is greater than 7 (but not 8 or 16)' {
-                    $mockStartSqlSetupProcessExitCode = 9
-
-                    $copyItemWithRobocopyParameter = @{
-                        Path = $mockRobocopyArgumentSourcePath
-                        DestinationPath = $mockRobocopyArgumentDestinationPath
-                    }
-
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Throw "Robocopy reported that failures occurred when copying files. Error code: $mockStartSqlSetupProcessExitCode."
-
-                    Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
-                    Assert-MockCalled -CommandName Start-Process -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When Copy-ItemWithRobocopy is called and finishes successfully it should return the correct exit code' {
-                BeforeEach {
-                    $mockRobocopyExecutableVersion = $mockRobocopyExecutableVersionWithUnbufferedIO
-
-                    Mock -CommandName Get-Command -MockWith $mockGetCommand -Verifiable
-                    Mock -CommandName Start-Process -MockWith $mockStartSqlSetupProcess_Robocopy_WithExitCode -Verifiable
-                }
-
-                AfterEach {
-                    Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
-                    Assert-MockCalled -CommandName Start-Process -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should finish successfully with exit code 1' {
-                    $mockStartSqlSetupProcessExitCode = 1
-
-                    $copyItemWithRobocopyParameter = @{
-                        Path = $mockRobocopyArgumentSourcePath
-                        DestinationPath = $mockRobocopyArgumentDestinationPath
-                    }
-
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
-
-                    Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
-                    Assert-MockCalled -CommandName Start-Process -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should finish successfully with exit code 2' {
-                    $mockStartSqlSetupProcessExitCode = 2
-
-                    $copyItemWithRobocopyParameter = @{
-                        Path = $mockRobocopyArgumentSourcePath
-                        DestinationPath = $mockRobocopyArgumentDestinationPath
-                    }
-
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
-
-                    Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
-                    Assert-MockCalled -CommandName Start-Process -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should finish successfully with exit code 3' {
-                    $mockStartSqlSetupProcessExitCode = 3
-
-                    $copyItemWithRobocopyParameter = @{
-                        Path = $mockRobocopyArgumentSourcePath
-                        DestinationPath = $mockRobocopyArgumentDestinationPath
-                    }
-
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
-                }
-            }
-            Context 'When Copy-ItemWithRobocopy is called with spaces in paths and finishes successfully it should return the correct exit code' {
-                BeforeEach {
-                    $mockRobocopyExecutableVersion = $mockRobocopyExecutableVersionWithUnbufferedIO
-
-                    Mock -CommandName Get-Command -MockWith $mockGetCommand -Verifiable
-                    Mock -CommandName Start-Process -MockWith $mockStartSqlSetupProcess_Robocopy_WithExitCode -Verifiable
-                }
-
-                AfterEach {
-                    Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
-                    Assert-MockCalled -CommandName Start-Process -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should finish successfully with exit code 1' {
-                    $mockStartSqlSetupProcessExitCode = 1
-
-                    $copyItemWithRobocopyParameter = @{
-                        Path = $mockRobocopyArgumentSourcePathWithSpaces
-                        DestinationPath = $mockRobocopyArgumentDestinationPathWithSpaces
-                    }
-
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
-
-                }
-
-                It 'Should finish successfully with exit code 2' {
-                    $mockStartSqlSetupProcessExitCode = 2
-
-                    $copyItemWithRobocopyParameter = @{
-                        Path = $mockRobocopyArgumentSourcePathWithSpaces
-                        DestinationPath = $mockRobocopyArgumentDestinationPathWithSpaces
-                    }
-
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
-
-                }
-
-                It 'Should finish successfully with exit code 3' {
-                    $mockStartSqlSetupProcessExitCode = 3
-
-                    $copyItemWithRobocopyParameter = @{
-                        Path = $mockRobocopyArgumentSourcePathWithSpaces
-                        DestinationPath = $mockRobocopyArgumentDestinationPathWithSpaces
-                    }
-
-                    { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
-                }
-            }
-        }
-
         Describe 'Get-ServiceAccountParameters' -Tag 'Helper' {
             $serviceTypes = @('SQL','AGT','IS','RS','AS','FT')
 
@@ -5079,45 +4884,6 @@ try
                         $result.$mockPasswordArgumentName | Should -BeExactly $mockDomainServiceAccountContainingDollarSign.GetNetworkCredential().Password
                     }
 
-                }
-            }
-        }
-
-        Describe 'Get-TemporaryFolder' -Tag 'Helper' {
-            BeforeAll {
-                $mockExpectedTempPath = [IO.Path]::GetTempPath()
-            }
-
-            Context 'When using Get-TemporaryFolder' {
-                It 'Should return the correct temporary path' {
-                    Get-TemporaryFolder | Should -BeExactly $mockExpectedTempPath
-                }
-            }
-        }
-
-        Describe 'Start-SqlSetupProcess' -Tag 'Helper' {
-            Context 'When starting a process successfully' {
-                It 'Should return exit code 0' {
-                    $startSqlSetupProcessParameters = @{
-                        FilePath = 'powershell.exe'
-                        ArgumentList = '-Command &{Start-Sleep -Seconds 2}'
-                        Timeout = 30
-                    }
-
-                    $processExitCode = Start-SqlSetupProcess @startSqlSetupProcessParameters
-                    $processExitCode | Should -BeExactly 0
-                }
-            }
-
-            Context 'When starting a process and the process does not finish before the timeout period' {
-                It 'Should throw an error message' {
-                    $startSqlSetupProcessParameters = @{
-                        FilePath = 'powershell.exe'
-                        ArgumentList = '-Command &{Start-Sleep -Seconds 3}'
-                        Timeout = 2
-                    }
-
-                    { Start-SqlSetupProcess @startSqlSetupProcessParameters } | Should -Throw
                 }
             }
         }

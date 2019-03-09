@@ -3,8 +3,13 @@
 ## Unreleased
 
 - Changes to SqlServerDsc
-  - Added new resources
+  - Added new resources.
     - SqlRSSetup
+  - Added helper module DscResource.Common from the repository
+    DscResource.Template.
+    - Moved all helper functions from SqlServerDscHelper.psm1 to DscResource.Common.
+  - Added helper module DscResource.LocalizationHelper from the repository
+    DscResource.Template, this replaces the helper module CommonResourceHelper.psm1.
 - Changes to SqlServerMemory
   - Updated Cim Class to Win32_ComputerSystem (instead of Win32_PhysicalMemory)
     because the correct memory size was not being detected correctly on Azure VMs

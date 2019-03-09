@@ -816,8 +816,14 @@ when trying to add 'http://+:443' when 'http://+:80' already exist.
 
 Installs the standalone [Microsoft SQL Server 2017 Reporting Services](https://docs.microsoft.com/en-us/sql/reporting-services/create-deploy-and-manage-mobile-and-paginated-reports).
 
->**NOTE:** To install Microsoft SQL Server 2016 or older, please use the
->resource SqlSetup.
+If both `SourceCredential` and `PsDscRunAsCredential` is used then the
+credentials in `SourceCredential` will only be used to copy the
+installation media locally, and then the credentials in `PsDscRunAsCredential`
+will be used during installation. If `PsDscRunAsCredential` is not
+used, then the installation will run as SYSTEM.
+
+>To install Microsoft SQL Server Reporting Services 2016 (or older),
+>please use the resource SqlSetup.
 
 #### Requirements
 
@@ -837,8 +843,9 @@ Installs the standalone [Microsoft SQL Server 2017 Reporting Services](https://d
 * **`[String]` IAcceptLicensTerms** _(Required)_: Accept licens terms.
   This must be set to 'Yes'. { 'Yes' }
 * **`[String]` Action** _(Write)_: The action to be performed. Default
-  value is 'Install'. { *Install* | Uninstall | Repair }
-* **`[String]` SourcePath** _(Write)_: The path to the root of the source
+  value is 'Install' which performs either install or upgrade.
+  { *Install* | Uninstall }
+* **`[String]` SourcePath** _(Write)_: The path to the installation media
   file to be used for installation, e.g an UNC path to a shared resource.
   Environment variables can be used in the path.
 * **`[PSCredential]` SourceCredential** _(Write)_: Credentials used to
@@ -851,13 +858,14 @@ Installs the standalone [Microsoft SQL Server 2017 Reporting Services](https://d
   is finished.
 * **`[Boolean]` EditionUpgrade** _(Write)_: Upgrades the edition of the
   installed product. Requires that either the ProductKey or the Edition
-  parameter is also assigned. No upgrade performed by default.
+  parameter is also assigned. By default no edition upgrade is performed.
 * **`[String]` Edition** _(Write)_: Sets the custom free edition.
   { 'Development' | 'Evaluation' | 'ExpressAdvanced' }
 * **`[String]` LogPath** _(Write)_: Specifies the setup log file location,
   e.g. 'log.txt'. By default, log files are created under %TEMP%.
 * **`[String]` InstallFolder** _(Write)_: Sets the install folder, e.g.
-  'C:\Program Files\SSRS'. Default value is 'C:\Program Files\Microsoft SQL Server Reporting Services'.
+  'C:\Program Files\SSRS'. Default value is 'C:\Program Files\Microsoft
+  SQL Server Reporting Services'.
 
 #### Read-Only Properties from Get-TargetResource
 
