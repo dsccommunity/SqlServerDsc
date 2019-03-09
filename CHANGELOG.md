@@ -41,6 +41,8 @@
   - Changed the logic of 'Build the argument string to be passed to setup' to
     not quote the value if root directory is specified
     ([issue #1254](https://github.com/PowerShell/SqlServerDsc/issues/1254)).
+  - Moved some resource specific helper functions to the new helper module
+    DscResource.Common so they can be shared with the new resource SqlRSSetup.
 - Changes to SqlAGDatabase
   - Fix MatchDatabaseOwner to check for CONTROL SERVER, IMPERSONATE LOGIN, or
     CONTROL LOGIN permission in addition to IMPERSONATE ANY LOGIN.

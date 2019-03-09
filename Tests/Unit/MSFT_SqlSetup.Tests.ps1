@@ -114,18 +114,14 @@ try
             $actualValues.Count | Should -Be $ExpectedArgument.Count `
                 -Because ('the expected argument was: {0}' -f ($ExpectedArgument.Keys -join ','))
 
+            Write-Verbose -Message 'Verified actual setup argument values against expected setup argument values' -Verbose
+
             foreach ($argumentKey in $ExpectedArgument.Keys)
             {
                 $argumentKeyName = $actualValues.GetEnumerator() |
                     Where-Object -FilterScript {
                         $_.Name -eq $argumentKey
                     } | Select-Object -ExpandProperty 'Name'
-
-                # Limit the output in the console when everything is fine.
-                if ($argumentKeyName -ne $argumentKey -or $argumentValue -ne $ExpectedArgument.$argumentKey)
-                {
-                    Write-Warning -Message 'Verified actual setup argument values against expected setup argument values'
-                }
 
                 $argumentKeyName | Should -Be $argumentKey
 

@@ -12,7 +12,8 @@ class MSFT_SqlRSSetup : OMI_BaseResource
     [Write, Description("Upgrades the edition of the installed product. Requires that either the ProductKey or the Edition parameter is also assigned. Default is $false.")] Boolean EditionUpgrade;
     [Write, Description("Sets the custom free edition. { 'Development' | 'Evaluation' | 'ExpressAdvanced' }"), ValueMap{"Development","Evaluation","ExpressAdvanced"}, Values{"Development","Evaluation","ExpressAdvanced"}] String Edition;
     [Write, Description("Specifies the setup log file location, e.g. 'log.txt'. By default, log files are created under %TEMP%.")] String LogPath;
-    [Write, Description("Sets the install folder, e.g. 'C:\Program Files\SSRS'. Default value is 'C:\Program Files\Microsoft SQL Server Reporting Services'.")] String InstallFolder;
+    [Write, Description("Sets the install folder, e.g. 'C:\\Program Files\\SSRS'. Default value is 'C:\\Program Files\\Microsoft SQL Server Reporting Services'.")] String InstallFolder;
+    [Write, Description("The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.")] UInt32 SetupProcessTimeout;
     [Read, Description("Returns the path to error dump log files.")] String ErrorDumpDirectory;
     [Read, Description("Returns the current version of the installed Microsoft SQL Server Reporting Service instance.")] String CurrentVersion;
     [Read, Description("Returns the current name of the Microsoft SQL Server Reporting Service instance Windows service.")] String ServiceName;

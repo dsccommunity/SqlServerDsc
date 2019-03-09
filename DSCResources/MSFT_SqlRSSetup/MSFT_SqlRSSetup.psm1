@@ -182,6 +182,11 @@ function Get-TargetResource
     .PARAMETER InstallFolder
         Sets the install folder, e.g. 'C:\Program Files\SSRS'. Default value is
         'C:\Program Files\Microsoft SQL Server Reporting Services'.
+
+    .PARAMETER SetupProcessTimeout
+        The timeout, in seconds, to wait for the setup process to finish.
+        Default value is 7200 seconds (2 hours). If the setup process does not
+        finish before this time, and error will be thrown.
 #>
 function Set-TargetResource
 {
@@ -248,18 +253,22 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $InstallFolder
+        $InstallFolder,
+
+        [Parameter()]
+        [System.UInt32]
+        $SetupProcessTimeout = 7200
     )
 
     # Must either choose ProductKey or Edition, not both.
-    if ($PSBoundParameters.ContainsKey('Edition') -and $PSBoundParameters.ContainsKey('ProductKey'))
+    if ($Action -eq 'Install' -and $PSBoundParameters.ContainsKey('Edition') -and $PSBoundParameters.ContainsKey('ProductKey'))
     {
         $errorMessage = $script:localizedData.EditionInvalidParameter
         New-InvalidArgumentException -ArgumentName 'Edition, ProductKey' -Message $errorMessage
     }
 
     # Must either choose ProductKey or Edition, not none.
-    if (-not $PSBoundParameters.ContainsKey('Edition') -and -not $PSBoundParameters.ContainsKey('ProductKey'))
+    if ($Action -eq 'Install' -and -not $PSBoundParameters.ContainsKey('Edition') -and -not $PSBoundParameters.ContainsKey('ProductKey'))
     {
         $errorMessage = $script:localizedData.EditionMissingParameter
         New-InvalidArgumentException -ArgumentName 'Edition, ProductKey' -Message $errorMessage
@@ -356,6 +365,13 @@ function Set-TargetResource
             }
         }
 
+        'EditionUpgrade'
+        {
+            $setupArguments += @{
+                'EditionUpgrade' = [System.Management.Automation.SwitchParameter] $true
+            }
+        }
+
         'Edition'
         {
             $setupArguments += @{
@@ -408,57 +424,50 @@ function Set-TargetResource
         $logOutput = $logOutput -replace $ProductKey, '*****-*****-*****-*****-*****'
     }
 
-    try
+    Write-Verbose -Message ($script:localizedData.SetupArguments -f $logOutput)
+
+    <#
+        This handles when PsDscRunAsCredential is set, or running
+        as the SYSTEM account.
+    #>
+
+    $startProcessParameters = @{
+        FilePath = $SourcePath
+        ArgumentList = $argumentString
+        Timeout = $SetupProcessTimeout
+    }
+
+    $processExitCode = Start-SqlSetupProcess @startProcessParameters
+
+    Write-Verbose -Message ($script:localizedData.SetupExitMessage -f $processExitCode)
+
+    if ($processExitCode -eq 3010 )
     {
-        Write-Verbose -Message ($script:localizedData.SetupArguments -f $logOutput)
-
-        <#
-            This handles when PsDscRunAsCredential is set, or running
-            as the SYSTEM account.
-        #>
-
-        $startProcessParameters = @{
-            FilePath = $SourcePath
-            ArgumentList = $argumentString
-            Timeout = $SetupProcessTimeout
-        }
-
-        $processExitCode = Start-SqlSetupProcess @startProcessParameters
-
-        Write-Verbose -Message ($script:localizedData.SetupExitMessage -f $processExitCode)
-
-        if ($processExitCode -eq 3010 )
+        if ($SuppressReboot)
         {
-            if ($SuppressReboot)
-            {
-                Write-Verbose -Message $script:localizedData.SuppressReboot
-            }
-            else
-            {
-                Write-Warning -Message $script:localizedData.SetupSuccessfulRebootRequired
-
-                $global:DSCMachineStatus = 1
-            }
-        }
-        elseif ($processExitCode -ne 0)
-        {
-            New-InvalidResultException -Message $script:localizedData.SetupFailed
+            Write-Verbose -Message $script:localizedData.SuppressReboot
         }
         else
         {
-            Write-Verbose -Message $script:localizedData.SetupSuccessful
-        }
-
-        if ($ForceReboot -or (-not $SuppressReboot -and (Test-PendingReboot)))
-        {
-            Write-Verbose -Message $script:localizedData.Reboot
+            Write-Warning -Message $script:localizedData.SetupSuccessfulRebootRequired
 
             $global:DSCMachineStatus = 1
         }
     }
-    catch
+    elseif ($processExitCode -ne 0)
     {
-        throw $_
+        New-InvalidResultException -Message $script:localizedData.SetupFailed
+    }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.SetupSuccessful
+    }
+
+    if ($ForceReboot -or (-not $SuppressReboot -and (Test-PendingReboot)))
+    {
+        Write-Verbose -Message $script:localizedData.Reboot
+
+        $global:DSCMachineStatus = 1
     }
 }
 
@@ -510,6 +519,11 @@ function Set-TargetResource
     .PARAMETER InstallFolder
         Sets the install folder, e.g. 'C:\Program Files\SSRS'. Default value is
         'C:\Program Files\Microsoft SQL Server Reporting Services'.
+
+    .PARAMETER SetupProcessTimeout
+        The timeout, in seconds, to wait for the setup process to finish.
+        Default value is 7200 seconds (2 hours). If the setup process does not
+        finish before this time, and error will be thrown.
 #>
 function Test-TargetResource
 {
@@ -567,7 +581,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $InstallFolder
+        $InstallFolder,
+
+        [Parameter()]
+        [System.UInt32]
+        $SetupProcessTimeout = 7200
     )
 
     Write-Verbose -Message (

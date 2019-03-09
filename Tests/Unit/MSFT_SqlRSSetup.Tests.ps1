@@ -112,6 +112,8 @@ try
             $actualValues.Count | Should -Be $ExpectedArgument.Count `
                 -Because ('the expected argument was: {0}' -f ($ExpectedArgument.Keys -join ','))
 
+            Write-Verbose -Message 'Verified actual setup argument values against expected setup argument values' -Verbose
+
             foreach ($argumentKey in $ExpectedArgument.Keys)
             {
                 $argumentKeyName =  $actualValues.GetEnumerator() |
@@ -121,14 +123,7 @@ try
 
                 $argumentValue = $actualValues.$argumentKey
 
-                # Limit the output in the console when everything is fine.
-                if ($argumentKeyName -ne $argumentKey -or $argumentValue -ne $ExpectedArgument.$argumentKey)
-                {
-                    Write-Warning -Message 'Verified actual setup argument values against expected setup argument values'
-                }
-
                 $argumentKeyName | Should -Be $argumentKey
-
                 $argumentValue | Should -Be $ExpectedArgument.$argumentKey
             }
         }
@@ -157,7 +152,7 @@ try
                         $result = Get-TargetResource @mockGetTargetResourceParameters
                         $result.InstanceName | Should -BeNullOrEmpty
 
-                        Assert-MockCalled -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope 'It'
                     }
 
                     It 'Should return the same values as passed as parameters' {
@@ -165,7 +160,7 @@ try
                         $result.IAcceptLicensTerms | Should -Be $mockGetTargetResourceParameters.IAcceptLicensTerms
                         $result.SourcePath | Should -Be $mockGetTargetResourceParameters.SourcePath
 
-                        Assert-MockCalled -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope 'It'
                     }
 
                     It 'Should return $null or $false for the rest of the properties' {
@@ -182,7 +177,7 @@ try
                         $getTargetResourceResult.CurrentVersion | Should -BeNullOrEmpty
                         $getTargetResourceResult.ServiceName | Should -BeNullOrEmpty
 
-                        Assert-MockCalled -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope 'It'
                     }
                 }
 
@@ -268,7 +263,7 @@ try
 
                         Assert-MockCalled -CommandName Get-RegistryPropertyValue `
                             -ParameterFilter $mockGetItemProperty_InstanceName_ParameterFilter `
-                            -Exactly -Times 1 -Scope It
+                            -Exactly -Times 1 -Scope 'It'
                     }
 
                     It 'Should return the same values as passed as parameters' {
@@ -293,19 +288,19 @@ try
 
                         Assert-MockCalled -CommandName Get-RegistryPropertyValue `
                             -ParameterFilter $mockGetItemProperty_InstallRootDirectory_ParameterFilter `
-                            -Exactly -Times 1 -Scope It
+                            -Exactly -Times 1 -Scope 'It'
 
                         Assert-MockCalled -CommandName Get-RegistryPropertyValue `
                             -ParameterFilter $mockGetItemProperty_ServiceName_ParameterFilter `
-                            -Exactly -Times 1 -Scope It
+                            -Exactly -Times 1 -Scope 'It'
 
                         Assert-MockCalled -CommandName Get-RegistryPropertyValue `
                             -ParameterFilter $mockGetItemProperty_ErrorDumpDir_ParameterFilter `
-                            -Exactly -Times 1 -Scope It
+                            -Exactly -Times 1 -Scope 'It'
 
                         Assert-MockCalled -CommandName Get-RegistryPropertyValue `
                             -ParameterFilter $mockGetItemProperty_CurrentVersion_ParameterFilter `
-                            -Exactly -Times 1 -Scope It
+                            -Exactly -Times 1 -Scope 'It'
                     }
                 }
             }
@@ -332,7 +327,7 @@ try
                         $result = Test-TargetResource @mockTestTargetResourceParameters
                         $result | Should -BeTrue
 
-                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
                     }
                 }
 
@@ -349,7 +344,7 @@ try
                         $result = Test-TargetResource @mockTestTargetResourceParameters
                         $result | Should -BeTrue
 
-                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
                     }
                 }
             }
@@ -370,7 +365,7 @@ try
                         $result = Test-TargetResource @mockTestTargetResourceParameters
                         $result | Should -BeFalse
 
-                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
                     }
                 }
 
@@ -387,7 +382,7 @@ try
                         $result = Test-TargetResource @mockTestTargetResourceParameters
                         $result | Should -BeFalse
 
-                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
                     }
                 }
             }
@@ -421,11 +416,130 @@ try
 
             Context 'When the system is not in the desired state' {
                 Context 'When Reporting Services are installed with the minimum required parameters' {
-                    BeforeAll {
-                        $mockStartSqlSetupProcess = {
+                    BeforeEach {
+                        $mockSetTargetResourceParameters['ProductKey'] = $mockProductKey
+
+                        $mockStartSqlSetupProcess_ExpectedArgumentList = @{
+                            Quiet = [System.Management.Automation.SwitchParameter] $true
+                            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                            PID = $mockProductKey
+                        }
+
+                        Mock -CommandName Start-SqlSetupProcess -MockWith {
                             Test-SetupArgument -Argument $ArgumentList -ExpectedArgument $mockStartSqlSetupProcess_ExpectedArgumentList
 
                             return 0
+                        }
+                    }
+
+                    It 'Should call the correct mocks' {
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Start-SqlSetupProcess -ParameterFilter {
+                            $FilePath -eq $mockSetTargetResourceParameters.SourcePath
+                        } -Exactly -Times 1 -Scope 'It'
+                    }
+                }
+
+                Context 'When Reporting Services should be uninstalled' {
+                    BeforeEach {
+                        $mockSetTargetResourceParameters['Action'] = 'Uninstall'
+
+                        $mockStartSqlSetupProcess_ExpectedArgumentList = @{
+                            Quiet = [System.Management.Automation.SwitchParameter] $true
+                            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                            Uninstall = [System.Management.Automation.SwitchParameter] $true
+                        }
+
+                        Mock -CommandName Start-SqlSetupProcess -MockWith {
+                            Test-SetupArgument -Argument $ArgumentList -ExpectedArgument $mockStartSqlSetupProcess_ExpectedArgumentList
+
+                            return 0
+                        }
+                    }
+
+                    It 'Should call the correct mocks' {
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Start-SqlSetupProcess -ParameterFilter {
+                            $FilePath -eq $mockSetTargetResourceParameters.SourcePath
+                        } -Exactly -Times 1 -Scope 'It'
+                    }
+                }
+
+                Context 'When Reporting Services are installed with parameter Edition' {
+                    BeforeEach {
+                        $mockSetTargetResourceParameters['Edition'] = 'Development'
+
+                        $mockStartSqlSetupProcess_ExpectedArgumentList = @{
+                            Quiet = [System.Management.Automation.SwitchParameter] $true
+                            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                            Edition = 'Dev'
+                        }
+
+                        Mock -CommandName Start-SqlSetupProcess -MockWith {
+                            Test-SetupArgument -Argument $ArgumentList -ExpectedArgument $mockStartSqlSetupProcess_ExpectedArgumentList
+
+                            return 0
+                        }
+                    }
+
+                    It 'Should call the correct mocks' {
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Start-SqlSetupProcess -ParameterFilter {
+                            $FilePath -eq $mockSetTargetResourceParameters.SourcePath
+                        } -Exactly -Times 1 -Scope 'It'
+                    }
+                }
+
+                Context 'When Reporting Services are installed with parameters ProductKey, SuppressReboot, LogPath, EditionUpgrade, and InstallFolder' {
+                    BeforeEach {
+                        $mockSetTargetResourceParameters['ProductKey'] = $mockProductKey
+                        $mockSetTargetResourceParameters['SuppressReboot'] = $true
+                        $mockSetTargetResourceParameters['LogPath'] = 'log.txt'
+                        $mockSetTargetResourceParameters['EditionUpgrade'] = $true
+                        $mockSetTargetResourceParameters['InstallFolder'] = 'C:\Temp'
+
+                        $mockStartSqlSetupProcess_ExpectedArgumentList = @{
+                            Quiet = [System.Management.Automation.SwitchParameter] $true
+                            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                            PID = $mockProductKey
+                            NoRestart = [System.Management.Automation.SwitchParameter] $true
+                            Log = 'log.txt'
+                            EditionUpgrade = [System.Management.Automation.SwitchParameter] $true
+                            InstallFolder = 'C:\Temp'
+                        }
+
+                        Mock -CommandName Start-SqlSetupProcess -MockWith {
+                            Test-SetupArgument -Argument $ArgumentList -ExpectedArgument $mockStartSqlSetupProcess_ExpectedArgumentList
+
+                            return 0
+                        }
+                    }
+
+                    It 'Should call the correct mocks' {
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Start-SqlSetupProcess -ParameterFilter {
+                            $FilePath -eq $mockSetTargetResourceParameters.SourcePath
+                        } -Exactly -Times 1 -Scope 'It'
+                    }
+                }
+
+                Context 'When Reporting Services are installed using parameter SourceCredential' {
+                    BeforeAll {
+                        $mockLocalPath = 'C:\LocalPath'
+
+                        $mockShareCredentialUserName = 'COMPANY\SqlAdmin'
+                        $mockShareCredentialPassword = 'dummyPassW0rd'
+                        $mockShareCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @(
+                            $mockShareCredentialUserName,
+                            ($mockShareCredentialPassword | ConvertTo-SecureString -AsPlainText -Force)
+                        )
+
+                        Mock -CommandName Invoke-InstallationMediaCopy -MockWith {
+                            return $mockLocalPath
                         }
                     }
 
@@ -446,62 +560,215 @@ try
                     }
 
                     It 'Should call the correct mocks' {
+                        $mockSetTargetResourceParameters['SourceCredential'] = $mockShareCredential
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Invoke-InstallationMediaCopy -Exactly -Times 1 -Scope 'It'
+                        Assert-MockCalled -CommandName Start-SqlSetupProcess -ParameterFilter {
+                            # Have to build the correct path (local path + executable).
+                            $FilePath -eq (Join-Path -Path $mockLocalPath -ChildPath (Split-Path -Path $mockSetTargetResourceParameters.SourcePath -Leaf))
+                        } -Exactly -Times 1 -Scope 'It'
+                    }
+                }
+
+                Context 'When the Reporting Services installation is successful with exit code 3010' {
+                    BeforeEach {
+                        $mockSetTargetResourceParameters['Edition'] = 'Development'
+
+                        $mockStartSqlSetupProcess_ExpectedArgumentList = @{
+                            Quiet = [System.Management.Automation.SwitchParameter] $true
+                            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                            Edition = 'Dev'
+                        }
+
+                        Mock -CommandName Start-SqlSetupProcess -MockWith {
+                            Test-SetupArgument -Argument $ArgumentList -ExpectedArgument $mockStartSqlSetupProcess_ExpectedArgumentList
+
+                            return 3010
+                        }
+
+                        $global:DSCMachineStatus = 0
+                    }
+
+                    It 'Should call the correct mocks' {
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                        # Should set the global DSCMachineStatus variable.
+                        $global:DSCMachineStatus | Should -Be 1
 
                         Assert-MockCalled -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $FilePath -eq $mockSetTargetResourceParameters.SourcePath
-                        } -Exactly -Times 1 -Scope It
+                        } -Exactly -Times 1 -Scope 'It'
+                    }
+
+                    Context 'When the Reporting Services installation is successful with exit code 3010, and called with parameter SuppressReboot' {
+                        BeforeEach {
+                            $mockSetTargetResourceParameters['Edition'] = 'Development'
+                            $mockSetTargetResourceParameters['SuppressReboot'] = $true
+
+                            $mockStartSqlSetupProcess_ExpectedArgumentList = @{
+                                Quiet = [System.Management.Automation.SwitchParameter] $true
+                                IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                                Edition = 'Dev'
+                                NoRestart = [System.Management.Automation.SwitchParameter] $true
+                            }
+                        }
+
+                        It 'Should call the correct mocks' {
+                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                            Assert-MockCalled -CommandName Start-SqlSetupProcess -ParameterFilter {
+                                $FilePath -eq $mockSetTargetResourceParameters.SourcePath
+                            } -Exactly -Times 1 -Scope 'It'
+
+                            # Should not set the global DSCMachineStatus variable.
+                            $global:DSCMachineStatus | Should -Be 0
+                        }
+                    }
+                }
+
+                Context 'When the Reporting Services installation is successful and ForceReboot is used' {
+                    BeforeEach {
+                        $mockSetTargetResourceParameters['Edition'] = 'Development'
+                        $mockSetTargetResourceParameters['ForceReboot'] = $true
+
+                        $mockStartSqlSetupProcess_ExpectedArgumentList = @{
+                            Quiet = [System.Management.Automation.SwitchParameter] $true
+                            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                            Edition = 'Dev'
+                        }
+
+                        Mock -CommandName Test-PendingReboot
+                        Mock -CommandName Start-SqlSetupProcess -MockWith {
+                            Test-SetupArgument -Argument $ArgumentList -ExpectedArgument $mockStartSqlSetupProcess_ExpectedArgumentList
+
+                            return 0
+                        }
+
+                        $global:DSCMachineStatus = 0
+                    }
+
+                    It 'Should call the correct mocks' {
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                        # Should set the global DSCMachineStatus variable.
+                        $global:DSCMachineStatus | Should -Be 1
+
+                        Assert-MockCalled -CommandName Test-PendingReboot -Exactly -Times 0 -Scope 'It'
+                        Assert-MockCalled -CommandName Start-SqlSetupProcess -ParameterFilter {
+                            $FilePath -eq $mockSetTargetResourceParameters.SourcePath
+                        } -Exactly -Times 1 -Scope 'It'
+                    }
+                }
+
+                Context 'When the Reporting Services installation is successful, and there are a pending reboot' {
+                    BeforeEach {
+                        $mockSetTargetResourceParameters['Edition'] = 'Development'
+
+                        $mockStartSqlSetupProcess_ExpectedArgumentList = @{
+                            Quiet = [System.Management.Automation.SwitchParameter] $true
+                            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                            Edition = 'Dev'
+                        }
+
+                        Mock -CommandName Test-PendingReboot -MockWith {
+                            return $true
+                        }
+
+                        Mock -CommandName Start-SqlSetupProcess -MockWith {
+                            Test-SetupArgument -Argument $ArgumentList -ExpectedArgument $mockStartSqlSetupProcess_ExpectedArgumentList
+
+                            return 0
+                        }
+
+                        $global:DSCMachineStatus = 0
+                    }
+
+                    It 'Should call the correct mocks' {
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                        # Should set the global DSCMachineStatus variable.
+                        $global:DSCMachineStatus | Should -Be 1
+
+                        Assert-MockCalled -CommandName Test-PendingReboot -Exactly -Times 1 -Scope 'It'
+                        Assert-MockCalled -CommandName Start-SqlSetupProcess -ParameterFilter {
+                            $FilePath -eq $mockSetTargetResourceParameters.SourcePath
+                        } -Exactly -Times 1 -Scope 'It'
+                    }
+                }
+
+                Context 'When the Reporting Services installation fails' {
+                    BeforeEach {
+                        $mockSetTargetResourceParameters['Edition'] = 'Development'
+
+                        $mockStartSqlSetupProcess_ExpectedArgumentList = @{
+                            Quiet = [System.Management.Automation.SwitchParameter] $true
+                            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                            Edition = 'Dev'
+                        }
+
+                        Mock -CommandName Start-SqlSetupProcess -MockWith {
+                            Test-SetupArgument -Argument $ArgumentList -ExpectedArgument $mockStartSqlSetupProcess_ExpectedArgumentList
+
+                            return 1
+                        }
+
+                        $global:DSCMachineStatus = 0
+                    }
+
+                    It 'Should call the correct mocks' {
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw $script:localizedData.SetupFailed
+
+                        Assert-MockCalled -CommandName Start-SqlSetupProcess -ParameterFilter {
+                            $FilePath -eq $mockSetTargetResourceParameters.SourcePath
+                        } -Exactly -Times 1 -Scope 'It'
                     }
                 }
             }
+        }
 
-            Context 'When Reporting Services are installed using parameter SourceCredential' {
-                BeforeAll {
-                    $mockLocalPath = 'C:\LocalPath'
+        Describe "MSFT_SqlRSSetup\Convert-EditionName" -Tag 'Helper' {
+            Context 'When converting edition names' {
+                $testCases = @(
+                    @{
+                        InputName = 'Development'
+                        OutputName = 'Dev'
+                    }
+                    @{
+                        InputName = 'Evaluation'
+                        OutputName = 'Eval'
+                    }
+                    @{
+                        InputName = 'ExpressAdvanced'
+                        OutputName = 'ExprAdv'
+                    }
+                    @{
+                        InputName = 'Dev'
+                        OutputName = 'Development'
+                    }
+                    @{
+                        InputName = 'Eval'
+                        OutputName = 'Evaluation'
+                    }
+                    @{
+                        InputName = 'ExprAdv'
+                        OutputName = 'ExpressAdvanced'
+                    }
+                )
 
-                    $mockShareCredentialUserName = 'COMPANY\SqlAdmin'
-                    $mockShareCredentialPassword = 'dummyPassW0rd'
-                    $mockShareCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @(
-                        $mockShareCredentialUserName,
-                        ($mockShareCredentialPassword | ConvertTo-SecureString -AsPlainText -Force)
+                It 'Should return the the value <OutputName> when converting from value <InputName>' -TestCases $testCases {
+                    param
+                    (
+                        [Parameter()]
+                        [System.String]
+                        $InputName,
+
+                        [Parameter()]
+                        [System.String]
+                        $OutputName
                     )
 
-                    $mockStartSqlSetupProcess = {
-                        Test-SetupArgument -Argument $ArgumentList -ExpectedArgument $mockStartSqlSetupProcess_ExpectedArgumentList
-
-                        return 0
-                    }
-
-                    Mock -CommandName Invoke-InstallationMediaCopy -MockWith {
-                        return $mockLocalPath
-                    }
-                }
-
-                BeforeEach {
-                    $mockSetTargetResourceParameters['ProductKey'] = $mockProductKey
-
-                    $mockStartSqlSetupProcess_ExpectedArgumentList = @{
-                        Quiet = [System.Management.Automation.SwitchParameter] $true
-                        IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
-                        PID = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-                    }
-
-                    Mock -CommandName Start-SqlSetupProcess -MockWith {
-                        Test-SetupArgument -Argument $ArgumentList -ExpectedArgument $mockStartSqlSetupProcess_ExpectedArgumentList
-
-                        return 0
-                    }
-                }
-
-                It 'Should call the correct mocks' {
-                    $mockSetTargetResourceParameters['SourceCredential'] = $mockShareCredential
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-
-                    Assert-MockCalled -CommandName Invoke-InstallationMediaCopy -Exactly -Times 1 -Scope It
-                    Assert-MockCalled -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        # Have to build the correct path (local path + executable).
-                        $FilePath -eq (Join-Path -Path $mockLocalPath -ChildPath (Split-Path -Path $mockSetTargetResourceParameters.SourcePath -Leaf))
-                    } -Exactly -Times 1 -Scope It
+                    Convert-EditionName -Name $InputName | Should -Be $OutputName
                 }
             }
         }

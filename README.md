@@ -866,6 +866,9 @@ used, then the installation will run as SYSTEM.
 * **`[String]` InstallFolder** _(Write)_: Sets the install folder, e.g.
   'C:\Program Files\SSRS'. Default value is 'C:\Program Files\Microsoft
   SQL Server Reporting Services'.
+* **`[UInt32]` SetupProcessTimeout** _(Write)_: The timeout, in seconds, to wait
+  for the setup process to finish. Default value is 7200 seconds (2 hours). If
+  the setup process does not finish before this time, and error will be thrown.
 
 #### Read-Only Properties from Get-TargetResource
 
