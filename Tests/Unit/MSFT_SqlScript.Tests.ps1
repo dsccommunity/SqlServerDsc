@@ -44,9 +44,6 @@ $TestEnvironment = Initialize-TestEnvironment `
 function Invoke-TestSetup {
     # Loading mocked classes
     Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SqlPowerShellSqlExecutionException.cs')
-
-    # Importing SQLPS stubs
-    Import-Module -Name (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Force -Global
 }
 
 function Invoke-TestCleanup {
@@ -60,192 +57,143 @@ try
     Invoke-TestSetup
 
     InModuleScope $script:dscResourceName {
-        InModuleScope 'SqlServerDscHelper' {
-            $script:dscModuleName = 'SqlServerDsc'
-            $resourceName = 'MSFT_SqlScript'
-
-            $testParameters = @{
-                ServerInstance = $env:COMPUTERNAME
-                SetFilePath    = "set.sql"
-                GetFilePath    = "get.sql"
-                TestFilePath   = "test.sql"
-            }
-
-            $testParametersTimeout = @{
-                ServerInstance = $env:COMPUTERNAME
-                SetFilePath    = "set-timeout.sql"
-                GetFilePath    = "get-timeout.sql"
-                TestFilePath   = "test-timeout.sql"
-                QueryTimeout   = 30
-            }
-
-            Describe "$resourceName\Get-TargetResource" {
-
-                Context 'Get-TargetResource fails to import SQLPS module' {
-                    $throwMessage = "Failed to import SQLPS module."
-
-                    Mock -CommandName Import-SQLPSModule -MockWith {
-                        throw $throwMessage
-                    }
-
-                    It 'Should throw the correct error from Import-Module' {
-                        { Get-TargetResource @testParameters } | Should -Throw $throwMessage
-                    }
+        Describe 'MSFT_SqlScript\Get-TargetResource' {
+            BeforeAll {
+                $testParameters = @{
+                    ServerInstance = $env:COMPUTERNAME
+                    SetFilePath    = "set.sql"
+                    GetFilePath    = "get.sql"
+                    TestFilePath   = "test.sql"
                 }
 
-                Context 'Get-TargetResource returns script results successfully' {
-                    Mock -CommandName Import-SQLPSModule
-                    Mock -CommandName Invoke-Sqlcmd -MockWith {
-                        return ''
-                    }
-
-                    It 'Should return the expected results' {
-                        $result = Get-TargetResource @testParameters
-
-                        $result.ServerInstance | Should -Be $testParameters.ServerInstance
-                        $result.SetFilePath | Should -Be $testParameters.SetFilePath
-                        $result.GetFilePath | Should -Be $testParameters.GetFilePath
-                        $result.TestFilePath | Should -Be $testParameters.TestFilePath
-                        $result | Should -BeOfType Hashtable
-                    }
-                }
-
-                Context 'Get-TargetResource returns script results successfully with query timeout' {
-                    Mock -CommandName Import-SQLPSModule
-                    Mock -CommandName Invoke-Sqlcmd -MockWith {
-                        return ''
-                    }
-
-                    It 'Should return the expected results' {
-                        $result = Get-TargetResource @testParametersTimeout
-                        $result.ServerInstance | Should -Be $testParametersTimeout.ServerInstance
-                        $result.SetFilePath | Should -Be $testParametersTimeout.SetFilePath
-                        $result.GetFilePath | Should -Be $testParametersTimeout.GetFilePath
-                        $result.TestFilePath | Should -Be $testParametersTimeout.TestFilePath
-                        $result | Should -BeOfType Hashtable
-                    }
-                }
-
-                Context 'Get-TargetResource throws an error when running the script in the GetFilePath parameter' {
-                    $errorMessage = "Failed to run SQL Script"
-
-                    Mock -CommandName Import-SQLPSModule
-                    Mock -CommandName Invoke-Sqlcmd -MockWith {
-                        throw $errorMessage
-                    }
-
-                    It 'Should throw the correct error from Invoke-Sqlcmd' {
-                        { Get-TargetResource @testParameters } | Should -Throw $errorMessage
-                    }
+                $testParametersTimeout = @{
+                    ServerInstance = $env:COMPUTERNAME
+                    SetFilePath    = "set-timeout.sql"
+                    GetFilePath    = "get-timeout.sql"
+                    TestFilePath   = "test-timeout.sql"
+                    QueryTimeout   = 30
                 }
             }
 
-            Describe "$resourceName\Set-TargetResource" {
-
-                Context 'Set-TargetResource fails to import SQLPS module' {
-                    $throwMessage = "Failed to import SQLPS module."
-
-                    Mock -CommandName Import-SQLPSModule -MockWith { throw $throwMessage }
-
-                    It 'Should throw the correct error from Import-Module' {
-                        { Set-TargetResource @testParameters } | Should -Throw $throwMessage
-                    }
+            Context 'When Get-TargetResource returns script results successfully' {
+                Mock -CommandName Invoke-SqlScript -MockWith {
+                    return ''
                 }
 
-                Context 'Set-TargetResource runs script without issue' {
-                    Mock -CommandName Import-SQLPSModule -MockWith {}
-                    Mock -CommandName Invoke-Sqlcmd -MockWith {
-                        return ''
-                    }
+                It 'Should return the expected results' {
+                    $result = Get-TargetResource @testParameters
 
-                    It 'Should return the expected results' {
-                        $result = Set-TargetResource @testParameters
-                        $result | Should -Be ''
-                    }
-                }
-
-                Context 'Set-TargetResource runs script without issue using timeout' {
-                    Mock -CommandName Import-SQLPSModule -MockWith {}
-                    Mock -CommandName Invoke-Sqlcmd -MockWith {
-                        return ''
-                    }
-
-                    It 'Should return the expected results' {
-                        $result = Set-TargetResource @testParametersTimeout
-                        $result | Should -Be ''
-                    }
-                }
-
-                Context 'Set-TargetResource throws an error when running the script in the SetFilePath parameter' {
-                    $errorMessage = "Failed to run SQL Script"
-
-                    Mock -CommandName Import-SQLPSModule -MockWith {}
-                    Mock -CommandName Invoke-Sqlcmd -MockWith {
-                        throw $errorMessage
-                    }
-
-                    It 'Should throw the correct error from Invoke-Sqlcmd' {
-                        { Set-TargetResource @testParameters } | Should -Throw $errorMessage
-                    }
+                    $result.ServerInstance | Should -Be $testParameters.ServerInstance
+                    $result.SetFilePath | Should -Be $testParameters.SetFilePath
+                    $result.GetFilePath | Should -Be $testParameters.GetFilePath
+                    $result.TestFilePath | Should -Be $testParameters.TestFilePath
+                    $result | Should -BeOfType [System.Collections.Hashtable]
                 }
             }
 
-            Describe "$resourceName\Test-TargetResource" {
-                Context 'Test-TargetResource fails to import SQLPS module' {
-                    $throwMessage = 'Failed to import SQLPS module.'
-
-                    Mock -CommandName Import-SQLPSModule -MockWith {
-                        throw $throwMessage
-                    }
-
-                    It 'Should throw the correct error from Import-Module' {
-                        { Set-TargetResource @testParameters } | Should -Throw $throwMessage
-                    }
+            Context 'When Get-TargetResource returns script results successfully with query timeout' {
+                Mock -CommandName Invoke-SqlScript -MockWith {
+                    return ''
                 }
 
-                Context 'Test-TargetResource runs script without issue' {
-                    Mock -CommandName Import-SQLPSModule -MockWith {}
-                    Mock -CommandName Invoke-Sqlcmd -MockWith {}
+                It 'Should return the expected results' {
+                    $result = Get-TargetResource @testParametersTimeout
+                    $result.ServerInstance | Should -Be $testParametersTimeout.ServerInstance
+                    $result.SetFilePath | Should -Be $testParametersTimeout.SetFilePath
+                    $result.GetFilePath | Should -Be $testParametersTimeout.GetFilePath
+                    $result.TestFilePath | Should -Be $testParametersTimeout.TestFilePath
+                    $result | Should -BeOfType [System.Collections.Hashtable]
+                }
+            }
 
-                    It 'Should return true' {
-                        $result = Test-TargetResource @testParameters
-                        $result | Should -Be $true
-                    }
+            Context 'When Get-TargetResource throws an error when running the script in the GetFilePath parameter' {
+                $errorMessage = "Failed to run SQL Script"
+
+                Mock -CommandName Invoke-SqlScript -MockWith {
+                    throw $errorMessage
                 }
 
-                Context 'Test-TargetResource runs script without issue with timeout' {
-                    Mock -CommandName Import-SQLPSModule -MockWith {}
-                    Mock -CommandName Invoke-Sqlcmd -MockWith {}
+                It 'Should throw the correct error from Invoke-Sqlcmd' {
+                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
+                }
+            }
+        }
 
-                    It 'Should return true' {
-                        $result = Test-TargetResource @testParametersTimeout
-                        $result | Should -Be $true
-                    }
+        Describe 'MSFT_SqlScript\Set-TargetResource' {
+            Context 'When Set-TargetResource runs script without issue' {
+                Mock -CommandName Invoke-SqlScript -MockWith {
+                    return ''
                 }
 
-                Context 'Test-TargetResource throws the exception SqlPowerShellSqlExecutionException when running the script in the TestFilePath parameter' {
-                    Mock -CommandName Import-SQLPSModule -MockWith {}
-                    Mock -CommandName Invoke-Sqlcmd -MockWith {
-                        throw New-Object -TypeName Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException
-                    }
+                It 'Should return the expected results' {
+                    $result = Set-TargetResource @testParameters
+                    $result | Should -Be ''
+                }
+            }
 
-                    It 'Should return false' {
-                        $result = Test-TargetResource @testParameters
-                        $result | Should -Be $false
-                    }
+            Context 'When Set-TargetResource runs script without issue using timeout' {
+                Mock -CommandName Invoke-SqlScript -MockWith {
+                    return ''
                 }
 
-                Context 'Test-TargetResource throws an unexpected error when running the script in the TestFilePath parameter' {
-                    $errorMessage = "Failed to run SQL Script"
+                It 'Should return the expected results' {
+                    $result = Set-TargetResource @testParametersTimeout
+                    $result | Should -Be ''
+                }
+            }
 
-                    Mock -CommandName Import-SQLPSModule -MockWith {}
-                    Mock -CommandName Invoke-Sqlcmd -MockWith {
-                        throw $errorMessage
-                    }
+            Context 'When Set-TargetResource throws an error when running the script in the SetFilePath parameter' {
+                $errorMessage = "Failed to run SQL Script"
 
-                    It 'Should throw the correct error from Invoke-Sqlcmd' {
-                        { Test-TargetResource @testParameters } | Should -Throw $errorMessage
-                    }
+                Mock -CommandName Invoke-SqlScript -MockWith {
+                    throw $errorMessage
+                }
+
+                It 'Should throw the correct error from Invoke-Sqlcmd' {
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
+                }
+            }
+        }
+
+        Describe 'MSFT_SqlScript\Test-TargetResource' {
+            Context 'When Test-TargetResource runs script without issue' {
+                Mock -CommandName Invoke-SqlScript
+
+                It 'Should return true' {
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $true
+                }
+            }
+
+            Context 'When Test-TargetResource runs script without issue with timeout' {
+                Mock -CommandName Invoke-SqlScript
+
+                It 'Should return true' {
+                    $result = Test-TargetResource @testParametersTimeout
+                    $result | Should -Be $true
+                }
+            }
+
+            Context 'When Test-TargetResource throws the exception SqlPowerShellSqlExecutionException when running the script in the TestFilePath parameter' {
+                Mock -CommandName Invoke-SqlScript -MockWith {
+                    throw New-Object -TypeName Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException
+                }
+
+                It 'Should return false' {
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $false
+                }
+            }
+
+            Context 'When Test-TargetResource throws an unexpected error when running the script in the TestFilePath parameter' {
+                $errorMessage = "Failed to run SQL Script"
+
+                Mock -CommandName Invoke-SqlScript -MockWith {
+                    throw $errorMessage
+                }
+
+                It 'Should throw the correct error from Invoke-Sqlcmd' {
+                    { Test-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
             }
         }
