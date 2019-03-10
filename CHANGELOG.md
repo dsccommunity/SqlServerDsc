@@ -11,6 +11,8 @@
     - Renamed Test-SqlDscParameterState to Test-DscParameterState.
   - Added helper module DscResource.LocalizationHelper from the repository
     DscResource.Template, this replaces the helper module CommonResourceHelper.psm1.
+  - Cleaned up unit tests around loading cmdlet stubs, and loading classes
+    stubs.
 - Changes to SqlServerMemory
   - Updated Cim Class to Win32_ComputerSystem (instead of Win32_PhysicalMemory)
     because the correct memory size was not being detected correctly on Azure VMs

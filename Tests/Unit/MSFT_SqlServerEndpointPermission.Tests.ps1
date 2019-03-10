@@ -40,7 +40,7 @@ $TestEnvironment = Initialize-TestEnvironment `
 function Invoke-TestSetup
 {
     # Loading mocked classes
-    Add-Type -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SMO.cs')
+    Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
 }
 
 function Invoke-TestCleanup
