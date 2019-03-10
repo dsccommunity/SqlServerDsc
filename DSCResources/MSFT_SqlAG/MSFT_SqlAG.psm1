@@ -108,13 +108,13 @@ function Get-TargetResource
         Specifies if the availability group should be present or absent. Default is Present.
 
     .PARAMETER AutomatedBackupPreference
-        Specifies the automated backup preference for the availability group.
+        Specifies the automated backup preference for the availability group. When creating a group the default is 'None'.
 
     .PARAMETER AvailabilityMode
-        Specifies the replica availability mode. Default is 'AsynchronousCommit'.
+        Specifies the replica availability mode. When creating a group the default is 'AsynchronousCommit'.
 
     .PARAMETER BackupPriority
-        Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. Default is 50.
+        Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. When creating a group the efault is 50.
 
     .PARAMETER BasicAvailabilityGroup
         Specifies the type of availability group is Basic. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions.
@@ -132,13 +132,16 @@ function Get-TargetResource
         Specifies how the availability replica handles connections when in the secondary role.
 
     .PARAMETER EndpointHostName
-        Specifies the hostname or IP address of the availability group replica endpoint. Default is the instance network name.
+        Specifies the hostname or IP address of the availability group replica endpoint. When creating a group the default is the instance network name.
 
     .PARAMETER FailureConditionLevel
         Specifies the automatic failover behavior of the availability group.
 
+    .PARAMETER FailoverMode
+        Specifies the failover mode. When creating a group the default is 'Manual'.
+
     .PARAMETER HealthCheckTimeout
-        Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. Default is 30,000.
+        Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. When creating a group the default is 30,000.
 
     .PARAMETER ProcessOnlyOnActiveNode
         Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
@@ -285,14 +288,14 @@ function Set-TargetResource
                 throw New-TerminatingError -ErrorType DatabaseMirroringEndpointNotFound -FormatArgs $ServerName, $InstanceName -ErrorCategory ObjectNotFound
             }
 
-            if ( -not $EndpointHostName )
-            {
-                $EndpointHostName = $serverObject.NetName
-            }
-
             # If the availability group does not exist, create it
             if ( -not $availabilityGroup )
             {
+                if ( -not $EndpointHostName )
+                {
+                    $EndpointHostName = $serverObject.NetName
+                }
+
                 # Set up the parameters to create the AG Replica
                 $newReplicaParams = @{
                     Name             = $serverObject.DomainInstanceName
@@ -485,13 +488,13 @@ function Set-TargetResource
         Specifies if the availability group should be present or absent. Default is Present.
 
     .PARAMETER AutomatedBackupPreference
-        Specifies the automated backup preference for the availability group.
+        Specifies the automated backup preference for the availability group. When creating a group the default is 'None'.
 
     .PARAMETER AvailabilityMode
-        Specifies the replica availability mode. Default is 'AsynchronousCommit'.
+        Specifies the replica availability mode. When creating a group the default is 'AsynchronousCommit'.
 
     .PARAMETER BackupPriority
-        Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. Default is 50.
+        Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. When creating a group the default is 50.
 
     .PARAMETER BasicAvailabilityGroup
         Specifies the type of availability group is Basic. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions.
@@ -509,13 +512,16 @@ function Set-TargetResource
         Specifies how the availability replica handles connections when in the secondary role.
 
     .PARAMETER EndpointHostName
-        Specifies the hostname or IP address of the availability group replica endpoint. Default is the instance network name.
+        Specifies the hostname or IP address of the availability group replica endpoint. When creating a group the default is the instance network name.
 
     .PARAMETER FailureConditionLevel
         Specifies the automatic failover behavior of the availability group.
 
+    .PARAMETER FailoverMode
+        Specifies the failover mode. When creating a group the default is 'Manual'.
+
     .PARAMETER HealthCheckTimeout
-        Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. Default is 30,000.
+        Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. When creating a group the default is 30,000.
 
     .PARAMETER ProcessOnlyOnActiveNode
         Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.

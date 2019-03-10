@@ -184,14 +184,16 @@ It will also manage the Availability Group replica on the specified node.
 * **`[String]` Ensure** _(Write)_: Specifies if the availability group should be
   present or absent. Default is Present. { *Present* | Absent }
 * **`[String]` AutomatedBackupPreference** _(Write)_: Specifies the automated backup
-  preference for the availability group. Default is None.
+  preference for the availability group. When creating a group the default is 'None'.
   { Primary | SecondaryOnly | Secondary | *None* }
 * **`[String]` AvailabilityMode** _(Write)_: Specifies the replica availability mode.
-  Default is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
+  Default when creating a group is 'AsynchronousCommit'.
+  { *AsynchronousCommit* | SynchronousCommit }
 * **`[UInt32]` BackupPriority** _(Write)_: Specifies the desired priority of the
   replicas in performing backups. The acceptable values for this parameter are:
   integers from 0 through 100. Of the set of replicas which are online and available,
-  the replica that has the highest priority performs the backup. Default is 50.
+  the replica that has the highest priority performs the backup. When creating
+  a group the default is 50.
 * **`[Boolean]` BasicAvailabilityGroup** _(Write)_: Specifies the type of
   availability group is Basic. This is only available is SQL Server 2016
   and later and is ignored when applied to previous versions.
@@ -215,10 +217,10 @@ It will also manage the Availability Group replica on the specified node.
   OnCriticalServerErrors | OnModerateServerErrors |
   OnAnyQualifiedFailureCondition }
 * **`[String]` FailoverMode** _(Write)_: Specifies the failover mode.
-  Default is 'Manual'. { Automatic | *Manual* }
+  When creating a group the default is 'Manual'. { Automatic | *Manual* }
 * **`[UInt32]` HealthCheckTimeout** _(Write)_: Specifies the length of time, in
   milliseconds, after which AlwaysOn availability groups declare an unresponsive
-  server to be unhealthy. Default is 30000.
+  server to be unhealthy. When creating a group the default is 30000.
 * **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
   will only determine if a change is needed if the target node is the active
   host of the SQL Server Instance.
@@ -414,11 +416,13 @@ Always On Availability Group Replica.
 * **`[String]` Ensure** _(Write)_: Specifies if the availability group replica should
   be present or absent. Default is Present. { *Present* | Absent }
 * **`[String]` AvailabilityMode** _(Write)_: Specifies the replica availability mode.
-  Default is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
+  When creating a replica the default is 'AsynchronousCommit'.
+  { *AsynchronousCommit* | SynchronousCommit }
 * **`[UInt32]` BackupPriority** _(Write)_: Specifies the desired priority of the
   replicas in performing backups. The acceptable values for this parameter are:
   integers from 0 through 100. Of the set of replicas which are online and available,
-  the replica that has the highest priority performs the backup. Default is 50.
+  the replica that has the highest priority performs the backup. When creating a
+  replica the default is 50.
 * **`[String]` ConnectionModeInPrimaryRole** _(Write)_: Specifies how the availability
   replica handles connections when in the primary role.
   { AllowAllConnections | AllowReadWriteConnections }
@@ -427,8 +431,8 @@ Always On Availability Group Replica.
   { AllowNoConnections | AllowReadIntentConnectionsOnly | AllowAllConnections }
 * **`[String]` EndpointHostName** _(Write)_: Specifies the hostname or IP address
   of the availability group replica endpoint. Default is the instance network name.
-* **`[String]` FailoverMode** _(Write)_: Specifies the failover mode. Default is
-  'Manual'. { Automatic | *Manual* }
+* **`[String]` FailoverMode** _(Write)_: Specifies the failover mode.
+  When creating a replica the default is 'Manual'. { Automatic | *Manual* }
 * **`[String]` ReadOnlyRoutingConnectionUrl** _(Write)_: Specifies the fully-qualified
   domain name (FQDN) and port to use when routing to the replica for read only
   connections.

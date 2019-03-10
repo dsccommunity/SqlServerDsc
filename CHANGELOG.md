@@ -41,6 +41,15 @@
   - New-TerminatingError error text for a missing localized message now matches
     the output even if the "missing localized message" localized message is
     also missing.
+- Changes to SqlAG
+  - Updated documentation on the behaviour of defaults as they only apply when
+    creating a group.
+- Changes to SqlAGReplica
+  - AvailabilityMode, BackupPriority, and FailoverMode defaults only apply when
+    creating a replica not when making changes to an existing replica. Explicit
+    parameters will still change existing replicas ([issue #1244](https://github.com/PowerShell/SqlServerDsc/issues/1244)).
+  - ReadOnlyRoutingList now gets updated without throwing an error on the first
+    run ([issue #518](https://github.com/PowerShell/SqlServerDsc/issues/518)).
 
 ## 12.3.0.0
 
