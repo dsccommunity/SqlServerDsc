@@ -8,6 +8,7 @@
   - Added helper module DscResource.Common from the repository
     DscResource.Template.
     - Moved all helper functions from SqlServerDscHelper.psm1 to DscResource.Common.
+    - Renamed Test-SqlDscParameterState to Test-DscParameterState.
   - Added helper module DscResource.LocalizationHelper from the repository
     DscResource.Template, this replaces the helper module CommonResourceHelper.psm1.
 - Changes to SqlServerMemory
@@ -43,6 +44,14 @@
     ([issue #1254](https://github.com/PowerShell/SqlServerDsc/issues/1254)).
   - Moved some resource specific helper functions to the new helper module
     DscResource.Common so they can be shared with the new resource SqlRSSetup.
+  - Improved verbose messages in Test-TargetResource function to more
+    clearly tell if features are already installed or not.
+  - Refactored unit tests for the functions Test-TargetResource and
+    Set-TargetResource to improve testing speed.
+  - Modified the Test-TargetResource and Set-TargetResource to not be
+    case-sensitive when comparing feature names. *This was handled
+    correctly in real-world scenarios, but failed when running the unit
+    tests (and testing casing).*
 - Changes to SqlAGDatabase
   - Fix MatchDatabaseOwner to check for CONTROL SERVER, IMPERSONATE LOGIN, or
     CONTROL LOGIN permission in addition to IMPERSONATE ANY LOGIN.
