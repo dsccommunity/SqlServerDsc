@@ -883,6 +883,7 @@ used, then the installation will run as SYSTEM.
 #### Examples
 
 * [Install Reporting Services](Examples/Resources/SqlRSSetup/1-InstallReportingServices.ps1)
+* [Uninstall Reporting Services](Examples/Resources/SqlRSSetup/2-UninstallReportingServices)
 
 #### Known issues
 
