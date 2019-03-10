@@ -40,7 +40,7 @@ $TestEnvironment = Initialize-TestEnvironment `
 function Invoke-TestSetup
 {
     # Importing SQLPS stubs
-    Import-Module -Name (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Force
+    Import-Module -Name (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Force -Global
 }
 
 function Invoke-TestCleanup
