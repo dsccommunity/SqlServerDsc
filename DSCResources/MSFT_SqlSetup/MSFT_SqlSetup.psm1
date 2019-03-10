@@ -1075,20 +1075,23 @@ function Set-TargetResource
 
     # Determine features to install
     $featuresToInstall = ''
-    foreach ($feature in $Features.Split(','))
-    {
-        # Given that all the returned features are uppercase, make sure that the feature to search for is also uppercase
-        $feature = $feature.ToUpper();
 
+    $featuresArray = $Features -split ','
+
+    foreach ($feature in $featuresArray)
+    {
         if (($sqlVersion -in ('13','14')) -and ($feature -in ('ADV_SSMS','SSMS')))
         {
             $errorMessage = $script:localizedData.FeatureNotSupported -f $feature
             New-InvalidOperationException -Message $errorMessage
         }
 
-        if (-not ($getTargetResourceResult.Features.Contains($feature)))
+        $foundFeaturesArray = $getTargetResourceResult.Features -split ','
+
+        if ($feature -notin $foundFeaturesArray)
         {
-            $featuresToInstall += "$feature,"
+            # Must make sure the feature names are provided in upper-case.
+            $featuresToInstall += '{0},' -f $feature.ToUpper()
         }
         else
         {
@@ -2116,18 +2119,25 @@ function Test-TargetResource
     $boundParameters = $PSBoundParameters
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-    Write-Verbose -Message ($script:localizedData.FeaturesFound -f $($getTargetResourceResult.Features))
+    if ($null -eq $getTargetResourceResult.Features -or $getTargetResourceResult.Features -eq '')
+    {
+        Write-Verbose -Message $script:localizedData.NoFeaturesFound
+    }
+    else
+    {
+        Write-Verbose -Message ($script:localizedData.FeaturesFound -f $getTargetResourceResult.Features)
+    }
 
     $result = $true
 
-    if ($getTargetResourceResult.Features )
+    if ($getTargetResourceResult.Features)
     {
-        foreach ($feature in $Features.Split(","))
-        {
-            # Given that all the returned features are uppercase, make sure that the feature to search for is also uppercase
-            $feature = $feature.ToUpper();
+        $featuresArray = $Features -split ','
+        $foundFeaturesArray = $getTargetResourceResult.Features -split ','
 
-            if(!($getTargetResourceResult.Features.Contains($feature)))
+        foreach ($feature in $featuresArray)
+        {
+            if ($feature -notin $foundFeaturesArray)
             {
                 Write-Verbose -Message ($script:localizedData.UnableToFindFeature -f $feature, $($getTargetResourceResult.Features))
                 $result = $false

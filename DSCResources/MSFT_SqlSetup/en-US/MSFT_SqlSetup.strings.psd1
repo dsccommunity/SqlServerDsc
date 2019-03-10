@@ -57,7 +57,8 @@ ConvertFrom-StringData @'
     Reboot = Rebooting target node.
     SuppressReboot = Suppressing reboot of target node.
     TestFailedAfterSet = Test-TargetResource returned false after calling Set-TargetResource.
-    FeaturesFound = Features found: {0}
+    FeaturesFound = Found features already installed: {0}
+    NoFeaturesFound = No features are installed.
     UnableToFindFeature = Unable to find feature '{0}' among the installed features: '{1}'.
     EvaluatingClusterParameters = Clustered install, checking parameters.
     ClusterParameterIsNotInDesiredState = {0} '{1}' is not in the desired state for this cluster.
