@@ -130,7 +130,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   database roles.
 * [**SqlRS**](#sqlrs) configures SQL Server Reporting.
   Services to use a database engine in another instance.
-* [**SqlRSSetup**](#sqlrssetup) Installs the standalone [Microsoft SQL Server 2017 Reporting Services](https://docs.microsoft.com/en-us/sql/reporting-services/create-deploy-and-manage-mobile-and-paginated-reports).
+* [**SqlRSSetup**](#sqlrssetup) Installs the standalone
+  [Microsoft SQL Server 2017 Reporting Services](https://docs.microsoft.com/en-us/sql/reporting-services/create-deploy-and-manage-mobile-and-paginated-reports).
 * [**SqlScript**](#sqlscript) resource to extend DSC Get/Set/Test
   functionality to T-SQL.
 * [**SqlScriptQuery**](#sqlscriptquery) resource to extend DSC Get/Set/Test
