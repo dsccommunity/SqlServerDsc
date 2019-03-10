@@ -702,7 +702,7 @@ function Test-TargetResource
 
     if ($Ensure -eq 'Present')
     {
-        $returnValue = Test-SQLDscParameterState `
+        $returnValue = Test-DscParameterState `
             -CurrentValues $getTargetResourceResult `
             -DesiredValues $PSBoundParameters `
             -ValuesToCheck @(

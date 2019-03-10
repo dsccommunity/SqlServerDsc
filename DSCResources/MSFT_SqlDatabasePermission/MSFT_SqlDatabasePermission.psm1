@@ -402,7 +402,7 @@ function Test-TargetResource
         the value 'Present' for the Ensure parameter, otherwise Ensure will have the value
         'Absent'.
     #>
-    return Test-SQLDscParameterState -CurrentValues $getTargetResourceResult `
+    return Test-DscParameterState -CurrentValues $getTargetResourceResult `
         -DesiredValues $PSBoundParameters `
         -ValuesToCheck @('Name', 'Ensure', 'PermissionState')
 }

@@ -191,7 +191,7 @@ function Test-TargetResource
 
     $currentValues = Get-TargetResource @PSBoundParameters
 
-    return Test-SQLDscParameterState -CurrentValues $currentValues `
+    return Test-DscParameterState -CurrentValues $currentValues `
         -DesiredValues $PSBoundParameters `
         -ValuesToCheck @('Name', 'RecoveryModel')
 }

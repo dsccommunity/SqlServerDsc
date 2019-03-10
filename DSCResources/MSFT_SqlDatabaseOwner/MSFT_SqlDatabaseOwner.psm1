@@ -200,7 +200,7 @@ function Test-TargetResource
     Write-Verbose -Message "Testing owner $Name of database $Database"
 
     $currentValues = Get-TargetResource @PSBoundParameters
-    return Test-SQLDscParameterState -CurrentValues $CurrentValues `
+    return Test-DscParameterState -CurrentValues $CurrentValues `
         -DesiredValues $PSBoundParameters `
         -ValuesToCheck @('Name', 'Database')
 }
