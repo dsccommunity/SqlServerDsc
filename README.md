@@ -815,7 +815,7 @@ when trying to add 'http://+:443' when 'http://+:80' already exist.
 
 ### SqlRSSetup
 
-Installs the standalone [Microsoft SQL Server 2017 Reporting Services](https://docs.microsoft.com/en-us/sql/reporting-services/create-deploy-and-manage-mobile-and-paginated-reports).
+Installs the standalone [Microsoft SQL Server Reporting Services](https://docs.microsoft.com/en-us/sql/reporting-services/create-deploy-and-manage-mobile-and-paginated-reports).
 
 If both `SourceCredential` and `PsDscRunAsCredential` is used then the
 credentials in `SourceCredential` will only be used to copy the

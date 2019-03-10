@@ -22,7 +22,8 @@ Configuration Example
         {
             InstanceName         = 'SSRS'
             IAcceptLicensTerms   = 'Yes'
-            Action               = 'Uninstall'
+            SourcePath           = 'C:\InstallMedia\SQLServerReportingServices.exe'
+            Edition              = 'Development'
 
             PsDscRunAsCredential = $SqlInstallCredential
         }
