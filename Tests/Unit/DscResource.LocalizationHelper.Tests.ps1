@@ -1,4 +1,21 @@
-# Import the CommonResourceHelper module to test
+<#
+    .SYNOPSIS
+        Automated unit test for helper functions in module DscResource.LocalizationHelper.
+
+    .NOTES
+        To run this script locally, please make sure to first run the bootstrap
+        script. Read more at
+        https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
+#>
+
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
+if (Test-SkipContinuousIntegrationTask -Type 'Unit')
+{
+    return
+}
+
+# Import the DscResource.LocalizationHelper module to test
 $script:resourceModulePath = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
 $script:modulesFolderPath = Join-Path -Path $script:resourceModulePath -ChildPath 'Modules\DscResource.LocalizationHelper'
 

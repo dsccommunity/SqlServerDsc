@@ -18,4 +18,140 @@ ConvertFrom-StringData @'
     RobocopySuccessfulAndRemovedExtraFilesAtDestination = Robocopy copied files to destination successfully. Robocopy also found files at the destination path that is not present at the source path, these extra files was remove at the destination path.
     RobocopyAllFilesPresent = Robocopy reported that all files already present.
     StartSetupProcess = Started the process with id {0} using the path '{1}', and with a timeout value of {2} seconds.
+    ConnectedToDatabaseEngineInstance = Connected to SQL instance '{0}'.
+    FailedToConnectToDatabaseEngineInstance = Failed to connect to SQL instance '{0}'.
+    ConnectedToAnalysisServicesInstance = Connected to Analysis Services instance '{0}'.
+    FailedToConnectToAnalysisServicesInstance = Failed to connected to Analysis Services instance '{0}'.
+    SqlMajorVersion = SQL major version is {0}.
+    SqlServerVersionIsInvalid = Could not get the SQL version for the instance '{0}'.
+    PreferredModuleFound = Preferred module SqlServer found.
+    PreferredModuleNotFound = Information: PowerShell module SqlServer not found, trying to use older SQLPS module.
+    ImportedPowerShellModule = Importing PowerShell module '{0}' with version '{1}' from path '{2}'.
+    PowerShellModuleAlreadyImported = Found PowerShell module {0} already imported in the session.
+    ModuleForceRemoval = Forcibly removed the SQL PowerShell module from the session to import it fresh again.
+    DebugMessagePushingLocation = SQLPS module changes CWD to SQLSERVER:\ when loading, pushing location to pop it when module is loaded.
+    DebugMessagePoppingLocation = Popping location back to what it was before importing SQLPS module.
+    PowerShellSqlModuleNotFound = Neither PowerShell module SqlServer or SQLPS was found. Unable to run SQL Server cmdlets.
+    FailedToImportPowerShellSqlModule = Failed to import {0} module.
+    GetSqlServerClusterResources = Getting cluster resource for SQL Server.
+    GetSqlAgentClusterResource = Getting active cluster resource SQL Server Agent.
+    BringClusterResourcesOffline = Bringing the SQL Server resources {0} offline.
+    BringSqlServerClusterResourcesOnline = Bringing the SQL Server resource back online.
+    BringSqlServerAgentClusterResourcesOnline = Bringing the SQL Server Agent resource online.
+    GetServiceInformation = Getting information about service '{0}'.
+    RestartService = '{0}' service is restarting.
+    StoppingService = '{0}' service is stopping.
+    StartingService = '{0}' service is starting.
+    WaitServiceRestart = Waiting {0} seconds before starting service '{1}'.
+    StartingDependentService = Starting service '{0}'.
+    WaitingInstanceTimeout = Waiting for instance {0}\\{1} to report status online, with a timeout value of {2} seconds.
+    FailedToConnectToInstanceTimeout = Failed to connect to the instance {0}\\{1} within the timeout period of {2} seconds.
+    ExecuteQueryWithResultsFailed = Executing query with results failed on database '{0}'.
+    ExecuteNonQueryFailed = Executing non-query failed on database '{0}'.
+    AlterAvailabilityGroupReplicaFailed = Failed to alter the availability group replica '{0}'.
+    GetEffectivePermissionForLogin = Getting the effective permissions for the login '{0}' on '{1}'.
+    ClusterPermissionsMissing = The cluster does not have permissions to manage the Availability Group on '{0}\\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either 'NT SERVICE\\ClusSvc' or 'NT AUTHORITY\\SYSTEM'.
+    ClusterLoginMissing = The login '{0}' is not present. {1}
+    ClusterLoginMissingPermissions = The account '{0}' is missing one or more of the following permissions: {1}
+    ClusterLoginMissingRecommendedPermissions = The recommended account '{0}' is missing one or more of the following permissions: {1}
+    ClusterLoginPermissionsPresent = The cluster login '{0}' has the required permissions.
+
+    # - NOTE!
+    # - Below strings are used by helper functions New-TerminatingError and New-WarningMessage.
+    # - These strings were merged from old SqlServerDsc.strings.psd1. These will be moved to it's individual
+    # - resource when that resources get moved over to the new localization.
+    # - NOTE!
+
+    # Common
+    NoKeyFound = No Localization key found for ErrorType: '{0}'.
+    AbsentNotImplemented = Ensure = Absent is not implemented!
+    TestFailedAfterSet = Test-TargetResource returned false after calling set.
+    RemoteConnectionFailed = Remote PowerShell connection to Server '{0}' failed.
+    TODO = ToDo. Work not implemented at this time.
+    UnexpectedErrorFromGet = Got unexpected result from Get-TargetResource. No change is made.
+    NotConnectedToInstance = Was unable to connect to the instance '{0}\\{1}'
+    AlterAvailabilityGroupFailed = Failed to alter the availability group '{0}'.
+    HadrNotEnabled = HADR is not enabled.
+    AvailabilityGroupNotFound = Unable to locate the availability group '{0}' on the instance '{1}'.
+    ParameterNotOfType = The parameter '{0}' is not of the type '{1}'.
+    ParameterNullOrEmpty = The parameter '{0}' is NULL or empty.
+
+    # SQLServer
+    NoDatabase = Database '{0}' does not exist on SQL server '{1}\\{2}'.
+    SSRSNotFound = SQL Reporting Services instance '{0}' does not exist!
+    RoleNotFound = Role '{0}' does not exist on database '{1}' on SQL server '{2}\\{3}'."
+    LoginNotFound = Login '{0}' does not exist on SQL server '{1}\\{2}'."
+    FailedLogin = Creating a login of type 'SqlLogin' requires LoginCredential
+
+    # Database Role
+    AddLoginDatabaseSetError = Failed adding the login {2} as a user of the database {3}, on the instance {0}\\{1}.
+    DropMemberDatabaseSetError = Failed removing the login {2} from the role {3} on the database {4}, on the instance {0}\\{1}.
+    AddMemberDatabaseSetError = Failed adding the login {2} to the role {3} on the database {4}, on the instance {0}\\{1}.
+
+    # AvailabilityGroupListener
+    AvailabilityGroupListenerNotFound = Trying to make a change to a listener that does not exist.
+    AvailabilityGroupListenerErrorVerifyExist = Unexpected result when trying to verify existence of listener '{0}'.
+    AvailabilityGroupListenerIPChangeError = IP-address configuration mismatch. Expecting '{0}' found '{1}'. Resource does not support changing IP-address. Listener needs to be removed and then created again.
+    AvailabilityGroupListenerDHCPChangeError = IP-address configuration mismatch. Expecting '{0}' found '{1}'. Resource does not support changing between static IP and DHCP. Listener needs to be removed and then created again.
+
+    # Endpoint
+    EndpointNotFound = Endpoint '{0}' does not exist
+    EndpointErrorVerifyExist = Unexpected result when trying to verify existence of endpoint '{0}'.
+    EndpointFoundButWrongType = Endpoint '{0}' does exist, but it is not of type 'DatabaseMirroring'.
+
+    # Permission
+    PermissionGetError = Unexpected result when trying to get permissions for '{0}'.
+    ChangingPermissionFailed = Changing permission for principal '{0}' failed.
+
+    # AlwaysOnService
+    AlterAlwaysOnServiceFailed = Failed to ensure Always On is {0} on the instance '{1}'.
+    UnexpectedAlwaysOnStatus = The status of property Server.IsHadrEnabled was neither $true or $false. Status is '{0}'.
+
+    # Login
+    PasswordValidationFailed = Creation of the login '{0}' failed due to the following error: {1}
+    LoginCreationFailedFailedOperation = Creation of the login '{0}' failed due to a failed operation.
+    LoginCreationFailedSqlNotSpecified = Creation of the SQL login '{0}' failed due to an unspecified error.
+    LoginCreationFailedWindowsNotSpecified = Creation of the Windows login '{0}' failed due to an unspecified error.
+    LoginTypeNotImplemented = The login type '{0}' is not implemented in this resource.
+    IncorrectLoginMode = The instance '{0}\{1}' is currently in '{2}' authentication mode. To create a SQL Login, it must be set to 'Mixed' authentication mode.
+    LoginCredentialNotFound = The credential for the SQL Login '{0}' was not found.
+    PasswordChangeFailed = Setting the password failed for the SQL Login '{0}'.
+    AlterLoginFailed = Altering the login '{0}' failed.
+    CreateLoginFailed = Creating the login '{0}' failed.
+    DropLoginFailed = Dropping the login '{0}' failed.
+
+    # AlwaysOnAvailabilityGroup
+    CreateAvailabilityGroupReplicaFailed = Creating the Availability Group Replica '{0}' failed on the instance '{1}'.
+    CreateAvailabilityGroupFailed = Creating the availability group '{0}'.
+    DatabaseMirroringEndpointNotFound = No database mirroring endpoint was found on '{0}\{1}'.
+    InstanceNotPrimaryReplica = The instance '{0}' is not the primary replica for the availability group '{1}'.
+    RemoveAvailabilityGroupFailed = Failed to remove the availability group '{0}' from the '{1}' instance.
+
+    # AlwaysOnAvailabilityGroupReplica
+    JoinAvailabilityGroupFailed = Failed to join the availability group replica '{0}'.
+    RemoveAvailabilityGroupReplicaFailed = Failed to remove the availability group replica '{0}'.
+    ReplicaNotFound = Unable to find the availability group replica '{0}' on the instance '{1}'.
+
+    # Max degree of parallelism
+    MaxDopSetError = Unexpected result when trying to configure the max degree of parallelism server configuration option.
+    MaxDopParamMustBeNull = MaxDop parameter must be set to $null or not assigned if DynamicAlloc parameter is set to $true.
+
+    # Server Memory
+    MaxMemoryParamMustBeNull = The parameter MaxMemory must be null when DynamicAlloc is set to true.
+    MaxMemoryParamMustNotBeNull = The parameter MaxMemory must not be null when DynamicAlloc is set to false.
+    AlterServerMemoryFailed = Failed to alter the server configuration memory for {0}\\{1}.
+    ErrorGetDynamicMaxMemory = Failed to calculate dynamically the maximum memory.
+
+    # SQLServerDatabase
+    CreateDatabaseSetError = Failed to create the database named {2} on {0}\\{1}.
+    DropDatabaseSetError = Failed to drop the database named {2} on {0}\\{1}.
+    FailedToGetOwnerDatabase = Failed to get owner of the database named {0} on {1}\\{2}.
+    FailedToSetOwnerDatabase = Failed to set owner named {0} of the database named {1} on {2}\\{3}.
+    FailedToSetPermissionDatabase = Failed to set permission for login named {0} of the database named {1} on {2}\\{3}.
+    FailedToEnumDatabasePermissions = Failed to get permission for login named {0} of the database named {1} on {2}\\{3}.
+    UpdateDatabaseSetError = Failed to update database {1} on {0}\\{1} with specified changes.
+    InvalidCollationError = The specified collation '{3}' is not a valid collation for database {2} on {0}\\{1}.
+
+    # SQLServerNetwork
+    UnableToUseBothDynamicAndStaticPort = Unable to set both TCP dynamic port and TCP static port. Only one can be set.
 '@
