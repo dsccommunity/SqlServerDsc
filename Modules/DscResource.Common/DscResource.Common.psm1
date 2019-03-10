@@ -1832,7 +1832,7 @@ function Test-ImpersonatePermissions
     .OUTPUTS
         Hash table with the properties SQLServer and SQLInstanceName.
 #>
-function Split-FullSQLInstanceName
+function Split-FullSqlInstanceName
 {
     param
     (
@@ -2177,6 +2177,7 @@ Export-ModuleMember -Function @(
     'Disconnect-UncPath'
     'Test-PendingReboot'
     'Start-SqlSetupProcess'
+    'Connect-SQL'
     'Connect-SQLAnalysis'
     'Get-SqlInstanceMajorVersion'
     'New-TerminatingError'
@@ -2191,7 +2192,7 @@ Export-ModuleMember -Function @(
     'Test-AvailabilityReplicaSeedingModeAutomatic'
     'Get-PrimaryReplicaServerObject'
     'Test-ImpersonatePermissions'
-    'Split-FullSQLInstanceName'
+    'Split-FullSqlInstanceName'
     'Test-ClusterPermissions'
     'Test-ActiveNode'
     'Invoke-SqlScript'
