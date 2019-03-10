@@ -110,7 +110,7 @@ try
 
             # Start by checking whether we have the same number of parameters
             $actualValues.Count | Should -Be $ExpectedArgument.Count `
-                -Because ('the expected argument was: {0}' -f ($ExpectedArgument.Keys -join ','))
+                -Because ('the expected arguments was: {0}' -f ($ExpectedArgument.Keys -join ','))
 
             Write-Verbose -Message 'Verified actual setup argument values against expected setup argument values' -Verbose
 
