@@ -60,6 +60,23 @@ sa | P@ssw0rd1 | Administrator of the Database Engine instances DSCSQLTEST. |
 with this user and that means that this user must have permission to access the
 properties `IsClustered` and `IsHadrEnable`.*
 
+## SqlRSSetup
+
+**Run order:** 2
+
+**Depends on:** None
+
+The integration tests will install a Microsoft SQL Server 2017 Reporting
+Services and leave it on the AppVeyor build worker for other integration
+tests to use.
+
+Instance | Feature | Description
+--- | --- | ---
+SSRS | RS | The Reporting Services is installed, but not configured.
+
+>**Note:** The Reporting Services service is stopped to save memory on the build
+>worker.
+
 ## SqlAlwaysOnService
 
 **Run order:** 2
@@ -81,30 +98,6 @@ tests creates an Active Directory Detached Cluster with an IP address of
 >starts enough to be able to run integration tests for AlwaysOn service.s
 
 The tests will leave the AlwaysOn service disabled.
-
-## SqlRS
-
-**Run order:** 2
-
-**Depends on:** SqlSetup
-
-The integration tests will install the following instances and leave it on the
-AppVeyor build worker for other integration tests to use.
-
-Instance | Feature | Description
---- | --- | ---
-DSCRS2016 | RS | The Reporting Services is initialized, and in a working state.
-
->**Note:** The Reporting Services service is stopped to save memory on the build
->worker.
-
-### Properties for the instance
-
-- **Collation:** Finnish\_Swedish\_CI\_AS
-- **InstallSharedDir:** C:\Program Files\Microsoft SQL Server
-- **InstallSharedWOWDir:** C:\Program Files (x86)\Microsoft SQL Server
-- **DatabaseServerName:** `$env:COMPUTERNAME`
-- **DatabaseInstanceName:** DSCSQLTEST
 
 ## SqlDatabaseDefaultLocation
 
@@ -152,6 +145,30 @@ DscUser4 | SQL | P@ssw0rd1 | *None*
 
 > **Note:** Login DscUser3 was create disabled and was used to test removal of
 > a login.
+
+## SqlRS
+
+**Run order:** 3
+
+**Depends on:** SqlSetup, SqlRSSetup
+
+The integration tests will install the following instances and leave it on the
+AppVeyor build worker for other integration tests to use.
+
+Instance | Feature | Description
+--- | --- | ---
+DSCRS2016 | RS | The Reporting Services is initialized, and in a working state.
+
+>**Note:** The Reporting Services service is stopped to save memory on the build
+>worker.
+
+### Properties for the instance
+
+- **Collation:** Finnish\_Swedish\_CI\_AS
+- **InstallSharedDir:** C:\Program Files\Microsoft SQL Server
+- **InstallSharedWOWDir:** C:\Program Files (x86)\Microsoft SQL Server
+- **DatabaseServerName:** `$env:COMPUTERNAME`
+- **DatabaseInstanceName:** DSCSQLTEST
 
 ## SqlServerRole
 
