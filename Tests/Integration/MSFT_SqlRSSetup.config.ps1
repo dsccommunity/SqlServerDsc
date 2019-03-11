@@ -35,7 +35,7 @@ else
     .SYNOPSIS
         Installs a Microsoft SQL Server 2017 Reporting Services.
 #>
-Configuration MSFT_SqlSetup_InstallReportingServicesAsUser_Config
+Configuration MSFT_SqlRSSetup_InstallReportingServicesAsUser_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
