@@ -40,7 +40,7 @@ else
         Microsoft SQL Server 2017 Reporting Services instance.
         If it exist, it is removed to be able to test the installation.
 #>
-Configuration MSFT_SqlRSSetup_InstallReportingServicesAsUser_Config
+Configuration MSFT_SqlRSSetup_UninstallReportingServicesAsUser_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
