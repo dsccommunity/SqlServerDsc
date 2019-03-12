@@ -456,7 +456,16 @@ function Set-TargetResource
     }
     elseif ($processExitCode -ne 0)
     {
-        New-InvalidResultException -Message $script:localizedData.SetupFailed
+        if ($PSBoundParameters.ContainsKey('LogPath'))
+        {
+            $errorMessage = $script:localizedData.SetupFailedWithLog -f $LogPath
+        }
+        else
+        {
+            $errorMessage = $script:localizedData.SetupFailed
+        }
+
+        New-InvalidResultException -Message $errorMessage
     }
     else
     {

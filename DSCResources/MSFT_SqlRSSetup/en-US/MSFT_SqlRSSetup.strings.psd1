@@ -8,7 +8,8 @@ ConvertFrom-StringData @'
     SetupArguments = Starting installation using the arguments: {0}
     SetupExitMessage = Installation exited with code '{0}'.
     SetupSuccessfulRebootRequired = Installation finished successfully, but a reboot is required.
-    SetupFailed = Please see the log file '{0}'.
+    SetupFailed = Please see the log file in the %TEMP% folder.
+    SetupFailedWithLog = Please see the log file '{0}'. If not path was provided, the default path for log files is %TEMP%.
     SetupSuccessful = Installation finished successfully.
     Reboot = Rebooting target node.
     SuppressReboot = Suppressing reboot of target node.
