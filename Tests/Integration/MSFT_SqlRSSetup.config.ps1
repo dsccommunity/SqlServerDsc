@@ -33,6 +33,35 @@ else
 
 <#
     .SYNOPSIS
+        Uninstalls the Microsoft SQL Server 2017 Reporting Services.
+
+    .NOTES
+        When this test was written the build worker already contained a
+        Microsoft SQL Server 2017 Reporting Services instance.
+        If it exist, it is removed to be able to test the installation.
+#>
+Configuration MSFT_SqlRSSetup_InstallReportingServicesAsUser_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlRSSetup 'Integration_Test'
+        {
+            InstanceName         = $Node.InstanceName
+            IAcceptLicensTerms   = $Node.IAcceptLicensTerms
+            SourcePath           = $Node.SourcePath
+            Action               = 'Uninstall'
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
         Installs a Microsoft SQL Server 2017 Reporting Services.
 #>
 Configuration MSFT_SqlRSSetup_InstallReportingServicesAsUser_Config

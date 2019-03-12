@@ -116,7 +116,9 @@ try
                 $resourceCurrentState.InstallFolder      | Should -Be 'C:\Program Files\Microsoft SQL Server Reporting Services'
                 $resourceCurrentState.ServiceName        | Should -Be 'SQLServerReportingServices'
                 $resourceCurrentState.ErrorDumpDirectory | Should -Be 'C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\LogFiles'
-                $resourceCurrentState.CurrentVersion     | Should -BeGreaterThan [System.Version] '14.0.0.0'
+
+                $isCorrectVersion = $resourceCurrentState.CurrentVersion -ge [System.Version] '14.0.0.0'
+                $isCorrectVersion | Should -BeTrue
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
