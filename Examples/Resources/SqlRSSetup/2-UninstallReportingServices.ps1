@@ -21,9 +21,11 @@ Configuration Example
         SqlRSSetup 'InstallDefaultInstance'
         {
             InstanceName         = 'SSRS'
-            IAcceptLicensTerms   = 'Yes'
             SourcePath           = 'C:\InstallMedia\SQLServerReportingServices.exe'
             Action               = 'Uninstall'
+
+            # This needs to be set to although it is not used during uninstall.
+            IAcceptLicensTerms   = 'Yes'
 
             PsDscRunAsCredential = $SqlInstallCredential
         }

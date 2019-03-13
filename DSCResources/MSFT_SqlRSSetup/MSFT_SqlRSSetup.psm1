@@ -313,15 +313,17 @@ function Set-TargetResource
 
     Write-Verbose -Message ($script:localizedData.InstallationMediaPath -f $pathToSetupExecutable)
 
-    $setupArguments = @{}
-
-    # Add standard install arguments
-    $setupArguments += @{
+    $setupArguments = @{
         Quiet = [System.Management.Automation.SwitchParameter] $true
-        IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
     }
 
-    if ($Action -eq 'Uninstall')
+    if ($Action -eq 'Install')
+    {
+        $setupArguments += @{
+            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+        }
+    }
+    else
     {
         $setupArguments += @{
             'uninstall' =  [System.Management.Automation.SwitchParameter] $true
