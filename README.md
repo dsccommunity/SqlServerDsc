@@ -851,11 +851,11 @@ used, then the installation will run as SYSTEM.
   Environment variables can be used in the path.
 * **`[PSCredential]` SourceCredential** _(Write)_: Credentials used to
   access the path set in the parameter 'SourcePath'.
-* **`[Boolean]` SuppressReboot** _(Write)_: Suppresses any attempts to
+* **`[Boolean]` SuppressRestart** _(Write)_: Suppresses any attempts to
   restart.
 * **`[String]` ProductKey** _(Write)_: Sets the custom license key, e.g.
   '12345-12345-12345-12345-12345'.
-* **`[Boolean]` ForceReboot** _(Write)_: Forces a restart after installation
+* **`[Boolean]` ForceRestart** _(Write)_: Forces a restart after installation
   is finished.
 * **`[Boolean]` EditionUpgrade** _(Write)_: Upgrades the edition of the
   installed product. Requires that either the ProductKey or the Edition

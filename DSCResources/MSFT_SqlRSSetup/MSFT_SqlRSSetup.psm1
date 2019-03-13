@@ -35,7 +35,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlRSSetup'
         The following properties always return $null on purpose.
           - Action
           - SourceCredential
-          - ForceReboot
+          - ForceRestart
           - EditionUpgrade
           - LogPath
 
@@ -68,7 +68,7 @@ function Get-TargetResource
         Action = $null
         SourceCredential = $null
         ProductKey = $null
-        ForceReboot = $false
+        ForceRestart = $false
         EditionUpgrade = $false
         Edition = $null
         LogPath = $null
@@ -158,13 +158,13 @@ function Get-TargetResource
     .PARAMETER SourceCredential
         Credentials used to access the path set in the parameter 'SourcePath'.
 
-    .PARAMETER SuppressReboot
+    .PARAMETER SuppressRestart
         Suppresses any attempts to restart.
 
     .PARAMETER ProductKey
         Sets the custom license key, e.g. '12345-12345-12345-12345-12345'.
 
-    .PARAMETER ForceReboot
+    .PARAMETER ForceRestart
         Forces a restart after installation is finished.
 
     .PARAMETER EditionUpgrade
@@ -192,7 +192,7 @@ function Set-TargetResource
 {
     <#
         Suppressing this rule because $global:DSCMachineStatus is used to trigger
-        a reboot, either by force or when there are pending changes.
+        a Restart, either by force or when there are pending changes.
     #>
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
     <#
@@ -228,7 +228,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $SuppressReboot,
+        $SuppressRestart,
 
         [Parameter()]
         [System.String]
@@ -236,7 +236,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $ForceReboot,
+        $ForceRestart,
 
         [Parameter()]
         [System.Boolean]
@@ -272,6 +272,12 @@ function Set-TargetResource
     {
         $errorMessage = $script:localizedData.EditionMissingParameter
         New-InvalidArgumentException -ArgumentName 'Edition, ProductKey' -Message $errorMessage
+    }
+
+    if (-not (Test-Path -Path $SourcePath) -or (Get-Item -Path $SourcePath).Extension -ne '.exe')
+    {
+        $errorMessage = $script:localizedData.SourcePathNotFound -f $SourcePath
+        New-InvalidArgumentException -ArgumentName 'SourcePath' -Message $errorMessage
     }
 
     $InstanceName = $InstanceName.ToUpper()
@@ -336,7 +342,7 @@ function Set-TargetResource
     #>
     $allowedParametersAsArguments = @(
         'ProductKey'
-        'SuppressReboot'
+        'SuppressRestart'
         'EditionUpgrade'
         'Edition'
         'LogPath'
@@ -360,7 +366,7 @@ function Set-TargetResource
             }
         }
 
-        'SuppressReboot'
+        'SuppressRestart'
         {
             $setupArguments += @{
                 'norestart' = [System.Management.Automation.SwitchParameter] $true
@@ -443,20 +449,15 @@ function Set-TargetResource
 
     Write-Verbose -Message ($script:localizedData.SetupExitMessage -f $processExitCode)
 
-    if ($processExitCode -eq 3010 )
+    if ($processExitCode -eq 0)
     {
-        if ($SuppressReboot)
-        {
-            Write-Verbose -Message $script:localizedData.SuppressReboot
-        }
-        else
-        {
-            Write-Warning -Message $script:localizedData.SetupSuccessfulRebootRequired
-
-            $global:DSCMachineStatus = 1
-        }
+        Write-Verbose -Message $script:localizedData.SetupSuccessful
     }
-    elseif ($processExitCode -ne 0)
+    elseif ($processExitCode -eq 3010)
+    {
+        Write-Warning -Message $script:localizedData.SetupSuccessfulRestartRequired
+    }
+    else
     {
         if ($PSBoundParameters.ContainsKey('LogPath'))
         {
@@ -469,16 +470,27 @@ function Set-TargetResource
 
         New-InvalidResultException -Message $errorMessage
     }
-    else
+
+    <#
+        If ForceRestart is set it will always override SuppressRestart.
+        If SuppressRestart is set it will always override any pending Restart.
+    #>
+    if ($ForceRestart)
     {
-        Write-Verbose -Message $script:localizedData.SetupSuccessful
+        $global:DSCMachineStatus = 1
+    }
+    elseif ($SuppressRestart)
+    {
+        Write-Verbose -Message $script:localizedData.SuppressRestart
+    }
+    elseif (-not $SuppressRestart -and (Test-PendingRestart))
+    {
+        $global:DSCMachineStatus = 1
     }
 
-    if ($ForceReboot -or (-not $SuppressReboot -and (Test-PendingReboot)))
+    if ($global:DSCMachineStatus -eq 1)
     {
-        Write-Verbose -Message $script:localizedData.Reboot
-
-        $global:DSCMachineStatus = 1
+        Write-Verbose -Message $script:localizedData.Restart
     }
 }
 
@@ -506,13 +518,13 @@ function Set-TargetResource
     .PARAMETER SourceCredential
         Credentials used to access the path set in the parameter 'SourcePath'.
 
-    .PARAMETER SuppressReboot
+    .PARAMETER SuppressRestart
         Suppresses any attempts to restart.
 
     .PARAMETER ProductKey
         Sets the custom license key, e.g. '12345-12345-12345-12345-12345'.
 
-    .PARAMETER ForceReboot
+    .PARAMETER ForceRestart
         Forces a restart after installation is finished.
 
     .PARAMETER EditionUpgrade
@@ -567,7 +579,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $SuppressReboot,
+        $SuppressRestart,
 
         [Parameter()]
         [System.String]
@@ -575,7 +587,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $ForceReboot,
+        $ForceRestart,
 
         [Parameter()]
         [System.Boolean]

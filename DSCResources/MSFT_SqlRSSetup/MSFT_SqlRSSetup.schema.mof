@@ -6,9 +6,9 @@ class MSFT_SqlRSSetup : OMI_BaseResource
     [Required, Description("The path to the installation media file to be used for installation, e.g an UNC path to a shared resource. Environment variables can be used in the path.")] String SourcePath;
     [Write, Description("The action to be performed. Default value is 'Install' which performs either install or upgrade. { *Install* | Uninstall }"), ValueMap{"Install","Uninstall"}, Values{"Install","Uninstall"}] String Action;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("Credentials used to access the path set in the parameter 'SourcePath'.")] String SourceCredential;
-    [Write, Description("Suppresses any attempts to restart.")] Boolean SuppressReboot;
+    [Write, Description("Suppresses any attempts to restart.")] Boolean SuppressRestart;
     [Write, Description("Sets the custom license key, e.g. '12345-12345-12345-12345-12345'.")] String ProductKey;
-    [Write, Description("Forces a restart after installation is finished.")] Boolean ForceReboot;
+    [Write, Description("Forces a restart after installation is finished.")] Boolean ForceRestart;
     [Write, Description("Upgrades the edition of the installed product. Requires that either the ProductKey or the Edition parameter is also assigned. Default is $false.")] Boolean EditionUpgrade;
     [Write, Description("Sets the custom free edition. { 'Development' | 'Evaluation' | 'ExpressAdvanced' }"), ValueMap{"Development","Evaluation","ExpressAdvanced"}, Values{"Development","Evaluation","ExpressAdvanced"}] String Edition;
     [Write, Description("Specifies the setup log file location, e.g. 'log.txt'. By default, log files are created under %TEMP%.")] String LogPath;

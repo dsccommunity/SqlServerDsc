@@ -539,7 +539,7 @@ function Disconnect-UncPath
     .OUTPUTS
         Returns $true if there is a pending reboot, otherwise it returns $false.
 #>
-function Test-PendingReboot
+function Test-PendingRestart
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -2175,7 +2175,7 @@ Export-ModuleMember -Function @(
     'Invoke-InstallationMediaCopy'
     'Connect-UncPath'
     'Disconnect-UncPath'
-    'Test-PendingReboot'
+    'Test-PendingRestart'
     'Start-SqlSetupProcess'
     'Connect-SQL'
     'Connect-SQLAnalysis'

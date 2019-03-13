@@ -168,7 +168,7 @@ try
                         $getTargetResourceResult.Action | Should -BeNullOrEmpty
                         $getTargetResourceResult.SourceCredential | Should -BeNullOrEmpty
                         $getTargetResourceResult.ProductKey | Should -BeNullOrEmpty
-                        $getTargetResourceResult.ForceReboot | Should -BeFalse
+                        $getTargetResourceResult.ForceRestart | Should -BeFalse
                         $getTargetResourceResult.EditionUpgrade | Should -BeFalse
                         $getTargetResourceResult.Edition | Should -BeNullOrEmpty
                         $getTargetResourceResult.LogPath | Should -BeNullOrEmpty
@@ -277,7 +277,7 @@ try
                         $getTargetResourceResult.Action | Should -BeNullOrEmpty
                         $getTargetResourceResult.SourceCredential | Should -BeNullOrEmpty
                         $getTargetResourceResult.ProductKey | Should -BeNullOrEmpty
-                        $getTargetResourceResult.ForceReboot | Should -BeFalse
+                        $getTargetResourceResult.ForceRestart | Should -BeFalse
                         $getTargetResourceResult.EditionUpgrade | Should -BeFalse
                         $getTargetResourceResult.Edition | Should -BeNullOrEmpty
                         $getTargetResourceResult.LogPath | Should -BeNullOrEmpty
@@ -395,6 +395,46 @@ try
 
             BeforeEach {
                 $mockSetTargetResourceParameters = $mockDefaultParameters.Clone()
+
+                # Reset global variable DSCMachineStatus before each test.
+                $global:DSCMachineStatus = 0
+            }
+
+
+            Context 'When providing a missing SourcePath' {
+                BeforeEach {
+                    $mockSetTargetResourceParameters['Edition'] = 'Development'
+
+                    Mock -CommandName Test-Path -MockWith {
+                        return $false
+                    }
+                }
+
+                It 'Should throw the correct error message' {
+                    $errorMessage = $script:localizedData.SourcePathNotFound -f $mockSetTargetResourceParameters.SourcePath
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw $errorMessage
+                }
+            }
+
+            Context 'When providing a correct path in SourcePath, but no executable' {
+                BeforeEach {
+                    $mockSetTargetResourceParameters['Edition'] = 'Development'
+
+                    Mock -CommandName Test-Path -MockWith {
+                        return $true
+                    }
+
+                    Mock -CommandName Get-Item -MockWith {
+                        return @{
+                            Extension = ''
+                        }
+                    }
+                }
+
+                It 'Should throw the correct error message' {
+                    $errorMessage = $script:localizedData.SourcePathNotFound -f $mockSetTargetResourceParameters.SourcePath
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw $errorMessage
+                }
             }
 
             Context 'When providing both the parameters ProductKey and Edition' {
@@ -403,18 +443,30 @@ try
                     $mockSetTargetResourceParameters['ProductKey'] = $mockProductKey
                 }
 
-                It 'Should throw the correct error' {
+                It 'Should throw the correct error message' {
                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw $script:localizedData.EditionInvalidParameter
                 }
             }
 
             Context 'When providing neither the parameters ProductKey or Edition' {
-                It 'Should throw the correct error' {
+                It 'Should throw the correct error message' {
                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw $script:localizedData.EditionMissingParameter
                 }
             }
 
             Context 'When the system is not in the desired state' {
+                BeforeAll {
+                    Mock -CommandName Test-Path -MockWith {
+                        return $true
+                    }
+
+                    Mock -CommandName Get-Item -MockWith {
+                        return @{
+                            Extension = '.exe'
+                        }
+                    }
+                }
+
                 Context 'When Reporting Services are installed with the minimum required parameters' {
                     BeforeEach {
                         $mockSetTargetResourceParameters['ProductKey'] = $mockProductKey
@@ -447,7 +499,6 @@ try
 
                         $mockStartSqlSetupProcess_ExpectedArgumentList = @{
                             Quiet = [System.Management.Automation.SwitchParameter] $true
-                            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
                             Uninstall = [System.Management.Automation.SwitchParameter] $true
                         }
 
@@ -493,10 +544,10 @@ try
                     }
                 }
 
-                Context 'When Reporting Services are installed with parameters ProductKey, SuppressReboot, LogPath, EditionUpgrade, and InstallFolder' {
+                Context 'When Reporting Services are installed with parameters ProductKey, SuppressRestart, LogPath, EditionUpgrade, and InstallFolder' {
                     BeforeEach {
                         $mockSetTargetResourceParameters['ProductKey'] = $mockProductKey
-                        $mockSetTargetResourceParameters['SuppressReboot'] = $true
+                        $mockSetTargetResourceParameters['SuppressRestart'] = $true
                         $mockSetTargetResourceParameters['LogPath'] = 'log.txt'
                         $mockSetTargetResourceParameters['EditionUpgrade'] = $true
                         $mockSetTargetResourceParameters['InstallFolder'] = 'C:\Temp'
@@ -586,11 +637,9 @@ try
 
                             return 3010
                         }
-
-                        $global:DSCMachineStatus = 0
                     }
 
-                    It 'Should call the correct mocks' {
+                    It 'Should call the correct mocks, and set $global:DSCMachineStatus to 1' {
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
                         # Should set the global DSCMachineStatus variable.
@@ -601,10 +650,10 @@ try
                         } -Exactly -Times 1 -Scope 'It'
                     }
 
-                    Context 'When the Reporting Services installation is successful with exit code 3010, and called with parameter SuppressReboot' {
+                    Context 'When the Reporting Services installation is successful with exit code 3010, and called with parameter SuppressRestart' {
                         BeforeEach {
                             $mockSetTargetResourceParameters['Edition'] = 'Development'
-                            $mockSetTargetResourceParameters['SuppressReboot'] = $true
+                            $mockSetTargetResourceParameters['SuppressRestart'] = $true
 
                             $mockStartSqlSetupProcess_ExpectedArgumentList = @{
                                 Quiet = [System.Management.Automation.SwitchParameter] $true
@@ -627,10 +676,10 @@ try
                     }
                 }
 
-                Context 'When the Reporting Services installation is successful and ForceReboot is used' {
+                Context 'When the Reporting Services installation is successful and ForceRestart is used' {
                     BeforeEach {
                         $mockSetTargetResourceParameters['Edition'] = 'Development'
-                        $mockSetTargetResourceParameters['ForceReboot'] = $true
+                        $mockSetTargetResourceParameters['ForceRestart'] = $true
 
                         $mockStartSqlSetupProcess_ExpectedArgumentList = @{
                             Quiet = [System.Management.Automation.SwitchParameter] $true
@@ -638,30 +687,28 @@ try
                             Edition = 'Dev'
                         }
 
-                        Mock -CommandName Test-PendingReboot
+                        Mock -CommandName Test-PendingRestart
                         Mock -CommandName Start-SqlSetupProcess -MockWith {
                             Test-SetupArgument -Argument $ArgumentList -ExpectedArgument $mockStartSqlSetupProcess_ExpectedArgumentList
 
                             return 0
                         }
-
-                        $global:DSCMachineStatus = 0
                     }
 
-                    It 'Should call the correct mocks' {
+                    It 'Should call the correct mocks, and set $global:DSCMachineStatus to 1' {
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
                         # Should set the global DSCMachineStatus variable.
                         $global:DSCMachineStatus | Should -Be 1
 
-                        Assert-MockCalled -CommandName Test-PendingReboot -Exactly -Times 0 -Scope 'It'
+                        Assert-MockCalled -CommandName Test-PendingRestart -Exactly -Times 0 -Scope 'It'
                         Assert-MockCalled -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $FilePath -eq $mockSetTargetResourceParameters.SourcePath
                         } -Exactly -Times 1 -Scope 'It'
                     }
                 }
 
-                Context 'When the Reporting Services installation is successful, and there are a pending reboot' {
+                Context 'When the Reporting Services installation is successful, and there are a pending restart' {
                     BeforeEach {
                         $mockSetTargetResourceParameters['Edition'] = 'Development'
 
@@ -671,7 +718,7 @@ try
                             Edition = 'Dev'
                         }
 
-                        Mock -CommandName Test-PendingReboot -MockWith {
+                        Mock -CommandName Test-PendingRestart -MockWith {
                             return $true
                         }
 
@@ -680,17 +727,15 @@ try
 
                             return 0
                         }
-
-                        $global:DSCMachineStatus = 0
                     }
 
-                    It 'Should call the correct mocks' {
+                    It 'Should call the correct mocks, and set $global:DSCMachineStatus to 1' {
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
                         # Should set the global DSCMachineStatus variable.
                         $global:DSCMachineStatus | Should -Be 1
 
-                        Assert-MockCalled -CommandName Test-PendingReboot -Exactly -Times 1 -Scope 'It'
+                        Assert-MockCalled -CommandName Test-PendingRestart -Exactly -Times 1 -Scope 'It'
                         Assert-MockCalled -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $FilePath -eq $mockSetTargetResourceParameters.SourcePath
                         } -Exactly -Times 1 -Scope 'It'
@@ -712,16 +757,44 @@ try
 
                             return 1
                         }
-
-                        $global:DSCMachineStatus = 0
                     }
 
-                    It 'Should call the correct mocks' {
+                    It 'Should throw the correct error message' {
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw $script:localizedData.SetupFailed
 
                         Assert-MockCalled -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $FilePath -eq $mockSetTargetResourceParameters.SourcePath
                         } -Exactly -Times 1 -Scope 'It'
+
+                        # Should not set the global DSCMachineStatus variable.
+                        $global:DSCMachineStatus | Should -Be 0
+                    }
+
+                    Context 'When the Reporting Services installation fails, and called with parameter LogPath' {
+                        BeforeEach {
+                            $mockSetTargetResourceParameters['Edition'] = 'Development'
+                            $mockSetTargetResourceParameters['LogPath'] = 'TestDrive:\'
+
+                            $mockStartSqlSetupProcess_ExpectedArgumentList = @{
+                                Quiet = [System.Management.Automation.SwitchParameter] $true
+                                IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                                Edition = 'Dev'
+                                log = $mockSetTargetResourceParameters.LogPath
+                            }
+                        }
+
+                        It 'Should throw the correct error message' {
+                            $errorMessage = $script:localizedData.SetupFailedWithLog -f $mockSetTargetResourceParameters.LogPath
+
+                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw $errorMessage
+
+                            Assert-MockCalled -CommandName Start-SqlSetupProcess -ParameterFilter {
+                                $FilePath -eq $mockSetTargetResourceParameters.SourcePath
+                            } -Exactly -Times 1 -Scope 'It'
+
+                            # Should not set the global DSCMachineStatus variable.
+                            $global:DSCMachineStatus | Should -Be 0
+                        }
                     }
                 }
             }

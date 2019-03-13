@@ -1628,7 +1628,7 @@ function Set-TargetResource
             Write-Verbose -Message $setupExitMessageSuccessful
         }
 
-        if ($ForceReboot -or (Test-PendingReboot))
+        if ($ForceReboot -or (Test-PendingRestart))
         {
             if (-not ($SuppressReboot))
             {
