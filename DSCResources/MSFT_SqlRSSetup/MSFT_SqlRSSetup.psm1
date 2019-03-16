@@ -124,6 +124,8 @@ function Get-TargetResource
             Name = 'Microsoft SQL Server Reporting Services'
             ProviderName = 'Programs'
             ErrorAction = 'SilentlyContinue'
+            # Get-Package returns a lot of excessive information that we don't need.
+            Verbose = $false
         }
 
         $reportingServicesPackage = Get-Package @getPackageParameters
