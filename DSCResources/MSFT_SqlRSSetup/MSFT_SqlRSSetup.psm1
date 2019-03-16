@@ -334,7 +334,7 @@ function Set-TargetResource
         $SourcePath = Join-Path -Path $newExecutableParentFolder -ChildPath $executableFileName
     }
 
-    Write-Verbose -Message ($script:localizedData.InstallationMediaPath -f $pathToSetupExecutable)
+    Write-Verbose -Message ($script:localizedData.InstallationMediaPath -f $SourcePath)
 
     $setupArguments = @{
         Quiet = [System.Management.Automation.SwitchParameter] $true
