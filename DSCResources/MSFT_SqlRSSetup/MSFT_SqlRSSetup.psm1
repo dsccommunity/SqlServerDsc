@@ -120,12 +120,25 @@ function Get-TargetResource
         $returnObject['ErrorDumpDirectory'] = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
         # CurrentVersion
-        $getRegistryPropertyValueParameters = @{
-            Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\MSSQLServer\CurrentVersion' -f $InstanceName
-            Name = 'CurrentVersion'
+        $getPackageParameters = @{
+            Name = 'Microsoft SQL Server Reporting Services'
+            ProviderName = 'Programs'
+            ErrorAction = 'SilentlyContinue'
         }
 
-        $returnObject['CurrentVersion'] = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
+        $reportingServicesPackage = Get-Package @getPackageParameters
+        if ($reportingServicesPackage)
+        {
+            Write-Verbose -Message (
+                $script:localizedData.VersionFound -f $reportingServicesPackage.Version
+            )
+
+            $returnObject['CurrentVersion'] = $reportingServicesPackage.Version
+        }
+        else
+        {
+            Write-Warning -Message $script:localizedData.PackageNotFound
+        }
     }
     else
     {
@@ -473,6 +486,8 @@ function Set-TargetResource
     elseif ($processExitCode -eq 3010)
     {
         Write-Warning -Message ($script:localizedData.SetupSuccessfulRestartRequired -f $script:localizedData.$Action)
+
+        $global:DSCMachineStatus = 1
     }
     else
     {
@@ -489,15 +504,18 @@ function Set-TargetResource
     }
 
     <#
-        If ForceRestart is set it will always override SuppressRestart.
-        If SuppressRestart is set it will always override any pending Restart.
+        If ForceRestart is set it will always restart, and override SuppressRestart.
+        If SuppressRestart is set it will always override any pending restart.
     #>
     if ($ForceRestart)
     {
         $global:DSCMachineStatus = 1
     }
-    elseif ($SuppressRestart)
+    elseif ($global:DSCMachineStatus -eq 1 -and $SuppressRestart)
     {
+        # Suppressing restart to make sure the node is not restarted.
+        $global:DSCMachineStatus = 0
+
         Write-Verbose -Message $script:localizedData.SuppressRestart
     }
     elseif (-not $SuppressRestart -and (Test-PendingRestart))
@@ -656,15 +674,33 @@ function Test-TargetResource
         We determine if the Microsoft SQL Server Reporting Service instance is
         installed if the instance name is found in the registry.
     #>
-    if ($Action -eq 'Install' -and $getTargetResourceResult.InstanceName)
+    if ($Action -eq 'Install')
     {
-        $fileMajorVersion = (Get-FileProductVersion -Path $SourcePath).Major
-        $installedMajorVersion = ([System.Version] $getTargetResourceResult.CurrentVersion).Major
+        $fileVersion = Get-FileProductVersion -Path $SourcePath
 
-        # The major version is evaluated if VersionUpgrade is set to $true
-        if (-not $VersionUpgrade -or ($VersionUpgrade -and $installedMajorVersion -ge $fileMajorVersion))
+        if ($getTargetResourceResult.InstanceName)
         {
-            $returnValue = $true
+            $installedVersion = [System.Version] $getTargetResourceResult.CurrentVersion
+
+            # The major version is evaluated if VersionUpgrade is set to $true
+            if (-not $VersionUpgrade -or ($VersionUpgrade -and $installedVersion -ge $fileVersion))
+            {
+                $returnValue = $true
+            }
+            else
+            {
+                Write-Verbose -Message (
+                    $script:localizedData.WrongVersionFound `
+                        -f $fileVersion.ToString(), $installedVersion.ToString()
+                )
+            }
+        }
+        else
+        {
+            Write-Verbose -Message (
+                $script:localizedData.MissingVersion `
+                    -f $fileVersion.ToString()
+            )
         }
     }
 

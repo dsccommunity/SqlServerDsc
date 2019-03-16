@@ -129,6 +129,7 @@ try
         }
 
         $mockInstanceName = 'SSRS'
+        $mockCurrentVersion = '14.0.6514.11481'
 
         # Default parameters that are used for the It-blocks.
         $mockDefaultParameters = @{
@@ -183,7 +184,7 @@ try
 
                 Context 'When there is an installed Reporting Services' {
                     BeforeAll {
-                        $mockGetItemProperty_InstanceName = {
+                        $mockGetRegistryPropertyValue_InstanceName = {
                             <#
                                 Currently only the one instance name of 'SSRS' is supported,
                                 and the same name is currently used for instance id.
@@ -191,70 +192,82 @@ try
                             return $mockInstanceName
                         }
 
-                        $mockGetItemProperty_InstanceName_ParameterFilter = {
+                        $mockGetRegistryPropertyValue_InstanceName_ParameterFilter = {
                             $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS' `
                                 -and $Name -eq $mockInstanceName
                         }
 
-                        $mockGetItemPropertyValue_InstallRootDirectory = 'C:\Program Files\Microsoft SQL Server Reporting Services'
-                        $mockGetItemProperty_InstallRootDirectory = {
-                            return $mockGetItemPropertyValue_InstallRootDirectory
+                        $mockInstallRootDirectory = 'C:\Program Files\Microsoft SQL Server Reporting Services'
+                        $mockGetRegistryPropertyValue_InstallRootDirectory = {
+                            return $mockInstallRootDirectory
                         }
 
-                        $mockGetItemProperty_InstallRootDirectory_ParameterFilter = {
+                        $mockGetRegistryPropertyValue_InstallRootDirectory_ParameterFilter = {
                             $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\Setup' `
                                 -and $Name -eq 'InstallRootDirectory'
                         }
 
-                        $mockGetItemPropertyValue_ServiceName = 'SQLServerReportingServices'
-                        $mockGetItemProperty_ServiceName = {
-                            return $mockGetItemPropertyValue_ServiceName
+                        $mockServiceName = 'SQLServerReportingServices'
+                        $mockGetRegistryPropertyValue_ServiceName = {
+                            return $mockServiceName
                         }
 
-                        $mockGetItemProperty_ServiceName_ParameterFilter = {
+                        $mockGetRegistryPropertyValue_ServiceName_ParameterFilter = {
                             $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\Setup' `
                                 -and $Name -eq 'ServiceName'
                         }
 
-                        $mockGetItemPropertyValue_ErrorDumpDir = 'C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\LogFiles'
-                        $mockGetItemProperty_ErrorDumpDir = {
-                            return $mockGetItemPropertyValue_ErrorDumpDir
+                        $mockErrorDumpDir = 'C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\LogFiles'
+                        $mockGetRegistryPropertyValue_ErrorDumpDir = {
+                            return $mockErrorDumpDir
                         }
 
-                        $mockGetItemProperty_ErrorDumpDir_ParameterFilter = {
+                        $mockGetRegistryPropertyValue_ErrorDumpDir_ParameterFilter = {
                             $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\CPE' `
                                 -and $Name -eq 'ErrorDumpDir'
                         }
 
-                        $mockGetItemPropertyValue_CurrentVersion = '14.0.600.1109'
-                        $mockGetItemProperty_CurrentVersion = {
-                            return $mockGetItemPropertyValue_CurrentVersion
-                        }
-
-                        $mockGetItemProperty_CurrentVersion_ParameterFilter = {
-                            $Path -eq ('HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\MSSQLServer\CurrentVersion' -f $mockInstanceName) `
-                                -and $Name -eq 'CurrentVersion'
+                        $mockGetPackage_CurrentVersion = {
+                            return @{
+                                Version = $mockCurrentVersion
+                            }
                         }
 
                         Mock -CommandName Get-RegistryPropertyValue `
-                            -MockWith $mockGetItemProperty_InstanceName `
-                            -ParameterFilter $mockGetItemProperty_InstanceName_ParameterFilter
+                            -MockWith $mockGetRegistryPropertyValue_InstanceName `
+                            -ParameterFilter $mockGetRegistryPropertyValue_InstanceName_ParameterFilter
 
                         Mock -CommandName Get-RegistryPropertyValue `
-                            -MockWith $mockGetItemProperty_InstallRootDirectory `
-                            -ParameterFilter $mockGetItemProperty_InstallRootDirectory_ParameterFilter
+                            -MockWith $mockGetRegistryPropertyValue_InstallRootDirectory `
+                            -ParameterFilter $mockGetRegistryPropertyValue_InstallRootDirectory_ParameterFilter
 
                         Mock -CommandName Get-RegistryPropertyValue `
-                            -MockWith $mockGetItemProperty_ServiceName `
-                            -ParameterFilter $mockGetItemProperty_ServiceName_ParameterFilter
+                            -MockWith $mockGetRegistryPropertyValue_ServiceName `
+                            -ParameterFilter $mockGetRegistryPropertyValue_ServiceName_ParameterFilter
 
                         Mock -CommandName Get-RegistryPropertyValue `
-                            -MockWith $mockGetItemProperty_ErrorDumpDir `
-                            -ParameterFilter $mockGetItemProperty_ErrorDumpDir_ParameterFilter
+                            -MockWith $mockGetRegistryPropertyValue_ErrorDumpDir `
+                            -ParameterFilter $mockGetRegistryPropertyValue_ErrorDumpDir_ParameterFilter
 
-                        Mock -CommandName Get-RegistryPropertyValue `
-                            -MockWith $mockGetItemProperty_CurrentVersion `
-                            -ParameterFilter $mockGetItemProperty_CurrentVersion_ParameterFilter
+                        # This is a workaround for the issue https://github.com/pester/Pester/issues/604.
+                        function Get-Package
+                        {
+                            [CmdletBinding()]
+                            param
+                            (
+                                [Parameter(Mandatory = $true)]
+                                [System.String]
+                                $Name,
+
+                                [Parameter(Mandatory = $true)]
+                                [System.String]
+                                $ProviderName
+                            )
+
+                            throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
+                        }
+
+                        Mock -CommandName Get-Package -MockWith $mockGetPackage_CurrentVersion
                     }
 
                     It 'Should return the correct InstanceName' {
@@ -262,7 +275,7 @@ try
                         $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
 
                         Assert-MockCalled -CommandName Get-RegistryPropertyValue `
-                            -ParameterFilter $mockGetItemProperty_InstanceName_ParameterFilter `
+                            -ParameterFilter $mockGetRegistryPropertyValue_InstanceName_ParameterFilter `
                             -Exactly -Times 1 -Scope 'It'
                     }
 
@@ -281,26 +294,38 @@ try
                         $getTargetResourceResult.EditionUpgrade | Should -BeFalse
                         $getTargetResourceResult.Edition | Should -BeNullOrEmpty
                         $getTargetResourceResult.LogPath | Should -BeNullOrEmpty
-                        $getTargetResourceResult.InstallFolder | Should -Be $mockGetItemPropertyValue_InstallRootDirectory
-                        $getTargetResourceResult.ErrorDumpDirectory | Should -Be $mockGetItemPropertyValue_ErrorDumpDir
-                        $getTargetResourceResult.CurrentVersion | Should -Be $mockGetItemPropertyValue_CurrentVersion
-                        $getTargetResourceResult.ServiceName | Should -Be $mockGetItemPropertyValue_ServiceName
+                        $getTargetResourceResult.InstallFolder | Should -Be $mockInstallRootDirectory
+                        $getTargetResourceResult.ErrorDumpDirectory | Should -Be $mockErrorDumpDir
+                        $getTargetResourceResult.CurrentVersion | Should -Be $mockCurrentVersion
+                        $getTargetResourceResult.ServiceName | Should -Be $mockServiceName
 
                         Assert-MockCalled -CommandName Get-RegistryPropertyValue `
-                            -ParameterFilter $mockGetItemProperty_InstallRootDirectory_ParameterFilter `
+                            -ParameterFilter $mockGetRegistryPropertyValue_InstallRootDirectory_ParameterFilter `
                             -Exactly -Times 1 -Scope 'It'
 
                         Assert-MockCalled -CommandName Get-RegistryPropertyValue `
-                            -ParameterFilter $mockGetItemProperty_ServiceName_ParameterFilter `
+                            -ParameterFilter $mockGetRegistryPropertyValue_ServiceName_ParameterFilter `
                             -Exactly -Times 1 -Scope 'It'
 
                         Assert-MockCalled -CommandName Get-RegistryPropertyValue `
-                            -ParameterFilter $mockGetItemProperty_ErrorDumpDir_ParameterFilter `
+                            -ParameterFilter $mockGetRegistryPropertyValue_ErrorDumpDir_ParameterFilter `
                             -Exactly -Times 1 -Scope 'It'
 
-                        Assert-MockCalled -CommandName Get-RegistryPropertyValue `
-                            -ParameterFilter $mockGetItemProperty_CurrentVersion_ParameterFilter `
-                            -Exactly -Times 1 -Scope 'It'
+                        Assert-MockCalled -CommandName Get-Package -Exactly -Times 1 -Scope 'It'
+                    }
+
+                    Context 'When there is an installed Reporting Services, but no installed package is found to determine version' {
+                        BeforeEach {
+                            Mock -CommandName Get-Package
+                            Mock -CommandName Write-Warning
+                        }
+
+                        It 'Should return the correct values for the rest of the properties' {
+                            $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
+                            $getTargetResourceResult.CurrentVersion | Should -BeNullOrEmpty
+
+                            Assert-MockCalled -CommandName Write-Warning -Exactly -Times 1 -Scope 'It'
+                        }
                     }
                 }
             }
@@ -336,12 +361,12 @@ try
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
                                 InstanceName = 'SSRS'
-                                CurrentVersion = '14.0.0.0'
+                                CurrentVersion = $mockCurrentVersion
                             }
                         }
 
                         Mock -CommandName Get-FileProductVersion -MockWith {
-                            return [System.Version] '14.0.0.0'
+                            return [System.Version] $mockCurrentVersion
                         }
                     }
 
@@ -359,12 +384,12 @@ try
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
                                 InstanceName = 'SSRS'
-                                CurrentVersion = '14.0.0.0'
+                                CurrentVersion = $mockCurrentVersion
                             }
                         }
 
                         Mock -CommandName Get-FileProductVersion -MockWith {
-                            return [System.Version] '15.0.0.0'
+                            return [System.Version] '15.1.1.0'
                         }
                     }
 
@@ -406,10 +431,14 @@ try
                                 InstanceName = $null
                             }
                         }
+
+                        Mock -CommandName Get-FileProductVersion -MockWith {
+                            return [System.Version] $mockCurrentVersion
+                        }
                     }
 
                     It 'Should return $false' {
-                        $result = Test-TargetResource @mockTestTargetResourceParameters
+                        $result = Test-TargetResource @mockTestTargetResourceParameters -Verbose
                         $result | Should -BeFalse
 
                         Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
@@ -421,19 +450,19 @@ try
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
                                 InstanceName = 'SSRS'
-                                CurrentVersion = '14.0.0.0'
+                                CurrentVersion = $mockCurrentVersion
                             }
                         }
 
                         Mock -CommandName Get-FileProductVersion -MockWith {
-                            return [System.Version] '15.0.0.0'
+                            return [System.Version] '15.1.1.0'
                         }
                     }
 
                     It 'Should return $false' {
                         $mockTestTargetResourceParameters['VersionUpgrade'] = $true
 
-                        $result = Test-TargetResource @mockTestTargetResourceParameters
+                        $result = Test-TargetResource @mockTestTargetResourceParameters -Verbose
                         $result | Should -BeFalse
 
                         Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'

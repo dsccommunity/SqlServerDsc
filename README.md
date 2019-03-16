@@ -835,6 +835,10 @@ used, then the installation will run as SYSTEM.
 * The parameter IAcceptLicensTerms must be set to 'Yes'.
 * The parameter InstanceName can only be set to 'SSRS' since there is
   no way to change the instance name.
+* When using action 'Uninstall', the same version of the executable as the version
+  of the installed product must be used. If not, sometimes the uninstall
+  is successful (because the executable returns exit code 0) but the
+  Microsoft SQL Server Reporting Services instance was not actually removed.
 
 #### Parameters
 

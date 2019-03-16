@@ -18,4 +18,8 @@ ConvertFrom-StringData @'
     EditionInvalidParameter = Both the parameters Edition and ProductKey was specified. Only either parameter Edition or ProductKey is allowed.
     EditionMissingParameter = Neither the parameters Edition and ProductKey was specified.
     SourcePathNotFound = The source path '{0}' does not exist, or the path does not specify an executable file.
+    VersionFound = The Microsoft SQL Server Reporting Service instance is version '{0}'.
+    PackageNotFound = Could not determine the version of the Microsoft SQL Server Reporting Service instance.
+    WrongVersionFound = Expected version '{0}', but version '{1}' is installed.
+    MissingVersion = Expected version '{0}' to be installed.
 '@

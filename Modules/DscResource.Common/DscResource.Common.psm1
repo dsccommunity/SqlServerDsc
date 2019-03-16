@@ -1548,6 +1548,7 @@ function Test-LoginEffectivePermissions
         [System.String[]]
         $Permissions,
 
+        [Parameter()]
         [ValidateSet('SERVER', 'LOGIN')]
         [Parameter()]
         [System.String]
@@ -1776,7 +1777,8 @@ function Test-ImpersonatePermissions
         New-VerboseMessage -Message ( 'The login "{0}" does not have control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
     }
 
-    if ( -not [System.String]::IsNullOrEmpty($SecurableName) ) {
+    if (-not [System.String]::IsNullOrEmpty($SecurableName))
+    {
         # Check for login-specific impersonation permissions
         $testLoginEffectivePermissionsParams = @{
             SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
@@ -1786,6 +1788,7 @@ function Test-ImpersonatePermissions
             SecurableClass  = 'LOGIN'
             SecurableName   = $SecurableName
         }
+
         $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
         if ($impersonatePermissionsPresent)
         {
@@ -1806,6 +1809,7 @@ function Test-ImpersonatePermissions
             SecurableClass  = 'LOGIN'
             SecurableName   = $SecurableName
         }
+
         $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
         if ($impersonatePermissionsPresent)
         {
