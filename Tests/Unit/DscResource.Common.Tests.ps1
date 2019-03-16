@@ -886,7 +886,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Test-PendingReboot' -Tag 'TestPendingReboot' {
+    Describe 'DscResource.Common\Test-PendingRestart' -Tag 'TestPendingRestart' {
         Context 'When there is a pending reboot' {
             BeforeAll {
                 Mock -CommandName Get-RegistryPropertyValue -MockWith {
@@ -895,8 +895,8 @@ InModuleScope 'DscResource.Common' {
             }
 
             It 'Should return $true' {
-                $testPendingRebootResult = Test-PendingReboot
-                $testPendingRebootResult | Should -BeTrue
+                $testPendingRestartResult = Test-PendingRestart
+                $testPendingRestartResult | Should -BeTrue
 
                 Assert-MockCalled -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope 'It'
             }
@@ -908,8 +908,8 @@ InModuleScope 'DscResource.Common' {
             }
 
             It 'Should return $true' {
-                $testPendingRebootResult = Test-PendingReboot
-                $testPendingRebootResult | Should -BeFalse
+                $testPendingRestartResult = Test-PendingRestart
+                $testPendingRestartResult | Should -BeFalse
 
                 Assert-MockCalled -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope 'It'
             }
