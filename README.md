@@ -843,12 +843,12 @@ used, then the installation will run as SYSTEM.
   { 'SSRS' }
 * **`[String]` IAcceptLicensTerms** _(Required)_: Accept licens terms.
   This must be set to 'Yes'. { 'Yes' }
+* **`[String]` SourcePath** _(Required)_: The path to the installation media
+  file to be used for installation, e.g an UNC path to a shared resource.
+  Environment variables can be used in the path.
 * **`[String]` Action** _(Write)_: The action to be performed. Default
   value is 'Install' which performs either install or upgrade.
   { *Install* | Uninstall }
-* **`[String]` SourcePath** _(Write)_: The path to the installation media
-  file to be used for installation, e.g an UNC path to a shared resource.
-  Environment variables can be used in the path.
 * **`[PSCredential]` SourceCredential** _(Write)_: Credentials used to
   access the path set in the parameter 'SourcePath'.
 * **`[Boolean]` SuppressRestart** _(Write)_: Suppresses any attempts to
@@ -860,6 +860,10 @@ used, then the installation will run as SYSTEM.
 * **`[Boolean]` EditionUpgrade** _(Write)_: Upgrades the edition of the
   installed product. Requires that either the ProductKey or the Edition
   parameter is also assigned. By default no edition upgrade is performed.
+* **`[Boolean]` VersionUpgrade** _(Write)_: Upgrades installed product
+  version, if the major product version of the source executable is higher
+  than the major current version. Requires that either the ProductKey or
+  the Edition parameter is also assigned. Default is $false.
 * **`[String]` Edition** _(Write)_: Sets the custom free edition.
   { 'Development' | 'Evaluation' | 'ExpressAdvanced' }
 * **`[String]` LogPath** _(Write)_: Specifies the setup log file location,

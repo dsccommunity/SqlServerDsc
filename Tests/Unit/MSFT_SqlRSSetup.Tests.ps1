@@ -336,7 +336,12 @@ try
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
                                 InstanceName = 'SSRS'
+                                CurrentVersion = '14.0.0.0'
                             }
+                        }
+
+                        Mock -CommandName Get-FileProductVersion -MockWith {
+                            return [System.Version] '14.0.0.0'
                         }
                     }
 
@@ -345,12 +350,37 @@ try
                         $result | Should -BeTrue
 
                         Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
+                        Assert-MockCalled -CommandName Get-FileProductVersion -Exactly -Times 1 -Scope 'It'
+                    }
+                }
+
+                Context 'When the installed Reporting Services is an older version that the installation media, but parameter VersionUpgrade is not used' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                InstanceName = 'SSRS'
+                                CurrentVersion = '14.0.0.0'
+                            }
+                        }
+
+                        Mock -CommandName Get-FileProductVersion -MockWith {
+                            return [System.Version] '15.0.0.0'
+                        }
+                    }
+
+                    It 'Should return $false' {
+                        # This is called without the parameter 'VersionUpgrade'.
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+                        $result | Should -BeTrue
+
+                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
+                        Assert-MockCalled -CommandName Get-FileProductVersion -Exactly -Times 1 -Scope 'It'
                     }
                 }
             }
 
             Context 'When the system is not in the desired state' {
-                Context 'When there is an installed Reporting Services' {
+                Context 'When there should be no installed Reporting Services' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
@@ -383,6 +413,31 @@ try
                         $result | Should -BeFalse
 
                         Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
+                    }
+                }
+
+                Context 'When the wrong version of Reporting Services is installed, and parameter VersionUpgrade is used' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                InstanceName = 'SSRS'
+                                CurrentVersion = '14.0.0.0'
+                            }
+                        }
+
+                        Mock -CommandName Get-FileProductVersion -MockWith {
+                            return [System.Version] '15.0.0.0'
+                        }
+                    }
+
+                    It 'Should return $false' {
+                        $mockTestTargetResourceParameters['VersionUpgrade'] = $true
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+                        $result | Should -BeFalse
+
+                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
+                        Assert-MockCalled -CommandName Get-FileProductVersion -Exactly -Times 1 -Scope 'It'
                     }
                 }
             }
@@ -829,7 +884,7 @@ try
                     }
                 )
 
-                It 'Should return the the value <OutputName> when converting from value <InputName>' -TestCases $testCases {
+                It 'Should return the value <OutputName> when converting from value <InputName>' -TestCases $testCases {
                     param
                     (
                         [Parameter()]
@@ -842,6 +897,26 @@ try
                     )
 
                     Convert-EditionName -Name $InputName | Should -Be $OutputName
+                }
+            }
+        }
+
+        Describe "MSFT_SqlRSSetup\Get-FileProductVersion" -Tag 'Helper' {
+            Context 'When converting edition names' {
+                $mockProductVersion = '14.0.0.0'
+
+                BeforeAll {
+                    Mock -CommandName Get-Item -MockWith {
+                        return @{
+                            VersionInfo = @{
+                                ProductVersion = $mockProductVersion
+                            }
+                        }
+                    }
+                }
+
+                It 'Should return the correct product version' {
+                    Get-FileProductVersion -Path 'TestDrive:\MockExecutable.exe' | Should -Be $mockProductVersion
                 }
             }
         }

@@ -10,6 +10,7 @@ class MSFT_SqlRSSetup : OMI_BaseResource
     [Write, Description("Sets the custom license key, e.g. '12345-12345-12345-12345-12345'.")] String ProductKey;
     [Write, Description("Forces a restart after installation is finished.")] Boolean ForceRestart;
     [Write, Description("Upgrades the edition of the installed product. Requires that either the ProductKey or the Edition parameter is also assigned. Default is $false.")] Boolean EditionUpgrade;
+    [Write, Description("Upgrades installed product version, if the major product version of the source executable is higher than the major current version. Requires that either the ProductKey or the Edition parameter is also assigned. Default is $false.")] Boolean VersionUpgrade;
     [Write, Description("Sets the custom free edition. { 'Development' | 'Evaluation' | 'ExpressAdvanced' }"), ValueMap{"Development","Evaluation","ExpressAdvanced"}, Values{"Development","Evaluation","ExpressAdvanced"}] String Edition;
     [Write, Description("Specifies the setup log file location, e.g. 'log.txt'. By default, log files are created under %TEMP%.")] String LogPath;
     [Write, Description("Sets the install folder, e.g. 'C:\\Program Files\\SSRS'. Default value is 'C:\\Program Files\\Microsoft SQL Server Reporting Services'.")] String InstallFolder;

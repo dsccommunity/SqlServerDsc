@@ -32,11 +32,13 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlRSSetup'
           - ProductKey
           - Edition
 
-        The following properties always return $null on purpose.
+        The following properties always return $null on purpose. This could be
+        changed in the future.
           - Action
           - SourceCredential
           - ForceRestart
           - EditionUpgrade
+          - VersionUpgrade
           - LogPath
 
 #>
@@ -70,6 +72,7 @@ function Get-TargetResource
         ProductKey = $null
         ForceRestart = $false
         EditionUpgrade = $false
+        VersionUpgrade = $false
         Edition = $null
         LogPath = $null
         InstallFolder = $null
@@ -171,6 +174,16 @@ function Get-TargetResource
         Upgrades the edition of the installed product. Requires that either the
         ProductKey or the Edition parameter is also assigned. Default is $false.
 
+    .PARAMETER VersionUpgrade
+        Upgrades installed product version, if the major product version of the
+        source executable is higher than the major current version. Requires that
+        either the ProductKey or the Edition parameter is also assigned. Default
+        is $false.
+
+        Not used in Set-TargetResource. The default is that the installation
+        does upgrade. This variable is only used in Test-TargetResource to return
+        false if the major version is different.
+
     .PARAMETER Edition
         Sets the custom free edition.
         { 'Development' | 'Evaluation' | 'ExpressAdvanced' }
@@ -241,6 +254,10 @@ function Set-TargetResource
         [Parameter()]
         [System.Boolean]
         $EditionUpgrade,
+
+        [Parameter()]
+        [System.Boolean]
+        $VersionUpgrade,
 
         [Parameter()]
         [ValidateSet('Development','Evaluation','ExpressAdvanced')]
@@ -531,6 +548,12 @@ function Set-TargetResource
         Upgrades the edition of the installed product. Requires that either the
         ProductKey or the Edition parameter is also assigned. Default is $false.
 
+    .PARAMETER VersionUpgrade
+        Upgrades installed product version, if the major product version of the
+        source executable is higher than the major current version. Requires that
+        either the ProductKey or the Edition parameter is also assigned. Default
+        is $false.
+
     .PARAMETER Edition
         Sets the custom free edition.
         { 'Development' | 'Evaluation' | 'ExpressAdvanced' }
@@ -594,6 +617,10 @@ function Test-TargetResource
         $EditionUpgrade,
 
         [Parameter()]
+        [System.Boolean]
+        $VersionUpgrade,
+
+        [Parameter()]
         [ValidateSet('Development','Evaluation','ExpressAdvanced')]
         [System.String]
         $Edition,
@@ -627,12 +654,18 @@ function Test-TargetResource
 
     <#
         We determine if the Microsoft SQL Server Reporting Service instance is
-        installed if the instance name is found in the registry. No other
-        parameters are evaluated.
+        installed if the instance name is found in the registry.
     #>
     if ($Action -eq 'Install' -and $getTargetResourceResult.InstanceName)
     {
-        $returnValue = $true
+        $fileMajorVersion = (Get-FileProductVersion -Path $SourcePath).Major
+        $installedMajorVersion = ([System.Version] $getTargetResourceResult.CurrentVersion).Major
+
+        # The major version is evaluated if VersionUpgrade is set to $true
+        if (-not $VersionUpgrade -or ($VersionUpgrade -and $installedMajorVersion -ge $fileMajorVersion))
+        {
+            $returnValue = $true
+        }
     }
 
     if ($Action -eq 'Uninstall' -and $null -eq $getTargetResourceResult.InstanceName)
@@ -703,4 +736,28 @@ function Convert-EditionName
     }
 
     return $convertEditionNameResult
+}
+
+<#
+    .SYNOPSIS
+        Gets the product version of a executable.
+
+    .PARAMETER Path
+        The path to the executable to return product version for.
+
+    .OUTPUTS
+        Returns the product version as [System.Version] type.
+#>
+function Get-FileProductVersion
+{
+    [CmdletBinding()]
+    [OutputType([System.Version])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Path
+    )
+
+    return [System.Version] (Get-Item -Path $Path).VersionInfo.ProductVersion
 }
