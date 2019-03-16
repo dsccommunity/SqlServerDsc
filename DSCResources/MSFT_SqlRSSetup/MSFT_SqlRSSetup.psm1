@@ -334,7 +334,7 @@ function Set-TargetResource
         $SourcePath = Join-Path -Path $newExecutableParentFolder -ChildPath $executableFileName
     }
 
-    Write-Verbose -Message ($script:localizedData.InstallationMediaPath -f $SourcePath)
+    Write-Verbose -Message ($script:localizedData.UsingExecutable -f $SourcePath)
 
     $setupArguments = @{
         Quiet = [System.Management.Automation.SwitchParameter] $true
@@ -468,11 +468,11 @@ function Set-TargetResource
 
     if ($processExitCode -eq 0)
     {
-        Write-Verbose -Message $script:localizedData.SetupSuccessful
+        Write-Verbose -Message ($script:localizedData.SetupSuccessful -f $script:localizedData.$Action)
     }
     elseif ($processExitCode -eq 3010)
     {
-        Write-Warning -Message $script:localizedData.SetupSuccessfulRestartRequired
+        Write-Warning -Message ($script:localizedData.SetupSuccessfulRestartRequired -f $script:localizedData.$Action)
     }
     else
     {
