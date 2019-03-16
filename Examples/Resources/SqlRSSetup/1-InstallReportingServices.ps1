@@ -21,7 +21,7 @@ Configuration Example
         SqlRSSetup 'InstallDefaultInstance'
         {
             InstanceName         = 'SSRS'
-            IAcceptLicensTerms   = 'Yes'
+            IAcceptLicenseTerms   = 'Yes'
             SourcePath           = 'C:\InstallMedia\SQLServerReportingServices.exe'
             Edition              = 'Development'
 

@@ -18,7 +18,7 @@ else
             @{
                 NodeName           = 'localhost'
                 InstanceName       = 'SSRS'
-                IAcceptLicensTerms = 'Yes'
+                IAcceptLicenseTerms = 'Yes'
                 SourcePath         = Join-Path -Path $env:TEMP -ChildPath 'SQLServerReportingServices.exe'
                 Edition            = 'Development'
 
@@ -49,7 +49,7 @@ Configuration MSFT_SqlRSSetup_InstallReportingServicesAsUser_Config
         SqlRSSetup 'Integration_Test'
         {
             InstanceName         = $Node.InstanceName
-            IAcceptLicensTerms   = $Node.IAcceptLicensTerms
+            IAcceptLicenseTerms   = $Node.IAcceptLicenseTerms
             SourcePath           = $Node.SourcePath
             Edition              = $Node.Edition
 
@@ -79,7 +79,7 @@ Configuration MSFT_SqlRSSetup_UninstallReportingServicesAsUser_Config
         SqlRSSetup 'Integration_Test'
         {
             InstanceName         = $Node.InstanceName
-            IAcceptLicensTerms   = $Node.IAcceptLicensTerms
+            IAcceptLicenseTerms   = $Node.IAcceptLicenseTerms
             SourcePath           = $Node.SourcePath
             Action               = 'Uninstall'
 

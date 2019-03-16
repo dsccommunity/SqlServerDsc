@@ -134,7 +134,7 @@ try
         # Default parameters that are used for the It-blocks.
         $mockDefaultParameters = @{
             InstanceName       = $mockInstanceName
-            IAcceptLicensTerms = 'Yes'
+            IAcceptLicenseTerms = 'Yes'
             SourcePath         = '\\server\share\SQLServerReportingServices.exe'
         }
 
@@ -158,7 +158,7 @@ try
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @mockGetTargetResourceParameters
-                        $result.IAcceptLicensTerms | Should -Be $mockGetTargetResourceParameters.IAcceptLicensTerms
+                        $result.IAcceptLicenseTerms | Should -Be $mockGetTargetResourceParameters.IAcceptLicenseTerms
                         $result.SourcePath | Should -Be $mockGetTargetResourceParameters.SourcePath
 
                         Assert-MockCalled -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope 'It'
@@ -281,7 +281,7 @@ try
 
                     It 'Should return the same values as passed as parameters' {
                         $result = Get-TargetResource @mockGetTargetResourceParameters
-                        $result.IAcceptLicensTerms | Should -Be $mockGetTargetResourceParameters.IAcceptLicensTerms
+                        $result.IAcceptLicenseTerms | Should -Be $mockGetTargetResourceParameters.IAcceptLicenseTerms
                         $result.SourcePath | Should -Be $mockGetTargetResourceParameters.SourcePath
                     }
 
@@ -557,7 +557,7 @@ try
 
                         $mockStartSqlSetupProcess_ExpectedArgumentList = @{
                             Quiet = [System.Management.Automation.SwitchParameter] $true
-                            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                            IAcceptLicenseTerms = [System.Management.Automation.SwitchParameter] $true
                             PID = $mockProductKey
                         }
 
@@ -608,7 +608,7 @@ try
 
                         $mockStartSqlSetupProcess_ExpectedArgumentList = @{
                             Quiet = [System.Management.Automation.SwitchParameter] $true
-                            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                            IAcceptLicenseTerms = [System.Management.Automation.SwitchParameter] $true
                             Edition = 'Dev'
                         }
 
@@ -638,7 +638,7 @@ try
 
                         $mockStartSqlSetupProcess_ExpectedArgumentList = @{
                             Quiet = [System.Management.Automation.SwitchParameter] $true
-                            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                            IAcceptLicenseTerms = [System.Management.Automation.SwitchParameter] $true
                             PID = $mockProductKey
                             NoRestart = [System.Management.Automation.SwitchParameter] $true
                             Log = 'log.txt'
@@ -683,7 +683,7 @@ try
 
                         $mockStartSqlSetupProcess_ExpectedArgumentList = @{
                             Quiet = [System.Management.Automation.SwitchParameter] $true
-                            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                            IAcceptLicenseTerms = [System.Management.Automation.SwitchParameter] $true
                             PID = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
                         }
 
@@ -712,7 +712,7 @@ try
 
                         $mockStartSqlSetupProcess_ExpectedArgumentList = @{
                             Quiet = [System.Management.Automation.SwitchParameter] $true
-                            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                            IAcceptLicenseTerms = [System.Management.Automation.SwitchParameter] $true
                             Edition = 'Dev'
                         }
 
@@ -741,7 +741,7 @@ try
 
                             $mockStartSqlSetupProcess_ExpectedArgumentList = @{
                                 Quiet = [System.Management.Automation.SwitchParameter] $true
-                                IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                                IAcceptLicenseTerms = [System.Management.Automation.SwitchParameter] $true
                                 Edition = 'Dev'
                                 NoRestart = [System.Management.Automation.SwitchParameter] $true
                             }
@@ -767,7 +767,7 @@ try
 
                         $mockStartSqlSetupProcess_ExpectedArgumentList = @{
                             Quiet = [System.Management.Automation.SwitchParameter] $true
-                            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                            IAcceptLicenseTerms = [System.Management.Automation.SwitchParameter] $true
                             Edition = 'Dev'
                         }
 
@@ -798,7 +798,7 @@ try
 
                         $mockStartSqlSetupProcess_ExpectedArgumentList = @{
                             Quiet = [System.Management.Automation.SwitchParameter] $true
-                            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                            IAcceptLicenseTerms = [System.Management.Automation.SwitchParameter] $true
                             Edition = 'Dev'
                         }
 
@@ -832,7 +832,7 @@ try
 
                         $mockStartSqlSetupProcess_ExpectedArgumentList = @{
                             Quiet = [System.Management.Automation.SwitchParameter] $true
-                            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                            IAcceptLicenseTerms = [System.Management.Automation.SwitchParameter] $true
                             Edition = 'Dev'
                         }
 
@@ -861,7 +861,7 @@ try
 
                             $mockStartSqlSetupProcess_ExpectedArgumentList = @{
                                 Quiet = [System.Management.Automation.SwitchParameter] $true
-                                IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+                                IAcceptLicenseTerms = [System.Management.Automation.SwitchParameter] $true
                                 Edition = 'Dev'
                                 log = $mockSetTargetResourceParameters.LogPath
                             }

@@ -832,7 +832,7 @@ used, then the installation will run as SYSTEM.
 * If `PsDscRunAsCredential` common parameter is used to run the resource,
   the specified credential must have permissions to connect to the location
   where the Microsoft SQL Server Reporting Services media is placed.
-* The parameter IAcceptLicensTerms must be set to 'Yes'.
+* The parameter IAcceptLicenseTerms must be set to 'Yes'.
 * The parameter InstanceName can only be set to 'SSRS' since there is
   no way to change the instance name.
 * When using action 'Uninstall', the same version of the executable as the version
@@ -845,7 +845,7 @@ used, then the installation will run as SYSTEM.
 * **`[String]` InstanceName** _(Key)_: Name of the Microsoft SQL Server
   Reporting Service instance to installed. This can only be set to 'SSRS'.
   { 'SSRS' }
-* **`[String]` IAcceptLicensTerms** _(Required)_: Accept licens terms.
+* **`[String]` IAcceptLicenseTerms** _(Required)_: Accept licens terms.
   This must be set to 'Yes'. { 'Yes' }
 * **`[String]` SourcePath** _(Required)_: The path to the installation media
   file to be used for installation, e.g an UNC path to a shared resource.

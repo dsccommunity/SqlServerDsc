@@ -18,7 +18,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlRSSetup'
         Name of the Microsoft SQL Server Reporting Service instance to installed.
         This can only be set to 'SSRS'. { 'SSRS' }
 
-    .PARAMETER IAcceptLicensTerms
+    .PARAMETER IAcceptLicenseTerms
         Accept licens terms. This must be set to 'Yes'. { 'Yes' }
 
     .PARAMETER SourcePath
@@ -56,7 +56,7 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
         [System.String]
-        $IAcceptLicensTerms,
+        $IAcceptLicenseTerms,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -65,7 +65,7 @@ function Get-TargetResource
 
     $returnObject = @{
         InstanceName = $null
-        IAcceptLicensTerms = $IAcceptLicensTerms
+        IAcceptLicenseTerms = $IAcceptLicenseTerms
         SourcePath = $SourcePath
         Action = $null
         SourceCredential = $null
@@ -160,7 +160,7 @@ function Get-TargetResource
         Name of the Microsoft SQL Server Reporting Service instance to installed.
         This can only be set to 'SSRS'. { 'SSRS' }
 
-    .PARAMETER IAcceptLicensTerms
+    .PARAMETER IAcceptLicenseTerms
         Accept licens terms. This must be set to 'Yes'. { 'Yes' }
 
     .PARAMETER SourcePath
@@ -239,7 +239,7 @@ function Set-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
         [System.String]
-        $IAcceptLicensTerms,
+        $IAcceptLicenseTerms,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -358,7 +358,7 @@ function Set-TargetResource
     if ($Action -eq 'Install')
     {
         $setupArguments += @{
-            IAcceptLicensTerms = [System.Management.Automation.SwitchParameter] $true
+            IAcceptLicenseTerms = [System.Management.Automation.SwitchParameter] $true
         }
     }
     else
@@ -539,7 +539,7 @@ function Set-TargetResource
         Name of the Microsoft SQL Server Reporting Service instance to installed.
         This can only be set to 'SSRS'. { 'SSRS' }
 
-    .PARAMETER IAcceptLicensTerms
+    .PARAMETER IAcceptLicenseTerms
         Accept licens terms. This must be set to 'Yes'. { 'Yes' }
 
     .PARAMETER SourcePath
@@ -605,7 +605,7 @@ function Test-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
         [System.String]
-        $IAcceptLicensTerms,
+        $IAcceptLicenseTerms,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -664,7 +664,7 @@ function Test-TargetResource
 
     $getTargetResourceParameters = @{
         InstanceName = $InstanceName
-        IAcceptLicensTerms = $IAcceptLicensTerms
+        IAcceptLicenseTerms = $IAcceptLicenseTerms
         SourcePath = $SourcePath
     }
 
