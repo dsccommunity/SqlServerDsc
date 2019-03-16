@@ -2771,7 +2771,7 @@ try
                     return $true
                 } -Verifiable
 
-                Mock -CommandName Test-PendingReboot -MockWith {
+                Mock -CommandName Test-PendingRestart -MockWith {
                     return $false
                 }
 
