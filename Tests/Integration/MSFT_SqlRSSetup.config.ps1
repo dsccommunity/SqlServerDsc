@@ -53,6 +53,8 @@ Configuration MSFT_SqlRSSetup_UninstallReportingServicesAsUser_Config
             SourcePath           = $Node.SourcePath
             Action               = 'Uninstall'
 
+            SuppressRestart      = $true
+
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
@@ -76,6 +78,8 @@ Configuration MSFT_SqlRSSetup_InstallReportingServicesAsUser_Config
             IAcceptLicensTerms   = $Node.IAcceptLicensTerms
             SourcePath           = $Node.SourcePath
             Edition              = $Node.Edition
+
+            SuppressRestart      = $true
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
