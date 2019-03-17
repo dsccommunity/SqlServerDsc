@@ -1550,7 +1550,6 @@ function Test-LoginEffectivePermissions
 
         [Parameter()]
         [ValidateSet('SERVER', 'LOGIN')]
-        [Parameter()]
         [System.String]
         $SecurableClass = 'SERVER',
 
