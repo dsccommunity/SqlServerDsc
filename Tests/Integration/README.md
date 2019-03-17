@@ -64,18 +64,41 @@ properties `IsClustered` and `IsHadrEnable`.*
 
 **Run order:** 2
 
-**Depends on:** None
+**Depends on:** SqlSetup (for the local installation account)
 
-The integration tests will install a Microsoft SQL Server 2017 Reporting
-Services and leave it on the AppVeyor build worker for other integration
-tests to use.
+The integration tests will install (or upgrade) a Microsoft SQL Server
+2017 Reporting Services instance and leave it on the AppVeyor build worker
+for other integration tests to use.
 
-Instance | Feature | Description
---- | --- | ---
-SSRS | RS | The Reporting Services is installed, but not configured.
+>**NOTE:** Uninstall is not tested, because when upgrading the existing
+>Microsoft SQL Server 2017 Reporting Services instance it requires a
+>restart, that prevents uninstall until the node is restarted. AppVeyor
+>build workers are not allowed to be restarted during testing phase.
 
->**Note:** The Reporting Services service is stopped to save memory on the build
->worker.
+Instance |  State
+--- | ---
+SSRS | Stopped
+
+>**Note:** The Reporting Services instance is not configured after it is
+>installed or upgraded, but if there are already an instance of Reporting
+>Services installed on the build worker, it could have been configured.
+>Other integraiton tests need to take that into consideration.
+
+### Properties for the instance SSRS
+
+- **InstanceName:** SSRS
+- **CurrentVersion:** ^14.0.6981.38291 (depends on the version downloaded)
+- **ErrorDumpDirectory:** C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\LogFiles
+- **LogPath:** C:\Users\appveyor\AppData\Local\Temp\SSRS
+- **InstallFolder:** C:\Program Files\Microsoft SQL Server Reporting Services
+- **ServiceName:** SQLServerReportingServices
+- **Edition:** Developer
+
+### Users
+
+User | Password | Description
+--- | --- | --- | ---
+.\SqlInstall | P@ssw0rd1 | The Reporting Services instance is installed using this account.
 
 ## SqlAlwaysOnService
 

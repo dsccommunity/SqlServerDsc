@@ -16,16 +16,16 @@ else
     $ConfigurationData = @{
         AllNodes = @(
             @{
-                NodeName           = 'localhost'
-                InstanceName       = 'SSRS'
+                NodeName            = 'localhost'
+                InstanceName        = 'SSRS'
                 IAcceptLicenseTerms = 'Yes'
-                SourcePath         = Join-Path -Path $env:TEMP -ChildPath 'SQLServerReportingServices.exe'
-                Edition            = 'Development'
+                SourcePath          = Join-Path -Path $env:TEMP -ChildPath 'SQLServerReportingServices.exe'
+                Edition             = 'Development'
 
-                UserName           = "$env:COMPUTERNAME\SqlInstall"
-                Password           = 'P@ssw0rd1'
+                UserName            = "$env:COMPUTERNAME\SqlInstall"
+                Password            = 'P@ssw0rd1'
 
-                CertificateFile    = $env:DscPublicCertificatePath
+                CertificateFile     = $env:DscPublicCertificatePath
             }
         )
     }
@@ -33,12 +33,16 @@ else
 
 <#
     .SYNOPSIS
-        Installs a Microsoft SQL Server 2017 Reporting Services.
+        Installs a Microsoft SQL Server 2017 Reporting Services instance.
 
     .NOTES
         When this test was written the build worker already contained a
         Microsoft SQL Server 2017 Reporting Services instance.
         If it exist, it will be upgraded.
+
+        Uninstall is not tested, because when upgrading the existing Microsoft
+        SQL Server 2017 Reporting Services instance it requires a restart which
+        prevents uninstall until the node is rebooted.
 #>
 Configuration MSFT_SqlRSSetup_InstallReportingServicesAsUser_Config
 {
@@ -49,7 +53,7 @@ Configuration MSFT_SqlRSSetup_InstallReportingServicesAsUser_Config
         SqlRSSetup 'Integration_Test'
         {
             InstanceName         = $Node.InstanceName
-            IAcceptLicenseTerms   = $Node.IAcceptLicenseTerms
+            IAcceptLicenseTerms  = $Node.IAcceptLicenseTerms
             SourcePath           = $Node.SourcePath
             Edition              = $Node.Edition
 
@@ -68,26 +72,19 @@ Configuration MSFT_SqlRSSetup_InstallReportingServicesAsUser_Config
 
 <#
     .SYNOPSIS
-        Uninstalls the Microsoft SQL Server 2017 Reporting Services instance.
+        Stopping the Microsoft SQL Server 2017 Reporting Services instance to
+        save memory on the build worker.
 #>
-Configuration MSFT_SqlRSSetup_UninstallReportingServicesAsUser_Config
+Configuration MSFT_SqlSetup_StopReportingServicesInstance_Config
 {
-    Import-DscResource -ModuleName 'SqlServerDsc'
+    Import-DscResource -ModuleName 'PSDscResources'
 
     node $AllNodes.NodeName
     {
-        SqlRSSetup 'Integration_Test'
+        Service 'StopReportingServicesInstance'
         {
-            InstanceName         = $Node.InstanceName
-            IAcceptLicenseTerms   = $Node.IAcceptLicenseTerms
-            SourcePath           = $Node.SourcePath
-            Action               = 'Uninstall'
-
-            SuppressRestart      = $true
-
-            PsDscRunAsCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+            Name  = 'SQLServerReportingServices'
+            State = 'Stopped'
         }
     }
 }
