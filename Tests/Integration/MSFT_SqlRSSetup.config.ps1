@@ -75,7 +75,7 @@ Configuration MSFT_SqlRSSetup_InstallReportingServicesAsUser_Config
         Stopping the Microsoft SQL Server 2017 Reporting Services instance to
         save memory on the build worker.
 #>
-Configuration MSFT_SqlSetup_StopReportingServicesInstance_Config
+Configuration MSFT_SqlRSSetup_StopReportingServicesInstance_Config
 {
     Import-DscResource -ModuleName 'PSDscResources'
 
