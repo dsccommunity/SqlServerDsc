@@ -9,6 +9,9 @@
     DscResource.Template.
     - Moved all helper functions from SqlServerDscHelper.psm1 to DscResource.Common.
     - Renamed Test-SqlDscParameterState to Test-DscParameterState.
+    - New-TerminatingError error text for a missing localized message now matches
+      the output even if the "missing localized message" localized message is
+      also missing.
   - Added helper module DscResource.LocalizationHelper from the repository
     DscResource.Template, this replaces the helper module CommonResourceHelper.psm1.
   - Cleaned up unit tests, mostly around loading cmdlet stubs and loading
@@ -59,10 +62,6 @@
   - Fix MatchDatabaseOwner to check for CONTROL SERVER, IMPERSONATE LOGIN, or
     CONTROL LOGIN permission in addition to IMPERSONATE ANY LOGIN.
   - Update and fix MatchDatabaseOwner help text.
-- Changes to xSQLServerHelper
-  - New-TerminatingError error text for a missing localized message now matches
-    the output even if the "missing localized message" localized message is
-    also missing.
 - Changes to SqlAG
   - Updated documentation on the behaviour of defaults as they only apply when
     creating a group.
@@ -72,6 +71,10 @@
     parameters will still change existing replicas ([issue #1244](https://github.com/PowerShell/SqlServerDsc/issues/1244)).
   - ReadOnlyRoutingList now gets updated without throwing an error on the first
     run ([issue #518](https://github.com/PowerShell/SqlServerDsc/issues/518)).
+- Changes to SqlDatabaseDefaultLocation
+  - No longer does the Test-TargetResource fail on the second test run
+    when the backup file path was changed, and the path was ending with
+    a backslash ([issue #1307](https://github.com/PowerShell/SqlServerDsc/issues/1307)).
 
 ## 12.3.0.0
 

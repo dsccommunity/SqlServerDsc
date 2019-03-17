@@ -79,7 +79,7 @@ try
                 }
 
                 $resourceCurrentState.Type | Should -Be 'Data'
-                ( Join-Path -Path $resourceCurrentState.Path -ChildPath '' ) | Should -Be ( Join-Path -Path $ConfigurationData.AllNodes.DataFilePath -ChildPath '' )
+                $resourceCurrentState.Path | Should -Be $ConfigurationData.AllNodes.DataFilePath
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -126,7 +126,7 @@ try
                 }
 
                 $resourceCurrentState.Type | Should -Be 'Log'
-                ( Join-Path -Path $resourceCurrentState.Path -ChildPath '' ) | Should -Be ( Join-Path -Path $ConfigurationData.AllNodes.LogFilePath -ChildPath '' )
+                $resourceCurrentState.Path | Should -Be $ConfigurationData.AllNodes.LogFilePath
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -173,7 +173,8 @@ try
                 }
 
                 $resourceCurrentState.Type | Should -Be 'Backup'
-                ( Join-Path -Path $resourceCurrentState.Path -ChildPath '' ) | Should -Be ( Join-Path -Path $ConfigurationData.AllNodes.BackupFilePath -ChildPath '' )
+                # Ending backslash is removed because of regression test for issue #1307.
+                $resourceCurrentState.Path | Should -Be $ConfigurationData.AllNodes.BackupFilePath.TrimEnd('\')
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {

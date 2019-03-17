@@ -62,7 +62,10 @@ try
         $mockInstanceName = 'MSSQLSERVER'
         $mockSQLDataPath = 'C:\Program Files\Data\'
         $mockSqlLogPath = 'C:\Program Files\Log\'
+
+        # Ending backslash is regression test for issue #1307.
         $mockSqlBackupPath = 'C:\Program Files\Backup\'
+
         $mockSqlAlterDataPath = 'C:\Program Files\'
         $mockSqlAlterLogPath = 'C:\Program Files\'
         $mockSqlAlterBackupPath = 'C:\Program Files\'
@@ -92,7 +95,8 @@ try
                 Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru -Force |
                 Add-Member -MemberType NoteProperty -Name DefaultFile -Value $mockSqlDataPath -PassThru -Force |
                 Add-Member -MemberType NoteProperty -Name DefaultLog -Value $mockSqlLogPath -PassThru -Force |
-                Add-Member -MemberType NoteProperty -Name BackupDirectory -Value $mockSqlBackupPath -PassThru -Force |
+                # Ending backslash is removed because of regression test for issue #1307.
+                Add-Member -MemberType NoteProperty -Name BackupDirectory -Value $mockSqlBackupPath.TrimEnd('\') -PassThru -Force |
                 Add-Member -MemberType ScriptMethod -Name Alter -Value {
                 if ($mockInvalidOperationForAlterMethod)
                 {
@@ -101,33 +105,27 @@ try
                 $script:WasMethodAlterCalled = $true
             } -PassThru -Force
         }
-
-        $testCases = @(
-            @{
-                Type               = 'Data'
-                Path               = $mockSqlDataPath
-                AlterPath          = $mockSqlAlterDataPath
-                ExpectedAlterPath = $mockExpectedAlterDataPath
-                InvalidPath        = $mockInvalidPathForData
-            },
-            @{
-                Type               = 'Log'
-                Path               = $mockSqlLogPath
-                AlterPath          = $mockSqlAlterLogPath
-                ExpectedAlterPath = $mockExpectedAlterLogPath
-                InvalidPath        = $mockInvalidPathForLog
-            },
-            @{
-                Type               = 'Backup'
-                Path               = $mockSqlBackupPath
-                AlterPath          = $mockSqlAlterBackupPath
-                ExpectedAlterPath = $mockExpectedAlterBackupPath
-                InvalidPath        = $mockInvalidPathForBackup
-            }
-        )
         #endregion
 
         Describe 'MSFT_SqlDatabaseDefaultLocation\Get-TargetResource' -Tag 'Get' {
+            BeforeAll {
+                $testCases = @(
+                    @{
+                        Type               = 'Data'
+                        Path               = $mockSqlDataPath
+                    },
+                    @{
+                        Type               = 'Log'
+                        Path               = $mockSqlLogPath
+                    },
+                    @{
+                        Type               = 'Backup'
+                        # Ending backslash is removed because of regression test for issue #1307.
+                        Path               = $mockSqlBackupPath.TrimEnd('\')
+                    }
+                )
+            }
+
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
                 Mock -CommandName Test-ActiveNode -Mockwith {
@@ -162,6 +160,25 @@ try
         }
 
         Describe 'MSFT_SqlDatabaseDefaultLocation\Test-TargetResource' -Tag 'Test' {
+            BeforeAll {
+                $testCases = @(
+                    @{
+                        Type               = 'Data'
+                        Path               = $mockSqlDataPath
+                        AlterPath          = $mockSqlAlterDataPath
+                    },
+                    @{
+                        Type               = 'Log'
+                        Path               = $mockSqlLogPath
+                        AlterPath          = $mockSqlAlterLogPath
+                    },
+                    @{
+                        Type               = 'Backup'
+                        Path               = $mockSqlBackupPath
+                        AlterPath          = $mockSqlAlterBackupPath
+                    }
+                )
+            }
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
                 Mock -CommandName Test-ActiveNode -MockWith {
@@ -240,6 +257,32 @@ try
         }
 
         Describe 'MSFT_SqlDatabaseDefaultLocation\Set-TargetResource' -Tag 'Set' {
+            BeforeAll {
+                $testCases = @(
+                    @{
+                        Type               = 'Data'
+                        Path               = $mockSqlDataPath
+                        AlterPath          = $mockSqlAlterDataPath
+                        ExpectedAlterPath  = $mockExpectedAlterDataPath
+                        InvalidPath        = $mockInvalidPathForData
+                    },
+                    @{
+                        Type               = 'Log'
+                        Path               = $mockSqlLogPath
+                        AlterPath          = $mockSqlAlterLogPath
+                        ExpectedAlterPath  = $mockExpectedAlterLogPath
+                        InvalidPath        = $mockInvalidPathForLog
+                    },
+                    @{
+                        Type               = 'Backup'
+                        Path               = $mockSqlBackupPath
+                        AlterPath          = $mockSqlAlterBackupPath
+                        ExpectedAlterPath  = $mockExpectedAlterBackupPath
+                        InvalidPath        = $mockInvalidPathForBackup
+                    }
+                )
+            }
+
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
                 Mock -CommandName Restart-SqlService -Verifiable

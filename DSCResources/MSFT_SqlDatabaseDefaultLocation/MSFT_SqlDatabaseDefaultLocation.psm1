@@ -147,6 +147,12 @@ Function Set-TargetResource
         $ProcessOnlyOnActiveNode
     )
 
+    if ($Type -eq 'Backup')
+    {
+        # Ending backslash is removed because of issue #1307.
+        $Path = $Path.TrimEnd('\')
+    }
+
     # Make sure the Path exists, needs to be cluster aware as well for this check
     if (-Not (Test-Path $Path))
     {
@@ -264,6 +270,12 @@ function Test-TargetResource
     )
 
     Write-Verbose -Message ($script:localizedData.TestingCurrentPath -f $Type)
+
+    if ($Type -eq 'Backup')
+    {
+        # Ending backslash is removed because of issue #1307.
+        $Path = $Path.TrimEnd('\')
+    }
 
     $getTargetResourceParameters = @{
         InstanceName = $InstanceName
