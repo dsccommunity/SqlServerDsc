@@ -116,7 +116,7 @@ tests creates an Active Directory Detached Cluster with an IP address of
 >but the gateway will be removed in the last clean up test. Gateway is removed so
 >that there will be no conflict with the default gateway.
 
->*Note:** The Active Directory Detached Cluster is not fully functioning in the
+>**Note:** The Active Directory Detached Cluster is not fully functioning in the
 >sense that it cannot start the Name resource in the 'Cluster Group', but it
 >starts enough to be able to run integration tests for AlwaysOn service.s
 
