@@ -13,6 +13,7 @@
     DscResource.Template, this replaces the helper module CommonResourceHelper.psm1.
   - Cleaned up unit tests, mostly around loading cmdlet stubs and loading
     classes stubs, but also some tests that were using some odd variants.
+  - Fix all integration tests according to issue [PowerShell/DscResource.Template#14](https://github.com/PowerShell/DscResource.Template/issues/14).
 - Changes to SqlServerMemory
   - Updated Cim Class to Win32_ComputerSystem (instead of Win32_PhysicalMemory)
     because the correct memory size was not being detected correctly on Azure VMs
