@@ -82,7 +82,7 @@ SSRS | Stopped
 >**Note:** The Reporting Services instance is not configured after it is
 >installed or upgraded, but if there are already an instance of Reporting
 >Services installed on the build worker, it could have been configured.
->Other integraiton tests need to take that into consideration.
+>Other integration tests need to take that into consideration.
 
 ### Properties for the instance SSRS
 
