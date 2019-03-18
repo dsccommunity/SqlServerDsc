@@ -128,7 +128,7 @@ try
 
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
-                Mock -CommandName Test-ActiveNode -Mockwith {
+                Mock -CommandName Test-ActiveNode -MockWith {
                     param
                     (
                         [PSObject]
