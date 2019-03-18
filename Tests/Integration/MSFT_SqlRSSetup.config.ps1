@@ -33,11 +33,11 @@ else
 
 <#
     .SYNOPSIS
-        Installs a Microsoft SQL Server 2017 Reporting Services instance.
+        Installs a Microsoft SQL Server Reporting Services instance.
 
     .NOTES
         When this test was written the build worker already contained a
-        Microsoft SQL Server 2017 Reporting Services instance.
+        Microsoft SQL Server Reporting Services instance.
         If it exist, it will be upgraded.
 
         Uninstall is not tested, because when upgrading the existing Microsoft
@@ -72,7 +72,7 @@ Configuration MSFT_SqlRSSetup_InstallReportingServicesAsUser_Config
 
 <#
     .SYNOPSIS
-        Stopping the Microsoft SQL Server 2017 Reporting Services instance to
+        Stopping the Microsoft SQL Server Reporting Services instance to
         save memory on the build worker.
 #>
 Configuration MSFT_SqlRSSetup_StopReportingServicesInstance_Config

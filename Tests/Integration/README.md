@@ -71,9 +71,9 @@ The integration tests will install (or upgrade) a Microsoft SQL Server
 for other integration tests to use.
 
 >**NOTE:** Uninstall is not tested, because when upgrading the existing
->Microsoft SQL Server 2017 Reporting Services instance it requires a
->restart, that prevents uninstall until the node is restarted. AppVeyor
->build workers are not allowed to be restarted during testing phase.
+>Microsoft SQL Server Reporting Services instance it requires a restart,
+>that prevents uninstall until the node is restarted. AppVeyor build
+>workers are not allowed to be restarted during testing phase.
 
 Instance |  State
 --- | ---

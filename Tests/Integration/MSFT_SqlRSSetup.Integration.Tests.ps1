@@ -36,37 +36,38 @@ try
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $configFile
 
-    # Download Microsoft SQL Server 2017 Reporting Services media
+    # Download Microsoft SQL Server Reporting Services (October 2017) executable
     if (-not (Test-Path -Path $ConfigurationData.AllNodes.SourcePath))
     {
         # By switching to 'SilentlyContinue' should theoretically increase the download speed.
         $previousProgressPreference = $ProgressPreference
         $ProgressPreference = 'SilentlyContinue'
 
-        Write-Verbose -Message ('Start downloading the Microsoft SQL Server 2017 Reporting Services media at {0}.' -f (Get-Date -Format 'yyyy-MM-dd hh:mm:ss')) -Verbose
-
+        $script:mockSourceMediaDisplayName = 'Microsoft SQL Server Reporting Services (October 2017)'
         $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/E/6/4/E6477A2A-9B58-40F7-8AD6-62BB8491EA78/SQLServerReportingServices.exe'
+
+        Write-Info -Message ('Start downloading the {1} executable at {0}.' -f (Get-Date -Format 'yyyy-MM-dd hh:mm:ss'), $script:mockSourceMediaDisplayName) -Verbose
 
         Invoke-WebRequest -Uri $script:mockSourceMediaUrl -OutFile $ConfigurationData.AllNodes.SourcePath
 
-        Write-Verbose -Message ('Microsoft SQL Server 2017 Reporting Services media file has SHA1 hash ''{0}''.' -f (Get-FileHash -Path $ConfigurationData.AllNodes.SourcePath -Algorithm 'SHA1').Hash) -Verbose
+        Write-Info -Message ('{1} executable file has SHA1 hash ''{0}''.' -f (Get-FileHash -Path $ConfigurationData.AllNodes.SourcePath -Algorithm 'SHA1').Hash, $script:mockSourceMediaDisplayName) -Verbose
 
         $ProgressPreference = $previousProgressPreference
 
-        # Double check that the Microsoft SQL Server 2017 Reporting Services was downloaded.
+        # Double check that the Microsoft SQL Server Reporting Services (October 2017) was downloaded.
         if (-not (Test-Path -Path $ConfigurationData.AllNodes.SourcePath))
         {
-            Write-Warning -Message ('Microsoft SQL Server 2017 Reporting Services media could not be downloaded, can not run the integration test.')
+            Write-Warning -Message ('{0} executable could not be downloaded, can not run the integration test.' -f $script:mockSourceMediaDisplayName)
             return
         }
         else
         {
-            Write-Verbose -Message ('Finished downloading the Microsoft SQL Server 2017 Reporting Services media at {0}.' -f (Get-Date -Format 'yyyy-MM-dd hh:mm:ss')) -Verbose
+            Write-Info -Message ('Finished downloading the {1} executable at {0}.' -f (Get-Date -Format 'yyyy-MM-dd hh:mm:ss'), $script:mockSourceMediaDisplayName) -Verbose
         }
     }
     else
     {
-        Write-Verbose -Message 'Microsoft SQL Server 2017 Reporting Services media is already downloaded' -Verbose
+        Write-Info -Message ('{0} executable is already downloaded' -f $script:mockSourceMediaDisplayName) -Verbose
     }
 
     Describe "$($script:dscResourceName)_Integration" {
