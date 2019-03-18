@@ -49,7 +49,7 @@ function Get-TargetResource
         {
             New-VerboseMessage -Message "Enumerating permissions for endpoint $Name"
 
-            $permissionSet = New-Object -Property @{ Connect = $True } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
+            $permissionSet = New-Object -Property @{ Connect = $true } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
 
             $endpointPermission = $endpointObject.EnumObjectPermissions( $permissionSet ) | Where-Object { $_.PermissionState -eq "Grant" -and $_.Grantee -eq $Principal }
             if ($endpointPermission.Count -ne 0)
@@ -152,7 +152,7 @@ function Set-TargetResource
         $endpointObject = $sqlServerObject.Endpoints[$Name]
         if ($null -ne $endpointObject)
         {
-            $permissionSet = New-Object -Property @{ Connect = $True } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
+            $permissionSet = New-Object -Property @{ Connect = $true } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
 
             if ($Ensure -eq 'Present')
             {

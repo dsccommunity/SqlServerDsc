@@ -638,7 +638,7 @@ try
 
                 It 'Should return False when no permissions were found' {
                     $result = Test-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone'
-                    $result | Should -be $False
+                    $result | Should -be $false
                     Assert-VerifiableMock
                 }
             }
@@ -654,7 +654,7 @@ try
 
                 It 'Should return False when the wrong permissions are added' {
                     $result = Test-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone'
-                    $result | Should -be $False
+                    $result | Should -be $false
                     Assert-VerifiableMock
                 }
             }

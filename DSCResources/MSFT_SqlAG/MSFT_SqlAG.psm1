@@ -695,7 +695,7 @@ function Test-TargetResource
                     {
                         New-VerboseMessage -Message "'$($parameterName)' should be '$($parameterValue)' but is '$($getTargetResourceResult.($parameterName))'"
 
-                        $result = $False
+                        $result = $false
                     }
                 }
 
