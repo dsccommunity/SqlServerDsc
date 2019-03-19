@@ -71,7 +71,7 @@ try
         $mockEndpointHostName = $mockServerName
         $mockFailoverMode = 'Manual'
         $mockReadOnlyRoutingConnectionUrl = "TCP://$($mockServerName).domain.com:1433"
-        $mockReadOnlyRoutingList = @($mockServerName)
+        $mockReadOnlyRoutingList = @('Server1', 'Server2')
         $mockProcessOnlyOnActiveNode = $false
 
         #endregion
@@ -153,7 +153,7 @@ try
         $mockAvailabilityGroupReplica1EndpointUrl = "$($mockAvailabilityGroupReplica1EndpointProtocol)://$($mockServer1Name):$($mockAvailabilityGroupReplica1EndpointPort)"
         $mockAvailabilityGroupReplica1FailoverMode = 'Manual'
         $mockAvailabilityGroupReplica1ReadOnlyRoutingConnectionUrl = "TCP://$($mockServer1Name).domain.com:1433"
-        $mockAvailabilityGroupReplica1ReadOnlyRoutingList = @($mockServer1Name)
+        $mockAvailabilityGroupReplica1ReadOnlyRoutingList = $mockReadOnlyRoutingList
 
         $mockAvailabilityGroupReplica2Name = $mockServer2Name
         $mockAvailabilityGroupReplica2AvailabilityMode = 'AsynchronousCommit'
@@ -165,7 +165,7 @@ try
         $mockAvailabilityGroupReplica2EndpointUrl = "$($mockAvailabilityGroupReplica2EndpointProtocol)://$($mockServer2Name):$($mockAvailabilityGroupReplica2EndpointPort)"
         $mockAvailabilityGroupReplica2FailoverMode = 'Manual'
         $mockAvailabilityGroupReplica2ReadOnlyRoutingConnectionUrl = "TCP://$($mockServer2Name).domain.com:1433"
-        $mockAvailabilityGroupReplica2ReadOnlyRoutingList = @($mockServer2Name)
+        $mockAvailabilityGroupReplica2ReadOnlyRoutingList = $mockReadOnlyRoutingList
 
         $mockAvailabilityGroupReplica3Name = $mockServer3Name
         $mockAvailabilityGroupReplica3AvailabilityMode = 'AsynchronousCommit'
@@ -177,7 +177,7 @@ try
         $mockAvailabilityGroupReplica3EndpointUrl = "$($mockAvailabilityGroupReplica3EndpointProtocol)://$($mockServer3Name):$($mockAvailabilityGroupReplica3EndpointPort)"
         $mockAvailabilityGroupReplica3FailoverMode = 'Manual'
         $mockAvailabilityGroupReplica3ReadOnlyRoutingConnectionUrl = "TCP://$($mockServer3Name).domain.com:1433"
-        $mockAvailabilityGroupReplica3ReadOnlyRoutingList = @($mockServer3Name)
+        $mockAvailabilityGroupReplica3ReadOnlyRoutingList = $mockReadOnlyRoutingList
 
         #endregion
 
@@ -612,7 +612,7 @@ try
                     $getTargetResourceResult.FailoverMode | Should -Be $mockFailoverMode
                     $getTargetResourceResult.Name | Should -Be $mockServerName
                     $getTargetResourceResult.ReadOnlyRoutingConnectionUrl | Should -Be $mockReadOnlyRoutingConnectionUrl
-                    $getTargetResourceResult.ReadOnlyRoutingList | Should -Be $mockServerName
+                    $getTargetResourceResult.ReadOnlyRoutingList | Should -Be $mockReadOnlyRoutingList
                     $getTargetResourceResult.ServerName | Should -Be $mockServerName
                     $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
                     $getTargetResourceResult.EndpointHostName | Should -Be $mockServerName
@@ -1083,7 +1083,7 @@ try
                         ConnectionModeInSecondaryRole = 'AllowReadIntentConnectionsOnly'
                         FailoverMode                  = 'Automatic'
                         ReadOnlyRoutingConnectionUrl  = 'TCP://TestHost.domain.com:1433'
-                        ReadOnlyRoutingList           = @('Server1', 'Server2')
+                        ReadOnlyRoutingList           = @('Server2', 'Server1')
                     }
                 }
 
@@ -1353,6 +1353,13 @@ try
                         ReadOnlyRoutingConnectionUrl  = 'WrongUrl'
                         ReadOnlyRoutingList           = @('WrongServer')
                     }
+                }
+
+                It "Should return $true when the Availability Replica is present all properties are in the desired state" {
+                    Test-TargetResource @testTargetResourceParameters | Should -Be $true
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
                 }
 
                 It 'Should return $false when the Availability Replica is absent' {
