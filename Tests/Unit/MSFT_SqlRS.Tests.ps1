@@ -140,7 +140,7 @@ try
 
         $mockGetCimInstance_Language = {
             return @{
-                Language = '1050'
+                Language = '1033'
             }
         }
 
