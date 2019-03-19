@@ -666,9 +666,12 @@ function Test-TargetResource
                         continue
                     }
 
-                    if ( $parameterName -eq 'ReadOnlyRoutingList' ) {
+                    if ( $parameterName -eq 'ReadOnlyRoutingList' )
+                    {
                         $different = ( $getTargetResourceResult.($parameterName) -join ',' ) -ne ( $parameterValue -join ',' )
-                    } else {
+                    }
+                    else
+                    {
                         $different = $getTargetResourceResult.($parameterName) -ne $parameterValue
                     }
 
