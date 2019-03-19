@@ -99,13 +99,6 @@ try
             }
         }
 
-        $mockGetItemProperty = {
-            return @{
-                InstanceName = $mockInstanceName
-                Version      = $mockDynamic_SqlBuildVersion
-            }
-        }
-
         $mockGetCimInstance_ConfigurationSetting_NamedInstance = {
             return @(
                 (
@@ -147,7 +140,7 @@ try
 
         $mockGetCimInstance_Language = {
             return @{
-                Language = '1033'
+                Language = '1050'
             }
         }
 
@@ -157,12 +150,9 @@ try
 
         Describe "SqlRS\Get-TargetResource" -Tag 'Get' {
             BeforeAll {
-                $mockDynamic_SqlBuildVersion = '13.0.4001.0'
-
-                Mock -CommandName Get-ItemProperty -MockWith $mockGetItemProperty -Verifiable
                 Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_ListReservedUrls -ParameterFilter {
                     $MethodName -eq 'ListReservedUrls'
-                } -Verifiable
+                }
 
                 <#
                     This is mocked here so that no calls are made to it directly,
@@ -179,17 +169,18 @@ try
 
             Context 'When the system is in the desired state' {
                 BeforeAll {
+                    Mock -CommandName Get-ReportingServicesData -MockWith {
+                        return @{
+                            Configuration          = (& $mockGetCimInstance_ConfigurationSetting_NamedInstance)[0]
+                            ReportsApplicationName = 'ReportServerWebApp'
+                            SqlVersion             = 13
+                        }
+                    }
+
                     $mockDynamicReportServerApplicationName = $mockReportServerApplicationName
                     $mockDynamicReportsApplicationName = $mockReportsApplicationName
                     $mockDynamicReportsApplicationUrlString = $mockReportsApplicationUrl
                     $mockDynamicReportServerApplicationUrlString = $mockReportServerApplicationUrl
-                }
-
-                BeforeEach {
-                    Mock -CommandName Get-CimInstance `
-                        -MockWith $mockGetCimInstance_ConfigurationSetting_NamedInstance `
-                        -ParameterFilter $mockGetCimInstance_ConfigurationSetting_ParameterFilter `
-                        -Verifiable
                 }
 
                 $mockDynamicIsInitialized = $true
@@ -239,10 +230,13 @@ try
 
             Context 'When the system is not in the desired state' {
                 BeforeEach {
-                    Mock -CommandName Get-CimInstance `
-                        -MockWith $mockGetCimInstance_ConfigurationSetting_DefaultInstance `
-                        -ParameterFilter $mockGetCimInstance_ConfigurationSetting_ParameterFilter `
-                        -Verifiable
+                    Mock -CommandName Get-ReportingServicesData -MockWith {
+                        return @{
+                            Configuration          = (& $mockGetCimInstance_ConfigurationSetting_DefaultInstance)[0]
+                            ReportsApplicationName = 'ReportServerWebApp'
+                            SqlVersion             = 13
+                        }
+                    }
 
                     $testParameters = $defaultParameters.Clone()
                     $testParameters['InstanceName'] = $mockDefaultInstanceName
@@ -290,28 +284,29 @@ try
                         $resultGetTargetResource.IsInitialized | Should -Be $false
                     }
                 }
-
-                Context 'When there is no Reporting Services instance' {
-                    BeforeEach {
-                        Mock -CommandName Get-ItemProperty
-                    }
-
-                    It 'Should throw the correct error message' {
-                        { Get-TargetResource @defaultParameters } | Should -Throw 'SQL Reporting Services instance ''INSTANCE'' does not exist!'
-                    }
-                }
             }
 
-            Assert-VerifiableMock
+            Context 'When there is no Reporting Services instance' {
+                BeforeAll {
+                    Mock -CommandName Get-ReportingServicesData -MockWith {
+                        return @{
+                            Configuration          = $null
+                        }
+                    }
+                }
+
+                It 'Should throw the correct error message' {
+                    { Get-TargetResource @defaultParameters } | Should -Throw 'SQL Reporting Services instance ''INSTANCE'' does not exist!'
+                }
+            }
         }
 
         Describe "SqlRS\Set-TargetResource" -Tag 'Set' {
             BeforeAll {
-                Mock -CommandName Import-SQLPSModule -Verifiable
-                Mock -CommandName Invoke-Sqlcmd -Verifiable
-                Mock -CommandName Get-ItemProperty -MockWith $mockGetItemProperty -Verifiable
-                Mock -CommandName Restart-ReportingServicesService -Verifiable
-                Mock -CommandName Invoke-RsCimMethod -Verifiable
+                Mock -CommandName Import-SQLPSModule
+                Mock -CommandName Invoke-Sqlcmd
+                Mock -CommandName Restart-ReportingServicesService
+                Mock -CommandName Invoke-RsCimMethod
                 Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_GenerateDatabaseCreationScript -ParameterFilter {
                     $MethodName -eq 'GenerateDatabaseCreationScript'
                 }
@@ -335,8 +330,15 @@ try
             Context 'When the system is not in the desired state' {
                 Context 'When configuring a named instance that are not initialized' {
                     BeforeAll {
-                        $mockDynamic_SqlBuildVersion = '13.0.4001.0'
                         $mockDynamicIsInitialized = $false
+
+                        Mock -CommandName Get-ReportingServicesData -MockWith {
+                            return @{
+                                Configuration          = (& $mockGetCimInstance_ConfigurationSetting_NamedInstance)[0]
+                                ReportsApplicationName = 'ReportServerWebApp'
+                                SqlVersion             = 13
+                            }
+                        }
 
                         Mock -CommandName Test-TargetResource -MockWith {
                             return $true
@@ -352,14 +354,8 @@ try
 
                     BeforeEach {
                         Mock -CommandName Get-CimInstance `
-                            -MockWith $mockGetCimInstance_ConfigurationSetting_NamedInstance `
-                            -ParameterFilter $mockGetCimInstance_ConfigurationSetting_ParameterFilter `
-                            -Verifiable
-
-                        Mock -CommandName Get-CimInstance `
                             -MockWith $mockGetCimInstance_Language `
-                            -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter `
-                            -Verifiable
+                            -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter
                     }
 
                     It 'Should configure Reporting Service without throwing an error' {
@@ -405,15 +401,15 @@ try
                             $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
                         } -Exactly -Times 1 -Scope It
 
-                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 3 -Scope It
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
                     }
 
                     Context 'When there is no Reporting Services instance after Set-TargetResource has been called' {
                         BeforeEach {
-                            Mock -CommandName Get-ItemProperty -Verifiable
-                            Mock -CommandName Test-TargetResource -Verifiable
+                            Mock -CommandName Get-ItemProperty
+                            Mock -CommandName Test-TargetResource
                         }
 
                         It 'Should throw the correct error message' {
@@ -425,7 +421,7 @@ try
                         BeforeEach {
                             Mock -CommandName Get-CimInstance -MockWith {
                                 return $null
-                            } -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter -Verifiable                        }
+                            } -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter                         }
 
                         It 'Should throw the correct error message' {
                             { Set-TargetResource @defaultParameters } | Should -Throw 'Unable to find WMI object Win32_OperatingSystem.'
@@ -435,8 +431,15 @@ try
 
                 Context 'When configuring a named instance that are already initialized' {
                     BeforeAll {
-                        $mockDynamic_SqlBuildVersion = '13.0.4001.0'
                         $mockDynamicIsInitialized = $true
+
+                        Mock -CommandName Get-ReportingServicesData -MockWith {
+                            return @{
+                                Configuration          = (& $mockGetCimInstance_ConfigurationSetting_NamedInstance)[0]
+                                ReportsApplicationName = 'ReportServerWebApp'
+                                SqlVersion             = 13
+                            }
+                        }
 
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
@@ -463,14 +466,8 @@ try
 
                     BeforeEach {
                         Mock -CommandName Get-CimInstance `
-                            -MockWith $mockGetCimInstance_ConfigurationSetting_NamedInstance `
-                            -ParameterFilter $mockGetCimInstance_ConfigurationSetting_ParameterFilter `
-                            -Verifiable
-
-                        Mock -CommandName Get-CimInstance `
                             -MockWith $mockGetCimInstance_Language `
-                            -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter `
-                            -Verifiable
+                            -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter
                     }
 
                     It 'Should configure Reporting Service without throwing an error' {
@@ -520,7 +517,7 @@ try
                             $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
                         } -Exactly -Times 2 -Scope It
 
-                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
                     }
@@ -622,12 +619,11 @@ try
 
                 Context 'When configuring a default instance that are not initialized' {
                     BeforeAll {
-                        $mockDynamic_SqlBuildVersion = '12.0.4100.1'
                         $mockDynamicIsInitialized = $false
 
                         Mock -CommandName Test-TargetResource -MockWith {
                             return $true
-                        } -Verifiable
+                        }
 
                         $defaultParameters = @{
                             InstanceName         = $mockDefaultInstanceName
@@ -637,15 +633,18 @@ try
                     }
 
                     BeforeEach {
-                        Mock -CommandName Get-CimInstance `
-                            -MockWith $mockGetCimInstance_ConfigurationSetting_DefaultInstance `
-                            -ParameterFilter $mockGetCimInstance_ConfigurationSetting_ParameterFilter `
-                            -Verifiable
+                        # This mocks the SQL Server Reporting Services 2014 and older
+                        Mock -CommandName Get-ReportingServicesData -MockWith {
+                            return @{
+                                Configuration          = (& $mockGetCimInstance_ConfigurationSetting_DefaultInstance)[0]
+                                ReportsApplicationName = 'ReportManager'
+                                SqlVersion             = 12
+                            }
+                        }
 
                         Mock -CommandName Get-CimInstance `
                             -MockWith $mockGetCimInstance_Language `
-                            -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter `
-                            -Verifiable
+                            -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter
                     }
 
                     It 'Should configure Reporting Service without throwing an error' {
@@ -687,14 +686,12 @@ try
                             $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationNameLegacy
                         } -Exactly -Times 1 -Scope It
 
-                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 3 -Scope It
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
                     }
                 }
             }
-
-            Assert-VerifiableMock
         }
 
         Describe "SqlRS\Test-TargetResource" -Tag 'Test' {
@@ -705,7 +702,7 @@ try
                             return @{
                                 IsInitialized = $false
                             }
-                        } -Verifiable
+                        }
 
                         $testParameters = @{
                             InstanceName         = $mockNamedInstanceName
@@ -728,7 +725,7 @@ try
                                 ReportServerVirtualDirectory = $mockVirtualDirectoryReportServerName
                                 ReportsVirtualDirectory      = $mockVirtualDirectoryReportsName
                             }
-                        } -Verifiable
+                        }
 
                         $testParameters = @{
                             InstanceName                 = $mockNamedInstanceName
@@ -753,7 +750,7 @@ try
                                 ReportServerVirtualDirectory = $mockVirtualDirectoryReportServerName
                                 ReportsVirtualDirectory      = $mockVirtualDirectoryReportsName
                             }
-                        } -Verifiable
+                        }
 
                         $testParameters = @{
                             InstanceName                 = $mockNamedInstanceName
@@ -777,7 +774,7 @@ try
                                 IsInitialized           = $true
                                 ReportServerReservedUrl = $mockReportServerApplicationUrl
                             }
-                        } -Verifiable
+                        }
 
                         $testParameters = @{
                             InstanceName            = $mockNamedInstanceName
@@ -800,7 +797,7 @@ try
                                 IsInitialized      = $true
                                 ReportsReservedUrl = $mockReportServerApplicationUrl
                             }
-                        } -Verifiable
+                        }
 
                         $testParameters = @{
                             InstanceName         = $mockNamedInstanceName
@@ -825,7 +822,7 @@ try
                                 IsInitialized      = $true
                                 UseSsl             = $false
                             }
-                        } -Verifiable
+                        }
 
                         $testParameters = @{
                             InstanceName         = $mockNamedInstanceName
@@ -848,7 +845,7 @@ try
                         return @{
                             IsInitialized = $true
                         }
-                    } -Verifiable
+                    }
 
                     $defaultParameters = @{
                         InstanceName         = $mockNamedInstanceName
@@ -862,8 +859,6 @@ try
                     $resultTestTargetResource | Should -Be $true
                 }
             }
-
-            Assert-VerifiableMock
         }
 
         Describe "SqlRS\Invoke-RsCimMethod" -Tag 'Helper' {
@@ -880,7 +875,7 @@ try
                         return @{
                             HRESULT = 0
                         }
-                    } -Verifiable
+                    }
                 }
 
                 Context 'When calling Invoke-CimMethod without arguments' {
@@ -927,7 +922,7 @@ try
                                 HRESULT = 1
                                 Error   = 'Something went wrong'
                             }
-                        } -Verifiable
+                        }
                     }
 
                     It 'Should call Invoke-CimMethod and throw the correct error' {
@@ -950,7 +945,7 @@ try
                             return New-Object -TypeName Object |
                                 Add-Member -MemberType NoteProperty -Name 'HRESULT' -Value 1 -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'ExtendedErrors' -Value @('Something went wrong', 'Another thing went wrong') -PassThru -Force
-                        } -Verifiable
+                        }
                     }
 
                     It 'Should call Invoke-CimMethod and throw the correct error' {
@@ -967,8 +962,170 @@ try
                     }
                 }
             }
+        }
 
-            Assert-VerifiableMock
+        Describe 'SqlRS\Get-ReportingServicesData' -Tag 'Helper' {
+            BeforeAll {
+                $mockInstanceId = 'MSRS13.{0}' -f $mockNamedInstanceName
+                $mockGetItemProperty_InstanceNames = {
+                    return @{
+                        $mockNamedInstanceName = $mockInstanceId
+                    }
+                }
+
+                $mockGetItemProperty_InstanceNames_ParameterFilter = {
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS'
+                }
+
+                $mockSql2014Version = '12.0.6024.0'
+                $mockGetItemProperty_Sql2014 = {
+                    return @{
+                        Version = $mockSql2014Version
+                    }
+                }
+
+                $mockSql2016Version = '13.0.4001.0'
+                $mockGetItemProperty_Sql2016 = {
+                    return @{
+                        Version = $mockSql2016Version
+                    }
+                }
+
+                $mockSql2017Version = '14.0.6514.11481'
+                $mockGetItemProperty_Sql2017 = {
+                    return @{
+                        CurrentVersion = $mockSql2017Version
+                    }
+                }
+
+                $mockGetItemProperty_Sql2014AndSql2016_ParameterFilter = {
+                    $Path -eq ('HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\Setup' -f $mockInstanceId)
+                }
+
+                $mockGetItemProperty_Sql2017_ParameterFilter = {
+                    $Path -eq ('HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\MSSQLServer\CurrentVersion' -f $mockInstanceId)
+                }
+
+                $mockDynamicIsInitialized = $false
+                $mockDynamicSecureConnectionLevel = 0
+            }
+
+            Context 'When there is a Reporting Services instance' {
+                BeforeEach {
+                    Mock -CommandName Get-ItemProperty `
+                        -MockWith $mockGetItemProperty_InstanceNames `
+                        -ParameterFilter $mockGetItemProperty_InstanceNames_ParameterFilter
+
+                    Mock -CommandName Get-CimInstance `
+                        -MockWith $mockGetCimInstance_ConfigurationSetting_NamedInstance `
+                        -ParameterFilter $mockGetCimInstance_ConfigurationSetting_ParameterFilter `
+                }
+
+                Context 'When the instance is SQL Server Reporting Services 2014 or older' {
+                    BeforeEach {
+                        Mock -CommandName Test-Path -MockWith {
+                            return $false
+                        }
+
+                        Mock -CommandName Get-ItemProperty `
+                            -MockWith $mockGetItemProperty_Sql2014 `
+                            -ParameterFilter $mockGetItemProperty_Sql2014AndSql2016_ParameterFilter
+                    }
+
+                    It 'Should return the correct information' {
+                        $getReportingServicesDataResult = Get-ReportingServicesData -InstanceName $mockNamedInstanceName
+                        $getReportingServicesDataResult.Configuration | Should -BeOfType [Microsoft.Management.Infrastructure.CimInstance]
+                        $getReportingServicesDataResult.Configuration.InstanceName | Should -Be $mockNamedInstanceName
+                        $getReportingServicesDataResult.Configuration.DatabaseServerName | Should -Be "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName"
+                        $getReportingServicesDataResult.Configuration.IsInitialized | Should -Be $false
+                        $getReportingServicesDataResult.Configuration.VirtualDirectoryReportServer | Should -Be $mockVirtualDirectoryReportServerName
+                        $getReportingServicesDataResult.Configuration.VirtualDirectoryReportManager | Should -Be $mockVirtualDirectoryReportManagerName
+                        $getReportingServicesDataResult.Configuration.SecureConnectionLevel | Should -Be 0
+                        $getReportingServicesDataResult.ReportsApplicationName | Should -Be 'ReportManager'
+                        $getReportingServicesDataResult.SqlVersion | Should -Be $mockSql2014Version.Split('.')[0]
+
+                        Assert-MockCalled -CommandName Get-ItemProperty `
+                            -ParameterFilter $mockGetItemProperty_InstanceNames_ParameterFilter `
+                            -Exactly -Times 2 -Scope 'It'
+
+                        Assert-MockCalled -CommandName Get-ItemProperty `
+                            -ParameterFilter $mockGetItemProperty_Sql2014AndSql2016_ParameterFilter `
+                            -Exactly -Times 1 -Scope 'It'
+
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 1 -Scope 'It'
+                    }
+                }
+
+                Context 'When the instance is SQL Server Reporting Services 2016' {
+                    BeforeEach {
+                        Mock -CommandName Test-Path -MockWith {
+                            return $false
+                        }
+
+                        Mock -CommandName Get-ItemProperty `
+                            -MockWith $mockGetItemProperty_Sql2016 `
+                            -ParameterFilter $mockGetItemProperty_Sql2014AndSql2016_ParameterFilter
+                    }
+
+                    It 'Should return the correct information' {
+                        $getReportingServicesDataResult = Get-ReportingServicesData -InstanceName $mockNamedInstanceName
+                        $getReportingServicesDataResult.Configuration | Should -BeOfType [Microsoft.Management.Infrastructure.CimInstance]
+                        $getReportingServicesDataResult.Configuration.InstanceName | Should -Be $mockNamedInstanceName
+                        $getReportingServicesDataResult.Configuration.DatabaseServerName | Should -Be "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName"
+                        $getReportingServicesDataResult.Configuration.IsInitialized | Should -Be $false
+                        $getReportingServicesDataResult.Configuration.VirtualDirectoryReportServer | Should -Be $mockVirtualDirectoryReportServerName
+                        $getReportingServicesDataResult.Configuration.VirtualDirectoryReportManager | Should -Be $mockVirtualDirectoryReportManagerName
+                        $getReportingServicesDataResult.Configuration.SecureConnectionLevel | Should -Be 0
+                        $getReportingServicesDataResult.ReportsApplicationName | Should -Be 'ReportServerWebApp'
+                        $getReportingServicesDataResult.SqlVersion | Should -Be $mockSql2016Version.Split('.')[0]
+
+                        Assert-MockCalled -CommandName Get-ItemProperty `
+                            -ParameterFilter $mockGetItemProperty_InstanceNames_ParameterFilter `
+                            -Exactly -Times 2 -Scope 'It'
+
+                        Assert-MockCalled -CommandName Get-ItemProperty `
+                            -ParameterFilter $mockGetItemProperty_Sql2014AndSql2016_ParameterFilter `
+                            -Exactly -Times 1 -Scope 'It'
+
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 1 -Scope 'It'
+                    }
+                }
+
+                Context 'When the instance is SQL Server Reporting Services 2017' {
+                    BeforeEach {
+                        Mock -CommandName Test-Path -MockWith {
+                            return $true
+                        }
+
+                        Mock -CommandName Get-ItemProperty `
+                            -MockWith $mockGetItemProperty_Sql2017 `
+                            -ParameterFilter $mockGetItemProperty_Sql2017_ParameterFilter
+                    }
+
+                    It 'Should return the correct information' {
+                        $getReportingServicesDataResult = Get-ReportingServicesData -InstanceName $mockNamedInstanceName
+                        $getReportingServicesDataResult.Configuration | Should -BeOfType [Microsoft.Management.Infrastructure.CimInstance]
+                        $getReportingServicesDataResult.Configuration.InstanceName | Should -Be $mockNamedInstanceName
+                        $getReportingServicesDataResult.Configuration.DatabaseServerName | Should -Be "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName"
+                        $getReportingServicesDataResult.Configuration.IsInitialized | Should -Be $false
+                        $getReportingServicesDataResult.Configuration.VirtualDirectoryReportServer | Should -Be $mockVirtualDirectoryReportServerName
+                        $getReportingServicesDataResult.Configuration.VirtualDirectoryReportManager | Should -Be $mockVirtualDirectoryReportManagerName
+                        $getReportingServicesDataResult.Configuration.SecureConnectionLevel | Should -Be 0
+                        $getReportingServicesDataResult.ReportsApplicationName | Should -Be 'ReportServerWebApp'
+                        $getReportingServicesDataResult.SqlVersion | Should -Be $mockSql2017Version.Split('.')[0]
+
+                        Assert-MockCalled -CommandName Get-ItemProperty `
+                            -ParameterFilter $mockGetItemProperty_InstanceNames_ParameterFilter `
+                            -Exactly -Times 2 -Scope 'It'
+
+                        Assert-MockCalled -CommandName Get-ItemProperty `
+                            -ParameterFilter $mockGetItemProperty_Sql2017_ParameterFilter `
+                            -Exactly -Times 1 -Scope 'It'
+
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 1 -Scope 'It'
+                    }
+                }
+            }
         }
     }
 }
