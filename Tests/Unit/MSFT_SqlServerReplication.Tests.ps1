@@ -38,11 +38,10 @@ $TestEnvironment = Initialize-TestEnvironment `
     -TestType Unit
 
 #endregion HEADER
-# Begin Testing
+
 try
 {
     InModuleScope $script:dscResourceName {
-
         Describe 'Helper functions' {
             Context 'Get-SqlServerMajorVersion' {
 

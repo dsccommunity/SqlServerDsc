@@ -159,7 +159,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be $true
+                Test-DscConfiguration -Verbose | Should -Be 'True'
             }
         }
 
@@ -208,7 +208,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be $true
+                Test-DscConfiguration -Verbose | Should -Be 'True'
             }
         }
     }

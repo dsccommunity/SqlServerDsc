@@ -46,6 +46,7 @@ be used by other integration tests.
 
 > Note: User account names was kept to a maximum of 15 characters.
 
+<!-- markdownlint-disable MD013 -->
 User | Password | Permission | Description
 --- | --- | --- | ---
 .\SqlInstall | P@ssw0rd1 | Local Windows administrator. Administrator of Database Engine instance DSCSQLTEST\*. | Runs Setup for the default instance.
@@ -55,10 +56,53 @@ User | Password | Permission | Description
 .\svc-SqlSecondary | yig-C^Equ3 | Local user. | Used by other tests, but created here.
 .\svc-SqlAgentSec | yig-C^Equ3 | Local user. | Used by other tests.
 sa | P@ssw0rd1 | Administrator of the Database Engine instances DSCSQLTEST. |
+<!-- markdownlint-enable MD013 -->
 
 *\* This is due to that the integration tests runs the resource SqlAlwaysOnService
 with this user and that means that this user must have permission to access the
 properties `IsClustered` and `IsHadrEnable`.*
+
+## SqlRSSetup
+
+**Run order:** 2
+
+**Depends on:** SqlSetup (for the local installation account)
+
+The integration tests will install (or upgrade) a Microsoft SQL Server
+2017 Reporting Services instance and leave it on the AppVeyor build worker
+for other integration tests to use.
+
+>**NOTE:** Uninstall is not tested, because when upgrading the existing
+>Microsoft SQL Server Reporting Services instance it requires a restart,
+>that prevents uninstall until the node is restarted. AppVeyor build
+>workers are not allowed to be restarted during testing phase.
+
+Instance |  State
+--- | ---
+SSRS | Stopped
+
+>**Note:** The Reporting Services instance is not configured after it is
+>installed or upgraded, but if there are already an instance of Reporting
+>Services installed on the build worker, it could have been configured.
+>Other integration tests need to take that into consideration.
+
+### Properties for the instance SSRS
+
+- **InstanceName:** SSRS
+- **CurrentVersion:** ^14.0.6981.38291 (depends on the version downloaded)
+- **ErrorDumpDirectory:** C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\LogFiles
+- **LogPath:** C:\Users\appveyor\AppData\Local\Temp\SSRS
+- **InstallFolder:** C:\Program Files\Microsoft SQL Server Reporting Services
+- **ServiceName:** SQLServerReportingServices
+- **Edition:** Developer
+
+### Users
+
+<!-- markdownlint-disable MD013 -->
+User | Password | Description
+--- | --- | --- | ---
+.\SqlInstall | P@ssw0rd1 | The Reporting Services instance is installed using this account.
+<!-- markdownlint-enable MD013 -->
 
 ## SqlAlwaysOnService
 
@@ -71,40 +115,18 @@ an IP address of '192.168.40.10'. To be able to activate the AlwaysOn service th
 tests creates an Active Directory Detached Cluster with an IP address of
 '192.168.40.11' and the cluster will ignore any other static IP addresses.
 
->**Note:** During the tests the gateway of the loopback adatper named 'ClusterNetwork'
+<!-- markdownlint-disable MD028 -->
+>**Note:** During the tests the gateway of the loopback adapter named 'ClusterNetwork'
 >will be set to '192.168.40.254', because it is a requirement to create the cluster,
 >but the gateway will be removed in the last clean up test. Gateway is removed so
 >that there will be no conflict with the default gateway.
 
->*Note:** The Active Directory Detached Cluster is not fully functioning in the
+>**Note:** The Active Directory Detached Cluster is not fully functioning in the
 >sense that it cannot start the Name resource in the 'Cluster Group', but it
 >starts enough to be able to run integration tests for AlwaysOn service.s
+<!-- markdownlint-enable MD028 -->
 
 The tests will leave the AlwaysOn service disabled.
-
-## SqlRS
-
-**Run order:** 2
-
-**Depends on:** SqlSetup
-
-The integration tests will install the following instances and leave it on the
-AppVeyor build worker for other integration tests to use.
-
-Instance | Feature | Description
---- | --- | ---
-DSCRS2016 | RS | The Reporting Services is initialized, and in a working state.
-
->**Note:** The Reporting Services service is stopped to save memory on the build
->worker.
-
-### Properties for the instance
-
-- **Collation:** Finnish\_Swedish\_CI\_AS
-- **InstallSharedDir:** C:\Program Files\Microsoft SQL Server
-- **InstallSharedWOWDir:** C:\Program Files (x86)\Microsoft SQL Server
-- **DatabaseServerName:** `$env:COMPUTERNAME`
-- **DatabaseInstanceName:** DSCSQLTEST
 
 ## SqlDatabaseDefaultLocation
 
@@ -152,6 +174,30 @@ DscUser4 | SQL | P@ssw0rd1 | *None*
 
 > **Note:** Login DscUser3 was create disabled and was used to test removal of
 > a login.
+
+## SqlRS
+
+**Run order:** 3
+
+**Depends on:** SqlSetup, SqlRSSetup
+
+The integration tests will install the following instances and leave it on the
+AppVeyor build worker for other integration tests to use.
+
+Instance | Feature | Description
+--- | --- | ---
+DSCRS2016 | RS | The Reporting Services is initialized, and in a working state.
+
+>**Note:** The Reporting Services service is stopped to save memory on the build
+>worker.
+
+### Properties for the instance
+
+- **Collation:** Finnish\_Swedish\_CI\_AS
+- **InstallSharedDir:** C:\Program Files\Microsoft SQL Server
+- **InstallSharedWOWDir:** C:\Program Files (x86)\Microsoft SQL Server
+- **DatabaseServerName:** `$env:COMPUTERNAME`
+- **DatabaseInstanceName:** DSCSQLTEST
 
 ## SqlServerRole
 

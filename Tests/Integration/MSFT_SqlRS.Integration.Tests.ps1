@@ -1,5 +1,5 @@
 # This is used to make sure the integration test run in the correct order.
-[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 2)]
+[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 3)]
 param()
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
@@ -113,7 +113,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be $true
+                Test-DscConfiguration -Verbose | Should -Be 'True'
             }
 
             It 'Should be able to access the ReportServer site without any error' {
@@ -203,7 +203,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be $true
+                Test-DscConfiguration -Verbose | Should -Be 'True'
             }
 
             <#
@@ -261,7 +261,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be $true
+                Test-DscConfiguration -Verbose | Should -Be 'True'
             }
 
             It 'Should be able to access the ReportServer site without any error' {

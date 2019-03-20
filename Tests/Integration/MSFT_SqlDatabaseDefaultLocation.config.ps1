@@ -27,6 +27,8 @@ else
 
                 DataFilePath    = 'C:\SQLData\'
                 LogFilePath     = 'C:\SQLLog\'
+
+                # Ending backslash is regression test for issue #1307.
                 BackupFilePath  = 'C:\Backups\'
 
                 CertificateFile = $env:DscPublicCertificatePath

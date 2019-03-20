@@ -1,9 +1,11 @@
-Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-        -ChildPath 'SqlServerDscHelper.psm1') `
-    -Force
+$script:resourceModulePath = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+$script:modulesFolderPath = Join-Path -Path $script:resourceModulePath -ChildPath 'Modules'
 
-Import-Module -Name (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent) `
-        -ChildPath 'CommonResourceHelper.psm1')
+$script:localizationModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.LocalizationHelper'
+Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath 'DscResource.LocalizationHelper.psm1')
+
+$script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
+Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlDatabaseDefaultLocation'
 
@@ -145,6 +147,12 @@ Function Set-TargetResource
         $ProcessOnlyOnActiveNode
     )
 
+    if ($Type -eq 'Backup')
+    {
+        # Ending backslash is removed because of issue #1307.
+        $Path = $Path.TrimEnd('\')
+    }
+
     # Make sure the Path exists, needs to be cluster aware as well for this check
     if (-Not (Test-Path $Path))
     {
@@ -262,6 +270,12 @@ function Test-TargetResource
     )
 
     Write-Verbose -Message ($script:localizedData.TestingCurrentPath -f $Type)
+
+    if ($Type -eq 'Backup')
+    {
+        # Ending backslash is removed because of issue #1307.
+        $Path = $Path.TrimEnd('\')
+    }
 
     $getTargetResourceParameters = @{
         InstanceName = $InstanceName

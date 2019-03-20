@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+- Changes to SqlServerDsc
+  - Added new resources.
+    - SqlRSSetup
+  - Added helper module DscResource.Common from the repository
+    DscResource.Template.
+    - Moved all helper functions from SqlServerDscHelper.psm1 to DscResource.Common.
+    - Renamed Test-SqlDscParameterState to Test-DscParameterState.
+    - New-TerminatingError error text for a missing localized message now matches
+      the output even if the "missing localized message" localized message is
+      also missing.
+  - Added helper module DscResource.LocalizationHelper from the repository
+    DscResource.Template, this replaces the helper module CommonResourceHelper.psm1.
+  - Cleaned up unit tests, mostly around loading cmdlet stubs and loading
+    classes stubs, but also some tests that were using some odd variants.
+  - Fix all integration tests according to issue [PowerShell/DscResource.Template#14](https://github.com/PowerShell/DscResource.Template/issues/14).
 - Changes to SqlServerMemory
   - Updated Cim Class to Win32_ComputerSystem (instead of Win32_PhysicalMemory)
     because the correct memory size was not being detected correctly on Azure VMs
@@ -33,14 +48,20 @@
   - Changed the logic of 'Build the argument string to be passed to setup' to
     not quote the value if root directory is specified
     ([issue #1254](https://github.com/PowerShell/SqlServerDsc/issues/1254)).
+  - Moved some resource specific helper functions to the new helper module
+    DscResource.Common so they can be shared with the new resource SqlRSSetup.
+  - Improved verbose messages in Test-TargetResource function to more
+    clearly tell if features are already installed or not.
+  - Refactored unit tests for the functions Test-TargetResource and
+    Set-TargetResource to improve testing speed.
+  - Modified the Test-TargetResource and Set-TargetResource to not be
+    case-sensitive when comparing feature names. *This was handled
+    correctly in real-world scenarios, but failed when running the unit
+    tests (and testing casing).*
 - Changes to SqlAGDatabase
   - Fix MatchDatabaseOwner to check for CONTROL SERVER, IMPERSONATE LOGIN, or
     CONTROL LOGIN permission in addition to IMPERSONATE ANY LOGIN.
   - Update and fix MatchDatabaseOwner help text.
-- Changes to xSQLServerHelper
-  - New-TerminatingError error text for a missing localized message now matches
-    the output even if the "missing localized message" localized message is
-    also missing.
 - Changes to SqlAG
   - Updated documentation on the behaviour of defaults as they only apply when
     creating a group.
@@ -52,6 +73,10 @@
     run ([issue #518](https://github.com/PowerShell/SqlServerDsc/issues/518)).
   - Test-Resource fixed to report whether ReadOnlyRoutingList desired state
     has been reached correctly ([issue #1305](https://github.com/PowerShell/SqlServerDsc/issues/1305)).
+- Changes to SqlDatabaseDefaultLocation
+  - No longer does the Test-TargetResource fail on the second test run
+    when the backup file path was changed, and the path was ending with
+    a backslash ([issue #1307](https://github.com/PowerShell/SqlServerDsc/issues/1307)).
 
 ## 12.3.0.0
 

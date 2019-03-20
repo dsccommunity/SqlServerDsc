@@ -1,40 +1,60 @@
-# Swedish localized resources for helper module SqlServerDscHelper.
+# Localized resources for helper module DscResource.Common.
 
 ConvertFrom-StringData @'
-    ConnectedToDatabaseEngineInstance = Ansluten till SQL instans '{0}'.
-    FailedToConnectToDatabaseEngineInstance = Misslyckades att ansluta till SQL instans '{0}'.
-    ConnectedToAnalysisServicesInstance = Ansluten till Analysis Services instans '{0}'.
-    FailedToConnectToAnalysisServicesInstance = Misslyckades att ansluta till Analysis Services instans '{0}'.
-    SqlMajorVersion = SQL major version är {0}.
-    SqlServerVersionIsInvalid = Kunde inte hämta SQL version för instansen '{0}'.
-    PropertyTypeInvalidForDesiredValues = Egenskapen 'DesiredValues' måste vara endera en [System.Collections.Hashtable], [CimInstance] eller [PSBoundParametersDictionary]. Den typ som hittades var {0}.
-    PropertyTypeInvalidForValuesToCheck = Om 'DesiredValues' är av typ CimInstance, då måste egenskapen 'ValuesToCheck' sättas till ett värde.
-    PropertyValidationError = Förväntades hitta ett värde av typen matris för egenskapen {0} för nuvarande värden, men den var endera inte tillgänglig eller så var den satt till Null. Detta har medfört att test metoden har retunerat falskt.
-    PropertiesDoesNotMatch = Hittade en matris för egenskapen {0} för nuvarande värden, men denna matris matchar inte önskat läge. Detaljer för ändringarna finns nedan.
+    PropertyTypeInvalidForDesiredValues = Property 'DesiredValues' must be either a [System.Collections.Hashtable], [CimInstance] or [PSBoundParametersDictionary]. The type detected was {0}.
+    PropertyTypeInvalidForValuesToCheck = If 'DesiredValues' is a CimInstance, then property 'ValuesToCheck' must contain a value.
+    PropertyValidationError = Expected to find an array value for property {0} in the current values, but it was either not present or was null. This has caused the test method to return false.
+    PropertiesDoesNotMatch = Found an array for property {0} in the current values, but this array does not match the desired state. Details of the changes are below.
     PropertyThatDoesNotMatch = {0} - {1}
-    ValueOfTypeDoesNotMatch = {0} värde för egenskapen {1} matchar inte. Nuvarande läge är '{2}' och önskat läge är '{3}'.
-    UnableToCompareProperty = Inte möjligt att jämföra egenskapen {0} som typen {1}. {1} hanteras inte av Test-SQLDscParameterState cmdlet.
-    PreferredModuleFound = Föredragen modul SqlServer funnen.
-    PreferredModuleNotFound = Information: PowerShell modul SqlServer ej funnen, försöker att använda äldre SQLPS modul.
-    ImportedPowerShellModule = Importerade PowerShell modul '{0}' med version '{1}' från mapp '{2}'.
-    PowerShellModuleAlreadyImported = Fann att PowerShell modul {0} redan är importerad i sessionen.
-    ModuleForceRemoval = Tvingade bort den tidigare SQL PowerShell modulen från sessionen för att importera den fräsch igen.
-    DebugMessagePushingLocation = SQLPS modul ändrar nuvarande katalog till SQLSERVER:\ när modulen laddas, sparar nuvarande katalog så den kan återställas efter modulen laddats.
-    DebugMessagePoppingLocation = Återställer nuvarande katalog till vad den var innan modulen SQLPS importerades.
-    PowerShellSqlModuleNotFound = Varken PowerShell modulen SqlServer eller SQLPS kunde hittas. Kommer inte kunna köra SQL Server cmdlets.
-    FailedToImportPowerShellSqlModule = Misslyckades att importera {0} modulen.
-    GetSqlServerClusterResources = Hämtar kluster resurser för SQL Server.
-    GetSqlAgentClusterResource = Hämtar aktiva kluster resurser för SQL Server Agent.
-    BringClusterResourcesOffline = Tar SQL Server resurser {0} offline.
-    BringSqlServerClusterResourcesOnline = Tar SQL Server resurser online igen.
-    BringSqlServerAgentClusterResourcesOnline = Tar SQL Server Agent resurser online.
-    GetSqlServerService = Hämtar SQL Server-tjänst information.
-    RestartSqlServerService = SQL Server-tjänst startar om.
-    StartingDependentService = Startar tjänst {0}
-    ExecuteQueryWithResultsFailed = Exekvering av fråga med resultat misslyckades mot databas '{0}'.
-    ExecuteNonQueryFailed = Exekvering av icke-fråga misslyckades på databas '{0}'.
-    AlterAvailabilityGroupReplicaFailed = Misslyckades att ändra Availability Group kopia '{0}'.
-    GetEffectivePermissionForLogin = Hämtar effektiva behörigheter för inloggningen '{0}' på '{1}'.
+    ValueOfTypeDoesNotMatch = {0} value for property {1} does not match. Current state is '{2}' and desired state is '{3}'.
+    UnableToCompareProperty = Unable to compare property {0} as the type {1} is not handled by the Test-DscParameterState cmdlet.
+    RobocopyUsingUnbufferedIo = Robocopy is using unbuffered I/O.
+    RobocopyNotUsingUnbufferedIo = Unbuffered I/O cannot be used due to incompatible version of Robocopy.
+    RobocopyArguments = Robocopy is started with the following arguments: {0}
+    RobocopyErrorCopying = Robocopy reported errors when copying files. Error code: {0}.
+    RobocopyFailuresCopying = Robocopy reported that failures occurred when copying files. Error code: {0}.
+    RobocopySuccessful = Robocopy copied files successfully
+    RobocopyRemovedExtraFilesAtDestination = Robocopy found files at the destination path that is not present at the source path, these extra files was remove at the destination path.
+    RobocopySuccessfulAndRemovedExtraFilesAtDestination = Robocopy copied files to destination successfully. Robocopy also found files at the destination path that is not present at the source path, these extra files was remove at the destination path.
+    RobocopyAllFilesPresent = Robocopy reported that all files already present.
+    StartSetupProcess = Started the process with id {0} using the path '{1}', and with a timeout value of {2} seconds.
+    ConnectedToDatabaseEngineInstance = Connected to SQL instance '{0}'.
+    FailedToConnectToDatabaseEngineInstance = Failed to connect to SQL instance '{0}'.
+    ConnectedToAnalysisServicesInstance = Connected to Analysis Services instance '{0}'.
+    FailedToConnectToAnalysisServicesInstance = Failed to connected to Analysis Services instance '{0}'.
+    SqlMajorVersion = SQL major version is {0}.
+    SqlServerVersionIsInvalid = Could not get the SQL version for the instance '{0}'.
+    PreferredModuleFound = Preferred module SqlServer found.
+    PreferredModuleNotFound = Information: PowerShell module SqlServer not found, trying to use older SQLPS module.
+    ImportedPowerShellModule = Importing PowerShell module '{0}' with version '{1}' from path '{2}'.
+    PowerShellModuleAlreadyImported = Found PowerShell module {0} already imported in the session.
+    ModuleForceRemoval = Forcibly removed the SQL PowerShell module from the session to import it fresh again.
+    DebugMessagePushingLocation = SQLPS module changes CWD to SQLSERVER:\ when loading, pushing location to pop it when module is loaded.
+    DebugMessagePoppingLocation = Popping location back to what it was before importing SQLPS module.
+    PowerShellSqlModuleNotFound = Neither PowerShell module SqlServer or SQLPS was found. Unable to run SQL Server cmdlets.
+    FailedToImportPowerShellSqlModule = Failed to import {0} module.
+    GetSqlServerClusterResources = Getting cluster resource for SQL Server.
+    GetSqlAgentClusterResource = Getting active cluster resource SQL Server Agent.
+    BringClusterResourcesOffline = Bringing the SQL Server resources {0} offline.
+    BringSqlServerClusterResourcesOnline = Bringing the SQL Server resource back online.
+    BringSqlServerAgentClusterResourcesOnline = Bringing the SQL Server Agent resource online.
+    GetServiceInformation = Getting information about service '{0}'.
+    RestartService = '{0}' service is restarting.
+    StoppingService = '{0}' service is stopping.
+    StartingService = '{0}' service is starting.
+    WaitServiceRestart = Waiting {0} seconds before starting service '{1}'.
+    StartingDependentService = Starting service '{0}'.
+    WaitingInstanceTimeout = Waiting for instance {0}\\{1} to report status online, with a timeout value of {2} seconds.
+    FailedToConnectToInstanceTimeout = Failed to connect to the instance {0}\\{1} within the timeout period of {2} seconds.
+    ExecuteQueryWithResultsFailed = Executing query with results failed on database '{0}'.
+    ExecuteNonQueryFailed = Executing non-query failed on database '{0}'.
+    AlterAvailabilityGroupReplicaFailed = Failed to alter the availability group replica '{0}'.
+    GetEffectivePermissionForLogin = Getting the effective permissions for the login '{0}' on '{1}'.
+    ClusterPermissionsMissing = The cluster does not have permissions to manage the Availability Group on '{0}\\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either 'NT SERVICE\\ClusSvc' or 'NT AUTHORITY\\SYSTEM'.
+    ClusterLoginMissing = The login '{0}' is not present. {1}
+    ClusterLoginMissingPermissions = The account '{0}' is missing one or more of the following permissions: {1}
+    ClusterLoginMissingRecommendedPermissions = The recommended account '{0}' is missing one or more of the following permissions: {1}
+    ClusterLoginPermissionsPresent = The cluster login '{0}' has the required permissions.
 
     # - NOTE!
     # - Below strings are used by helper functions New-TerminatingError and New-WarningMessage.
@@ -83,10 +103,6 @@ ConvertFrom-StringData @'
     PermissionGetError = Unexpected result when trying to get permissions for '{0}'.
     ChangingPermissionFailed = Changing permission for principal '{0}' failed.
 
-    # Configuration
-    ConfigurationOptionNotFound = Specified option '{0}' could not be found.
-    ConfigurationRestartRequired = Configuration option '{0}' has been updated, but a manual restart of SQL Server is required for it to take effect.
-
     # AlwaysOnService
     AlterAlwaysOnServiceFailed = Failed to ensure Always On is {0} on the instance '{1}'.
     UnexpectedAlwaysOnStatus = The status of property Server.IsHadrEnabled was neither $true or $false. Status is '{0}'.
@@ -105,7 +121,6 @@ ConvertFrom-StringData @'
     DropLoginFailed = Dropping the login '{0}' failed.
 
     # AlwaysOnAvailabilityGroup
-    ClusterPermissionsMissing = The cluster does not have permissions to manage the Availability Group on '{0}\\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either 'NT SERVICE\\ClusSvc' or 'NT AUTHORITY\\SYSTEM'.
     CreateAvailabilityGroupReplicaFailed = Creating the Availability Group Replica '{0}' failed on the instance '{1}'.
     CreateAvailabilityGroupFailed = Creating the availability group '{0}'.
     DatabaseMirroringEndpointNotFound = No database mirroring endpoint was found on '{0}\{1}'.
@@ -134,8 +149,9 @@ ConvertFrom-StringData @'
     FailedToSetOwnerDatabase = Failed to set owner named {0} of the database named {1} on {2}\\{3}.
     FailedToSetPermissionDatabase = Failed to set permission for login named {0} of the database named {1} on {2}\\{3}.
     FailedToEnumDatabasePermissions = Failed to get permission for login named {0} of the database named {1} on {2}\\{3}.
+    UpdateDatabaseSetError = Failed to update database {1} on {0}\\{1} with specified changes.
+    InvalidCollationError = The specified collation '{3}' is not a valid collation for database {2} on {0}\\{1}.
 
     # SQLServerNetwork
     UnableToUseBothDynamicAndStaticPort = Unable to set both TCP dynamic port and TCP static port. Only one can be set.
-
 '@

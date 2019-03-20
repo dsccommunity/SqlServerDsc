@@ -1,8 +1,11 @@
-Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'SqlServerDscHelper.psm1')
+$script:resourceModulePath = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+$script:modulesFolderPath = Join-Path -Path $script:resourceModulePath -ChildPath 'Modules'
 
-Import-Module -Name (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent) `
-                               -ChildPath 'CommonResourceHelper.psm1')
+$script:localizationModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.LocalizationHelper'
+Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath 'DscResource.LocalizationHelper.psm1')
+
+$script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
+Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlSetup'
 
@@ -89,13 +92,7 @@ function Get-TargetResource
 
     if ($SourceCredential)
     {
-        $newSmbMappingParameters = @{
-            RemotePath = $SourcePath
-            UserName = "$($SourceCredential.GetNetworkCredential().Domain)\$($SourceCredential.GetNetworkCredential().UserName)"
-            Password = $($SourceCredential.GetNetworkCredential().Password)
-        }
-
-        $null = New-SmbMapping @newSmbMappingParameters
+        Connect-UncPath -RemotePath $SourcePath -SourceCredential $SourceCredential
     }
 
     $pathToSetupExecutable = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
@@ -106,7 +103,7 @@ function Get-TargetResource
 
     if ($SourceCredential)
     {
-        Remove-SmbMapping -RemotePath $SourcePath -Force
+        Disconnect-UncPath -RemotePath $SourcePath
     }
 
     if ($InstanceName -eq 'MSSQLSERVER')
@@ -1043,24 +1040,14 @@ function Set-TargetResource
         'UpdateSource'
     )
 
-    # Remove trailing slash ('\') from paths
+    # Making sure paths are correct.
     foreach ($parameterName in $parametersToEvaluateTrailingSlash)
     {
         if ($PSBoundParameters.ContainsKey($parameterName))
         {
             $parameterValue = Get-Variable -Name $parameterName -ValueOnly
-
-            # Trim backslash, but only if the path contains a full path and not just a qualifier.
-            if ($parameterValue -and $parameterValue -notmatch '^[a-zA-Z]:\\$')
-            {
-                Set-Variable -Name $parameterName -Value $parameterValue.TrimEnd('\')
-            }
-
-            # If the path only contains a qualifier but no backslash ('M:'), then a backslash is added ('M:\').
-            if ($parameterValue -match '^[a-zA-Z]:$')
-            {
-                Set-Variable -Name $parameterName -Value "$parameterValue\"
-            }
+            $formattedPath = Format-Path -Path $parameterValue -TrailingSlash
+            Set-Variable -Name $parameterName -Value $formattedPath
         }
     }
 
@@ -1068,29 +1055,13 @@ function Set-TargetResource
 
     if ($SourceCredential)
     {
-        $newSmbMappingParameters = @{
-            RemotePath = $SourcePath
-            UserName = "$($SourceCredential.GetNetworkCredential().Domain)\$($SourceCredential.GetNetworkCredential().UserName)"
-            Password = $($SourceCredential.GetNetworkCredential().Password)
+        $invokeInstallationMediaCopyParameters = @{
+            SourcePath = $SourcePath
+            SourceCredential = $SourceCredential
+            PassThru = $true
         }
 
-        $null = New-SmbMapping @newSmbMappingParameters
-
-        # Create a destination folder so the media files aren't written to the root of the Temp folder.
-        $mediaDestinationFolder = Split-Path -Path $SourcePath -Leaf
-        if (-not $mediaDestinationFolder )
-        {
-            $mediaDestinationFolder = New-Guid | Select-Object -ExpandProperty Guid
-        }
-
-        $mediaDestinationPath = Join-Path -Path (Get-TemporaryFolder) -ChildPath $mediaDestinationFolder
-
-        Write-Verbose -Message ($script:localizedData.RobocopyIsCopying -f $SourcePath, $mediaDestinationPath)
-        Copy-ItemWithRobocopy -Path $SourcePath -DestinationPath $mediaDestinationPath
-
-        Remove-SmbMapping -RemotePath $SourcePath -Force
-
-        $SourcePath = $mediaDestinationPath
+        $SourcePath = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters
     }
 
     $pathToSetupExecutable = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
@@ -1101,20 +1072,23 @@ function Set-TargetResource
 
     # Determine features to install
     $featuresToInstall = ''
-    foreach ($feature in $Features.Split(','))
-    {
-        # Given that all the returned features are uppercase, make sure that the feature to search for is also uppercase
-        $feature = $feature.ToUpper();
 
+    $featuresArray = $Features -split ','
+
+    foreach ($feature in $featuresArray)
+    {
         if (($sqlVersion -in ('13','14')) -and ($feature -in ('ADV_SSMS','SSMS')))
         {
             $errorMessage = $script:localizedData.FeatureNotSupported -f $feature
             New-InvalidOperationException -Message $errorMessage
         }
 
-        if (-not ($getTargetResourceResult.Features.Contains($feature)))
+        $foundFeaturesArray = $getTargetResourceResult.Features -split ','
+
+        if ($feature -notin $foundFeaturesArray)
         {
-            $featuresToInstall += "$feature,"
+            # Must make sure the feature names are provided in upper-case.
+            $featuresToInstall += '{0},' -f $feature.ToUpper()
         }
         else
         {
@@ -1577,13 +1551,13 @@ function Set-TargetResource
                     # Logic added as a fix for Issue#1254 SqlSetup:Fails when a root directory is specified
                     if($currentSetupArgument.Value -match '^[a-zA-Z]:\\$')
                     {
-                        $setupArgumentValue = $currentSetupArgument.Value   
+                        $setupArgumentValue = $currentSetupArgument.Value
                     }
-                    else 
+                    else
                     {
-                        $setupArgumentValue = '"{0}"' -f $currentSetupArgument.Value  
+                        $setupArgumentValue = '"{0}"' -f $currentSetupArgument.Value
                     }
-                    
+
                 }
             }
 
@@ -1654,7 +1628,7 @@ function Set-TargetResource
             Write-Verbose -Message $setupExitMessageSuccessful
         }
 
-        if ($ForceReboot -or ($null -ne (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue)))
+        if ($ForceReboot -or (Test-PendingRestart))
         {
             if (-not ($SuppressReboot))
             {
@@ -2142,18 +2116,25 @@ function Test-TargetResource
     $boundParameters = $PSBoundParameters
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-    Write-Verbose -Message ($script:localizedData.FeaturesFound -f $($getTargetResourceResult.Features))
+    if ($null -eq $getTargetResourceResult.Features -or $getTargetResourceResult.Features -eq '')
+    {
+        Write-Verbose -Message $script:localizedData.NoFeaturesFound
+    }
+    else
+    {
+        Write-Verbose -Message ($script:localizedData.FeaturesFound -f $getTargetResourceResult.Features)
+    }
 
     $result = $true
 
-    if ($getTargetResourceResult.Features )
+    if ($getTargetResourceResult.Features)
     {
-        foreach ($feature in $Features.Split(","))
-        {
-            # Given that all the returned features are uppercase, make sure that the feature to search for is also uppercase
-            $feature = $feature.ToUpper();
+        $featuresArray = $Features -split ','
+        $foundFeaturesArray = $getTargetResourceResult.Features -split ','
 
-            if(!($getTargetResourceResult.Features.Contains($feature)))
+        foreach ($feature in $featuresArray)
+        {
+            if ($feature -notin $foundFeaturesArray)
             {
                 Write-Verbose -Message ($script:localizedData.UnableToFindFeature -f $feature, $($getTargetResourceResult.Features))
                 $result = $false
@@ -2231,114 +2212,6 @@ function Get-FirstItemPropertyValue
     }
 
     return $registryPropertyValue
-}
-
-<#
-    .SYNOPSIS
-        Copy folder structure using Robocopy. Every file and folder, including empty ones are copied.
-
-    .PARAMETER Path
-        Source path to be copied.
-
-    .PARAMETER DestinationPath
-        The path to the destination.
-#>
-function Copy-ItemWithRobocopy
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $Path,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $DestinationPath
-    )
-    $quotedPath = '"{0}"' -f $Path
-    $quotedDestinationPath = '"{0}"' -f $DestinationPath
-    $robocopyExecutable = Get-Command -Name "Robocopy.exe" -ErrorAction Stop
-
-    $robocopyArgumentSilent = '/njh /njs /ndl /nc /ns /nfl'
-    $robocopyArgumentCopySubDirectoriesIncludingEmpty = '/e'
-    $robocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource = '/purge'
-
-    if ([System.Version]$robocopyExecutable.FileVersionInfo.ProductVersion -ge [System.Version]'6.3.9600.16384')
-    {
-        Write-Verbose -Message $script:localizedData.RobocopyUsingUnbufferedIo
-
-        $robocopyArgumentUseUnbufferedIO = '/J'
-    }
-    else
-    {
-        Write-Verbose -Message $script:localizedData.RobocopyNotUsingUnbufferedIo
-    }
-
-    $robocopyArgumentList = '{0} {1} {2} {3} {4} {5}' -f $quotedPath,
-                                                         $quotedDestinationPath,
-                                                         $robocopyArgumentCopySubDirectoriesIncludingEmpty,
-                                                         $robocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource,
-                                                         $robocopyArgumentUseUnbufferedIO,
-                                                         $robocopyArgumentSilent
-
-    $robocopyStartProcessParameters = @{
-        FilePath = $robocopyExecutable.Name
-        ArgumentList = $robocopyArgumentList
-    }
-
-    Write-Verbose -Message  ($script:localizedData.RobocopyArguments -f $robocopyArgumentList )
-    $robocopyProcess = Start-Process @robocopyStartProcessParameters -Wait -NoNewWindow -PassThru
-
-    switch ($($robocopyProcess.ExitCode))
-    {
-        {$_ -in 8, 16}
-        {
-            $errorMessage = $script:localizedData.RobocopyErrorCopying -f $_
-            New-InvalidOperationException -Message $errorMessage
-        }
-
-        {$_ -gt 7 }
-        {
-            $errorMessage = $script:localizedData.RobocopyFailuresCopying -f $_
-            New-InvalidResultException -Message $errorMessage
-        }
-
-        1
-        {
-            Write-Verbose -Message  $script:localizedData.RobocopySuccessful
-        }
-
-        2
-        {
-            Write-Verbose -Message  $script:localizedData.RobocopyRemovedExtraFilesAtDestination
-        }
-
-        3
-        {
-            Write-Verbose -Message  $script:localizedData.RobocopySuccessfulAndRemovedExtraFilesAtDestination
-        }
-
-        {$_ -eq 0 -or $null -eq $_ }
-        {
-            Write-Verbose -Message  $script:localizedData.RobocopyAllFilesPresent
-        }
-    }
-}
-
-<#
-    .SYNOPSIS
-        Returns the path of the current user's temporary folder.
-#>
-function Get-TemporaryFolder
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param()
-
-    return [IO.Path]::GetTempPath()
 }
 
 <#
@@ -2453,50 +2326,6 @@ function Get-ServiceAccountParameters
 
 
     return $parameters
-}
-
-<#
-    .SYNOPSIS
-        Starts the SQL setup process.
-
-    .PARAMETER FilePath
-        String containing the path to setup.exe.
-
-    .PARAMETER ArgumentList
-        The arguments that should be passed to setup.exe.
-
-    .PARAMETER Timeout
-        The timeout in seconds to wait for the process to finish.
-#>
-function Start-SqlSetupProcess
-{
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $FilePath,
-
-        [Parameter()]
-        [System.String]
-        $ArgumentList,
-
-        [Parameter(Mandatory = $true)]
-        [System.UInt32]
-        $Timeout
-    )
-
-    $startProcessParameters = @{
-        FilePath = $FilePath
-        ArgumentList = $ArgumentList
-    }
-
-    $sqlSetupProcess = Start-Process @startProcessParameters -PassThru -NoNewWindow -ErrorAction Stop
-
-    Write-Verbose -Message ($script:localizedData.StartSetupProcess -f $sqlSetupProcess.Id, $startProcessParameters.FilePath, $Timeout)
-
-    Wait-Process -InputObject $sqlSetupProcess -Timeout $Timeout -ErrorAction Stop
-
-    return $sqlSetupProcess.ExitCode
 }
 
 <#
