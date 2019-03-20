@@ -666,11 +666,20 @@ function Test-TargetResource
                         continue
                     }
 
-                    if ( $getTargetResourceResult.($parameterName) -ne $parameterValue )
+                    if ( $parameterName -eq 'ReadOnlyRoutingList' )
+                    {
+                        $different = ( $getTargetResourceResult.($parameterName) -join ',' ) -ne ( $parameterValue -join ',' )
+                    }
+                    else
+                    {
+                        $different = $getTargetResourceResult.($parameterName) -ne $parameterValue
+                    }
+
+                    if ( $different )
                     {
                         New-VerboseMessage -Message "'$($parameterName)' should be '$($parameterValue)' but is '$($getTargetResourceResult.($parameterName))'"
 
-                        $result = $False
+                        $result = $false
                     }
                 }
 

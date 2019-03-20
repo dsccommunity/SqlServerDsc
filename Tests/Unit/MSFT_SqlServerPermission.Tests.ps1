@@ -78,7 +78,7 @@ try
                     $mockObjectSmoServer.Name = "$mockServerName\$mockInstanceName"
                     $mockObjectSmoServer.DisplayName = $mockInstanceName
                     $mockObjectSmoServer.InstanceName = $mockInstanceName
-                    $mockObjectSmoServer.IsHadrEnabled = $False
+                    $mockObjectSmoServer.IsHadrEnabled = $false
                     $mockObjectSmoServer.MockGranteeName = $mockPrincipal
 
                     return $mockObjectSmoServer
@@ -204,7 +204,7 @@ try
                     $mockObjectSmoServer.Name = "$mockServerName\$mockInstanceName"
                     $mockObjectSmoServer.DisplayName = $mockInstanceName
                     $mockObjectSmoServer.InstanceName = $mockInstanceName
-                    $mockObjectSmoServer.IsHadrEnabled = $False
+                    $mockObjectSmoServer.IsHadrEnabled = $false
                     $mockObjectSmoServer.MockGranteeName = $mockPrincipal
 
                     return $mockObjectSmoServer
@@ -272,7 +272,7 @@ try
                     $mockObjectSmoServer.Name = "$mockServerName\$mockInstanceName"
                     $mockObjectSmoServer.DisplayName = $mockInstanceName
                     $mockObjectSmoServer.InstanceName = $mockInstanceName
-                    $mockObjectSmoServer.IsHadrEnabled = $False
+                    $mockObjectSmoServer.IsHadrEnabled = $false
                     $mockObjectSmoServer.MockGranteeName = $mockPrincipal
 
                     return $mockObjectSmoServer
@@ -329,7 +329,7 @@ try
                             $mockObjectSmoServer.Name = "$mockServerName\$mockInstanceName"
                             $mockObjectSmoServer.DisplayName = $mockInstanceName
                             $mockObjectSmoServer.InstanceName = $mockInstanceName
-                            $mockObjectSmoServer.IsHadrEnabled = $False
+                            $mockObjectSmoServer.IsHadrEnabled = $false
                             # This make the SMO Server object mock to throw when Grant() method is called.
                             $mockObjectSmoServer.MockGranteeName = $mockOtherPrincipal
 
