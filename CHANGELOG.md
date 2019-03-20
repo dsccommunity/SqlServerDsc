@@ -71,6 +71,8 @@
     parameters will still change existing replicas ([issue #1244](https://github.com/PowerShell/SqlServerDsc/issues/1244)).
   - ReadOnlyRoutingList now gets updated without throwing an error on the first
     run ([issue #518](https://github.com/PowerShell/SqlServerDsc/issues/518)).
+  - Test-Resource fixed to report whether ReadOnlyRoutingList desired state
+    has been reached correctly ([issue #1305](https://github.com/PowerShell/SqlServerDsc/issues/1305)).
 - Changes to SqlDatabaseDefaultLocation
   - No longer does the Test-TargetResource fail on the second test run
     when the backup file path was changed, and the path was ending with
