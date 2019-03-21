@@ -1454,27 +1454,34 @@ InModuleScope $script:subModuleName {
                 -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
         }
 
-        Context 'When connecting to the default instance using Windows Authentication' {
-            It 'Should not throw when connecting' {
-                $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME"
+        Context 'When using feature flag ''AnalysisServicesConnection''' {
+            Context 'When connecting to the default instance using Windows Authentication' {
+                It 'Should not throw when connecting' {
+                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME"
 
-                { Connect-SQLAnalysis } | Should -Not -Throw
+                    { Connect-SQLAnalysis -FeatureFlag 'AnalysisServicesConnection' } | Should -Not -Throw
 
-                Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
-                    -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                }
             }
-        }
 
-        Context 'When connecting to the named instance using Windows Authentication' {
-            It 'Should not throw when connecting' {
-                $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName"
+            Context 'When connecting to the named instance using Windows Authentication' {
+                It 'Should not throw when connecting' {
+                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName"
 
-                { Connect-SQLAnalysis -InstanceName $mockInstanceName } | Should -Not -Throw
-
-                Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
-                    -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                    { Connect-SQLAnalysis -SQLInstanceName $mockInstanceName -FeatureFlag 'AnalysisServicesConnection' } | Should -Not -Throw
+                }
             }
-        }
+
+            Context 'When connecting to the named instance using Windows Authentication impersonation' {
+                It 'Should not throw when connecting' {
+                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName;User ID=$mockSetupCredentialUserName;Password=$mockSetupCredentialPassword"
+
+                    { Connect-SQLAnalysis -SQLInstanceName $mockInstanceName -SetupCredential $mockSetupCredential -FeatureFlag 'AnalysisServicesConnection' } | Should -Not -Throw
+                }
+            }
 
         Context 'When connecting to the named instance using Windows Authentication impersonation' {
             Context 'When authentication without NetBIOS domain and Fully Qualified Domain Name (FQDN)' {
@@ -1507,68 +1514,131 @@ InModuleScope $script:subModuleName {
 
                     Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
                         -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+
+            Context 'When connecting to the default instance using a Analysis Service instance that does not exist' {
+                It 'Should throw the correct error' {
+                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME"
+
+                    # Force the mock of Connect() method to throw 'Unable to connect.'
+                    $mockThrowInvalidOperation = $true
+
+                    $mockCorrectErrorMessage = ($script:localizedData.FailedToConnectToAnalysisServicesInstance -f $env:COMPUTERNAME)
+                    { Connect-SQLAnalysis -FeatureFlag 'AnalysisServicesConnection' } | Should -Throw $mockCorrectErrorMessage
+
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+
+                    # Setting it back to the default so it does not disturb other tests.
+                    $mockThrowInvalidOperation = $false
+                }
+            }
+
+            # This test is to test the mock so that it throws correct when data source is not the expected data source
+            Context 'When connecting to the named instance using another data source then expected' {
+                It 'Should throw the correct error' {
+                    $mockExpectedDataSource = "Force wrong data source"
+
+                    $testParameters = @{
+                        SQLServer = 'DummyHost'
+                        SQLInstanceName = $mockInstanceName
+                    }
+
+                    $mockCorrectErrorMessage = ($script:localizedData.FailedToConnectToAnalysisServicesInstance -f "$($testParameters.SQLServer)\$($testParameters.SQLInstanceName)")
+                    { Connect-SQLAnalysis @testParameters } | Should -Throw $mockCorrectErrorMessage
+
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
                 }
             }
         }
 
-        Context 'When connecting to the default instance using the correct service instance but does not return a correct Analysis Service object' {
-            It 'Should throw the correct error' {
-                $mockExpectedDataSource = ''
+        Context 'When not using feature flag ''AnalysisServicesConnection''' {
+            Context 'When connecting to the default instance using Windows Authentication' {
+                It 'Should not throw when connecting' {
+                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME"
 
-                Mock -CommandName New-Object `
-                    -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                    { Connect-SQLAnalysis } | Should -Not -Throw
 
-                $mockErrorMessage = ($script:localizedData.FailedToConnectToAnalysisServicesInstance -f $env:COMPUTERNAME)
-
-                $mockErrorMessage | Should -Not -BeNullOrEmpty
-
-                { Connect-SQLAnalysis } | Should -Throw -ExpectedMessage $mockErrorMessage
-
-                Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
-                    -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
-            }
-        }
-
-        Context 'When connecting to the default instance using a Analysis Service instance that does not exist' {
-            It 'Should throw the correct error' {
-                $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME"
-
-                # Force the mock of Connect() method to throw 'Unable to connect.'
-                $mockThrowInvalidOperation = $true
-
-                $mockErrorMessage = ($script:localizedData.FailedToConnectToAnalysisServicesInstance -f $env:COMPUTERNAME)
-
-                $mockErrorMessage | Should -Not -BeNullOrEmpty
-
-                { Connect-SQLAnalysis } | Should -Throw -ExpectedMessage $mockErrorMessage
-
-                Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
-                    -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
-
-                # Setting it back to the default so it does not disturb other tests.
-                $mockThrowInvalidOperation = $false
-            }
-        }
-
-        # This test is to test the mock so that it throws correct when data source is not the expected data source
-        Context 'When connecting to the named instance using another data source then expected' {
-            It 'Should throw the correct error' {
-                $mockExpectedDataSource = "Force wrong data source"
-
-                $testParameters = @{
-                    ServerName = 'DummyHost'
-                    InstanceName = $mockInstanceName
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
                 }
-
-                $mockErrorMessage = ($script:localizedData.FailedToConnectToAnalysisServicesInstance -f "$($testParameters.ServerName)\$($testParameters.InstanceName)")
-
-                $mockErrorMessage | Should -Not -BeNullOrEmpty
-
-                { Connect-SQLAnalysis @testParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
-
-                Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
-                    -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
             }
+
+            Context 'When connecting to the named instance using Windows Authentication' {
+                It 'Should not throw when connecting' {
+                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName"
+
+                    { Connect-SQLAnalysis -SQLInstanceName $mockInstanceName } | Should -Not -Throw
+
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                }
+            }
+
+            Context 'When connecting to the named instance using Windows Authentication impersonation' {
+                It 'Should not throw when connecting' {
+                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName;User ID=$mockSetupCredentialUserName;Password=$mockSetupCredentialPassword"
+
+                    { Connect-SQLAnalysis -SQLInstanceName $mockInstanceName -SetupCredential $mockSetupCredential } | Should -Not -Throw
+
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                }
+            }
+
+            Context 'When connecting to the default instance using the correct service instance but does not return a correct Analysis Service object' {
+                It 'Should throw the correct error' {
+                    $mockExpectedDataSource = ''
+
+                    Mock -CommandName New-Object `
+                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter `
+                        -Verifiable
+
+                    $mockCorrectErrorMessage = ($script:localizedData.FailedToConnectToAnalysisServicesInstance -f $env:COMPUTERNAME)
+                    { Connect-SQLAnalysis } | Should -Throw $mockCorrectErrorMessage
+
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                }
+            }
+
+            Context 'When connecting to the default instance using a Analysis Service instance that does not exist' {
+                It 'Should throw the correct error' {
+                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME"
+
+                    # Force the mock of Connect() method to throw 'Unable to connect.'
+                    $mockThrowInvalidOperation = $true
+
+                    $mockCorrectErrorMessage = ($script:localizedData.FailedToConnectToAnalysisServicesInstance -f $env:COMPUTERNAME)
+                    { Connect-SQLAnalysis } | Should -Throw $mockCorrectErrorMessage
+
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+
+                    # Setting it back to the default so it does not disturb other tests.
+                    $mockThrowInvalidOperation = $false
+                }
+            }
+
+            # This test is to test the mock so that it throws correct when data source is not the expected data source
+            Context 'When connecting to the named instance using another data source then expected' {
+                It 'Should throw the correct error' {
+                    $mockExpectedDataSource = "Force wrong data source"
+
+                    $testParameters = @{
+                        SQLServer = 'DummyHost'
+                        SQLInstanceName = $mockInstanceName
+                    }
+
+                    $mockCorrectErrorMessage = ($script:localizedData.FailedToConnectToAnalysisServicesInstance -f "$($testParameters.SQLServer)\$($testParameters.SQLInstanceName)")
+                    { Connect-SQLAnalysis @testParameters } | Should -Throw $mockCorrectErrorMessage
+
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                }
+            }
+
+            Assert-VerifiableMock
         }
     }
 
@@ -3493,6 +3563,28 @@ InModuleScope $script:subModuleName {
             $result = Get-FilePathMajorVersion -Path 'C:\AnyPath\Setup.exe'
 
             $result | Should -Be '10'
+        }
+
+        Assert-VerifiableMock
+    }
+
+    Describe 'Test-FeatureFlag' -Tag 'TestFeatureFlag' {
+        Context 'When no feature flags was provided' {
+            It 'Should return $false' {
+                Test-FeatureFlag -FeatureFlag $null -TestFlag 'MyFlag' | Should -Be $false
+            }
+        }
+
+        Context 'When feature flags was provided' {
+            It 'Should return $true' {
+                Test-FeatureFlag -FeatureFlag @('FirstFlag','SecondFlag') -TestFlag 'SecondFlag' | Should -Be $true
+            }
+        }
+
+        Context 'When feature flags was provided, but missing' {
+            It 'Should return $false' {
+                Test-FeatureFlag -FeatureFlag @('MyFlag2') -TestFlag 'MyFlag' | Should -Be $false
+            }
         }
     }
 }

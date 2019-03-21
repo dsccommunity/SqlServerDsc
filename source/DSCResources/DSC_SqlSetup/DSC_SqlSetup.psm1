@@ -339,6 +339,8 @@ function Get-TargetResource
 
         $serviceAnalysisService = Get-ServiceProperties -ServiceName $serviceNames.AnalysisService
 
+        $analysisServer = Connect-SQLAnalysis -SQLServer $sqlHostName -SQLInstanceName $InstanceName -FeatureFlag $FeatureFlag
+
         $getTargetResourceReturnValue.ASSvcAccountUsername = $serviceAnalysisService.UserName
         $getTargetResourceReturnValue.AsSvcStartupType = $serviceAnalysisService.StartupType
 
