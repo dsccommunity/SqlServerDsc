@@ -4071,26 +4071,6 @@ try
                 }
             }
         }
-
-        Describe 'Test-FeatureFlag' -Tag 'Helper' {
-            Context 'When no feature flags was provided' {
-                It 'Should return $false' {
-                    Test-FeatureFlag -FeatureFlag $null -TestFlag 'MyFlag' | Should -Be $false
-                }
-            }
-
-            Context 'When feature flags was provided' {
-                It 'Should return $true' {
-                    Test-FeatureFlag -FeatureFlag @('FirstFlag','SecondFlag') -TestFlag 'SecondFlag' | Should -Be $true
-                }
-            }
-
-            Context 'When feature flags was provided, but missing' {
-                It 'Should return $false' {
-                    Test-FeatureFlag -FeatureFlag @('MyFlag2') -TestFlag 'MyFlag' | Should -Be $false
-                }
-            }
-        }
     }
 }
 finally

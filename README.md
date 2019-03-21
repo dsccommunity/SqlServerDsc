@@ -1732,7 +1732,7 @@ Feature flags are used to toggle functionality on or off. One or more
 feature flags can be added to the parameter `FeatureFlag`, i.e.
 `FeatureFlag = @('DetectionSharedFeatures')`.
 
->**NOTE:** The functionality, exposed
+>**WARNING!** The functionality, exposed
 with a feature flag, can be changed from one release to another, including
 having breaking changes.
 
@@ -1740,6 +1740,7 @@ having breaking changes.
 Feature flag | Description
 --- | ---
 DetectionSharedFeatures | A new way of detecting if the shared features is installed or not. This was implemented because the previous implementation did not work fully with SQL Server 2017.
+AnalysisServicesConnection | A new method of loading the assembly *Microsoft.AnalysisServices*. Using this, no longer is the helper function `Connect-SqlAnalysis` using `LoadWithPartial()` to load the assembly **Microsoft.AnalysisServices**. This requires the [SqlServer module](https://www.powershellgallery.com/packages/SqlServer) to be present on the node.
 <!-- markdownlint-enable MD013 -->
 
 #### Credentials for running the resource

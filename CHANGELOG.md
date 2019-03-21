@@ -42,6 +42,7 @@
     Backwards Compatibility), and SDK (Client Tools SDK) is installed or
     not. The new functionality is used when the parameter `FeatureFlag`
     is set to `'DetectionSharedFeatures'` ([issue #1105](https://github.com/PowerShell/SqlServerDsc/issues/1105)).
+    This functionality will be the default in a future breaking release.
   - Added a new helper function `Get-InstalledSharedFeatures` to move out
     some of the code from the `Get-TargetResource` to make unit testing
     easier and faster.
@@ -58,10 +59,25 @@
     case-sensitive when comparing feature names. *This was handled
     correctly in real-world scenarios, but failed when running the unit
     tests (and testing casing).*
-  - Now the correct assembly should load when using the helper function
-    Connect-SQLAnalysis. Previously is was using LoadWithPartialName() which
-    meant that it would load the first assembly in GAC, regardless of which
-    PowerShell module was used (SQLPS or SqlSever).
+  - The helper function `Connect-SqlAnalysis` is using `LoadWithPartial()`
+    to load the assembly **`Microsoft.AnalysisServices`**. On a node where multiple
+    instances with different versions of SQL Server (regardless of features)
+    is installed, this will result in the first assembly found in the
+    GAC will be loaded into the session, regardless of version. This can
+    result in an assembly being loaded that is not compatible with the
+    version of SQL Server it should be used to connect to.
+    A new method of loading the assembly **`Microsoft.AnalysisServices`** was
+    introduced under a feature flag; `'AnalysisServicesConnection'`.
+    This new functionality depends on the SqlServer module, and must be
+    present on the node. The [SqlServer module](https://www.powershellgallery.com/packages/SqlServer)
+    can be installed on the node by leveraging the new DSC resources in the
+    [PowerShellGet (v2.1.2)](https://www.powershellgallery.com/packages/PowerShellGet/2.1.2)
+    module. This new method does not work with the SQLPS module due to
+    the SQLPS module does not load the correct assembly, while
+    [SqlServer module](https://www.powershellgallery.com/packages/SqlServer)
+    (v21.1.18080 and above) does. The new functionality is used when the
+    parameter `FeatureFlag` is set to `'AnalysisServicesConnection'`.
+    This functionality will be the default in a future breaking release.
 - Changes to SqlAGDatabase
   - Fix MatchDatabaseOwner to check for CONTROL SERVER, IMPERSONATE LOGIN, or
     CONTROL LOGIN permission in addition to IMPERSONATE ANY LOGIN.
