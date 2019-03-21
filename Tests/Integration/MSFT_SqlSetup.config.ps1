@@ -52,8 +52,18 @@ else
 
                 # Database Engine properties.
                 DatabaseEngineNamedInstanceName         = 'DSCSQLTEST'
-                DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,AS,CONN,BC,SDK'
-                AnalysisServicesMultiServerMode         = 'MULTIDIMENSIONAL'
+                DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,CONN,BC,SDK'
+
+                <#
+                    Analysis Services Multi-dimensional properties.
+                    The features CONN,BC,SDK is installed with the DSCSQLTEST so those
+                    features will found for DSCTABULAR instance as well.
+                    The features is added here so the same property can be used to
+                    evaluate the result in the test.
+                #>
+                AnalysisServicesMultiInstanceName     = 'DSCMULTI'
+                AnalysisServicesMultiFeatures         = 'AS,CONN,BC,SDK'
+                AnalysisServicesMultiServerMode       = 'MULTIDIMENSIONAL'
 
                 <#
                     Analysis Services Tabular properties.
@@ -264,10 +274,6 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
             SQLCollation           = $Node.Collation
             SQLSvcAccount          = $SqlServicePrimaryCredential
             AgtSvcAccount          = $SqlAgentServicePrimaryCredential
-            ASServerMode           = $Node.AnalysisServicesMultiServerMode
-            AsSvcStartupType       = 'Automatic'
-            ASCollation            = $Node.Collation
-            ASSvcAccount           = $SqlServicePrimaryCredential
             InstanceDir            = $Node.InstanceDir
             InstallSharedDir       = $Node.InstallSharedDir
             InstallSharedWOWDir    = $Node.InstallSharedWOWDir
@@ -292,11 +298,6 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
                     IsHadrEnable for SqlAlwaysOnService.
                 #>
                 Split-Path -Path $SqlInstallCredential.UserName -Leaf
-            )
-
-            # This must be set if using SYSTEM account to install.
-            ASSysAdminAccounts    = @(
-                Split-Path -Path $SqlAdministratorCredential.UserName -Leaf
             )
         }
     }
@@ -355,7 +356,7 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineDefaultInstanceAsUser_Config
     {
         SqlSetup 'Integration_Test'
         {
-            FeatureFlag            = @('DetectionSharedFeatures')
+            FeatureFlag          = @('DetectionSharedFeatures')
 
             InstanceName         = $Node.DatabaseEngineDefaultInstanceName
             Features             = $Node.DatabaseEngineDefaultInstanceFeatures
@@ -404,6 +405,80 @@ Configuration MSFT_SqlSetup_StopSqlServerDefaultInstance_Config
 
 <#
     .SYNOPSIS
+        Installing the latest SqlServer module from PowerShell Gallery.
+
+    .NOTES
+        This is needed to install SQL Server Analysis Services instances.
+#>
+Configuration MSFT_SqlSetup_InstallSqlServerModule_Config
+{
+    Import-DscResource -ModuleName 'PowerShellGet' -ModuleVersion '2.1.2'
+
+    node $AllNodes.NodeName
+    {
+        PSModule 'InstallSqlServerModule'
+        {
+            Name = 'SqlServer'
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Installs a named instance of Analysis Services in multi-dimensional mode.
+#>
+Configuration MSFT_SqlSetup_InstallMultiDimensionalAnalysisServicesAsSystem_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlSetup 'Integration_Test'
+        {
+            FeatureFlag         = @('DetectionSharedFeatures','AnalysisServicesConnection')
+
+            InstanceName        = $Node.AnalysisServicesMultiInstanceName
+            Features            = $Node.AnalysisServicesMultiFeatures
+            SourcePath          = "$($Node.DriveLetter):\"
+            ASServerMode        = $Node.AnalysisServicesMultiServerMode
+            ASCollation         = $Node.Collation
+            ASSvcAccount        = $SqlServicePrimaryCredential
+            InstallSharedDir    = $Node.InstallSharedDir
+            InstallSharedWOWDir = $Node.InstallSharedWOWDir
+            UpdateEnabled       = $Node.UpdateEnabled
+            SuppressReboot      = $Node.SuppressReboot
+            ForceReboot         = $Node.ForceReboot
+
+            # This must be set if using SYSTEM account to install.
+            ASSysAdminAccounts  = @(
+                Split-Path -Path $SqlAdministratorCredential.UserName -Leaf
+            )
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Stopping the Analysis Services multi-dimensional named instance to save
+        memory on the build worker.
+#>
+Configuration MSFT_SqlSetup_StopMultiDimensionalAnalysisServices_Config
+{
+    Import-DscResource -ModuleName 'PSDscResources'
+
+    node $AllNodes.NodeName
+    {
+        Service ('StopMultiDimensionalAnalysisServicesInstance{0}' -f $Node.AnalysisServicesMultiInstanceName)
+        {
+            Name  = ('MSOLAP${0}' -f $Node.AnalysisServicesMultiInstanceName)
+            State = 'Stopped'
+        }
+    }
+}
+
+
+<#
+    .SYNOPSIS
         Installs a named instance of Analysis Services in tabular mode.
 #>
 Configuration MSFT_SqlSetup_InstallTabularAnalysisServicesAsSystem_Config
@@ -414,7 +489,7 @@ Configuration MSFT_SqlSetup_InstallTabularAnalysisServicesAsSystem_Config
     {
         SqlSetup 'Integration_Test'
         {
-            FeatureFlag            = @('DetectionSharedFeatures')
+            FeatureFlag         = @('DetectionSharedFeatures','AnalysisServicesConnection')
 
             InstanceName        = $Node.AnalysisServicesTabularInstanceName
             Features            = $Node.AnalysisServicesTabularFeatures
@@ -449,8 +524,29 @@ Configuration MSFT_SqlSetup_StopTabularAnalysisServices_Config
     {
         Service ('StopTabularAnalysisServicesInstance{0}' -f $Node.AnalysisServicesTabularInstanceName)
         {
-            Name  = ('MSOLAP${0}' -f $Node.DatabaseEngineNamedInstanceName)
+            Name  = ('MSOLAP${0}' -f $Node.AnalysisServicesTabularInstanceName)
             State = 'Stopped'
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Installing the latest SqlServer module from PowerShell Gallery.
+
+    .NOTES
+        This is needed to install SQL Server Analysis Services instances.
+#>
+Configuration MSFT_SqlSetup_UninstallSqlServerModule_Config
+{
+    Import-DscResource -ModuleName 'PowerShellGet' -ModuleVersion '2.1.2'
+
+    node $AllNodes.NodeName
+    {
+        PSModule 'UninstallSqlServerModule'
+        {
+            Ensure = 'Absent'
+            Name   = 'SqlServer'
         }
     }
 }
