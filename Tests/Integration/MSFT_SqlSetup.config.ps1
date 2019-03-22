@@ -335,12 +335,6 @@ Configuration MSFT_SqlSetup_StopServicesInstance_Config
             Name   = ('MSSQL${0}' -f $Node.DatabaseEngineNamedInstanceName)
             State  = 'Stopped'
         }
-
-        Service ('StopMultiAnalysisServicesInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
-        {
-            Name  = ('MSOLAP${0}' -f $Node.DatabaseEngineNamedInstanceName)
-            State = 'Stopped'
-        }
     }
 }
 
@@ -419,6 +413,7 @@ Configuration MSFT_SqlSetup_InstallSqlServerModule_Config
         PSModule 'InstallSqlServerModule'
         {
             Name = 'SqlServer'
+            InstallationPolicy = 'Trusted'
         }
     }
 }
