@@ -433,8 +433,9 @@ Configuration MSFT_SqlSetup_InstallSqlServerModule_Config
     {
         PSModule 'InstallSqlServerModule'
         {
-            Name = 'SqlServer'
+            Name               = 'SqlServer'
             InstallationPolicy = 'Trusted'
+            AllowClobber       = $true
         }
     }
 }
