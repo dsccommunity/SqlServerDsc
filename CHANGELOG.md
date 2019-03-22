@@ -35,8 +35,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     module. This new method does not work with the SQLPS module due to
     the SQLPS module does not load the correct assembly, while
     [SqlServer module](https://www.powershellgallery.com/packages/SqlServer)
-    (v21.1.18080 and above) does. The new functionality is used when the
-    parameter `FeatureFlag` is set to `'AnalysisServicesConnection'`.
+    (v21.1.18080 and above) does.
+    The detection of a successful connection to the Sql Server Analysis
+    Services has also been changed. Now it actually evaluates the property
+    `Connected` of the returned `Microsoft.AnalysisServices.Server` object.
+    The new functionality is used when the parameter `FeatureFlag` is set
+    to `'AnalysisServicesConnection'`.
     This functionality will be the default in a future breaking release.
 
 ## [15.1.0] - 2021-02-02
