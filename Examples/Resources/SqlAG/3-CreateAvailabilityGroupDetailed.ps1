@@ -23,9 +23,9 @@ $ConfigurationData = @{
             FailoverMode                  = 'Automatic'
             HealthCheckTimeout            = 15000
 
-            BasicAvailabilityGroup        = $False
-            DatabaseHealthTrigger         = $True
-            DtcSupportEnabled             = $True
+            BasicAvailabilityGroup        = $false
+            DatabaseHealthTrigger         = $true
+            DtcSupportEnabled             = $true
         },
 
         @{

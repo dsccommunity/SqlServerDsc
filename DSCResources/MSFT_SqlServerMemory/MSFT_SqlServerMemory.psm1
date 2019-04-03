@@ -1,4 +1,11 @@
-Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) -ChildPath 'SqlServerDscHelper.psm1') -Force
+$script:resourceModulePath = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+$script:modulesFolderPath = Join-Path -Path $script:resourceModulePath -ChildPath 'Modules'
+
+$script:localizationModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.LocalizationHelper'
+Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath 'DscResource.LocalizationHelper.psm1')
+
+$script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
+Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
 <#
     .SYNOPSIS
@@ -340,7 +347,7 @@ function Get-SqlDscDynamicMaxMemory
 {
     try
     {
-        $physicalMemory = ((Get-CimInstance -ClassName Win32_PhysicalMemory).Capacity | Measure-Object -Sum).Sum
+        $physicalMemory = (Get-CimInstance -ClassName Win32_ComputerSystem).TotalPhysicalMemory
         $physicalMemoryInMegaBytes = [Math]::Round($physicalMemory / 1MB)
 
         # Find how much to save for OS: 20% of total ram for under 15GB / 12.5% for over 20GB

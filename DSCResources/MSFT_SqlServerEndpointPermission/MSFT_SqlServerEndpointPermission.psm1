@@ -1,6 +1,12 @@
-Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-        -ChildPath 'SqlServerDscHelper.psm1') `
-    -Force
+$script:resourceModulePath = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+$script:modulesFolderPath = Join-Path -Path $script:resourceModulePath -ChildPath 'Modules'
+
+$script:localizationModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.LocalizationHelper'
+Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath 'DscResource.LocalizationHelper.psm1')
+
+$script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
+Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
+
 <#
     .SYNOPSIS
         Returns the current state of the permissions for the principal (login).
@@ -49,7 +55,7 @@ function Get-TargetResource
         {
             New-VerboseMessage -Message "Enumerating permissions for endpoint $Name"
 
-            $permissionSet = New-Object -Property @{ Connect = $True } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
+            $permissionSet = New-Object -Property @{ Connect = $true } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
 
             $endpointPermission = $endpointObject.EnumObjectPermissions( $permissionSet ) | Where-Object { $_.PermissionState -eq "Grant" -and $_.Grantee -eq $Principal }
             if ($endpointPermission.Count -ne 0)
@@ -152,7 +158,7 @@ function Set-TargetResource
         $endpointObject = $sqlServerObject.Endpoints[$Name]
         if ($null -ne $endpointObject)
         {
-            $permissionSet = New-Object -Property @{ Connect = $True } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
+            $permissionSet = New-Object -Property @{ Connect = $true } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
 
             if ($Ensure -eq 'Present')
             {

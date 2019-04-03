@@ -39,8 +39,8 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 function Invoke-TestSetup
 {
-    # Compile the SMO stubs for use by the unit tests.
-    Add-Type -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SMO.cs')
+    # Loading mocked classes
+    Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
 }
 
 function Invoke-TestCleanup

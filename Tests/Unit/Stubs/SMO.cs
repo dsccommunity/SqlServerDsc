@@ -238,7 +238,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public string MockGranteeName;
 
         public AvailabilityGroupCollection AvailabilityGroups = new AvailabilityGroupCollection();
-        public ConnectionContext ConnectionContext;
+        public ServerConnection ConnectionContext;
         public string ComputerNamePhysicalNetBIOS;
         public DatabaseCollection Databases = new DatabaseCollection();
         public string DisplayName;
@@ -765,7 +765,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public string FailoverMode;
         public string Name;
         public string ReadOnlyRoutingConnectionUrl;
-        public string[] ReadOnlyRoutingList;
+        public System.Collections.Specialized.StringCollection ReadOnlyRoutingList;
         public string Role = "Secondary";
 
         public void Alter()
@@ -783,7 +783,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Common.ServerConnection
     // Used by:
     //  SqlAGDatabase
-    public class ConnectionContext
+    public class ServerConnection
     {
         public string TrueLogin;
 

@@ -1,6 +1,6 @@
 @{
   # Version number of this module.
-  moduleVersion = '12.3.0.0'
+  moduleVersion = '12.4.0.0'
 
   # ID used to uniquely identify this module
   GUID = '693ee082-ed36-45a7-b490-88b07c86b42f'
@@ -50,65 +50,80 @@
 
           # ReleaseNotes of this module
         ReleaseNotes = '- Changes to SqlServerDsc
-  - Reverting the change that was made as part of the
-    [issue 1260](https://github.com/PowerShell/SqlServerDsc/issues/1260)
-    in the previous release, as it only mitigated the issue, it did not
-    solve the issue.
-  - Removed the container testing since that broke the integration tests,
-    possible due to using excessive amount of memory on the AppVeyor build
-    worker. This will make the unit tests to take a bit longer to run
-    ([issue 1260](https://github.com/PowerShell/SqlServerDsc/issues/1260)).
-  - The unit tests and the integration tests are now run in two separate
-    build workers in AppVeyor. One build worker runs the integration tests,
-    while a second build worker runs the unit tests. The build workers runs
-    in parallel on paid accounts, but sequentially on free accounts
-    ([issue 1260](https://github.com/PowerShell/SqlServerDsc/issues/1260)).
-  - Clean up error handling in some of the integration tests that was
-    part of a workaround for a bug in Pester. The bug is resolved, and
-    the error handling is not again built into Pester.
-  - Speeding up the AppVeyor tests by splitting the common tests in a
-    separate build job.
-  - Updated the appveyor.yml to have the correct build step, and also
-    correct run the build step only in one of the jobs.
-  - Update integration tests to use the new integration test template.
-  - Added SqlAgentOperator resource.
-- Changes to SqlServiceAccount
-  - Fixed Get-ServiceObject when searching for Integration Services service.
-    Unlike the rest of SQL Server services, the Integration Services service
-    cannot be instanced, however you can have multiple versions installed.
-    Get-Service object would return the correct service name that you
-    are looking for, but it appends the version number at the end. Added
-    parameter VersionNumber so the search would return the correct
-    service name.
-  - Added code to allow for using Managed Service Accounts.
-  - Now the correct service type string value is returned by the function
-    `Get-TargetResource`. Previously one value was passed in as a parameter
-    (e.g. `DatabaseEngine`), but a different string value as returned
-    (e.g. `SqlServer`). Now `Get-TargetResource` return the same values
-    that can be passed as values in the parameter `ServiceType`
-    ([issue 981](https://github.com/PowerShell/SqlServerDsc/issues/981)).
-- Changes to SqlServerLogin
-  - Fixed issue in Test-TargetResource to valid password on disabled accounts
-    ([issue 915](https://github.com/PowerShell/SqlServerDsc/issues/915)).
-  - Now when adding a login of type SqlLogin, and the SQL Server login mode
-    is set to `"Integrated"`, an error is correctly thrown
-    ([issue 1179](https://github.com/PowerShell/SqlServerDsc/issues/1179)).
+  - Added new resources.
+    - SqlRSSetup
+  - Added helper module DscResource.Common from the repository
+    DscResource.Template.
+    - Moved all helper functions from SqlServerDscHelper.psm1 to DscResource.Common.
+    - Renamed Test-SqlDscParameterState to Test-DscParameterState.
+    - New-TerminatingError error text for a missing localized message now matches
+      the output even if the "missing localized message" localized message is
+      also missing.
+  - Added helper module DscResource.LocalizationHelper from the repository
+    DscResource.Template, this replaces the helper module CommonResourceHelper.psm1.
+  - Cleaned up unit tests, mostly around loading cmdlet stubs and loading
+    classes stubs, but also some tests that were using some odd variants.
+  - Fix all integration tests according to issue [PowerShell/DscResource.Template14](https://github.com/PowerShell/DscResource.Template/issues/14).
+- Changes to SqlServerMemory
+  - Updated Cim Class to Win32_ComputerSystem (instead of Win32_PhysicalMemory)
+    because the correct memory size was not being detected correctly on Azure VMs
+    ([issue 914](https://github.com/PowerShell/SqlServerDsc/issues/914)).
 - Changes to SqlSetup
-  - Updated the integration test to stop the named instance while installing
-    the other instances to mitigate
-    [issue 1260](https://github.com/PowerShell/SqlServerDsc/issues/1260).
-  - Add parameters to configure the Tempdb files during the installation of
-    the instance. The new parameters are SqlTempdbFileCount, SqlTempdbFileSize,
-    SqlTempdbFileGrowth, SqlTempdbLogFileSize and SqlTempdbLogFileGrowth
-    ([issue 1167](https://github.com/PowerShell/SqlServerDsc/issues/1167)).
-- Changes to SqlServerEndpoint
-  - Add the optional parameter Owner. The default owner remains the login used
-    for the creation of the endpoint
-    ([issue 1251](https://github.com/PowerShell/SqlServerDsc/issues/1251)).
-    [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
-  - Add integration tests
-    ([issue 744](https://github.com/PowerShell/SqlServerDsc/issues/744)).
-    [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
+  - Split integration tests into two jobs, one for running integration tests
+    for SQL Server 2016 and another for running integration test for
+    SQL Server 2017 ([issue 858](https://github.com/PowerShell/SqlServerDsc/issues/858)).
+  - Localized messages for Master Data Services no longer start and end with
+    single quote.
+  - When installing features a verbose message is written if a feature is found
+    to already be installed. It no longer quietly removes the feature from the
+    `/FEATURES` argument.
+  - Cleaned up a bit in the tests, removed excessive piping.
+  - Fixed minor typo in examples.
+  - A new optional parameter `FeatureFlag` parameter was added to control
+    breaking changes. Functionality added under a feature flag can be
+    toggled on or off, and could be changed later to be the default.
+    This way we can also make more of the new functionalities the default
+    in the same breaking change release ([issue 1105](https://github.com/PowerShell/SqlServerDsc/issues/1105)).
+  - Added a new way of detecting if the shared feature CONN (Client Tools
+    Connectivity, and SQL Client Connectivity SDK), BC (Client Tools
+    Backwards Compatibility), and SDK (Client Tools SDK) is installed or
+    not. The new functionality is used when the parameter `FeatureFlag`
+    is set to `"DetectionSharedFeatures"` ([issue 1105](https://github.com/PowerShell/SqlServerDsc/issues/1105)).
+  - Added a new helper function `Get-InstalledSharedFeatures` to move out
+    some of the code from the `Get-TargetResource` to make unit testing
+    easier and faster.
+  - Changed the logic of "Build the argument string to be passed to setup" to
+    not quote the value if root directory is specified
+    ([issue 1254](https://github.com/PowerShell/SqlServerDsc/issues/1254)).
+  - Moved some resource specific helper functions to the new helper module
+    DscResource.Common so they can be shared with the new resource SqlRSSetup.
+  - Improved verbose messages in Test-TargetResource function to more
+    clearly tell if features are already installed or not.
+  - Refactored unit tests for the functions Test-TargetResource and
+    Set-TargetResource to improve testing speed.
+  - Modified the Test-TargetResource and Set-TargetResource to not be
+    case-sensitive when comparing feature names. *This was handled
+    correctly in real-world scenarios, but failed when running the unit
+    tests (and testing casing).*
+- Changes to SqlAGDatabase
+  - Fix MatchDatabaseOwner to check for CONTROL SERVER, IMPERSONATE LOGIN, or
+    CONTROL LOGIN permission in addition to IMPERSONATE ANY LOGIN.
+  - Update and fix MatchDatabaseOwner help text.
+- Changes to SqlAG
+  - Updated documentation on the behaviour of defaults as they only apply when
+    creating a group.
+- Changes to SqlAGReplica
+  - AvailabilityMode, BackupPriority, and FailoverMode defaults only apply when
+    creating a replica not when making changes to an existing replica. Explicit
+    parameters will still change existing replicas ([issue 1244](https://github.com/PowerShell/SqlServerDsc/issues/1244)).
+  - ReadOnlyRoutingList now gets updated without throwing an error on the first
+    run ([issue 518](https://github.com/PowerShell/SqlServerDsc/issues/518)).
+  - Test-Resource fixed to report whether ReadOnlyRoutingList desired state
+    has been reached correctly ([issue 1305](https://github.com/PowerShell/SqlServerDsc/issues/1305)).
+- Changes to SqlDatabaseDefaultLocation
+  - No longer does the Test-TargetResource fail on the second test run
+    when the backup file path was changed, and the path was ending with
+    a backslash ([issue 1307](https://github.com/PowerShell/SqlServerDsc/issues/1307)).
 
 '
 
@@ -116,6 +131,7 @@
 
   } # End of PrivateData hashtable
   }
+
 
 
 

@@ -22,7 +22,7 @@ else
                 Password        = 'P@ssw0rd1'
 
                 ServerName      = $env:COMPUTERNAME
-                InstanceName    = 'DSCSQL2016'
+                InstanceName    = 'DSCSQLTEST'
 
                 ProtocolName    = 'Tcp'
                 Enabled         = $true

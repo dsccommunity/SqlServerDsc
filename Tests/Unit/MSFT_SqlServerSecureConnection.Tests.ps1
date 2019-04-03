@@ -39,7 +39,8 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 function Invoke-TestSetup
 {
-    Import-Module -Name (Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests') -ChildPath 'Unit') -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Global -Force
+    # Importing SQLPS stubs
+    Import-Module -Name (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Force -Global
 }
 
 function Invoke-TestCleanup
@@ -638,7 +639,7 @@ try
 
                 It 'Should return False when no permissions were found' {
                     $result = Test-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone'
-                    $result | Should -be $False
+                    $result | Should -be $false
                     Assert-VerifiableMock
                 }
             }
@@ -654,7 +655,7 @@ try
 
                 It 'Should return False when the wrong permissions are added' {
                     $result = Test-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone'
-                    $result | Should -be $False
+                    $result | Should -be $false
                     Assert-VerifiableMock
                 }
             }

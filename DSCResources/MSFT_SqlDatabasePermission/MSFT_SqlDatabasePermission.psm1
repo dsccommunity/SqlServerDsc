@@ -1,6 +1,12 @@
-Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-        -ChildPath 'SqlServerDscHelper.psm1') `
-    -Force
+$script:resourceModulePath = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+$script:modulesFolderPath = Join-Path -Path $script:resourceModulePath -ChildPath 'Modules'
+
+$script:localizationModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.LocalizationHelper'
+Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath 'DscResource.LocalizationHelper.psm1')
+
+$script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
+Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
+
 <#
     .SYNOPSIS
     Returns the current permissions for the user in the database
@@ -402,7 +408,7 @@ function Test-TargetResource
         the value 'Present' for the Ensure parameter, otherwise Ensure will have the value
         'Absent'.
     #>
-    return Test-SQLDscParameterState -CurrentValues $getTargetResourceResult `
+    return Test-DscParameterState -CurrentValues $getTargetResourceResult `
         -DesiredValues $PSBoundParameters `
         -ValuesToCheck @('Name', 'Ensure', 'PermissionState')
 }

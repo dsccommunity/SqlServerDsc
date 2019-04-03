@@ -30,9 +30,6 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 
-# Loading mocked classes
-Add-Type -Path ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SMO.cs )
-
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:dscModuleName `
     -DSCResourceName $script:dscResourceName `
@@ -42,6 +39,8 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 function Invoke-TestSetup
 {
+    # Loading mocked classes
+    Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
 }
 
 function Invoke-TestCleanup
@@ -157,22 +156,12 @@ try
             }
 
             Mock -CommandName Get-CimInstance -MockWith {
-                $mockGetCimInstanceMem = @()
 
-                $mockGetCimInstanceMem += New-Object -TypeName PSObject -Property @{
-                    Name     = 'Physical Memory'
-                    Tag      = 'Physical Memory 0'
-                    Capacity = 8589934592
+                New-Object -TypeName PSObject -Property @{
+                    TotalPhysicalMemory = 17179869184
                 }
 
-                $mockGetCimInstanceMem += New-Object -TypeName PSObject -Property @{
-                    Name     = 'Physical Memory'
-                    Tag      = 'Physical Memory 1'
-                    Capacity = 8589934592
-                }
-
-                $mockGetCimInstanceMem
-            } -ParameterFilter { $ClassName -eq 'Win32_PhysicalMemory' } -Verifiable
+            } -ParameterFilter { $ClassName -eq 'Win32_ComputerSystem' } -Verifiable
 
             Mock -CommandName Get-CimInstance -MockWith {
                 $mockGetCimInstanceProc = [PSCustomObject]@{
@@ -317,9 +306,9 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
-                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_PhysicalMemory' {
+                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_ComputerSystem' {
                     Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
-                        $ClassName -eq 'Win32_PhysicalMemory'
+                        $ClassName -eq 'Win32_ComputerSystem'
                     } -Scope Context
                 }
 
@@ -361,9 +350,9 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
-                It 'Should not call the mock function Get-CimInstance with ClassName equal to Win32_PhysicalMemory' {
+                It 'Should not call the mock function Get-CimInstance with ClassName equal to Win32_ComputerSystem' {
                     Assert-MockCalled Get-CimInstance -Exactly -Times 0 -ParameterFilter {
-                        $ClassName -eq 'Win32_PhysicalMemory'
+                        $ClassName -eq 'Win32_ComputerSystem'
                     } -Scope Context
                 }
 
@@ -401,9 +390,9 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
-                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_PhysicalMemory' {
+                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_ComputerSystem' {
                     Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
-                        $ClassName -eq 'Win32_PhysicalMemory'
+                        $ClassName -eq 'Win32_ComputerSystem'
                     } -Scope Context
                 }
 
@@ -497,22 +486,12 @@ try
             }
 
             Mock -CommandName Get-CimInstance -MockWith {
-                $mockGetCimInstanceMem = @()
 
-                $mockGetCimInstanceMem += New-Object -TypeName PSObject -Property @{
-                    Name     = 'Physical Memory'
-                    Tag      = 'Physical Memory 0'
-                    Capacity = 17179869184
+                New-Object -TypeName PSObject -Property @{
+                    TotalPhysicalMemory = 17179869184
                 }
 
-                $mockGetCimInstanceMem += New-Object -TypeName PSObject -Property @{
-                    Name     = 'Physical Memory'
-                    Tag      = 'Physical Memory 1'
-                    Capacity = 17179869184
-                }
-
-                $mockGetCimInstanceMem
-            } -ParameterFilter { $ClassName -eq 'Win32_PhysicalMemory' } -Verifiable
+            } -ParameterFilter { $ClassName -eq 'Win32_ComputerSystem' } -Verifiable
 
             Mock -CommandName Get-CimInstance -MockWith {
                 $mockGetCimInstanceProc = [PSCustomObject]@{
@@ -636,9 +615,9 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
-                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_PhysicalMemory' {
+                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_ComputerSystem' {
                     Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
-                        $ClassName -eq 'Win32_PhysicalMemory'
+                        $ClassName -eq 'Win32_ComputerSystem'
                     } -Scope Context
                 }
 
@@ -678,9 +657,9 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
-                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_PhysicalMemory' {
+                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_ComputerSystem' {
                     Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
-                        $ClassName -eq 'Win32_PhysicalMemory'
+                        $ClassName -eq 'Win32_ComputerSystem'
                     } -Scope Context
                 }
 
@@ -768,9 +747,9 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
-                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_PhysicalMemory' {
+                It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_ComputerSystem' {
                     Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
-                        $ClassName -eq 'Win32_PhysicalMemory'
+                        $ClassName -eq 'Win32_ComputerSystem'
                     } -Scope Context
                 }
 

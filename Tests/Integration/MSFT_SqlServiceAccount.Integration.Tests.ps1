@@ -4,7 +4,7 @@ param()
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-if (Test-SkipContinuousIntegrationTask -Type 'Integration')
+if (Test-SkipContinuousIntegrationTask -Type 'Integration' -Category @('Integration_SQL2016','Integration_SQL2017'))
 {
     return
 }
@@ -119,7 +119,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be $true
+                Test-DscConfiguration -Verbose | Should -Be 'True'
             }
         }
 
@@ -166,7 +166,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be $true
+                Test-DscConfiguration -Verbose | Should -Be 'True'
             }
         }
 
@@ -213,7 +213,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be $true
+                Test-DscConfiguration -Verbose | Should -Be 'True'
             }
         }
 
@@ -260,7 +260,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be $true
+                Test-DscConfiguration -Verbose | Should -Be 'True'
             }
         }
 
@@ -334,7 +334,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be $true
+                Test-DscConfiguration -Verbose | Should -Be 'True'
             }
         }
 
@@ -381,7 +381,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be $true
+                Test-DscConfiguration -Verbose | Should -Be 'True'
             }
         }
 
@@ -428,7 +428,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be $true
+                Test-DscConfiguration -Verbose | Should -Be 'True'
             }
         }
 
@@ -475,7 +475,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be $true
+                Test-DscConfiguration -Verbose | Should -Be 'True'
             }
         }
     }

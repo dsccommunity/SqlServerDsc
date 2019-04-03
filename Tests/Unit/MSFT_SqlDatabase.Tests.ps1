@@ -39,7 +39,6 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 function Invoke-TestSetup
 {
-    # Loading mocked classes
 }
 
 function Invoke-TestCleanup

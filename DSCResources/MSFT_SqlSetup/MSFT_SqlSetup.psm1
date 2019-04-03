@@ -1,8 +1,11 @@
-Import-Module -Name (Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) `
-                               -ChildPath 'SqlServerDscHelper.psm1')
+$script:resourceModulePath = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+$script:modulesFolderPath = Join-Path -Path $script:resourceModulePath -ChildPath 'Modules'
 
-Import-Module -Name (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent) `
-                               -ChildPath 'CommonResourceHelper.psm1')
+$script:localizationModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.LocalizationHelper'
+Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath 'DscResource.LocalizationHelper.psm1')
+
+$script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
+Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlSetup'
 
@@ -31,6 +34,11 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlSetup'
 
     .PARAMETER FailoverClusterNetworkName
         Host name to be assigned to the clustered SQL Server instance.
+
+    .PARAMETER FeatureFlag
+        Feature flags are used to toggle functionality on or off. See the
+        documentation for what additional functionality exist through a feature
+        flag.
 #>
 function Get-TargetResource
 {
@@ -57,8 +65,17 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String]
-        $FailoverClusterNetworkName
+        $FailoverClusterNetworkName,
+
+        [Parameter()]
+        [System.String[]]
+        $FeatureFlag
     )
+
+    if ($FeatureFlag)
+    {
+        Write-Verbose -Message ($script:localizedData.FeatureFlag -f ($FeatureFlag -join ''','''))
+    }
 
     if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster','Addnode'))
     {
@@ -75,13 +92,7 @@ function Get-TargetResource
 
     if ($SourceCredential)
     {
-        $newSmbMappingParameters = @{
-            RemotePath = $SourcePath
-            UserName = "$($SourceCredential.GetNetworkCredential().Domain)\$($SourceCredential.GetNetworkCredential().UserName)"
-            Password = $($SourceCredential.GetNetworkCredential().Password)
-        }
-
-        $null = New-SmbMapping @newSmbMappingParameters
+        Connect-UncPath -RemotePath $SourcePath -SourceCredential $SourceCredential
     }
 
     $pathToSetupExecutable = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
@@ -92,7 +103,7 @@ function Get-TargetResource
 
     if ($SourceCredential)
     {
-        Remove-SmbMapping -RemotePath $SourcePath -Force
+        Disconnect-UncPath -RemotePath $SourcePath
     }
 
     if ($InstanceName -eq 'MSSQLSERVER')
@@ -153,22 +164,6 @@ function Get-TargetResource
             Write-Verbose -Message $script:localizedData.ReplicationFeatureNotFound
         }
 
-        # Check if Data Quality Client sub component is configured
-        $dataQualityClientRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
-
-        Write-Verbose -Message ($script:localizedData.EvaluateDataQualityClientFeature -f $dataQualityClientRegistryPath)
-
-        $isDQCInstalled = (Get-ItemProperty -Path $dataQualityClientRegistryPath).SQL_DQ_CLIENT_Full
-        if ($isDQCInstalled -eq 1)
-        {
-            Write-Verbose -Message $script:localizedData.DataQualityClientFeatureFound
-            $features += 'DQC,'
-        }
-        else
-        {
-            Write-Verbose -Message $script:localizedData.DataQualityClientFeatureNotFound
-        }
-
         # Check if Data Quality Services sub component is configured
         $dataQualityServicesRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\DQ\*"
 
@@ -185,6 +180,25 @@ function Get-TargetResource
             Write-Verbose -Message $script:localizedData.DataQualityServicesFeatureNotFound
         }
 
+        if (-not (Test-FeatureFlag -FeatureFlag $FeatureFlag -TestFlag 'DetectionSharedFeatures'))
+        {
+            # Check if Data Quality Client sub component is configured
+            $dataQualityClientRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
+
+            Write-Verbose -Message ($script:localizedData.EvaluateDataQualityClientFeature -f $dataQualityClientRegistryPath)
+
+            $isDQCInstalled = (Get-ItemProperty -Path $dataQualityClientRegistryPath).SQL_DQ_CLIENT_Full
+            if ($isDQCInstalled -eq 1)
+            {
+                Write-Verbose -Message $script:localizedData.DataQualityClientFeatureFound
+                $features += 'DQC,'
+            }
+            else
+            {
+                Write-Verbose -Message $script:localizedData.DataQualityClientFeatureNotFound
+            }
+        }
+
         $instanceId = $fullInstanceId.Split('.')[1]
         $instanceDirectory = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$fullInstanceId\Setup" -Name 'SqlProgramDir').SqlProgramDir.Trim("\")
 
@@ -199,19 +213,17 @@ function Get-TargetResource
 
             # Tempdb data files size
             $SqlTempdbFileSize = ($tempdbPrimaryFilegroup.Files.Size | Measure-Object -Average).Average / 1Kb
-            
+
             # Tempdb data files growth
             $SqlTempdbFileGrowth = ($tempdbPrimaryFilegroup.Files.Growth | Measure-Object -Average).Average / 1Kb
-            
+
             # Tempdb log file size
             $tempdbTempLog = ($databaseServer.Databases | Where-Object {$_.Name -eq 'tempdb'}).LogFiles | Where-Object {$_.Name -eq 'templog'}
             $SqlTempdbLogFileSize = $tempdbTempLog.Size / 1Kb
-            
+
             # Tempdb log file growth
             $SqlTempdbLogFileGrowth = $tempdbTempLog.Growth / 1Kb
         }
-
-
 
         $sqlCollation = $databaseServer.Collation
 
@@ -362,71 +374,80 @@ function Get-TargetResource
         Write-Verbose -Message $script:localizedData.IntegrationServicesFeatureNotFound
     }
 
-    # Check if Documentation Components "BOL" is configured
-    $documentationComponentsRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
+    if (-not (Test-FeatureFlag -FeatureFlag $FeatureFlag -TestFlag 'DetectionSharedFeatures'))
+    {
+        # Check if Documentation Components "BOL" is configured
+        $documentationComponentsRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
 
-    Write-Verbose -Message ($script:localizedData.EvaluateDocumentationComponentsFeature -f $documentationComponentsRegistryPath)
+        Write-Verbose -Message ($script:localizedData.EvaluateDocumentationComponentsFeature -f $documentationComponentsRegistryPath)
 
-    $isBOLInstalled = (Get-ItemProperty -Path $documentationComponentsRegistryPath -ErrorAction SilentlyContinue).SQL_BOL_Components
-    if ($isBOLInstalled -eq 1)
-    {
-        Write-Verbose -Message $script:localizedData.DocumentationComponentsFeatureFound
-        $features += 'BOL,'
-    }
-    else
-    {
-        Write-Verbose -Message $script:localizedData.DocumentationComponentsFeatureNotFound
+        $isBOLInstalled = (Get-ItemProperty -Path $documentationComponentsRegistryPath -ErrorAction SilentlyContinue).SQL_BOL_Components
+        if ($isBOLInstalled -eq 1)
+        {
+            Write-Verbose -Message $script:localizedData.DocumentationComponentsFeatureFound
+            $features += 'BOL,'
+        }
+        else
+        {
+            Write-Verbose -Message $script:localizedData.DocumentationComponentsFeatureNotFound
+        }
+
+        $clientComponentsFullRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\Tools\Setup\Client_Components_Full"
+        $registryClientComponentsFullFeatureList = (Get-ItemProperty -Path $clientComponentsFullRegistryPath -ErrorAction SilentlyContinue).FeatureList
+
+        Write-Verbose -Message ($script:localizedData.EvaluateClientConnectivityToolsFeature -f $clientComponentsFullRegistryPath)
+
+        if ($registryClientComponentsFullFeatureList -like '*Connectivity_FNS=3*')
+        {
+            Write-Verbose -Message $script:localizedData.ClientConnectivityToolsFeatureFound
+            $features += 'CONN,'
+        }
+        else
+        {
+            Write-Verbose -Message $script:localizedData.ClientConnectivityToolsFeatureNotFound
+        }
+
+        Write-Verbose -Message ($script:localizedData.EvaluateClientConnectivityBackwardsCompatibilityToolsFeature -f $clientComponentsFullRegistryPath)
+        if ($registryClientComponentsFullFeatureList -like '*Tools_Legacy_FNS=3*')
+        {
+            Write-Verbose -Message $script:localizedData.ClientConnectivityBackwardsCompatibilityToolsFeatureFound
+            $features += 'BC,'
+        }
+        else
+        {
+            Write-Verbose -Message $script:localizedData.ClientConnectivityBackwardsCompatibilityToolsFeatureNotFound
+        }
+
+        Write-Verbose -Message ($script:localizedData.EvaluateClientToolsSdkFeature -f $clientComponentsFullRegistryPath)
+        if (($registryClientComponentsFullFeatureList -like '*SDK_Full=3*') -and ($registryClientComponentsFullFeatureList -like '*SDK_FNS=3*'))
+        {
+            Write-Verbose -Message $script:localizedData.ClientToolsSdkFeatureFound
+            $features += 'SDK,'
+        }
+        else
+        {
+            Write-Verbose -Message $script:localizedData.ClientToolsSdkFeatureNotFound
+        }
+
+        # Check if MDS sub component is configured for this server
+        $masterDataServicesFullRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
+        Write-Verbose -Message ($script:localizedData.EvaluateMasterDataServicesFeature -f $masterDataServicesFullRegistryPath)
+        $isMDSInstalled = (Get-ItemProperty -Path $masterDataServicesFullRegistryPath -ErrorAction SilentlyContinue).MDSCoreFeature
+        if ($isMDSInstalled -eq 1)
+        {
+            Write-Verbose -Message $script:localizedData.MasterDataServicesFeatureFound
+            $features += 'MDS,'
+        }
+        else
+        {
+            Write-Verbose -Message $script:localizedData.MasterDataServicesFeatureNotFound
+        }
     }
 
-    $clientComponentsFullRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\Tools\Setup\Client_Components_Full"
-    $registryClientComponentsFullFeatureList = (Get-ItemProperty -Path $clientComponentsFullRegistryPath -ErrorAction SilentlyContinue).FeatureList
-
-    Write-Verbose -Message ($script:localizedData.EvaluateClientConnectivityToolsFeature -f $clientComponentsFullRegistryPath)
-
-    if ($registryClientComponentsFullFeatureList -like '*Connectivity_FNS=3*')
+    if ((Test-FeatureFlag -FeatureFlag $FeatureFlag -TestFlag 'DetectionSharedFeatures'))
     {
-        Write-Verbose -Message $script:localizedData.ClientConnectivityToolsFeatureFound
-        $features += 'CONN,'
-    }
-    else
-    {
-        Write-Verbose -Message $script:localizedData.ClientConnectivityToolsFeatureNotFound
-    }
-
-    Write-Verbose -Message ($script:localizedData.EvaluateClientConnectivityBackwardsCompatibilityToolsFeature -f $clientComponentsFullRegistryPath)
-    if ($registryClientComponentsFullFeatureList -like '*Tools_Legacy_FNS=3*')
-    {
-        Write-Verbose -Message $script:localizedData.ClientConnectivityBackwardsCompatibilityToolsFeatureFound
-        $features += 'BC,'
-    }
-    else
-    {
-        Write-Verbose -Message $script:localizedData.ClientConnectivityBackwardsCompatibilityToolsFeatureNotFound
-    }
-
-    Write-Verbose -Message ($script:localizedData.EvaluateClientToolsSdkFeature -f $clientComponentsFullRegistryPath)
-    if (($registryClientComponentsFullFeatureList -like '*SDK_Full=3*') -and ($registryClientComponentsFullFeatureList -like '*SDK_FNS=3*'))
-    {
-        Write-Verbose -Message $script:localizedData.ClientToolsSdkFeatureFound
-        $features += 'SDK,'
-    }
-    else
-    {
-        Write-Verbose -Message $script:localizedData.ClientToolsSdkFeatureNotFound
-    }
-
-    # Check if MDS sub component is configured for this server
-    $masterDataServicesFullRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
-    Write-Verbose -Message ($script:localizedData.EvaluateMasterDataServicesFeature -f $masterDataServicesFullRegistryPath)
-    $isMDSInstalled = (Get-ItemProperty -Path $masterDataServicesFullRegistryPath -ErrorAction SilentlyContinue).MDSCoreFeature
-    if ($isMDSInstalled -eq 1)
-    {
-        Write-Verbose -Message $script:localizedData.MasterDataServicesFeatureFound
-        $features += 'MDS,'
-    }
-    else
-    {
-        Write-Verbose -Message $script:localizedData.MasterDataServicesFeatureNotFound
+        $installedSharedFeatures = Get-InstalledSharedFeatures -SqlVersion $sqlVersion
+        $features += '{0},' -f ($installedSharedFeatures -join ',')
     }
 
     $registryUninstallPath = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall'
@@ -733,6 +754,11 @@ function Get-TargetResource
 
     .PARAMETER SetupProcessTimeout
         The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.
+
+    .PARAMETER FeatureFlag
+        Feature flags are used to toggle functionality on or off. See the
+        documentation for what additional functionality exist through a feature
+        flag.
 #>
 function Set-TargetResource
 {
@@ -976,7 +1002,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.UInt32]
-        $SetupProcessTimeout = 7200
+        $SetupProcessTimeout = 7200,
+
+        [Parameter()]
+        [System.String[]]
+        $FeatureFlag
     )
 
     $getTargetResourceParameters = @{
@@ -985,6 +1015,7 @@ function Set-TargetResource
         SourceCredential = $SourceCredential
         InstanceName = $InstanceName
         FailoverClusterNetworkName = $FailoverClusterNetworkName
+        FeatureFlag = $FeatureFlag
     }
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
@@ -1009,24 +1040,14 @@ function Set-TargetResource
         'UpdateSource'
     )
 
-    # Remove trailing slash ('\') from paths
+    # Making sure paths are correct.
     foreach ($parameterName in $parametersToEvaluateTrailingSlash)
     {
         if ($PSBoundParameters.ContainsKey($parameterName))
         {
             $parameterValue = Get-Variable -Name $parameterName -ValueOnly
-
-            # Trim backslash, but only if the path contains a full path and not just a qualifier.
-            if ($parameterValue -and $parameterValue -notmatch '^[a-zA-Z]:\\$')
-            {
-                Set-Variable -Name $parameterName -Value $parameterValue.TrimEnd('\')
-            }
-
-            # If the path only contains a qualifier but no backslash ('M:'), then a backslash is added ('M:\').
-            if ($parameterValue -match '^[a-zA-Z]:$')
-            {
-                Set-Variable -Name $parameterName -Value "$parameterValue\"
-            }
+            $formattedPath = Format-Path -Path $parameterValue -TrailingSlash
+            Set-Variable -Name $parameterName -Value $formattedPath
         }
     }
 
@@ -1034,29 +1055,13 @@ function Set-TargetResource
 
     if ($SourceCredential)
     {
-        $newSmbMappingParameters = @{
-            RemotePath = $SourcePath
-            UserName = "$($SourceCredential.GetNetworkCredential().Domain)\$($SourceCredential.GetNetworkCredential().UserName)"
-            Password = $($SourceCredential.GetNetworkCredential().Password)
+        $invokeInstallationMediaCopyParameters = @{
+            SourcePath = $SourcePath
+            SourceCredential = $SourceCredential
+            PassThru = $true
         }
 
-        $null = New-SmbMapping @newSmbMappingParameters
-
-        # Create a destination folder so the media files aren't written to the root of the Temp folder.
-        $mediaDestinationFolder = Split-Path -Path $SourcePath -Leaf
-        if (-not $mediaDestinationFolder )
-        {
-            $mediaDestinationFolder = New-Guid | Select-Object -ExpandProperty Guid
-        }
-
-        $mediaDestinationPath = Join-Path -Path (Get-TemporaryFolder) -ChildPath $mediaDestinationFolder
-
-        Write-Verbose -Message ($script:localizedData.RobocopyIsCopying -f $SourcePath, $mediaDestinationPath)
-        Copy-ItemWithRobocopy -Path $SourcePath -DestinationPath $mediaDestinationPath
-
-        Remove-SmbMapping -RemotePath $SourcePath -Force
-
-        $SourcePath = $mediaDestinationPath
+        $SourcePath = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters
     }
 
     $pathToSetupExecutable = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
@@ -1067,20 +1072,27 @@ function Set-TargetResource
 
     # Determine features to install
     $featuresToInstall = ''
-    foreach ($feature in $Features.Split(','))
-    {
-        # Given that all the returned features are uppercase, make sure that the feature to search for is also uppercase
-        $feature = $feature.ToUpper();
 
+    $featuresArray = $Features -split ','
+
+    foreach ($feature in $featuresArray)
+    {
         if (($sqlVersion -in ('13','14')) -and ($feature -in ('ADV_SSMS','SSMS')))
         {
             $errorMessage = $script:localizedData.FeatureNotSupported -f $feature
             New-InvalidOperationException -Message $errorMessage
         }
 
-        if (-not ($getTargetResourceResult.Features.Contains($feature)))
+        $foundFeaturesArray = $getTargetResourceResult.Features -split ','
+
+        if ($feature -notin $foundFeaturesArray)
         {
-            $featuresToInstall += "$feature,"
+            # Must make sure the feature names are provided in upper-case.
+            $featuresToInstall += '{0},' -f $feature.ToUpper()
+        }
+        else
+        {
+            Write-Verbose -Message ($script:localizedData.FeatureAlreadyInstalled -f $feature)
         }
     }
 
@@ -1365,31 +1377,31 @@ function Set-TargetResource
                 'SQLBackupDir'
             )
         }
-        
+
         # tempdb : define SqlTempdbFileCount
         if($PSBoundParameters.ContainsKey('SqlTempdbFileCount'))
         {
             $setupArguments += @{ SqlTempdbFileCount = $SqlTempdbFileCount }
         }
-        
+
         # tempdb : define SqlTempdbFileSize
         if($PSBoundParameters.ContainsKey('SqlTempdbFileSize'))
         {
             $setupArguments += @{ SqlTempdbFileSize = $SqlTempdbFileSize }
         }
-        
+
         # tempdb : define SqlTempdbFileGrowth
         if($PSBoundParameters.ContainsKey('SqlTempdbFileGrowth'))
         {
             $setupArguments += @{ SqlTempdbFileGrowth = $SqlTempdbFileGrowth }
         }
-        
+
         # tempdb : define SqlTempdbLogFileSize
         if($PSBoundParameters.ContainsKey('SqlTempdbLogFileSize'))
         {
             $setupArguments += @{ SqlTempdbLogFileSize = $SqlTempdbLogFileSize }
         }
-        
+
         # tempdb : define SqlTempdbLogFileGrowth
         if($PSBoundParameters.ContainsKey('SqlTempdbLogFileGrowth'))
         {
@@ -1536,7 +1548,16 @@ function Set-TargetResource
                 }
                 else
                 {
-                    $setupArgumentValue = '"{0}"' -f $currentSetupArgument.Value
+                    # Logic added as a fix for Issue#1254 SqlSetup:Fails when a root directory is specified
+                    if($currentSetupArgument.Value -match '^[a-zA-Z]:\\$')
+                    {
+                        $setupArgumentValue = $currentSetupArgument.Value
+                    }
+                    else
+                    {
+                        $setupArgumentValue = '"{0}"' -f $currentSetupArgument.Value
+                    }
+
                 }
             }
 
@@ -1607,7 +1628,7 @@ function Set-TargetResource
             Write-Verbose -Message $setupExitMessageSuccessful
         }
 
-        if ($ForceReboot -or ($null -ne (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue)))
+        if ($ForceReboot -or (Test-PendingRestart))
         {
             if (-not ($SuppressReboot))
             {
@@ -1837,6 +1858,11 @@ function Set-TargetResource
 
     .PARAMETER SetupProcessTimeout
         The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.
+
+    .PARAMETER FeatureFlag
+        Feature flags are used to toggle functionality on or off. See the
+        documentation for what additional functionality exist through a feature
+        flag.
 #>
 function Test-TargetResource
 {
@@ -2071,7 +2097,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.UInt32]
-        $SetupProcessTimeout = 7200
+        $SetupProcessTimeout = 7200,
+
+        [Parameter()]
+        [System.String[]]
+        $FeatureFlag
     )
 
     $getTargetResourceParameters = @{
@@ -2080,23 +2110,31 @@ function Test-TargetResource
         SourceCredential = $SourceCredential
         InstanceName = $InstanceName
         FailoverClusterNetworkName = $FailoverClusterNetworkName
+        FeatureFlag = $FeatureFlag
     }
 
     $boundParameters = $PSBoundParameters
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-    Write-Verbose -Message ($script:localizedData.FeaturesFound -f $($getTargetResourceResult.Features))
+    if ($null -eq $getTargetResourceResult.Features -or $getTargetResourceResult.Features -eq '')
+    {
+        Write-Verbose -Message $script:localizedData.NoFeaturesFound
+    }
+    else
+    {
+        Write-Verbose -Message ($script:localizedData.FeaturesFound -f $getTargetResourceResult.Features)
+    }
 
     $result = $true
 
-    if ($getTargetResourceResult.Features )
+    if ($getTargetResourceResult.Features)
     {
-        foreach ($feature in $Features.Split(","))
-        {
-            # Given that all the returned features are uppercase, make sure that the feature to search for is also uppercase
-            $feature = $feature.ToUpper();
+        $featuresArray = $Features -split ','
+        $foundFeaturesArray = $getTargetResourceResult.Features -split ','
 
-            if(!($getTargetResourceResult.Features.Contains($feature)))
+        foreach ($feature in $featuresArray)
+        {
+            if ($feature -notin $foundFeaturesArray)
             {
                 Write-Verbose -Message ($script:localizedData.UnableToFindFeature -f $feature, $($getTargetResourceResult.Features))
                 $result = $false
@@ -2174,114 +2212,6 @@ function Get-FirstItemPropertyValue
     }
 
     return $registryPropertyValue
-}
-
-<#
-    .SYNOPSIS
-        Copy folder structure using Robocopy. Every file and folder, including empty ones are copied.
-
-    .PARAMETER Path
-        Source path to be copied.
-
-    .PARAMETER DestinationPath
-        The path to the destination.
-#>
-function Copy-ItemWithRobocopy
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $Path,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $DestinationPath
-    )
-    $quotedPath = '"{0}"' -f $Path
-    $quotedDestinationPath = '"{0}"' -f $DestinationPath
-    $robocopyExecutable = Get-Command -Name "Robocopy.exe" -ErrorAction Stop
-
-    $robocopyArgumentSilent = '/njh /njs /ndl /nc /ns /nfl'
-    $robocopyArgumentCopySubDirectoriesIncludingEmpty = '/e'
-    $robocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource = '/purge'
-
-    if ([System.Version]$robocopyExecutable.FileVersionInfo.ProductVersion -ge [System.Version]'6.3.9600.16384')
-    {
-        Write-Verbose -Message $script:localizedData.RobocopyUsingUnbufferedIo
-
-        $robocopyArgumentUseUnbufferedIO = '/J'
-    }
-    else
-    {
-        Write-Verbose -Message $script:localizedData.RobocopyNotUsingUnbufferedIo
-    }
-
-    $robocopyArgumentList = '{0} {1} {2} {3} {4} {5}' -f $quotedPath,
-                                                         $quotedDestinationPath,
-                                                         $robocopyArgumentCopySubDirectoriesIncludingEmpty,
-                                                         $robocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource,
-                                                         $robocopyArgumentUseUnbufferedIO,
-                                                         $robocopyArgumentSilent
-
-    $robocopyStartProcessParameters = @{
-        FilePath = $robocopyExecutable.Name
-        ArgumentList = $robocopyArgumentList
-    }
-
-    Write-Verbose -Message  ($script:localizedData.RobocopyArguments -f $robocopyArgumentList )
-    $robocopyProcess = Start-Process @robocopyStartProcessParameters -Wait -NoNewWindow -PassThru
-
-    switch ($($robocopyProcess.ExitCode))
-    {
-        {$_ -in 8, 16}
-        {
-            $errorMessage = $script:localizedData.RobocopyErrorCopying -f $_
-            New-InvalidOperationException -Message $errorMessage
-        }
-
-        {$_ -gt 7 }
-        {
-            $errorMessage = $script:localizedData.RobocopyFailuresCopying -f $_
-            New-InvalidResultException -Message $errorMessage
-        }
-
-        1
-        {
-            Write-Verbose -Message  $script:localizedData.RobocopySuccessful
-        }
-
-        2
-        {
-            Write-Verbose -Message  $script:localizedData.RobocopyRemovedExtraFilesAtDestination
-        }
-
-        3
-        {
-            Write-Verbose -Message  $script:localizedData.RobocopySuccessfulAndRemovedExtraFilesAtDestination
-        }
-
-        {$_ -eq 0 -or $null -eq $_ }
-        {
-            Write-Verbose -Message  $script:localizedData.RobocopyAllFilesPresent
-        }
-    }
-}
-
-<#
-    .SYNOPSIS
-        Returns the path of the current user's temporary folder.
-#>
-function Get-TemporaryFolder
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param()
-
-    return [IO.Path]::GetTempPath()
 }
 
 <#
@@ -2400,50 +2330,6 @@ function Get-ServiceAccountParameters
 
 <#
     .SYNOPSIS
-        Starts the SQL setup process.
-
-    .PARAMETER FilePath
-        String containing the path to setup.exe.
-
-    .PARAMETER ArgumentList
-        The arguments that should be passed to setup.exe.
-
-    .PARAMETER Timeout
-        The timeout in seconds to wait for the process to finish.
-#>
-function Start-SqlSetupProcess
-{
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $FilePath,
-
-        [Parameter()]
-        [System.String]
-        $ArgumentList,
-
-        [Parameter(Mandatory = $true)]
-        [System.UInt32]
-        $Timeout
-    )
-
-    $startProcessParameters = @{
-        FilePath = $FilePath
-        ArgumentList = $ArgumentList
-    }
-
-    $sqlSetupProcess = Start-Process @startProcessParameters -PassThru -NoNewWindow -ErrorAction Stop
-
-    Write-Verbose -Message ($script:localizedData.StartSetupProcess -f $sqlSetupProcess.Id, $startProcessParameters.FilePath, $Timeout)
-
-    Wait-Process -InputObject $sqlSetupProcess -Timeout $Timeout -ErrorAction Stop
-
-    return $sqlSetupProcess.ExitCode
-}
-
-<#
-    .SYNOPSIS
         Converts the start mode property returned by a Win32_Service CIM object to the resource properties *StartupType equivalent
 
     .PARAMETER StartMode
@@ -2464,6 +2350,145 @@ function ConvertTo-StartupType
     }
 
     return $StartMode
+}
+
+<#
+    .SYNOPSIS
+        Returns an array of installed shared features.
+
+    .PARAMETER SqlVersion
+        The major version of the SQL Server instance, i.e. 12, 13, or 14.
+#>
+function Get-InstalledSharedFeatures
+{
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Int32]
+        $SqlVersion
+    )
+
+    $sharedFeatures = @()
+
+    $configurationStateRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($SqlVersion)0\ConfigurationState"
+
+    # Check if Data Quality Client sub component is configured
+    Write-Verbose -Message ($script:localizedData.EvaluateDataQualityClientFeature -f $configurationStateRegistryPath)
+
+    $isDQCInstalled = (Get-ItemProperty -Path $configurationStateRegistryPath -ErrorAction SilentlyContinue).SQL_DQ_CLIENT_Full
+    if ($isDQCInstalled -eq 1)
+    {
+        Write-Verbose -Message $script:localizedData.DataQualityClientFeatureFound
+        $sharedFeatures += 'DQC'
+    }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.DataQualityClientFeatureNotFound
+    }
+
+    # Check if Documentation Components "BOL" is configured
+    Write-Verbose -Message ($script:localizedData.EvaluateDocumentationComponentsFeature -f $configurationStateRegistryPath)
+
+    $isBOLInstalled = (Get-ItemProperty -Path $configurationStateRegistryPath -ErrorAction SilentlyContinue).SQL_BOL_Components
+    if ($isBOLInstalled -eq 1)
+    {
+        Write-Verbose -Message $script:localizedData.DocumentationComponentsFeatureFound
+        $sharedFeatures += 'BOL'
+    }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.DocumentationComponentsFeatureNotFound
+    }
+
+    # Check if Client Tools Connectivity (and SQL Client Connectivity SDK) "CONN" is configured
+    Write-Verbose -Message ($script:localizedData.EvaluateDocumentationComponentsFeature -f $configurationStateRegistryPath)
+
+    $isConnInstalled = (Get-ItemProperty -Path $configurationStateRegistryPath -ErrorAction SilentlyContinue).Connectivity_Full
+    if ($isConnInstalled -eq 1)
+    {
+        Write-Verbose -Message $script:localizedData.ClientConnectivityToolsFeatureFound
+        $sharedFeatures += 'CONN'
+    }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.ClientConnectivityToolsFeatureNotFound
+    }
+
+    # Check if Client Tools Backwards Compatibility "BC" is configured
+    Write-Verbose -Message ($script:localizedData.EvaluateDocumentationComponentsFeature -f $configurationStateRegistryPath)
+
+    $isBcInstalled = (Get-ItemProperty -Path $configurationStateRegistryPath -ErrorAction SilentlyContinue).Tools_Legacy_Full
+    if ($isBcInstalled -eq 1)
+    {
+        Write-Verbose -Message $script:localizedData.ClientConnectivityBackwardsCompatibilityToolsFeatureFound
+        $sharedFeatures += 'BC'
+    }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.ClientConnectivityBackwardsCompatibilityToolsFeatureNotFound
+    }
+
+    # Check if Client Tools SDK "SDK" is configured
+    Write-Verbose -Message ($script:localizedData.EvaluateDocumentationComponentsFeature -f $configurationStateRegistryPath)
+
+    $isSdkInstalled = (Get-ItemProperty -Path $configurationStateRegistryPath -ErrorAction SilentlyContinue).SDK_Full
+    if ($isSdkInstalled -eq 1)
+    {
+        Write-Verbose -Message $script:localizedData.ClientToolsSdkFeatureFound
+        $sharedFeatures += 'SDK'
+    }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.ClientToolsSdkFeatureNotFound
+    }
+
+    # Check if MDS sub component is configured for this server
+    Write-Verbose -Message ($script:localizedData.EvaluateMasterDataServicesFeature -f $configurationStateRegistryPath)
+
+    $isMDSInstalled = (Get-ItemProperty -Path $configurationStateRegistryPath -ErrorAction SilentlyContinue).MDSCoreFeature
+    if ($isMDSInstalled -eq 1)
+    {
+        Write-Verbose -Message $script:localizedData.MasterDataServicesFeatureFound
+        $sharedFeatures += 'MDS'
+    }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.MasterDataServicesFeatureNotFound
+    }
+
+    return $sharedFeatures
+}
+
+<#
+    .SYNOPSIS
+        Test if the specific feature flag should be enabled.
+
+    .PARAMETER FeatureFlag
+        An array of feature flags that should be compared against.
+
+    .PARAMETER TestFlag
+        The feature flag that is being check if it should be enabled.
+#>
+function Test-FeatureFlag
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter()]
+        [System.String[]]
+        $FeatureFlag,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $TestFlag
+    )
+
+    $flagEnabled = $FeatureFlag -and ($FeatureFlag -and $FeatureFlag.Contains($TestFlag))
+
+    return $flagEnabled
 }
 
 Export-ModuleMember -Function *-TargetResource

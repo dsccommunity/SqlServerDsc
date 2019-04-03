@@ -18,7 +18,7 @@ else
             @{
                 NodeName             = 'localhost'
                 ServerName           = $env:COMPUTERNAME
-                InstanceName         = 'DSCSQL2016'
+                InstanceName         = 'DSCSQLTEST'
 
                 EndpointName         = 'HADR'
                 Port                 = 5023

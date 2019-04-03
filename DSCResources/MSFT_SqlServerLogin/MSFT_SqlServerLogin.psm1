@@ -1,6 +1,11 @@
-Import-Module -Name (Join-Path -Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) `
-        -ChildPath 'SqlServerDscHelper.psm1') `
-    -Force
+$script:resourceModulePath = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+$script:modulesFolderPath = Join-Path -Path $script:resourceModulePath -ChildPath 'Modules'
+
+$script:localizationModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.LocalizationHelper'
+Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath 'DscResource.LocalizationHelper.psm1')
+
+$script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
+Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
 <#
     .SYNOPSIS
@@ -434,24 +439,24 @@ function Test-TargetResource
                         #>
                         if ((Find-ExceptionByNumber -ExceptionToSearch $_.Exception -ErrorNumber 18470))
                         {
-                            New-VerboseMessage -Message "Password valid, but '$Name' is disabled."                            
+                            New-VerboseMessage -Message "Password valid, but '$Name' is disabled."
                         }
                         elseif ((Find-ExceptionByNumber -ExceptionToSearch $_.Exception -ErrorNumber 18456))
                         {
                             New-VerboseMessage -Message $_.Exception.message
-                            
+
                             # The password was not correct, password validation failed
                             $testPassed = $false
                         }
-                        else 
+                        else
                         {
                             New-VerboseMessage -Message "Unknown error: $($_.Exception.message)"
-                            
+
                             # Something else went wrong, rethrow error
                             throw
                         }
                     }
-                    else 
+                    else
                     {
                         New-VerboseMessage -Message "Password validation failed for the login '$Name'."
                         $testPassed = $false

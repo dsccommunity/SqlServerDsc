@@ -57,21 +57,14 @@ ConvertFrom-StringData @'
     Reboot = Rebooting target node.
     SuppressReboot = Suppressing reboot of target node.
     TestFailedAfterSet = Test-TargetResource returned false after calling Set-TargetResource.
-    FeaturesFound = Features found: {0}
+    FeaturesFound = Found features already installed: {0}
+    NoFeaturesFound = No features are installed.
     UnableToFindFeature = Unable to find feature '{0}' among the installed features: '{1}'.
     EvaluatingClusterParameters = Clustered install, checking parameters.
     ClusterParameterIsNotInDesiredState = {0} '{1}' is not in the desired state for this cluster.
-    RobocopyUsingUnbufferedIo = Robocopy is using unbuffered I/O.
-    RobocopyNotUsingUnbufferedIo = Unbuffered I/O cannot be used due to incompatible version of Robocopy.
-    RobocopyArguments = Robocopy is started with the following arguments: {0}
-    RobocopyErrorCopying = Robocopy reported errors when copying files. Error code: {0}.
-    RobocopyFailuresCopying = Robocopy reported that failures occurred when copying files. Error code: {0}.
-    RobocopySuccessful = Robocopy copied files successfully
-    RobocopyRemovedExtraFilesAtDestination = Robocopy found files at the destination path that is not present at the source path, these extra files was remove at the destination path.
-    RobocopySuccessfulAndRemovedExtraFilesAtDestination = Robocopy copied files to destination successfully. Robocopy also found files at the destination path that is not present at the source path, these extra files was remove at the destination path.
-    RobocopyAllFilesPresent = Robocopy reported that all files already present.
-    StartSetupProcess = Started the process with id {0} using the path '{1}', and with a timeout value of {2} seconds.
     EvaluateMasterDataServicesFeature = Detecting Master Data Services (MDS) feature ({0}).
-    MasterDataServicesFeatureFound = 'Master Data Services (MDS) feature detected.'
-    MasterDataServicesFeatureNotFound = 'Master Data Services (MDS) feature not detected.'
+    MasterDataServicesFeatureFound = Master Data Services (MDS) feature detected.
+    MasterDataServicesFeatureNotFound = Master Data Services (MDS) feature not detected.
+    FeatureAlreadyInstalled = The feature '{0}' is already installed so it will not be installed again.
+    FeatureFlag = Using feature flag '{0}'
 '@

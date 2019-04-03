@@ -21,7 +21,7 @@ else
                 ServiceAccount  = "$env:COMPUTERNAME\svc-SqlPrimary"
 
                 ServerName      = $env:COMPUTERNAME
-                InstanceName    = 'DSCSQL2016'
+                InstanceName    = 'DSCSQLTEST'
 
                 Thumbprint      = $env:SqlCertificateThumbprint
 

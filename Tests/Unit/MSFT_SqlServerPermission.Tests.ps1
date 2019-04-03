@@ -40,7 +40,7 @@ $TestEnvironment = Initialize-TestEnvironment `
 function Invoke-TestSetup
 {
     # Loading mocked classes
-    Add-Type -Path (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\Unit\Stubs\SMO.cs')
+    Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
 }
 
 function Invoke-TestCleanup
@@ -78,7 +78,7 @@ try
                     $mockObjectSmoServer.Name = "$mockServerName\$mockInstanceName"
                     $mockObjectSmoServer.DisplayName = $mockInstanceName
                     $mockObjectSmoServer.InstanceName = $mockInstanceName
-                    $mockObjectSmoServer.IsHadrEnabled = $False
+                    $mockObjectSmoServer.IsHadrEnabled = $false
                     $mockObjectSmoServer.MockGranteeName = $mockPrincipal
 
                     return $mockObjectSmoServer
@@ -204,7 +204,7 @@ try
                     $mockObjectSmoServer.Name = "$mockServerName\$mockInstanceName"
                     $mockObjectSmoServer.DisplayName = $mockInstanceName
                     $mockObjectSmoServer.InstanceName = $mockInstanceName
-                    $mockObjectSmoServer.IsHadrEnabled = $False
+                    $mockObjectSmoServer.IsHadrEnabled = $false
                     $mockObjectSmoServer.MockGranteeName = $mockPrincipal
 
                     return $mockObjectSmoServer
@@ -272,7 +272,7 @@ try
                     $mockObjectSmoServer.Name = "$mockServerName\$mockInstanceName"
                     $mockObjectSmoServer.DisplayName = $mockInstanceName
                     $mockObjectSmoServer.InstanceName = $mockInstanceName
-                    $mockObjectSmoServer.IsHadrEnabled = $False
+                    $mockObjectSmoServer.IsHadrEnabled = $false
                     $mockObjectSmoServer.MockGranteeName = $mockPrincipal
 
                     return $mockObjectSmoServer
@@ -329,7 +329,7 @@ try
                             $mockObjectSmoServer.Name = "$mockServerName\$mockInstanceName"
                             $mockObjectSmoServer.DisplayName = $mockInstanceName
                             $mockObjectSmoServer.InstanceName = $mockInstanceName
-                            $mockObjectSmoServer.IsHadrEnabled = $False
+                            $mockObjectSmoServer.IsHadrEnabled = $false
                             # This make the SMO Server object mock to throw when Grant() method is called.
                             $mockObjectSmoServer.MockGranteeName = $mockOtherPrincipal
 

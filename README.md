@@ -130,6 +130,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   database roles.
 * [**SqlRS**](#sqlrs) configures SQL Server Reporting.
   Services to use a database engine in another instance.
+* [**SqlRSSetup**](#sqlrssetup) Installs the standalone
+  [Microsoft SQL Server Reporting Services](https://docs.microsoft.com/en-us/sql/reporting-services/create-deploy-and-manage-mobile-and-paginated-reports).
 * [**SqlScript**](#sqlscript) resource to extend DSC Get/Set/Test
   functionality to T-SQL.
 * [**SqlScriptQuery**](#sqlscriptquery) resource to extend DSC Get/Set/Test
@@ -184,14 +186,16 @@ It will also manage the Availability Group replica on the specified node.
 * **`[String]` Ensure** _(Write)_: Specifies if the availability group should be
   present or absent. Default is Present. { *Present* | Absent }
 * **`[String]` AutomatedBackupPreference** _(Write)_: Specifies the automated backup
-  preference for the availability group. Default is None.
+  preference for the availability group. When creating a group the default is 'None'.
   { Primary | SecondaryOnly | Secondary | *None* }
 * **`[String]` AvailabilityMode** _(Write)_: Specifies the replica availability mode.
-  Default is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
+  Default when creating a group is 'AsynchronousCommit'.
+  { *AsynchronousCommit* | SynchronousCommit }
 * **`[UInt32]` BackupPriority** _(Write)_: Specifies the desired priority of the
   replicas in performing backups. The acceptable values for this parameter are:
   integers from 0 through 100. Of the set of replicas which are online and available,
-  the replica that has the highest priority performs the backup. Default is 50.
+  the replica that has the highest priority performs the backup. When creating
+  a group the default is 50.
 * **`[Boolean]` BasicAvailabilityGroup** _(Write)_: Specifies the type of
   availability group is Basic. This is only available is SQL Server 2016
   and later and is ignored when applied to previous versions.
@@ -215,10 +219,10 @@ It will also manage the Availability Group replica on the specified node.
   OnCriticalServerErrors | OnModerateServerErrors |
   OnAnyQualifiedFailureCondition }
 * **`[String]` FailoverMode** _(Write)_: Specifies the failover mode.
-  Default is 'Manual'. { Automatic | *Manual* }
+  When creating a group the default is 'Manual'. { Automatic | *Manual* }
 * **`[UInt32]` HealthCheckTimeout** _(Write)_: Specifies the length of time, in
   milliseconds, after which AlwaysOn availability groups declare an unresponsive
-  server to be unhealthy. Default is 30000.
+  server to be unhealthy. When creating a group the default is 30000.
 * **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
   will only determine if a change is needed if the target node is the active
   host of the SQL Server Instance.
@@ -286,10 +290,11 @@ group.
   Availability Group. This parameter is ignored when 'Ensure' is 'Absent'.
 * **`[Boolean]` MatchDatabaseOwner** _(Write)_: If set to $true, this ensures the
   database owner of the database on the primary replica is the owner of the database
-  on all secondary replicas. This requires the database owner is available as a
-  login on all replicas and that the PsDscRunAsCredential has impersonate permissions.
+  on all secondary replicas. This requires the database owner is available
+  as a login on all replicas and that the PsDscRunAsCredential has impersonate any
+  login, control server, impersonate login, or control login permissions.
   If set to $false, the owner of the database will be the PsDscRunAsCredential.
-  The default is '$true'.
+  The default is '$false'.
 * **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
   will only determine if a change is needed if the target node is the active
   host of the SQL Server Instance.
@@ -413,11 +418,13 @@ Always On Availability Group Replica.
 * **`[String]` Ensure** _(Write)_: Specifies if the availability group replica should
   be present or absent. Default is Present. { *Present* | Absent }
 * **`[String]` AvailabilityMode** _(Write)_: Specifies the replica availability mode.
-  Default is 'AsynchronousCommit'. { *AsynchronousCommit* | SynchronousCommit }
+  When creating a replica the default is 'AsynchronousCommit'.
+  { *AsynchronousCommit* | SynchronousCommit }
 * **`[UInt32]` BackupPriority** _(Write)_: Specifies the desired priority of the
   replicas in performing backups. The acceptable values for this parameter are:
   integers from 0 through 100. Of the set of replicas which are online and available,
-  the replica that has the highest priority performs the backup. Default is 50.
+  the replica that has the highest priority performs the backup. When creating a
+  replica the default is 50.
 * **`[String]` ConnectionModeInPrimaryRole** _(Write)_: Specifies how the availability
   replica handles connections when in the primary role.
   { AllowAllConnections | AllowReadWriteConnections }
@@ -426,8 +433,8 @@ Always On Availability Group Replica.
   { AllowNoConnections | AllowReadIntentConnectionsOnly | AllowAllConnections }
 * **`[String]` EndpointHostName** _(Write)_: Specifies the hostname or IP address
   of the availability group replica endpoint. Default is the instance network name.
-* **`[String]` FailoverMode** _(Write)_: Specifies the failover mode. Default is
-  'Manual'. { Automatic | *Manual* }
+* **`[String]` FailoverMode** _(Write)_: Specifies the failover mode.
+  When creating a replica the default is 'Manual'. { Automatic | *Manual* }
 * **`[String]` ReadOnlyRoutingConnectionUrl** _(Write)_: Specifies the fully-qualified
   domain name (FQDN) and port to use when routing to the replica for read only
   connections.
@@ -805,6 +812,106 @@ already exist.
 
 This is caused when trying to add another URL using the same protocol. For example
 when trying to add 'http://+:443' when 'http://+:80' already exist.
+
+### SqlRSSetup
+
+Installs the standalone [Microsoft SQL Server Reporting Services](https://docs.microsoft.com/en-us/sql/reporting-services/create-deploy-and-manage-mobile-and-paginated-reports).
+
+If both `SourceCredential` and `PsDscRunAsCredential` is used then the
+credentials in `SourceCredential` will only be used to copy the
+installation media locally, and then the credentials in `PsDscRunAsCredential`
+will be used during installation. If `PsDscRunAsCredential` is not
+used, then the installation will run as SYSTEM.
+
+>To install Microsoft SQL Server Reporting Services 2016 (or older),
+>please use the resource SqlSetup.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2012 or later.
+* If `PsDscRunAsCredential` common parameter is used to run the resource,
+  the specified credential must have permissions to connect to the location
+  where the Microsoft SQL Server Reporting Services media is placed.
+* The parameter IAcceptLicenseTerms must be set to 'Yes'.
+* The parameter InstanceName can only be set to 'SSRS' since there is
+  no way to change the instance name.
+* When using action 'Uninstall', the same version of the executable as the version
+  of the installed product must be used. If not, sometimes the uninstall
+  is successful (because the executable returns exit code 0) but the
+  Microsoft SQL Server Reporting Services instance was not actually removed.
+
+>NOTE: When using the action 'Uninstall' and the target node to begin with
+>requires a restart, on the first run the Microsoft SQL Server Reporting
+>Services instance will not be uninstalled, but instead exit with code
+>3010 and the node will be, by default, restarted. On the second run after
+>restart, the Microsoft SQL Server Reporting Services instance will be
+>uninstalled. If the parameter SuppressRestart is used, then the node must
+>be restarted manually before the Microsoft SQL Server Reporting Services
+>instance will be successfully uninstalled.
+>
+>The Microsoft SQL Server Reporting Services log will indicate that a
+>restart is required by outputting; "*No action was taken as a system
+>reboot is required (0x8007015E)*". The log is default located in the
+>SSRS folder in `%TEMP%`, e.g. `C:\Users\<user>\AppData\Local\Temp\SSRS`.
+
+#### Parameters
+
+* **`[String]` InstanceName** _(Key)_: Name of the Microsoft SQL Server
+  Reporting Service instance to installed. This can only be set to 'SSRS'.
+  { 'SSRS' }
+* **`[String]` IAcceptLicenseTerms** _(Required)_: Accept licens terms.
+  This must be set to 'Yes'. { 'Yes' }
+* **`[String]` SourcePath** _(Required)_: The path to the installation media
+  file to be used for installation, e.g an UNC path to a shared resource.
+  Environment variables can be used in the path.
+* **`[String]` Action** _(Write)_: The action to be performed. Default
+  value is 'Install' which performs either install or upgrade.
+  { *Install* | Uninstall }
+* **`[PSCredential]` SourceCredential** _(Write)_: Credentials used to
+  access the path set in the parameter 'SourcePath'.
+* **`[Boolean]` SuppressRestart** _(Write)_: Suppresses any attempts to
+  restart.
+* **`[String]` ProductKey** _(Write)_: Sets the custom license key, e.g.
+  '12345-12345-12345-12345-12345'.
+* **`[Boolean]` ForceRestart** _(Write)_: Forces a restart after installation
+  is finished.
+* **`[Boolean]` EditionUpgrade** _(Write)_: Upgrades the edition of the
+  installed product. Requires that either the ProductKey or the Edition
+  parameter is also assigned. By default no edition upgrade is performed.
+* **`[Boolean]` VersionUpgrade** _(Write)_: Upgrades installed product
+  version, if the major product version of the source executable is higher
+  than the major current version. Requires that either the ProductKey or
+  the Edition parameter is also assigned. Default is $false.
+* **`[String]` Edition** _(Write)_: Sets the custom free edition.
+  { 'Development' | 'Evaluation' | 'ExpressAdvanced' }
+* **`[String]` LogPath** _(Write)_: Specifies the setup log file location,
+  e.g. 'log.txt'. By default, log files are created under `%TEMP%`.
+* **`[String]` InstallFolder** _(Write)_: Sets the install folder, e.g.
+  'C:\Program Files\SSRS'. Default value is 'C:\Program Files\Microsoft
+  SQL Server Reporting Services'.
+* **`[UInt32]` SetupProcessTimeout** _(Write)_: The timeout, in seconds, to wait
+  for the setup process to finish. Default value is 7200 seconds (2 hours). If
+  the setup process does not finish before this time, and error will be thrown.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[String]` ErrorDumpDirectory** _(Read)_: Returns the path to error
+  dump log files.
+* **`[String]` CurrentVersion** _(Read)_: Returns the current version
+  of the installed Microsoft SQL Server Reporting Service instance.
+* **`[String]` ServiceName** _(Read)_: Returns the current name
+  of the Microsoft SQL Server Reporting Service instance Windows service.
+
+#### Examples
+
+* [Install Reporting Services](Examples/Resources/SqlRSSetup/1-InstallReportingServices.ps1)
+* [Uninstall Reporting Services](Examples/Resources/SqlRSSetup/2-UninstallReportingServices.ps1)
+
+#### Known issues
+
+* [SqlRSSetup: Will always make an edition upgrade](https://github.com/PowerShell/SqlServerDsc/issues/1311)
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlRSSetup).
 
 ### SqlScript
 
@@ -1619,6 +1726,22 @@ cluster. This is a limitation of SQL Server. See article
 [You cannot add or remove features to a SQL Server 2008, SQL Server 2008 R2, or
 SQL Server 2012 failover cluster](https://support.microsoft.com/en-us/help/2547273/you-cannot-add-or-remove-features-to-a-sql-server-2008,-sql-server-2008-r2,-or-sql-server-2012-failover-cluster).
 
+#### Feature flags
+
+Feature flags are used to toggle functionality on or off. One or more
+feature flags can be added to the parameter `FeatureFlag`, i.e.
+`FeatureFlag = @('DetectionSharedFeatures')`.
+
+>**NOTE:** The functionality, exposed
+with a feature flag, can be changed from one release to another, including
+having breaking changes.
+
+<!-- markdownlint-disable MD013 -->
+Feature flag | Description
+--- | ---
+DetectionSharedFeatures | A new way of detecting if the shared features is installed or not. This was implemented because the previous implementation did not work fully with SQL Server 2017.
+<!-- markdownlint-enable MD013 -->
+
 #### Credentials for running the resource
 
 ##### PsDscRunAsCredential
@@ -1758,6 +1881,9 @@ need a '*SVCPASSWORD' argument in the setup arguments.
 * **`[UInt32]` SetupProcessTimeout** _(Write)_: The timeout, in seconds, to wait
   for the setup process to finish. Default value is 7200 seconds (2 hours). If
   the setup process does not finish before this time, and error will be thrown.
+* **`[String[]]` FeatureFlag** _(Write)_: Feature flags are used to toggle
+  functionality on or off. See the documentation for what additional
+  functionality exist through a feature flag.
 
 #### Read-Only Properties from Get-TargetResource
 
