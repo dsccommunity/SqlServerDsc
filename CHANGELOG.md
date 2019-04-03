@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 12.4.0.0
+
 - Changes to SqlServerDsc
   - Added new resources.
     - SqlRSSetup
