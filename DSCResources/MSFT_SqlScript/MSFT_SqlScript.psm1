@@ -82,11 +82,12 @@ function Get-TargetResource
 
     $invokeParameters = @{
         ServerInstance = $ServerInstance
-        InputFile = $GetFilePath
-        Credential = $Credential
-        Variable = $Variable
-        QueryTimeout = $QueryTimeout
-        ErrorAction = 'Stop'
+        InputFile      = $GetFilePath
+        Credential     = $Credential
+        Variable       = $Variable
+        QueryTimeout   = $QueryTimeout
+        Verbose        = $VerbosePreference
+        ErrorAction    = 'Stop'
     }
 
     $result = Invoke-SqlScript @invokeParameters
@@ -178,11 +179,12 @@ function Set-TargetResource
 
     $invokeParameters = @{
         ServerInstance = $ServerInstance
-        InputFile = $SetFilePath
-        Credential = $Credential
-        Variable = $Variable
-        QueryTimeout = $QueryTimeout
-        ErrorAction = 'Stop'
+        InputFile      = $SetFilePath
+        Credential     = $Credential
+        Variable       = $Variable
+        QueryTimeout   = $QueryTimeout
+        Verbose        = $VerbosePreference
+        ErrorAction    = 'Stop'
     }
 
     Invoke-SqlScript @invokeParameters
@@ -263,11 +265,12 @@ function Test-TargetResource
     {
         $invokeParameters = @{
             ServerInstance = $ServerInstance
-            InputFile = $TestFilePath
-            Credential = $Credential
-            Variable = $Variable
-            QueryTimeout = $QueryTimeout
-            ErrorAction = 'Stop'
+            InputFile      = $TestFilePath
+            Credential     = $Credential
+            Variable       = $Variable
+            QueryTimeout   = $QueryTimeout
+            Verbose        = $VerbosePreference
+            ErrorAction    = 'Stop'
         }
 
         $result = Invoke-SqlScript @invokeParameters
