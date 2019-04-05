@@ -6,6 +6,16 @@
   - Updated README and added example for SqlServerSecureConnection,
     instructing users to use the 'SYSTEM' service account instead of
     'LocalSystem'.
+- Changes to SqlScript
+  - Correctly passes the `$VerbosePreference` to the helper function
+    `Invoke-SqlScript` so that `PRINT` statements is outputted correctly
+    when verbose output is requested, e.g
+    `Start-DscConfiguration -Verbose`.
+- Changes to SqlScriptQuery
+  - Correctly passes the `$VerbosePreference` to the helper function
+    `Invoke-SqlScript` so that `PRINT` statements is outputted correctly
+    when verbose output is requested, e.g
+    `Start-DscConfiguration -Verbose`.
 
 ## 12.4.0.0
 
