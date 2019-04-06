@@ -5,6 +5,8 @@
 ## 12.4.0.0
 
 - Changes to SqlServerDsc
+  - Updated SqlServerSecureConnection module to replace 'LocalSystem' Service Account Name with 'SYSTEM'
+    to fix issue where the LocalSystem account throws an exception, but connects successfully.
   - Added new resources.
     - SqlRSSetup
   - Added helper module DscResource.Common from the repository
