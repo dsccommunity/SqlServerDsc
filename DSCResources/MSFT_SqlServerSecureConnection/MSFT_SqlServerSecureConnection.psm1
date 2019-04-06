@@ -212,11 +212,11 @@ function Set-TargetResource
 
     $encryptionState = Get-TargetResource @parameters
 
-	# Error is thrown but connection succeeds if 'LocalSystem' is set as ServiceAccount. Setting ServiceAccount to use SYSTEM instead. 
+    # Error is thrown but connection succeeds if 'LocalSystem' is set as ServiceAccount. Setting ServiceAccount to use SYSTEM instead. 
 	if ($ServiceAccount -eq 'LocalSystem')
-	{
-		ServiceAccount	= 'SYSTEM'
-	}
+    {
+        ServiceAccount  = 'SYSTEM'
+    }
 
     if ($Ensure -eq 'Present')
     {
