@@ -5,6 +5,9 @@
 ## 12.4.0.0
 
 - Changes to SqlServerDsc
+  - Updated README and added example for SqlServerSecureConnection,
+    instructing users to use the 'SYSTEM' service account instead of 
+	'LocalSystem'
   - Added new resources.
     - SqlRSSetup
   - Added helper module DscResource.Common from the repository
