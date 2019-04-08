@@ -1610,25 +1610,25 @@ All issues are not listed here, see [here for all open issues](https://github.co
 Configures SQL connections to be encrypted.
 Read more about encrypted connections in this article [Enable Encrypted Connections](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/enable-encrypted-connections-to-the-database-engine).
 
->Note: that the 'LocalSystem' service account will return a connection 
-error, even though the connection has been successful. 
+>Note: that the 'LocalSystem' service account will return a connection
+error, even though the connection has been successful.
 In that case, the 'SYSTEM' service account can be used.
 
 #### Parameters
 
 * **`[String]` InstanceName** _(Key)_: Name of the SQL Server instance to be
    configured.
-* **`[String]` Thumbprint** _(Key)_: Thumbprint of the certificate being used 
+* **`[String]` Thumbprint** _(Key)_: Thumbprint of the certificate being used
    for encryption. If parameter Ensure is set to 'Absent', then the parameter
    Thumbprint can be set to an empty string.
-* **`[Boolean]` ForceEncryption** _(Write)_: If all connections to the SQL 
+* **`[Boolean]` ForceEncryption** _(Write)_: If all connections to the SQL
    instance should be encrypted. If this parameter is not assigned a value,
    the default is that all connections must be encrypted.
 * **`[String]` Ensure** _(Write)_: If Encryption should be Enabled (Present)
    or Disabled (Absent).
-* **`[String]` ServiceAccount** _(Required)_: Name of the account running the 
-   SQL Server service. If parameter is set to "LocalSystem", then a 
-   connection error is displayed. Use the "SYSTEM" account instead, in that 
+* **`[String]` ServiceAccount** _(Required)_: Name of the account running the
+   SQL Server service. If parameter is set to "LocalSystem", then a
+   connection error is displayed. Use the "SYSTEM" account instead, in that
    case.
 
 #### Examples
@@ -1636,7 +1636,7 @@ In that case, the 'SYSTEM' service account can be used.
 * [Force Secure Connection](/Examples/Resources/SqlServerSecureConnection/1-ForceSecureConnection.ps1)
 * [Secure Connection Not Forced](/Examples/Resources/SqlServerSecureConnection/2-SecureConnectionNotForced.ps1)
 * [Secure Connection Absent](/Examples/Resources/SqlServerSecureConnection/3-SecureConnectionAbsent.ps1 )
-* [Secure Connection Using "SYSTEM" Account](/Examples/Resources/SqlServerSecureConnection/2-SecureConnectionUsingSYSTEMAccount.ps1)
+* [Secure Connection Using "SYSTEM" Account](/Examples/Resources/SqlServerSecureConnection/4-SecureConnectionUsingSYSTEMAccount.ps1)
 
 #### Known issues
 

@@ -1,8 +1,8 @@
 <#
 .EXAMPLE
     This example performs a standard Sql encryption setup using the "SYSTEM" account. 
-	Note that the "LocalSystem" account should not be used because it returns a connection error,
-	even though it inherits the "SYSTEM" account's privileges.
+    Note that the "LocalSystem" account should not be used because it returns a connection error,
+    even though it inherits the "SYSTEM" account's privileges.
 #>
 Configuration Example
 {
