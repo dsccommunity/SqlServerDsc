@@ -26,7 +26,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerSecureCon
         If Encryption should be Enabled (Present) or Disabled (Absent).
 
     .PARAMETER ServiceAccount
-        Name of the account running the SQL Server service.
+        Name of the account running the SQL Server service. If parameter is set to "LocalSystem", then a connection error is displayed. Use "SYSTEM" instead, in that case.
 #>
 function Get-TargetResource
 {
