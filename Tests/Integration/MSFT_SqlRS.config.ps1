@@ -21,11 +21,13 @@ else
     {
         # SQL2017
         $instanceName = 'SSRS'
+        $isoImageName = 'SQL2017.iso'
     }
     else
     {
         # SQL2016
         $instanceName = 'DSCRS2016'
+        $isoImageName = 'SQL2016.iso'
     }
 
     $ConfigurationData = @{
@@ -46,7 +48,7 @@ else
                 SuppressReboot       = $true # Make sure we don't reboot during testing.
                 ForceReboot          = $false
 
-                ImagePath            = "$env:TEMP\SQL2016.iso"
+                ImagePath            = "$env:TEMP\$isoImageName"
                 DriveLetter          = $mockIsoMediaDriveLetter
 
                 DatabaseServerName   = $env:COMPUTERNAME
@@ -101,32 +103,35 @@ Configuration MSFT_SqlRS_CreateDependencies_Config
             Ensure = 'Present'
         }
 
-        SqlSetup 'InstallReportingServicesInstance'
+        # MSFT_SqlRSSetup.Integration.Tests.ps1 will have installed SSRS 2017.
+        if($script:sqlVersion -eq '130')
         {
-            InstanceName          = $Node.InstanceName
-            Features              = $Node.Features
-            SourcePath            = "$($Node.DriveLetter):\"
-            BrowserSvcStartupType = 'Automatic'
-            InstallSharedDir      = $Node.InstallSharedDir
-            InstallSharedWOWDir   = $Node.InstallSharedWOWDir
-            UpdateEnabled         = $Node.UpdateEnabled
-            SuppressReboot        = $Node.SuppressReboot
-            ForceReboot           = $Node.ForceReboot
-            RSSvcAccount          = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Service_UserName, (ConvertTo-SecureString -String $Node.Service_Password -AsPlainText -Force))
+            SqlSetup 'InstallReportingServicesInstance'
+            {
+                InstanceName          = $Node.InstanceName
+                Features              = $Node.Features
+                SourcePath            = "$($Node.DriveLetter):\"
+                BrowserSvcStartupType = 'Automatic'
+                InstallSharedDir      = $Node.InstallSharedDir
+                InstallSharedWOWDir   = $Node.InstallSharedWOWDir
+                UpdateEnabled         = $Node.UpdateEnabled
+                SuppressReboot        = $Node.SuppressReboot
+                ForceReboot           = $Node.ForceReboot
+                RSSvcAccount          = New-Object `
+                    -TypeName System.Management.Automation.PSCredential `
+                    -ArgumentList @($Node.Service_UserName, (ConvertTo-SecureString -String $Node.Service_Password -AsPlainText -Force))
 
-            DependsOn             = @(
-                '[WaitForVolume]WaitForMountOfIsoMedia'
-                '[User]CreateReportingServicesServiceAccount'
-                '[WindowsFeature]NetFramework45'
-            )
+                DependsOn             = @(
+                    '[WaitForVolume]WaitForMountOfIsoMedia'
+                    '[User]CreateReportingServicesServiceAccount'
+                    '[WindowsFeature]NetFramework45'
+                )
 
-            PsDscRunAsCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @(
-                    $Node.RunAs_UserName, (ConvertTo-SecureString -String $Node.RunAs_Password -AsPlainText -Force))
-
+                PsDscRunAsCredential = New-Object `
+                    -TypeName System.Management.Automation.PSCredential `
+                    -ArgumentList @(
+                        $Node.RunAs_UserName, (ConvertTo-SecureString -String $Node.RunAs_Password -AsPlainText -Force))
+            }
         }
     }
 }
