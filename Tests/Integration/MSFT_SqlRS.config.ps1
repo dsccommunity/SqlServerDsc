@@ -17,6 +17,17 @@ else
     $mockLastDrive = ((Get-Volume).DriveLetter | Sort-Object | Select-Object -Last 1)
     $mockIsoMediaDriveLetter = [char](([int][char]$mockLastDrive) + 1)
 
+    if($script:sqlVersion -eq '140')
+    {
+        # SQL2017
+        $instanceName = 'SSRS'
+    }
+    else
+    {
+        # SQL2016
+        $instanceName = 'DSCRS2016'
+    }
+
     $ConfigurationData = @{
         AllNodes = @(
             @{
@@ -27,7 +38,7 @@ else
                 Service_UserName     = "$env:COMPUTERNAME\svc-Reporting"
                 Service_Password     = 'yig-C^Equ3'
 
-                InstanceName         = 'DSCRS2016'
+                InstanceName         = $instanceName
                 Features             = 'RS'
                 InstallSharedDir     = 'C:\Program Files\Microsoft SQL Server'
                 InstallSharedWOWDir  = 'C:\Program Files (x86)\Microsoft SQL Server'
