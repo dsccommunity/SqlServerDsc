@@ -1,10 +1,12 @@
 # Change log for SqlServerDsc
 
 ## Unreleased
-- Changes to SqlServerDsc
+
+- Changes to SqlServerSecureConnection
   - Updated README and added example for SqlServerSecureConnection,
     instructing users to use the 'SYSTEM' service account instead of
-    'LocalSystem'
+    'LocalSystem'.
+
 ## 12.4.0.0
 
 - Changes to SqlServerDsc
