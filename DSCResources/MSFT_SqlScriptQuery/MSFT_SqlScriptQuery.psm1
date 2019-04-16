@@ -86,6 +86,7 @@ function Get-TargetResource
         Credential     = $Credential
         Variable       = $Variable
         QueryTimeout   = $QueryTimeout
+        Verbose        = $VerbosePreference
         ErrorAction    = 'Stop'
     }
 
@@ -182,6 +183,7 @@ function Set-TargetResource
         Credential     = $Credential
         Variable       = $Variable
         QueryTimeout   = $QueryTimeout
+        Verbose        = $VerbosePreference
         ErrorAction    = 'Stop'
     }
 
@@ -267,6 +269,7 @@ function Test-TargetResource
             Credential     = $Credential
             Variable       = $Variable
             QueryTimeout   = $QueryTimeout
+            Verbose        = $VerbosePreference
             ErrorAction    = 'Stop'
         }
 

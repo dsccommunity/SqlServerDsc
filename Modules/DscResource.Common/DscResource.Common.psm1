@@ -2013,6 +2013,7 @@ function Test-ActiveNode
 #>
 function Invoke-SqlScript
 {
+    [CmdletBinding()]
     param
     (
         [Parameter(Mandatory = $true)]
