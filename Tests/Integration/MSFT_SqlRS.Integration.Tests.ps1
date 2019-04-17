@@ -133,7 +133,15 @@ try
             }
 
             It 'Should be able to access the ReportServer site without any error' {
-                $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                if($script:sqlVersion -eq '140')
+                {
+                    # SSRS 2017 does not support multiple instances
+                    $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
+                }
+                else
+                {
+                    $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                }
 
                 try
                 {
@@ -155,7 +163,15 @@ try
             }
 
             It 'Should be able to access the Reports site without any error' {
-                $reportsUri = 'http://{0}/Reports_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                if($script:sqlVersion -eq '140')
+                {
+                    # SSRS 2017 does not support multiple instances
+                    $reportsUri = 'http://{0}/Reports' -f $env:COMPUTERNAME
+                }
+                else
+                {
+                    $reportsUri = 'http://{0}/Reports_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                }
 
                 try
                 {
@@ -229,7 +245,15 @@ try
                 as this without testing for the correct error message on purpose.
             #>
             It 'Should not be able to access the ReportServer site and throw an error message' {
-                $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                if($script:sqlVersion -eq '140')
+                {
+                    # SSRS 2017 does not support multiple instances
+                    $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
+                }
+                else
+                {
+                    $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                }
 
                 { Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials } | Should -Throw
             }
@@ -281,7 +305,15 @@ try
             }
 
             It 'Should be able to access the ReportServer site without any error' {
-                $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                if($script:sqlVersion -eq '140')
+                {
+                    # SSRS 2017 does not support multiple instances
+                    $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
+                }
+                else
+                {
+                    $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                }
 
                 try
                 {
