@@ -247,10 +247,21 @@ Configuration MSFT_SqlRS_StopReportingServicesInstance_Config
 
     node $AllNodes.NodeName
     {
-        Service ('StopReportingServicesInstance{0}' -f $Node.InstanceName)
+        if($script:sqlVersion -eq '130')
         {
-            Name  = ('ReportServer${0}' -f $Node.InstanceName)
-            State = 'Stopped'
+            Service ('StopReportingServicesInstance{0}' -f $Node.InstanceName)
+            {
+                Name  = ('ReportServer${0}' -f $Node.InstanceName)
+                State = 'Stopped'
+            }
+        }
+        elseif($script:sqlVersion -eq '140')
+        {
+            Service 'StopReportingServicesInstance'
+            {
+                Name  = 'SQLServerReportingServices'
+                State = 'Stopped'
+            }
         }
     }
 }
