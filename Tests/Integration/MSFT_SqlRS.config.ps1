@@ -103,7 +103,6 @@ Configuration MSFT_SqlRS_CreateDependencies_Config
             Ensure = 'Present'
         }
 
-        # MSFT_SqlRSSetup.Integration.Tests.ps1 will have installed SSRS 2017.
         if($script:sqlVersion -eq '130')
         {
             SqlSetup 'InstallReportingServicesInstance'
@@ -131,6 +130,16 @@ Configuration MSFT_SqlRS_CreateDependencies_Config
                     -TypeName System.Management.Automation.PSCredential `
                     -ArgumentList @(
                         $Node.RunAs_UserName, (ConvertTo-SecureString -String $Node.RunAs_Password -AsPlainText -Force))
+            }
+        }
+        # MSFT_SqlRSSetup.Integration.Tests.ps1 will have installed SSRS 2017.
+        # We just need to start SSRS.
+        elseif($script:sqlVersion -eq '140')
+        {
+            Service 'StartReportingServicesInstance'
+            {
+                Name  = 'SQLServerReportingServices'
+                State = 'Running'
             }
         }
     }
