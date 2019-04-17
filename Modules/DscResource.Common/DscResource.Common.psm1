@@ -340,7 +340,7 @@ function Copy-ItemWithRobocopy
         ArgumentList = $robocopyArgumentList
     }
 
-    Write-Verbose -Message  ($script:localizedData.RobocopyArguments -f $robocopyArgumentList) -Verbose
+    Write-Verbose -Message ($script:localizedData.RobocopyArguments -f $robocopyArgumentList) -Verbose
     $robocopyProcess = Start-Process @robocopyStartProcessParameters -Wait -NoNewWindow -PassThru
 
     switch ($($robocopyProcess.ExitCode))
@@ -359,22 +359,24 @@ function Copy-ItemWithRobocopy
 
         1
         {
-            Write-Verbose -Message  $script:localizedData.RobocopySuccessful -Verbose
+            Write-Verbose -Message $script:localizedData.RobocopySuccessful -Verbose
         }
 
         2
         {
-            Write-Verbose -Message  $script:localizedData.RobocopyRemovedExtraFilesAtDestination -Verbose
+            Write-Verbose -Message $script:localizedData.RobocopyRemovedExtraFilesAtDestination -Verbose
         }
 
         3
         {
-            Write-Verbose -Message  $script:localizedData.RobocopySuccessfulAndRemovedExtraFilesAtDestination -Verbose
+            Write-Verbose -Message (
+                '{0} {1}' -f $script:localizedData.RobocopySuccessful, $script:localizedData.RobocopyRemovedExtraFilesAtDestination
+            ) -Verbose
         }
 
         {$_ -eq 0 -or $null -eq $_ }
         {
-            Write-Verbose -Message  $script:localizedData.RobocopyAllFilesPresent -Verbose
+            Write-Verbose -Message $script:localizedData.RobocopyAllFilesPresent -Verbose
         }
     }
 }

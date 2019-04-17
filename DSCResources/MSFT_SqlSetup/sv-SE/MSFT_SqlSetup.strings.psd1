@@ -42,7 +42,6 @@ ConvertFrom-StringData @'
     EvaluateClientToolsSdkFeature = Letar efter Client Tools SDK funktionen ({0}).
     ClientToolsSdkFeatureFound = Client Tools SDK funktionen hittad.
     ClientToolsSdkFeatureNotFound = Client Tools SDK funktionen hittades inte.
-    RobocopyIsCopying = Robocopy kopierar media från källan '{0}' till destinationen '{1}'.
     FeatureNotSupported = '{0}' är inte ett giltigt värde för egenskapen 'FEATURES'. Titta i hjälpdokumentationen för SQL Server för mer information.
     PathRequireClusterDriveFound = Hittade tilldelad parameter '{0}'. Adderar sökväg '{1}' till listan av sökvägar som kräver en klustrad enhet.
     FailoverClusterDiskMappingError = Kunde inte koppla den specifika sökvägen till en giltig klusterlagring. Enheter kopplade: {0}.
@@ -61,15 +60,6 @@ ConvertFrom-StringData @'
     UnableToFindFeature = Kunde inte hitta funktion '{0}' bland som installerade funktionerna: '{1}'.
     EvaluatingClusterParameters = Klustrad installation, kontrollerar parametrar.
     ClusterParameterIsNotInDesiredState = {0} '{1}' är inte i önskat läge för detta kluster.
-    RobocopyUsingUnbufferedIo = Robocopy använder sig av obuffrad I/O.
-    RobocopyNotUsingUnbufferedIo = Obuffrad I/O kan inte användas på grund av versionen av Robocopy inte är kompatibel.
-    RobocopyArguments = Robocopy startas med följande argument: {0}
-    RobocopyErrorCopying = Robocopy rapporterade fel när filer kopierades. Felkod: {0}.
-    RobocopyFailuresCopying = Robocopy rapporterade att fel uppstod när filer kopierades. Felkod: {0}.
-    RobocopySuccessful = Robocopy lyckades kopiera filer till destinationen.
-    RobocopyRemovedExtraFilesAtDestination = Robocopy fann extra filer på destinationen som inte finns i källan, dessa extra filer togs bort på destinationen.
-    RobocopySuccessfulAndRemovedExtraFilesAtDestination = Robocopy lyckades kopiera filer till destinationen. Robocopy fann extra filer på destinationen som inte finns i källan, dessa extra filer togs bort på destinationen.
-    RobocopyAllFilesPresent = Robocopy rapporterade att alla filer redan finns på destinationen.
     StartSetupProcess = Startade processen med id {0}, använder sig av sökvägen '{1}', och med en tidsgräns på {2} sekunder.
     EvaluateMasterDataServicesFeature = Letar efter Master Data Services (MDS) funktion ({0}).
     MasterDataServicesFeatureFound = Master Data Services (MDS) funktionen hittad.

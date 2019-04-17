@@ -35,6 +35,15 @@ ConvertFrom-StringData @'
     ExecuteNonQueryFailed = Exekvering av icke-fråga misslyckades på databas '{0}'.
     AlterAvailabilityGroupReplicaFailed = Misslyckades att ändra Availability Group kopia '{0}'.
     GetEffectivePermissionForLogin = Hämtar effektiva behörigheter för inloggningen '{0}' på '{1}'.
+    RobocopyIsCopying = Robocopy kopierar media från källan '{0}' till destinationen '{1}'.
+    RobocopyUsingUnbufferedIo = Robocopy använder sig av obuffrad I/O.
+    RobocopyNotUsingUnbufferedIo = Obuffrad I/O kan inte användas på grund av versionen av Robocopy inte är kompatibel.
+    RobocopyArguments = Robocopy startas med följande argument: {0}
+    RobocopyErrorCopying = Robocopy rapporterade fel när filer kopierades. Felkod: {0}.
+    RobocopyFailuresCopying = Robocopy rapporterade att fel uppstod när filer kopierades. Felkod: {0}.
+    RobocopySuccessful = Robocopy lyckades kopiera filer till destinationen.
+    RobocopyRemovedExtraFilesAtDestination = Robocopy fann extra filer på destinationen som inte finns i källan, dessa extra filer togs bort på destinationen.
+    RobocopyAllFilesPresent = Robocopy rapporterade att alla filer redan finns på destinationen.
 
     # - NOTE!
     # - Below strings are used by helper functions New-TerminatingError and New-WarningMessage.
@@ -137,5 +146,4 @@ ConvertFrom-StringData @'
 
     # SQLServerNetwork
     UnableToUseBothDynamicAndStaticPort = Unable to set both TCP dynamic port and TCP static port. Only one can be set.
-
 '@
