@@ -7,6 +7,7 @@ environment:
     secure: 9ekJzfsPCDBkyLrfmov83XbbhZ6E2N3z+B/Io8NbDetbHc6hWS19zsDmy7t0Vvxv
   # The job where deploy step should run (normally the last job)
   DeployInJobNumber: 4
+  APPVEYOR_RDP_PASSWORD: appV1@3$
 
 # The image that will be used when building the job matrix.
 image: Visual Studio 2017
@@ -26,6 +27,9 @@ install:
     - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
     - ps: Import-Module "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
     - ps: Invoke-AppveyorInstallTask
+
+on_finish:
+  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 #---------------------------------#
 #      build configuration        #
