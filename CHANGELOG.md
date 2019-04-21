@@ -18,6 +18,8 @@
     `Start-DscConfiguration -Verbose`.
 - Changes to SqlSetup
   - Concatenated Robocopy localization strings ([issue #694](https://github.com/PowerShell/SqlServerDsc/issues/694)).
+- Changes to SqlWaitForAG
+  - Added en-US localization ([issue #625](https://github.com/PowerShell/SqlServerDsc/issues/625)).
 
 ## 12.4.0.0
 

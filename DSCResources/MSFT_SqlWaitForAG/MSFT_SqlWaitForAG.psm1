@@ -7,6 +7,8 @@ Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath '
 $script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
 Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlWaitForAG'
+
 <#
     .SYNOPSIS
         Returns the cluster role/group that is waiting to be created,
@@ -43,12 +45,26 @@ function Get-TargetResource
         $RetryCount = 30
     )
 
+    Write-Verbose -Message (
+        $script:localizedData.GetCurrentState -f $Name
+    )
+
     $clusterGroupFound = $false
 
     $clusterGroup = Get-ClusterGroup -Name $Name -ErrorAction SilentlyContinue
     if ($null -ne $clusterGroup)
     {
+        Write-Verbose -Message (
+            $script:localizedData.FoundClusterGroup -f $Name
+        )
+
         $clusterGroupFound = $true
+    }
+    else
+    {
+        Write-Verbose -Message (
+            $script:localizedData.MissingClusterGroup -f $Name
+        )
     }
 
     return @{
@@ -93,7 +109,9 @@ function Set-TargetResource
         $RetryCount = 30
     )
 
-    New-VerboseMessage -Message "Checking for cluster group $Name. Will try for a total of $($RetryIntervalSec*$RetryCount) seconds."
+    Write-Verbose -Message (
+        $script:localizedData.WaitingClusterGroup -f $Name, $RetryCount, ($RetryIntervalSec * $RetryCount)
+    )
 
     $getTargetResourceParameters = @{
         Name             = $Name
@@ -106,18 +124,29 @@ function Set-TargetResource
         $clusterGroupFound = (Get-TargetResource @getTargetResourceParameters).GroupExist
         if ($clusterGroupFound)
         {
-            New-VerboseMessage -Message "Found cluster group $Name. Will sleep for another $RetryIntervalSec seconds before continuing."
+            Write-Verbose -Message (
+                '{0} {1}' -f `
+                    ($script:localizedData.FoundClusterGroup -f $Name, $RetryCount, ($RetryIntervalSec * $RetryCount)),
+                    ($script:localizedData.SleepMessage -f $RetryIntervalSec)
+            )
+
             Start-Sleep -Seconds $RetryIntervalSec
             break
         }
 
-        New-VerboseMessage -Message "Cluster group $Name not found. Will retry again after $RetryIntervalSec sec"
+        Write-Verbose -Message (
+            '{0} {1}' -f `
+                ($script:localizedData.MissingClusterGroup -f $Name, $RetryCount, ($RetryIntervalSec * $RetryCount)),
+                ($script:localizedData.RetryMessage -f $RetryIntervalSec)
+        )
+
         Start-Sleep -Seconds $RetryIntervalSec
     }
 
     if (-not $clusterGroupFound)
     {
-        throw "Cluster group $Name not found after $RetryCount attempts with $RetryIntervalSec sec interval"
+        $errorMessage = $script:localizedData.FailedMessage -f $Name
+        New-InvalidOperationException -Message $errorMessage
     }
 }
 
@@ -156,7 +185,9 @@ function Test-TargetResource
         $RetryCount = 30
     )
 
-    New-VerboseMessage -Message "Testing for cluster group $Name."
+    Write-Verbose -Message (
+        $script:localizedData.TestingConfiguration -f $Name
+    )
 
     $getTargetResourceParameters = @{
         Name             = $Name
@@ -167,11 +198,15 @@ function Test-TargetResource
     $clusterGroupFound = (Get-TargetResource @getTargetResourceParameters).GroupExist
     if ($clusterGroupFound)
     {
-        New-VerboseMessage -Message "Found cluster group $Name"
+        Write-Verbose -Message (
+            $script:localizedData.FoundClusterGroup -f $Name
+        )
     }
     else
     {
-        New-VerboseMessage -Message "Cluster group $Name not found"
+        Write-Verbose -Message (
+            $script:localizedData.MissingClusterGroup -f $Name
+        )
     }
 
     return $clusterGroupFound
