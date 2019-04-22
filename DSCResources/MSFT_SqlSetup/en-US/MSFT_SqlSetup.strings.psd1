@@ -42,7 +42,6 @@ ConvertFrom-StringData @'
     EvaluateClientToolsSdkFeature = Detecting Client Tools SDK feature ({0}).
     ClientToolsSdkFeatureFound = Client Tools SDK feature detected.
     ClientToolsSdkFeatureNotFound = Client Tools SDK feature not detected.
-    RobocopyIsCopying = Robocopy is copying media from source '{0}' to destination '{1}'.
     FeatureNotSupported = '{0}' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information.
     PathRequireClusterDriveFound = Found assigned parameter '{0}'. Adding path '{1}' to list of paths that required cluster drive.
     FailoverClusterDiskMappingError = Unable to map the specified paths to valid cluster storage. Drives mapped: {0}.
