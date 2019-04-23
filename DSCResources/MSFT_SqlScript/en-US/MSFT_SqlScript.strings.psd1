@@ -1,5 +1,3 @@
-# Localized resources for SqlSetup
-
 ConvertFrom-StringData @'
     ExecutingGetScript = Executing the Get script from the file path '{0}' on the instance '{1}'.
     ExecutingSetScript = Executing the Set script from the file path '{0}' on the instance '{1}'.

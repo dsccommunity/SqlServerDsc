@@ -1,5 +1,3 @@
-# Localized resources for SqlSetup
-
 ConvertFrom-StringData @'
     ExecutingGetQuery = Executing the Get query on the instance '{0}'.
     ExecutingSetQuery = Executing the Set query on the instance '{0}'.
