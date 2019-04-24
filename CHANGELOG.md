@@ -39,6 +39,9 @@
   - Reporting Services are restarted after changing settings, unless
     `$SuppressRestart` parameter is set ([issue #1331](https://github.com/PowerShell/SqlServerDsc/issues/1331)).
     `$SuppressRestart` will also prevent Reporting Services restart after initialization.
+- Changes to SqlServerLogin
+  - Added en-US localization ([issue #615](https://github.com/PowerShell/SqlServerDsc/issues/615)).
+  - Added unit tests to improved code coverage.
 
 ## 12.4.0.0
 
