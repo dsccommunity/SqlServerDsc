@@ -34,7 +34,6 @@
   - Refactored unit tests to simplify them add add slightly more code
     coverage.
 
-
 ## 12.4.0.0
 
 - Changes to SqlServerDsc
