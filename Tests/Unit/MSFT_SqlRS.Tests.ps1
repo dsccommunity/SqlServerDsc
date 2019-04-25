@@ -522,6 +522,101 @@ try
 
                         Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                Context 'When configuring a named instance that are already initialized, suppress restart' {
+                    BeforeAll {
+                        $mockDynamic_SqlBuildVersion = '13.0.4001.0'
+                        $mockDynamicIsInitialized = $true
+
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                ReportServerReservedUrl = $mockReportServerApplicationUrl
+                                ReportsReservedUrl      = $mockReportsApplicationUrl
+                            }
+                        }
+
+                        Mock -CommandName Test-TargetResource -MockWith {
+                            return $true
+                        }
+
+                        $testParameters = @{
+                            InstanceName                 = $mockNamedInstanceName
+                            DatabaseServerName           = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName         = $mockReportingServicesDatabaseNamedInstanceName
+                            ReportServerVirtualDirectory = 'ReportServer_NewName'
+                            ReportsVirtualDirectory      = 'Reports_NewName'
+                            ReportServerReservedUrl      = 'https://+:4443'
+                            ReportsReservedUrl           = 'https://+:4443'
+                            UseSsl                       = $true
+                            SuppressRestart              = $true
+                        }
+                    }
+
+                    BeforeEach {
+                        Mock -CommandName Get-CimInstance `
+                            -MockWith $mockGetCimInstance_ConfigurationSetting_NamedInstance `
+                            -ParameterFilter $mockGetCimInstance_ConfigurationSetting_ParameterFilter `
+                            -Verifiable
+
+                        Mock -CommandName Get-CimInstance `
+                            -MockWith $mockGetCimInstance_Language `
+                            -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter `
+                            -Verifiable
+                    }
+
+                    It 'Should configure Reporting Service without throwing an error' {
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'SetSecureConnectionLevel'
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportServerApplicationName
+                        } -Exactly -Times 2 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportsApplicationName
+                        } -Exactly -Times 2 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'InitializeReportServer'
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'SetDatabaseConnection'
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'GenerateDatabaseRightsScript'
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'GenerateDatabaseCreationScript'
+                        } -Exactly -Times 0 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportServerApplicationName
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportsApplicationName
+                        } -Exactly -Times 1 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
+                        } -Exactly -Times 2 -Scope It
+
+                        Assert-MockCalled -CommandName Invoke-RsCimMethod -ParameterFilter {
+                            $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
+                        } -Exactly -Times 2 -Scope It
+
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Restart-ReportingServicesService -Exactly -Times 0 -Scope It
                     }
                 }
 
