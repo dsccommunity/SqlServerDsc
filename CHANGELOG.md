@@ -22,6 +22,9 @@
   - Added additional unit tests for code coverage.
 - Changes to SqlSetup
   - Concatenated Robocopy localization strings ([issue #694](https://github.com/PowerShell/SqlServerDsc/issues/694)).
+  - Made the error message more descriptive when the Set-TargetResource
+    function calls the Test-TargetResource function to verify the desired
+    state.
 - Changes to SqlWaitForAG
   - Added en-US localization ([issue #625](https://github.com/PowerShell/SqlServerDsc/issues/625)).
 - Changes to SqlServerPermission
@@ -44,6 +47,11 @@
   - Added unit tests to improved code coverage.
 - Changes to SqlWindowsFirewall
   - Added en-US localization ([issue #614](https://github.com/PowerShell/SqlServerDsc/issues/614)).
+- Changes to SqlRS
+  - Fixed one of the error handling to use localization, and made the
+    error message more descriptive when the Set-TargetResource function
+    calls the Test-TargetResource function to verify the desired
+    state. *This was done prior to adding full en-US localization.*
 
 ## 12.4.0.0
 

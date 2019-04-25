@@ -703,7 +703,8 @@ function Set-TargetResource
 
     if ( -not (Test-TargetResource @PSBoundParameters) )
     {
-        throw New-TerminatingError -ErrorType TestFailedAfterSet -ErrorCategory InvalidResult
+        $errorMessage = $script:localizedData.TestFailedAfterSet
+        New-InvalidResultException -Message $errorMessage
     }
 }
 
