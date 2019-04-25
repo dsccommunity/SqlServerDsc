@@ -24,6 +24,8 @@
   - Concatenated Robocopy localization strings ([issue #694](https://github.com/PowerShell/SqlServerDsc/issues/694)).
 - Changes to SqlWaitForAG
   - Added en-US localization ([issue #625](https://github.com/PowerShell/SqlServerDsc/issues/625)).
+- Changes to SqlServerPermission
+  - Added en-US localization ([issue #619](https://github.com/PowerShell/SqlServerDsc/issues/619)).
 
 ## 12.4.0.0
 
