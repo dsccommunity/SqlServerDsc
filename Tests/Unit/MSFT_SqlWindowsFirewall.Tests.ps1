@@ -1047,7 +1047,7 @@ try
                     }
 
                     It 'Should throw the correct error when Set-TargetResource verifies result with Test-TargetResource' {
-                        { Set-TargetResource @testParameters } | Should -Throw TestFailedAfterSet
+                        { Set-TargetResource @testParameters } | Should -Throw $script:localizedData.TestFailedAfterSet
 
                         Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 1 -Scope It

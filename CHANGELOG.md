@@ -42,6 +42,8 @@
 - Changes to SqlServerLogin
   - Added en-US localization ([issue #615](https://github.com/PowerShell/SqlServerDsc/issues/615)).
   - Added unit tests to improved code coverage.
+- Changes to SqlWindowsFirewall
+  - Added en-US localization ([issue #614](https://github.com/PowerShell/SqlServerDsc/issues/614)).
 
 ## 12.4.0.0
 
