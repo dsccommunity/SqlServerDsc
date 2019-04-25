@@ -92,10 +92,6 @@ ConvertFrom-StringData @'
     AvailabilityGroupListenerIPChangeError = IP-address configuration mismatch. Expecting '{0}' found '{1}'. Resource does not support changing IP-address. Listener needs to be removed and then created again.
     AvailabilityGroupListenerDHCPChangeError = IP-address configuration mismatch. Expecting '{0}' found '{1}'. Resource does not support changing between static IP and DHCP. Listener needs to be removed and then created again.
 
-    # Endpoint
-    EndpointNotFound = Endpoint '{0}' does not exist
-    EndpointErrorVerifyExist = Unexpected result when trying to verify existence of endpoint '{0}'.
-
     # AlwaysOnService
     AlterAlwaysOnServiceFailed = Failed to ensure Always On is {0} on the instance '{1}'.
     UnexpectedAlwaysOnStatus = The status of property Server.IsHadrEnabled was neither $true or $false. Status is '{0}'.
