@@ -53,6 +53,8 @@
   - Added en-US localization ([issue #614](https://github.com/PowerShell/SqlServerDsc/issues/614)).
 - Changes to SqlServerEndpoint
   - Added en-US localization ([issue #611](https://github.com/PowerShell/SqlServerDsc/issues/611)).
+- Changes to SqlServerEndpointPermission
+  - Added en-US localization ([issue #612](https://github.com/PowerShell/SqlServerDsc/issues/612)).
 - Changes to SqlServerEndpointState
   - Added en-US localization ([issue #613](https://github.com/PowerShell/SqlServerDsc/issues/613)).
 

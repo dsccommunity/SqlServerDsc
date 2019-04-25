@@ -147,7 +147,7 @@ try
 
                 Context 'When endpoint is missing' {
                     It 'Should throw the correct error message' {
-                        { Get-TargetResource @testParameters } | Should -Throw 'Got unexpected result from Get-TargetResource. No change is made. InnerException: Endpoint ''DefaultEndpointMirror'' does not exist'
+                        { Get-TargetResource @testParameters } | Should -Throw ($script:localizedData.UnexpectedErrorFromGet -f $testParameters.Name)
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -296,7 +296,7 @@ try
                             }
                         } -Verifiable
 
-                        { Set-TargetResource @testParameters } | Should -Throw 'Endpoint ''DefaultEndpointMirror'' does not exist'
+                        { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.EndpointNotFound -f $testParameters.Name)
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
