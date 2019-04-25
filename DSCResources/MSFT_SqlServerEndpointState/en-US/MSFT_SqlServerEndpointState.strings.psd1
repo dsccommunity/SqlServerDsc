@@ -6,7 +6,7 @@ ConvertFrom-StringData @'
     CurrentState = The current state of the endpoint is '{0}'.
     SetEndpointState = Changing the state of the endpoint with the name '{0}' for the instance '{1}'.
     ChangeState = Changing the state of endpoint to '{0}'.
-    InDesiredState = The endpoint '{0}' is the desired state, the state is '{1}'.
+    InDesiredState = The endpoint '{0}' is in the desired state, the state is '{1}'.
     NotInDesiredState = The endpoint '{0}' has the state '{1}', but expected the state to be '{2}'.
     TestingConfiguration = Determines the state of the endpoint with the name '{0}' for the instance '{1}'.
 '@
