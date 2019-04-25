@@ -94,7 +94,9 @@ try
                                             $mockSqlServerLoginOne = @((
                                                     New-Object -TypeName Object |
                                                         Add-Member -MemberType ScriptMethod -Name IsMember -Value {
-                                                        param(
+                                                        param
+                                                        (
+                                                            [Parameter()]
                                                             [System.String]
                                                             $mockSqlDatabaseRole
                                                         )
@@ -122,7 +124,9 @@ try
                                                     New-Object -TypeName Object |
                                                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseRole -PassThru |
                                                         Add-Member -MemberType ScriptMethod -Name AddMember -Value {
-                                                        param(
+                                                        param
+                                                        (
+                                                            [Parameter()]
                                                             [System.String]
                                                             $mockSqlServerLogin
                                                         )
@@ -137,7 +141,9 @@ try
                                                         }
                                                     } -PassThru |
                                                         Add-Member -MemberType ScriptMethod -Name DropMember -Value {
-                                                        param(
+                                                        param
+                                                        (
+                                                            [Parameter()]
                                                             [System.String]
                                                             $mockSqlServerLogin
                                                         )
@@ -156,7 +162,9 @@ try
                                                     New-Object -TypeName Object |
                                                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseRoleSecond -PassThru |
                                                         Add-Member -MemberType ScriptMethod -Name AddMember -Value {
-                                                        param(
+                                                        param
+                                                        (
+                                                            [Parameter()]
                                                             [System.String]
                                                             $mockSqlServerLogin
                                                         )
@@ -171,7 +179,9 @@ try
                                                         }
                                                     } -PassThru |
                                                         Add-Member -MemberType ScriptMethod -Name DropMember -Value {
-                                                        param(
+                                                        param
+                                                        (
+                                                            [Parameter()]
                                                             [System.String]
                                                             $mockSqlServerLogin
                                                         )
@@ -234,7 +244,7 @@ try
         }
         #endregion
 
-        Describe "MSFT_SqlDatabaseRole\Get-TargetResource" -Tag 'Get' {
+        Describe 'MSFT_SqlDatabaseRole\Get-TargetResource' -Tag 'Get' {
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
@@ -248,10 +258,9 @@ try
                         Role     = $mockSqlDatabaseRole
                     }
 
-                    $throwInvalidOperation = ("Database 'unknownDatabaseName' does not exist " + `
-                            "on SQL server 'localhost\MSSQLSERVER'.")
+                    $errorMessage = $script:localizedData.DatabaseNotFound -f $testParameters.Database
 
-                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -268,10 +277,9 @@ try
                         Role     = 'unknownRoleName'
                     }
 
-                    $throwInvalidOperation = ("Role 'unknownRoleName' does not exist on database " + `
-                            "'AdventureWorks' on SQL server 'localhost\MSSQLSERVER'.")
+                    $errorMessage = $script:localizedData.RoleNotFound -f $testParameters.Role, $testParameters.Database
 
-                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -305,10 +313,10 @@ try
                         Role     = $mockSqlDatabaseRole
                     }
 
-                    $throwInvalidOperation = ("Login 'unknownLoginName' does not exist " + `
-                            "on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    $errorMessage = $script:localizedData.LoginNotFound -f $testParameters.Name
+
+                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -604,11 +612,9 @@ try
                         Ensure   = 'Present'
                     }
 
-                    $throwInvalidOperation = ('Failed adding the login John as a user of the database AdventureWorks, on ' + `
-                            'the instance localhost\MSSQLSERVER. InnerException: Exception calling "Create" ' + `
-                            'with "0" argument(s): "Mock Create Method was called with invalid operation."')
+                    $errorMessage = $script:localizedData.FailedToAddUser -f $testParameters.Name, $testParameters.Database
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -659,12 +665,9 @@ try
                         Ensure   = 'Present'
                     }
 
-                    $throwInvalidOperation = ('Failed adding the login CONTOSO\KingJulian to the role MySecondRole on ' + `
-                            'the database AdventureWorks, on the instance localhost\MSSQLSERVER. ' + `
-                            'InnerException: Exception calling "AddMember" with "1" argument(s): ' + `
-                            '"Mock AddMember Method was called with invalid operation."')
+                    $errorMessage = $script:localizedData.FailedToAddUserToRole -f $testParameters.Name, $testParameters.Role, $testParameters.Database
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -714,12 +717,9 @@ try
                         Ensure   = 'Absent'
                     }
 
-                    $throwInvalidOperation = ('Failed removing the login CONTOSO\SQLAdmin from the role MyRole on ' + `
-                            'the database AdventureWorks, on the instance localhost\MSSQLSERVER. ' + `
-                            'InnerException: Exception calling "DropMember" with "1" argument(s): ' + `
-                            '"Mock DropMember Method was called with invalid operation."')
+                    $errorMessage = $script:localizedData.FailedToDropUserFromRole -f $testParameters.Name, $testParameters.Role, $testParameters.Database
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {

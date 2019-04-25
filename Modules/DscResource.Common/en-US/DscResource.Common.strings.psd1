@@ -83,8 +83,6 @@ ConvertFrom-StringData @'
 
     # Database Role
     AddLoginDatabaseSetError = Failed adding the login {2} as a user of the database {3}, on the instance {0}\\{1}.
-    DropMemberDatabaseSetError = Failed removing the login {2} from the role {3} on the database {4}, on the instance {0}\\{1}.
-    AddMemberDatabaseSetError = Failed adding the login {2} to the role {3} on the database {4}, on the instance {0}\\{1}.
 
     # AvailabilityGroupListener
     AvailabilityGroupListenerNotFound = Trying to make a change to a listener that does not exist.

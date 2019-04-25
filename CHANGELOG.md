@@ -57,6 +57,8 @@
   - Added en-US localization ([issue #612](https://github.com/PowerShell/SqlServerDsc/issues/612)).
 - Changes to SqlServerEndpointState
   - Added en-US localization ([issue #613](https://github.com/PowerShell/SqlServerDsc/issues/613)).
+- Changes to SqlDatabaseRole
+  - Added en-US localization ([issue #610](https://github.com/PowerShell/SqlServerDsc/issues/610)).
 
 ## 12.4.0.0
 
