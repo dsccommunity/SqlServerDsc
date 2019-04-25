@@ -227,7 +227,7 @@ try
 
                 Context 'When endpoint exist but with wrong endpoint type' {
                     It 'Should throw the correct error' {
-                        { Get-TargetResource @testParameters } | Should -Throw 'Endpoint ''DefaultEndpointMirror'' does exist, but it is not of type ''DatabaseMirroring''.'
+                        { Get-TargetResource @testParameters } | Should -Throw ($script:localizedData.EndpointFoundButWrongType -f $testParameters.EndpointName)
                     }
                 }
 
@@ -241,7 +241,7 @@ try
                         return $null
                     }
 
-                    { Get-TargetResource @testParameters } | Should -Throw 'Was unable to connect to the instance ''localhost\INSTANCE1'''
+                    { Get-TargetResource @testParameters } | Should -Throw ($script:localizedData.NotConnectedToInstance -f $testParameters.ServerName, $testParameters.InstanceName)
                 }
             }
 
@@ -583,7 +583,7 @@ try
                             }
                         } -Verifiable
 
-                        { Set-TargetResource @testParameters } | Should -Throw 'Endpoint ''DefaultEndpointMirror'' does not exist'
+                        { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.EndpointNotFound -f $testParameters.EndpointName)
                     }
                 }
 
@@ -600,7 +600,7 @@ try
 
                         $testParameters.Add('Ensure', 'Absent')
 
-                        { Set-TargetResource @testParameters } | Should -Throw 'Endpoint ''DefaultEndpointMirror'' does not exist'
+                        { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.EndpointNotFound -f $testParameters.EndpointName)
                     }
                 }
 
@@ -611,7 +611,7 @@ try
                             return $null
                         }
 
-                        { Set-TargetResource @testParameters } | Should -Throw 'Was unable to connect to the instance ''localhost\INSTANCE1'''
+                        { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.NotConnectedToInstance -f $testParameters.ServerName, $testParameters.InstanceName)
                     }
                 }
             }
