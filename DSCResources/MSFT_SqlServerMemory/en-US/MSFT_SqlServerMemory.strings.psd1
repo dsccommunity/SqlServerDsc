@@ -8,7 +8,7 @@ ConvertFrom-StringData @'
     MinimumMemoryLimited = Minimum memory used by the instance '{0}' has been set to {1}MB.
     DefaultValues = Resetting to the default values; MinMemory = {0}, MaxMemory = {1}.
     ResetDefaultValues = Minimum and maximum server memory values used by the instance {0} has been reset to the default values.
-    AlterServerMemoryFailed = Failed to alter the server configuration memory for {0}\{1}.
+    AlterServerMemoryFailed = Failed to alter the server configuration memory for {0}\\{1}.
     ErrorGetDynamicMaxMemory = Failed to calculate dynamically the maximum memory.
     EvaluatingMinAndMaxMemory = Determines the values of the minimum and maximum memory server configuration option for the instance '{0}'.
     NotActiveNode = The node '{0}' is not actively hosting the instance '{1}'. Will always return success for this resource on this node, until this node is actively hosting the instance.
