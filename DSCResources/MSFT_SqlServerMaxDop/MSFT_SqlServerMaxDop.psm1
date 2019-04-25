@@ -7,6 +7,8 @@ Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath '
 $script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
 Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerMaxDop'
+
 <#
     .SYNOPSIS
     This function gets the max degree of parallelism server configuration option.
@@ -34,14 +36,16 @@ function Get-TargetResource
         $ServerName = $env:COMPUTERNAME
     )
 
+    Write-Verbose -Message (
+        $script:localizedData.GetConfiguration -f $InstanceName
+    )
+
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
-
-    # Is this node actively hosting the SQL instance?
-    $isActiveNode = Test-ActiveNode -ServerObject $sqlServerObject
-
     if ($sqlServerObject)
     {
-        Write-Verbose -Message 'Getting the max degree of parallelism server configuration option'
+        # Is this node actively hosting the SQL instance?
+        $isActiveNode = Test-ActiveNode -ServerObject $sqlServerObject
+
         $currentMaxDop = $sqlServerObject.Configuration.MaxDegreeOfParallelism.ConfigValue
     }
 
@@ -115,10 +119,12 @@ function Set-TargetResource
     )
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
-
     if ($sqlServerObject)
     {
-        Write-Verbose -Message 'Setting the max degree of parallelism server configuration option'
+        Write-Verbose -Message (
+            $script:localizedData.SetConfiguration -f $InstanceName
+        )
+
         switch ($Ensure)
         {
             'Present'
@@ -127,13 +133,15 @@ function Set-TargetResource
                 {
                     if ($MaxDop)
                     {
-                        throw New-TerminatingError -ErrorType MaxDopParamMustBeNull `
-                            -FormatArgs @( $ServerName, $InstanceName ) `
-                            -ErrorCategory InvalidArgument
+                        $errorMessage = $script:localizedData.MaxDopParamMustBeNull
+                        New-InvalidArgumentException -ArgumentName 'MaxDop' -Message $errorMessage
                     }
 
                     $targetMaxDop = Get-SqlDscDynamicMaxDop -SqlServerObject $sqlServerObject
-                    New-VerboseMessage -Message "Dynamic MaxDop is $targetMaxDop."
+
+                    Write-Verbose -Message (
+                        $script:localizedData.DynamicMaxDop -f $targetMaxDop
+                    )
                 }
                 else
                 {
@@ -144,7 +152,10 @@ function Set-TargetResource
             'Absent'
             {
                 $targetMaxDop = 0
-                New-VerboseMessage -Message 'Desired state should be absent - MAXDOP is reset to the default value.'
+
+                Write-Verbose -Message (
+                    $script:localizedData.SettingDefaultValue -f $targetMaxDop
+                )
             }
         }
 
@@ -152,14 +163,15 @@ function Set-TargetResource
         {
             $sqlServerObject.Configuration.MaxDegreeOfParallelism.ConfigValue = $targetMaxDop
             $sqlServerObject.Alter()
-            New-VerboseMessage -Message "Setting MAXDOP value to $targetMaxDop."
+
+            Write-Verbose -Message (
+                $script:localizedData.ChangeValue -f $targetMaxDop
+            )
         }
         catch
         {
-            throw New-TerminatingError -ErrorType MaxDopSetError `
-                -FormatArgs @($ServerName, $InstanceName, $targetMaxDop) `
-                -ErrorCategory InvalidOperation `
-                -InnerException $_.Exception
+            $errorMessage = $script:localizedData.MaxDopSetError
+            New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
         }
     }
 }
@@ -223,7 +235,9 @@ function Test-TargetResource
         $ProcessOnlyOnActiveNode
     )
 
-    Write-Verbose -Message 'Testing the max degree of parallelism server configuration option'
+    Write-Verbose -Message (
+        $script:localizedData.EvaluationConfiguration -f $targetMaxDop
+    )
 
     $parameters = @{
         InstanceName = $InstanceName
@@ -241,7 +255,10 @@ function Test-TargetResource
     #>
     if ( $ProcessOnlyOnActiveNode -and -not $getTargetResourceResult.IsActiveNode )
     {
-        New-VerboseMessage -Message ( 'The node "{0}" is not actively hosting the instance "{1}". Exiting the test.' -f $env:COMPUTERNAME, $InstanceName )
+        Write-Verbose -Message (
+            $script:localizedData.NotActiveNode -f $env:COMPUTERNAME, $InstanceName
+        )
+
         return $isMaxDopInDesiredState
     }
 
@@ -249,39 +266,42 @@ function Test-TargetResource
     {
         'Absent'
         {
-            if ($getMaxDop -ne 0)
+            $defaultMaxDopValue = 0
+
+            if ($getMaxDop -ne $defaultMaxDopValue)
             {
-                New-VerboseMessage -Message "Current MaxDop is $getMaxDop should be updated to 0"
+                Write-Verbose -Message (
+                    $script:localizedData.WrongMaxDop -f $getMaxDop, $defaultMaxDopValue
+                )
+
                 $isMaxDopInDesiredState = $false
             }
         }
+
         'Present'
         {
             if ($DynamicAlloc)
             {
                 if ($MaxDop)
                 {
-                    throw New-TerminatingError -ErrorType MaxDopParamMustBeNull `
-                        -FormatArgs @( $ServerName, $InstanceName ) `
-                        -ErrorCategory InvalidArgument
+                    $errorMessage = $script:localizedData.MaxDopParamMustBeNull
+                    New-InvalidArgumentException -ArgumentName 'MaxDop' -Message $errorMessage
                 }
 
-                $dynamicMaxDop = Get-SqlDscDynamicMaxDop
-                New-VerboseMessage -Message "Dynamic MaxDop is $dynamicMaxDop."
+                $MaxDop = Get-SqlDscDynamicMaxDop
 
-                if ($getMaxDop -ne $dynamicMaxDop)
-                {
-                    New-VerboseMessage -Message "Current MaxDop is $getMaxDop should be updated to $dynamicMaxDop"
-                    $isMaxDopInDesiredState = $false
-                }
+                Write-Verbose -Message (
+                    $script:localizedData.DynamicMaxDop -f $MaxDop
+                )
             }
-            else
+
+            if ($getMaxDop -ne $MaxDop)
             {
-                if ($getMaxDop -ne $MaxDop)
-                {
-                    New-VerboseMessage -Message "Current MaxDop is $getMaxDop should be updated to $MaxDop"
-                    $isMaxDopInDesiredState = $false
-                }
+                Write-Verbose -Message (
+                    $script:localizedData.WrongMaxDop -f $getMaxDop, $MaxDop
+                )
+
+                $isMaxDopInDesiredState = $false
             }
         }
     }

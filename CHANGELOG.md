@@ -33,6 +33,8 @@
     ([issue #1329](https://github.com/PowerShell/SqlServerDsc/issues/1329)).
   - Refactored unit tests to simplify them add add slightly more code
     coverage.
+- Changes to SqlServerMaxDop
+  - Added en-US localization ([issue #616](https://github.com/PowerShell/SqlServerDsc/issues/616)).
 
 ## 12.4.0.0
 
