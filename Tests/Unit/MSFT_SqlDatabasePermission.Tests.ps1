@@ -257,10 +257,9 @@ try
                         Permissions     = @( 'Connect', 'Update' )
                     }
 
-                    $throwInvalidOperation = ("Database 'unknownDatabaseName' does not exist " + `
-                            "on SQL server 'localhost\MSSQLSERVER'.")
+                    $errorMessage = $script:localizedData.DatabaseNotFound -f $testParameters.Database
 
-                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -276,10 +275,9 @@ try
                         Permissions     = @( 'Connect', 'Update' )
                     }
 
-                    $throwInvalidOperation = ("Login 'unknownLoginName' does not exist " + `
-                            "on SQL server 'localhost\MSSQLSERVER'.")
+                    $errorMessage = $script:localizedData.LoginNotFound -f $testParameters.Name
 
-                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -296,10 +294,9 @@ try
                         Permissions     = @( 'Connect', 'Update' )
                     }
 
-                    $throwInvalidOperation = ('Failed to get permission for login named Zebes\SamusAran of ' + `
-                            'the database named AdventureWorks on localhost\MSSQLSERVER.')
+                    $errorMessage = $script:localizedData.FailedToEnumDatabasePermissions -f $testParameters.Name, $testParameters.Database
 
-                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -428,10 +425,9 @@ try
                         Ensure          = 'Present'
                     }
 
-                    $throwInvalidOperation = ("Database 'unknownDatabaseName' does not exist " + `
-                            "on SQL server 'localhost\MSSQLSERVER'.")
+                    $errorMessage = $script:localizedData.DatabaseNotFound -f $testParameters.Database
 
-                    { Test-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Test-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -448,10 +444,9 @@ try
                         Ensure          = 'Present'
                     }
 
-                    $throwInvalidOperation = ("Login 'unknownLoginName' does not exist " + `
-                            "on SQL server 'localhost\MSSQLSERVER'.")
+                    $errorMessage = $script:localizedData.LoginNotFound -f $testParameters.Name
 
-                    { Test-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Test-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -469,10 +464,9 @@ try
                         Ensure          = 'Present'
                     }
 
-                    $throwInvalidOperation = ('Failed to get permission for login named Zebes\SamusAran of ' + `
-                            'the database named AdventureWorks on localhost\MSSQLSERVER.')
+                    $errorMessage = $script:localizedData.FailedToEnumDatabasePermissions -f $testParameters.Name, $testParameters.Database
 
-                    { Test-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Test-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -573,10 +567,9 @@ try
                         Ensure          = 'Present'
                     }
 
-                    $throwInvalidOperation = ("Database 'unknownDatabaseName' does not exist " + `
-                            "on SQL server 'localhost\MSSQLSERVER'.")
+                    $errorMessage = $script:localizedData.DatabaseNotFound -f $testParameters.Database
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -593,10 +586,10 @@ try
                         Ensure          = 'Present'
                     }
 
-                    $throwInvalidOperation = ("Login 'unknownLoginName' does not exist " + `
-                            "on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    $errorMessage = $script:localizedData.LoginNotFound -f $testParameters.Name
+
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -614,11 +607,9 @@ try
                         Ensure          = 'Present'
                     }
 
-                    $throwInvalidOperation = ('Failed adding the login Elysia\Chozo ' + `
-                            'as a user of the database AdventureWorks, ' + `
-                            'on the instance localhost\MSSQLSERVER.')
+                    $errorMessage = $script:localizedData.FailedToAddUser -f $testParameters.Name, $testParameters.Database
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
                     $script:mockMethodCreateLoginRan | Should -Be $true
 
@@ -629,9 +620,7 @@ try
             Context 'When the system is not in the desired state' {
                 Context 'When the mock methods fail (testing the test)' {
                     BeforeAll {
-                        $throwInvalidOperation = ('Failed to set permission for login named ' + `
-                                'Zebes\SamusAran of the database named ' + `
-                                'AdventureWorks on localhost\MSSQLSERVER.')
+                        $throwInvalidOperation = $script:localizedData.FailedToSetPermissionDatabase -f 'Zebes\SamusAran', 'AdventureWorks'
 
                         $mockExpectedSqlServerLogin = $mockSqlServerLoginUnknown
                     }

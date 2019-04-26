@@ -111,8 +111,6 @@ ConvertFrom-StringData @'
     DropDatabaseSetError = Failed to drop the database named {2} on {0}\\{1}.
     FailedToGetOwnerDatabase = Failed to get owner of the database named {0} on {1}\\{2}.
     FailedToSetOwnerDatabase = Failed to set owner named {0} of the database named {1} on {2}\\{3}.
-    FailedToSetPermissionDatabase = Failed to set permission for login named {0} of the database named {1} on {2}\\{3}.
-    FailedToEnumDatabasePermissions = Failed to get permission for login named {0} of the database named {1} on {2}\\{3}.
     UpdateDatabaseSetError = Failed to update database {1} on {0}\\{1} with specified changes.
     InvalidCollationError = The specified collation '{3}' is not a valid collation for database {2} on {0}\\{1}.
 
