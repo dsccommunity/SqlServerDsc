@@ -7,6 +7,8 @@ Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath '
 $script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
 Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlWindowsFirewall'
+
 <#
     .SYNOPSIS
         Returns the current state of the firewall rules.
@@ -48,13 +50,23 @@ function Get-TargetResource
 
     $InstanceName = $InstanceName.ToUpper()
 
+    Write-Verbose -Message (
+        $script:localizedData.EnumeratingFirewallRules -f $InstanceName
+    )
+
     $SourcePath = [Environment]::ExpandEnvironmentVariables($SourcePath)
 
     if ($SourceCredential)
     {
+        $userName = "$($SourceCredential.GetNetworkCredential().Domain)\$($SourceCredential.GetNetworkCredential().UserName)"
+
+        Write-Verbose -Message (
+            $script:localizedData.ConnectUsingCredential -f $SourcePath, $userName
+        )
+
         $newSmbMappingParameters = @{
             RemotePath = $SourcePath
-            UserName   = "$($SourceCredential.GetNetworkCredential().Domain)\$($SourceCredential.GetNetworkCredential().UserName)"
+            UserName   = $userName
             Password   = $($SourceCredential.GetNetworkCredential().Password)
         }
 
@@ -63,9 +75,15 @@ function Get-TargetResource
 
     $pathToSetupExecutable = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
 
-    New-VerboseMessage -Message "Using path: $pathToSetupExecutable"
+    Write-Verbose -Message (
+        $script:localizedData.UsingPath -f $pathToSetupExecutable
+    )
 
     $sqlVersion = Get-SqlMajorVersion -Path $pathToSetupExecutable
+
+    Write-Verbose -Message (
+        $script:localizedData.MajorVersion -f $sqlVersion
+    )
 
     if ($SourceCredential)
     {
@@ -352,24 +370,40 @@ function Set-TargetResource
 
     $InstanceName = $InstanceName.ToUpper()
 
+    Write-Verbose -Message (
+        $script:localizedData.ModifyFirewallRules -f $InstanceName
+    )
+
     $SourcePath = [Environment]::ExpandEnvironmentVariables($SourcePath)
 
     if ($SourceCredential)
     {
+        $userName = "$($SourceCredential.GetNetworkCredential().Domain)\$($SourceCredential.GetNetworkCredential().UserName)"
+
+        Write-Verbose -Message (
+            $script:localizedData.ConnectUsingCredential -f $SourcePath, $userName
+        )
+
         $newSmbMappingParameters = @{
             RemotePath = $SourcePath
-            UserName   = "$($SourceCredential.GetNetworkCredential().Domain)\$($SourceCredential.GetNetworkCredential().UserName)"
+            UserName   = $userName
             Password   = $($SourceCredential.GetNetworkCredential().Password)
         }
 
         $null = New-SmbMapping @newSmbMappingParameters
     }
 
-    $path = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
+    $pathToSetupExecutable = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
 
-    New-VerboseMessage -Message "Using path: $path"
+    Write-Verbose -Message (
+        $script:localizedData.UsingPath -f $pathToSetupExecutable
+    )
 
-    $sqlVersion = Get-SqlMajorVersion -Path $path
+    $sqlVersion = Get-SqlMajorVersion -Path $pathToSetupExecutable
+
+    Write-Verbose -Message (
+        $script:localizedData.MajorVersion -f $sqlVersion
+    )
 
     if ($SourceCredential)
     {
@@ -558,7 +592,8 @@ function Set-TargetResource
 
     if (-not (Test-TargetResource -SourcePath $SourcePath -Features $Features -InstanceName $InstanceName))
     {
-        throw New-TerminatingError -ErrorType TestFailedAfterSet -ErrorCategory InvalidResult
+        $errorMessage = $script:localizedData.TestFailedAfterSet
+        New-InvalidResultException -Message $errorMessage
     }
 }
 
@@ -609,9 +644,28 @@ function Test-TargetResource
         $SourceCredential
     )
 
+    Write-Verbose -Message (
+        $script:localizedData.EvaluatingFirewallRules -f $sqlVersion
+    )
+
     $getTargetResourceResult = Get-TargetResource -SourcePath $SourcePath -Features $Features -InstanceName $InstanceName
 
-    return ($getTargetResourceResult.Ensure -eq $Ensure)
+    $isInDesiredState = $getTargetResourceResult.Ensure -eq $Ensure
+
+    if ($isInDesiredState)
+    {
+        Write-Verbose -Message (
+            $script:localizedData.InDesiredState
+        )
+    }
+    else
+    {
+        Write-Verbose -Message (
+            $script:localizedData.NotInDesiredState
+        )
+    }
+
+    return $isInDesiredState
 }
 
 <#
@@ -747,13 +801,13 @@ function Test-IsFirewallRuleInDesiredState
 
     $isRuleInDesiredState = $false
 
-    if ($firewallRule = Get-NetFirewallRule -DisplayName $DisplayName -ErrorAction SilentlyContinue)
+    if ($firewallRule = Get-NetFirewallRule -DisplayName $DisplayName -ErrorAction 'SilentlyContinue')
     {
         if (($firewallRule.Enabled -eq $Enabled) -and ($firewallRule.Profile -eq $Profile) -and ($firewallRule.Direction -eq $Direction))
         {
             if ($PSBoundParameters.ContainsKey('Program'))
             {
-                if ($firewallApplicationFilter = Get-NetFirewallApplicationFilter -AssociatedNetFirewallRule $firewallRule -ErrorAction SilentlyContinue)
+                if ($firewallApplicationFilter = Get-NetFirewallApplicationFilter -AssociatedNetFirewallRule $firewallRule -ErrorAction 'SilentlyContinue')
                 {
                     if ($firewallApplicationFilter.Program -eq $Program)
                     {
@@ -764,7 +818,7 @@ function Test-IsFirewallRuleInDesiredState
 
             if ($PSBoundParameters.ContainsKey('Service'))
             {
-                if ($firewallServiceFilter = Get-NetFirewallServiceFilter -AssociatedNetFirewallRule $firewallRule -ErrorAction SilentlyContinue)
+                if ($firewallServiceFilter = Get-NetFirewallServiceFilter -AssociatedNetFirewallRule $firewallRule -ErrorAction 'SilentlyContinue')
                 {
                     if ($firewallServiceFilter.Service -eq $Service)
                     {
@@ -775,7 +829,7 @@ function Test-IsFirewallRuleInDesiredState
 
             if ($PSBoundParameters.ContainsKey('Protocol') -and $PSBoundParameters.ContainsKey('LocalPort'))
             {
-                if ($firewallPortFilter = Get-NetFirewallPortFilter -AssociatedNetFirewallRule $firewallRule -ErrorAction SilentlyContinue)
+                if ($firewallPortFilter = Get-NetFirewallPortFilter -AssociatedNetFirewallRule $firewallRule -ErrorAction 'SilentlyContinue')
                 {
                     if ($firewallPortFilter.Protocol -eq $Protocol -and $firewallPortFilter.LocalPort -eq $LocalPort)
                     {

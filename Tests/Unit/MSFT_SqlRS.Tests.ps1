@@ -417,7 +417,7 @@ try
                         }
 
                         It 'Should throw the correct error message' {
-                            { Set-TargetResource @defaultParameters } | Should -Throw 'Test-TargetResource returned false after calling set.'
+                            { Set-TargetResource @defaultParameters } | Should -Throw $script:localizedData.TestFailedAfterSet
                         }
                     }
 
