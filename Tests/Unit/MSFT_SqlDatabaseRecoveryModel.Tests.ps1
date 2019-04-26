@@ -109,10 +109,9 @@ try
                         RecoveryModel = 'Full'
                     }
 
-                    $throwInvalidOperation = ("Database 'UnknownDatabase' does not exist " + `
-                            "on SQL server 'localhost\MSSQLSERVER'.")
+                    $errorMessage = $script:localizedData.DatabaseNotFound -f $testParameters.Name
 
-                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -224,10 +223,9 @@ try
                         RecoveryModel = 'Full'
                     }
 
-                    $throwInvalidOperation = ("Database 'UnknownDatabase' does not exist " + `
-                            "on SQL server 'localhost\MSSQLSERVER'.")
+                    $errorMessage = $script:localizedData.DatabaseNotFound -f $testParameters.Name
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {
