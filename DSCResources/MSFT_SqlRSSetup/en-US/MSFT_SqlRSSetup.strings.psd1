@@ -1,5 +1,3 @@
-# Localized resources for SqlSetup
-
 ConvertFrom-StringData @'
     TestingConfiguration = Determines if the Microsoft SQL Server Reporting Service instance is installed.
     FoundInstance = Found Microsoft SQL Server Reporting Service instance named '{0}'.
