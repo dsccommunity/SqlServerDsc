@@ -7,6 +7,8 @@ Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath '
 $script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
 Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlAGListener'
+
 <#
     .SYNOPSIS
         Returns the current state of the Availability Group listener.
@@ -47,13 +49,19 @@ function Get-TargetResource
         $AvailabilityGroup
     )
 
+    Write-Verbose -Message (
+        $script:localizedData.GetAvailabilityGroupListener -f $Name, $AvailabilityGroup, $InstanceName
+    )
+
     try
     {
         $availabilityGroupListener = Get-SQLAlwaysOnAvailabilityGroupListener -Name $Name -AvailabilityGroup $AvailabilityGroup -ServerName $ServerName -InstanceName $InstanceName
 
         if ($null -ne $availabilityGroupListener)
         {
-            New-VerboseMessage -Message "Listener $Name exist."
+            Write-Verbose -Message (
+                $script:localizedData.AvailabilityGroupListenerIsPresent -f $Name
+            )
 
             $ensure = 'Present'
             $port = [uint16]( $availabilityGroupListener | Select-Object -ExpandProperty PortNumber )
@@ -69,7 +77,9 @@ function Get-TargetResource
         }
         else
         {
-            New-VerboseMessage -Message "Listener $Name does not exist"
+            Write-Verbose -Message (
+                $script:localizedData.AvailabilityGroupListenerIsNotPresent -f $Name
+            )
 
             $ensure = 'Absent'
             $port = 0
@@ -79,7 +89,8 @@ function Get-TargetResource
     }
     catch
     {
-        throw New-TerminatingError -ErrorType AvailabilityGroupListenerNotFound -FormatArgs @($Name) -ErrorCategory ObjectNotFound -InnerException $_.Exception
+        $errorMessage = $script:localizedData.AvailabilityGroupListenerNotFound -f $AvailabilityGroup, $InstanceName
+        New-ObjectNotFoundException -Message $errorMessage -ErrorRecord $_
     }
 
     return @{
@@ -176,7 +187,9 @@ function Set-TargetResource
         {
             if ($Ensure -eq 'Present')
             {
-                New-VerboseMessage -Message "Create listener on $AvailabilityGroup"
+                Write-Verbose -Message (
+                    $script:localizedData.CreateAvailabilityGroupListener -f $Name, $AvailabilityGroup, $InstanceName
+                )
 
                 $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
 
@@ -190,7 +203,10 @@ function Set-TargetResource
 
                     if ($Port)
                     {
-                        New-VerboseMessage -Message "Listener port set to $Port"
+                        Write-Verbose -Message (
+                            $script:localizedData.SetAvailabilityGroupListenerPort -f $Port
+                        )
+
                         $newListenerParams += @{
                             Port = $Port
                         }
@@ -198,33 +214,42 @@ function Set-TargetResource
 
                     if ($DHCP -and $IpAddress.Count -gt 0)
                     {
-                        New-VerboseMessage -Message "Listener set to DHCP with subnet $IpAddress"
+                        Write-Verbose -Message (
+                            $script:localizedData.SetAvailabilityGroupListenerDhcp -f $IpAddress
+                        )
+
                         $newListenerParams += @{
                             DhcpSubnet = [System.String] $IpAddress
                         }
                     }
                     elseif (-not $DHCP -and $IpAddress.Count -gt 0)
                     {
-                        New-VerboseMessage -Message "Listener set to static IP-address(es); $($IpAddress -join ', ')"
+                        Write-Verbose -Message (
+                            $script:localizedData.SetAvailabilityGroupListenerStaticIpAddress -f ($IpAddress -join ', ')
+                        )
+
                         $newListenerParams += @{
                             StaticIp = $IpAddress
                         }
                     }
                     else
                     {
-                        New-VerboseMessage -Message 'Listener using DHCP with server default subnet'
+                        Write-Verbose -Message $script:localizedData.SetAvailabilityGroupListenerDhcpDefaultSubnet
                     }
 
                     New-SqlAvailabilityGroupListener @newListenerParams -ErrorAction Stop | Out-Null
                 }
                 else
                 {
-                    throw New-TerminatingError -ErrorType AvailabilityGroupNotFound -FormatArgs @($AvailabilityGroup, $InstanceName) -ErrorCategory ObjectNotFound
+                    $errorMessage = $script:localizedData.AvailabilityGroupNotFound -f $AvailabilityGroup, $InstanceName
+                    New-ObjectNotFoundException -Message $errorMessage
                 }
             }
             else
             {
-                New-VerboseMessage -Message "Remove listener from $AvailabilityGroup"
+                Write-Verbose -Message (
+                    $script:localizedData.DropAvailabilityGroupListener -f $Name, $AvailabilityGroup, $InstanceName
+                )
 
                 $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
 
@@ -238,27 +263,29 @@ function Set-TargetResource
                     }
                     else
                     {
-                        throw New-TerminatingError -ErrorType AvailabilityGroupListenerNotFound -ErrorCategory ObjectNotFound
+                        $errorMessage = $script:localizedData.AvailabilityGroupListenerNotFound -f $AvailabilityGroup, $InstanceName
+                        New-ObjectNotFoundException -Message $errorMessage
                     }
                 }
                 else
                 {
-                    throw New-TerminatingError -ErrorType AvailabilityGroupNotFound -FormatArgs @($AvailabilityGroup, $InstanceName) -ErrorCategory ObjectNotFound
+                    $errorMessage = $script:localizedData.AvailabilityGroupNotFound -f $AvailabilityGroup, $InstanceName
+                    New-ObjectNotFoundException -Message $errorMessage
                 }
             }
         }
         else
         {
-            if ($Ensure -ne '')
-            {
-                New-VerboseMessage -Message "State is already $Ensure"
-            }
-
             if ($availabilityGroupListenerState.Ensure -eq 'Present')
             {
+                Write-Verbose -Message (
+                    $script:localizedData.AvailabilityGroupListenerIsPresent -f $Name
+                )
+
                 if (-not $DHCP -and $availabilityGroupListenerState.IpAddress.Count -lt $IpAddress.Count) # Only able to add a new IP-address, not change existing ones.
                 {
-                    New-VerboseMessage -Message 'Found at least one new IP-address.'
+                    Write-Verbose -Message $script:localizedData.FoundNewIpAddress
+
                     $ipAddressEqual = $false
                 }
                 else
@@ -270,13 +297,15 @@ function Set-TargetResource
                     }
                     else
                     {
-                        throw New-TerminatingError -ErrorType AvailabilityGroupListenerIPChangeError -FormatArgs @($($IpAddress -join ', '), $($availabilityGroupListenerState.IpAddress -join ', ')) -ErrorCategory InvalidOperation
+                        $errorMessage = $script:localizedData.AvailabilityGroupListenerIPChangeError -f ($IpAddress -join ', '), ($availabilityGroupListenerState.IpAddress -join ', ')
+                        New-InvalidOperationException -Message $errorMessage
                     }
                 }
 
                 if ($($PSBoundParameters.ContainsKey('DHCP')) -and $availabilityGroupListenerState.DHCP -ne $DHCP)
                 {
-                    throw New-TerminatingError -ErrorType AvailabilityGroupListenerDHCPChangeError -FormatArgs @( $DHCP, $($availabilityGroupListenerState.DHCP) ) -ErrorCategory InvalidOperation
+                    $errorMessage = $script:localizedData.AvailabilityGroupListenerDHCPChangeError -f $DHCP, $availabilityGroupListenerState.DHCP
+                    New-InvalidOperationException -Message $errorMessage
                 }
 
                 $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
@@ -289,11 +318,15 @@ function Set-TargetResource
                     {
                         if ($availabilityGroupListenerState.Port -ne $Port -or -not $ipAddressEqual)
                         {
-                            New-VerboseMessage -Message 'Listener differ in configuration.'
+                            Write-Verbose -Message (
+                                $script:localizedData.AvailabilityGroupListenerNotInDesiredState -f $Name, $AvailabilityGroup, $InstanceName
+                            )
 
                             if ($availabilityGroupListenerState.Port -ne $Port)
                             {
-                                New-VerboseMessage -Message 'Changing port configuration'
+                                Write-Verbose -Message (
+                                    $script:localizedData.ChangingAvailabilityGroupListenerPort -f $Port
+                                )
 
                                 $setListenerParams = @{
                                     InputObject = $availabilityGroupListenerObject
@@ -305,14 +338,16 @@ function Set-TargetResource
 
                             if (-not $ipAddressEqual)
                             {
-                                New-VerboseMessage -Message 'Adding IP-address(es)'
-
                                 $newIpAddress = @()
 
                                 foreach ($currentIpAddress in $IpAddress)
                                 {
                                     if (-not ( $availabilityGroupListenerState.IpAddress -contains $currentIpAddress))
                                     {
+                                        Write-Verbose -Message (
+                                            $script:localizedData.AddingAvailabilityGroupListenerIpAddress -f $currentIpAddress
+                                        )
+
                                         $newIpAddress += $currentIpAddress
                                     }
                                 }
@@ -327,24 +362,29 @@ function Set-TargetResource
                         }
                         else
                         {
-                            New-VerboseMessage -Message 'Listener configuration is already correct.'
+                            Write-Verbose -Message (
+                                $script:localizedData.AvailabilityGroupListenerInDesiredState -f $Name, $AvailabilityGroup, $InstanceName
+                            )
                         }
                     }
                     else
                     {
-                        throw New-TerminatingError -ErrorType AvailabilityGroupListenerNotFound -ErrorCategory ObjectNotFound
+                        $errorMessage = $script:localizedData.AvailabilityGroupListenerNotFound -f $AvailabilityGroup, $InstanceName
+                        New-ObjectNotFoundException -Message $errorMessage
                     }
                 }
                 else
                 {
-                    throw New-TerminatingError -ErrorType AvailabilityGroupNotFound -FormatArgs @($AvailabilityGroup, $InstanceName) -ErrorCategory ObjectNotFound
+                    $errorMessage = $script:localizedData.AvailabilityGroupNotFound -f $AvailabilityGroup, $InstanceName
+                    New-ObjectNotFoundException -Message $errorMessage
                 }
             }
         }
     }
     else
     {
-        throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
+        $errorMessage = $script:localizedData.UnexpectedErrorFromGet
+        New-InvalidResultException -Message $errorMessage
     }
 }
 
@@ -424,7 +464,9 @@ function Test-TargetResource
         AvailabilityGroup = [System.String] $AvailabilityGroup
     }
 
-    New-VerboseMessage -Message "Testing state of listener $Name"
+    Write-Verbose -Message (
+        $script:localizedData.TestingConfiguration -f $Name, $AvailabilityGroup, $InstanceName
+    )
 
     $availabilityGroupListenerState = Get-TargetResource @parameters
     if ($null -ne $availabilityGroupListenerState)
@@ -459,7 +501,21 @@ function Test-TargetResource
     }
     else
     {
-        throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
+        $errorMessage = $script:localizedData.UnexpectedErrorFromGet
+        New-InvalidResultException -Message $errorMessage
+    }
+
+    if ($result)
+    {
+        Write-Verbose -Message (
+            $script:localizedData.AvailabilityGroupListenerInDesiredState -f $Name, $AvailabilityGroup, $InstanceName
+        )
+    }
+    else
+    {
+        Write-Verbose -Message (
+            $script:localizedData.AvailabilityGroupListenerNotInDesiredState -f $Name, $AvailabilityGroup, $InstanceName
+        )
     }
 
     return $result
@@ -488,7 +544,9 @@ function Get-SQLAlwaysOnAvailabilityGroupListener
         $ServerName
     )
 
-    Write-Debug "Connecting to availability group $Name as $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+    Write-Debug -Message (
+        $script:localizedData.DebugConnectingAvailabilityGroup -f $Name, [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+    )
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
 
@@ -499,7 +557,8 @@ function Get-SQLAlwaysOnAvailabilityGroupListener
     }
     else
     {
-        throw New-TerminatingError -ErrorType AvailabilityGroupNotFound -FormatArgs @($AvailabilityGroup, $InstanceName) -ErrorCategory ObjectNotFound
+        $errorMessage = $script:localizedData.AvailabilityGroupNotFound -f $AvailabilityGroup, $InstanceName
+        New-ObjectNotFoundException -Message $errorMessage
     }
 
     return $availabilityGroupListener
