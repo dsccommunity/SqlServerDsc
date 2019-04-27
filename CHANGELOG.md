@@ -69,6 +69,8 @@
   - Added en-US localization ([issue #606](https://github.com/PowerShell/SqlServerDsc/issues/606)).
 - Changes to SqlAGListener
   - Added en-US localization ([issue #604](https://github.com/PowerShell/SqlServerDsc/issues/604)).
+- Changes to SqlAlwaysOnService
+  - Added en-US localization ([issue #603](https://github.com/PowerShell/SqlServerDsc/issues/608)).
 
 ## 12.4.0.0
 
