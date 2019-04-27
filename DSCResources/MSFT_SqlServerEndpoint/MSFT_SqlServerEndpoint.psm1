@@ -231,8 +231,6 @@ function Set-TargetResource
         }
         elseif ($Ensure -eq 'Absent' -and $getTargetResourceResult.Ensure -eq 'Present')
         {
-            Write-Verbose -Message ('Dropping endpoint {0}.' -f $EndpointName)
-
             $endpointObject = $sqlServerObject.Endpoints[$EndpointName]
             if ($endpointObject)
             {
