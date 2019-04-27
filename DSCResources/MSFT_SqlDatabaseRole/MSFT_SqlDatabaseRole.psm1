@@ -7,6 +7,8 @@ Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath '
 $script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
 Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlDatabaseRole'
+
 <#
     .SYNOPSIS
     Returns the current state of the user memberships in the role(s).
@@ -61,18 +63,18 @@ function Get-TargetResource
         $Role
     )
 
-    Write-Verbose -Message "Getting SQL Database role for $Name"
+    Write-Verbose -Message (
+        $script:localizedData.GetDatabaseRole -f $Name, $Database, $InstanceName
+    )
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
-
     if ($sqlServerObject)
     {
         # Check database exists
         if ( -not ($sqlDatabaseObject = $sqlServerObject.Databases[$Database]) )
         {
-            throw New-TerminatingError -ErrorType NoDatabase `
-                -FormatArgs @($Database, $ServerName, $InstanceName) `
-                -ErrorCategory ObjectNotFound
+            $errorMessage = $script:localizedData.DatabaseNotFound -f $Database
+            New-ObjectNotFoundException -Message $errorMessage
         }
 
         # Check role exists
@@ -80,18 +82,16 @@ function Get-TargetResource
         {
             if ( -not ($sqlDatabaseObject.Roles[$currentRole]) )
             {
-                throw New-TerminatingError -ErrorType RoleNotFound `
-                    -FormatArgs @($currentRole, $Database, $ServerName, $InstanceName) `
-                    -ErrorCategory ObjectNotFound
+                $errorMessage = $script:localizedData.RoleNotFound -f $currentRole, $Database
+                New-ObjectNotFoundException -Message $errorMessage
             }
         }
 
         # Check login exists
         if ( -not ($sqlServerObject.Logins[$Name]) )
         {
-            throw New-TerminatingError -ErrorType LoginNotFound `
-                -FormatArgs @($Name, $ServerName, $InstanceName) `
-                -ErrorCategory ObjectNotFound
+            $errorMessage = $script:localizedData.LoginNotFound -f $Name
+            New-ObjectNotFoundException -Message $errorMessage
         }
 
         $ensure = 'Absent'
@@ -103,15 +103,17 @@ function Get-TargetResource
             {
                 if ($sqlDatabaseUser.IsMember($currentRole))
                 {
-                    New-VerboseMessage -Message ("The login '$Name' is a member of the role '$currentRole' on the " + `
-                            "database '$Database', on the instance $ServerName\$InstanceName")
+                    Write-Verbose -Message (
+                        $script:localizedData.IsMember -f $Name, $currentRole, $Database
+                    )
 
                     $grantedRole += $currentRole
                 }
                 else
                 {
-                    New-VerboseMessage -Message ("The login '$Name' is not a member of the role '$currentRole' on the " + `
-                            "database '$Database', on the instance $ServerName\$InstanceName")
+                    Write-Verbose -Message (
+                        $script:localizedData.IsNotMember -f $Name, $currentRole, $Database
+                    )
                 }
             }
 
@@ -122,8 +124,9 @@ function Get-TargetResource
         }
         else
         {
-            New-VerboseMessage -Message ("The login '$Name' is not a user of the database " + `
-                    "'$Database' on the instance $ServerName\$InstanceName")
+            Write-Verbose -Message (
+                $script:localizedData.LoginIsNotUser -f $Name, $Database
+            )
         }
     }
 
@@ -201,10 +204,7 @@ function Set-TargetResource
         $Role
     )
 
-    Write-Verbose -Message "Setting SQL Database role for $Name"
-
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
-
     if ($sqlServerObject)
     {
         $sqlDatabaseObject = $sqlServerObject.Databases[$Database]
@@ -218,20 +218,21 @@ function Set-TargetResource
                 {
                     try
                     {
-                        New-VerboseMessage -Message ("Adding the login '$Name' as a user of the database " + `
-                                "'$Database', on the instance $ServerName\$InstanceName")
+                        Write-Verbose -Message (
+                            '{0} {1}' -f
+                                ($script:localizedData.LoginIsNotUser -f $Name, $Database),
+                                $script:localizedData.AddingLoginAsUser
+                        )
 
-                        $sqlDatabaseUser = New-Object -TypeName Microsoft.SqlServer.Management.Smo.User `
+                        $sqlDatabaseUser = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.User' `
                             -ArgumentList $sqlDatabaseObject, $Name
                         $sqlDatabaseUser.Login = $Name
                         $sqlDatabaseUser.Create()
                     }
                     catch
                     {
-                        throw New-TerminatingError -ErrorType AddLoginDatabaseSetError `
-                            -FormatArgs @($ServerName, $InstanceName, $Name, $Database) `
-                            -ErrorCategory InvalidOperation `
-                            -InnerException $_.Exception
+                        $errorMessage = $script:localizedData.FailedToAddUser -f $Name, $Database
+                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                     }
                 }
 
@@ -240,18 +241,17 @@ function Set-TargetResource
                 {
                     try
                     {
-                        New-VerboseMessage -Message ("Adding the login '$Name' to the role '$currentRole' on the " + `
-                                "database '$Database', on the instance $ServerName\$InstanceName")
+                        Write-Verbose -Message (
+                            $script:localizedData.AddUserToRole -f $Name, $currentRole, $Database
+                        )
 
                         $sqlDatabaseRole = $sqlDatabaseObject.Roles[$currentRole]
                         $sqlDatabaseRole.AddMember($Name)
                     }
                     catch
                     {
-                        throw New-TerminatingError -ErrorType AddMemberDatabaseSetError `
-                            -FormatArgs @($ServerName, $InstanceName, $Name, $Role, $Database) `
-                            -ErrorCategory InvalidOperation `
-                            -InnerException $_.Exception
+                        $errorMessage = $script:localizedData.FailedToAddUserToRole -f $Name, $currentRole, $Database
+                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                     }
                 }
             }
@@ -262,8 +262,9 @@ function Set-TargetResource
                 {
                     foreach ($currentRole in $Role)
                     {
-                        New-VerboseMessage -Message ("Removing the login '$Name' to the role '$currentRole' on the " + `
-                                "database '$Database', on the instance $ServerName\$InstanceName")
+                        Write-Verbose -Message (
+                            $script:localizedData.DropUserFromRole -f $Name, $currentRole, $Database
+                        )
 
                         $sqlDatabaseRole = $sqlDatabaseObject.Roles[$currentRole]
                         $sqlDatabaseRole.DropMember($Name)
@@ -271,10 +272,8 @@ function Set-TargetResource
                 }
                 catch
                 {
-                    throw New-TerminatingError -ErrorType DropMemberDatabaseSetError `
-                        -FormatArgs @($ServerName, $InstanceName, $Name, $Role, $Database) `
-                        -ErrorCategory InvalidOperation `
-                        -InnerException $_.Exception
+                    $errorMessage = $script:localizedData.FailedToDropUserFromRole -f $Name, $currentRole, $Database
+                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                 }
             }
         }
@@ -341,7 +340,9 @@ function Test-TargetResource
         $Role
     )
 
-    Write-Verbose -Message "Testing SQL Database role for $Name"
+    Write-Verbose -Message (
+        $script:localizedData.TestingConfiguration -f $Name, $Database, $InstanceName
+    )
 
     $getTargetResourceParameters = @{
         InstanceName = $PSBoundParameters.InstanceName
@@ -361,7 +362,10 @@ function Test-TargetResource
         {
             if ($getTargetResourceResult.Ensure -ne 'Absent')
             {
-                New-VerboseMessage -Message "Ensure is set to Absent. The existing role for $Name should be dropped"
+                Write-Verbose -Message (
+                    $script:localizedData.NotInDesiredStateAbsent -f $Name, $Database
+                )
+
                 $isDatabaseRoleInDesiredState = $false
             }
         }
@@ -370,13 +374,23 @@ function Test-TargetResource
         {
             if ($getTargetResourceResult.Ensure -ne 'Present')
             {
-                New-VerboseMessage -Message "Ensure is set to Present. The missing role for $Name should be added"
+                Write-Verbose -Message (
+                    $script:localizedData.NotInDesiredStatePresent -f $Name, $Database
+                )
+
                 $isDatabaseRoleInDesiredState = $false
             }
         }
     }
 
-    $isDatabaseRoleInDesiredState
+    if ($isDatabaseRoleInDesiredState)
+    {
+        Write-Verbose -Message (
+            $script:localizedData.InDesiredState -f $Name, $Database
+        )
+    }
+
+    return $isDatabaseRoleInDesiredState
 }
 
 Export-ModuleMember -Function *-TargetResource
