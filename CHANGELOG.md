@@ -61,6 +61,8 @@
   - Added en-US localization ([issue #610](https://github.com/PowerShell/SqlServerDsc/issues/610)).
 - Changes to SqlDatabaseRecoveryModel
   - Added en-US localization ([issue #609](https://github.com/PowerShell/SqlServerDsc/issues/609)).
+- Changes to SqlDatabasePermission
+  - Added en-US localization ([issue #608](https://github.com/PowerShell/SqlServerDsc/issues/608)).
 
 ## 12.4.0.0
 

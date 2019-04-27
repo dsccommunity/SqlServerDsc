@@ -7,6 +7,8 @@ Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath '
 $script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
 Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlDatabasePermission'
+
 <#
     .SYNOPSIS
     Returns the current permissions for the user in the database
@@ -66,11 +68,13 @@ function Get-TargetResource
         $InstanceName
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    Write-Verbose -Message (
+        $script:localizedData.GetDatabasePermission -f $Name, $Database, $InstanceName
+    )
 
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
     if ($sqlServerObject)
     {
-        Write-Verbose -Message "Getting permissions for user $Name in database $Database"
         $currentEnsure = 'Absent'
 
         if ($sqlDatabaseObject = $sqlServerObject.Databases[$Database])
@@ -101,27 +105,21 @@ function Get-TargetResource
                 }
                 catch
                 {
-                    throw New-TerminatingError -ErrorType FailedToEnumDatabasePermissions `
-                        -FormatArgs @($Name, $Database, $ServerName, $InstanceName) `
-                        -ErrorCategory InvalidOperation `
-                        -InnerException $_.Exception
+                    $errorMessage = $script:localizedData.FailedToEnumDatabasePermissions -f $Name, $Database
+                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                 }
 
             }
             else
             {
-                throw New-TerminatingError -ErrorType LoginNotFound `
-                    -FormatArgs @($Name, $ServerName, $InstanceName) `
-                    -ErrorCategory ObjectNotFound `
-                    -InnerException $_.Exception
+                $errorMessage = $script:localizedData.LoginNotFound -f $Name
+                New-ObjectNotFoundException -Message $errorMessage
             }
         }
         else
         {
-            throw New-TerminatingError -ErrorType NoDatabase `
-                -FormatArgs @($Database, $ServerName, $InstanceName) `
-                -ErrorCategory InvalidResult `
-                -InnerException $_.Exception
+            $errorMessage = $script:localizedData.DatabaseNotFound -f $Database
+            New-ObjectNotFoundException -Message $errorMessage
         }
 
         if ($getSqlDatabasePermissionResult)
@@ -135,7 +133,7 @@ function Get-TargetResource
         }
     }
 
-    $returnValue = @{
+    return @{
         Ensure          = $currentEnsure
         Database        = $Database
         Name            = $Name
@@ -144,8 +142,6 @@ function Get-TargetResource
         ServerName      = $ServerName
         InstanceName    = $InstanceName
     }
-
-    $returnValue
 }
 
 <#
@@ -215,10 +211,11 @@ function Set-TargetResource
     )
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
-
     if ($sqlServerObject)
     {
-        Write-Verbose -Message "Setting permissions of database $Database for login $Name"
+        Write-Verbose -Message (
+            $script:localizedData.ChangePermissionForUser -f $Name, $Database, $InstanceName
+        )
 
         if ($sqlDatabaseObject = $sqlServerObject.Databases[$Database])
         {
@@ -228,17 +225,20 @@ function Set-TargetResource
                 {
                     try
                     {
-                        New-VerboseMessage -Message "Adding SQL login $Name as a user of database $Database"
-                        $sqlDatabaseUser = New-Object -TypeName Microsoft.SqlServer.Management.Smo.User -ArgumentList ($sqlDatabaseObject, $Name)
+                        Write-Verbose -Message (
+                            '{0} {1}' -f
+                                ($script:localizedData.LoginIsNotUser -f $Name, $Database),
+                                $script:localizedData.AddingLoginAsUser
+                        )
+
+                        $sqlDatabaseUser = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.User' -ArgumentList ($sqlDatabaseObject, $Name)
                         $sqlDatabaseUser.Login = $Name
                         $sqlDatabaseUser.Create()
                     }
                     catch
                     {
-                        throw New-TerminatingError -ErrorType AddLoginDatabaseSetError `
-                            -FormatArgs @($ServerName, $InstanceName, $Name, $Database) `
-                            -ErrorCategory InvalidOperation `
-                            -InnerException $_.Exception
+                        $errorMessage = $script:localizedData.FailedToAddUser -f $Name, $Database
+                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                     }
                 }
 
@@ -246,7 +246,7 @@ function Set-TargetResource
                 {
                     try
                     {
-                        $permissionSet = New-Object -TypeName Microsoft.SqlServer.Management.Smo.DatabasePermissionSet
+                        $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
 
                         foreach ($permission in $permissions)
                         {
@@ -257,8 +257,9 @@ function Set-TargetResource
                         {
                             'Present'
                             {
-                                New-VerboseMessage -Message ('{0} the permissions ''{1}'' to the database {2} on the server {3}\{4}' `
-                                        -f $PermissionState, ($Permissions -join ','), $Database, $ServerName, $InstanceName)
+                                Write-Verbose -Message (
+                                    $script:localizedData.AddPermission -f $PermissionState, ($Permissions -join ','), $Database
+                                )
 
                                 switch ($PermissionState)
                                 {
@@ -281,8 +282,9 @@ function Set-TargetResource
 
                             'Absent'
                             {
-                                New-VerboseMessage -Message ('Revoking {0} permissions {1} to the database {2} on the server {3}\{4}' `
-                                        -f $PermissionState, ($Permissions -join ','), $Database, $ServerName, $InstanceName)
+                                Write-Verbose -Message (
+                                    $script:localizedData.DropPermission -f $PermissionState, ($Permissions -join ','), $Database
+                                )
 
                                 if ($PermissionState -eq 'GrantWithGrant')
                                 {
@@ -297,27 +299,21 @@ function Set-TargetResource
                     }
                     catch
                     {
-                        throw New-TerminatingError -ErrorType FailedToSetPermissionDatabase `
-                            -FormatArgs @($Name, $Database, $ServerName, $InstanceName) `
-                            -ErrorCategory InvalidOperation `
-                            -InnerException $_.Exception
+                        $errorMessage = $script:localizedData.FailedToSetPermissionDatabase -f $Name, $Database
+                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                     }
                 }
             }
             else
             {
-                throw New-TerminatingError -ErrorType LoginNotFound `
-                    -FormatArgs @($Name, $ServerName, $InstanceName) `
-                    -ErrorCategory ObjectNotFound `
-                    -InnerException $_.Exception
+                $errorMessage = $script:localizedData.LoginNotFound -f $Name
+                New-ObjectNotFoundException -Message $errorMessage
             }
         }
         else
         {
-            throw New-TerminatingError -ErrorType NoDatabase `
-                -FormatArgs @($Database, $ServerName, $InstanceName) `
-                -ErrorCategory InvalidResult `
-                -InnerException $_.Exception
+            $errorMessage = $script:localizedData.DatabaseNotFound -f $Database
+            New-ObjectNotFoundException -Message $errorMessage
         }
     }
 }
@@ -389,7 +385,10 @@ function Test-TargetResource
         $InstanceName = 'MSSQLSERVER'
     )
 
-    Write-Verbose -Message "Testing permissions for user $Name in database $Database."
+    Write-Verbose -Message (
+        $script:localizedData.TestingConfiguration -f $Name, $Database, $InstanceName
+    )
+
     $getTargetResourceParameters = @{
         InstanceName    = $PSBoundParameters.InstanceName
         ServerName      = $PSBoundParameters.ServerName
