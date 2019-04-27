@@ -7,6 +7,8 @@ Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath '
 $script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
 Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlDatabaseOwner'
+
 <#
     .SYNOPSIS
     This function gets the owner of the desired sql database.
@@ -50,30 +52,33 @@ function Get-TargetResource
         $InstanceName
     )
 
-    Write-Verbose -Message "Getting owner of database $Database"
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    Write-Verbose -Message (
+        $script:localizedData.GetCurrentDatabaseOwner -f $Database, $InstanceName
+    )
 
-    if ($sqlServerObject)
+    try
     {
-        # Check database exists
-        if ( -not ($sqlDatabaseObject = $sqlServerObject.Databases[$Database]) )
+        $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+        if ($sqlServerObject)
         {
-            throw New-TerminatingError -ErrorType NoDatabase `
-                -FormatArgs @($Database, $ServerName, $InstanceName) `
-                -ErrorCategory ObjectNotFound
-        }
+            # Check database exists
+            if ( -not ($sqlDatabaseObject = $sqlServerObject.Databases[$Database]) )
+            {
+                $errorMessage = $script:localizedData.DatabaseNotFound -f $Database
+                New-ObjectNotFoundException -Message $errorMessage
+            }
 
-        try
-        {
             $sqlDatabaseOwner = $sqlDatabaseObject.Owner
-            New-VerboseMessage -Message "Owner for SQL Database name $Database is $sqlDatabaseOwner"
+
+            Write-Verbose -Message (
+                $script:localizedData.CurrentDatabaseOwner -f $Database, $sqlDatabaseOwner
+            )
         }
-        catch
-        {
-            throw New-TerminatingError -ErrorType FailedToGetOwnerDatabase `
-                -FormatArgs @($Database, $ServerName, $InstanceName) `
-                -ErrorCategory InvalidOperation
-        }
+    }
+    catch
+    {
+        $errorMessage = $script:localizedData.FailedToGetOwnerDatabase -f $Database
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
 
     $returnValue = @{
@@ -128,34 +133,39 @@ function Set-TargetResource
         $InstanceName
     )
 
-    Write-Verbose -Message "Setting owner $Name of database $Database"
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
-
     if ($sqlServerObject)
     {
         # Check database exists
         if ( -not ($sqlDatabaseObject = $sqlServerObject.Databases[$Database]) )
         {
-            throw New-TerminatingError -ErrorType NoDatabase -FormatArgs @($Database, $ServerName, $InstanceName) -ErrorCategory ObjectNotFound
+            $errorMessage = $script:localizedData.DatabaseNotFound -f $Database
+            New-ObjectNotFoundException -Message $errorMessage
         }
 
         # Check login exists
         if ( -not ($sqlServerObject.Logins[$Name]) )
         {
-            throw New-TerminatingError -ErrorType LoginNotFound -FormatArgs @($Name, $ServerName, $InstanceName) -ErrorCategory ObjectNotFound
+            $errorMessage = $script:localizedData.LoginNotFound -f $Name
+            New-ObjectNotFoundException -Message $errorMessage
         }
+
+        Write-Verbose -Message (
+            $script:localizedData.SetDatabaseOwner -f $Database, $InstanceName
+        )
 
         try
         {
             $sqlDatabaseObject.SetOwner($Name)
-            New-VerboseMessage -Message "Owner of SQL Database name $Database is now $Name"
+
+            Write-Verbose -Message (
+                $script:localizedData.NewOwner -f $Name
+            )
         }
         catch
         {
-            throw New-TerminatingError -ErrorType FailedToSetOwnerDatabase `
-                -FormatArgs @($Name, $Database, $ServerName, $InstanceName) `
-                -ErrorCategory InvalidOperation `
-                -InnerException $_.Exception
+            $errorMessage = $script:localizedData.FailedToSetOwnerDatabase -f $Database
+            New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
         }
     }
 }
@@ -203,7 +213,9 @@ function Test-TargetResource
         $InstanceName
     )
 
-    Write-Verbose -Message "Testing owner $Name of database $Database"
+    Write-Verbose -Message (
+        $script:localizedData.TestingConfiguration -f $Database, $InstanceName
+    )
 
     $currentValues = Get-TargetResource @PSBoundParameters
     return Test-DscParameterState -CurrentValues $CurrentValues `
