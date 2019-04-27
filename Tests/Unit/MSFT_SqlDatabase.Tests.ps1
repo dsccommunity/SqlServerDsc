@@ -379,10 +379,26 @@ try
                         Ensure = 'Present'
                     }
 
-                    $throwInvalidOperation = ('InnerException: Exception calling "Create" ' + `
-                            'with "0" argument(s): "Mock Create Method was called with invalid operation."')
+                    $errorMessage = $script:localizedData.FailedToCreateDatabase -f $testParameters.Name
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
+
+                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter {
+                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database'
+                    } -Scope It
+                }
+
+                It 'Should throw the correct error when Alter() method was called with invalid operation' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name   = $mockSqlDatabaseName
+                        Ensure = 'Present'
+                        Collation = 'SQL_Latin1_General_Pref_CP850_CI_AS'
+                    }
+
+                    $errorMessage = $script:localizedData.FailedToUpdateDatabase -f $testParameters.Name
+
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should throw the correct error when invalid collation is specified' {
@@ -393,19 +409,11 @@ try
                         Collation = 'InvalidCollation'
                     }
 
-                    $throwInvalidOperation = ("The specified collation '{3}' is not a valid collation for database {2} on {0}\{1}." -f $mockServerName, $mockInstanceName, $testParameters.Name, $testParameters.Collation)
+                    $errorMessage = $script:localizedData.InvalidCollation -f $testParameters.Collation, $testParameters.InstanceName
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
-                }
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
-                It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
-                }
-
-                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Database' {
-                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter {
-                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database'
-                    } -Scope Context
+                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -421,10 +429,10 @@ try
                 }
 
                 It 'Should throw the correct error when Drop() method was called with invalid operation' {
-                    $throwInvalidOperation = ('InnerException: Exception calling "Drop" ' + `
-                            'with "0" argument(s): "Mock Drop Method was called with invalid operation."')
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    $errorMessage = $script:localizedData.FailedToDropDatabase -f $testParameters.Name
+
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {

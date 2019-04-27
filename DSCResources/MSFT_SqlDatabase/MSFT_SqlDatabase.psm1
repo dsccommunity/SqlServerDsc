@@ -7,6 +7,8 @@ Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath '
 $script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
 Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlDatabase'
+
 <#
     .SYNOPSIS
     This function gets the sql database.
@@ -62,25 +64,34 @@ function Get-TargetResource
         $Collation
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    Write-Verbose -Message (
+        $script:localizedData.GetDatabase -f $Name, $InstanceName
+    )
 
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
     if ($sqlServerObject)
     {
         $sqlDatabaseCollation = $sqlServerObject.Collation
-        Write-Verbose -Message 'Getting SQL Databases'
+
         # Check database exists
         $sqlDatabaseObject = $sqlServerObject.Databases[$Name]
 
         if ($sqlDatabaseObject)
         {
-            Write-Verbose -Message "SQL Database name $Name is present"
             $Ensure = 'Present'
             $sqlDatabaseCollation = $sqlDatabaseObject.Collation
+
+            Write-Verbose -Message (
+                $script:localizedData.DatabasePresent -f $Name, $sqlDatabaseCollation
+            )
         }
         else
         {
-            Write-Verbose -Message "SQL Database name $Name is absent"
             $Ensure = 'Absent'
+
+            Write-Verbose -Message (
+                $script:localizedData.DatabaseAbsent -f $Name
+            )
         }
     }
 
@@ -149,7 +160,6 @@ function Set-TargetResource
     )
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
-
     if ($sqlServerObject)
     {
         if ($Ensure -eq 'Present')
@@ -160,49 +170,51 @@ function Set-TargetResource
             }
             elseif ($Collation -notin $sqlServerObject.EnumCollations().Name)
             {
-                throw New-TerminatingError -ErrorType InvalidCollationError `
-                    -FormatArgs @($ServerName, $InstanceName, $Name, $Collation) `
-                    -ErrorCategory InvalidOperation
+                $errorMessage = $script:localizedData.InvalidCollation -f $Collation, $InstanceName
+                New-ObjectNotFoundException -Message $errorMessage
             }
 
             $sqlDatabaseObject = $sqlServerObject.Databases[$Name]
-
             if ($sqlDatabaseObject)
             {
+                Write-Verbose -Message (
+                    $script:localizedData.SetDatabase -f $Name, $InstanceName
+                )
+
                 try
                 {
-                    Write-Verbose -Message "Updating the database $Name with specified settings."
+                    Write-Verbose -Message (
+                        $script:localizedData.UpdatingCollation -f $Collation
+                    )
+
                     $sqlDatabaseObject.Collation = $Collation
                     $sqlDatabaseObject.Alter()
-                    New-VerboseMessage -Message "Updated Database $Name."
                 }
                 catch
                 {
-                    throw New-TerminatingError -ErrorType UpdateDatabaseSetError `
-                        -FormatArgs @($ServerName, $InstanceName, $Name) `
-                        -ErrorCategory InvalidOperation `
-                        -InnerException $_.Exception
+                    $errorMessage = $script:localizedData.FailedToUpdateDatabase -f $Name
+                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                 }
             }
             else
             {
                 try
                 {
-                    $sqlDatabaseObjectToCreate = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $sqlServerObject, $Name
+                    $sqlDatabaseObjectToCreate = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database' -ArgumentList $sqlServerObject, $Name
                     if ($sqlDatabaseObjectToCreate)
                     {
-                        Write-Verbose -Message "Adding to SQL the database $Name."
+                        Write-Verbose -Message (
+                            $script:localizedData.CreateDatabase -f $Name
+                        )
+
                         $sqlDatabaseObjectToCreate.Collation = $Collation
                         $sqlDatabaseObjectToCreate.Create()
-                        New-VerboseMessage -Message "Created Database $Name."
                     }
                 }
                 catch
                 {
-                    throw New-TerminatingError -ErrorType CreateDatabaseSetError `
-                        -FormatArgs @($ServerName, $InstanceName, $Name) `
-                        -ErrorCategory InvalidOperation `
-                        -InnerException $_.Exception
+                    $errorMessage = $script:localizedData.FailedToCreateDatabase -f $Name
+                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                 }
             }
         }
@@ -213,17 +225,17 @@ function Set-TargetResource
                 $sqlDatabaseObjectToDrop = $sqlServerObject.Databases[$Name]
                 if ($sqlDatabaseObjectToDrop)
                 {
-                    Write-Verbose -Message "Deleting to SQL the database $Name."
+                    Write-Verbose -Message (
+                        $script:localizedData.DropDatabase -f $Name
+                    )
+
                     $sqlDatabaseObjectToDrop.Drop()
-                    New-VerboseMessage -Message "Dropped Database $Name."
                 }
             }
             catch
             {
-                throw New-TerminatingError -ErrorType DropDatabaseSetError `
-                    -FormatArgs @($ServerName, $InstanceName, $Name) `
-                    -ErrorCategory InvalidOperation `
-                    -InnerException $_.Exception
+                $errorMessage = $script:localizedData.FailedToDropDatabase -f $Name
+                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }
         }
     }
@@ -283,7 +295,9 @@ function Test-TargetResource
         $Collation
     )
 
-    Write-Verbose -Message "Checking if database named $Name is present or absent"
+    Write-Verbose -Message (
+        $script:localizedData.TestingConfiguration -f $Name, $InstanceName
+    )
 
     $getTargetResourceResult = Get-TargetResource @PSBoundParameters
     $isDatabaseInDesiredState = $true
@@ -299,7 +313,10 @@ function Test-TargetResource
         {
             if ($getTargetResourceResult.Ensure -ne 'Absent')
             {
-                New-VerboseMessage -Message "Ensure is set to Absent. The database $Name should be dropped"
+                Write-Verbose -Message (
+                    $script:localizedData.NotInDesiredStateAbsent -f $Name
+                )
+
                 $isDatabaseInDesiredState = $false
             }
         }
@@ -308,18 +325,24 @@ function Test-TargetResource
         {
             if ($getTargetResourceResult.Ensure -ne 'Present')
             {
-                New-VerboseMessage -Message "Ensure is set to Present. The database $Name should be created"
+                Write-Verbose -Message (
+                    $script:localizedData.NotInDesiredStatePresent -f $Name
+                )
+
                 $isDatabaseInDesiredState = $false
             }
             elseif ($getTargetResourceResult.Collation -ne $Collation)
             {
-                New-VerboseMessage -Message 'Database exist but has the wrong collation.'
+                Write-Verbose -Message (
+                    $script:localizedData.CollationWrong -f $Name, $getTargetResourceResult.Collation, $Collation
+                )
+
                 $isDatabaseInDesiredState = $false
             }
         }
     }
 
-    $isDatabaseInDesiredState
+    return $isDatabaseInDesiredState
 }
 
 Export-ModuleMember -Function *-TargetResource

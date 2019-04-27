@@ -100,10 +100,6 @@ ConvertFrom-StringData @'
     RemoveAvailabilityGroupReplicaFailed = Failed to remove the availability group replica '{0}'.
     ReplicaNotFound = Unable to find the availability group replica '{0}' on the instance '{1}'.
 
-    # SQLServerDatabase
-    CreateDatabaseSetError = Failed to create the database named {2} on {0}\\{1}.
-    DropDatabaseSetError = Failed to drop the database named {2} on {0}\\{1}.
-
     # SQLServerNetwork
     UnableToUseBothDynamicAndStaticPort = Unable to set both TCP dynamic port and TCP static port. Only one can be set.
 '@
