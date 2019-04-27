@@ -42,16 +42,21 @@
   - Reporting Services are restarted after changing settings, unless
     `$SuppressRestart` parameter is set ([issue #1331](https://github.com/PowerShell/SqlServerDsc/issues/1331)).
     `$SuppressRestart` will also prevent Reporting Services restart after initialization.
+  - Fixed one of the error handling to use localization, and made the
+    error message more descriptive when the Set-TargetResource function
+    calls the Test-TargetResource function to verify the desired
+    state. *This was done prior to adding full en-US localization.*
 - Changes to SqlServerLogin
   - Added en-US localization ([issue #615](https://github.com/PowerShell/SqlServerDsc/issues/615)).
   - Added unit tests to improved code coverage.
 - Changes to SqlWindowsFirewall
   - Added en-US localization ([issue #614](https://github.com/PowerShell/SqlServerDsc/issues/614)).
-- Changes to SqlRS
-  - Fixed one of the error handling to use localization, and made the
-    error message more descriptive when the Set-TargetResource function
-    calls the Test-TargetResource function to verify the desired
-    state. *This was done prior to adding full en-US localization.*
+- Changes to SqlServerEndpoint
+  - Added en-US localization ([issue #611](https://github.com/PowerShell/SqlServerDsc/issues/611)).
+- Changes to SqlServerEndpointPermission
+  - Added en-US localization ([issue #612](https://github.com/PowerShell/SqlServerDsc/issues/612)).
+- Changes to SqlServerEndpointState
+  - Added en-US localization ([issue #613](https://github.com/PowerShell/SqlServerDsc/issues/613)).
 
 ## 12.4.0.0
 

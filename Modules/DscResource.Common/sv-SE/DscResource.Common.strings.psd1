@@ -57,7 +57,6 @@ ConvertFrom-StringData @'
     RemoteConnectionFailed = Remote PowerShell connection to Server '{0}' failed.
     TODO = ToDo. Work not implemented at this time.
     UnexpectedErrorFromGet = Got unexpected result from Get-TargetResource. No change is made.
-    NotConnectedToInstance = Was unable to connect to the instance '{0}\\{1}'
     AlterAvailabilityGroupFailed = Failed to alter the availability group '{0}'.
     HadrNotEnabled = HADR is not enabled.
     AvailabilityGroupNotFound = Unable to locate the availability group '{0}' on the instance '{1}'.
@@ -81,11 +80,6 @@ ConvertFrom-StringData @'
     AvailabilityGroupListenerErrorVerifyExist = Unexpected result when trying to verify existence of listener '{0}'.
     AvailabilityGroupListenerIPChangeError = IP-address configuration mismatch. Expecting '{0}' found '{1}'. Resource does not support changing IP-address. Listener needs to be removed and then created again.
     AvailabilityGroupListenerDHCPChangeError = IP-address configuration mismatch. Expecting '{0}' found '{1}'. Resource does not support changing between static IP and DHCP. Listener needs to be removed and then created again.
-
-    # Endpoint
-    EndpointNotFound = Endpoint '{0}' does not exist
-    EndpointErrorVerifyExist = Unexpected result when trying to verify existence of endpoint '{0}'.
-    EndpointFoundButWrongType = Endpoint '{0}' does exist, but it is not of type 'DatabaseMirroring'.
 
     # Configuration
     ConfigurationOptionNotFound = Specified option '{0}' could not be found.
