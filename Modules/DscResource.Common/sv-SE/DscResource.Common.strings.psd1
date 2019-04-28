@@ -103,8 +103,6 @@ ConvertFrom-StringData @'
     # SQLServerDatabase
     CreateDatabaseSetError = Failed to create the database named {2} on {0}\\{1}.
     DropDatabaseSetError = Failed to drop the database named {2} on {0}\\{1}.
-    FailedToGetOwnerDatabase = Failed to get owner of the database named {0} on {1}\\{2}.
-    FailedToSetOwnerDatabase = Failed to set owner named {0} of the database named {1} on {2}\\{3}.
 
     # SQLServerNetwork
     UnableToUseBothDynamicAndStaticPort = Unable to set both TCP dynamic port and TCP static port. Only one can be set.
