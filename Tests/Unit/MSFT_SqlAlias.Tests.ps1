@@ -1090,6 +1090,28 @@ try
                     Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
             } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -Verifiable
 
+            Context 'When the system is in the desired state (Absent)' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Absent'
+                        }
+                    }
+
+                    $testParameters = @{
+                        Ensure = 'Absent'
+                        Name = $name
+                        ServerName = $serverNameTcp
+                    }
+                }
+
+                It "Should return true from the test method" {
+                    Test-TargetResource @testParameters | Should -Be $true
+
+                    Assert-MockCalled Get-TargetResource -Exactly -Times 1 -Scope It
+                }
+            }
+
             Context 'When the system is in the desired state (when using TCP)' {
                 $testParameters = @{
                     Name = $name

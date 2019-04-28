@@ -7,6 +7,8 @@ Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath '
 $script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
 Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlAlias'
+
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -37,14 +39,19 @@ function Get-TargetResource
     $protocolTcp = 'DBMSSOCN'
     $protocolNamedPipes = 'DBNMPNTW'
 
-    Write-Verbose -Message "Getting the SQL Server Client Alias $Name"
+    Write-Verbose -Message (
+        $script:localizedData.GetClientAlias -f $Name
+    )
+
     $itemValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' `
                                   -Name $Name `
                                   -ErrorAction SilentlyContinue
 
     if (((Get-CimInstance -ClassName win32_OperatingSystem).OSArchitecture) -eq '64-bit')
     {
-        Write-Verbose -Message "64-bit Operating System. Also get the client alias $Name from Wow6432Node"
+        Write-Verbose -Message (
+            $script:localizedData.OSArchitecture64Bit -f $Name
+        )
 
         $isWow6432Node = $true
         $itemValueWow6432Node = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' `
@@ -97,7 +104,7 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding()]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -129,8 +136,6 @@ function Set-TargetResource
         $Ensure = 'Present'
     )
 
-    Write-Verbose -Message "Setting the SQL Server Client Alias $Name"
-
     if ($Protocol -eq 'NP')
     {
         $itemValue = "DBNMPNTW,\\$ServerName\PIPE\sql\query"
@@ -139,7 +144,7 @@ function Set-TargetResource
     if ($Protocol -eq 'TCP')
     {
         $itemValue = "DBMSSOCN,$ServerName"
-        if (!$UseDynamicTcpPort)
+        if (-not $UseDynamicTcpPort)
         {
             $itemValue += ",$TcpPort"
         }
@@ -150,53 +155,53 @@ function Set-TargetResource
 
     if ($Ensure -eq 'Present')
     {
-        Write-Verbose -Message "Adding the SQL Server Client Alias $Name"
+        Write-Verbose -Message (
+            $script:localizedData.AddClientAlias64Bit -f $Name
+        )
 
-        if ($PSCmdlet.ShouldProcess($Name, 'Setting the client alias'))
+        if (-not (Test-Path -Path $registryPath))
         {
-            if (!(Test-Path -Path $registryPath))
-            {
-                New-Item -Path $registryPath -Force | Out-Null
-            }
-
-            Set-ItemProperty -Path $registryPath -Name $Name -Value $itemValue | Out-Null
+            New-Item -Path $registryPath -Force | Out-Null
         }
+
+        Set-ItemProperty -Path $registryPath -Name $Name -Value $itemValue | Out-Null
 
         # If this is a 64-bit OS then also update Wow6432Node
         if (((Get-CimInstance -ClassName win32_OperatingSystem).OSArchitecture) -eq '64-bit')
         {
-            if ($PSCmdlet.ShouldProcess($Name, 'Setting the client alias (32-bit)'))
-            {
-                if (!(Test-Path -Path $registryPathWow6432Node))
-                {
-                    New-Item -Path $registryPathWow6432Node -Force | Out-Null
-                }
+            Write-Verbose -Message (
+                $script:localizedData.AddClientAlias32Bit -f $Name
+            )
 
-                Set-ItemProperty -Path $registryPathWow6432Node -Name $Name -Value $itemValue | Out-Null
+            if (-not (Test-Path -Path $registryPathWow6432Node))
+            {
+                New-Item -Path $registryPathWow6432Node -Force | Out-Null
             }
+
+            Set-ItemProperty -Path $registryPathWow6432Node -Name $Name -Value $itemValue | Out-Null
         }
     }
 
     if ($Ensure -eq 'Absent')
     {
-        Write-Verbose -Message "Removing the SQL Server Client Alias $Name"
+        Write-Verbose -Message (
+            $script:localizedData.RemoveClientAlias64Bit -f $Name
+        )
 
-        if ($PSCmdlet.ShouldProcess($Name, 'Remove the client alias'))
+        if (Test-Path -Path $registryPath)
         {
-            if (Test-Path -Path $registryPath)
-            {
-                Remove-ItemProperty -Path $registryPath -Name $Name
-            }
+            Remove-ItemProperty -Path $registryPath -Name $Name
         }
 
         # If this is a 64-bit OS then also remove from Wow6432Node
         if (((Get-CimInstance -ClassName win32_OperatingSystem).OSArchitecture) -eq '64-bit' `
               -and (Test-Path -Path $registryPathWow6432Node))
         {
-            if ($PSCmdlet.ShouldProcess($Name, 'Remove the client alias (32-bit)'))
-            {
-                Remove-ItemProperty -Path $registryPathWow6432Node -Name $Name
-            }
+            Write-Verbose -Message (
+                $script:localizedData.RemoveClientAlias32Bit -f $Name
+            )
+
+            Remove-ItemProperty -Path $registryPathWow6432Node -Name $Name
         }
     }
 }
@@ -236,7 +241,9 @@ function Test-TargetResource
         $Ensure = 'Present'
     )
 
-    Write-Verbose -Message "Testing the SQL Server Client Alias $Name"
+    Write-Verbose -Message (
+        $script:localizedData.TestingConfiguration -f $Name
+    )
 
     $result = $false
 
@@ -251,11 +258,17 @@ function Test-TargetResource
     {
         if( $Ensure -eq 'Absent' )
         {
+            Write-Verbose -Message (
+                $script:localizedData.ClientAliasMissing -f $Name
+            )
+
             $result = $true
         }
         else
         {
-            Write-Verbose -Message 'Ensure is in the desired state. Verifying values.'
+            Write-Verbose -Message (
+                $script:localizedData.ClientAliasPresent -f $Name
+            )
 
             if ($Protocol -eq $currentValues.Protocol)
             {
@@ -283,11 +296,15 @@ function Test-TargetResource
 
     if ($result)
     {
-        Write-Verbose -Message 'In the desired state'
+        Write-Verbose -Message (
+            $script:localizedData.InDesiredState -f $Name
+        )
     }
     else
     {
-        Write-Verbose -Message 'Not in the desired state'
+        Write-Verbose -Message (
+            $script:localizedData.NotInDesiredState -f $Name
+        )
     }
 
     return $result
