@@ -63,11 +63,6 @@
   - Added en-US localization ([issue #609](https://github.com/PowerShell/SqlServerDsc/issues/609)).
 - Changes to SqlDatabasePermission
   - Added en-US localization ([issue #608](https://github.com/PowerShell/SqlServerDsc/issues/608)).
-- Changes to SqlRS
-  - Fixed one of the error handling to use localization, and made the
-    error message more descriptive when the Set-TargetResource function
-    calls the Test-TargetResource function to verify the desired
-    state. *This was done prior to adding full en-US localization.*
 - Changes to SqlDatabaseOwner
   - Added en-US localization ([issue #607](https://github.com/PowerShell/SqlServerDsc/issues/607)).
 
