@@ -56,7 +56,6 @@ ConvertFrom-StringData @'
     AbsentNotImplemented = Ensure = Absent is not implemented!
     RemoteConnectionFailed = Remote PowerShell connection to Server '{0}' failed.
     TODO = ToDo. Work not implemented at this time.
-    UnexpectedErrorFromGet = Got unexpected result from Get-TargetResource. No change is made.
     AlterAvailabilityGroupFailed = Failed to alter the availability group '{0}'.
     HadrNotEnabled = HADR is not enabled.
     AvailabilityGroupNotFound = Unable to locate the availability group '{0}' on the instance '{1}'.
@@ -71,10 +70,7 @@ ConvertFrom-StringData @'
     FailedLogin = Creating a login of type 'SqlLogin' requires LoginCredential
 
     # AvailabilityGroupListener
-    AvailabilityGroupListenerNotFound = Trying to make a change to a listener that does not exist.
     AvailabilityGroupListenerErrorVerifyExist = Unexpected result when trying to verify existence of listener '{0}'.
-    AvailabilityGroupListenerIPChangeError = IP-address configuration mismatch. Expecting '{0}' found '{1}'. Resource does not support changing IP-address. Listener needs to be removed and then created again.
-    AvailabilityGroupListenerDHCPChangeError = IP-address configuration mismatch. Expecting '{0}' found '{1}'. Resource does not support changing between static IP and DHCP. Listener needs to be removed and then created again.
 
     # Configuration
     ConfigurationOptionNotFound = Specified option '{0}' could not be found.

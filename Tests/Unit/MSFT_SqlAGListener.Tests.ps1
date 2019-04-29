@@ -236,7 +236,7 @@ try
                 $mockDynamicAvailabilityGroup = $mockUnknownAvailabilityGroup
 
                 It 'Should throw the correct error' {
-                    { Get-TargetResource @testParameters } | Should -Throw 'Trying to make a change to a listener that does not exist. InnerException: Unable to locate the availability group ''AG01'' on the instance ''MSSQLSERVER''.'
+                    { Get-TargetResource @testParameters } | Should -Throw ($script:localizedData.AvailabilityGroupListenerNotFound -f $testParameters.AvailabilityGroup, $testParameters.InstanceName)
                 }
             }
 
@@ -521,7 +521,7 @@ try
                         return $null
                     }
 
-                    { Test-TargetResource @testParameters } | Should -Throw 'Got unexpected result from Get-TargetResource. No change is made.'
+                    { Test-TargetResource @testParameters } | Should -Throw $script:localizedData.UnexpectedErrorFromGet
                 }
             }
 
@@ -685,7 +685,7 @@ try
                         }
                     }
 
-                    { Set-TargetResource @testParameters } | Should -Throw 'Unable to locate the availability group ''AG01'' on the instance ''MSSQLSERVER''.'
+                    { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.AvailabilityGroupNotFound -f $testParameters.AvailabilityGroup, $testParameters.InstanceName)
                 }
 
                 It 'Should throw the correct error when availability group is not found and Ensure is set to ''Absent''' {
@@ -697,7 +697,7 @@ try
                         }
                     }
 
-                    { Set-TargetResource @testParameters } | Should -Throw 'Unable to locate the availability group ''AG01'' on the instance ''MSSQLSERVER''.'
+                    { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.AvailabilityGroupNotFound -f $testParameters.AvailabilityGroup, $testParameters.InstanceName)
                 }
 
                 $mockDynamicAvailabilityGroup = $mockKnownAvailabilityGroup
@@ -706,7 +706,7 @@ try
                 It 'Should throw the correct error when listener is not found and Ensure is set to ''Absent''' {
                     $testParameters['Ensure'] = 'Absent'
 
-                    { Set-TargetResource @testParameters } | Should -Throw 'Trying to make a change to a listener that does not exist.'
+                    { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.AvailabilityGroupListenerNotFound -f $testParameters.AvailabilityGroup, $testParameters.InstanceName)
                 }
 
                 It 'Should throw the correct error when listener is not found and Ensure is set to ''Present''' {
@@ -726,7 +726,7 @@ try
                         }
                     }
 
-                    { Set-TargetResource @testParameters } | Should -Throw 'Trying to make a change to a listener that does not exist.'
+                    { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.AvailabilityGroupListenerNotFound -f $testParameters.AvailabilityGroup, $testParameters.InstanceName)
                 }
 
                 $mockDynamicAvailabilityGroup = $mockUnknownAvailabilityGroup
@@ -749,7 +749,7 @@ try
                         }
                     }
 
-                    { Set-TargetResource @testParameters } | Should -Throw 'Unable to locate the availability group ''AG01'' on the instance ''MSSQLSERVER''.'
+                    { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.AvailabilityGroupNotFound -f $testParameters.AvailabilityGroup, $testParameters.InstanceName)
                 }
             }
 
@@ -810,7 +810,7 @@ try
                         return $null
                     }
 
-                    { Set-TargetResource @testParameters } | Should -Throw 'Got unexpected result from Get-TargetResource. No change is made.'
+                    { Set-TargetResource @testParameters } | Should -Throw $script:localizedData.UnexpectedErrorFromGet
                 }
             }
 
