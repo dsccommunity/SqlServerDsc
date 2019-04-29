@@ -65,6 +65,8 @@
   - Added en-US localization ([issue #608](https://github.com/PowerShell/SqlServerDsc/issues/608)).
 - Changes to SqlDatabaseOwner
   - Added en-US localization ([issue #607](https://github.com/PowerShell/SqlServerDsc/issues/607)).
+- Changes to SqlDatabase
+  - Added en-US localization ([issue #606](https://github.com/PowerShell/SqlServerDsc/issues/606)).
 
 ## 12.4.0.0
 

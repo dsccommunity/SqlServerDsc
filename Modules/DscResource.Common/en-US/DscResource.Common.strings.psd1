@@ -81,9 +81,6 @@ ConvertFrom-StringData @'
     LoginNotFound = Login '{0}' does not exist on SQL server '{1}\\{2}'."
     FailedLogin = Creating a login of type 'SqlLogin' requires LoginCredential
 
-    # Database Role
-    AddLoginDatabaseSetError = Failed adding the login {2} as a user of the database {3}, on the instance {0}\\{1}.
-
     # AvailabilityGroupListener
     AvailabilityGroupListenerNotFound = Trying to make a change to a listener that does not exist.
     AvailabilityGroupListenerErrorVerifyExist = Unexpected result when trying to verify existence of listener '{0}'.
@@ -105,13 +102,4 @@ ConvertFrom-StringData @'
     JoinAvailabilityGroupFailed = Failed to join the availability group replica '{0}'.
     RemoveAvailabilityGroupReplicaFailed = Failed to remove the availability group replica '{0}'.
     ReplicaNotFound = Unable to find the availability group replica '{0}' on the instance '{1}'.
-
-    # SQLServerDatabase
-    CreateDatabaseSetError = Failed to create the database named {2} on {0}\\{1}.
-    DropDatabaseSetError = Failed to drop the database named {2} on {0}\\{1}.
-    UpdateDatabaseSetError = Failed to update database {1} on {0}\\{1} with specified changes.
-    InvalidCollationError = The specified collation '{3}' is not a valid collation for database {2} on {0}\\{1}.
-
-    # SQLServerNetwork
-    UnableToUseBothDynamicAndStaticPort = Unable to set both TCP dynamic port and TCP static port. Only one can be set.
 '@
