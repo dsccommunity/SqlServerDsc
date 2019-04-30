@@ -77,7 +77,7 @@ ConvertFrom-StringData @'
     ConfigurationRestartRequired = Configuration option '{0}' has been updated, but a manual restart of SQL Server is required for it to take effect.
 
     # AlwaysOnService
-    AlterAlwaysOnServiceFailed = Failed to ensure Always On is {0} on the instance '{1}'.
+
     UnexpectedAlwaysOnStatus = The status of property Server.IsHadrEnabled was neither $true or $false. Status is '{0}'.
 
     # AlwaysOnAvailabilityGroup

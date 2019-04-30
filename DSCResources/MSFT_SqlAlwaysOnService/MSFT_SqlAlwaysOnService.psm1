@@ -7,6 +7,8 @@ Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath '
 $script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
 Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlAlwaysOnService'
+
 <#
     .SYNOPSIS
     Gets the current value of the SQL Server Always On high availability and
@@ -57,7 +59,9 @@ function Get-TargetResource
         $statusString = 'disabled'
     }
 
-    New-VerboseMessage -Message ( 'SQL Always On is {0} on "{1}\{2}".' -f $statusString, $ServerName, $InstanceName )
+    Write-Verbose -Message (
+        $script:localizedData.GetAlwaysOnServiceState -f $statusString, $ServerName, $InstanceName
+    )
 
     return @{
         IsHadrEnabled = $isAlwaysOnEnabled
@@ -121,19 +125,32 @@ function Set-TargetResource
     {
         'Absent'
         {
+            $statusString = 'disabled'
+
             # Disable Always On without restarting the services.
-            New-VerboseMessage -Message "Disabling Always On for the instance $serverInstance"
+            Write-Verbose -Message (
+                $script:localizedData.DisableAlwaysOnAvailabilityGroup -f $ServerName, $InstanceName
+            )
+
             Disable-SqlAlwaysOn -ServerInstance $serverInstance -NoServiceRestart
         }
+
         'Present'
         {
+            $statusString = 'enabled'
+
             # Enable Always On without restarting the services.
-            New-VerboseMessage -Message "Enabling Always On for the instance $serverInstance"
+            Write-Verbose -Message (
+                $script:localizedData.EnableAlwaysOnAvailabilityGroup -f $ServerName, $InstanceName
+            )
+
             Enable-SqlAlwaysOn -ServerInstance $serverInstance -NoServiceRestart
         }
     }
 
-    New-VerboseMessage -Message ( 'SQL Always On has been {0} on "{1}\{2}". Restarting the service.' -f @{Absent = 'disabled'; Present = 'enabled'}[$Ensure], $ServerName, $InstanceName )
+    Write-Verbose -Message (
+        $script:localizedData.DisableAlwaysOnAvailabilityGroup -f $statusString, $ServerName, $InstanceName
+    )
 
     # Now restart the SQL service so that all dependent services are also returned to their previous state
     Restart-SqlService -SQLServer $ServerName -SQLInstanceName $InstanceName -Timeout $RestartTimeout
@@ -141,7 +158,8 @@ function Set-TargetResource
     # Verify always on was set
     if ( -not ( Test-TargetResource @PSBoundParameters ) )
     {
-        throw New-TerminatingError -ErrorType AlterAlwaysOnServiceFailed -FormatArgs $Ensure, $serverInstance -ErrorCategory InvalidResult
+        $errorMessage = $script:localizedData.AlterAlwaysOnServiceFailed -f $statusString, $ServerName, $InstanceName
+        New-InvalidResultException -Message $errorMessage
     }
 }
 
@@ -190,6 +208,10 @@ function Test-TargetResource
         $RestartTimeout = 120
     )
 
+    Write-Verbose -Message (
+        $script:localizedData.TestingConfiguration -f $ServerName, $InstanceName
+    )
+
     # Determine the current state of Always On
     $getTargetResourceParameters = @{
         Ensure       = $Ensure
@@ -199,15 +221,34 @@ function Test-TargetResource
 
     $state = Get-TargetResource @getTargetResourceParameters
 
-    # Determine what the desired state of Always On is
-    $hadrDesiredState = @{ 'Present' = $true; 'Absent' = $false }[$Ensure]
+    $isInDesiredState = $true
 
-    # Determine whether the value matches the desired state
-    $desiredStateMet = $state.IsHadrEnabled -eq $hadrDesiredState
+    if ($state.IsHadrEnabled)
+    {
+        if ($Ensure -eq 'Present')
+        {
+            Write-Verbose -Message $script:localizedData.AlwaysOnAvailabilityGroupEnabled
+        }
+        else
+        {
+            Write-Verbose -Message $script:localizedData.AlwaysOnAvailabilityGroupNotInDesiredStateDisabled
+            $isInDesiredState = $false
+        }
+    }
+    else
+    {
+        if ($Ensure -eq 'Absent')
+        {
+            Write-Verbose -Message $script:localizedData.AlwaysOnAvailabilityGroupDisabled
+        }
+        else
+        {
+            Write-Verbose -Message $script:localizedData.AlwaysOnAvailabilityGroupNotInDesiredStateEnabled
+            $isInDesiredState = $false
+        }
+    }
 
-    New-VerboseMessage -Message ( 'SQL Always On is in the desired state for "{0}\{1}": {2}.' -f $ServerName, $InstanceName, $desiredStateMet )
-
-    return $desiredStateMet
+    return $isInDesiredState
 }
 
 Export-ModuleMember -Function *-TargetResource
