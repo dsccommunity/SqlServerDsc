@@ -71,6 +71,10 @@
   - Added en-US localization ([issue #604](https://github.com/PowerShell/SqlServerDsc/issues/604)).
 - Changes to SqlAlwaysOnService
   - Added en-US localization ([issue #603](https://github.com/PowerShell/SqlServerDsc/issues/608)).
+- Changes to SqlAlias
+  - Added en-US localization ([issue #602](https://github.com/PowerShell/SqlServerDsc/issues/602)).
+  - Removed ShouldProcess for the code, since it has no purpose in a DSC
+    resource ([issue #242](https://github.com/PowerShell/SqlServerDsc/issues/242)).
 
 ## 12.4.0.0
 
