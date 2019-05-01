@@ -67,7 +67,7 @@ ConvertFrom-StringData @'
     AbsentNotImplemented = Ensure = Absent is not implemented!
     RemoteConnectionFailed = Remote PowerShell connection to Server '{0}' failed.
     TODO = ToDo. Work not implemented at this time.
-    AlterAvailabilityGroupFailed = Failed to alter the availability group '{0}'.
+
     HadrNotEnabled = HADR is not enabled.
     AvailabilityGroupNotFound = Unable to locate the availability group '{0}' on the instance '{1}'.
     ParameterNotOfType = The parameter '{0}' is not of the type '{1}'.
@@ -89,10 +89,8 @@ ConvertFrom-StringData @'
 
     # AlwaysOnAvailabilityGroup
     CreateAvailabilityGroupReplicaFailed = Creating the Availability Group Replica '{0}' failed on the instance '{1}'.
-    CreateAvailabilityGroupFailed = Creating the availability group '{0}'.
+
     DatabaseMirroringEndpointNotFound = No database mirroring endpoint was found on '{0}\{1}'.
-    InstanceNotPrimaryReplica = The instance '{0}' is not the primary replica for the availability group '{1}'.
-    RemoveAvailabilityGroupFailed = Failed to remove the availability group '{0}' from the '{1}' instance.
 
     # AlwaysOnAvailabilityGroupReplica
     JoinAvailabilityGroupFailed = Failed to join the availability group replica '{0}'.
