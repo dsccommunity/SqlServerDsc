@@ -1378,28 +1378,47 @@ function Restart-ReportingServicesService
 
 <#
     .SYNOPSIS
-    Executes a query on the specified database.
+        Executes a query on the specified database.
 
     .PARAMETER SQLServer
-    The hostname of the server that hosts the SQL instance.
+        The hostname of the server that hosts the SQL instance.
 
     .PARAMETER SQLInstanceName
-    The name of the SQL instance that hosts the database.
+        The name of the SQL instance that hosts the database.
 
     .PARAMETER Database
-    Specify the name of the database to execute the query on.
+        Specify the name of the database to execute the query on.
 
     .PARAMETER Query
-    The query string to execute.
+        The query string to execute.
+
+    .PARAMETER DatabaseCredential
+        PSCredential object with the credentials to use to impersonate a user when connecting.
+        If this is not provided then the current user will be used to connect to the SQL Server Database Engine instance.
+
+    .PARAMETER LoginType
+        If the SetupCredential is set, specify with this parameter, which type
+        of credentials are set: Native SQL login or Windows user Login. Default
+        value is 'WindowsUser'.
+
+    .PARAMETER SqlManagementObject
+        You can pass in an object type of 'Microsoft.SqlServer.Management.Smo.Server'. This can also be passed in
+        through the pipeline allowing you to use connect-sql | invoke-query if you wish.
 
     .PARAMETER WithResults
-    Specifies if the query should return results.
+        Specifies if the query should return results.
 
     .EXAMPLE
-    Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master -Query 'SELECT name FROM sys.databases' -WithResults
+        Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master `
+            -Query 'SELECT name FROM sys.databases' -WithResults
 
     .EXAMPLE
-    Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master -Query 'RESTORE DATABASE [NorthWinds] WITH RECOVERY'
+        Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master `
+            -Query 'RESTORE DATABASE [NorthWinds] WITH RECOVERY'
+
+    .EXAMPLE
+        Connect-SQL @sqlConnectionParameters | Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER `
+            -Database master -Query 'SELECT name FROM sys.databases' -WithResults
 #>
 function Invoke-Query
 {
@@ -1445,8 +1464,7 @@ function Invoke-Query
         $WithResults
     )
 
-
-
+    # If we don't have an smo object, then we try to use credentials
     if (-not $PSBoundParameters.ContainsKey('SqlManagementObject'))
     {
         $connectSQLParamaters = @{
@@ -1467,7 +1485,7 @@ function Invoke-Query
         $smoConnectObject = $SqlManagementObject
     }
 
-    if ( $WithResults )
+    if ($WithResults)
     {
         try
         {
