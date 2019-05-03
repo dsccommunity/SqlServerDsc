@@ -1390,46 +1390,45 @@ InModuleScope 'DscResource.Common' {
         BeforeAll {
             $mockExpectedQuery = ''
 
-            $mockConnectSql = {
-                return @(
-                    (
-                        New-Object -TypeName PSObject -Property @{
-                            Databases = @{
-                                'master' = (
-                                    New-Object -TypeName PSObject -Property @{ Name = 'master' } |
-                                        Add-Member -MemberType ScriptMethod -Name ExecuteNonQuery -Value {
-                                            param
-                                            (
-                                                [Parameter()]
-                                                [System.String]
-                                                $sqlCommand
-                                            )
-
-                                            if ( $sqlCommand -ne $mockExpectedQuery )
-                                            {
-                                                throw
-                                            }
-                                        } -PassThru |
-                                        Add-Member -MemberType ScriptMethod -Name ExecuteWithResults -Value {
-                                            param
-                                            (
-                                                [Parameter()]
-                                                [System.String]
-                                                $sqlCommand
-                                            )
-
-                                            if ( $sqlCommand -ne $mockExpectedQuery )
-                                            {
-                                                throw
-                                            }
-
-                                            return New-Object -TypeName System.Data.DataSet
-                                        } -PassThru
-                                )
-                            }
-                        }
-                    )
+            $masterDatabaseObject = New-Object -TypeName PSObject
+            $masterDatabaseObject | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'master'
+            $masterDatabaseObject | Add-Member -MemberType ScriptMethod -Name 'ExecuteNonQuery' -Value {
+                param
+                (
+                    [Parameter()]
+                    [System.String]
+                    $sqlCommand
                 )
+
+                if ( $sqlCommand -ne $mockExpectedQuery )
+                {
+                    throw
+                }
+            }
+
+            $masterDatabaseObject | Add-Member -MemberType ScriptMethod -Name ExecuteWithResults -Value {
+                param
+                (
+                    [Parameter()]
+                    [System.String]
+                    $sqlCommand
+                )
+
+                if ( $sqlCommand -ne $mockExpectedQuery )
+                {
+                    throw
+                }
+
+                return New-Object -TypeName System.Data.DataSet
+            }
+
+            $databasesObject = New-Object -TypeName PSObject
+            $databasesObject | Add-Member -MemberType NoteProperty -Name 'Databases' -Value @{
+                'master' = $masterDatabaseObject
+            }
+
+            $mockConnectSql = {
+                return @($databasesObject)
             }
 
             $mockThrowLocalizedMessage = {
