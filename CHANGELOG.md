@@ -75,6 +75,10 @@
   - Added en-US localization ([issue #602](https://github.com/PowerShell/SqlServerDsc/issues/602)).
   - Removed ShouldProcess for the code, since it has no purpose in a DSC
     resource ([issue #242](https://github.com/PowerShell/SqlServerDsc/issues/242)).
+- Changes to SqlServerReplication
+  - Added en-US localization ([issue #620](https://github.com/PowerShell/SqlServerDsc/issues/620)).
+  - Refactored Get-TargetResource slightly so it provide better verbose
+    messages.
 
 ## 12.4.0.0
 
