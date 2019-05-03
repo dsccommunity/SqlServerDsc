@@ -1,10 +1,22 @@
+$script:resourceModulePath = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+$script:modulesFolderPath = Join-Path -Path $script:resourceModulePath -ChildPath 'Modules'
+
+$script:localizationModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.LocalizationHelper'
+Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath 'DscResource.LocalizationHelper.psm1')
+
+$script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
+Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
+
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerReplication'
+
 $dom = [AppDomain]::CreateDomain('SqlServerReplication')
 
 function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
@@ -44,7 +56,9 @@ function Get-TargetResource
         $UninstallWithForce = $true
     )
 
-    $Ensure = 'Absent'
+    Write-Verbose -Message (
+        $script:localizedData.GetCurrentState -f $InstanceName
+    )
 
     $sqlMajorVersion = Get-SqlServerMajorVersion -InstanceName $InstanceName
     $localSqlName = Get-SqlLocalServerName -InstanceName $InstanceName
@@ -52,31 +66,45 @@ function Get-TargetResource
     $localServerConnection = New-ServerConnection -SqlMajorVersion $sqlMajorVersion -SqlServerName $localSqlName
     $localReplicationServer = New-ReplicationServer -SqlMajorVersion $sqlMajorVersion -ServerConnection $localServerConnection
 
+    $currentEnsure = 'Present'
+
     if ($localReplicationServer.IsDistributor -eq $true)
     {
-        $Ensure = 'Present'
-        $DistributorMode = 'Local'
+        $currentDistributorMode = 'Local'
     }
     elseif ($localReplicationServer.IsPublisher -eq $true)
     {
-        $Ensure = 'Present'
-        $DistributorMode = 'Remote'
+        $currentDistributorMode = 'Remote'
+    }
+    else
+    {
+        $currentEnsure = 'Absent'
     }
 
-    if ($Ensure -eq 'Present')
+    if ($currentEnsure -eq 'Present')
     {
-        $DistributionDBName = $localReplicationServer.DistributionDatabase
-        $RemoteDistributor = $localReplicationServer.DistributionServer
-        $WorkingDirectory = $localReplicationServer.WorkingDirectory
+        Write-Verbose -Message (
+            $script:localizedData.DistributorMode -f $DistributorMode, $InstanceName
+        )
+
+        $currentDistributionDBName = $localReplicationServer.DistributionDatabase
+        $currentRemoteDistributor = $localReplicationServer.DistributionServer
+        $currentWorkingDirectory = $localReplicationServer.WorkingDirectory
+    }
+    else
+    {
+        Write-Verbose -Message (
+            $script:localizedData.NoDistributorMode -f $InstanceName
+        )
     }
 
     $returnValue = @{
         InstanceName       = $InstanceName
-        Ensure             = $Ensure
-        DistributorMode    = $DistributorMode
-        DistributionDBName = $DistributionDBName
-        RemoteDistributor  = $RemoteDistributor
-        WorkingDirectory   = $WorkingDirectory
+        Ensure             = $currentEnsure
+        DistributorMode    = $currentDistributorMode
+        DistributionDBName = $currentDistributionDBName
+        RemoteDistributor  = $currentRemoteDistributor
+        WorkingDirectory   = $currentWorkingDirectory
     }
 
     return $returnValue
@@ -85,7 +113,8 @@ function Get-TargetResource
 function Set-TargetResource
 {
     [CmdletBinding()]
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
@@ -127,7 +156,8 @@ function Set-TargetResource
 
     if (($DistributorMode -eq 'Remote') -and (-not $RemoteDistributor))
     {
-        throw "RemoteDistributor parameter cannot be empty when DistributorMode = 'Remote'!"
+        $errorMessage = $script:localizedData.NoRemoteDistributor
+        New-InvalidArgumentException -ArgumentName 'RemoteDistributor' -Message $errorMessage
     }
 
     $sqlMajorVersion = Get-SqlServerMajorVersion -InstanceName $InstanceName
@@ -140,7 +170,9 @@ function Set-TargetResource
     {
         if ($DistributorMode -eq 'Local' -and $localReplicationServer.IsDistributor -eq $false)
         {
-            Write-Verbose "Local distribution will be configured ..."
+            Write-Verbose -Message (
+                $script:localizedData.ConfigureLocalDistributor
+            )
 
             $distributionDB = New-DistributionDatabase `
                 -SqlMajorVersion $sqlMajorVersion `
@@ -163,7 +195,9 @@ function Set-TargetResource
 
         if ($DistributorMode -eq 'Remote' -and $localReplicationServer.IsPublisher -eq $false)
         {
-            Write-Verbose "Remote distribution will be configured ..."
+            Write-Verbose -Message (
+                $script:localizedData.ConfigureRemoteDistributor
+            )
 
             $remoteConnection = New-ServerConnection -SqlMajorVersion $sqlMajorVersion -SqlServerName $RemoteDistributor
 
@@ -185,12 +219,17 @@ function Set-TargetResource
     {
         if ($localReplicationServer.IsDistributor -eq $true -or $localReplicationServer.IsPublisher -eq $true)
         {
-            Write-Verbose "Distribution will be removed ..."
+            Write-Verbose -Message (
+                $script:localizedData.RemoveDistributor
+            )
+
             Uninstall-Distributor -ReplicationServer $localReplicationServer -UninstallWithForce $UninstallWithForce
         }
         else
         {
-            Write-Verbose "Distribution is not configured on this instance."
+            Write-Verbose -Message (
+                $script:localizedData.NoDistributorMode -f $InstanceName
+            )
         }
     }
 }
@@ -199,7 +238,8 @@ function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
@@ -239,6 +279,10 @@ function Test-TargetResource
         $UninstallWithForce = $true
     )
 
+    Write-Verbose -Message (
+        $script:localizedData.TestingConfiguration
+    )
+
     $result = $false
     $state = Get-TargetResource @PSBoundParameters
 
@@ -259,7 +303,8 @@ function New-ServerConnection
 {
     [CmdletBinding()]
     [OutputType([System.Object])]
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion,
@@ -279,7 +324,8 @@ function New-ReplicationServer
 {
     [CmdletBinding()]
     [OutputType([System.Object])]
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion,
@@ -299,7 +345,8 @@ function New-DistributionDatabase
 {
     [CmdletBinding()]
     [OutputType([System.Object])]
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion,
@@ -314,7 +361,11 @@ function New-DistributionDatabase
     )
 
     $rmo = Get-RmoAssembly -SqlMajorVersion $SqlMajorVersion
-    Write-Verbose "Creating DistributionDatabase object $DistributionDBName"
+
+    Write-Verbose -Message (
+        $script:localizedData.CreateDistributionDatabase -f $DistributionDBName
+    )
+
     $distributionDB = New-Object $rmo.GetType('Microsoft.SqlServer.Replication.DistributionDatabase') $DistributionDBName, $ServerConnection
 
     return $distributionDB
@@ -324,7 +375,8 @@ function New-DistributionPublisher
 {
     [CmdletBinding()]
     [OutputType([System.Object])]
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion,
@@ -347,7 +399,8 @@ function New-DistributionPublisher
 function Install-RemoteDistributor
 {
     [CmdletBinding()]
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.Object]
         $ReplicationServer,
@@ -361,14 +414,18 @@ function Install-RemoteDistributor
         $AdminLinkCredentials
     )
 
-    Write-Verbose "Calling InstallDistributor with RemoteDistributor = $RemoteDistributor"
+    Write-Verbose -Message (
+        $script:localizedData.InstallRemoteDistributor -f $RemoteDistributor
+    )
+
     $ReplicationServer.InstallDistributor($RemoteDistributor, $AdminLinkCredentials.Password)
 }
 
 function Install-LocalDistributor
 {
     [CmdletBinding()]
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.Object]
         $ReplicationServer,
@@ -382,14 +439,18 @@ function Install-LocalDistributor
         $DistributionDB
     )
 
-    Write-Verbose "Calling method InstallDistributor() with DistributionDB"
+    Write-Verbose -Message (
+        $script:localizedData.InstallLocalDistributor
+    )
+
     $ReplicationServer.InstallDistributor($AdminLinkCredentials.Password, $DistributionDB)
 }
 
 function Uninstall-Distributor
 {
     [CmdletBinding()]
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.Object]
         $ReplicationServer,
@@ -398,14 +459,19 @@ function Uninstall-Distributor
         [System.Boolean]
         $UninstallWithForce
     )
-    Write-Verbose 'Calling method UninstallDistributor() on ReplicationServer object'
+
+    Write-Verbose -Message (
+        $script:localizedData.UninstallDistributor
+    )
+
     $ReplicationServer.UninstallDistributor($UninstallWithForce)
 }
 
 function Register-DistributorPublisher
 {
     [CmdletBinding()]
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion,
@@ -431,7 +497,9 @@ function Register-DistributorPublisher
         $UseTrustedConnection
     )
 
-    Write-Verbose "Creating DistributorPublisher $PublisherName on $($ServerConnection.ServerInstance)"
+    Write-Verbose -Message (
+        $script:localizedData.CreateDistributorPublisher -f $PublisherName, $ServerConnection.ServerInstance
+    )
 
     $distributorPublisher = New-DistributionPublisher `
         -SqlMajorVersion $SqlMajorVersion `
@@ -448,14 +516,18 @@ function Get-ConnectionInfoAssembly
 {
     [CmdletBinding()]
     [OutputType([System.Reflection.Assembly])]
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion
     )
 
     $connInfo = $dom.Load("Microsoft.SqlServer.ConnectionInfo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
-    Write-Verbose "Loaded assembly: $($connInfo.FullName)"
+
+    Write-Verbose -Message (
+        $script:localizedData.LoadAssembly -f $connInfo.FullName
+    )
 
     return $connInfo
 }
@@ -464,14 +536,18 @@ function Get-RmoAssembly
 {
     [CmdletBinding()]
     [OutputType([System.Reflection.Assembly])]
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMajorVersion
     )
 
     $rmo = $dom.Load("Microsoft.SqlServer.Rmo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
-    Write-Verbose "Loaded assembly: $($rmo.FullName)"
+
+    Write-Verbose -Message (
+        $script:localizedData.LoadAssembly -f $rmo.FullName
+    )
 
     return $rmo
 }
@@ -480,7 +556,8 @@ function Get-SqlServerMajorVersion
 {
     [CmdletBinding()]
     [OutputType([System.String])]
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName
@@ -488,11 +565,14 @@ function Get-SqlServerMajorVersion
 
     $instanceId = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL").$InstanceName
     $sqlVersion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\Setup").Version
+
     $sqlMajorVersion = $sqlVersion.Split(".")[0]
     if (-not $sqlMajorVersion)
     {
-        throw "Unable to detect version for sql server instance: $InstanceName!"
+        $errorMessage = $script:localizedData.FailedToDetectSqlVersion -f $InstanceName
+        New-InvalidResultException -Message $errorMessage
     }
+
     return $sqlMajorVersion
 }
 
@@ -500,13 +580,14 @@ function Get-SqlLocalServerName
 {
     [CmdletBinding()]
     [OutputType([System.String])]
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName
     )
 
-    if ($InstanceName -eq "MSSQLSERVER")
+    if ($InstanceName -eq 'MSSQLSERVER')
     {
         return $env:COMPUTERNAME
     }
