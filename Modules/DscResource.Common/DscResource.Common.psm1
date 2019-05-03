@@ -639,6 +639,7 @@ function Connect-SQL
         [System.String]
         $InstanceName = 'MSSQLSERVER',
 
+        [Alias("DatabaseCredential")]
         [Parameter()]
         [ValidateNotNull()]
         [System.Management.Automation.PSCredential]
@@ -683,10 +684,9 @@ function Connect-SQL
             $sql.ConnectionContext.ConnectAsUserName = $SetupCredential.GetNetworkCredential().UserName
         }
 
-        Write-Verbose -Message (
-            'Connecting using the credential ''{0}'' and the login type ''{1}''.' `
-                -f $connectUsername, $LoginType
-        ) -Verbose
+        Write-Verbose -Message ($script:localizedData.ConnectingToDatabaseEngineInstance -f
+            $databaseEngineInstance, $connectUserName, $LoginType
+        )
 
         $sql.ConnectionContext.ServerInstance = $databaseEngineInstance
         $sql.ConnectionContext.Connect()
@@ -698,7 +698,7 @@ function Connect-SQL
 
     if ( $sql.Status -match '^Online$' )
     {
-        Write-Verbose -Message ($script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance) -Verbose
+        Write-Verbose -Message ($script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance)
         return $sql
     }
     else
@@ -1406,35 +1406,66 @@ function Invoke-Query
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Alias("ServerName")]
+        [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLServer,
+        $SQLServer = $env:COMPUTERNAME,
 
-        [Parameter(Mandatory = $true)]
+        [Alias("InstanceName")]
+        [Parameter()]
         [System.String]
-        $SQLInstanceName,
+        $SQLInstanceName = 'MSSQLSERVER',
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [System.String]
-        $Database,
+        $Database = 'master',
 
         [Parameter(Mandatory = $true)]
         [System.String]
         $Query,
+
+        [Alias("SetupCredential")]
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $DatabaseCredential,
+
+        [Parameter()]
+        [ValidateSet('WindowsUser', 'SqlLogin')]
+        [System.String]
+        $LoginType = 'WindowsUser',
+
+        [Parameter(ValueFromPipeline)]
+        [ValidateNotNull()]
+        [Microsoft.SqlServer.Management.Smo.Server]
+        $SqlManagementObject,
 
         [Parameter()]
         [Switch]
         $WithResults
     )
 
-    $serverObject = Connect-SQL -ServerName $SQLServer -InstanceName $SQLInstanceName
+    if (-not $SqlManagementObject)
+    {
+        $connectSQLParamaters = @{
+            ServerName      = $SQLServer
+            InstanceName    = $SQLInstanceName
+            LoginType       = $LoginType
+        }
+
+        if ($PSBoundParameters.ContainsKey('DatabaseCredential'))
+        {
+            $connectSQLParamaters.SetupCredential = $DatabaseCredential
+        }
+
+        $SqlManagementObject = Connect-SQL @connectSQLParamaters
+    }
 
     if ( $WithResults )
     {
         try
         {
-            $result = $serverObject.Databases[$Database].ExecuteWithResults($Query)
+            $result = $SqlManagementObject.Databases[$Database].ExecuteWithResults($Query)
         }
         catch
         {
@@ -1446,7 +1477,7 @@ function Invoke-Query
     {
         try
         {
-            $serverObject.Databases[$Database].ExecuteNonQuery($Query)
+            $SqlManagementObject.Databases[$Database].ExecuteNonQuery($Query)
         }
         catch
         {

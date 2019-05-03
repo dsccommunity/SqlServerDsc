@@ -75,6 +75,10 @@
   - Added en-US localization ([issue #602](https://github.com/PowerShell/SqlServerDsc/issues/602)).
   - Removed ShouldProcess for the code, since it has no purpose in a DSC
     resource ([issue #242](https://github.com/PowerShell/SqlServerDsc/issues/242)).
+- Changes to common module (Connect-SQL, Invoke-Query)
+  - Updated Connect-SQL with alias, removed -Verbose from messages, and updated localized strings
+  - Updated Invoke-Query to work better with Connect-SQL, you can now pipe connect-sql into invoke-query
+    and pass in an 'Microsoft.SqlServer.Management.Smo.Server' object or credentials for connect-sql
 
 ## 12.4.0.0
 

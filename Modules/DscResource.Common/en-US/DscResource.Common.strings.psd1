@@ -18,6 +18,7 @@ ConvertFrom-StringData @'
     RobocopyRemovedExtraFilesAtDestination = Robocopy found files at the destination path that is not present at the source path, these extra files was remove at the destination path.
     RobocopyAllFilesPresent = Robocopy reported that all files already present.
     StartSetupProcess = Started the process with id {0} using the path '{1}', and with a timeout value of {2} seconds.
+    ConnectingToDatabaseEngineInstance = Connecting to the SQL instance '{0}' using the credential '{1}' and the login type '{2}'.
     ConnectedToDatabaseEngineInstance = Connected to SQL instance '{0}'.
     FailedToConnectToDatabaseEngineInstance = Failed to connect to SQL instance '{0}'.
     ConnectedToAnalysisServicesInstance = Connected to Analysis Services instance '{0}'.
