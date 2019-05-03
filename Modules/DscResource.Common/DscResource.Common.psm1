@@ -1445,7 +1445,9 @@ function Invoke-Query
         $WithResults
     )
 
-    if (-not $SqlManagementObject)
+
+
+    if (-not $PSBoundParameters.ContainsKey('SqlManagementObject'))
     {
         $connectSQLParamaters = @{
             ServerName      = $SQLServer
@@ -1458,14 +1460,18 @@ function Invoke-Query
             $connectSQLParamaters.SetupCredential = $DatabaseCredential
         }
 
-        $SqlManagementObject = Connect-SQL @connectSQLParamaters
+        $smoConnectObject = Connect-SQL @connectSQLParamaters
+    }
+    else
+    {
+        $smoConnectObject = $SqlManagementObject
     }
 
     if ( $WithResults )
     {
         try
         {
-            $result = $SqlManagementObject.Databases[$Database].ExecuteWithResults($Query)
+            $result = $smoConnectObject.Databases[$Database].ExecuteWithResults($Query)
         }
         catch
         {
@@ -1477,7 +1483,7 @@ function Invoke-Query
     {
         try
         {
-            $SqlManagementObject.Databases[$Database].ExecuteNonQuery($Query)
+            $smoConnectObject.Databases[$Database].ExecuteNonQuery($Query)
         }
         catch
         {
