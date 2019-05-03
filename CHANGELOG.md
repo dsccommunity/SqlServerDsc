@@ -79,10 +79,20 @@
   - Added en-US localization ([issue #620](https://github.com/PowerShell/SqlServerDsc/issues/620)).
   - Refactored Get-TargetResource slightly so it provide better verbose
     messages.
-- Changes to common module (Connect-SQL, Invoke-Query) ([issue #1354](https://github.com/PowerShell/SqlServerDsc/issues/1354)) and  ([issue #1355](https://github.com/PowerShell/SqlServerDsc/issues/1355))
-  - Updated Connect-SQL with alias, removed -Verbose from messages, and updated localized strings
-  - Updated Invoke-Query to work better with Connect-SQL, you can now pipe connect-sql into invoke-query
-    and pass in an 'Microsoft.SqlServer.Management.Smo.Server' object or credentials for connect-sql
+- Changes to common module: Connect-SQL
+  - Fixes issues in [issue #1354](https://github.com/PowerShell/SqlServerDsc/issues/1354)
+  - Updated Connect-SQL with alias
+  - Removed -Verbose from messages
+  - Updated localized strings
+- Changes to common module: Invoke-Query
+  - Fixes issues in [issue #1355](https://github.com/PowerShell/SqlServerDsc/issues/1355)
+  - Works together with Connect-SQL now
+  - Parameters and Aliases now match that of Connect-SQL
+  - Can now pass in credentials
+  - Can now pass in 'Microsoft.SqlServer.Management.Smo.Server' object
+  - Can also pipe in 'Microsoft.SqlServer.Management.Smo.Server' object
+  - Can pipe Connect-SQL | Invoke-Query
+  - Added default vaules to Invoke-Query
 
 ## 12.4.0.0
 
