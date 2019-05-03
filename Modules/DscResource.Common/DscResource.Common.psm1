@@ -686,7 +686,7 @@ function Connect-SQL
 
         Write-Verbose -Message ($script:localizedData.ConnectingToDatabaseEngineInstance -f
             $databaseEngineInstance, $connectUserName, $LoginType
-        )
+        ) -Verbose
 
         $sql.ConnectionContext.ServerInstance = $databaseEngineInstance
         $sql.ConnectionContext.Connect()
@@ -698,7 +698,7 @@ function Connect-SQL
 
     if ( $sql.Status -match '^Online$' )
     {
-        Write-Verbose -Message ($script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance)
+        Write-Verbose -Message ($script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance) -Verbose
         return $sql
     }
     else

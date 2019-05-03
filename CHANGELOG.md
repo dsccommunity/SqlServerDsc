@@ -82,7 +82,6 @@
 - Changes to common module: Connect-SQL
   - Fixes issues in [issue #1354](https://github.com/PowerShell/SqlServerDsc/issues/1354)
   - Updated Connect-SQL with alias
-  - Removed -Verbose from messages
   - Updated localized strings
 - Changes to common module: Invoke-Query
   - Fixes issues in [issue #1355](https://github.com/PowerShell/SqlServerDsc/issues/1355)

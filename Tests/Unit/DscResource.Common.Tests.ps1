@@ -1406,7 +1406,7 @@ InModuleScope 'DscResource.Common' {
                 }
             }
 
-            $masterDatabaseObject | Add-Member -MemberType ScriptMethod -Name ExecuteWithResults -Value {
+            $masterDatabaseObject | Add-Member -MemberType ScriptMethod -Name 'ExecuteWithResults' -Value {
                 param
                 (
                     [Parameter()]
@@ -1434,6 +1434,15 @@ InModuleScope 'DscResource.Common' {
             $mockThrowLocalizedMessage = {
                 throw $Message
             }
+
+            $mockSetupCredentialUserName = 'TestUserName12345'
+            $mockSetupCredentialPassword = 'StrongOne7.'
+            $mockSetupCredentialSecurePassword = ConvertTo-SecureString -String $mockSetupCredentialPassword -AsPlainText -Force
+            $mockSetupCredential = New-Object -TypeName PSCredential -ArgumentList ($mockSetupCredentialUserName, $mockSetupCredentialSecurePassword)
+            $mockSMOServer = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockSMOServer | Add-Member -MemberType NoteProperty -Name 'Databases' -Value @{
+                'master' = $masterDatabaseObject
+            } -Force
         }
 
         BeforeEach {
@@ -1442,10 +1451,11 @@ InModuleScope 'DscResource.Common' {
         }
 
         $queryParams = @{
-            SQLServer = 'Server1'
-            SQLInstanceName = 'MSSQLSERVER'
-            Database = 'master'
-            Query = ''
+            SQLServer          = 'Server1'
+            SQLInstanceName    = 'MSSQLSERVER'
+            Database           = 'master'
+            Query              = ''
+            DatabaseCredential = $mockSetupCredential
         }
 
         Context 'Execute a query with no results' {
