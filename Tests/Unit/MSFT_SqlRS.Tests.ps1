@@ -405,7 +405,7 @@ try
                             $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
                         } -Exactly -Times 1 -Scope It
 
-                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 3 -Scope It
                         Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
                     }
@@ -687,7 +687,7 @@ try
                             $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationNameLegacy
                         } -Exactly -Times 1 -Scope It
 
-                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 2 -Scope It
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 3 -Scope It
                         Assert-MockCalled -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                         Assert-MockCalled -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
                     }
