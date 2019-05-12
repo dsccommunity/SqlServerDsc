@@ -41,8 +41,8 @@ function Test-DscParameterState
     $returnValue = $true
 
     if (($DesiredValues.GetType().Name -ne 'HashTable') `
-        -and ($DesiredValues.GetType().Name -ne 'CimInstance') `
-        -and ($DesiredValues.GetType().Name -ne 'PSBoundParametersDictionary'))
+            -and ($DesiredValues.GetType().Name -ne 'CimInstance') `
+            -and ($DesiredValues.GetType().Name -ne 'PSBoundParametersDictionary'))
     {
         $errorMessage = $script:localizedData.PropertyTypeInvalidForDesiredValues -f $($DesiredValues.GetType().Name)
         New-InvalidArgumentException -ArgumentName 'DesiredValues' -Message $errorMessage
@@ -67,11 +67,11 @@ function Test-DscParameterState
         if (($_ -ne 'Verbose'))
         {
             if (($CurrentValues.ContainsKey($_) -eq $false) `
-            -or ($CurrentValues.$_ -ne $DesiredValues.$_) `
-            -or (($DesiredValues.GetType().Name -ne 'CimInstance' -and $DesiredValues.ContainsKey($_) -eq $true) -and ($null -ne $DesiredValues.$_ -and $DesiredValues.$_.GetType().IsArray)))
+                    -or ($CurrentValues.$_ -ne $DesiredValues.$_) `
+                    -or (($DesiredValues.GetType().Name -ne 'CimInstance' -and $DesiredValues.ContainsKey($_) -eq $true) -and ($null -ne $DesiredValues.$_ -and $DesiredValues.$_.GetType().IsArray)))
             {
                 if ($DesiredValues.GetType().Name -eq 'HashTable' -or `
-                    $DesiredValues.GetType().Name -eq 'PSBoundParametersDictionary')
+                        $DesiredValues.GetType().Name -eq 'PSBoundParametersDictionary')
                 {
                     $checkDesiredValue = $DesiredValues.ContainsKey($_)
                 }
@@ -95,7 +95,7 @@ function Test-DscParameterState
                     if ($desiredType.IsArray -eq $true)
                     {
                         if (($CurrentValues.ContainsKey($fieldName) -eq $false) `
-                        -or ($null -eq $CurrentValues.$fieldName))
+                                -or ($null -eq $CurrentValues.$fieldName))
                         {
                             Write-Verbose -Message ($script:localizedData.PropertyValidationError -f $fieldName) -Verbose
 
@@ -104,7 +104,7 @@ function Test-DscParameterState
                         else
                         {
                             $arrayCompare = Compare-Object -ReferenceObject $CurrentValues.$fieldName `
-                                                           -DifferenceObject $DesiredValues.$fieldName
+                                -DifferenceObject $DesiredValues.$fieldName
                             if ($null -ne $arrayCompare)
                             {
                                 Write-Verbose -Message ($script:localizedData.PropertiesDoesNotMatch -f $fieldName) -Verbose
@@ -124,10 +124,10 @@ function Test-DscParameterState
                             'String'
                             {
                                 if (-not [System.String]::IsNullOrEmpty($CurrentValues.$fieldName) -or `
-                                    -not [System.String]::IsNullOrEmpty($DesiredValues.$fieldName))
+                                        -not [System.String]::IsNullOrEmpty($DesiredValues.$fieldName))
                                 {
                                     Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
+                                            -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
 
                                     $returnValue = $false
                                 }
@@ -136,10 +136,10 @@ function Test-DscParameterState
                             'Int32'
                             {
                                 if (-not ($DesiredValues.$fieldName -eq 0) -or `
-                                    -not ($null -eq $CurrentValues.$fieldName))
+                                        -not ($null -eq $CurrentValues.$fieldName))
                                 {
                                     Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
+                                            -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
 
                                     $returnValue = $false
                                 }
@@ -148,10 +148,10 @@ function Test-DscParameterState
                             { $_ -eq 'Int16' -or $_ -eq 'UInt16' -or $_ -eq 'Single' }
                             {
                                 if (-not ($DesiredValues.$fieldName -eq 0) -or `
-                                    -not ($null -eq $CurrentValues.$fieldName))
+                                        -not ($null -eq $CurrentValues.$fieldName))
                                 {
                                     Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
+                                            -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
 
                                     $returnValue = $false
                                 }
@@ -162,7 +162,7 @@ function Test-DscParameterState
                                 if ($CurrentValues.$fieldName -ne $DesiredValues.$fieldName)
                                 {
                                     Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
+                                            -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
 
                                     $returnValue = $false
                                 }
@@ -171,7 +171,7 @@ function Test-DscParameterState
                             default
                             {
                                 Write-Warning -Message ($script:localizedData.UnableToCompareProperty `
-                                    -f $fieldName, $desiredType.Name)
+                                        -f $fieldName, $desiredType.Name)
 
                                 $returnValue = $false
                             }
@@ -226,7 +226,7 @@ function Get-RegistryPropertyValue
     }
     catch
     {
-         $getItemPropertyResult = $null
+        $getItemPropertyResult = $null
     }
 
     return $getItemPropertyResult
@@ -329,14 +329,14 @@ function Copy-ItemWithRobocopy
     }
 
     $robocopyArgumentList = '{0} {1} {2} {3} {4} {5}' -f $quotedPath,
-                                                         $quotedDestinationPath,
-                                                         $robocopyArgumentCopySubDirectoriesIncludingEmpty,
-                                                         $robocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource,
-                                                         $robocopyArgumentUseUnbufferedIO,
-                                                         $robocopyArgumentSilent
+    $quotedDestinationPath,
+    $robocopyArgumentCopySubDirectoriesIncludingEmpty,
+    $robocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource,
+    $robocopyArgumentUseUnbufferedIO,
+    $robocopyArgumentSilent
 
     $robocopyStartProcessParameters = @{
-        FilePath = $robocopyExecutable.Name
+        FilePath     = $robocopyExecutable.Name
         ArgumentList = $robocopyArgumentList
     }
 
@@ -345,13 +345,13 @@ function Copy-ItemWithRobocopy
 
     switch ($($robocopyProcess.ExitCode))
     {
-        {$_ -in 8, 16}
+        { $_ -in 8, 16 }
         {
             $errorMessage = $script:localizedData.RobocopyErrorCopying -f $_
             New-InvalidOperationException -Message $errorMessage
         }
 
-        {$_ -gt 7 }
+        { $_ -gt 7 }
         {
             $errorMessage = $script:localizedData.RobocopyFailuresCopying -f $_
             New-InvalidResultException -Message $errorMessage
@@ -374,7 +374,7 @@ function Copy-ItemWithRobocopy
             ) -Verbose
         }
 
-        {$_ -eq 0 -or $null -eq $_ }
+        { $_ -eq 0 -or $null -eq $_ }
         {
             Write-Verbose -Message $script:localizedData.RobocopyAllFilesPresent -Verbose
         }
@@ -592,7 +592,7 @@ function Start-SqlSetupProcess
     )
 
     $startProcessParameters = @{
-        FilePath = $FilePath
+        FilePath     = $FilePath
         ArgumentList = $ArgumentList
     }
 
@@ -620,9 +620,9 @@ function Start-SqlSetupProcess
         If this is not provided then the current user will be used to connect to the SQL Server Database Engine instance.
 
     .PARAMETER LoginType
-        If the SetupCredential is set, specify with this parameter, which type
-        of credentials are set: Native SQL login or Windows user Login. Default
-        value is 'WindowsUser'.
+        Specifies which type of logon credential should be used. The valid types are
+        Integrated, WindowsUser, and SqlLogin. If WindowsUser or SqlLogin are specified
+        then the SetupCredential needs to be specified as well.
 #>
 function Connect-SQL
 {
@@ -646,66 +646,66 @@ function Connect-SQL
         $SetupCredential,
 
         [Parameter()]
-        [ValidateSet('WindowsUser', 'SqlLogin')]
+        [ValidateSet('Integrated', 'WindowsUser', 'SqlLogin')]
         [System.String]
-        $LoginType = 'WindowsUser'
+        $LoginType = 'Integrated'
     )
 
     Import-SQLPSModule
 
-    if ($InstanceName -eq 'MSSQLSERVER')
+    $sqlServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+    $sqlConnectionContext = $sqlServerObject.ConnectionContext
+
+    $databaseEngineInstance = '{0}\{1}' -f $ServerName, $InstanceName
+
+    $databaseEngineInstance = $databaseEngineInstance -replace '\\MSSQLSERVER$', ''
+    $sqlConnectionContext.ServerInstance = $databaseEngineInstance
+
+    if ($LoginType -eq 'Integrated')
     {
-        $databaseEngineInstance = $ServerName
+        $connectUserName = [Environment]::UserName
     }
     else
     {
-        $databaseEngineInstance = "$ServerName\$InstanceName"
-    }
-
-    if ($SetupCredential)
-    {
-        $sql = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
-
-        if ($LoginType -eq 'SqlLogin')
+        if ($SetupCredential)
         {
-            $connectUsername = $SetupCredential.Username
-
-            $sql.ConnectionContext.LoginSecure = $false
-            $sql.ConnectionContext.Login = $SetupCredential.Username
-            $sql.ConnectionContext.SecurePassword = $SetupCredential.Password
+            $connectUserName = $SetupCredential.GetNetworkCredential().UserName
+            if ($LoginType -eq 'SqlLogin')
+            {
+                $sqlServerObject.ConnectionContext.LoginSecure = $false
+                $sqlServerObject.ConnectionContext.Login = $connectUserName
+                $sqlServerObject.ConnectionContext.SecurePassword = $SetupCredential.Password
+            }
+            elseif ($LoginType -eq 'WindowsUser')
+            {
+                $sqlServerObject.ConnectionContext.ConnectAsUser = $true
+                $sqlServerObject.ConnectionContext.ConnectAsUserName = $connectUserName
+                $sqlServerObject.ConnectionContext.ConnectAsUserPassword = $SetupCredential.GetNetworkCredential().Password
+            }
         }
-
-        if ($LoginType -eq 'WindowsUser')
+        else
         {
-            $connectUsername = $SetupCredential.GetNetworkCredential().UserName
-
-            $sql.ConnectionContext.ConnectAsUser = $true
-            $sql.ConnectionContext.ConnectAsUserPassword = $SetupCredential.GetNetworkCredential().Password
-            $sql.ConnectionContext.ConnectAsUserName = $SetupCredential.GetNetworkCredential().UserName
+            $errorMessage = $script:localizedData.CredentialsNotSpecified -f $LoginType
+            New-InvalidOperationException -Message $errorMessage
         }
-
-        Write-Verbose -Message ($script:localizedData.ConnectingToDatabaseEngineInstance -f
-            $databaseEngineInstance, $connectUserName, $LoginType
-        ) -Verbose
-
-        $sql.ConnectionContext.ServerInstance = $databaseEngineInstance
-        $sql.ConnectionContext.Connect()
     }
-    else
+
+    Write-Verbose -Message ($script:localizedData.ConnectingToDatabaseEngineInstance -f
+        $databaseEngineInstance, $connectUserName, $LoginType
+    ) -Verbose
+
+    try
     {
-        $sql = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server -ArgumentList $databaseEngineInstance
+        $sqlServerObject.ConnectionContext.Connect()
     }
-
-    if ( $sql.Status -match '^Online$' )
-    {
-        Write-Verbose -Message ($script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance) -Verbose
-        return $sql
-    }
-    else
+    catch
     {
         $errorMessage = $script:localizedData.FailedToConnectToDatabaseEngineInstance -f $databaseEngineInstance
         New-InvalidOperationException -Message $errorMessage
     }
+
+    Write-Verbose -Message ($script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance) -Verbose
+    return $sqlServerObject
 }
 
 <#
@@ -1032,7 +1032,7 @@ function Import-SQLPSModule
     if ($Force.IsPresent)
     {
         Write-Verbose -Message $script:localizedData.ModuleForceRemoval -Verbose
-        Remove-Module -Name @('SqlServer','SQLPS','SQLASCmdlets') -Force -ErrorAction SilentlyContinue
+        Remove-Module -Name @('SqlServer', 'SQLPS', 'SQLASCmdlets') -Force -ErrorAction SilentlyContinue
     }
 
     <#
@@ -1052,8 +1052,8 @@ function Import-SQLPSModule
 
     # Get the newest SqlServer module if more than one exist
     $availableModule = Get-Module -FullyQualifiedName 'SqlServer' -ListAvailable |
-        Sort-Object -Property 'Version' -Descending |
-        Select-Object -First 1 -Property Name, Path, Version
+    Sort-Object -Property 'Version' -Descending |
+    Select-Object -First 1 -Property Name, Path, Version
 
     if ($availableModule)
     {
@@ -1076,15 +1076,15 @@ function Import-SQLPSModule
             Get the newest SQLPS module if more than one exist.
         #>
         $availableModule = Get-Module -FullyQualifiedName 'SQLPS' -ListAvailable |
-            Select-Object -Property Name, Path, @{
-                Name = 'Version'
-                Expression = {
-                    # Parse the build version number '120', '130' from the Path.
-                    (Select-String -InputObject $_.Path -Pattern '\\([0-9]{3})\\' -List).Matches.Groups[1].Value
-                }
-            } |
-            Sort-Object -Property 'Version' -Descending |
-            Select-Object -First 1
+        Select-Object -Property Name, Path, @{
+            Name       = 'Version'
+            Expression = {
+                # Parse the build version number '120', '130' from the Path.
+                (Select-String -InputObject $_.Path -Pattern '\\([0-9]{3})\\' -List).Matches.Groups[1].Value
+            }
+        } |
+        Sort-Object -Property 'Version' -Descending |
+        Select-Object -First 1
 
         if ($availableModule)
         {
@@ -1211,11 +1211,11 @@ function Restart-SqlService
             # Get the cluster resources
             Write-Verbose -Message ($script:localizedData.GetSqlServerClusterResources) -Verbose
             $sqlService = Get-CimInstance -Namespace root/MSCluster -ClassName MSCluster_Resource -Filter "Type = 'SQL Server'" |
-                Where-Object -FilterScript { $_.PrivateProperties.InstanceName -eq $serverObject.ServiceName }
+            Where-Object -FilterScript { $_.PrivateProperties.InstanceName -eq $serverObject.ServiceName }
 
             Write-Verbose -Message ($script:localizedData.GetSqlAgentClusterResource) -Verbose
             $agentService = $sqlService | Get-CimAssociatedInstance -ResultClassName MSCluster_Resource |
-                Where-Object -FilterScript { ($_.Type -eq 'SQL Server Agent') -and ($_.State -eq 2) }
+            Where-Object -FilterScript { ($_.Type -eq 'SQL Server Agent') -and ($_.State -eq 2) }
 
             # Build a listing of resources being acted upon
             $resourceNames = @($sqlService.Name, ($agentService | Select-Object -ExpandProperty Name)) -join ","
@@ -1397,11 +1397,11 @@ function Restart-ReportingServicesService
         If this is not provided then the current user will be used to connect to the SQL Server Database Engine instance.
 
     .PARAMETER LoginType
-        If the SetupCredential is set, specify with this parameter, which type
-        of credentials are set: Native SQL login or Windows user Login. Default
-        value is 'WindowsUser'.
+        Specifies which type of logon credential should be used. The valid types are
+        Integrated, WindowsUser, and SqlLogin. If WindowsUser or SqlLogin are specified
+        then the SetupCredential needs to be specified as well.
 
-    .PARAMETER SqlManagementObject
+    .PARAMETER SqlServerObject
         You can pass in an object type of 'Microsoft.SqlServer.Management.Smo.Server'. This can also be passed in
         through the pipeline allowing you to use connect-sql | invoke-query if you wish.
 
@@ -1450,14 +1450,14 @@ function Invoke-Query
         $DatabaseCredential,
 
         [Parameter()]
-        [ValidateSet('WindowsUser', 'SqlLogin')]
+        [ValidateSet('Integrated', 'WindowsUser', 'SqlLogin')]
         [System.String]
-        $LoginType = 'WindowsUser',
+        $LoginType = 'Integrated',
 
         [Parameter(ValueFromPipeline)]
         [ValidateNotNull()]
         [Microsoft.SqlServer.Management.Smo.Server]
-        $SqlManagementObject,
+        $SqlServerObject,
 
         [Parameter()]
         [Switch]
@@ -1465,12 +1465,16 @@ function Invoke-Query
     )
 
     # If we don't have an smo object, then we try to use credentials
-    if (-not $PSBoundParameters.ContainsKey('SqlManagementObject'))
+    if ($PSBoundParameters.ContainsKey('SqlServerObject'))
+    {
+        $smoConnectObject = $SqlServerObject
+    }
+    else
     {
         $connectSQLParamaters = @{
-            ServerName      = $SQLServer
-            InstanceName    = $SQLInstanceName
-            LoginType       = $LoginType
+            ServerName   = $SQLServer
+            InstanceName = $SQLInstanceName
+            LoginType    = $LoginType
         }
 
         if ($PSBoundParameters.ContainsKey('DatabaseCredential'))
@@ -1479,10 +1483,6 @@ function Invoke-Query
         }
 
         $smoConnectObject = Connect-SQL @connectSQLParamaters
-    }
-    else
-    {
-        $smoConnectObject = $SqlManagementObject
     }
 
     if ($WithResults)
@@ -1652,8 +1652,8 @@ function Test-LoginEffectivePermissions
     if ( $null -ne $loginEffectivePermissions )
     {
         $loginMissingPermissions = Compare-Object -ReferenceObject $Permissions -DifferenceObject $loginEffectivePermissions |
-            Where-Object -FilterScript { $_.SideIndicator -ne '=>' } |
-            Select-Object -ExpandProperty InputObject
+        Where-Object -FilterScript { $_.SideIndicator -ne '=>' } |
+        Select-Object -ExpandProperty InputObject
 
         if ( $loginMissingPermissions.Count -eq 0 )
         {
@@ -2138,9 +2138,9 @@ function Get-ServiceAccount
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $ServiceAccount
-     )
+    )
 
-    $accountParameters = @{}
+    $accountParameters = @{ }
 
     switch -Regex ($ServiceAccount.UserName.ToUpper())
     {

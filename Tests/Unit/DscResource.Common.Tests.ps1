@@ -1461,7 +1461,7 @@ InModuleScope 'DscResource.Common' {
 
         $queryParametersWithSMO = @{
             Query              = ''
-            SqlManagementObject = $mockSMOServer
+            SqlServerObject = $mockSMOServer
         }
 
         Context 'Execute a query with no results' {
@@ -1477,7 +1477,9 @@ InModuleScope 'DscResource.Common' {
             It 'Should throw the correct error, ExecuteNonQueryFailed, when executing the query fails' {
                 $queryParams.Query = 'BadQuery'
 
-                { Invoke-Query @queryParams } | Should -Throw ($script:localizedData.ExecuteNonQueryFailed -f $queryParams.Database)
+                { Invoke-Query @queryParams } | Should -Throw (
+                    $script:localizedData.ExecuteNonQueryFailed -f $queryParams.Database
+                )
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
@@ -1496,7 +1498,9 @@ InModuleScope 'DscResource.Common' {
             It 'Should throw the correct error, ExecuteQueryWithResultsFailed, when executing the query fails' {
                 $queryParams.Query = 'BadQuery'
 
-                { Invoke-Query @queryParams -WithResults } | Should -Throw ($script:localizedData.ExecuteQueryWithResultsFailed -f $queryParams.Database)
+                { Invoke-Query @queryParams -WithResults } | Should -Throw (
+                    $script:localizedData.ExecuteQueryWithResultsFailed -f $queryParams.Database
+                )
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
@@ -1516,13 +1520,15 @@ InModuleScope 'DscResource.Common' {
                 It 'Should throw the correct error, ExecuteNonQueryFailed, when executing the query fails' {
                     $queryParametersWithSMO.Query = 'BadQuery'
 
-                    { Invoke-Query @queryParametersWithSMO } | Should -Throw ($script:localizedData.ExecuteNonQueryFailed -f $queryParams.Database)
+                    { Invoke-Query @queryParametersWithSMO } | Should -Throw (
+                        $script:localizedData.ExecuteNonQueryFailed -f $queryParams.Database
+                    )
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 0 -Exactly
                 }
             }
 
-            Context 'Execute a query with results' {
+            Context 'Execute a query with piped SMO server object' {
                 It 'Should execute the query and return a result set' {
                     $queryParametersWithSMO.Query = 'SELECT name FROM sys.databases'
                     $mockExpectedQuery = $queryParametersWithSMO.Query.Clone()
@@ -1535,7 +1541,30 @@ InModuleScope 'DscResource.Common' {
                 It 'Should throw the correct error, ExecuteQueryWithResultsFailed, when executing the query fails' {
                     $queryParametersWithSMO.Query = 'BadQuery'
 
-                    { Invoke-Query @queryParametersWithSMO -WithResults } | Should -Throw ($script:localizedData.ExecuteQueryWithResultsFailed -f $queryParams.Database)
+                    { Invoke-Query @queryParametersWithSMO -WithResults } | Should -Throw (
+                        $script:localizedData.ExecuteQueryWithResultsFailed -f $queryParams.Database
+                    )
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 0 -Exactly
+                }
+            }
+
+            Context 'Execute a query with results' {
+                It 'Should execute the query and return a result set' {
+                    $mockQuery = 'SELECT name FROM sys.databases'
+                    $mockExpectedQuery = $mockQuery
+
+                    $mockSMOServer | Invoke-Query -Query $mockQuery -WithResults | Should -Not -BeNullOrEmpty
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 0 -Exactly
+                }
+
+                It 'Should throw the correct error, ExecuteQueryWithResultsFailed, when executing the query fails' {
+                    $mockQuery = 'BadQuery'
+
+                    { $mockSMOServer | Invoke-Query -Query $mockQuery -WithResults } | Should -Throw (
+                        $script:localizedData.ExecuteQueryWithResultsFailed -f $queryParams.Database
+                    )
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 0 -Exactly
                 }
@@ -2252,6 +2281,7 @@ InModuleScope 'DscResource.Common' {
 
     Describe 'DscResource.Common\Connect-SQL' -Tag 'ConnectSql' {
         BeforeAll {
+            $mockInstanceName = 'TEST'
             $mockNewObject_MicrosoftDatabaseEngine = {
                 <#
                     $ArgumentList[0] will contain the ServiceInstance when calling mock New-Object.
@@ -2328,6 +2358,7 @@ InModuleScope 'DscResource.Common' {
             $mockSetupCredentialPassword = 'StrongOne7.'
             $mockSetupCredentialSecurePassword = ConvertTo-SecureString -String $mockSetupCredentialPassword -AsPlainText -Force
             $mockSetupCredential = New-Object -TypeName PSCredential -ArgumentList ($mockSetupCredentialUserName, $mockSetupCredentialSecurePassword)
+
         }
 
         BeforeEach {
@@ -2344,7 +2375,12 @@ InModuleScope 'DscResource.Common' {
                 $mockExpectedDatabaseEngineServer = 'TestServer'
                 $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
 
-                $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer
+                $connectSQLWindowsParameters = @{
+                    ServerName      = $mockExpectedDatabaseEngineServer
+                    LoginType       = 'WindowsUser'
+                    SetupCredential = $mockSetupCredential
+                }
+                $databaseEngineServerObject = Connect-SQL @connectSQLWindowsParameters
                 $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly $mockExpectedDatabaseEngineServer
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
@@ -2421,6 +2457,7 @@ InModuleScope 'DscResource.Common' {
                     ServerName = $mockExpectedDatabaseEngineServer
                     InstanceName = $mockExpectedDatabaseEngineInstance
                     SetupCredential = $mockSetupCredential
+                    LoginType = 'WindowsUser'
                 }
 
                 $databaseEngineServerObject = Connect-SQL @testParameters
@@ -2435,17 +2472,33 @@ InModuleScope 'DscResource.Common' {
             }
         }
 
-        Context 'When connecting to the default instance using the correct service instance but does not return a correct Database Engine object' {
+        Context 'When we are unable to connect to the database' {
             It 'Should throw the correct error' {
                 $mockExpectedDatabaseEngineServer = $env:COMPUTERNAME
                 $mockExpectedDatabaseEngineInstance = $mockInstanceName
-
-                Mock -CommandName New-Object `
-                    -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter `
-                    -Verifiable
+                $mockThrowInvalidOperation = $true
 
                 $mockCorrectErrorMessage = ($script:localizedData.FailedToConnectToDatabaseEngineInstance -f $mockExpectedDatabaseEngineServer)
                 { Connect-SQL } | Should -Throw $mockCorrectErrorMessage
+
+                Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                    -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+
+                $mockThrowInvalidOperation = $false
+            }
+        }
+
+        Context 'When the logon type is WindowsUser or SqlLogin, but not credentials were passed' {
+            It 'Should throw the correct error' {
+                $mockExpectedDatabaseEngineServer = 'TestServer'
+                $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
+
+                $connectSQLWindowsParameters = @{
+                    ServerName      = $mockExpectedDatabaseEngineServer
+                    LoginType       = 'WindowsUser'
+                }
+                $mockCorrectErrorMessage = ($script:localizedData.CredentialsNotSpecified -f $connectSQLWindowsParameters.LoginType)
+                { Connect-SQL @connectSQLWindowsParameters } | Should -Throw $mockCorrectErrorMessage
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
                     -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
