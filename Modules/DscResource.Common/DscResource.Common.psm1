@@ -1336,12 +1336,12 @@ function Restart-ReportingServicesService
         $WaitTime = 0
     )
 
-    Write-Verbose -Message ($script:localizedData.GetServiceInformation -f 'Reporting Services') -Verbose
-
     if ($SQLInstanceName -eq 'SSRS')
     {
         # Check if we're dealing with SSRS 2017
         $ServiceName = 'SQLServerReportingServices'
+
+        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
         $reportingServicesService = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
     }
 
@@ -1349,13 +1349,16 @@ function Restart-ReportingServicesService
     {
         $ServiceName = 'ReportServer'
 
-        # Pre-2017 SSRS support multiple instances, check if we're dealing
-        # with a named instance.
+        <#
+            Pre-2017 SSRS support multiple instances, check if we're dealing
+            with a named instance.
+        #>
         if (-not ($SQLInstanceName -eq 'MSSQLSERVER'))
         {
             $ServiceName += '${0}' -f $SQLInstanceName
         }
 
+        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
         $reportingServicesService = Get-Service -Name $ServiceName
     }
 
