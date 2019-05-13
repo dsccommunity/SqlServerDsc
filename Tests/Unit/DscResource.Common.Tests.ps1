@@ -1462,6 +1462,7 @@ InModuleScope 'DscResource.Common' {
         $queryParametersWithSMO = @{
             Query              = ''
             SqlServerObject = $mockSMOServer
+            Database           = 'master'
         }
 
         Context 'Execute a query with no results' {
@@ -1554,7 +1555,8 @@ InModuleScope 'DscResource.Common' {
                     $mockQuery = 'SELECT name FROM sys.databases'
                     $mockExpectedQuery = $mockQuery
 
-                    $mockSMOServer | Invoke-Query -Query $mockQuery -WithResults | Should -Not -BeNullOrEmpty
+                    $mockSMOServer | Invoke-Query -Query $mockQuery -Database master -WithResults |
+                        Should -Not -BeNullOrEmpty
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 0 -Exactly
                 }
@@ -1562,9 +1564,10 @@ InModuleScope 'DscResource.Common' {
                 It 'Should throw the correct error, ExecuteQueryWithResultsFailed, when executing the query fails' {
                     $mockQuery = 'BadQuery'
 
-                    { $mockSMOServer | Invoke-Query -Query $mockQuery -WithResults } | Should -Throw (
-                        $script:localizedData.ExecuteQueryWithResultsFailed -f $queryParams.Database
-                    )
+                    { $mockSMOServer | Invoke-Query -Query $mockQuery -Database master -WithResults } |
+                        Should -Throw (
+                            $script:localizedData.ExecuteQueryWithResultsFailed -f $queryParams.Database
+                        )
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 0 -Exactly
                 }
@@ -2323,6 +2326,7 @@ InModuleScope 'DscResource.Common' {
                             Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
                             Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
                             Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
+                            Add-Member -MemberType ScriptMethod -Name Disconnect -Value {$true} -PassThru |
                             Add-Member -MemberType ScriptMethod -Name Connect -Value {
                                 if ($mockExpectedDatabaseEngineInstance -eq 'MSSQLSERVER')
                                 {

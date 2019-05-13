@@ -658,11 +658,16 @@ function Connect-SQL
 
     $databaseEngineInstance = '{0}\{1}' -f $ServerName, $InstanceName
 
+    # If MSSQLSERVER is specified, we need to remove it so it's only the servername
     $databaseEngineInstance = $databaseEngineInstance -replace '\\MSSQLSERVER$', ''
     $sqlConnectionContext.ServerInstance = $databaseEngineInstance
 
     if ($LoginType -eq 'Integrated')
     {
+        <#
+          This is only used for verbose messaging and not for the connection
+          string since this is using Integrated Security=true(sspi)
+        #>
         $connectUserName = [Environment]::UserName
     }
     else
@@ -672,15 +677,15 @@ function Connect-SQL
             $connectUserName = $SetupCredential.GetNetworkCredential().UserName
             if ($LoginType -eq 'SqlLogin')
             {
-                $sqlServerObject.ConnectionContext.LoginSecure = $false
-                $sqlServerObject.ConnectionContext.Login = $connectUserName
-                $sqlServerObject.ConnectionContext.SecurePassword = $SetupCredential.Password
+                $sqlConnectionContext.LoginSecure    = $false
+                $sqlConnectionContext.Login          = $connectUserName
+                $sqlConnectionContext.SecurePassword = $SetupCredential.Password
             }
             elseif ($LoginType -eq 'WindowsUser')
             {
-                $sqlServerObject.ConnectionContext.ConnectAsUser = $true
-                $sqlServerObject.ConnectionContext.ConnectAsUserName = $connectUserName
-                $sqlServerObject.ConnectionContext.ConnectAsUserPassword = $SetupCredential.GetNetworkCredential().Password
+                $sqlConnectionContext.ConnectAsUser         = $true
+                $sqlConnectionContext.ConnectAsUserName     = $connectUserName
+                $sqlConnectionContext.ConnectAsUserPassword = $SetupCredential.GetNetworkCredential().Password
             }
         }
         else
@@ -696,12 +701,23 @@ function Connect-SQL
 
     try
     {
-        $sqlServerObject.ConnectionContext.Connect()
+        $sqlConnectionContext.Connect()
     }
     catch
     {
         $errorMessage = $script:localizedData.FailedToConnectToDatabaseEngineInstance -f $databaseEngineInstance
-        New-InvalidOperationException -Message $errorMessage
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $PSItem
+    }
+    finally
+    {
+        <#
+          Connect will ensure we actually can connect, but we need to
+          disconnect from the session so we don't have anything hanging.
+          If we need run a method on the sqlServerObject it will
+          automatically open a new session and then close, therefore,
+          we don't need to keep the session open.
+        #>
+        $sqlConnectionContext.Disconnect()
     }
 
     Write-Verbose -Message ($script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance) -Verbose
@@ -1422,23 +1438,23 @@ function Restart-ReportingServicesService
 #>
 function Invoke-Query
 {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName='SqlServer')]
     param
     (
         [Alias("ServerName")]
-        [Parameter()]
+        [Parameter(ParameterSetName='SqlServer')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
         [Alias("InstanceName")]
-        [Parameter()]
+        [Parameter(ParameterSetName='SqlServer')]
         [System.String]
         $SQLInstanceName = 'MSSQLSERVER',
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
-        $Database = 'master',
+        $Database,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -1454,7 +1470,7 @@ function Invoke-Query
         [System.String]
         $LoginType = 'Integrated',
 
-        [Parameter(ValueFromPipeline)]
+        [Parameter(ValueFromPipeline, ParameterSetName='SqlObject', Mandatory = $true)]
         [ValidateNotNull()]
         [Microsoft.SqlServer.Management.Smo.Server]
         $SqlServerObject,
@@ -1465,11 +1481,11 @@ function Invoke-Query
     )
 
     # If we don't have an smo object, then we try to use credentials
-    if ($PSBoundParameters.ContainsKey('SqlServerObject'))
+    if ($PSCmdlet.ParameterSetName -eq 'SqlObject')
     {
         $smoConnectObject = $SqlServerObject
     }
-    else
+    elseif ($PSCmdlet.ParameterSetName -eq 'SqlServer')
     {
         $connectSQLParamaters = @{
             ServerName   = $SQLServer
