@@ -242,7 +242,23 @@ function Set-TargetResource
 
     if ( $null -ne $reportingServicesData.Configuration )
     {
-        if ( $InstanceName -eq 'MSSQLSERVER' )
+        if ( $reportingServicesData.SqlVersion -ge 14 )
+        {
+            if ( [string]::IsNullOrEmpty($ReportServerVirtualDirectory) )
+            {
+                $ReportServerVirtualDirectory = 'ReportServer'
+            }
+
+            if ( [string]::IsNullOrEmpty($ReportsVirtualDirectory) )
+            {
+                $ReportsVirtualDirectory = 'Reports'
+            }
+
+            $reportingServicesServiceName = 'SQLServerReportingServices'
+            $reportingServicesDatabaseName = 'ReportServer'
+
+        }
+        elseif ( $InstanceName -eq 'MSSQLSERVER' )
         {
             if ( [System.String]::IsNullOrEmpty($ReportServerVirtualDirectory) )
             {
@@ -882,7 +898,15 @@ function Get-ReportingServicesData
     if ( Get-ItemProperty -Path $instanceNamesRegistryKey -Name $InstanceName -ErrorAction SilentlyContinue )
     {
         $instanceId = (Get-ItemProperty -Path $instanceNamesRegistryKey -Name $InstanceName).$InstanceName
-        $sqlVersion = [System.Int32]((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\Setup" -Name 'Version').Version).Split('.')[0]
+
+        if( Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\MSSQLServer\CurrentVersion" )
+        {
+            # SQL Server 2017 SSRS stores current SQL Server version to a different Registry path.
+            $sqlVersion = [int]((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$InstanceId\MSSQLServer\CurrentVersion" -Name "CurrentVersion").CurrentVersion).Split(".")[0]
+        }
+        else {
+            $sqlVersion = [int]((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\Setup" -Name "Version").Version).Split(".")[0]
+        }
         $reportingServicesConfiguration = Get-CimInstance -ClassName MSReportServer_ConfigurationSetting -Namespace "root\Microsoft\SQLServer\ReportServer\RS_$InstanceName\v$sqlVersion\Admin"
         $reportingServicesConfiguration = $reportingServicesConfiguration | Where-Object -FilterScript {
             $_.InstanceName -eq $InstanceName
@@ -905,6 +929,7 @@ function Get-ReportingServicesData
     @{
         Configuration          = $reportingServicesConfiguration
         ReportsApplicationName = $reportsApplicationName
+        SqlVersion             = $sqlVersion
     }
 }
 
@@ -946,7 +971,7 @@ function Invoke-RsCimMethod
         ErrorAction = 'Stop'
     }
 
-    if ($PSBoundParameters.ContainsKey('Arguments'))
+    if ( $PSBoundParameters.ContainsKey('Arguments') )
     {
         $invokeCimMethodParameters['Arguments'] = $Arguments
     }
@@ -957,9 +982,9 @@ function Invoke-RsCimMethod
         If an general error occur in the Invoke-CimMethod, like calling a method
         that does not exist, returns $null in $invokeCimMethodResult.
     #>
-    if ($invokeCimMethodResult -and $invokeCimMethodResult.HRESULT -ne 0)
+    if ( $invokeCimMethodResult -and $invokeCimMethodResult.HRESULT -ne 0 )
     {
-        if ($invokeCimMethodResult | Get-Member -Name 'ExtendedErrors')
+        if ( $invokeCimMethodResult | Get-Member -Name 'ExtendedErrors' )
         {
             <#
                 The returned object property ExtendedErrors is an array
