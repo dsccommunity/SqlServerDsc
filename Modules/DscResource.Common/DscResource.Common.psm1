@@ -340,7 +340,7 @@ function Copy-ItemWithRobocopy
         ArgumentList = $robocopyArgumentList
     }
 
-    Write-Verbose -Message  ($script:localizedData.RobocopyArguments -f $robocopyArgumentList) -Verbose
+    Write-Verbose -Message ($script:localizedData.RobocopyArguments -f $robocopyArgumentList) -Verbose
     $robocopyProcess = Start-Process @robocopyStartProcessParameters -Wait -NoNewWindow -PassThru
 
     switch ($($robocopyProcess.ExitCode))
@@ -359,22 +359,24 @@ function Copy-ItemWithRobocopy
 
         1
         {
-            Write-Verbose -Message  $script:localizedData.RobocopySuccessful -Verbose
+            Write-Verbose -Message $script:localizedData.RobocopySuccessful -Verbose
         }
 
         2
         {
-            Write-Verbose -Message  $script:localizedData.RobocopyRemovedExtraFilesAtDestination -Verbose
+            Write-Verbose -Message $script:localizedData.RobocopyRemovedExtraFilesAtDestination -Verbose
         }
 
         3
         {
-            Write-Verbose -Message  $script:localizedData.RobocopySuccessfulAndRemovedExtraFilesAtDestination -Verbose
+            Write-Verbose -Message (
+                '{0} {1}' -f $script:localizedData.RobocopySuccessful, $script:localizedData.RobocopyRemovedExtraFilesAtDestination
+            ) -Verbose
         }
 
         {$_ -eq 0 -or $null -eq $_ }
         {
-            Write-Verbose -Message  $script:localizedData.RobocopyAllFilesPresent -Verbose
+            Write-Verbose -Message $script:localizedData.RobocopyAllFilesPresent -Verbose
         }
     }
 }
@@ -1334,15 +1336,31 @@ function Restart-ReportingServicesService
         $WaitTime = 0
     )
 
-    $ServiceName = 'ReportServer'
-
-    if (-not ($SQLInstanceName -eq 'MSSQLSERVER'))
+    if ($SQLInstanceName -eq 'SSRS')
     {
-        $ServiceName += '${0}' -f $SQLInstanceName
+        # Check if we're dealing with SSRS 2017
+        $ServiceName = 'SQLServerReportingServices'
+
+        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
+        $reportingServicesService = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
     }
 
-    Write-Verbose -Message ($script:localizedData.GetServiceInformation -f 'Reporting Services') -Verbose
-    $reportingServicesService = Get-Service -Name $ServiceName
+    if ($null -eq $reportingServicesService)
+    {
+        $ServiceName = 'ReportServer'
+
+        <#
+            Pre-2017 SSRS support multiple instances, check if we're dealing
+            with a named instance.
+        #>
+        if (-not ($SQLInstanceName -eq 'MSSQLSERVER'))
+        {
+            $ServiceName += '${0}' -f $SQLInstanceName
+        }
+
+        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
+        $reportingServicesService = Get-Service -Name $ServiceName
+    }
 
     <#
         Get all dependent services that are running.
@@ -2013,6 +2031,7 @@ function Test-ActiveNode
 #>
 function Invoke-SqlScript
 {
+    [CmdletBinding()]
     param
     (
         [Parameter(Mandatory = $true)]

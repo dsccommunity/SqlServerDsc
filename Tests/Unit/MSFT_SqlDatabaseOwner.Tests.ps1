@@ -120,10 +120,9 @@ try
                         Name     = $mockSqlServerLogin
                     }
 
-                    $throwInvalidOperation = ("Database 'unknownDatabaseName' does not exist " + `
-                            "on SQL server 'localhost\MSSQLSERVER'.")
+                    $errorMessage = $script:localizedData.DatabaseNotFound -f $testParameters.Database
 
-                    { Get-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -156,6 +155,27 @@ try
                     Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
+
+            Context 'When the Connect-Sql fails with an error' {
+                BeforeEach {
+                    Mock -CommandName Connect-Sql -MockWith {
+                        throw 'mocked error'
+                    }
+                }
+
+                It 'Should throw the correct error when the method SetOwner() set the wrong login' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Database = $mockSqlDatabaseName
+                        Name     = $mockSqlServerLogin
+                    }
+
+                    $errorMessage = $script:localizedData.FailedToGetOwnerDatabase -f $testParameters.Database
+
+                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
+                }
+            }
+
 
             Assert-VerifiableMock
         }
@@ -217,10 +237,10 @@ try
                         Name     = $mockSqlServerLogin
                     }
 
-                    $throwInvalidOperation = ("Database 'unknownDatabaseName' does not exist " + `
-                            "on SQL server 'localhost\MSSQLSERVER'.")
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    $errorMessage = $script:localizedData.DatabaseNotFound -f $testParameters.Database
+
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -236,10 +256,9 @@ try
                         Name     = 'John'
                     }
 
-                    $throwInvalidOperation = ("Login 'John' does not exist on " + `
-                            "SQL server 'localhost\MSSQLSERVER'.")
+                    $errorMessage = $script:localizedData.LoginNotFound -f $testParameters.Name
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -274,13 +293,9 @@ try
                         Name     = $mockSqlServerLogin
                     }
 
-                    $throwInvalidOperation = ('Failed to set owner named Zebes\SamusAran of the database ' + `
-                            'named AdventureWorks on localhost\MSSQLSERVER. InnerException: ' + `
-                            'Exception calling "SetOwner" with "1" argument(s): "Called mocked ' + `
-                            'SetOwner() method without setting the right login. ' + `
-                            "Expected 'Zebes\SamusAran'. But was 'Elysia\Chozo'.")
+                    $errorMessage = $script:localizedData.FailedToSetOwnerDatabase -f $testParameters.Database
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -298,12 +313,9 @@ try
                         Name     = $mockSqlServerLogin
                     }
 
-                    $throwInvalidOperation = ('Failed to set owner named Zebes\SamusAran of the database ' + `
-                            'named AdventureWorks on localhost\MSSQLSERVER. InnerException: ' + `
-                            'Exception calling "SetOwner" with "1" argument(s): "Mock ' + `
-                            'of method SetOwner() was called with invalid operation.')
+                    $errorMessage = $script:localizedData.FailedToSetOwnerDatabase -f $testParameters.Database
 
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
                 It 'Should call the mock function Connect-SQL' {

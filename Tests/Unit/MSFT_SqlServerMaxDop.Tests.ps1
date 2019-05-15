@@ -372,7 +372,7 @@ try
                 }
 
                 It 'Should throw the correct error' {
-                    { Test-TargetResource @testParameters } | Should -Throw 'MaxDop parameter must be set to $null or not assigned if DynamicAlloc parameter is set to $true.'
+                    { Test-TargetResource @testParameters } | Should -Throw $script:localizedData.MaxDopParamMustBeNull
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -418,7 +418,7 @@ try
                 }
 
                 It 'Should throw the correct error' {
-                    { Set-TargetResource @testParameters } | Should -Throw 'MaxDop parameter must be set to $null or not assigned if DynamicAlloc parameter is set to $true.'
+                    { Set-TargetResource @testParameters } | Should -Throw $script:localizedData.MaxDopParamMustBeNull
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -501,12 +501,8 @@ try
                     Ensure       = 'Present'
                 }
 
-                It 'Shoud throw the correct error when Alter() method was called with invalid operation' {
-                    $throwInvalidOperation = ('Unexpected result when trying to configure the max degree of parallelism ' + `
-                            'server configuration option. InnerException: Exception calling "Alter" ' + `
-                            'with "0" argument(s): "Mock Alter Method was called with invalid operation."')
-
-                    { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
+                It 'Should throw the correct error when Alter() method was called with invalid operation' {
+                    { Set-TargetResource @testParameters } | Should -Throw $script:localizedData.MaxDopSetError
                 }
 
                 It 'Should call the mock function Connect-SQL' {

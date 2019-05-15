@@ -42,7 +42,6 @@ ConvertFrom-StringData @'
     EvaluateClientToolsSdkFeature = Detecting Client Tools SDK feature ({0}).
     ClientToolsSdkFeatureFound = Client Tools SDK feature detected.
     ClientToolsSdkFeatureNotFound = Client Tools SDK feature not detected.
-    RobocopyIsCopying = Robocopy is copying media from source '{0}' to destination '{1}'.
     FeatureNotSupported = '{0}' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information.
     PathRequireClusterDriveFound = Found assigned parameter '{0}'. Adding path '{1}' to list of paths that required cluster drive.
     FailoverClusterDiskMappingError = Unable to map the specified paths to valid cluster storage. Drives mapped: {0}.
@@ -56,7 +55,7 @@ ConvertFrom-StringData @'
     SetupFailed = Please see the 'Summary.txt' log file in the 'Setup Bootstrap\\Log' folder.
     Reboot = Rebooting target node.
     SuppressReboot = Suppressing reboot of target node.
-    TestFailedAfterSet = Test-TargetResource returned false after calling Set-TargetResource.
+    TestFailedAfterSet = Test-TargetResource function returned false when Set-TargetResource function verified the desired state. This indicates that the Set-TargetResource did not correctly set set the desired state, or that the function Test-TargetResource does not correctly evaluates the desired state.
     FeaturesFound = Found features already installed: {0}
     NoFeaturesFound = No features are installed.
     UnableToFindFeature = Unable to find feature '{0}' among the installed features: '{1}'.

@@ -135,8 +135,6 @@ try
         Mock -CommandName Disable-SqlAlwaysOn -ModuleName $script:dscResourceName
         Mock -CommandName Enable-SqlAlwaysOn -ModuleName $script:dscResourceName
         Mock -CommandName Import-SQLPSModule -ModuleName $script:dscResourceName
-        Mock -CommandName New-TerminatingError { $ErrorType } -ModuleName $script:dscResourceName
-        Mock -CommandName New-VerboseMessage -ModuleName $script:dscResourceName
         Mock -CommandName Restart-SqlService -ModuleName $script:dscResourceName -Verifiable
 
         Context 'When HADR is not in the desired state' {
@@ -203,12 +201,11 @@ try
                     }
                 } -ModuleName $script:dscResourceName -Verifiable
 
-                { Set-TargetResource @enableHadr } | Should -Throw 'AlterAlwaysOnServiceFailed'
+                { Set-TargetResource @enableHadr } | Should -Throw ($script:localizedData.AlterAlwaysOnServiceFailed -f 'enabled', $enableHadr.ServerName, $enableHadr.InstanceName)
                 Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Connect-SQL -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Disable-SqlAlwaysOn -Scope It -Times 0
                 Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Enable-SqlAlwaysOn -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Restart-SqlService -Scope It -Times 1
-                Assert-MockCalled -ModuleName $script:dscResourceName -CommandName New-TerminatingError -Scope It -Times 1
             }
 
             It 'Should throw the correct error message when Ensure is set to Absent, but IsHadrEnabled is $true' {
@@ -218,12 +215,11 @@ try
                     }
                 } -ModuleName $script:dscResourceName -Verifiable
 
-                { Set-TargetResource @disableHadr } | Should -Throw 'AlterAlwaysOnServiceFailed'
+                { Set-TargetResource @disableHadr } | Should -Throw ($script:localizedData.AlterAlwaysOnServiceFailed -f 'disabled', $disableHadr.ServerName, $disableHadr.InstanceName)
                 Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Connect-SQL -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Disable-SqlAlwaysOn -Scope It -Times 1
                 Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Enable-SqlAlwaysOn -Scope It -Times 0
                 Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Restart-SqlService -Scope It -Times 1
-                Assert-MockCalled -ModuleName $script:dscResourceName -CommandName New-TerminatingError -Scope It -Times 1
             }
         }
     }

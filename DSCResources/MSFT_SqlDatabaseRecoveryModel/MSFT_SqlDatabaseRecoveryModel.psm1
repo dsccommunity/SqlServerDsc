@@ -7,11 +7,13 @@ Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath '
 $script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
 Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlDatabaseRecoveryModel'
+
 <#
     .SYNOPSIS
     This function gets all Key properties defined in the resource schema file
 
-    .PARAMETER Database
+    .PARAMETER Name
     This is the SQL database
 
     .PARAMETER RecoveryModel
@@ -51,41 +53,42 @@ function Get-TargetResource
         $Name
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    Write-Verbose -Message (
+        $script:localizedData.GetRecoveryModel -f $Name, $InstanceName
+    )
 
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
     if ($sqlServerObject)
     {
-        Write-Verbose -Message "Getting RecoveryModel of SQL database '$Name'"
         $sqlDatabaseObject = $sqlServerObject.Databases[$Name]
-
         if ($sqlDatabaseObject)
         {
             $sqlDatabaseRecoveryModel = $sqlDatabaseObject.RecoveryModel
-            New-VerboseMessage -Message "The current recovery model used by database $Name is '$sqlDatabaseRecoveryModel'"
+
+            Write-Verbose -Message (
+                $script:localizedData.CurrentRecoveryModel -f $sqlDatabaseRecoveryModel, $Name
+            )
         }
         else
         {
-            throw New-TerminatingError -ErrorType NoDatabase `
-                -FormatArgs @($Name, $ServerName, $InstanceName) `
-                -ErrorCategory InvalidResult
+            $errorMessage = $script:localizedData.DatabaseNotFound -f $Name
+            New-InvalidResultException -Message $errorMessage
         }
     }
 
-    $returnValue = @{
+    return @{
         Name          = $Name
         RecoveryModel = $sqlDatabaseRecoveryModel
         ServerName    = $ServerName
         InstanceName  = $InstanceName
     }
-
-    $returnValue
 }
 
 <#
     .SYNOPSIS
     This function gets all Key properties defined in the resource schema file
 
-    .PARAMETER Database
+    .PARAMETER Name
     This is the SQL database
 
     .PARAMETER RecoveryModel
@@ -125,26 +128,29 @@ function Set-TargetResource
     )
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
-
     if ($sqlServerObject)
     {
-        Write-Verbose -Message "Setting RecoveryModel of SQL database '$Name'"
-        $sqlDatabaseObject = $sqlServerObject.Databases[$Name]
+        Write-Verbose -Message (
+            $script:localizedData.SetRecoveryModel -f $Name
+        )
 
+        $sqlDatabaseObject = $sqlServerObject.Databases[$Name]
         if ($sqlDatabaseObject)
         {
             if ($sqlDatabaseObject.RecoveryModel -ne $RecoveryModel)
             {
                 $sqlDatabaseObject.RecoveryModel = $RecoveryModel
                 $sqlDatabaseObject.Alter()
-                New-VerboseMessage -Message "The recovery model for the database $Name is changed to '$RecoveryModel'."
+
+                Write-Verbose -Message (
+                    $script:localizedData.ChangeRecoveryModel -f $Name, $RecoveryModel
+                )
             }
         }
         else
         {
-            throw New-TerminatingError -ErrorType NoDatabase `
-                -FormatArgs @($Name, $ServerName, $InstanceName) `
-                -ErrorCategory InvalidResult
+            $errorMessage = $script:localizedData.DatabaseNotFound -f $Name
+            New-InvalidResultException -Message $errorMessage
         }
     }
 }
@@ -153,7 +159,7 @@ function Set-TargetResource
     .SYNOPSIS
     This function gets all Key properties defined in the resource schema file
 
-    .PARAMETER Database
+    .PARAMETER Name
     This is the SQL database
 
     .PARAMETER RecoveryModel
@@ -193,7 +199,9 @@ function Test-TargetResource
         $Name
     )
 
-    Write-Verbose -Message "Testing RecoveryModel of database '$Name'"
+    Write-Verbose -Message (
+        $script:localizedData.TestingConfiguration -f $Name, $InstanceName
+    )
 
     $currentValues = Get-TargetResource @PSBoundParameters
 

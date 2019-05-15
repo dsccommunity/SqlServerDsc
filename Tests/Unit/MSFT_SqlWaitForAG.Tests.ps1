@@ -240,7 +240,7 @@ try
                 It 'Should throw the correct error message' {
                     $testParameters.Name = $mockOtherClusterGroupName
 
-                    { Set-TargetResource @testParameters } | Should -Throw 'Cluster group UnknownAG not found after 2 attempts with 1 sec interval'
+                    { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.FailedMessage -f $mockOtherClusterGroupName)
 
                     Assert-MockCalled -CommandName Get-ClusterGroup `
                         -ParameterFilter $mockGetClusterGroup_ParameterFilter_KnownGroup `

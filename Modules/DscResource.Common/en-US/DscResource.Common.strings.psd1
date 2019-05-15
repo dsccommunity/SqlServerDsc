@@ -8,6 +8,7 @@ ConvertFrom-StringData @'
     PropertyThatDoesNotMatch = {0} - {1}
     ValueOfTypeDoesNotMatch = {0} value for property {1} does not match. Current state is '{2}' and desired state is '{3}'.
     UnableToCompareProperty = Unable to compare property {0} as the type {1} is not handled by the Test-DscParameterState cmdlet.
+    RobocopyIsCopying = Robocopy is copying media from source '{0}' to destination '{1}'.
     RobocopyUsingUnbufferedIo = Robocopy is using unbuffered I/O.
     RobocopyNotUsingUnbufferedIo = Unbuffered I/O cannot be used due to incompatible version of Robocopy.
     RobocopyArguments = Robocopy is started with the following arguments: {0}
@@ -15,7 +16,6 @@ ConvertFrom-StringData @'
     RobocopyFailuresCopying = Robocopy reported that failures occurred when copying files. Error code: {0}.
     RobocopySuccessful = Robocopy copied files successfully
     RobocopyRemovedExtraFilesAtDestination = Robocopy found files at the destination path that is not present at the source path, these extra files was remove at the destination path.
-    RobocopySuccessfulAndRemovedExtraFilesAtDestination = Robocopy copied files to destination successfully. Robocopy also found files at the destination path that is not present at the source path, these extra files was remove at the destination path.
     RobocopyAllFilesPresent = Robocopy reported that all files already present.
     StartSetupProcess = Started the process with id {0} using the path '{1}', and with a timeout value of {2} seconds.
     ConnectedToDatabaseEngineInstance = Connected to SQL instance '{0}'.
@@ -65,11 +65,8 @@ ConvertFrom-StringData @'
     # Common
     NoKeyFound = No Localization key found for ErrorType: '{0}'.
     AbsentNotImplemented = Ensure = Absent is not implemented!
-    TestFailedAfterSet = Test-TargetResource returned false after calling set.
     RemoteConnectionFailed = Remote PowerShell connection to Server '{0}' failed.
     TODO = ToDo. Work not implemented at this time.
-    UnexpectedErrorFromGet = Got unexpected result from Get-TargetResource. No change is made.
-    NotConnectedToInstance = Was unable to connect to the instance '{0}\\{1}'
     AlterAvailabilityGroupFailed = Failed to alter the availability group '{0}'.
     HadrNotEnabled = HADR is not enabled.
     AvailabilityGroupNotFound = Unable to locate the availability group '{0}' on the instance '{1}'.
@@ -83,42 +80,12 @@ ConvertFrom-StringData @'
     LoginNotFound = Login '{0}' does not exist on SQL server '{1}\\{2}'."
     FailedLogin = Creating a login of type 'SqlLogin' requires LoginCredential
 
-    # Database Role
-    AddLoginDatabaseSetError = Failed adding the login {2} as a user of the database {3}, on the instance {0}\\{1}.
-    DropMemberDatabaseSetError = Failed removing the login {2} from the role {3} on the database {4}, on the instance {0}\\{1}.
-    AddMemberDatabaseSetError = Failed adding the login {2} to the role {3} on the database {4}, on the instance {0}\\{1}.
-
     # AvailabilityGroupListener
-    AvailabilityGroupListenerNotFound = Trying to make a change to a listener that does not exist.
     AvailabilityGroupListenerErrorVerifyExist = Unexpected result when trying to verify existence of listener '{0}'.
-    AvailabilityGroupListenerIPChangeError = IP-address configuration mismatch. Expecting '{0}' found '{1}'. Resource does not support changing IP-address. Listener needs to be removed and then created again.
-    AvailabilityGroupListenerDHCPChangeError = IP-address configuration mismatch. Expecting '{0}' found '{1}'. Resource does not support changing between static IP and DHCP. Listener needs to be removed and then created again.
-
-    # Endpoint
-    EndpointNotFound = Endpoint '{0}' does not exist
-    EndpointErrorVerifyExist = Unexpected result when trying to verify existence of endpoint '{0}'.
-    EndpointFoundButWrongType = Endpoint '{0}' does exist, but it is not of type 'DatabaseMirroring'.
-
-    # Permission
-    PermissionGetError = Unexpected result when trying to get permissions for '{0}'.
-    ChangingPermissionFailed = Changing permission for principal '{0}' failed.
 
     # AlwaysOnService
-    AlterAlwaysOnServiceFailed = Failed to ensure Always On is {0} on the instance '{1}'.
-    UnexpectedAlwaysOnStatus = The status of property Server.IsHadrEnabled was neither $true or $false. Status is '{0}'.
 
-    # Login
-    PasswordValidationFailed = Creation of the login '{0}' failed due to the following error: {1}
-    LoginCreationFailedFailedOperation = Creation of the login '{0}' failed due to a failed operation.
-    LoginCreationFailedSqlNotSpecified = Creation of the SQL login '{0}' failed due to an unspecified error.
-    LoginCreationFailedWindowsNotSpecified = Creation of the Windows login '{0}' failed due to an unspecified error.
-    LoginTypeNotImplemented = The login type '{0}' is not implemented in this resource.
-    IncorrectLoginMode = The instance '{0}\{1}' is currently in '{2}' authentication mode. To create a SQL Login, it must be set to 'Mixed' authentication mode.
-    LoginCredentialNotFound = The credential for the SQL Login '{0}' was not found.
-    PasswordChangeFailed = Setting the password failed for the SQL Login '{0}'.
-    AlterLoginFailed = Altering the login '{0}' failed.
-    CreateLoginFailed = Creating the login '{0}' failed.
-    DropLoginFailed = Dropping the login '{0}' failed.
+    UnexpectedAlwaysOnStatus = The status of property Server.IsHadrEnabled was neither $true or $false. Status is '{0}'.
 
     # AlwaysOnAvailabilityGroup
     CreateAvailabilityGroupReplicaFailed = Creating the Availability Group Replica '{0}' failed on the instance '{1}'.
@@ -131,27 +98,4 @@ ConvertFrom-StringData @'
     JoinAvailabilityGroupFailed = Failed to join the availability group replica '{0}'.
     RemoveAvailabilityGroupReplicaFailed = Failed to remove the availability group replica '{0}'.
     ReplicaNotFound = Unable to find the availability group replica '{0}' on the instance '{1}'.
-
-    # Max degree of parallelism
-    MaxDopSetError = Unexpected result when trying to configure the max degree of parallelism server configuration option.
-    MaxDopParamMustBeNull = MaxDop parameter must be set to $null or not assigned if DynamicAlloc parameter is set to $true.
-
-    # Server Memory
-    MaxMemoryParamMustBeNull = The parameter MaxMemory must be null when DynamicAlloc is set to true.
-    MaxMemoryParamMustNotBeNull = The parameter MaxMemory must not be null when DynamicAlloc is set to false.
-    AlterServerMemoryFailed = Failed to alter the server configuration memory for {0}\\{1}.
-    ErrorGetDynamicMaxMemory = Failed to calculate dynamically the maximum memory.
-
-    # SQLServerDatabase
-    CreateDatabaseSetError = Failed to create the database named {2} on {0}\\{1}.
-    DropDatabaseSetError = Failed to drop the database named {2} on {0}\\{1}.
-    FailedToGetOwnerDatabase = Failed to get owner of the database named {0} on {1}\\{2}.
-    FailedToSetOwnerDatabase = Failed to set owner named {0} of the database named {1} on {2}\\{3}.
-    FailedToSetPermissionDatabase = Failed to set permission for login named {0} of the database named {1} on {2}\\{3}.
-    FailedToEnumDatabasePermissions = Failed to get permission for login named {0} of the database named {1} on {2}\\{3}.
-    UpdateDatabaseSetError = Failed to update database {1} on {0}\\{1} with specified changes.
-    InvalidCollationError = The specified collation '{3}' is not a valid collation for database {2} on {0}\\{1}.
-
-    # SQLServerNetwork
-    UnableToUseBothDynamicAndStaticPort = Unable to set both TCP dynamic port and TCP static port. Only one can be set.
 '@

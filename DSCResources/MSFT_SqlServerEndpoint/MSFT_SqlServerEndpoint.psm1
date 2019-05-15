@@ -7,6 +7,8 @@ Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath '
 $script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
 Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerEndpoint'
+
 <#
     .SYNOPSIS
         Returns the current state of the endpoint.
@@ -39,6 +41,10 @@ function Get-TargetResource
         $InstanceName
     )
 
+    Write-Verbose -Message (
+        $script:localizedData.GetEndpoint -f $EndpointName, $InstanceName
+    )
+
     $getTargetResourceReturnValues = @{
         ServerName   = $ServerName
         InstanceName = $InstanceName
@@ -52,16 +58,17 @@ function Get-TargetResource
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
     if ($sqlServerObject)
     {
-        Write-Verbose -Message ('Connected to {0}\{1}' -f $ServerName, $InstanceName)
+        Write-Verbose -Message (
+            $script:localizedData.ConnectedToInstance -f $ServerName, $InstanceName
+        )
 
         $endpointObject = $sqlServerObject.Endpoints[$EndpointName]
         if ($endpointObject.Name -eq $EndpointName)
         {
             if ($sqlServerObject.Endpoints[$EndPointName].EndpointType -ne 'DatabaseMirroring')
             {
-                throw New-TerminatingError -ErrorType EndpointFoundButWrongType `
-                    -FormatArgs @($EndpointName) `
-                    -ErrorCategory InvalidOperation
+                $errorMessage = $script:localizedData.EndpointFoundButWrongType -f $EndpointName
+                New-InvalidOperationException -Message $errorMessage
             }
 
             $getTargetResourceReturnValues.Ensure = 'Present'
@@ -81,9 +88,8 @@ function Get-TargetResource
     }
     else
     {
-        throw New-TerminatingError -ErrorType NotConnectedToInstance `
-            -FormatArgs @($ServerName, $InstanceName) `
-            -ErrorCategory InvalidOperation
+        $errorMessage = $script:localizedData.NotConnectedToInstance -f $ServerName, $InstanceName
+        New-InvalidOperationException -Message $errorMessage
     }
 
     return $getTargetResourceReturnValues
@@ -156,7 +162,9 @@ function Set-TargetResource
     {
         if ($Ensure -eq 'Present' -and $getTargetResourceResult.Ensure -eq 'Absent')
         {
-            Write-Verbose -Message ('Creating endpoint {0}.' -f $EndpointName)
+            Write-Verbose -Message (
+                $script:localizedData.CreateEndpoint -f $EndpointName, $InstanceName
+            )
 
             $endpointObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Endpoint -ArgumentList $sqlServerObject, $EndpointName
             $endpointObject.EndpointType = [Microsoft.SqlServer.Management.Smo.EndpointType]::DatabaseMirroring
@@ -177,56 +185,72 @@ function Set-TargetResource
         }
         elseif ($Ensure -eq 'Present' -and $getTargetResourceResult.Ensure -eq 'Present')
         {
+            Write-Verbose -Message (
+                $script:localizedData.SetEndpoint -f $EndpointName, $InstanceName
+            )
+
             # The endpoint already exist, verifying supported endpoint properties so they are in desired state.
             $endpointObject = $sqlServerObject.Endpoints[$EndpointName]
             if ($endpointObject)
             {
                 if ($endpointObject.Protocol.Tcp.ListenerIPAddress -ne $IpAddress)
                 {
-                    Write-Verbose -Message ('Updating endpoint {0} IP address to {1}.' -f $EndpointName, $IpAddress)
+                    Write-Verbose -Message (
+                        $script:localizedData.UpdatingEndpointIPAddress -f $IpAddress
+                    )
+
                     $endpointObject.Protocol.Tcp.ListenerIPAddress = $IpAddress
                     $endpointObject.Alter()
                 }
 
                 if ($endpointObject.Protocol.Tcp.ListenerPort -ne $Port)
                 {
-                    Write-Verbose -Message ('Updating endpoint {0} port to {1}.' -f $EndpointName, $Port)
+                    Write-Verbose -Message (
+                        $script:localizedData.UpdatingEndpointPort -f $Port
+                    )
+
                     $endpointObject.Protocol.Tcp.ListenerPort = $Port
                     $endpointObject.Alter()
                 }
 
                 if ($endpointObject.Owner -ne $Owner)
                 {
-                    Write-Verbose -Message ('Updating endpoint {0} Owner to {1}.' -f $EndpointName, $Owner)
+                    Write-Verbose -Message (
+                        $script:localizedData.UpdatingEndpointOwner -f $Owner
+                    )
+
                     $endpointObject.Owner = $Owner
                     $endpointObject.Alter()
                 }
             }
             else
             {
-                throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($EndpointName) -ErrorCategory ObjectNotFound
+                $errorMessage = $script:localizedData.EndpointNotFound -f $EndpointName
+                New-ObjectNotFoundException -Message $errorMessage
             }
         }
         elseif ($Ensure -eq 'Absent' -and $getTargetResourceResult.Ensure -eq 'Present')
         {
-            Write-Verbose -Message ('Dropping endpoint {0}.' -f $EndpointName)
-
             $endpointObject = $sqlServerObject.Endpoints[$EndpointName]
             if ($endpointObject)
             {
+                Write-Verbose -Message (
+                    $script:localizedData.DropEndpoint -f $EndpointName, $InstanceName
+                )
+
                 $endpointObject.Drop()
             }
             else
             {
-                throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($EndpointName) -ErrorCategory ObjectNotFound
+                $errorMessage = $script:localizedData.EndpointNotFound -f $EndpointName
+                New-ObjectNotFoundException -Message $errorMessage
             }
         }
     }
     else
     {
-        throw New-TerminatingError -ErrorType NotConnectedToInstance `
-            -FormatArgs @($ServerName, $InstanceName) `
-            -ErrorCategory InvalidOperation
+        $errorMessage = $script:localizedData.NotConnectedToInstance -f $ServerName, $InstanceName
+        New-InvalidOperationException -Message $errorMessage
     }
 }
 
@@ -291,6 +315,10 @@ function Test-TargetResource
         $Owner
     )
 
+    Write-Verbose -Message (
+        $script:localizedData.TestingConfiguration -f $EndpointName, $InstanceName
+    )
+
     $getTargetResourceResult = Get-TargetResource -EndpointName $EndpointName -ServerName $ServerName -InstanceName $InstanceName
     if ($getTargetResourceResult.Ensure -eq $Ensure)
     {
@@ -315,6 +343,19 @@ function Test-TargetResource
     else
     {
         $result = $false
+    }
+
+    if ($result)
+    {
+        Write-Verbose -Message (
+            $script:localizedData.InDesiredState -f $EndpointName
+        )
+    }
+    else
+    {
+        Write-Verbose -Message (
+            $script:localizedData.NotInDesiredState -f $EndpointName
+        )
     }
 
     return $result

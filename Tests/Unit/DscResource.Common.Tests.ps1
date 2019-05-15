@@ -2634,6 +2634,31 @@ InModuleScope 'DscResource.Common' {
             }
         }
 
+        Context 'When restarting an SQL Server 2017 Report Services' {
+            BeforeAll {
+                $mockServiceName = 'SQLServerReportingServices'
+                $mockDependedServiceName = 'DependentService'
+
+                $mockDynamicServiceName = $mockServiceName
+                $mockDynamicDependedServiceName = $mockDependedServiceName
+                $mockDynamicServiceDisplayName = 'Reporting Services'
+
+                Mock -CommandName Stop-Service -Verifiable
+                Mock -CommandName Start-Service -Verifiable
+                Mock -CommandName Get-Service -MockWith $mockGetService
+            }
+
+            It 'Should restart the service and dependent service' {
+                { Restart-ReportingServicesService -SQLInstanceName 'SSRS' } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Get-Service -ParameterFilter {
+                    $Name -eq $mockServiceName
+                } -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Stop-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 2
+            }
+        }
+
         Context 'When restarting a Report Services named instance' {
             BeforeAll {
                 $mockServiceName = 'ReportServer$TEST'

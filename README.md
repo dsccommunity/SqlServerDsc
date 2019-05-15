@@ -775,6 +775,9 @@ Initializes and configures SQL Reporting Services server.
 * **`[Boolean]` UseSsl** _(Write)_: If connections to the Reporting Services must
   use SSL. If this parameter is not assigned a value, the default is that Reporting
   Services does not use SSL.
+* **`[Boolean]` SuppressRestart** _(Write)_: Reporting Services need to be restarted
+  after initialization or settings change. If this parameter is set to $true,
+  Reporting Services will not be restarted, even after initialisation.
 
 #### Read-Only Properties from Get-TargetResource
 
@@ -1610,6 +1613,10 @@ All issues are not listed here, see [here for all open issues](https://github.co
 Configures SQL connections to be encrypted.
 Read more about encrypted connections in this article [Enable Encrypted Connections](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/enable-encrypted-connections-to-the-database-engine).
 
+>Note: that the 'LocalSystem' service account will return a connection
+error, even though the connection has been successful.
+In that case, the 'SYSTEM' service account can be used.
+
 #### Requirements
 
 * Target machine must be running Windows Server 2008 R2 or later.
@@ -1630,7 +1637,9 @@ Read more about encrypted connections in this article [Enable Encrypted Connecti
    used for encryption. If parameter Ensure is set to 'Absent', then the
    parameter Certificate can be set to an empty string.
 * **`[String]` ServiceAccount** _(Required)_: Name of the account running the
-   SQL Server service.
+   SQL Server service. If parameter is set to "LocalSystem", then a
+   connection error is displayed. Use the "SYSTEM" account instead, in that
+   case.
 * **`[String]` Ensure** _(Write)_: If Encryption should be Enabled (Present)
   or Disabled (Absent). { *Present* | Absent }. Defaults to Present.
 * **`[Boolean]` ForceEncryption** _(Write)_: If all connections to the SQL
@@ -1642,6 +1651,7 @@ Read more about encrypted connections in this article [Enable Encrypted Connecti
 * [Force Secure Connection](Examples/Resources/SqlServerSecureConnection/1-ForceSecureConnection.ps1).
 * [Secure Connection but not required](Examples/Resources/SqlServerSecureConnection/2-SecureConnectionNotForced.ps1).
 * [Secure Connection disabled](Examples/Resources/SqlServerSecureConnection/3-SecureConnectionAbsent.ps1).
+* [Secure Connection Using "SYSTEM" Account](/Examples/Resources/SqlServerSecureConnection/4-SecureConnectionUsingSYSTEMAccount.ps1).
 
 #### Known issues
 

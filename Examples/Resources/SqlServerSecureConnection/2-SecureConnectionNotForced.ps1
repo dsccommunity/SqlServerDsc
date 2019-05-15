@@ -1,6 +1,6 @@
 <#
 .EXAMPLE
-    This example performs a standard Sql encryption setup. Forcing all connections to be encrypted.
+    This example performs a standard Sql encryption setup. All connections are not forced to be encrypted.
 #>
 Configuration Example
 {

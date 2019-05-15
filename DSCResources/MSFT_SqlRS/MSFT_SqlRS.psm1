@@ -7,6 +7,8 @@ Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath '
 $script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
 Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlRS'
+
 <#
     .SYNOPSIS
         Gets the SQL Reporting Services initialization status.
@@ -152,6 +154,11 @@ function Get-TargetResource
         parameter is not assigned a value, the default is that Reporting
         Services does not use SSL.
 
+    .PARAMETER SuppressRestart
+        Reporting Services need to be restarted after initialization or
+        settings change. If this parameter is set to $true, Reporting Services
+        will not be restarted, even after initialisation.
+
     .NOTES
         To find out the parameter names for the methods in the class
         MSReportServer_ConfigurationSetting it's easy to list them using the
@@ -224,14 +231,34 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $UseSsl
+        $UseSsl,
+
+        [Parameter()]
+        [System.Boolean]
+        $SuppressRestart
     )
 
     $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
 
     if ( $null -ne $reportingServicesData.Configuration )
     {
-        if ( $InstanceName -eq 'MSSQLSERVER' )
+        if ( $reportingServicesData.SqlVersion -ge 14 )
+        {
+            if ( [string]::IsNullOrEmpty($ReportServerVirtualDirectory) )
+            {
+                $ReportServerVirtualDirectory = 'ReportServer'
+            }
+
+            if ( [string]::IsNullOrEmpty($ReportsVirtualDirectory) )
+            {
+                $ReportsVirtualDirectory = 'Reports'
+            }
+
+            $reportingServicesServiceName = 'SQLServerReportingServices'
+            $reportingServicesDatabaseName = 'ReportServer'
+
+        }
+        elseif ( $InstanceName -eq 'MSSQLSERVER' )
         {
             if ( [System.String]::IsNullOrEmpty($ReportServerVirtualDirectory) )
             {
@@ -278,10 +305,14 @@ function Set-TargetResource
         }
 
         $language = $wmiOperatingSystem.OSLanguage
+        $restartReportingService = $false
 
         if ( -not $reportingServicesData.Configuration.IsInitialized )
         {
             New-VerboseMessage -Message "Initializing Reporting Services on $DatabaseServerName\$DatabaseInstanceName."
+
+            # We will restart Reporting Services after initialization (unless SuppressRestart is set)
+            $restartReportingService = $true
 
             # If no Report Server reserved URLs have been specified, use the default one.
             if ( $null -eq $ReportServerReservedUrl )
@@ -430,15 +461,26 @@ function Set-TargetResource
 
             Invoke-RsCimMethod @invokeRsCimMethodParameters
 
-            $invokeRsCimMethodParameters = @{
-                CimInstance = $reportingServicesData.Configuration
-                MethodName = 'InitializeReportServer'
-                Arguments = @{
-                    InstallationId = $reportingServicesData.Configuration.InstallationID
-                }
-            }
+            $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
 
-            Invoke-RsCimMethod @invokeRsCimMethodParameters
+            <#
+                Only execute InitializeReportServer if SetDatabaseConnection hasn't
+                initialized Reporting Services already. Otherwise, executing
+                InitializeReportServer will fail on SQL Server Standard and
+                lower editions.
+            #>
+            if ( -not $reportingServicesData.Configuration.IsInitialized )
+            {
+                $invokeRsCimMethodParameters = @{
+                    CimInstance = $reportingServicesData.Configuration
+                    MethodName = 'InitializeReportServer'
+                    Arguments = @{
+                        InstallationId = $reportingServicesData.Configuration.InstallationID
+                    }
+                }
+
+                Invoke-RsCimMethod @invokeRsCimMethodParameters
+            }
 
             if ( $PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl )
             {
@@ -454,8 +496,6 @@ function Set-TargetResource
 
                 Invoke-RsCimMethod @invokeRsCimMethodParameters
             }
-
-            Restart-ReportingServicesService -SQLInstanceName $InstanceName -WaitTime 30
         }
         else
         {
@@ -489,6 +529,8 @@ function Set-TargetResource
             if ( -not [System.String]::IsNullOrEmpty($ReportServerVirtualDirectory) -and ($ReportServerVirtualDirectory -ne $currentConfig.ReportServerVirtualDirectory) )
             {
                 New-VerboseMessage -Message "Setting report server virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
+
+                $restartReportingService = $true
 
                 $currentConfig.ReportServerReservedUrl | ForEach-Object -Process {
                     $invokeRsCimMethodParameters = @{
@@ -534,6 +576,8 @@ function Set-TargetResource
             if ( -not [System.String]::IsNullOrEmpty($ReportsVirtualDirectory) -and ($ReportsVirtualDirectory -ne $currentConfig.ReportsVirtualDirectory) )
             {
                 New-VerboseMessage -Message "Setting reports virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
+
+                $restartReportingService = $true
 
                 $currentConfig.ReportsReservedUrl | ForEach-Object -Process {
                     $invokeRsCimMethodParameters = @{
@@ -583,6 +627,8 @@ function Set-TargetResource
 
             if ( ($null -ne $ReportServerReservedUrl) -and ($null -ne (Compare-Object @compareParameters)) )
             {
+                $restartReportingService = $true
+
                 $currentConfig.ReportServerReservedUrl | ForEach-Object -Process {
                     $invokeRsCimMethodParameters = @{
                         CimInstance = $reportingServicesData.Configuration
@@ -620,6 +666,8 @@ function Set-TargetResource
 
             if ( ($null -ne $ReportsReservedUrl) -and ($null -ne (Compare-Object @compareParameters)) )
             {
+                $restartReportingService = $true
+
                 $currentConfig.ReportsReservedUrl | ForEach-Object -Process {
                     $invokeRsCimMethodParameters = @{
                         CimInstance = $reportingServicesData.Configuration
@@ -655,6 +703,8 @@ function Set-TargetResource
             {
                 New-VerboseMessage -Message "Changing value for using SSL to '$UseSsl'."
 
+                $restartReportingService = $true
+
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
                     MethodName = 'SetSecureConnectionLevel'
@@ -666,11 +716,22 @@ function Set-TargetResource
                 Invoke-RsCimMethod @invokeRsCimMethodParameters
             }
         }
+
+        if ( $restartReportingService -and $SuppressRestart )
+        {
+            Write-Warning -Message $script:localizedData.SuppressRestart
+        }
+        elseif ( $restartReportingService -and (-not $SuppressRestart) )
+        {
+            Write-Verbose -Message $script:localizedData.Restart
+            Restart-ReportingServicesService -SQLInstanceName $InstanceName -WaitTime 30
+        }
     }
 
     if ( -not (Test-TargetResource @PSBoundParameters) )
     {
-        throw New-TerminatingError -ErrorType TestFailedAfterSet -ErrorCategory InvalidResult
+        $errorMessage = $script:localizedData.TestFailedAfterSet
+        New-InvalidResultException -Message $errorMessage
     }
 }
 
@@ -705,6 +766,11 @@ function Set-TargetResource
         If connections to the Reporting Services must use SSL. If this
         parameter is not assigned a value, the default is that Reporting
         Services does not use SSL.
+
+    .PARAMETER SuppressRestart
+        Reporting Services need to be restarted after initialization or
+        settings change. If this parameter is set to $true, Reporting Services
+        will not be restarted, even after initialisation.
 #>
 function Test-TargetResource
 {
@@ -742,7 +808,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $UseSsl
+        $UseSsl,
+
+        [Parameter()]
+        [System.Boolean]
+        $SuppressRestart
     )
 
     $result = $true
@@ -828,7 +898,15 @@ function Get-ReportingServicesData
     if ( Get-ItemProperty -Path $instanceNamesRegistryKey -Name $InstanceName -ErrorAction SilentlyContinue )
     {
         $instanceId = (Get-ItemProperty -Path $instanceNamesRegistryKey -Name $InstanceName).$InstanceName
-        $sqlVersion = [System.Int32]((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\Setup" -Name 'Version').Version).Split('.')[0]
+
+        if( Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\MSSQLServer\CurrentVersion" )
+        {
+            # SQL Server 2017 SSRS stores current SQL Server version to a different Registry path.
+            $sqlVersion = [int]((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$InstanceId\MSSQLServer\CurrentVersion" -Name "CurrentVersion").CurrentVersion).Split(".")[0]
+        }
+        else {
+            $sqlVersion = [int]((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\Setup" -Name "Version").Version).Split(".")[0]
+        }
         $reportingServicesConfiguration = Get-CimInstance -ClassName MSReportServer_ConfigurationSetting -Namespace "root\Microsoft\SQLServer\ReportServer\RS_$InstanceName\v$sqlVersion\Admin"
         $reportingServicesConfiguration = $reportingServicesConfiguration | Where-Object -FilterScript {
             $_.InstanceName -eq $InstanceName
@@ -851,6 +929,7 @@ function Get-ReportingServicesData
     @{
         Configuration          = $reportingServicesConfiguration
         ReportsApplicationName = $reportsApplicationName
+        SqlVersion             = $sqlVersion
     }
 }
 
@@ -892,7 +971,7 @@ function Invoke-RsCimMethod
         ErrorAction = 'Stop'
     }
 
-    if ($PSBoundParameters.ContainsKey('Arguments'))
+    if ( $PSBoundParameters.ContainsKey('Arguments') )
     {
         $invokeCimMethodParameters['Arguments'] = $Arguments
     }
@@ -903,9 +982,9 @@ function Invoke-RsCimMethod
         If an general error occur in the Invoke-CimMethod, like calling a method
         that does not exist, returns $null in $invokeCimMethodResult.
     #>
-    if ($invokeCimMethodResult -and $invokeCimMethodResult.HRESULT -ne 0)
+    if ( $invokeCimMethodResult -and $invokeCimMethodResult.HRESULT -ne 0 )
     {
-        if ($invokeCimMethodResult | Get-Member -Name 'ExtendedErrors')
+        if ( $invokeCimMethodResult | Get-Member -Name 'ExtendedErrors' )
         {
             <#
                 The returned object property ExtendedErrors is an array

@@ -7,6 +7,8 @@ Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath '
 $script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
 Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerEndpointState'
+
 <#
     .SYNOPSIS
         Returns the current state of an endpoint.
@@ -39,7 +41,9 @@ function Get-TargetResource
         $Name
     )
 
-    New-VerboseMessage -Message "Getting state of endpoint $Name"
+    Write-Verbose -Message (
+        $script:localizedData.GetEndpointState -f $Name, $InstanceName
+    )
 
     try
     {
@@ -49,15 +53,21 @@ function Get-TargetResource
         if ($null -ne $endpointObject)
         {
             $currentState = $endpointObject.EndpointState
+
+            Write-Verbose -Message (
+                $script:localizedData.CurrentState -f $currentState
+            )
         }
         else
         {
-            throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($Name) -ErrorCategory ObjectNotFound
+            $errorMessage = $script:localizedData.EndpointNotFound -f $Name
+            New-ObjectNotFoundException -Message $errorMessage
         }
     }
     catch
     {
-        throw New-TerminatingError -ErrorType EndpointErrorVerifyExist -FormatArgs @($Name) -ErrorCategory ObjectNotFound -InnerException $_.Exception
+        $errorMessage = $script:localizedData.EndpointErrorVerifyExist -f $Name
+        New-ObjectNotFoundException -Message $errorMessage -ErrorRecord $_
     }
 
     return @{
@@ -107,6 +117,10 @@ function Set-TargetResource
         $State = 'Started'
     )
 
+    Write-Verbose -Message (
+        $script:localizedData.SetEndpointState -f $Name, $InstanceName
+    )
+
     $parameters = @{
         InstanceName = [System.String] $InstanceName
         ServerName   = [System.String] $ServerName
@@ -118,7 +132,9 @@ function Set-TargetResource
     {
         if ($getTargetResourceResult.State -ne $State)
         {
-            New-VerboseMessage -Message ('Changing state of endpoint ''{0}''' -f $Name)
+            Write-Verbose -Message (
+                $script:localizedData.ChangeState -f $State
+            )
 
             $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
 
@@ -129,16 +145,19 @@ function Set-TargetResource
                 State       = $State
             }
 
-            Set-SqlHADREndpoint @setEndpointParams -ErrorAction Stop | Out-Null
+            Set-SqlHADREndpoint @setEndpointParams -ErrorAction 'Stop' | Out-Null
         }
         else
         {
-            New-VerboseMessage -Message ('Endpoint ''{0}'' state is already correct.' -f $Name)
+            Write-Verbose -Message (
+                $script:localizedData.InDesiredState -f $Name, $State
+            )
         }
     }
     else
     {
-        throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
+        $errorMessage = $script:localizedData.UnexpectedErrorFromGet
+        New-InvalidResultException -Message $errorMessage
     }
 }
 
@@ -182,27 +201,40 @@ function Test-TargetResource
         $State = 'Started'
     )
 
+    Write-Verbose -Message (
+        $script:localizedData.TestingConfiguration -f $Name, $InstanceName
+    )
+
     $parameters = @{
         InstanceName = $InstanceName
         ServerName   = $ServerName
         Name         = $Name
     }
 
-    New-VerboseMessage -Message "Testing state $State on endpoint '$Name'"
-
     $getTargetResourceResult = Get-TargetResource @parameters
     if ($null -ne $getTargetResourceResult)
     {
-        $result = $false
-
         if ($getTargetResourceResult.State -eq $State)
         {
+            Write-Verbose -Message (
+                $script:localizedData.InDesiredState -f $Name, $getTargetResourceResult.State
+            )
+
             $result = $true
+        }
+        else
+        {
+            Write-Verbose -Message (
+                $script:localizedData.NotInDesiredState -f $Name, $getTargetResourceResult.State, $State
+            )
+
+            $result = $false
         }
     }
     else
     {
-        throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -ErrorCategory InvalidResult
+        $errorMessage = $script:localizedData.UnexpectedErrorFromGet
+        New-InvalidResultException -Message $errorMessage
     }
 
     return $result

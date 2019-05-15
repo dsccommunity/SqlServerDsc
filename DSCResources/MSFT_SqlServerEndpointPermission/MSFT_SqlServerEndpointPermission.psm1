@@ -7,6 +7,8 @@ Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath '
 $script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
 Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
 
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerEndpointPermission'
+
 <#
     .SYNOPSIS
         Returns the current state of the permissions for the principal (login).
@@ -46,6 +48,10 @@ function Get-TargetResource
         $Principal
     )
 
+    Write-Verbose -Message (
+        $script:localizedData.GetEndpointPermission -f $EndpointName, $InstanceName
+    )
+
     try
     {
         $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
@@ -53,11 +59,14 @@ function Get-TargetResource
         $endpointObject = $sqlServerObject.Endpoints[$Name]
         if ( $null -ne $endpointObject )
         {
-            New-VerboseMessage -Message "Enumerating permissions for endpoint $Name"
+            $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ObjectPermissionSet' -Property @{
+                Connect = $true
+            }
 
-            $permissionSet = New-Object -Property @{ Connect = $true } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
+            $endpointPermission = $endpointObject.EnumObjectPermissions($permissionSet) | Where-Object -FilterScript {
+                $_.PermissionState -eq 'Grant' -and $_.Grantee -eq $Principal
+            }
 
-            $endpointPermission = $endpointObject.EnumObjectPermissions( $permissionSet ) | Where-Object { $_.PermissionState -eq "Grant" -and $_.Grantee -eq $Principal }
             if ($endpointPermission.Count -ne 0)
             {
                 $Ensure = 'Present'
@@ -71,12 +80,14 @@ function Get-TargetResource
         }
         else
         {
-            throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($Name) -ErrorCategory ObjectNotFound
+            $errorMessage = $script:localizedData.EndpointNotFound -f $Name
+            New-ObjectNotFoundException -Message $errorMessage
         }
     }
     catch
     {
-        throw New-TerminatingError -ErrorType UnexpectedErrorFromGet -FormatArgs @($Name) -ErrorCategory ObjectNotFound -InnerException $_.Exception
+        $errorMessage = $script:localizedData.UnexpectedErrorFromGet -f $Name
+        New-ObjectNotFoundException -Message $errorMessage -ErrorRecord $_
     }
 
     return @{
@@ -153,33 +164,47 @@ function Set-TargetResource
     $getTargetResourceResult = Get-TargetResource @parameters
     if ($getTargetResourceResult.Ensure -ne $Ensure)
     {
+        Write-Verbose -Message (
+            $script:localizedData.SetEndpointPermission -f $EndpointName, $InstanceName
+        )
+
         $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
 
         $endpointObject = $sqlServerObject.Endpoints[$Name]
         if ($null -ne $endpointObject)
         {
-            $permissionSet = New-Object -Property @{ Connect = $true } -TypeName Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
+            $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ObjectPermissionSet' -Property @{
+                Connect = $true
+            }
 
             if ($Ensure -eq 'Present')
             {
-                New-VerboseMessage -Message "Grant permission to $Principal on endpoint $Name"
+                Write-Verbose -Message (
+                    $script:localizedData.GrantPermission -f $Principal
+                )
 
                 $endpointObject.Grant($permissionSet, $Principal)
             }
             else
             {
-                New-VerboseMessage -Message "Revoke permission to $Principal on endpoint $Name"
+                Write-Verbose -Message (
+                    $script:localizedData.RevokePermission -f $Principal
+                )
+
                 $endpointObject.Revoke($permissionSet, $Principal)
             }
         }
         else
         {
-            throw New-TerminatingError -ErrorType EndpointNotFound -FormatArgs @($Name) -ErrorCategory ObjectNotFound
+            $errorMessage = $script:localizedData.EndpointNotFound -f $Name
+            New-ObjectNotFoundException -Message $errorMessage
         }
     }
     else
     {
-        New-VerboseMessage -Message "State is already $Ensure"
+        Write-Verbose -Message (
+            $script:localizedData.InDesiredState -f $Name
+        )
     }
 }
 
@@ -245,11 +270,28 @@ function Test-TargetResource
         Principal    = [System.String] $Principal
     }
 
-    New-VerboseMessage -Message "Testing state of endpoint permission for $Principal"
+    Write-Verbose -Message (
+        $script:localizedData.TestingConfiguration -f $Name, $InstanceName
+    )
 
     $getTargetResourceResult = Get-TargetResource @parameters
 
-    return $getTargetResourceResult.Ensure -eq $Ensure
+    $isInDesiredState = $getTargetResourceResult.Ensure -eq $Ensure
+
+    if ($isInDesiredState)
+    {
+        Write-Verbose -Message (
+            $script:localizedData.InDesiredState -f $Name
+        )
+    }
+    else
+    {
+        Write-Verbose -Message (
+            $script:localizedData.NotInDesiredState -f $Name
+        )
+    }
+
+    return $isInDesiredState
 }
 
 Export-ModuleMember -Function *-TargetResource
