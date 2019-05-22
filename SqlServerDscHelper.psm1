@@ -23,6 +23,9 @@ $script:localizedData = Get-LocalizedData -ResourceName 'SqlServerDscHelper' -Sc
         If the SetupCredential is set, specify with this parameter, which type
         of credentials are set: Native SQL login or Windows user Login. Default
         value is 'WindowsUser'.
+
+    .PARAMETER StatementTimeout
+    Set the query StatementTimeout in seconds. Default value 600 seconds (10mins).
 #>
 function Connect-SQL
 {
@@ -965,6 +968,9 @@ function Restart-ReportingServicesService
 
     .PARAMETER WithResults
     Specifies if the query should return results.
+
+    .PARAMETER StatementTimeout
+    Set the query StatementTimeout in seconds. Default 600 seconds (10mins).
 
     .EXAMPLE
     Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master -Query 'SELECT name FROM sys.databases' -WithResults
