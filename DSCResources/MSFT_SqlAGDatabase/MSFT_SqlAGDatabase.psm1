@@ -195,7 +195,7 @@ function Set-TargetResource
     Import-SQLPSModule
 
     # Connect to the defined instance
-    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -StatementTimeout 0
 
     # Get the Availability Group
     $availabilityGroup = $serverObject.AvailabilityGroups[$AvailabilityGroupName]
@@ -410,10 +410,11 @@ function Set-TargetResource
 
                 # Build the backup parameters. If no backup was previously taken, a standard full will be taken. Otherwise a CopyOnly backup will be taken.
                 $backupSqlDatabaseParameters = @{
-                    DatabaseObject = $databaseObject
-                    BackupAction   = 'Database'
-                    BackupFile     = $databaseFullBackupFile
-                    ErrorAction    = 'Stop'
+                    DatabaseObject   = $databaseObject
+                    BackupAction     = 'Database'
+                    BackupFile       = $databaseFullBackupFile
+                    ErrorAction      = 'Stop'
+                    StatementTimeout = 0
                 }
 
                 # If no full backup was ever taken, do not take a backup with CopyOnly
@@ -437,10 +438,11 @@ function Set-TargetResource
 
                 # Create the parameters to perform a transaction log backup
                 $backupSqlDatabaseLogParams = @{
-                    DatabaseObject = $databaseObject
-                    BackupAction   = 'Log'
-                    BackupFile     = $databaseLogBackupFile
-                    ErrorAction    = 'Stop'
+                    DatabaseObject   = $databaseObject
+                    BackupAction     = 'Log'
+                    BackupFile       = $databaseLogBackupFile
+                    ErrorAction      = 'Stop'
+                    StatementTimeout = 0
                 }
 
                 try
@@ -486,7 +488,7 @@ function Set-TargetResource
                 $restoreDatabaseQueryStringBuilder.Append('FROM DISK = ''') | Out-Null
                 $restoreDatabaseQueryStringBuilder.Append($databaseFullBackupFile) | Out-Null
                 $restoreDatabaseQueryStringBuilder.AppendLine('''') | Out-Null
-                $restoreDatabaseQueryStringBuilder.Append('WITH NORECOVERY') | Out-Null
+                $restoreDatabaseQueryStringBuilder.Append('WITH NORECOVERY, REPLACE') | Out-Null
                 if ( $MatchDatabaseOwner )
                 {
                     $restoreDatabaseQueryStringBuilder.AppendLine() | Out-Null
@@ -528,8 +530,8 @@ function Set-TargetResource
                         $currentReplicaAvailabilityGroupObject = $currentAvailabilityGroupReplicaServerObject.AvailabilityGroups[$AvailabilityGroupName]
 
                         # Restore the database
-                        Invoke-Query -SQLServer $currentAvailabilityGroupReplicaServerObject.NetName -SQLInstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreDatabaseQueryString
-                        Invoke-Query -SQLServer $currentAvailabilityGroupReplicaServerObject.NetName -SQLInstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreLogQueryString
+                        Invoke-Query -SQLServer $currentAvailabilityGroupReplicaServerObject.NetName -SQLInstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreDatabaseQueryString -StatementTimeout 0
+                        Invoke-Query -SQLServer $currentAvailabilityGroupReplicaServerObject.NetName -SQLInstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreLogQueryString -StatementTimeout 0
 
                         # Add the database to the Availability Group
                         Add-SqlAvailabilityDatabase -InputObject $currentReplicaAvailabilityGroupObject -Database $databaseToAddToAvailabilityGroup

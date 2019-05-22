@@ -47,7 +47,12 @@ function Connect-SQL
         [Parameter()]
         [ValidateSet('WindowsUser', 'SqlLogin')]
         [System.String]
-        $LoginType = 'WindowsUser'
+        $LoginType = 'WindowsUser',
+
+        [Parameter()]
+        [ValidateNotNull()]
+        [System.Int32]
+        $StatementTimeout = 600
     )
 
     Import-SQLPSModule
@@ -61,10 +66,10 @@ function Connect-SQL
         $databaseEngineInstance = "$ServerName\$InstanceName"
     }
 
+    $sql = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+
     if ($SetupCredential)
     {
-        $sql = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
-
         if ($LoginType -eq 'SqlLogin')
         {
             $connectUsername = $SetupCredential.Username
@@ -87,14 +92,12 @@ function Connect-SQL
             'Connecting using the credential ''{0}'' and the login type ''{1}''.' `
                 -f $connectUsername, $LoginType
         ) -Verbose
+    }
 
-        $sql.ConnectionContext.ServerInstance = $databaseEngineInstance
-        $sql.ConnectionContext.Connect()
-    }
-    else
-    {
-        $sql = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server -ArgumentList $databaseEngineInstance
-    }
+    $sql.ConnectionContext.ServerInstance = $databaseEngineInstance
+    $sql.ConnectionContext.StatementTimeout = $StatementTimeout
+    $sql.ConnectionContext.ApplicationName = 'SqlServerDsc'
+    $sql.ConnectionContext.Connect()
 
     if ( $sql.Status -match '^Online$' )
     {
@@ -993,10 +996,15 @@ function Invoke-Query
 
         [Parameter()]
         [Switch]
-        $WithResults
+        $WithResults,
+
+        [Parameter()]
+        [ValidateNotNull()]
+        [System.Int32]
+        $StatementTimeout = 600
     )
 
-    $serverObject = Connect-SQL -ServerName $SQLServer -InstanceName $SQLInstanceName
+    $serverObject = Connect-SQL -ServerName $SQLServer -InstanceName $SQLInstanceName -StatementTimeout $StatementTimeout
 
     if ( $WithResults )
     {
