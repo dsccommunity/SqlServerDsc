@@ -70,6 +70,9 @@ function Connect-SQL
     }
 
     $sql = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+    $sql.ConnectionContext.ServerInstance = $databaseEngineInstance
+    $sql.ConnectionContext.StatementTimeout = $StatementTimeout
+    $sql.ConnectionContext.ApplicationName = 'SqlServerDsc'
 
     if ($SetupCredential)
     {
@@ -97,17 +100,21 @@ function Connect-SQL
         ) -Verbose
     }
 
-    $sql.ConnectionContext.ServerInstance = $databaseEngineInstance
-    $sql.ConnectionContext.StatementTimeout = $StatementTimeout
-    $sql.ConnectionContext.ApplicationName = 'SqlServerDsc'
-    $sql.ConnectionContext.Connect()
-
-    if ( $sql.Status -match '^Online$' )
+    try
     {
-        Write-Verbose -Message ($script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance) -Verbose
-        return $sql
+        $sql.ConnectionContext.Connect()
+
+        if ( $sql.Status -match '^Online$' )
+        {
+            Write-Verbose -Message ($script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance) -Verbose
+            return $sql
+        }
+        else
+        {
+            throw
+        }
     }
-    else
+    catch
     {
         $errorMessage = $script:localizedData.FailedToConnectToDatabaseEngineInstance -f $databaseEngineInstance
         New-InvalidOperationException -Message $errorMessage
@@ -1132,8 +1139,8 @@ function Test-LoginEffectivePermissions
         [System.String[]]
         $Permissions,
 
-        [ValidateSet('SERVER', 'LOGIN')]
         [Parameter()]
+        [ValidateSet('SERVER', 'LOGIN')]
         [System.String]
         $SecurableClass = 'SERVER',
 
@@ -1360,7 +1367,8 @@ function Test-ImpersonatePermissions
         New-VerboseMessage -Message ( 'The login "{0}" does not have control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
     }
 
-    if ( -not [System.String]::IsNullOrEmpty($SecurableName) ) {
+    if ( -not [System.String]::IsNullOrEmpty($SecurableName) )
+    {
         # Check for login-specific impersonation permissions
         $testLoginEffectivePermissionsParams = @{
             SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
