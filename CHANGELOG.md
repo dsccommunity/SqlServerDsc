@@ -1,7 +1,13 @@
 # Change log for SqlServerDsc
 
 ## Unreleased
-
+- Changes to SqlServerDscHelper
+  - Added parameter StatementTimeout with default value 600 (10 minutes) to functions SQL-Connect and Invoke-Query.
+    [issue #1358]
+- Changes to SqlAGDatabase
+  - Added 'REPLACE' to restore command to allow secondary database to be overwritten after a failed configuration. 
+  - Added parameter StatementTimeout with value 0 (unlimited) to functions SQL-Connect and Invoke-Query
+    [issue #1358]
 - Changes to SqlServerMemory
   - Updated Cim Class to Win32_ComputerSystem (instead of Win32_PhysicalMemory)
     because the correct memory size was not being detected correctly on Azure VMs
