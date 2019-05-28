@@ -296,7 +296,7 @@ try
                 }
 
                 It 'Should throw the correct error message' {
-                    { Get-TargetResource @defaultParameters } | Should -Throw 'SQL Reporting Services instance ''INSTANCE'' does not exist!'
+                    { Get-TargetResource @defaultParameters } | Should -Throw ($script:localizedData.ReportingServicesNotFound -f $defaultParameters.InstanceName)
                 }
             }
         }
