@@ -348,11 +348,6 @@ The localized strings are placed in a file named 'SqlServerDscHelper.strings.psd
 which are located in each language folder in the root of the module. For English
 language strings the folder is ['en-US'](https://github.com/PowerShell/SqlServerDsc/blob/dev/en-US).
 
-##### New-TerminatingError
-
-Throws a localized error message using Throw. The parameter ErrorType takes the
-message type for which it will get the localized message string.
-
 ##### New-VerboseMessage
 
 Writes a localized verbose message using Write-Verbose. The parameter ErrorType

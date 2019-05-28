@@ -2424,54 +2424,6 @@ InModuleScope 'DscResource.Common' {
         Assert-VerifiableMock
     }
 
-    Describe 'DscResource.Common\New-TerminatingError' -Tag 'NewTerminatingError' {
-        Context -Name 'When building a localized error message' -Fixture {
-            It 'Should return the correct error record with the correct error message' {
-                $errorRecord = New-TerminatingError -ErrorType 'NoKeyFound' -FormatArgs 'Dummy error'
-                $errorRecord.Exception.Message | Should -Be 'No Localization key found for ErrorType: ''Dummy error''.'
-            }
-
-            It 'Should return the correct error record with the correct error message including InnerException' {
-                $errorRecord = New-TerminatingError -ErrorType 'NoKeyFound' -FormatArgs 'Dummy error' -InnerException 'Dummy exception'
-                $errorRecord.Exception.Message | Should -Be 'No Localization key found for ErrorType: ''Dummy error''. InnerException: Dummy exception'
-            }
-
-            It 'Should return the correct error record with a matching FullyQualifiedErrorId' {
-                $errorRecord = New-TerminatingError -ErrorType 'NoKeyFound' -FormatArgs 'Dummy error'
-                $errorRecord.FullyQualifiedErrorId | Should -Be 'DscResource.NoKeyFound'
-            }
-
-            It 'Should return the correct error record with a matching FullyQualifiedErrorId when there is no calling module' {
-                Mock -CommandName Get-PSCallStack -MockWith {
-                    , [PSCustomObject] @{
-                        ScriptName = ''
-                    }
-                }
-                $errorRecord = New-TerminatingError -ErrorType 'NoKeyFound' -FormatArgs 'Dummy error'
-                $errorRecord.FullyQualifiedErrorId | Should -Be 'NoKeyFound'
-            }
-        }
-
-        Context -Name 'When building a localized error message that does not exists' -Fixture {
-            It 'Should return the correct error record with the correct error message' {
-                $errorRecord = New-TerminatingError -ErrorType 'UnknownDummyMessage' -FormatArgs 'Dummy error'
-                $errorRecord.Exception.Message | Should -Be 'No Localization key found for ErrorType: ''UnknownDummyMessage''.'
-            }
-
-            It 'Should return the correct error record with the correct error message even if the NoKeyFound message is missing' {
-                $noKeyFound = $script:localizedData.NoKeyFound
-                $script:localizedData.Remove('NoKeyFound')
-
-                $errorRecord = New-TerminatingError -ErrorType 'UnknownDummyMessage' -FormatArgs 'Dummy error'
-                $errorRecord.Exception.Message | Should -Be 'No Localization key found for ErrorType: ''UnknownDummyMessage''.'
-
-                $script:localizedData.NoKeyFound = $noKeyFound
-            }
-        }
-
-        Assert-VerifiableMock
-    }
-
     Describe 'DscResource.Common\Split-FullSQLInstanceName' {
         Context 'When the "FullSQLInstanceName" parameter is not supplied' {
             It 'Should throw when the "FullSQLInstanceName" parameter is $null' {

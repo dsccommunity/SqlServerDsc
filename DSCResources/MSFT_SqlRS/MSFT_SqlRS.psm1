@@ -106,7 +106,8 @@ function Get-TargetResource
     }
     else
     {
-        throw New-TerminatingError -ErrorType SSRSNotFound -FormatArgs @($InstanceName) -ErrorCategory ObjectNotFound
+        $errorMessage = $script:localizedData.ReportingServicesNotFound -f $InstanceName
+        New-ObjectNotFoundException -Message $errorMessage
     }
 
     return @{

@@ -714,7 +714,6 @@ try
         }
 
         Describe 'MSFT_SqlServerLogin\Set-TargetResource' {
-            Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:dscResourceName
             Mock -CommandName Update-SQLServerLogin -ModuleName $script:dscResourceName
             Mock -CommandName New-SQLServerLogin -ModuleName $script:dscResourceName
             Mock -CommandName Remove-SQLServerLogin -ModuleName $script:dscResourceName
@@ -1131,8 +1130,6 @@ try
         }
 
         Describe 'MSFT_SqlServerLogin\Update-SQLServerLogin' {
-            Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:dscResourceName
-
             Context 'When the Login is altered' {
                 It 'Should silently alter the login' {
                     $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Domain\User')
@@ -1154,8 +1151,6 @@ try
         }
 
         Describe 'MSFT_SqlServerLogin\New-SQLServerLogin' {
-            Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:dscResourceName
-
             Context 'When the Login is created' {
                 It 'Should silently create a Windows login' {
                     $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Domain\User')
@@ -1237,8 +1232,6 @@ try
         }
 
         Describe 'MSFT_SqlServerLogin\Remove-SQLServerLogin' {
-            Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:dscResourceName
-
             Context 'When the Login is dropped' {
                 It 'Should silently drop the login' {
                     $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Domain\User')
@@ -1260,8 +1253,6 @@ try
         }
 
         Describe 'MSFT_SqlServerLogin\Set-SQLServerLoginPassword' {
-            Mock -CommandName New-TerminatingError -MockWith { $ErrorType } -ModuleName $script:dscResourceName
-
             Context 'When the password is set on an existing login' {
                 It 'Should silently set the password' {
                     $setPasswordParameters = @{
