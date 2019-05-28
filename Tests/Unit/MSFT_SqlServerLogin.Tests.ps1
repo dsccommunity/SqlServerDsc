@@ -531,14 +531,14 @@ try
                 }
 
                 It 'Should not be checking login properties when Windows user is Absent' {
-                    Mock -CommandName New-VerboseMessage -ParameterFilter {$message.contains('rather than WindowsUser')}
+                    Mock -CommandName Write-Verbose -ParameterFilter {$message.contains('rather than WindowsUser')}
 
                     $testTargetResource_WindowsUserAbsent_EnsurePresent = $testTargetResource_WindowsUserAbsent.Clone()
                     $testTargetResource_WindowsUserAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
 
                     ( Test-TargetResource @testTargetResource_WindowsUserAbsent_EnsurePresent ) | Should -Be $false
 
-                    Assert-MockCalled -CommandName New-VerboseMessage -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Write-Verbose -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should return $false when the specified Windows group is Absent' {
@@ -551,14 +551,14 @@ try
                 }
 
                 It 'Should not be checking login properties when Windows group is Absent' {
-                    Mock -CommandName New-VerboseMessage -ParameterFilter {$message.contains('rather than WindowsGroup')}
+                    Mock -CommandName Write-Verbose -ParameterFilter {$message.contains('rather than WindowsGroup')}
 
                     $testTargetResource_WindowsGroupAbsent_EnsurePresent = $testTargetResource_WindowsGroupAbsent.Clone()
                     $testTargetResource_WindowsGroupAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
 
                     ( Test-TargetResource @testTargetResource_WindowsGroupAbsent_EnsurePresent ) | Should -Be $false
 
-                    Assert-MockCalled -CommandName New-VerboseMessage -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Write-Verbose -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should return $false when the specified SQL Login is Absent' {
@@ -571,14 +571,14 @@ try
                 }
 
                 It 'Should not be checking login properties when SQL Login is Absent' {
-                    Mock -CommandName New-VerboseMessage -ParameterFilter {$message.contains('rather than SqlLogin')}
+                    Mock -CommandName Write-Verbose -ParameterFilter {$message.contains('rather than SqlLogin')}
 
                     $testTargetResource_SqlLoginAbsent_EnsurePresent = $testTargetResource_SqlLoginAbsent.Clone()
                     $testTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
 
                     ( Test-TargetResource @testTargetResource_SqlLoginAbsent_EnsurePresent ) | Should -Be $false
 
-                    Assert-MockCalled -CommandName New-VerboseMessage -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Write-Verbose -Scope It -Times 0 -Exactly
                 }
 
                 It 'Should return $true when the specified Windows user is Present' {

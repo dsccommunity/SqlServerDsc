@@ -445,7 +445,7 @@ function Invoke-InstallationMediaCopy
 
     $mediaDestinationPath = Join-Path -Path (Get-TemporaryFolder) -ChildPath $mediaDestinationFolder
 
-    Write-Verbose -Message ($script:localizedData.RobocopyIsCopying -f $SourcePath, $mediaDestinationPath)
+    Write-Verbose -Message ($script:localizedData.RobocopyIsCopying -f $SourcePath, $mediaDestinationPath) -Verbose
     Copy-ItemWithRobocopy -Path $SourcePath -DestinationPath $mediaDestinationPath
 
     Disconnect-UncPath -RemotePath $SourcePath
@@ -824,34 +824,6 @@ function Get-SqlInstanceMajorVersion
     [System.UInt16] $sqlMajorVersionNumber = $sqlVersion.Split('.')[0]
 
     return $sqlMajorVersionNumber
-}
-
-<#
-    .SYNOPSIS
-    Displays a standardized verbose message.
-
-    This helper function is obsolete, should use Write-Verbose together with individual resource
-    localization strings.
-    https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#localization
-
-    Strings in this function has not been localized since this helper function should be removed
-    when all resources has moved over to the new localization,
-
-    .PARAMETER Message
-    String containing the key of the localized warning message.
-#>
-function New-VerboseMessage
-{
-    [CmdletBinding()]
-    [Alias()]
-    [OutputType([System.String])]
-    Param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Message
-    )
-    Write-Verbose -Message ((Get-Date -format yyyy-MM-dd_HH-mm-ss) + ": $Message") -Verbose
 }
 
 <#
@@ -1614,12 +1586,12 @@ function Test-ImpersonatePermissions
     $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
     if ($impersonatePermissionsPresent)
     {
-        New-VerboseMessage -Message ( 'The login "{0}" has impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
+        Write-Verbose -Message ( 'The login "{0}" has impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName ) -Verbose
         return $impersonatePermissionsPresent
     }
     else
     {
-        New-VerboseMessage -Message ( 'The login "{0}" does not have impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
+        Write-Verbose -Message ( 'The login "{0}" does not have impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName ) -Verbose
     }
 
     # Check for sysadmin / control server permission which allows impersonation
@@ -1632,12 +1604,12 @@ function Test-ImpersonatePermissions
     $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
     if ($impersonatePermissionsPresent)
     {
-        New-VerboseMessage -Message ( 'The login "{0}" has control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
+        Write-Verbose -Message ( 'The login "{0}" has control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName ) -Verbose
         return $impersonatePermissionsPresent
     }
     else
     {
-        New-VerboseMessage -Message ( 'The login "{0}" does not have control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
+        Write-Verbose -Message ( 'The login "{0}" does not have control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName ) -Verbose
     }
 
     if (-not [System.String]::IsNullOrEmpty($SecurableName))
@@ -1655,12 +1627,12 @@ function Test-ImpersonatePermissions
         $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
         if ($impersonatePermissionsPresent)
         {
-            New-VerboseMessage -Message ( 'The login "{0}" has impersonate permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName )
+            Write-Verbose -Message ( 'The login "{0}" has impersonate permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName ) -Verbose
             return $impersonatePermissionsPresent
         }
         else
         {
-            New-VerboseMessage -Message ( 'The login "{0}" does not have impersonate permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName )
+            Write-Verbose -Message ( 'The login "{0}" does not have impersonate permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName ) -Verbose
         }
 
         # Check for login-specific control permissions
@@ -1676,16 +1648,16 @@ function Test-ImpersonatePermissions
         $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
         if ($impersonatePermissionsPresent)
         {
-            New-VerboseMessage -Message ( 'The login "{0}" has control permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName )
+            Write-Verbose -Message ( 'The login "{0}" has control permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName ) -Verbose
             return $impersonatePermissionsPresent
         }
         else
         {
-            New-VerboseMessage -Message ( 'The login "{0}" does not have control permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName )
+            Write-Verbose -Message ( 'The login "{0}" does not have control permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName ) -Verbose
         }
     }
 
-    New-VerboseMessage -Message ( 'The login "{0}" does not have any impersonate permissions required on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
+    Write-Verbose -Message ( 'The login "{0}" does not have any impersonate permissions required on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName ) -Verbose
     return $impersonatePermissionsPresent
 }
 
@@ -2048,7 +2020,6 @@ Export-ModuleMember -Function @(
     'Connect-SQL'
     'Connect-SQLAnalysis'
     'Get-SqlInstanceMajorVersion'
-    'New-VerboseMessage'
     'Import-SQLPSModule'
     'Restart-SqlService'
     'Restart-ReportingServicesService'

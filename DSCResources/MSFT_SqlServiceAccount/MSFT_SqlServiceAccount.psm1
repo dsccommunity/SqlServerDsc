@@ -158,13 +158,13 @@ function Test-TargetResource
 
     if ($Force)
     {
-        New-VerboseMessage -Message $script:localizedData.ForceServiceAccountUpdate
+        Write-Verbose -Message $script:localizedData.ForceServiceAccountUpdate
         return $false
     }
 
     # Get the current state
     $currentState = Get-TargetResource -ServerName $ServerName -InstanceName $InstanceName -ServiceType $ServiceType -ServiceAccount $ServiceAccount -VersionNumber $VersionNumber
-    New-VerboseMessage -Message ($script:localizedData.CurrentServiceAccount -f $currentState.ServiceAccountName, $ServerName, $InstanceName)
+    Write-Verbose -Message ($script:localizedData.CurrentServiceAccount -f $currentState.ServiceAccountName, $ServerName, $InstanceName)
 
     return ($currentState.ServiceAccountName -ieq $ServiceAccount.UserName)
 }
@@ -246,7 +246,7 @@ function Set-TargetResource
 
     try
     {
-        New-VerboseMessage -Message ($script:localizedData.UpdatingServiceAccount -f $ServiceAccount.UserName, $serviceObject.Name)
+        Write-Verbose -Message ($script:localizedData.UpdatingServiceAccount -f $ServiceAccount.UserName, $serviceObject.Name)
         $account = Get-ServiceAccount -ServiceAccount $ServiceAccount
         $serviceObject.SetServiceAccount($account.UserName, $account.Password)
     }
@@ -258,7 +258,7 @@ function Set-TargetResource
 
     if ($RestartService)
     {
-        New-VerboseMessage -Message ($script:localizedData.RestartingService -f $InstanceName)
+        Write-Verbose -Message ($script:localizedData.RestartingService -f $InstanceName)
         Restart-SqlService -SQLServer $ServerName -SQLInstanceName $InstanceName
     }
 }
@@ -318,7 +318,7 @@ function Get-ServiceObject
     Import-SQLPSModule
 
     $verboseMessage = $script:localizedData.ConnectingToWmi -f $ServerName
-    New-VerboseMessage -Message $verboseMessage
+    Write-Verbose -Message $verboseMessage
 
     # Connect to SQL WMI
     $managedComputer = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer -ArgumentList $ServerName

@@ -310,7 +310,7 @@ function Set-TargetResource
 
         if ( -not $reportingServicesData.Configuration.IsInitialized )
         {
-            New-VerboseMessage -Message "Initializing Reporting Services on $DatabaseServerName\$DatabaseInstanceName."
+            Write-Verbose -Message "Initializing Reporting Services on $DatabaseServerName\$DatabaseInstanceName."
 
             # We will restart Reporting Services after initialization (unless SuppressRestart is set)
             $restartReportingService = $true
@@ -329,7 +329,7 @@ function Set-TargetResource
 
             if ( $reportingServicesData.Configuration.VirtualDirectoryReportServer -ne $ReportServerVirtualDirectory )
             {
-                New-VerboseMessage -Message "Setting report server virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
+                Write-Verbose -Message "Setting report server virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
 
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
@@ -344,7 +344,7 @@ function Set-TargetResource
                 Invoke-RsCimMethod @invokeRsCimMethodParameters
 
                 $ReportServerReservedUrl | ForEach-Object -Process {
-                    New-VerboseMessage -Message "Adding report server URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
+                    Write-Verbose -Message "Adding report server URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
 
                     $invokeRsCimMethodParameters = @{
                         CimInstance = $reportingServicesData.Configuration
@@ -362,7 +362,7 @@ function Set-TargetResource
 
             if ( $reportingServicesData.Configuration.VirtualDirectoryReportManager -ne $ReportsVirtualDirectory )
             {
-                New-VerboseMessage -Message "Setting reports virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
+                Write-Verbose -Message "Setting reports virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
 
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
@@ -377,7 +377,7 @@ function Set-TargetResource
                 Invoke-RsCimMethod @invokeRsCimMethodParameters
 
                 $ReportsReservedUrl | ForEach-Object -Process {
-                    New-VerboseMessage -Message "Adding reports URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
+                    Write-Verbose -Message "Adding reports URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
 
                     $invokeRsCimMethodParameters = @{
                         CimInstance = $reportingServicesData.Configuration
@@ -485,7 +485,7 @@ function Set-TargetResource
 
             if ( $PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl )
             {
-                New-VerboseMessage -Message "Changing value for using SSL to '$UseSsl'."
+                Write-Verbose -Message "Changing value for using SSL to '$UseSsl'."
 
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
@@ -529,7 +529,7 @@ function Set-TargetResource
 
             if ( -not [System.String]::IsNullOrEmpty($ReportServerVirtualDirectory) -and ($ReportServerVirtualDirectory -ne $currentConfig.ReportServerVirtualDirectory) )
             {
-                New-VerboseMessage -Message "Setting report server virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
+                Write-Verbose -Message "Setting report server virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
 
                 $restartReportingService = $true
 
@@ -576,7 +576,7 @@ function Set-TargetResource
 
             if ( -not [System.String]::IsNullOrEmpty($ReportsVirtualDirectory) -and ($ReportsVirtualDirectory -ne $currentConfig.ReportsVirtualDirectory) )
             {
-                New-VerboseMessage -Message "Setting reports virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
+                Write-Verbose -Message "Setting reports virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
 
                 $restartReportingService = $true
 
@@ -645,7 +645,7 @@ function Set-TargetResource
                 }
 
                 $ReportServerReservedUrl | ForEach-Object -Process {
-                    New-VerboseMessage -Message "Adding report server URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
+                    Write-Verbose -Message "Adding report server URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
                     $invokeRsCimMethodParameters = @{
                         CimInstance = $reportingServicesData.Configuration
                         MethodName = 'ReserveUrl'
@@ -684,7 +684,7 @@ function Set-TargetResource
                 }
 
                 $ReportsReservedUrl | ForEach-Object -Process {
-                    New-VerboseMessage -Message "Adding reports URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
+                    Write-Verbose -Message "Adding reports URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
 
                     $invokeRsCimMethodParameters = @{
                         CimInstance = $reportingServicesData.Configuration
@@ -702,7 +702,7 @@ function Set-TargetResource
 
             if ( $PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl )
             {
-                New-VerboseMessage -Message "Changing value for using SSL to '$UseSsl'."
+                Write-Verbose -Message "Changing value for using SSL to '$UseSsl'."
 
                 $restartReportingService = $true
 
@@ -828,19 +828,19 @@ function Test-TargetResource
 
     if ( -not $currentConfig.IsInitialized )
     {
-        New-VerboseMessage -Message "Reporting services $DatabaseServerName\$DatabaseInstanceName are not initialized."
+        Write-Verbose -Message "Reporting services $DatabaseServerName\$DatabaseInstanceName are not initialized."
         $result = $false
     }
 
     if ( -not [System.String]::IsNullOrEmpty($ReportServerVirtualDirectory) -and ($ReportServerVirtualDirectory -ne $currentConfig.ReportServerVirtualDirectory) )
     {
-        New-VerboseMessage -Message "Report server virtual directory on $DatabaseServerName\$DatabaseInstanceName is $($currentConfig.ReportServerVirtualDir), should be $ReportServerVirtualDirectory."
+        Write-Verbose -Message "Report server virtual directory on $DatabaseServerName\$DatabaseInstanceName is $($currentConfig.ReportServerVirtualDir), should be $ReportServerVirtualDirectory."
         $result = $false
     }
 
     if ( -not [System.String]::IsNullOrEmpty($ReportsVirtualDirectory) -and ($ReportsVirtualDirectory -ne $currentConfig.ReportsVirtualDirectory) )
     {
-        New-VerboseMessage -Message "Reports virtual directory on $DatabaseServerName\$DatabaseInstanceName is $($currentConfig.ReportsVirtualDir), should be $ReportsVirtualDirectory."
+        Write-Verbose -Message "Reports virtual directory on $DatabaseServerName\$DatabaseInstanceName is $($currentConfig.ReportsVirtualDir), should be $ReportsVirtualDirectory."
         $result = $false
     }
 
@@ -851,7 +851,7 @@ function Test-TargetResource
 
     if ( ($null -ne $ReportServerReservedUrl) -and ($null -ne (Compare-Object @compareParameters)) )
     {
-        New-VerboseMessage -Message "Report server reserved URLs on $DatabaseServerName\$DatabaseInstanceName are $($currentConfig.ReportServerReservedUrl -join ', '), should be $($ReportServerReservedUrl -join ', ')."
+        Write-Verbose -Message "Report server reserved URLs on $DatabaseServerName\$DatabaseInstanceName are $($currentConfig.ReportServerReservedUrl -join ', '), should be $($ReportServerReservedUrl -join ', ')."
         $result = $false
     }
 
@@ -862,13 +862,13 @@ function Test-TargetResource
 
     if ( ($null -ne $ReportsReservedUrl) -and ($null -ne (Compare-Object @compareParameters)) )
     {
-        New-VerboseMessage -Message "Reports reserved URLs on $DatabaseServerName\$DatabaseInstanceName are $($currentConfig.ReportsReservedUrl -join ', ')), should be $($ReportsReservedUrl -join ', ')."
+        Write-Verbose -Message "Reports reserved URLs on $DatabaseServerName\$DatabaseInstanceName are $($currentConfig.ReportsReservedUrl -join ', ')), should be $($ReportsReservedUrl -join ', ')."
         $result = $false
     }
 
     if ( $PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl )
     {
-        New-VerboseMessage -Message "The value for using SSL are not in desired state. Should be '$UseSsl', but was '$($currentConfig.UseSsl)'."
+        Write-Verbose -Message "The value for using SSL are not in desired state. Should be '$UseSsl', but was '$($currentConfig.UseSsl)'."
         $result = $false
     }
 
