@@ -146,7 +146,7 @@ function Set-TargetResource
                     $MaxMemory = Get-SqlDscDynamicMaxMemory
 
                     Write-Verbose -Message (
-                        $script:localizedData.DynamicMemoryValue -f $MaxMemory
+                        $script:localizedData.DynamicMaxMemoryValue -f $MaxMemory
                     )
                 }
                 else
@@ -158,11 +158,11 @@ function Set-TargetResource
                     }
                 }
 
-                $sqlServerObject.Configuration.MaxServerMemory.ConfigValue = $MaxMemory
-
                 Write-Verbose -Message (
-                    $script:localizedData.DynamicMaxMemoryValue -f $InstanceName, $MaxMemory
+                    $script:localizedData.MaximumMemoryLimited -f $InstanceName, $MaxMemory
                 )
+
+                $sqlServerObject.Configuration.MaxServerMemory.ConfigValue = $MaxMemory
 
                 if ($MinMemory)
                 {

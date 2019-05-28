@@ -97,7 +97,7 @@ function Get-TargetResource
                 if ( $null -ne (Compare-Object -ReferenceObject $membersInRole -DifferenceObject $Members))
                 {
                     Write-Verbose -Message (
-                        $script:localizedData.DesiredMemberNotPresent `
+                        $script:localizedData.DesiredMembersNotPresent `
                             -f $ServerRoleName
                     )
 

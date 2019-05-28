@@ -13,6 +13,14 @@
   - Added en-US localization.
 - Changes to SqlAGReplica
   - Added en-US localization.
+- Changes to SqlAlwaysOnService
+  - Now outputs the correct verbose message when restarting the service.
+- Changes to SqlServerMemory
+  - Now outputs the correct verbose messages when calculating the dynamic
+    memory, and when limiting maximum memory.
+- Changes to SqlServerRole
+  - Now outputs the correct verbose message when the members of a role is
+    not in desired state.
 
 ## 12.5.0.0
 

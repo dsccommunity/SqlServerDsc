@@ -283,7 +283,7 @@ function Set-TargetResource
                     }
                     catch
                     {
-                        $errorMessage = $script:localizedData.RemoveAvailabilityGroupReplicaFailed -f $Name, $AvailabilityGroupName, $InstanceName
+                        $errorMessage = $script:localizedData.FailedRemoveAvailabilityGroupReplica -f $Name, $AvailabilityGroupName, $InstanceName
                         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                     }
                 }

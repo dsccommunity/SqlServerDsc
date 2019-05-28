@@ -22,7 +22,6 @@ ConvertFrom-StringData @'
     FailedToConnectToDatabaseEngineInstance = Failed to connect to SQL instance '{0}'.
     ConnectedToAnalysisServicesInstance = Connected to Analysis Services instance '{0}'.
     FailedToConnectToAnalysisServicesInstance = Failed to connected to Analysis Services instance '{0}'.
-    SqlMajorVersion = SQL major version is {0}.
     SqlServerVersionIsInvalid = Could not get the SQL version for the instance '{0}'.
     PreferredModuleFound = Preferred module SqlServer found.
     PreferredModuleNotFound = Information: PowerShell module SqlServer not found, trying to use older SQLPS module.
@@ -55,27 +54,4 @@ ConvertFrom-StringData @'
     ClusterLoginMissingPermissions = The account '{0}' is missing one or more of the following permissions: {1}
     ClusterLoginMissingRecommendedPermissions = The recommended account '{0}' is missing one or more of the following permissions: {1}
     ClusterLoginPermissionsPresent = The cluster login '{0}' has the required permissions.
-
-    # - NOTE!
-    # - Below strings are used by helper functions New-TerminatingError and New-WarningMessage.
-    # - These strings were merged from old SqlServerDsc.strings.psd1. These will be moved to it's individual
-    # - resource when that resources get moved over to the new localization.
-    # - NOTE!
-
-    # Common
-    NoKeyFound = No Localization key found for ErrorType: '{0}'.
-    AbsentNotImplemented = Ensure = Absent is not implemented!
-    RemoteConnectionFailed = Remote PowerShell connection to Server '{0}' failed.
-    TODO = ToDo. Work not implemented at this time.
-
-    HadrNotEnabled = HADR is not enabled.
-    ParameterNotOfType = The parameter '{0}' is not of the type '{1}'.
-    ParameterNullOrEmpty = The parameter '{0}' is NULL or empty.
-
-    # SQLServer
-    NoDatabase = Database '{0}' does not exist on SQL server '{1}\\{2}'.
-    SSRSNotFound = SQL Reporting Services instance '{0}' does not exist!
-    RoleNotFound = Role '{0}' does not exist on database '{1}' on SQL server '{2}\\{3}'."
-    LoginNotFound = Login '{0}' does not exist on SQL server '{1}\\{2}'."
-    FailedLogin = Creating a login of type 'SqlLogin' requires LoginCredential
 '@

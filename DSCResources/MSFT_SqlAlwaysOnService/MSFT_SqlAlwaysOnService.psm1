@@ -146,7 +146,7 @@ function Set-TargetResource
     }
 
     Write-Verbose -Message (
-        $script:localizedData.DisableAlwaysOnAvailabilityGroup -f $statusString, $ServerName, $InstanceName
+        $script:localizedData.RestartingService -f $statusString, $ServerName, $InstanceName
     )
 
     # Now restart the SQL service so that all dependent services are also returned to their previous state

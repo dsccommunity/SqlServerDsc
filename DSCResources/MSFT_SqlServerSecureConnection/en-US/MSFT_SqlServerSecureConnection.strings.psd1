@@ -13,7 +13,6 @@ ConvertFrom-StringData @'
     TestingConfiguration = Determine if the Secure Connection is in the desired state.
     ThumbprintResult = Thumbprint was '{0}' but expected '{1}'.
     ForceEncryptionResult = ForceEncryption was '{0}' but expected '{1}'.
-    CertificateResult = Certificate permissions was '{0}' but expected 'True'.
     EncryptionOff = SQL Secure Connection is Disabled.
     InstanceNotFound = SQL instance '{0}' not found on SQL Server.
     PrivateKeyPath = Certificate private key is located at '{0}'.

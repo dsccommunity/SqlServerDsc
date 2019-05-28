@@ -1,4 +1,10 @@
-# Swedish localized resources for helper module SqlServerDscHelper.
+<#
+    Swedish localized resources for helper module SqlServerDsc.Common.
+
+    Strings are added in english here by non-Swedish speaking contributors.
+    if you are a Swedish speaking contributor, then please help us translate
+    or improve these strings.
+#>
 
 ConvertFrom-StringData @'
     ConnectedToDatabaseEngineInstance = Ansluten till SQL instans '{0}'.
@@ -49,31 +55,4 @@ ConvertFrom-StringData @'
     ClusterLoginMissingPermissions = The account '{0}' is missing one or more of the following permissions: {1}
     ClusterLoginMissingRecommendedPermissions = The recommended account '{0}' is missing one or more of the following permissions: {1}
     ClusterLoginPermissionsPresent = The cluster login '{0}' has the required permissions.
-
-    # - NOTE!
-    # - Below strings are used by helper functions New-TerminatingError and New-WarningMessage.
-    # - These strings were merged from old SqlServerDsc.strings.psd1. These will be moved to it's individual
-    # - resource when that resources get moved over to the new localization.
-    # - NOTE!
-
-    # Common
-    NoKeyFound = No Localization key found for ErrorType: '{0}'.
-    AbsentNotImplemented = Ensure = Absent is not implemented!
-    RemoteConnectionFailed = Remote PowerShell connection to Server '{0}' failed.
-    TODO = ToDo. Work not implemented at this time.
-
-    HadrNotEnabled = HADR is not enabled.
-    ParameterNotOfType = The parameter '{0}' is not of the type '{1}'.
-    ParameterNullOrEmpty = The parameter '{0}' is NULL or empty.
-
-    # SQLServer
-    NoDatabase = Database '{0}' does not exist on SQL server '{1}\\{2}'.
-    SSRSNotFound = SQL Reporting Services instance '{0}' does not exist!
-    RoleNotFound = Role '{0}' does not exist on database '{1}' on SQL server '{2}\\{3}'."
-    LoginNotFound = Login '{0}' does not exist on SQL server '{1}\\{2}'."
-    FailedLogin = Creating a login of type 'SqlLogin' requires LoginCredential
-
-    # Configuration
-    ConfigurationOptionNotFound = Specified option '{0}' could not be found.
-    ConfigurationRestartRequired = Configuration option '{0}' has been updated, but a manual restart of SQL Server is required for it to take effect.
 '@

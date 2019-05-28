@@ -57,11 +57,13 @@ ConvertFrom-StringData @'
     SuppressReboot = Förhindrar omstart av målnod.
     TestFailedAfterSet = Funktionen Test-TargetResource returnerade falskt när funktionen Set-TargetResource verifierade önskad konfiguration. Detta indikerar att funktionen Set-TargetResource inte på ett korrekt sätt kunde sätta önskad konfiguration, eller att funktionen Test-TargetResource inte utvärderar önskad konfiguration på korrekt sätt.
     FeaturesFound = Funktioner funna: {0}
+    NoFeaturesFound = Inga funktioner är installerad.
     UnableToFindFeature = Kunde inte hitta funktion '{0}' bland som installerade funktionerna: '{1}'.
     EvaluatingClusterParameters = Klustrad installation, kontrollerar parametrar.
     ClusterParameterIsNotInDesiredState = {0} '{1}' är inte i önskat läge för detta kluster.
-    StartSetupProcess = Startade processen med id {0}, använder sig av sökvägen '{1}', och med en tidsgräns på {2} sekunder.
     EvaluateMasterDataServicesFeature = Letar efter Master Data Services (MDS) funktion ({0}).
     MasterDataServicesFeatureFound = Master Data Services (MDS) funktionen hittad.
     MasterDataServicesFeatureNotFound = Master Data Services (MDS) funktionen hittades inte.
+    FeatureAlreadyInstalled = Funktionen '{0}' är redan installerad så den kommer inte bli installerad igen.
+    FeatureFlag = Använder tilläggsflagga '{0}'
 '@

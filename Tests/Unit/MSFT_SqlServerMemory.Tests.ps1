@@ -67,6 +67,7 @@ try
         $mockDefaultParameters = @{
             InstanceName = $mockInstanceName
             ServerName   = $mockServerName
+            Verbose = $true
         }
 
         #region Function mocks

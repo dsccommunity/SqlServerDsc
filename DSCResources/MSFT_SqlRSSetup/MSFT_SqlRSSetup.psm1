@@ -478,13 +478,22 @@ function Set-TargetResource
 
     Write-Verbose -Message ($script:localizedData.SetupExitMessage -f $processExitCode)
 
+    if ($Action -eq 'Install')
+    {
+        $localizedAction = $script:localizedData.Install
+    }
+    else
+    {
+        $localizedAction = $script:localizedData.Uninstall
+    }
+
     if ($processExitCode -eq 0)
     {
-        Write-Verbose -Message ($script:localizedData.SetupSuccessful -f $script:localizedData.$Action)
+        Write-Verbose -Message ($script:localizedData.SetupSuccessful -f $localizedAction)
     }
     elseif ($processExitCode -eq 3010)
     {
-        Write-Warning -Message ($script:localizedData.SetupSuccessfulRestartRequired -f $script:localizedData.$Action)
+        Write-Warning -Message ($script:localizedData.SetupSuccessfulRestartRequired -f $localizedAction)
 
         $global:DSCMachineStatus = 1
     }
