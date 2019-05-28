@@ -1,7 +1,7 @@
 <#
     Swedish localized resources for helper module SqlServerDsc.Common.
 
-    Strings are added in english here by non-Swedish speaking contributors.
+    Strings are added in English here by non-Swedish speaking contributors.
     if you are a Swedish speaking contributor, then please help us translate
     or improve these strings.
 #>
