@@ -4,7 +4,7 @@ param()
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-if (Test-SkipContinuousIntegrationTask -Type 'Integration' -Category 'Integration_SQL2016')
+if (Test-SkipContinuousIntegrationTask -Type 'Integration' -Category @('Integration_SQL2016','Integration_SQL2017'))
 {
     return
 }
@@ -28,6 +28,22 @@ $TestEnvironment = Initialize-TestEnvironment `
     -DSCResourceName $script:dscResourceName `
     -TestType Integration
 #endregion
+
+<#
+    This is used in both the configuration file and in this script file
+    to run the correct tests depending of what version of SQL Server is
+    being tested in the current job.
+#>
+if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
+{
+    $script:sqlVersion = '140'
+}
+else
+{
+    $script:sqlVersion = '130'
+}
+
+Write-Verbose -Message ('Running integration tests for SSRS version {0}' -f $script:sqlVersion) -Verbose
 
 # Using try/finally to always cleanup.
 try
@@ -117,7 +133,15 @@ try
             }
 
             It 'Should be able to access the ReportServer site without any error' {
-                $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                if($script:sqlVersion -eq '140')
+                {
+                    # SSRS 2017 does not support multiple instances
+                    $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
+                }
+                else
+                {
+                    $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                }
 
                 try
                 {
@@ -139,7 +163,15 @@ try
             }
 
             It 'Should be able to access the Reports site without any error' {
-                $reportsUri = 'http://{0}/Reports_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                if($script:sqlVersion -eq '140')
+                {
+                    # SSRS 2017 does not support multiple instances
+                    $reportsUri = 'http://{0}/Reports' -f $env:COMPUTERNAME
+                }
+                else
+                {
+                    $reportsUri = 'http://{0}/Reports_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                }
 
                 try
                 {
@@ -213,7 +245,15 @@ try
                 as this without testing for the correct error message on purpose.
             #>
             It 'Should not be able to access the ReportServer site and throw an error message' {
-                $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                if($script:sqlVersion -eq '140')
+                {
+                    # SSRS 2017 does not support multiple instances
+                    $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
+                }
+                else
+                {
+                    $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                }
 
                 { Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials } | Should -Throw
             }
@@ -265,7 +305,15 @@ try
             }
 
             It 'Should be able to access the ReportServer site without any error' {
-                $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                if($script:sqlVersion -eq '140')
+                {
+                    # SSRS 2017 does not support multiple instances
+                    $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
+                }
+                else
+                {
+                    $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                }
 
                 try
                 {

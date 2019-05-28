@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 12.5.0.0
+
 - Changes to SqlServerSecureConnection
   - Updated README and added example for SqlServerSecureConnection,
     instructing users to use the 'SYSTEM' service account instead of
@@ -46,6 +48,12 @@
     error message more descriptive when the Set-TargetResource function
     calls the Test-TargetResource function to verify the desired
     state. *This was done prior to adding full en-US localization.*
+  - Fixed ([issue #1258](https://github.com/PowerShell/SqlServerDsc/issues/1258)).
+    When initializing Reporting Services, there is no need to execute `InitializeReportServer`
+    CIM method, since executing `SetDatabaseConnection` CIM method initializes
+    Reporting Services.
+  - [issue #864](https://github.com/PowerShell/SqlServerDsc/issues/864) SqlRs
+    can now initialise SSRS 2017 instances
 - Changes to SqlServerLogin
   - Added en-US localization ([issue #615](https://github.com/PowerShell/SqlServerDsc/issues/615)).
   - Added unit tests to improved code coverage.

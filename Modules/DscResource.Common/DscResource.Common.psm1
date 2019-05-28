@@ -1352,15 +1352,31 @@ function Restart-ReportingServicesService
         $WaitTime = 0
     )
 
-    $ServiceName = 'ReportServer'
-
-    if (-not ($SQLInstanceName -eq 'MSSQLSERVER'))
+    if ($SQLInstanceName -eq 'SSRS')
     {
-        $ServiceName += '${0}' -f $SQLInstanceName
+        # Check if we're dealing with SSRS 2017
+        $ServiceName = 'SQLServerReportingServices'
+
+        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
+        $reportingServicesService = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
     }
 
-    Write-Verbose -Message ($script:localizedData.GetServiceInformation -f 'Reporting Services') -Verbose
-    $reportingServicesService = Get-Service -Name $ServiceName
+    if ($null -eq $reportingServicesService)
+    {
+        $ServiceName = 'ReportServer'
+
+        <#
+            Pre-2017 SSRS support multiple instances, check if we're dealing
+            with a named instance.
+        #>
+        if (-not ($SQLInstanceName -eq 'MSSQLSERVER'))
+        {
+            $ServiceName += '${0}' -f $SQLInstanceName
+        }
+
+        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
+        $reportingServicesService = Get-Service -Name $ServiceName
+    }
 
     <#
         Get all dependent services that are running.
