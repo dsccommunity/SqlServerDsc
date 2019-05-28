@@ -38,6 +38,10 @@ function Get-TargetResource
         $DatabaseInstanceName
     )
 
+    Write-Verbose -Message (
+        $script:localizedData.GetConfiguration -f $InstanceName
+    )
+
     $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
 
     if ( $null -ne $reportingServicesData.Configuration )

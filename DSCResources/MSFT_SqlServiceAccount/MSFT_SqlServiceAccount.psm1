@@ -60,6 +60,10 @@ function Get-TargetResource
         $VersionNumber
     )
 
+    Write-Verbose -Message (
+        $script:localizedData.GetConfiguration -f $ServiceType
+    )
+
     # Get the SMO Service object instance
     $serviceObject = Get-ServiceObject -ServerName $ServerName -InstanceName $InstanceName -ServiceType $ServiceType -VersionNumber $VersionNumber
 

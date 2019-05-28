@@ -4,6 +4,8 @@
 
 - Changes to SqlServerDsc
   - Opt-in to the common test 'Common Test - Validation Localization'.
+  - Opt-in to the common test 'Common Test - Flagged Script Analyzer Rules'
+    ([issue #1101](https://github.com/PowerShell/SqlServerDsc/issues/1101)).
   - Removed the helper function `New-TerminatingError`, `New-WarningMessage`
     and `New-VerboseMessage` in favor of the the new
     [localization helper functions](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md#localization).
