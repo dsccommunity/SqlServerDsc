@@ -4,8 +4,8 @@
 
 - Changes to SqlServerDsc
   - Opt-in to the common test 'Common Test - Validation Localization'.
-  - Removed the helper function `New-TerminatingError` in favor of the
-    the new [localization helper functions](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md#localization).
+  - Removed the helper function `New-TerminatingError` and `New-WarningMessage`
+    in favor of the the new [localization helper functions](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md#localization).
 - Changes to SqlAG
   - Added en-US localization.
 - Changes to SqlAGReplica

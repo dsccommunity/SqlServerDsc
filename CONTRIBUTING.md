@@ -353,11 +353,6 @@ language strings the folder is ['en-US'](https://github.com/PowerShell/SqlServer
 Writes a localized verbose message using Write-Verbose. The parameter ErrorType
 takes the message type for which it will get the localized message string.
 
-##### New-WarningMessage
-
-Writes a localized warning message using Write-Warning. The parameter ErrorType
-takes the message type for which it will get the localized message string.
-
 ### Helper functions
 
 Helper functions or wrapper functions that are used by the resource can preferably

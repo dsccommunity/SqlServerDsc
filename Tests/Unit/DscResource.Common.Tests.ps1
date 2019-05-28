@@ -2400,30 +2400,6 @@ InModuleScope 'DscResource.Common' {
         Assert-VerifiableMock
     }
 
-    Describe 'DscResource.Common\New-WarningMessage' -Tag 'NewWarningMessage' {
-        Context -Name 'When writing a localized warning message' -Fixture {
-            It 'Should write the error message without throwing' {
-                Mock -CommandName Write-Warning -Verifiable
-
-                { New-WarningMessage -WarningType 'NoKeyFound' } | Should -Not -Throw
-
-                Assert-MockCalled -CommandName Write-Warning -Exactly -Times 1
-            }
-        }
-
-        Context -Name 'When trying to write a localized warning message that does not exists' -Fixture {
-            It 'Should throw the correct error message' {
-                Mock -CommandName Write-Warning -Verifiable
-
-                { New-WarningMessage -WarningType 'UnknownDummyMessage' } | Should -Throw 'No Localization key found for ErrorType: ''UnknownDummyMessage''.'
-
-                Assert-MockCalled -CommandName Write-Warning -Exactly -Times 0
-            }
-        }
-
-        Assert-VerifiableMock
-    }
-
     Describe 'DscResource.Common\Split-FullSQLInstanceName' {
         Context 'When the "FullSQLInstanceName" parameter is not supplied' {
             It 'Should throw when the "FullSQLInstanceName" parameter is $null' {
