@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Changes to SqlServerDsc
+  - Opt-in to the common test 'Common Test - Validation Localization'.
 - Changes to SqlAG
   - Added en-US localization.
 - Changes to SqlAGReplica
