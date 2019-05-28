@@ -352,7 +352,7 @@ function Set-TargetResource
                 catch
                 {
                     $errorMessage = $script:localizedData.FailedCreateAvailabilityGroupReplica -f $newReplicaParams.Name, $InstanceName
-                    New-InvalidOperationException -Message $errorMessage
+                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                 }
 
                 # Set up the parameters for the new availability group

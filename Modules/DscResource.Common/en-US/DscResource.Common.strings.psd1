@@ -69,7 +69,6 @@ ConvertFrom-StringData @'
     TODO = ToDo. Work not implemented at this time.
 
     HadrNotEnabled = HADR is not enabled.
-    AvailabilityGroupNotFound = Unable to locate the availability group '{0}' on the instance '{1}'.
     ParameterNotOfType = The parameter '{0}' is not of the type '{1}'.
     ParameterNullOrEmpty = The parameter '{0}' is NULL or empty.
 
@@ -79,21 +78,4 @@ ConvertFrom-StringData @'
     RoleNotFound = Role '{0}' does not exist on database '{1}' on SQL server '{2}\\{3}'."
     LoginNotFound = Login '{0}' does not exist on SQL server '{1}\\{2}'."
     FailedLogin = Creating a login of type 'SqlLogin' requires LoginCredential
-
-    # AvailabilityGroupListener
-    AvailabilityGroupListenerErrorVerifyExist = Unexpected result when trying to verify existence of listener '{0}'.
-
-    # AlwaysOnService
-
-    UnexpectedAlwaysOnStatus = The status of property Server.IsHadrEnabled was neither $true or $false. Status is '{0}'.
-
-    # AlwaysOnAvailabilityGroup
-    CreateAvailabilityGroupReplicaFailed = Creating the Availability Group Replica '{0}' failed on the instance '{1}'.
-
-    DatabaseMirroringEndpointNotFound = No database mirroring endpoint was found on '{0}\{1}'.
-
-    # AlwaysOnAvailabilityGroupReplica
-    JoinAvailabilityGroupFailed = Failed to join the availability group replica '{0}'.
-    RemoveAvailabilityGroupReplicaFailed = Failed to remove the availability group replica '{0}'.
-    ReplicaNotFound = Unable to find the availability group replica '{0}' on the instance '{1}'.
 '@

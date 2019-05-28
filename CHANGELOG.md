@@ -4,6 +4,8 @@
 
 - Changes to SqlAG
   - Added en-US localization.
+- Changes to SqlAGReplica
+  - Added en-US localization.
 
 ## 12.5.0.0
 
