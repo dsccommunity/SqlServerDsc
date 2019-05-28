@@ -1,8 +1,5 @@
 $script:modulesFolderPath = Split-Path -Path $PSScriptRoot -Parent
 
-$script:localizationModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.LocalizationHelper'
-Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath 'DscResource.LocalizationHelper.psm1')
-
 <#
     .SYNOPSIS
         Retrieves the localized string data based on the machine's culture.
