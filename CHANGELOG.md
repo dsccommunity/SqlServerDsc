@@ -7,6 +7,8 @@
   - Removed the helper function `New-TerminatingError`, `New-WarningMessage`
     and `New-VerboseMessage` in favor of the the new
     [localization helper functions](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md#localization).
+  - Combine DscResource.LocalizationHelper and DscResource.Common into
+    SqlServerDsc.Common ([issue #1357](https://github.com/PowerShell/SqlServerDsc/issues/1357)).
 - Changes to SqlAG
   - Added en-US localization.
 - Changes to SqlAGReplica

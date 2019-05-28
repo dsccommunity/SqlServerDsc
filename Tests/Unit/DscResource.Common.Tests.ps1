@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Automated unit test for helper functions in module DscResource.Common.
+        Automated unit test for helper functions in module SqlServerDsc.Common.
 
     .NOTES
         To run this script locally, please make sure to first run the bootstrap
@@ -15,11 +15,11 @@ if (Test-SkipContinuousIntegrationTask -Type 'Unit')
     return
 }
 
-# Import the DscResource.Common module to test
+# Import the SqlServerDsc.Common module to test
 $script:resourceModulePath = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
-$script:modulesFolderPath = Join-Path -Path $script:resourceModulePath -ChildPath 'Modules\DscResource.Common'
+$script:modulesFolderPath = Join-Path -Path $script:resourceModulePath -ChildPath 'Modules\SqlServerDsc.Common'
 
-Import-Module -Name (Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common.psm1') -Force
+Import-Module -Name (Join-Path -Path $script:modulesFolderPath -ChildPath 'SqlServerDsc.Common.psm1') -Force
 
 # Loading mocked classes
 Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
@@ -28,8 +28,8 @@ Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs
 # Importing SQLPS stubs
 Import-Module -Name (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Force -Global
 
-InModuleScope 'DscResource.Common' {
-    Describe 'DscResource.Common\Test-DscParameterState' -Tag 'TestDscParameterState' {
+InModuleScope 'SqlServerDsc.Common' {
+    Describe 'SqlServerDsc.Common\Test-DscParameterState' -Tag 'TestDscParameterState' {
         Context -Name 'When passing values' -Fixture {
             It 'Should return true for two identical tables' {
                 $mockDesiredValues = @{ Example = 'test' }
@@ -332,7 +332,7 @@ InModuleScope 'DscResource.Common' {
         Assert-VerifiableMock
     }
 
-    Describe 'DscResource.Common\Get-RegistryPropertyValue' -Tag 'GetRegistryPropertyValue' {
+    Describe 'SqlServerDsc.Common\Get-RegistryPropertyValue' -Tag 'GetRegistryPropertyValue' {
         BeforeAll {
             $mockWrongRegistryPath = 'HKLM:\SOFTWARE\AnyPath'
             $mockCorrectRegistryPath = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS'
@@ -399,7 +399,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Format-Path' -Tag 'FormatPath' {
+    Describe 'SqlServerDsc.Common\Format-Path' -Tag 'FormatPath' {
         BeforeAll {
             $mockCorrectPath = 'C:\Correct\Path'
             $mockPathWithTrailingBackslash = 'C:\Correct\Path\'
@@ -437,7 +437,7 @@ InModuleScope 'DscResource.Common' {
     }
 
     # Tests only the parts of the code that does not already get tested thru the other tests.
-    Describe 'DscResource.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy' {
+    Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy' {
         BeforeAll {
             $mockRobocopyExecutableName = 'Robocopy.exe'
             $mockRobocopyExecutableVersionWithoutUnbufferedIO = '6.2.9200.00000'
@@ -693,7 +693,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Get-TemporaryFolder' -Tag 'GetTemporaryFolder' {
+    Describe 'SqlServerDsc.Common\Get-TemporaryFolder' -Tag 'GetTemporaryFolder' {
         BeforeAll {
             $mockExpectedTempPath = [IO.Path]::GetTempPath()
         }
@@ -705,7 +705,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstallationMediaCopy' {
+    Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstallationMediaCopy' {
         BeforeAll {
             $mockSourcePathUNC = '\\server\share'
             $mockSourcePathUNCWithLeaf = '\\server\share\leaf'
@@ -797,7 +797,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
+    Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
         BeforeAll {
             $mockSourcePathUNC = '\\server\share'
 
@@ -864,7 +864,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Disconnect-UncPath' -Tag 'DisconnectUncPath' {
+    Describe 'SqlServerDsc.Common\Disconnect-UncPath' -Tag 'DisconnectUncPath' {
         BeforeAll {
             $mockSourcePathUNC = '\\server\share'
 
@@ -886,7 +886,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Test-PendingRestart' -Tag 'TestPendingRestart' {
+    Describe 'SqlServerDsc.Common\Test-PendingRestart' -Tag 'TestPendingRestart' {
         Context 'When there is a pending reboot' {
             BeforeAll {
                 Mock -CommandName Get-RegistryPropertyValue -MockWith {
@@ -916,7 +916,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Start-SqlSetupProcess' -Tag 'StartSqlSetupProcess' {
+    Describe 'SqlServerDsc.Common\Start-SqlSetupProcess' -Tag 'StartSqlSetupProcess' {
         Context 'When starting a process successfully' {
             It 'Should return exit code 0' {
                 $startSqlSetupProcessParameters = @{
@@ -943,7 +943,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Restart-SqlService' -Tag 'RestartSqlService' {
+    Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
         Context 'Restart-SqlService standalone instance' {
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith {
@@ -1250,7 +1250,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
+    Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
         BeforeAll {
             $mockInstanceName = 'TEST'
 
@@ -1386,7 +1386,7 @@ InModuleScope 'DscResource.Common' {
         Assert-VerifiableMock
     }
 
-    Describe 'DscResource.Common\Invoke-Query' -Tag 'InvokeQuery' {
+    Describe 'SqlServerDsc.Common\Invoke-Query' -Tag 'InvokeQuery' {
         BeforeAll {
             $mockExpectedQuery = ''
 
@@ -1488,7 +1488,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Update-AvailabilityGroupReplica' -Tag 'UpdateAvailabilityGroupReplica' {
+    Describe 'SqlServerDsc.Common\Update-AvailabilityGroupReplica' -Tag 'UpdateAvailabilityGroupReplica' {
         Context 'When the Availability Group Replica is altered' {
             It 'Should silently alter the Availability Group Replica' {
                 $availabilityReplica = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
@@ -1506,7 +1506,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEffectivePermissions' {
+    Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEffectivePermissions' {
 
         $mockAllServerPermissionsPresent = @(
             'Connect SQL',
@@ -1619,7 +1619,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Import-SQLPSModule' -Tag 'ImportSQLPSModule' {
+    Describe 'SqlServerDsc.Common\Import-SQLPSModule' -Tag 'ImportSQLPSModule' {
         BeforeAll {
             <#
                 This is the path to the latest version of SQLPS, to test that only the
@@ -1861,7 +1861,7 @@ InModuleScope 'DscResource.Common' {
         Assert-VerifiableMock
     }
 
-    Describe 'DscResource.Common\Get-SqlInstanceMajorVersion' -Tag 'GetSqlInstanceMajorVersion' {
+    Describe 'SqlServerDsc.Common\Get-SqlInstanceMajorVersion' -Tag 'GetSqlInstanceMajorVersion' {
         BeforeAll {
             $mockSqlMajorVersion = 13
             $mockInstanceName = 'TEST'
@@ -1942,7 +1942,7 @@ InModuleScope 'DscResource.Common' {
         Assert-VerifiableMock
     }
 
-    Describe 'DscResource.Common\Get-PrimaryReplicaServerObject' -Tag 'GetPrimaryReplicaServerObject' {
+    Describe 'SqlServerDsc.Common\Get-PrimaryReplicaServerObject' -Tag 'GetPrimaryReplicaServerObject' {
         BeforeEach {
             $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
             $mockServerObject.DomainInstanceName = 'Server1'
@@ -2014,7 +2014,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Test-AvailabilityReplicaSeedingModeAutomatic' -Tag 'TestAvailabilityReplicaSeedingModeAutomatic' {
+    Describe 'SqlServerDsc.Common\Test-AvailabilityReplicaSeedingModeAutomatic' -Tag 'TestAvailabilityReplicaSeedingModeAutomatic' {
 
         BeforeEach {
             $mockSqlVersion = 13
@@ -2110,7 +2110,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Test-ImpersonatePermissions' -Tag 'TestImpersonatePermissions' {
+    Describe 'SqlServerDsc.Common\Test-ImpersonatePermissions' -Tag 'TestImpersonatePermissions' {
         BeforeAll {
             $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter = {
                 $Permissions -eq @('IMPERSONATE ANY LOGIN')
@@ -2195,7 +2195,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Connect-SQL' -Tag 'ConnectSql' {
+    Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
         BeforeAll {
             $mockNewObject_MicrosoftDatabaseEngine = {
                 <#
@@ -2400,7 +2400,7 @@ InModuleScope 'DscResource.Common' {
         Assert-VerifiableMock
     }
 
-    Describe 'DscResource.Common\Split-FullSQLInstanceName' {
+    Describe 'SqlServerDsc.Common\Split-FullSQLInstanceName' {
         Context 'When the "FullSQLInstanceName" parameter is not supplied' {
             It 'Should throw when the "FullSQLInstanceName" parameter is $null' {
                 { Split-FullSQLInstanceName -FullSQLInstanceName $null } | Should -Throw
@@ -2430,7 +2430,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Test-ClusterPermissions' {
+    Describe 'SqlServerDsc.Common\Test-ClusterPermissions' {
         BeforeAll {
             Mock -CommandName Test-LoginEffectivePermissions -MockWith {
                 $mockClusterServicePermissionsPresent
@@ -2519,7 +2519,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Restart-ReportingServicesService' -Tag 'RestartReportingServicesService' {
+    Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartReportingServicesService' {
         BeforeAll {
             $mockGetService = {
                 return @{
@@ -2640,7 +2640,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Test-ActiveNode' -Tag 'TestActiveNode' {
+    Describe 'SqlServerDsc.Common\Test-ActiveNode' -Tag 'TestActiveNode' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
 
@@ -2685,7 +2685,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
+    Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
         BeforeAll {
             $invokeScriptFileParameters = @{
                 ServerInstance = $env:COMPUTERNAME
@@ -2761,7 +2761,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Get-ServiceAccount' -Tag 'GetServiceAccount' {
+    Describe 'SqlServerDsc.Common\Get-ServiceAccount' -Tag 'GetServiceAccount' {
         BeforeAll {
             $mockLocalSystemAccountUserName = 'NT AUTHORITY\SYSTEM'
             $mockLocalSystemAccountCredential = New-Object System.Management.Automation.PSCredential $mockLocalSystemAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
@@ -2806,7 +2806,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Find-ExceptionByNumber'{
+    Describe 'SqlServerDsc.Common\Find-ExceptionByNumber'{
         BeforeAll {
             $mockInnerException = New-Object System.Exception "This is a mock inner excpetion object"
             $mockInnerException | Add-Member -Name 'Number' -Value 2 -MemberType NoteProperty
