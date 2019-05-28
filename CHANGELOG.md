@@ -13,6 +13,9 @@
   - Added en-US localization.
 - Changes to SqlAGReplica
   - Added en-US localization.
+  - Improved verbose message output when creating availability group replica,
+    removing a availability group replica, and joining the availability
+    group replica to the availability group.
 - Changes to SqlAlwaysOnService
   - Now outputs the correct verbose message when restarting the service.
 - Changes to SqlServerMemory

@@ -279,6 +279,10 @@ function Set-TargetResource
                 {
                     try
                     {
+                        Write-Verbose -Message (
+                            $script:localizedData.RemoveAvailabilityReplica -f $Name, $AvailabilityGroupName, $InstanceName
+                        )
+
                         Remove-SqlAvailabilityReplica -InputObject $availabilityGroupReplica -Confirm:$false -ErrorAction Stop
                     }
                     catch
@@ -453,6 +457,10 @@ function Set-TargetResource
                     # Create the Availability Group Replica
                     try
                     {
+                        Write-Verbose -Message (
+                            $script:localizedData.PrepareAvailabilityReplica -f $Name, $AvailabilityGroupName, $InstanceName
+                        )
+
                         $availabilityGroupReplica = New-SqlAvailabilityReplica @newAvailabilityGroupReplicaParams
                     }
                     catch
@@ -464,6 +472,10 @@ function Set-TargetResource
                     # Join the Availability Group Replica to the Availability Group
                     try
                     {
+                        Write-Verbose -Message (
+                            $script:localizedData.JoinAvailabilityGroup -f $Name, $AvailabilityGroupName, $InstanceName
+                        )
+
                         Join-SqlAvailabilityGroup -Name $AvailabilityGroupName -InputObject $serverObject | Out-Null
                     }
                     catch
