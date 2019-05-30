@@ -80,9 +80,8 @@ function Get-TargetResource
     }
     else
     {
-
         $errorMessage = $script:localizedData.ConnectServerFailed -f $ServerName, $InstanceName
-        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+        New-InvalidOperationException -Message $errorMessage
     }
 
     return $returnValue
@@ -223,7 +222,7 @@ function Set-TargetResource
     else
     {
         $errorMessage = $script:localizedData.ConnectServerFailed -f $ServerName, $InstanceName
-        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+        New-InvalidOperationException -Message $errorMessage
     }
 }
 

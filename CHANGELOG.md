@@ -26,6 +26,10 @@
 - Changes to SqlServerRole
   - Now outputs the correct verbose message when the members of a role is
     not in desired state.
+- Changes to SqlAgentOperator
+  - Fix minor issue that when unable to connect to an instance. Instead
+    of showing a message saying that connect failed another unrelated
+    error message could have been shown, because of an error in the code.
 
 ## 12.5.0.0
 
