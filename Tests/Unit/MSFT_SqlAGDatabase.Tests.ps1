@@ -463,7 +463,6 @@ REVERT'
                 Mock -CommandName Invoke-Query -Verifiable -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                 Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Full_$(Get-Date -Format 'yyyyMMddhhmmss').bak") } -Verifiable -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                 Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Log_$(Get-Date -Format 'yyyyMMddhhmmss').trn") } -Verifiable -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                Mock -CommandName New-TerminatingError { $ErrorType } -Verifiable
                 Mock -CommandName Remove-Item -Verifiable
             }
 
@@ -514,7 +513,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
@@ -542,7 +540,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
@@ -570,7 +567,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 0 -Exactly
@@ -598,7 +594,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 0 -Exactly
@@ -626,7 +621,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
@@ -678,7 +672,6 @@ REVERT'
                         Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                         Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                         Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                         Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                         Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                             Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
@@ -709,7 +702,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
@@ -746,7 +738,6 @@ REVERT'
                         Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                         Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                         Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                         Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                         Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                             Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
@@ -778,7 +769,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
@@ -810,7 +800,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
@@ -842,7 +831,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
@@ -874,7 +862,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
@@ -906,7 +893,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
@@ -934,7 +920,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
@@ -962,7 +947,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
@@ -990,7 +974,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
@@ -1018,7 +1001,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
@@ -1050,7 +1032,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 0 -Exactly
@@ -1078,7 +1059,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 0 -Exactly
@@ -1106,7 +1086,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 0 -Exactly
@@ -1139,7 +1118,6 @@ REVERT'
                     Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                    Assert-MockCalled -CommandName New-TerminatingError -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly

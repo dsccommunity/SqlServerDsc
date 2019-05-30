@@ -1042,8 +1042,6 @@ try
                         Mock -CommandName Get-Service -MockWith $mockEmptyHashtable -Verifiable
                         Mock -CommandName Test-IsFirewallRuleInDesiredState -Verifiable
                         Mock -CommandName New-NetFirewallRule -Verifiable
-
-                        Mock New-TerminatingError -MockWith { return $ErrorType }
                     }
 
                     It 'Should throw the correct error when Set-TargetResource verifies result with Test-TargetResource' {

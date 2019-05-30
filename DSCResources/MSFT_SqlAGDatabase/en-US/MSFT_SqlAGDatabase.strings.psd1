@@ -9,7 +9,5 @@ ConvertFrom-StringData @'
     DatabasesNotFound = The following databases were not found in the instance: {0}.
     ImpersonatePermissionsMissing = The login '{0}' is missing impersonate any login, control server, impersonate login, or control login permissions in the instances '{1}'.
     NotActiveNode = The node '{0}' is not actively hosting the instance '{1}'. Exiting the test.
-    ParameterNotOfType = The parameter '{0}' is not of the type '{1}'.
-    ParameterNullOrEmpty = The parameter '{0}' is NULL or empty.
     RemovingDatabasesToAvailabilityGroup = Removing the following databases from the '{0}' availability group: {1}.
 '@

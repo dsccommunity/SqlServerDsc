@@ -1,11 +1,8 @@
 $script:resourceModulePath = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
 $script:modulesFolderPath = Join-Path -Path $script:resourceModulePath -ChildPath 'Modules'
 
-$script:localizationModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.LocalizationHelper'
-Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath 'DscResource.LocalizationHelper.psm1')
-
-$script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
-Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
+$script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'SqlServerDsc.Common'
+Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'SqlServerDsc.Common.psm1')
 
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlAGReplica'
 <#
@@ -282,11 +279,15 @@ function Set-TargetResource
                 {
                     try
                     {
+                        Write-Verbose -Message (
+                            $script:localizedData.RemoveAvailabilityReplica -f $Name, $AvailabilityGroupName, $InstanceName
+                        )
+
                         Remove-SqlAvailabilityReplica -InputObject $availabilityGroupReplica -Confirm:$false -ErrorAction Stop
                     }
                     catch
                     {
-                        $errorMessage = $script:localizedData.RemoveAvailabilityGroupReplicaFailed -f $Name, $AvailabilityGroupName, $InstanceName
+                        $errorMessage = $script:localizedData.FailedRemoveAvailabilityGroupReplica -f $Name, $AvailabilityGroupName, $InstanceName
                         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                     }
                 }
@@ -456,6 +457,10 @@ function Set-TargetResource
                     # Create the Availability Group Replica
                     try
                     {
+                        Write-Verbose -Message (
+                            $script:localizedData.PrepareAvailabilityReplica -f $Name, $AvailabilityGroupName, $InstanceName
+                        )
+
                         $availabilityGroupReplica = New-SqlAvailabilityReplica @newAvailabilityGroupReplicaParams
                     }
                     catch
@@ -467,6 +472,10 @@ function Set-TargetResource
                     # Join the Availability Group Replica to the Availability Group
                     try
                     {
+                        Write-Verbose -Message (
+                            $script:localizedData.JoinAvailabilityGroup -f $Name, $AvailabilityGroupName, $InstanceName
+                        )
+
                         Join-SqlAvailabilityGroup -Name $AvailabilityGroupName -InputObject $serverObject | Out-Null
                     }
                     catch

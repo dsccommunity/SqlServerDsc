@@ -10,4 +10,7 @@ ConvertFrom-StringData @'
     NotActiveNode = The node '{0}' is not actively hosting the instance '{1}'. Will always return success for this resource on this node, until this node is actively hosting the instance.
     TestingConfiguration = Determines if the configuration for the availability group '{0}' on the instance '{1}' is in desired state.
     ParameterNotInDesiredState = Expected the parameter '{0}' to have the value '{1}', but the value is '{2}'.
+    RemoveAvailabilityReplica = Removing the availability group replica '{0}' from the availability group '{1}' on the instance '{2}'.
+    PrepareAvailabilityReplica = Preparing the availability group replica '{0}' to join the availability group '{1}' on the instance '{2}'.
+    JoinAvailabilityGroup = Joining the availability group replica '{0}' to the availability group '{1}' on the instance '{2}'.
 '@

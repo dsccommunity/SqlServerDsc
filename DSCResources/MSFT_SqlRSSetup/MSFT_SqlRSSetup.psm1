@@ -1,11 +1,8 @@
 $script:resourceModulePath = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
 $script:modulesFolderPath = Join-Path -Path $script:resourceModulePath -ChildPath 'Modules'
 
-$script:localizationModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.LocalizationHelper'
-Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath 'DscResource.LocalizationHelper.psm1')
-
-$script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
-Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
+$script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'SqlServerDsc.Common'
+Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'SqlServerDsc.Common.psm1')
 
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlRSSetup'
 
@@ -481,13 +478,22 @@ function Set-TargetResource
 
     Write-Verbose -Message ($script:localizedData.SetupExitMessage -f $processExitCode)
 
+    if ($Action -eq 'Install')
+    {
+        $localizedAction = $script:localizedData.Install
+    }
+    else
+    {
+        $localizedAction = $script:localizedData.Uninstall
+    }
+
     if ($processExitCode -eq 0)
     {
-        Write-Verbose -Message ($script:localizedData.SetupSuccessful -f $script:localizedData.$Action)
+        Write-Verbose -Message ($script:localizedData.SetupSuccessful -f $localizedAction)
     }
     elseif ($processExitCode -eq 3010)
     {
-        Write-Warning -Message ($script:localizedData.SetupSuccessfulRestartRequired -f $script:localizedData.$Action)
+        Write-Warning -Message ($script:localizedData.SetupSuccessfulRestartRequired -f $localizedAction)
 
         $global:DSCMachineStatus = 1
     }
