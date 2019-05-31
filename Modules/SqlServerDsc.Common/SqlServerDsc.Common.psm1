@@ -1,10 +1,319 @@
 $script:modulesFolderPath = Split-Path -Path $PSScriptRoot -Parent
 
-$script:localizationModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.LocalizationHelper'
-Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath 'DscResource.LocalizationHelper.psm1')
+<#
+    .SYNOPSIS
+        Retrieves the localized string data based on the machine's culture.
+        Falls back to en-US strings if the machine's culture is not supported.
 
+    .PARAMETER ResourceName
+        The name of the resource as it appears before '.strings.psd1' of the localized string file.
+        For example:
+            For WindowsOptionalFeature: MSFT_WindowsOptionalFeature
+            For Service: MSFT_ServiceResource
+            For Registry: MSFT_RegistryResource
+            For Helper: SqlServerDscHelper
 
-$script:localizedData = Get-LocalizedData -ResourceName 'DscResource.Common' -ScriptRoot $PSScriptRoot
+    .PARAMETER ScriptRoot
+        Optional. The root path where to expect to find the culture folder. This is only needed
+        for localization in helper modules. This should not normally be used for resources.
+
+    .NOTES
+        To be able to use localization in the helper function, this function must
+        be first in the file, before Get-LocalizedData is used by itself to load
+        localized data for this helper module (see directly after this function).
+#>
+function Get-LocalizedData
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $ResourceName,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $ScriptRoot
+    )
+
+    if (-not $ScriptRoot)
+    {
+        $dscResourcesFolder = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -ChildPath 'DSCResources'
+        $resourceDirectory = Join-Path -Path $dscResourcesFolder -ChildPath $ResourceName
+    }
+    else
+    {
+        $resourceDirectory = $ScriptRoot
+    }
+
+    $localizedStringFileLocation = Join-Path -Path $resourceDirectory -ChildPath $PSUICulture
+
+    if (-not (Test-Path -Path $localizedStringFileLocation))
+    {
+        # Fallback to en-US
+        $localizedStringFileLocation = Join-Path -Path $resourceDirectory -ChildPath 'en-US'
+    }
+
+    Import-LocalizedData `
+        -BindingVariable 'localizedData' `
+        -FileName "$ResourceName.strings.psd1" `
+        -BaseDirectory $localizedStringFileLocation
+
+    return $localizedData
+}
+
+<#
+    .SYNOPSIS
+        Creates and throws an invalid argument exception.
+
+    .PARAMETER Message
+        The message explaining why this error is being thrown.
+
+    .PARAMETER ArgumentName
+        The name of the invalid argument that is causing this error to be thrown.
+#>
+function New-InvalidArgumentException
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $Message,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $ArgumentName
+    )
+
+    $argumentException = New-Object -TypeName 'ArgumentException' `
+        -ArgumentList @($Message, $ArgumentName)
+
+    $newObjectParameters = @{
+        TypeName     = 'System.Management.Automation.ErrorRecord'
+        ArgumentList = @($argumentException, $ArgumentName, 'InvalidArgument', $null)
+    }
+
+    $errorRecord = New-Object @newObjectParameters
+
+    throw $errorRecord
+}
+
+<#
+    .SYNOPSIS
+        Creates and throws an invalid operation exception.
+
+    .PARAMETER Message
+        The message explaining why this error is being thrown.
+
+    .PARAMETER ErrorRecord
+        The error record containing the exception that is causing this terminating error.
+#>
+function New-InvalidOperationException
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $Message,
+
+        [Parameter()]
+        [ValidateNotNull()]
+        [System.Management.Automation.ErrorRecord]
+        $ErrorRecord
+    )
+
+    if ($null -eq $ErrorRecord)
+    {
+        $invalidOperationException = New-Object -TypeName 'InvalidOperationException' `
+            -ArgumentList @($Message)
+    }
+    else
+    {
+        $invalidOperationException = New-Object -TypeName 'InvalidOperationException' `
+            -ArgumentList @($Message, $ErrorRecord.Exception)
+    }
+
+    $newObjectParameters = @{
+        TypeName     = 'System.Management.Automation.ErrorRecord'
+        ArgumentList = @(
+            $invalidOperationException.ToString(),
+            'MachineStateIncorrect',
+            'InvalidOperation',
+            $null
+        )
+    }
+
+    $errorRecordToThrow = New-Object @newObjectParameters
+
+    throw $errorRecordToThrow
+}
+
+<#
+    .SYNOPSIS
+        Creates and throws an object not found exception.
+
+    .PARAMETER Message
+        The message explaining why this error is being thrown.
+
+    .PARAMETER ErrorRecord
+        The error record containing the exception that is causing this terminating error.
+#>
+function New-ObjectNotFoundException
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $Message,
+
+        [Parameter()]
+        [ValidateNotNull()]
+        [System.Management.Automation.ErrorRecord]
+        $ErrorRecord
+    )
+
+    if ($null -eq $ErrorRecord)
+    {
+        $exception = New-Object -TypeName 'System.Exception' `
+            -ArgumentList @($Message)
+    }
+    else
+    {
+        $exception = New-Object -TypeName 'System.Exception' `
+            -ArgumentList @($Message, $ErrorRecord.Exception)
+    }
+
+    $newObjectParameters = @{
+        TypeName     = 'System.Management.Automation.ErrorRecord'
+        ArgumentList = @(
+            $exception.ToString(),
+            'MachineStateIncorrect',
+            'ObjectNotFound',
+            $null
+        )
+    }
+
+    $errorRecordToThrow = New-Object @newObjectParameters
+
+    throw $errorRecordToThrow
+}
+
+<#
+    .SYNOPSIS
+        Creates and throws an invalid result exception.
+
+    .PARAMETER Message
+        The message explaining why this error is being thrown.
+
+    .PARAMETER ErrorRecord
+        The error record containing the exception that is causing this terminating error.
+#>
+function New-InvalidResultException
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $Message,
+
+        [Parameter()]
+        [ValidateNotNull()]
+        [System.Management.Automation.ErrorRecord]
+        $ErrorRecord
+    )
+
+    if ($null -eq $ErrorRecord)
+    {
+        $exception = New-Object -TypeName 'System.Exception' `
+            -ArgumentList @($Message)
+    }
+    else
+    {
+        $exception = New-Object -TypeName 'System.Exception' `
+            -ArgumentList @($Message, $ErrorRecord.Exception)
+    }
+
+    $newObjectParameters = @{
+        TypeName     = 'System.Management.Automation.ErrorRecord'
+        ArgumentList = @(
+            $exception.ToString(),
+            'MachineStateIncorrect',
+            'InvalidResult',
+            $null
+        )
+    }
+
+    $errorRecordToThrow = New-Object @newObjectParameters
+
+    throw $errorRecordToThrow
+}
+
+<#
+    .SYNOPSIS
+        Creates and throws an not implemented exception.
+
+    .PARAMETER Message
+        The message explaining why this error is being thrown.
+
+    .PARAMETER ErrorRecord
+        The error record containing the exception that is causing this terminating error.
+        '
+    .NOTES
+        The error categories can be found here:
+        https://docs.microsoft.com/en-us/dotnet/api/system.management.automation.errorcategory
+#>
+function New-NotImplementedException
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $Message,
+
+        [Parameter()]
+        [ValidateNotNull()]
+        [System.Management.Automation.ErrorRecord]
+        $ErrorRecord
+    )
+
+    if ($null -eq $ErrorRecord)
+    {
+        $invalidOperationException = New-Object -TypeName 'NotImplementedException' `
+            -ArgumentList @($Message)
+    }
+    else
+    {
+        $invalidOperationException = New-Object -TypeName 'NotImplementedException' `
+            -ArgumentList @($Message, $ErrorRecord.Exception)
+    }
+
+    $newObjectParameters = @{
+        TypeName     = 'System.Management.Automation.ErrorRecord'
+        ArgumentList = @(
+            $invalidOperationException.ToString(),
+            'MachineStateIncorrect',
+            'NotImplemented',
+            $null
+        )
+    }
+
+    $errorRecordToThrow = New-Object @newObjectParameters
+
+    throw $errorRecordToThrow
+}
 
 <#
     .SYNOPSIS
@@ -445,7 +754,7 @@ function Invoke-InstallationMediaCopy
 
     $mediaDestinationPath = Join-Path -Path (Get-TemporaryFolder) -ChildPath $mediaDestinationFolder
 
-    Write-Verbose -Message ($script:localizedData.RobocopyIsCopying -f $SourcePath, $mediaDestinationPath)
+    Write-Verbose -Message ($script:localizedData.RobocopyIsCopying -f $SourcePath, $mediaDestinationPath) -Verbose
     Copy-ItemWithRobocopy -Path $SourcePath -DestinationPath $mediaDestinationPath
 
     Disconnect-UncPath -RemotePath $SourcePath
@@ -824,188 +1133,6 @@ function Get-SqlInstanceMajorVersion
     [System.UInt16] $sqlMajorVersionNumber = $sqlVersion.Split('.')[0]
 
     return $sqlMajorVersionNumber
-}
-
-<#
-    .SYNOPSIS
-        Returns a localized error message.
-
-        This helper function is obsolete, should use new helper functions.
-        https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#localization
-        https://github.com/PowerShell/SqlServerDsc/blob/dev/DSCResources/CommonResourceHelper.psm1
-
-        Strings in this function has not been localized since this helper function should be removed
-        when all resources has moved over to the new localization,
-
-    .PARAMETER ErrorType
-        String containing the key of the localized error message.
-
-    .PARAMETER FormatArgs
-        Collection of strings to replace format objects in the error message.
-
-    .PARAMETER ErrorCategory
-        The category to use for the error message. Default value is 'OperationStopped'.
-        Valid values are a value from the enumeration System.Management.Automation.ErrorCategory.
-
-    .PARAMETER TargetObject
-        The object that was being operated on when the error occurred.
-
-    .PARAMETER InnerException
-        Exception object that was thrown when the error occurred, which will be added to the final error message.
-#>
-function New-TerminatingError
-{
-    [CmdletBinding()]
-    [OutputType([System.Management.Automation.ErrorRecord])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $ErrorType,
-
-        [Parameter()]
-        [System.String[]]
-        $FormatArgs,
-
-        [Parameter()]
-        [System.Management.Automation.ErrorCategory]
-        $ErrorCategory = [System.Management.Automation.ErrorCategory]::OperationStopped,
-
-        [Parameter()]
-        [System.Object]
-        $TargetObject = $null,
-
-        [Parameter()]
-        [System.Exception]
-        $InnerException = $null
-    )
-
-    $errorMessage = $script:localizedData.$ErrorType
-
-    if (!$errorMessage)
-    {
-        $errorMessage = ($script:localizedData.NoKeyFound -f $ErrorType)
-
-        if (!$errorMessage)
-        {
-            $errorMessage = ("No Localization key found for ErrorType: '{0}'." -f $ErrorType)
-        }
-    }
-
-    $errorMessage = ($errorMessage -f $FormatArgs)
-
-    if ( $InnerException )
-    {
-        $errorMessage += " InnerException: $($InnerException.Message)"
-    }
-
-    $callStack = Get-PSCallStack
-
-    # Get Name of calling script
-    if ($callStack[1] -and $callStack[1].ScriptName)
-    {
-        $scriptPath = $callStack[1].ScriptName
-
-        $callingScriptName = $scriptPath.Split('\')[-1].Split('.')[0]
-
-        $errorId = "$callingScriptName.$ErrorType"
-    }
-    else
-    {
-        $errorId = $ErrorType
-    }
-
-    Write-Verbose -Message "$($script:localizedData.$ErrorType -f $FormatArgs) | ErrorType: $errorId"
-
-    $exception = New-Object -TypeName System.Exception -ArgumentList $errorMessage, $InnerException
-    $errorRecord = New-Object -TypeName System.Management.Automation.ErrorRecord -ArgumentList $exception, $errorId, $ErrorCategory, $TargetObject
-
-    return $errorRecord
-}
-
-<#
-    .SYNOPSIS
-        Displays a localized warning message.
-
-        This helper function is obsolete, should use Write-Warning together with individual resource
-        localization strings.
-        https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#localization
-
-        Strings in this function has not been localized since this helper function should be removed
-        when all resources has moved over to the new localization,
-
-    .PARAMETER WarningType
-        String containing the key of the localized warning message.
-
-    .PARAMETER FormatArgs
-        Collection of strings to replace format objects in warning message.
-#>
-function New-WarningMessage
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $WarningType,
-
-        [Parameter()]
-        [System.String[]]
-        $FormatArgs
-    )
-
-    ## Attempt to get the string from the localized data
-    $warningMessage = $script:localizedData.$WarningType
-
-    ## Ensure there is a message present in the localization file
-    if (!$warningMessage)
-    {
-        $errorParams = @{
-            ErrorType     = 'NoKeyFound'
-            FormatArgs    = $WarningType
-            ErrorCategory = 'InvalidArgument'
-            TargetObject  = 'New-WarningMessage'
-        }
-
-        ## Raise an error indicating the localization data is not present
-        throw New-TerminatingError @errorParams
-    }
-
-    ## Apply formatting
-    $warningMessage = $warningMessage -f $FormatArgs
-
-    ## Write the message as a warning
-    Write-Warning -Message $warningMessage
-}
-
-<#
-    .SYNOPSIS
-    Displays a standardized verbose message.
-
-    This helper function is obsolete, should use Write-Verbose together with individual resource
-    localization strings.
-    https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#localization
-
-    Strings in this function has not been localized since this helper function should be removed
-    when all resources has moved over to the new localization,
-
-    .PARAMETER Message
-    String containing the key of the localized warning message.
-#>
-function New-VerboseMessage
-{
-    [CmdletBinding()]
-    [Alias()]
-    [OutputType([System.String])]
-    Param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Message
-    )
-    Write-Verbose -Message ((Get-Date -format yyyy-MM-dd_HH-mm-ss) + ": $Message") -Verbose
 }
 
 <#
@@ -1768,12 +1895,12 @@ function Test-ImpersonatePermissions
     $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
     if ($impersonatePermissionsPresent)
     {
-        New-VerboseMessage -Message ( 'The login "{0}" has impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
+        Write-Verbose -Message ( 'The login "{0}" has impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName ) -Verbose
         return $impersonatePermissionsPresent
     }
     else
     {
-        New-VerboseMessage -Message ( 'The login "{0}" does not have impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
+        Write-Verbose -Message ( 'The login "{0}" does not have impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName ) -Verbose
     }
 
     # Check for sysadmin / control server permission which allows impersonation
@@ -1786,12 +1913,12 @@ function Test-ImpersonatePermissions
     $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
     if ($impersonatePermissionsPresent)
     {
-        New-VerboseMessage -Message ( 'The login "{0}" has control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
+        Write-Verbose -Message ( 'The login "{0}" has control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName ) -Verbose
         return $impersonatePermissionsPresent
     }
     else
     {
-        New-VerboseMessage -Message ( 'The login "{0}" does not have control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
+        Write-Verbose -Message ( 'The login "{0}" does not have control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName ) -Verbose
     }
 
     if (-not [System.String]::IsNullOrEmpty($SecurableName))
@@ -1809,12 +1936,12 @@ function Test-ImpersonatePermissions
         $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
         if ($impersonatePermissionsPresent)
         {
-            New-VerboseMessage -Message ( 'The login "{0}" has impersonate permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName )
+            Write-Verbose -Message ( 'The login "{0}" has impersonate permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName ) -Verbose
             return $impersonatePermissionsPresent
         }
         else
         {
-            New-VerboseMessage -Message ( 'The login "{0}" does not have impersonate permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName )
+            Write-Verbose -Message ( 'The login "{0}" does not have impersonate permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName ) -Verbose
         }
 
         # Check for login-specific control permissions
@@ -1830,16 +1957,16 @@ function Test-ImpersonatePermissions
         $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
         if ($impersonatePermissionsPresent)
         {
-            New-VerboseMessage -Message ( 'The login "{0}" has control permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName )
+            Write-Verbose -Message ( 'The login "{0}" has control permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName ) -Verbose
             return $impersonatePermissionsPresent
         }
         else
         {
-            New-VerboseMessage -Message ( 'The login "{0}" does not have control permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName )
+            Write-Verbose -Message ( 'The login "{0}" does not have control permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName ) -Verbose
         }
     }
 
-    New-VerboseMessage -Message ( 'The login "{0}" does not have any impersonate permissions required on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName )
+    Write-Verbose -Message ( 'The login "{0}" does not have any impersonate permissions required on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName ) -Verbose
     return $impersonatePermissionsPresent
 }
 
@@ -2188,6 +2315,8 @@ function Find-ExceptionByNumber
     return $errorFound
 }
 
+$script:localizedData = Get-LocalizedData -ResourceName 'SqlServerDsc.Common' -ScriptRoot $PSScriptRoot
+
 Export-ModuleMember -Function @(
     'Test-DscParameterState'
     'Get-RegistryPropertyValue'
@@ -2202,9 +2331,6 @@ Export-ModuleMember -Function @(
     'Connect-SQL'
     'Connect-SQLAnalysis'
     'Get-SqlInstanceMajorVersion'
-    'New-TerminatingError'
-    'New-WarningMessage'
-    'New-VerboseMessage'
     'Import-SQLPSModule'
     'Restart-SqlService'
     'Restart-ReportingServicesService'
@@ -2220,4 +2346,10 @@ Export-ModuleMember -Function @(
     'Invoke-SqlScript'
     'Get-ServiceAccount'
     'Find-ExceptionByNumber'
+    'New-InvalidArgumentException'
+    'New-InvalidOperationException'
+    'New-ObjectNotFoundException'
+    'New-InvalidResultException'
+    'New-NotImplementedException'
+    'Get-LocalizedData'
 )

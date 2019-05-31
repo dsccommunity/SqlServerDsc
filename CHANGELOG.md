@@ -2,6 +2,35 @@
 
 ## Unreleased
 
+- Changes to SqlServerDsc
+  - Opt-in to the common test 'Common Test - Validation Localization'.
+  - Opt-in to the common test 'Common Test - Flagged Script Analyzer Rules'
+    ([issue #1101](https://github.com/PowerShell/SqlServerDsc/issues/1101)).
+  - Removed the helper function `New-TerminatingError`, `New-WarningMessage`
+    and `New-VerboseMessage` in favor of the the new
+    [localization helper functions](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md#localization).
+  - Combine DscResource.LocalizationHelper and DscResource.Common into
+    SqlServerDsc.Common ([issue #1357](https://github.com/PowerShell/SqlServerDsc/issues/1357)).
+- Changes to SqlAG
+  - Added en-US localization.
+- Changes to SqlAGReplica
+  - Added en-US localization.
+  - Improved verbose message output when creating availability group replica,
+    removing a availability group replica, and joining the availability
+    group replica to the availability group.
+- Changes to SqlAlwaysOnService
+  - Now outputs the correct verbose message when restarting the service.
+- Changes to SqlServerMemory
+  - Now outputs the correct verbose messages when calculating the dynamic
+    memory, and when limiting maximum memory.
+- Changes to SqlServerRole
+  - Now outputs the correct verbose message when the members of a role is
+    not in desired state.
+- Changes to SqlAgentOperator
+  - Fix minor issue that when unable to connect to an instance. Instead
+    of showing a message saying that connect failed another unrelated
+    error message could have been shown, because of an error in the code.
+
 ## 12.5.0.0
 
 - Changes to SqlServerSecureConnection
