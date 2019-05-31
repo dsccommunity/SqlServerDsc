@@ -184,7 +184,7 @@ function Get-TargetResource
 
             Write-Verbose -Message ($script:localizedData.EvaluateDataQualityClientFeature -f $dataQualityClientRegistryPath)
 
-            $isDQCInstalled = (Get-ItemProperty -Path $dataQualityClientRegistryPath).SQL_DQ_CLIENT_Full
+            $isDQCInstalled = (Get-ItemProperty -Path $dataQualityClientRegistryPath -ErrorAction SilentlyContinue).SQL_DQ_CLIENT_Full
             if ($isDQCInstalled -eq 1)
             {
                 Write-Verbose -Message $script:localizedData.DataQualityClientFeatureFound
