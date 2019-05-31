@@ -30,6 +30,14 @@
   - Fix minor issue that when unable to connect to an instance. Instead
     of showing a message saying that connect failed another unrelated
     error message could have been shown, because of an error in the code.
+- Changes to SqlSetup
+  - Add an Action type of 'Upgrade'. This will ask setup to do a version
+    upgrade where possible ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
+  - Fix an error when testing for DQS installation ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
+- Changes to SqlWindowsFirewall
+  - Where a version upgrade has changed paths for a database engine, the
+    existing firewall rule for that instance will be updated rather than
+    another one created ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
 
 ## 12.5.0.0
 
