@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Changes to SqlServerDsc
+  - Added SqlAgentAlert resource.
   - Opt-in to the common test 'Common Test - Validation Localization'.
   - Opt-in to the common test 'Common Test - Flagged Script Analyzer Rules'
     ([issue #1101](https://github.com/PowerShell/SqlServerDsc/issues/1101)).
