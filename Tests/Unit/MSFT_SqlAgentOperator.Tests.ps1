@@ -278,7 +278,7 @@ try
                     $result | Should -Be $true
                 }
 
-                It 'Should return the state as true when desired sql asgent operator exists and has the correct email' {
+                It 'Should return the state as true when desired sql agent operator exists and has the correct email' {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         Name            = 'Nancy'
