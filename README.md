@@ -319,7 +319,7 @@ All issues are not listed here, see [here for all open issues](https://github.co
 ### SqlAgentAlert
 
 This resource is used to add/remove SQL Agent Alerts. You can also
-update the severity.
+update the severity or message id.
 
 #### Requirements
 
@@ -335,6 +335,7 @@ update the severity.
   configured. Default is $env:COMPUTERNAME.
 * **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
 * **`[String]` Severity** _(Write)_: The severity of the SQL Agent Alert.
+* **`[String]` MessageId** _(Write)_: The message id of the SQL Agent Alert.
 
 #### Examples
 

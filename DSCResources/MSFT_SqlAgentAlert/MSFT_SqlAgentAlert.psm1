@@ -18,7 +18,6 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlAgentAlert'
 
     .PARAMETER InstanceName
     The name of the SQL instance to be configured.
-
 #>
 function Get-TargetResource
 {
@@ -49,6 +48,7 @@ function Get-TargetResource
         ServerName   = $ServerName
         InstanceName = $InstanceName
         Severity     = $null
+        MessageId     = $null
     }
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
@@ -69,6 +69,7 @@ function Get-TargetResource
             $returnValue['Ensure'] = 'Present'
             $returnValue['Name'] = $sqlAgentObject.Name
             $returnValue['Severity'] = $sqlAgentObject.Severity
+            $returnValue['MessageId'] = $sqlAgentObject.MessageId
         }
         else
         {
@@ -105,6 +106,9 @@ function Get-TargetResource
 
     .PARAMETER Severity
     The severity of the SQL Agent Alert.
+
+    .PARAMETER MessageId
+    The messageid of the SQL Agent Alert.
 #>
 function Set-TargetResource
 {
@@ -133,7 +137,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $Severity
+        $Severity,
+
+        [Parameter()]
+        [System.String]
+        $MessageId
     )
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
@@ -147,6 +155,12 @@ function Set-TargetResource
                 $sqlAlertObject = $sqlServerObject.JobServer.Alerts | Where-Object {$_.Name -eq $Name}
                 if ($sqlAlertObject)
                 {
+                    if($PSBoundParameters.ContainsKey('Severity') -and $PSBoundParameters.ContainsKey('MessageId'))
+                    {
+                        $errorMessage = $script:localizedData.MultipleParameterError -f $Name
+                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                    }
+
                     if ($PSBoundParameters.ContainsKey('Severity'))
                     {
                         try
@@ -155,15 +169,36 @@ function Set-TargetResource
                                 $script:localizedData.UpdateSeverity `
                                     -f $Severity, $Name
                             )
+                            $sqlAlertObject.MessageId = 0
                             $sqlAlertObject.Severity = $Severity
                             $sqlAlertObject.Alter()
                         }
                         catch
                         {
-                            $errorMessage = $script:localizedData.UpdateAlertSetError -f $ServerName, $InstanceName, $Name, $Severity
+                            $errorMessage = $script:localizedData.UpdateAlertSeverityError -f $ServerName, $InstanceName, $Name, $Severity
                             New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                         }
                     }
+
+                    if ($PSBoundParameters.ContainsKey('MessageId'))
+                    {
+                        try
+                        {
+                            Write-Verbose -Message (
+                                $script:localizedData.UpdateMessageId `
+                                    -f $MessageId, $Name
+                            )
+                            $sqlAlertObject.Severity = 0
+                            $sqlAlertObject.MessageId = $MessageId
+                            $sqlAlertObject.Alter()
+                        }
+                        catch
+                        {
+                            $errorMessage = $script:localizedData.UpdateAlertMessageIdError -f $ServerName, $InstanceName, $Name, $MessageId
+                            New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                        }
+                    }
+
                 }
                 else
                 {
@@ -184,6 +219,14 @@ function Set-TargetResource
                                         -f $Severity, $Name
                                 )
                                 $sqlAlertObjectToCreate.Severity = $Severity
+                            }
+                            if ($PSBoundParameters.ContainsKey('MessageId'))
+                            {
+                                Write-Verbose -Message (
+                                    $script:localizedData.UpdateMessageId `
+                                        -f $MessageId, $Name
+                                )
+                                $sqlAlertObjectToCreate.MessageId = $MessageId
                             }
                             $sqlAlertObjectToCreate.Create()
                         }
@@ -243,6 +286,9 @@ function Set-TargetResource
 
     .PARAMETER Severity
     The severity of the SQL Agent Alert.
+
+    .PARAMETER MessageId
+    The messageid of the SQL Agent Alert.
 #>
 
 function Test-TargetResource
@@ -272,7 +318,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $Severity
+        $Severity,
+
+        [Parameter()]
+        [System.String]
+        $MessageId
     )
 
     $getTargetResourceParameters = @{
@@ -297,6 +347,7 @@ function Test-TargetResource
             -ValuesToCheck @(
             'Name'
             'Severity'
+            'MessageId'
         )
     }
     else
