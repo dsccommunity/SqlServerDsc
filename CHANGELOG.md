@@ -30,6 +30,7 @@
   - Fix minor issue that when unable to connect to an instance. Instead
     of showing a message saying that connect failed another unrelated
     error message could have been shown, because of an error in the code.
+  - Fix typo in test it block.
 
 ## 12.5.0.0
 
