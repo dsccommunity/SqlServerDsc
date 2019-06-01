@@ -44,7 +44,7 @@ function Get-TargetResource
     param
     (
         [Parameter()]
-        [ValidateSet('Install', 'Upgrade', 'InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
+        [ValidateSet('Install','Upgrade','InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
         [System.String]
         $Action = 'Install',
 
@@ -773,7 +773,7 @@ function Set-TargetResource
     param
     (
         [Parameter()]
-        [ValidateSet('Install', 'Upgrade', 'InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
+        [ValidateSet('Install','Upgrade','InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
         [System.String]
         $Action = 'Install',
 
@@ -1313,7 +1313,7 @@ function Set-TargetResource
         'ErrorReporting'
     )
 
-    if ($Action -in @('Install', 'Upgrade', 'InstallFailoverCluster','PrepareFailoverCluster','CompleteFailoverCluster'))
+    if ($Action -in @('Install','Upgrade','InstallFailoverCluster','PrepareFailoverCluster','CompleteFailoverCluster'))
     {
         $argumentVars += @(
             'Features',
@@ -1346,7 +1346,7 @@ function Set-TargetResource
         }
 
         # Should not be passed when PrepareFailoverCluster is specified
-        if ($Action -in @('Install', 'Upgrade', 'InstallFailoverCluster','CompleteFailoverCluster'))
+        if ($Action -in @('Install','Upgrade','InstallFailoverCluster','CompleteFailoverCluster'))
         {
             if ($null -ne $PsDscContext.RunAsUser)
             {
@@ -1405,7 +1405,7 @@ function Set-TargetResource
             $setupArguments += @{ SqlTempdbLogFileGrowth = $SqlTempdbLogFileGrowth }
         }
 
-        if ($Action -in @('Install', 'Upgrade'))
+        if ($Action -in @('Install','Upgrade'))
         {
             if ($PSBoundParameters.ContainsKey('AgtSvcStartupType'))
             {
@@ -1465,7 +1465,7 @@ function Set-TargetResource
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $ASSvcAccount -ServiceType 'AS')
         }
 
-        if ($Action -in ('Install', 'Upgrade', 'InstallFailoverCluster','CompleteFailoverCluster'))
+        if ($Action -in ('Install','Upgrade','InstallFailoverCluster','CompleteFailoverCluster'))
         {
             if ($null -ne $PsDscContext.RunAsUser)
             {

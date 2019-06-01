@@ -1083,7 +1083,7 @@ try
 
                         Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 8 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-                        Assert-MockCalled -CommandName Get-NetFirewallRule -Exactly -Times 14 -Scope It
+                        Assert-MockCalled -CommandName Get-NetFirewallRule -Exactly -Times 15 -Scope It
                         Assert-MockCalled -CommandName Get-NetFirewallApplicationFilter -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-NetFirewallServiceFilter -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-NetFirewallPortFilter -Exactly -Times 0 -Scope It
@@ -1157,7 +1157,7 @@ try
 
                         Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 8 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-                        Assert-MockCalled -CommandName Get-NetFirewallRule -Exactly -Times 14 -Scope It
+                        Assert-MockCalled -CommandName Get-NetFirewallRule -Exactly -Times 15 -Scope It
                         Assert-MockCalled -CommandName Get-NetFirewallApplicationFilter -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-NetFirewallServiceFilter -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-NetFirewallPortFilter -Exactly -Times 0 -Scope It
