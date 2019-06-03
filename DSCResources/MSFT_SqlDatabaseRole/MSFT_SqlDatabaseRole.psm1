@@ -31,9 +31,6 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlDatabaseRole'
 
     .PARAMETER MembersToExclude
         Specifies members the database role should exclude.
-
-    .PARAMETER Ensure
-        Specifies the desired state of the role.
 #>
 function Get-TargetResource
 {
@@ -82,7 +79,7 @@ function Get-TargetResource
     if ($sqlServerObject)
     {
         $membersInDesiredState = $true
-        $roleStatus = 'Present'
+        $roleStatus = 'Absent'
 
         # Check if database exists.
         if (-not ($sqlDatabaseObject = $sqlServerObject.Databases[$Database]))
@@ -149,10 +146,8 @@ function Get-TargetResource
                     }
                 }
             }
-        }
-        else
-        {
-            $roleStatus = 'Absent'
+
+            $roleStatus = 'Present'
         }
     }
 
@@ -587,12 +582,6 @@ function Remove-SqlDscDatabaseRoleMember
     )
 
     $databaseName = $SqlDatabaseObject.Name
-
-    if (-not ($SqlDatabaseObject.Roles[$Member] -or $SqlDatabaseObject.Users[$Member]))
-    {
-        $errorMessage = $script:localizedData.DatabaseRoleOrUserNotFound -f $Member, $databaseName
-        New-ObjectNotFoundException -Message $errorMessage
-    }
 
     try
     {
