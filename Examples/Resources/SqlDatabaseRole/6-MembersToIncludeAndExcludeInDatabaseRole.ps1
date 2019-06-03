@@ -10,7 +10,8 @@
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SqlAdministratorCredential
