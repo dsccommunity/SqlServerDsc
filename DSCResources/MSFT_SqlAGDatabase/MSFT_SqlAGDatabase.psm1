@@ -60,8 +60,8 @@ function Get-TargetResource
     # Create an object that reflects the current configuration
     $currentConfiguration = @{
         DatabaseName          = @()
-        ServerName             = $ServerName
-        InstanceName       = $InstanceName
+        ServerName            = $ServerName
+        InstanceName          = $InstanceName
         AvailabilityGroupName = ''
         BackupPath            = ''
         Ensure                = ''
@@ -84,7 +84,7 @@ function Get-TargetResource
         $currentConfiguration.AvailabilityGroupName = $AvailabilityGroupName
 
         # Get the databases in the availability group
-        $currentConfiguration.DatabaseName = $availabilityGroup.AvailabilityDatabases | Select-Object -ExpandProperty Name
+        $currentConfiguration.DatabaseName = [string[]] ($availabilityGroup.AvailabilityDatabases | Select-Object -ExpandProperty Name)
     }
     else
     {
