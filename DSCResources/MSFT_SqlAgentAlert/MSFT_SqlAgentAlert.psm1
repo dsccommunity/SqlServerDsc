@@ -59,7 +59,7 @@ function Get-TargetResource
             $script:localizedData.GetSqlAlerts
         )
         # Check agent exists
-        $sqlAgentObject = $sqlServerObject.JobServer.Alerts | Where-Object {$_.Name -eq $Name}
+        $sqlAgentObject = $sqlServerObject.JobServer.Alerts | Where-Object -FilterScript {$_.Name -eq $Name}
         if ($sqlAgentObject)
         {
             Write-Verbose -Message (
@@ -152,10 +152,10 @@ function Set-TargetResource
         {
             'Present'
             {
-                $sqlAlertObject = $sqlServerObject.JobServer.Alerts | Where-Object {$_.Name -eq $Name}
+                $sqlAlertObject = $sqlServerObject.JobServer.Alerts | Where-Object -FilterScript {$_.Name -eq $Name}
                 if ($sqlAlertObject)
                 {
-                    if($PSBoundParameters.ContainsKey('Severity') -and $PSBoundParameters.ContainsKey('MessageId'))
+                    if ($PSBoundParameters.ContainsKey('Severity') -and $PSBoundParameters.ContainsKey('MessageId'))
                     {
                         $errorMessage = $script:localizedData.MultipleParameterError -f $Name
                         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
@@ -243,7 +243,7 @@ function Set-TargetResource
             {
                 try
                 {
-                    $sqlAlertObjectToDrop = $sqlServerObject.JobServer.Alerts| Where-Object {$_.Name -eq $Name}
+                    $sqlAlertObjectToDrop = $sqlServerObject.JobServer.Alerts| Where-Object -FilterScript {$_.Name -eq $Name}
                     if ($sqlAlertObjectToDrop)
                     {
                         Write-Verbose -Message (

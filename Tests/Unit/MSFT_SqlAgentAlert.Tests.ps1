@@ -124,6 +124,14 @@ try
                                         {
                                             throw 'Mock Alter Method was called with invalid operation.'
                                         }
+                                        if ($this.MessageId -eq 7)
+                                        {
+                                            throw "Called mocked Create() method for a message id that doesn't exist."
+                                        }
+                                        if ($this.Severity -eq 999)
+                                        {
+                                            throw "Called mocked Create() method for a severity that doesn't exist."
+                                        }
                                     } -PassThru -Force
                                 )
                             } -PassThru
@@ -144,10 +152,18 @@ try
                                 throw 'Mock Create Method was called with invalid operation.'
                             }
 
-                            if ( $this.Name -ne $mockExpectedSqlAgentAlertToCreate )
+                            if ($this.Name -ne $mockExpectedSqlAgentAlertToCreate )
                             {
                                 throw "Called mocked Create() method without adding the right sql agent alert. Expected '{0}'. But was '{1}'." `
                                     -f $mockExpectedSqlAgentAlertToCreate, $this.Name
+                            }
+                            if ($this.MessageId -eq 7)
+                            {
+                                throw "Called mocked Create() method for a message id that doesn't exist."
+                            }
+                            if ($this.Severity -eq 999)
+                            {
+                                throw "Called mocked Create() method for a severity that doesn't exist."
                             }
                         } -PassThru -Force
                 )
@@ -161,6 +177,19 @@ try
                 Mock -CommandName New-Object -MockWith $mockNewSqlAgentAlert -ParameterFilter {
                     $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Alert'
                 } -Verifiable
+            }
+
+            Context 'When Connect-SQL returns nothing' {
+                It 'Should throw the correct error' {
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return $null
+                    }
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name   = 'TestAlertSev'
+                    }
+                    { Get-TargetResource @testParameters } | Should -Throw ($script:localizedData.ConnectServerFailed -f $testParameters.ServerName, $testParameters.InstanceName)
+                }
             }
 
             Context 'When the system is not in the desired state' {
@@ -208,6 +237,8 @@ try
                     $result.ServerName | Should -Be $testParameters.ServerName
                     $result.InstanceName | Should -Be $testParameters.InstanceName
                     $result.Name | Should -Be $testParameters.Name
+                    $result.Severity | Should -Be $mockSqlAgentAlertSeverity
+                    $result.MessageId | Should -Be 0
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -384,7 +415,22 @@ try
                 } -Verifiable
             }
 
-            Context 'When the system is not in the desired state and Ensure is set to Present' {
+            Context 'When Connect-SQL returns nothing' {
+                It 'Should throw the correct error' {
+                    Mock -CommandName Get-TargetResource -Verifiable
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return $null
+                    }
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name   = 'Message7'
+                        Ensure = 'Present'
+                    }
+                    { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.ConnectServerFailed -f $testParameters.ServerName, $testParameters.InstanceName)
+                }
+            }
+
+            Context 'When the system is not in the desired state and Ensure is set to Present'{
                 It 'Should not throw when creating the sql agent alert' {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
@@ -394,7 +440,7 @@ try
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
-                It 'Should not throw when changing the severity' {
+                It 'Should not throw when changing the severity'  {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         Name      = 'TestAlertSev'
@@ -414,12 +460,74 @@ try
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
+                It 'Should throw when changing severity and message id' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name       = 'TestAlertMsg'
+                        Ensure     = 'Present'
+                        Severity   = '17'
+                        MessageId  = '825'
+                    }
+                    { Set-TargetResource @testParameters } | Should -Throw
+                }
+
+                It 'Should throw when message id is not valid when altering existing alert' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name       = 'TestAlertMsg'
+                        Ensure     = 'Present'
+                        MessageId  = '7'
+                    }
+                    { Set-TargetResource @testParameters } | Should -Throw
+                }
+
+                It 'Should throw when severity is not valid when altering existing alert' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name       = 'TestAlertMsg'
+                        Ensure     = 'Present'
+                        Severity   = '999'
+                    }
+                    { Set-TargetResource @testParameters } | Should -Throw
+                }
+
+                It 'Should throw when message id is not valid when creating  alert' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name       = 'NewAlertMsg'
+                        Ensure     = 'Present'
+                        MessageId  = '7'
+                    }
+                    { Set-TargetResource @testParameters } | Should -Throw
+                }
+
+                It 'Should throw when severity is not valid when creating alert' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name       = 'NewAlertMsg'
+                        Ensure     = 'Present'
+                        Severity   = '999'
+                    }
+                    { Set-TargetResource @testParameters } | Should -Throw
+                }
+
+                $mockInvalidOperationForCreateMethod = $true
+                It 'Should throw the correct error when Create() method was called with invalid operation' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name   = 'NewAlert'
+                        Ensure = 'Present'
+                    }
+                    $errorMessage = ($script:localizedData.CreateAlertSetError -f $testParameters.Name, $testParameters.ServerName, $testParameters.InstanceName)
+                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
+                }
+
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 3 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 9 -Scope Context
                 }
 
                 It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Agent.Alert' {
-                    Assert-MockCalled -CommandName New-Object -Exactly -Times 6 -ParameterFilter {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 21 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Alert'
                     } -Scope Context
                 }
@@ -435,68 +543,29 @@ try
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
-                It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
-                }
-
-                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Agent.Alert' {
-                    Assert-MockCalled -CommandName New-Object -Exactly -Times 2 -ParameterFilter {
-                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Alert'
-                    } -Scope Context
-                }
-            }
-
-            $mockInvalidOperationForCreateMethod = $true
-            $mockInvalidOperationForAlterMethod = $true
-
-            Context 'When the system is not in the desired state and Ensure is set to Present' {
-                It 'Should throw the correct error when Create() method was called with invalid operation' {
+                It 'Should throw the correct error when Drop() method was called with invalid operation' {
+                    $mockInvalidOperationForDropMethod = $true
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
-                        Name   = 'NewAlert'
-                        Ensure = 'Present'
+                        Name      = 'TestAlertSev'
+                        Ensure    = 'Absent'
                     }
-                    $errorMessage = ($script:localizedData.CreateAlertSetError -f $testParameters.Name, $testParameters.ServerName, $testParameters.InstanceName)
+                    $errorMessage = ($script:localizedData.DropAlertSetError -f $testParameters.Name, $testParameters.ServerName, $testParameters.InstanceName)
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
 
+
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
                 }
 
                 It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Agent.Alert' {
-                    Assert-MockCalled -CommandName New-Object -Exactly -Times 3 -ParameterFilter {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 4 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Alert'
                     } -Scope Context
                 }
             }
-            $mockInvalidOperationForDropMethod = $true
-
-            Context 'When the system is not in the desired state and Ensure is set to Absent' {
-
-                $testParameters = $mockDefaultParameters
-                $testParameters += @{
-                    Name      = 'TestAlertSev'
-                    Ensure    = 'Absent'
-                }
-
-                $errorMessage = ($script:localizedData.DropAlertSetError -f $testParameters.Name, $testParameters.ServerName, $testParameters.InstanceName)
-
-                It 'Should throw the correct error when Drop() method was called with invalid operation' {
-                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
-                }
-
-                It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
-                }
-
-                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Agent.Alert' {
-                    Assert-MockCalled -CommandName New-Object -Exactly -Times 2 -ParameterFilter {
-                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Alert'
-                    } -Scope Context
-                }
-            }
-            Assert-VerifiableMock
+             Assert-VerifiableMock
         }
     }
 }
