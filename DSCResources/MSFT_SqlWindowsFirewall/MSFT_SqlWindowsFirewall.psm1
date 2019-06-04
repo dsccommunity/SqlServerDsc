@@ -441,7 +441,9 @@ function Set-TargetResource
 
                     if (-not (Test-IsFirewallRuleInDesiredState @databaseEngineFirewallRuleParameters))
                     {
-                        if (Get-NetFirewallRule | Where-Object { $_.DisplayName -eq $databaseEngineFirewallRuleDisplayName })
+                        if (Get-NetFirewallRule | Where-Object -FilterScript {
+                            $_.DisplayName -eq $databaseEngineFirewallRuleDisplayName
+                        })
                         {
                             Set-NetFirewallRule @databaseEngineFirewallRuleParameters
                         }
