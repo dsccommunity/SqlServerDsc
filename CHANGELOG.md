@@ -49,6 +49,7 @@
   - Where a version upgrade has changed paths for a database engine, the
     existing firewall rule for that instance will be updated rather than
     another one created ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
+    Other firewall rules can be fixed to work in the same way later.
 - Changes to SqlAGDatabase
   - Fix issue where calling Get would return an error because the database
     name list may have been returned as a string instead of as a string array ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
