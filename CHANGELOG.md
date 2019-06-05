@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Changes to SqlServerDsc.Common
+  - Added StatementTimeout to function 'Connect-SQL' with default 600 seconds (10mins).
+  - Added StatementTimeout to function 'Invoke-Query' with default 600 seconds (10mins).
+    Fixes Issue#1358
+- Changes to SqlAGDatabase
+  - Added new parameter 'ReplaceExisting' with default false.
+    This allows forced restores when a database already exists on secondary.
+  - Added StatementTimeout to Invoke-Query to fix Issue#1358
 - Changes to SqlServerDsc
   - Opt-in to the common test 'Common Test - Validation Localization'.
   - Opt-in to the common test 'Common Test - Flagged Script Analyzer Rules'
