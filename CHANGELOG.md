@@ -30,6 +30,15 @@
   - Fix minor issue that when unable to connect to an instance. Instead
     of showing a message saying that connect failed another unrelated
     error message could have been shown, because of an error in the code.
+  - Fix typo in test it block.
+- Changes to SqlDatabaseRole
+  - BREAKING CHANGE: Refactored to enable creation/deletion of the database role
+    itself as well as management of the role members. *Note that the resource no
+    longer adds database users.* ([issue #845](https://github.com/PowerShell/SqlServerDsc/issues/845),
+    [issue #847](https://github.com/PowerShell/SqlServerDsc/issues/847),
+    [issue #1252](https://github.com/PowerShell/SqlServerDsc/issues/1252),
+    [issue #1339](https://github.com/PowerShell/SqlServerDsc/issues/1339)).
+    [Paul Shamus @pshamus](https://github.com/pshamus)
 - Changes to SqlSetup
   - Add an Action type of 'Upgrade'. This will ask setup to do a version
     upgrade where possible ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
