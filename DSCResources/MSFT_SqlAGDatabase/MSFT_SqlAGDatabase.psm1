@@ -144,6 +144,11 @@ function Get-TargetResource
 
         The default is '$false'.
 
+    .PARAMETER ReplaceExisting
+        If set to $true, this adds the restore option WITH REPLACE.
+        If set to $false, Existing databases and files will block the restore and throw error.
+        The default is '$false'.
+
     .PARAMETER ProcessOnlyOnActiveNode
         Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
         Not used in Set-TargetResource.
@@ -185,6 +190,10 @@ function Set-TargetResource
         [Parameter()]
         [System.Boolean]
         $MatchDatabaseOwner,
+
+        [Parameter()]
+        [System.Boolean]
+        $ReplaceExisting,
 
         [Parameter()]
         [System.Boolean]
@@ -415,7 +424,7 @@ function Set-TargetResource
                     ErrorAction    = 'Stop'
                 }
 
-                # If no full backup was ever taken, do not take a backup with CopyOnly
+                # If database object last backup data not equal to 0 then backup with CopyOnly.
                 if ( $databaseObject.LastBackupDate -ne 0 )
                 {
                     $backupSqlDatabaseParameters.Add('CopyOnly', $true)
@@ -486,6 +495,12 @@ function Set-TargetResource
                 $restoreDatabaseQueryStringBuilder.Append($databaseFullBackupFile) | Out-Null
                 $restoreDatabaseQueryStringBuilder.AppendLine('''') | Out-Null
                 $restoreDatabaseQueryStringBuilder.Append('WITH NORECOVERY') | Out-Null
+
+                if ( $ReplaceExisting )
+                {
+                    $restoreDatabaseQueryStringBuilder.Append(',REPLACE') | Out-Null
+                }
+
                 if ( $MatchDatabaseOwner )
                 {
                     $restoreDatabaseQueryStringBuilder.AppendLine() | Out-Null
@@ -510,11 +525,13 @@ function Set-TargetResource
                 $restoreLogQueryStringBuilder.Append($databaseLogBackupFile) | Out-Null
                 $restoreLogQueryStringBuilder.AppendLine('''') | Out-Null
                 $restoreLogQueryStringBuilder.Append('WITH NORECOVERY') | Out-Null
+
                 if ( $MatchDatabaseOwner )
                 {
                     $restoreLogQueryStringBuilder.AppendLine() | Out-Null
                     $restoreLogQueryStringBuilder.Append('REVERT') | Out-Null
                 }
+
                 $restoreLogQueryString = $restoreLogQueryStringBuilder.ToString()
 
                 try
@@ -527,8 +544,8 @@ function Set-TargetResource
                         $currentReplicaAvailabilityGroupObject = $currentAvailabilityGroupReplicaServerObject.AvailabilityGroups[$AvailabilityGroupName]
 
                         # Restore the database
-                        Invoke-Query -SQLServer $currentAvailabilityGroupReplicaServerObject.NetName -SQLInstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreDatabaseQueryString
-                        Invoke-Query -SQLServer $currentAvailabilityGroupReplicaServerObject.NetName -SQLInstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreLogQueryString
+                        Invoke-Query -SQLServer $currentAvailabilityGroupReplicaServerObject.NetName -SQLInstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreDatabaseQueryString -StatementTimeout 0
+                        Invoke-Query -SQLServer $currentAvailabilityGroupReplicaServerObject.NetName -SQLInstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreLogQueryString -StatementTimeout 0
 
                         # Add the database to the Availability Group
                         Add-SqlAvailabilityDatabase -InputObject $currentReplicaAvailabilityGroupObject -Database $databaseToAddToAvailabilityGroup
