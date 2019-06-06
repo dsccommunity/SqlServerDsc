@@ -52,7 +52,8 @@
     Other firewall rules can be fixed to work in the same way later.
 - Changes to SqlAGDatabase
   - Fix issue where calling Get would return an error because the database
-    name list may have been returned as a string instead of as a string array ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
+    name list may have been returned as a string instead of as a string array
+    ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
 
 ## 12.5.0.0
 
