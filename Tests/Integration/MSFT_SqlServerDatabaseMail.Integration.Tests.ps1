@@ -78,16 +78,21 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.AccountName | Should -Be $ConfigurationData.AllNodes.AccountName
-                $resourceCurrentState.ProfileName | Should -Be $ConfigurationData.AllNodes.ProfileName
-                $resourceCurrentState.EmailAddress | Should -Be $ConfigurationData.AllNodes.EmailAddress
+                $resourceCurrentState.Ensure         | Should -Be 'Present'
+                $resourceCurrentState.AccountName    | Should -Be $ConfigurationData.AllNodes.AccountName
+                $resourceCurrentState.ProfileName    | Should -Be $ConfigurationData.AllNodes.ProfileName
+                $resourceCurrentState.EmailAddress   | Should -Be $ConfigurationData.AllNodes.EmailAddress
                 $resourceCurrentState.ReplyToAddress | Should -Be $ConfigurationData.AllNodes.EmailAddress
-                $resourceCurrentState.DisplayName | Should -Be $ConfigurationData.AllNodes.MailServerName
+                $resourceCurrentState.DisplayName    | Should -Be $ConfigurationData.AllNodes.MailServerName
                 $resourceCurrentState.MailServerName | Should -Be $ConfigurationData.AllNodes.MailServerName
-                $resourceCurrentState.Description | Should -Be $ConfigurationData.AllNodes.Description
-                $resourceCurrentState.LoggingLevel | Should -Be $ConfigurationData.AllNodes.LoggingLevel
-                $resourceCurrentState.TcpPort | Should -Be $ConfigurationData.AllNodes.TcpPort
+                $resourceCurrentState.Description    | Should -Be $ConfigurationData.AllNodes.Description
+                $resourceCurrentState.LoggingLevel   | Should -Be $ConfigurationData.AllNodes.LoggingLevel
+                $resourceCurrentState.TcpPort        | Should -Be $ConfigurationData.AllNodes.TcpPort
+                $resourceCurrentState.EnableSsl      | Should -Be $ConfigurationData.AllNodes.EnableSsl
+                $resourceCurrentState.Authentication | Should -Be $ConfigurationData.AllNodes.Authentication
+
+                $resourceCurrentState.SMTPAccount.UserName | Should -BeNullOrEmpty
+                $resourceCurrentState.SMTPAccount.GetNetworkCredential().Password | Should -BeNullOrEmpty
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -133,16 +138,19 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.Ensure | Should -Be 'Absent'
-                $resourceCurrentState.AccountName | Should -BeNullOrEmpty
-                $resourceCurrentState.ProfileName | Should -BeNullOrEmpty
-                $resourceCurrentState.EmailAddress | Should -BeNullOrEmpty
+                $resourceCurrentState.Ensure         | Should -Be 'Absent'
+                $resourceCurrentState.AccountName    | Should -BeNullOrEmpty
+                $resourceCurrentState.ProfileName    | Should -BeNullOrEmpty
+                $resourceCurrentState.EmailAddress   | Should -BeNullOrEmpty
                 $resourceCurrentState.ReplyToAddress | Should -BeNullOrEmpty
-                $resourceCurrentState.DisplayName | Should -BeNullOrEmpty
+                $resourceCurrentState.DisplayName    | Should -BeNullOrEmpty
                 $resourceCurrentState.MailServerName | Should -BeNullOrEmpty
-                $resourceCurrentState.Description | Should -BeNullOrEmpty
-                $resourceCurrentState.LoggingLevel | Should -BeNullOrEmpty
-                $resourceCurrentState.TcpPort | Should -BeNullOrEmpty
+                $resourceCurrentState.Description    | Should -BeNullOrEmpty
+                $resourceCurrentState.LoggingLevel   | Should -BeNullOrEmpty
+                $resourceCurrentState.TcpPort        | Should -BeNullOrEmpty
+                $resourceCurrentState.EnableSsl      | Should -BeNullOrEmpty
+                $resourceCurrentState.Authentication | Should -BeNullOrEmpty
+                $resourceCurrentState.SMTPAccount    | Should -BeNullOrEmpty
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {

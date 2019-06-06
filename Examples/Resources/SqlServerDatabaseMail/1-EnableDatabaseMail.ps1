@@ -18,6 +18,8 @@ $ConfigurationData = @{
             Description    = 'Default mail account and profile.'
             LoggingLevel   = 'Normal'
             TcpPort        = 25
+            EnableSsl      = $true
+            Authentication = 'Basic'
         }
     )
 }
@@ -29,15 +31,20 @@ Configuration Example
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
-        $SqlInstallCredential
+        $SqlInstallCredential,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SMTPAccountCredential
     )
 
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost {
+
         SqlServerConfiguration 'EnableDatabaseMailXPs'
         {
-
             ServerName     = $Node.ServerName
             InstanceName   = $Node.InstanceName
             OptionName     = 'Database Mail XPs'
@@ -59,6 +66,9 @@ Configuration Example
             Description          = $Node.Description
             LoggingLevel         = $Node.LoggingLevel
             TcpPort              = $Node.TcpPort
+            EnableSsl            = $Node.EnableSsl
+            Authentication       = $Node.Authentication
+            SMTPAccount          = $SMTPAccountCredential
 
             PsDscRunAsCredential = $SqlInstallCredential
         }
