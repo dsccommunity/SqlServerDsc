@@ -60,13 +60,14 @@ function Get-TargetResource
     # Create an object that reflects the current configuration
     $currentConfiguration = @{
         DatabaseName          = @()
-        ServerName             = $ServerName
-        InstanceName       = $InstanceName
+        ServerName            = $ServerName
+        InstanceName          = $InstanceName
         AvailabilityGroupName = ''
         BackupPath            = ''
         Ensure                = ''
         Force                 = $false
         MatchDatabaseOwner    = $false
+        ReplaceExisting       = $false
         IsActiveNode          = $false
     }
 
@@ -654,6 +655,11 @@ function Set-TargetResource
 
         The default is '$false'.
 
+    .PARAMETER ReplaceExisting
+        If set to $true, this adds the restore option WITH REPLACE.
+        If set to $false, Existing databases and files will block the restore and throw error.
+        The default is '$false'.
+
     .PARAMETER ProcessOnlyOnActiveNode
         Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
 #>
@@ -698,6 +704,10 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $ReplaceExisting,
+
+        [Parameter()]
+        [System.Boolean]
         $ProcessOnlyOnActiveNode
     )
 
@@ -705,8 +715,8 @@ function Test-TargetResource
 
     $getTargetResourceParameters = @{
         DatabaseName          = $DatabaseName
-        ServerName             = $ServerName
-        InstanceName       = $InstanceName
+        ServerName            = $ServerName
+        InstanceName          = $InstanceName
         AvailabilityGroupName = $AvailabilityGroupName
         BackupPath            = $BackupPath
     }
