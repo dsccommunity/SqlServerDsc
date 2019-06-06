@@ -22,6 +22,10 @@ ConvertFrom-StringData @'
     MailServerPropertyReplyToEmailAddress = reply to e-mail address
     MailServerPropertyServerName = server name
     MailServerPropertyTcpPort = TCP port
+    MailServerPropertyEnableSsl = SSL property
+    MailServerPropertySMTPAccount = SMTP account
+    MailServerPropertySMTPAccountPassword = password for SMTP account
+    MailServerPropertyAuthentication = authentication
     CreatingMailProfile = Creating a public default profile '{0}'.
     MailProfileExist = The public default profile '{0}' already exist.
     ConfigureSqlAgent = Configure the SQL Agent to use Database Mail.
@@ -30,4 +34,6 @@ ConvertFrom-StringData @'
     RemovingSqlAgentConfiguration = Configure the SQL Agent to not use Database Mail (changing it back to SQL Agent Mail).
     RemovingMailProfile = Removing the public default profile '{0}'.
     RemovingMailAccount = Removing the mail account '{0}'.
+    SMTPAccountMissingParameter = SMTPAccount parameter must be specified when Authentication is set to 'Basic'.
+    SMTPAccountIgnoringParameter = SMTPAccount parameter was specified and will be ignored as Authentication was not set to 'Basic'.
 '@

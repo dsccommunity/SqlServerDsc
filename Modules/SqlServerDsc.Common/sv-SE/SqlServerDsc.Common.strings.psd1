@@ -60,4 +60,11 @@ ConvertFrom-StringData @'
     ClusterLoginMissingPermissions = The account '{0}' is missing one or more of the following permissions: {1} (SQLCOMMON0051)
     ClusterLoginMissingRecommendedPermissions = The recommended account '{0}' is missing one or more of the following permissions: {1} (SQLCOMMON0052)
     ClusterLoginPermissionsPresent = The cluster login '{0}' has the required permissions. (SQLCOMMON0053)
+    DisconnectFromSQLInstance = Disconnected from '{0}' instance. (SQLCOMMON0054)
+    GetMailServerCredentialId = Getting credential Id used by SMTP mail server '{0}' on instance '{1}'. (SQLCOMMON0055)
+    GetServiceMasterKey = Getting service master key on instance '{0}'. (SQLCOMMON0056)
+    GetEntropyForSqlInstance = Getting entropy information from the registry for instance '{0}'. (SQLCOMMON0057)
+    GetEncryptedCredential = Getting encrypted password for credential with id '{0}' on instance '{1}'. (SQLCOMMON0058)
+    UnknownSmkSize = Unknown size '{0}' of Service Master Key for instance '{1}'. Valid values are '16' and '32'. (SQLCOMMON0059)
+    FailedCredentialDecryption = Decryption possibly failed or encrypted string was modfiied as magic number doesn't match. (SQLCOMMON0060)
 '@
