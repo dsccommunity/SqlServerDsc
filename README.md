@@ -294,6 +294,11 @@ group.
   login, control server, impersonate login, or control login permissions.
   If set to $false, the owner of the database will be the PsDscRunAsCredential.
   The default is '$false'.
+* **`[Boolean]` ReplaceExisting** _(Write)_: If set to $true, this adds the restore
+  option WITH REPLACE.
+  If set to $false, Existing databases and files will block the restore
+  and throw error.
+  The default is '$false'.
 * **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
   will only determine if a change is needed if the target node is the active
   host of the SQL Server Instance.
