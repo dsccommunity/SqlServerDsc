@@ -87,14 +87,24 @@
     name list may have been returned as a string instead of as a string array
     ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
 - Changes to SqlServerDatabaseMail
-  - Added new parameter `EnableSsl` which controls encryption of communication using Secure Sockets Layer.
-  - Added new parameter `Authentication` and `SMTPAccount` for configuration of SMTP authentication mode and credential used [issue #1215](https://github.com/PowerShell/SqlServerDsc/issues/1215).
-  - Added new helper function `Get-MailServerCredentialId` which gets credential Id used by mail server.
-  - Added new helper function `Get-ServiceMasterKey` which gets unencrypted Service Master Key for specified SQL Instance.
-  - Added new helper function `Get-SqlPSCredential` which decrypts and returns PSCredential object of SQL Credential by Id.
-  - Added DAC switch to function 'Connect-SQL' with default value $false. Used to specify that non-pooled Dedicated Admin Connection should be established.
-  - Added UsingDAC switch to function 'Invoke-Query' with default value $false. Used to specify that query should be executed using Dedicated Admin Connection. After execution DAC connection will be closed.
-  - Added PSCredential option to function 'Test-DscParameterState' which will compare PSCredential objects using username/password keys.
+  - Added new parameter `EnableSsl` which controls encryption of communication
+    using Secure Sockets Layer.
+  - Added new parameter `Authentication` and `SMTPAccount` for configuration of
+    SMTP authentication mode and credential used [issue #1215](https://github.com/PowerShell/SqlServerDsc/issues/1215).
+  - Added new helper function `Get-MailServerCredentialId` which gets
+    credential Id used by mail server.
+  - Added new helper function `Get-ServiceMasterKey` which gets unencrypted
+    Service Master Key for specified SQL Instance.
+  - Added new helper function `Get-SqlPSCredential` which decrypts and returns
+    PSCredential object of SQL Credential by Id.
+  - Added DAC switch to function 'Connect-SQL' with default value $false.
+    Used to specify that non-pooled Dedicated Admin Connection should be
+    established.
+  - Added UsingDAC switch to function 'Invoke-Query' with default value $false.
+    Used to specify that query should be executed using Dedicated Admin
+    Connection. After execution DAC connection will be closed.
+  - Added PSCredential option to function 'Test-DscParameterState' which will
+    compare PSCredential objects using username/password keys.
 
 ## 12.5.0.0
 

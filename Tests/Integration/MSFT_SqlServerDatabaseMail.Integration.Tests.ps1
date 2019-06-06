@@ -92,7 +92,7 @@ try
                 $resourceCurrentState.Authentication | Should -Be $ConfigurationData.AllNodes.Authentication
 
                 $resourceCurrentState.SMTPAccount.UserName | Should -BeNullOrEmpty
-                $resourceCurrentState.SMTPAccount.GetNetworkCredential().Password | Should -BeNullOrEmpty
+                $resourceCurrentState.SMTPAccount.Password | Should -BeNullOrEmpty
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
