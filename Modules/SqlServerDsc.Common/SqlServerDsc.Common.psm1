@@ -1653,7 +1653,15 @@ function Invoke-Query
     }
     catch
     {
-        $errorMessage = $script:localizedData.$(@('ExecuteNonQueryFailed', 'ExecuteQueryWithResultsFailed')[$WithResults.IsPresent]) -f $Database
+        if ($WithResults.IsPresent)
+        {
+            $errorMessage = $script:localizedData.ExecuteQueryWithResultsFailed -f $Database
+        }
+        else
+        {
+            $errorMessage = $script:localizedData.ExecuteNonQueryFailed -f $Database
+        }
+
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
     finally
