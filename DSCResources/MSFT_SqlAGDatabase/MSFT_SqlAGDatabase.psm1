@@ -85,7 +85,7 @@ function Get-TargetResource
         $currentConfiguration.AvailabilityGroupName = $AvailabilityGroupName
 
         # Get the databases in the availability group
-        $currentConfiguration.DatabaseName = $availabilityGroup.AvailabilityDatabases | Select-Object -ExpandProperty Name
+        $currentConfiguration.DatabaseName = [string[]] ($availabilityGroup.AvailabilityDatabases | Select-Object -ExpandProperty Name)
     }
     else
     {

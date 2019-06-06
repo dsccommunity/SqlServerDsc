@@ -20,6 +20,8 @@
     [localization helper functions](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md#localization).
   - Combine DscResource.LocalizationHelper and DscResource.Common into
     SqlServerDsc.Common ([issue #1357](https://github.com/PowerShell/SqlServerDsc/issues/1357)).
+  - Update Assert-TestEnvironment.ps1 to not error if strict mode is enabled
+    and there are no missing dependencies ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
 - Changes to SqlAG
   - Added en-US localization.
 - Changes to SqlAGReplica
@@ -48,6 +50,19 @@
     [issue #1252](https://github.com/PowerShell/SqlServerDsc/issues/1252),
     [issue #1339](https://github.com/PowerShell/SqlServerDsc/issues/1339)).
     [Paul Shamus @pshamus](https://github.com/pshamus)
+- Changes to SqlSetup
+  - Add an Action type of 'Upgrade'. This will ask setup to do a version
+    upgrade where possible ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
+  - Fix an error when testing for DQS installation ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
+- Changes to SqlWindowsFirewall
+  - Where a version upgrade has changed paths for a database engine, the
+    existing firewall rule for that instance will be updated rather than
+    another one created ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
+    Other firewall rules can be fixed to work in the same way later.
+- Changes to SqlAGDatabase
+  - Fix issue where calling Get would return an error because the database
+    name list may have been returned as a string instead of as a string array
+    ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
 
 ## 12.5.0.0
 

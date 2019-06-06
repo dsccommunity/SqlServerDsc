@@ -12,7 +12,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlSetup'
 
     .PARAMETER Action
         The action to be performed. Default value is 'Install'.
-        Possible values are 'Install', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'.
+        Possible values are 'Install', 'Upgrade', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'.
 
     .PARAMETER SourcePath
         The path to the root of the source files for installation. I.e and UNC path to a shared resource.  Environment variables can be used in the path.
@@ -44,7 +44,7 @@ function Get-TargetResource
     param
     (
         [Parameter()]
-        [ValidateSet('Install','InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
+        [ValidateSet('Install','Upgrade','InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
         [System.String]
         $Action = 'Install',
 
@@ -184,7 +184,7 @@ function Get-TargetResource
 
             Write-Verbose -Message ($script:localizedData.EvaluateDataQualityClientFeature -f $dataQualityClientRegistryPath)
 
-            $isDQCInstalled = (Get-ItemProperty -Path $dataQualityClientRegistryPath).SQL_DQ_CLIENT_Full
+            $isDQCInstalled = (Get-ItemProperty -Path $dataQualityClientRegistryPath -ErrorAction SilentlyContinue).SQL_DQ_CLIENT_Full
             if ($isDQCInstalled -eq 1)
             {
                 Write-Verbose -Message $script:localizedData.DataQualityClientFeatureFound
@@ -575,7 +575,7 @@ function Get-TargetResource
 
     .PARAMETER Action
         The action to be performed. Default value is 'Install'.
-        Possible values are 'Install', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'.
+        Possible values are 'Install', 'Upgrade', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'.
 
     .PARAMETER SourcePath
         The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.
@@ -773,7 +773,7 @@ function Set-TargetResource
     param
     (
         [Parameter()]
-        [ValidateSet('Install','InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
+        [ValidateSet('Install','Upgrade','InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
         [System.String]
         $Action = 'Install',
 
@@ -1313,7 +1313,7 @@ function Set-TargetResource
         'ErrorReporting'
     )
 
-    if ($Action -in @('Install','InstallFailoverCluster','PrepareFailoverCluster','CompleteFailoverCluster'))
+    if ($Action -in @('Install','Upgrade','InstallFailoverCluster','PrepareFailoverCluster','CompleteFailoverCluster'))
     {
         $argumentVars += @(
             'Features',
@@ -1346,7 +1346,7 @@ function Set-TargetResource
         }
 
         # Should not be passed when PrepareFailoverCluster is specified
-        if ($Action -in @('Install','InstallFailoverCluster','CompleteFailoverCluster'))
+        if ($Action -in @('Install','Upgrade','InstallFailoverCluster','CompleteFailoverCluster'))
         {
             if ($null -ne $PsDscContext.RunAsUser)
             {
@@ -1405,7 +1405,7 @@ function Set-TargetResource
             $setupArguments += @{ SqlTempdbLogFileGrowth = $SqlTempdbLogFileGrowth }
         }
 
-        if ($Action -in @('Install'))
+        if ($Action -in @('Install','Upgrade'))
         {
             if ($PSBoundParameters.ContainsKey('AgtSvcStartupType'))
             {
@@ -1465,7 +1465,7 @@ function Set-TargetResource
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $ASSvcAccount -ServiceType 'AS')
         }
 
-        if ($Action -in ('Install','InstallFailoverCluster','CompleteFailoverCluster'))
+        if ($Action -in ('Install','Upgrade','InstallFailoverCluster','CompleteFailoverCluster'))
         {
             if ($null -ne $PsDscContext.RunAsUser)
             {
@@ -1679,7 +1679,7 @@ function Set-TargetResource
 
     .PARAMETER Action
         The action to be performed. Default value is 'Install'.
-        Possible values are 'Install', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'.
+        Possible values are 'Install', 'Upgrade', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'.
 
     .PARAMETER SourcePath
         The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.
@@ -1868,7 +1868,7 @@ function Test-TargetResource
     param
     (
         [Parameter()]
-        [ValidateSet('Install','InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
+        [ValidateSet('Install', 'Upgrade', 'InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
         [System.String]
         $Action = 'Install',
 

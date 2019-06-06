@@ -37,6 +37,8 @@ $pesterModule = Get-Module $pesterModuleName -ListAvailable -Verbose:$false |
     Sort-Object -Property 'Version' -Descending |
     Select-Object -First 1
 
+$dependencyMissing = $false
+
 if (-not $pesterModule)
 {
     <#
