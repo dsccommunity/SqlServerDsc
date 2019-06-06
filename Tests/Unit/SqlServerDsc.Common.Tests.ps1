@@ -2238,6 +2238,8 @@ InModuleScope 'SqlServerDsc.Common' {
                             Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
                             Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
                             Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
+                            Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
+                            Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
                             Add-Member -MemberType ScriptMethod -Name Connect -Value {
                                 if ($mockExpectedDatabaseEngineInstance -eq 'MSSQLSERVER')
                                 {
@@ -2386,6 +2388,7 @@ InModuleScope 'SqlServerDsc.Common' {
                 $mockExpectedDatabaseEngineInstance = $mockInstanceName
 
                 Mock -CommandName New-Object `
+                    -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                     -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter `
                     -Verifiable
 

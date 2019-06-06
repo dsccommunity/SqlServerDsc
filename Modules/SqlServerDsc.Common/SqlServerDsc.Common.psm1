@@ -932,6 +932,9 @@ function Start-SqlSetupProcess
         If the SetupCredential is set, specify with this parameter, which type
         of credentials are set: Native SQL login or Windows user Login. Default
         value is 'WindowsUser'.
+
+    .PARAMETER StatementTimeout
+        Set the query StatementTimeout in seconds. Default 600 seconds (10mins).
 #>
 function Connect-SQL
 {
@@ -956,7 +959,12 @@ function Connect-SQL
         [Parameter()]
         [ValidateSet('WindowsUser', 'SqlLogin')]
         [System.String]
-        $LoginType = 'WindowsUser'
+        $LoginType = 'WindowsUser',
+
+        [Parameter()]
+        [ValidateNotNull()]
+        [System.Int32]
+        $StatementTimeout = 600
     )
 
     Import-SQLPSModule
@@ -970,10 +978,13 @@ function Connect-SQL
         $databaseEngineInstance = "$ServerName\$InstanceName"
     }
 
+    $sql = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+    $sql.ConnectionContext.ServerInstance = $databaseEngineInstance
+    $sql.ConnectionContext.StatementTimeout = $StatementTimeout
+    $sql.ConnectionContext.ApplicationName = 'SqlServerDsc'
+
     if ($SetupCredential)
     {
-        $sql = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
-
         if ($LoginType -eq 'SqlLogin')
         {
             $connectUsername = $SetupCredential.Username
@@ -996,21 +1007,23 @@ function Connect-SQL
             'Connecting using the credential ''{0}'' and the login type ''{1}''.' `
                 -f $connectUsername, $LoginType
         ) -Verbose
+    }
 
-        $sql.ConnectionContext.ServerInstance = $databaseEngineInstance
+    try
+    {
         $sql.ConnectionContext.Connect()
-    }
-    else
-    {
-        $sql = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server -ArgumentList $databaseEngineInstance
-    }
 
-    if ( $sql.Status -match '^Online$' )
-    {
-        Write-Verbose -Message ($script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance) -Verbose
-        return $sql
+        if ( $sql.Status -match '^Online$' )
+        {
+            Write-Verbose -Message ($script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance) -Verbose
+            return $sql
+        }
+        else
+        {
+            throw
+        }
     }
-    else
+    catch
     {
         $errorMessage = $script:localizedData.FailedToConnectToDatabaseEngineInstance -f $databaseEngineInstance
         New-InvalidOperationException -Message $errorMessage
@@ -1538,6 +1551,9 @@ function Restart-ReportingServicesService
     .PARAMETER WithResults
     Specifies if the query should return results.
 
+    .PARAMETER StatementTimeout
+    Set the query StatementTimeout in seconds. Default 600 seconds (10mins).
+
     .EXAMPLE
     Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master -Query 'SELECT name FROM sys.databases' -WithResults
 
@@ -1568,10 +1584,15 @@ function Invoke-Query
 
         [Parameter()]
         [Switch]
-        $WithResults
+        $WithResults,
+
+        [Parameter()]
+        [ValidateNotNull()]
+        [System.Int32]
+        $StatementTimeout = 600
     )
 
-    $serverObject = Connect-SQL -ServerName $SQLServer -InstanceName $SQLInstanceName
+    $serverObject = Connect-SQL -ServerName $SQLServer -InstanceName $SQLInstanceName -StatementTimeout $StatementTimeout
 
     if ( $WithResults )
     {

@@ -107,6 +107,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   resource to ensure an availability group is present or absent.
 * [**SqlAGDatabase**](#sqlagdatabase)
   to manage the database membership in Availability Groups.
+* [**SqlAgentAlert**](#sqlagentalert)
+  resource to manage SQL Agent Alerts.
 * [**SqlAgentOperator**](#sqlagentoperator)
   resource to manage SQL Agent Operators.
 * [**SqlAGListener**](#sqlaglistener)
@@ -294,6 +296,11 @@ group.
   login, control server, impersonate login, or control login permissions.
   If set to $false, the owner of the database will be the PsDscRunAsCredential.
   The default is '$false'.
+* **`[Boolean]` ReplaceExisting** _(Write)_: If set to $true, this adds the restore
+  option WITH REPLACE.
+  If set to $false, Existing databases and files will block the restore
+  and throw error.
+  The default is '$false'.
 * **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
   will only determine if a change is needed if the target node is the active
   host of the SQL Server Instance.
@@ -312,6 +319,36 @@ group.
 #### Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAGDatabase).
+
+### SqlAgentAlert
+
+This resource is used to add/remove SQL Agent Alerts. You can also
+update the severity or message id.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2008 or later.
+
+#### Parameters
+
+* **`[String]` Name** _(Key)_: The name of the SQL Agent Alert.
+* **`[String]` Ensure** _(Write)_: Specifies if the SQL Agent Alert should
+  be present or absent. Default is Present. { *Present* | Absent }
+* **`[String]` ServerName** _(Key)_: The host name of the SQL Server to be
+  configured. Default is $env:COMPUTERNAME.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` Severity** _(Write)_: The severity of the SQL Agent Alert.
+* **`[String]` MessageId** _(Write)_: The message id of the SQL Agent Alert.
+
+#### Examples
+
+* [Add a SQL Agent Alert](/Examples/Resources/SqlAgentAlert/1-AddAlert.ps1)
+* [Remove a SQL Agent Alert](/Examples/Resources/SqlAgentAlert/2-RemoveAlert.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAgentAlert).
 
 ### SqlAgentOperator
 
