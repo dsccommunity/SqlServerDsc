@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Changes to SqlServerDsc.Common
+  - Added StatementTimeout to function 'Connect-SQL' with default 600 seconds (10mins).
+  - Added StatementTimeout to function 'Invoke-Query' with default 600 seconds (10mins).
+    Fixes Issue#1358
+- Changes to SqlAGDatabase
+  - Added new parameter 'ReplaceExisting' with default false.
+    This allows forced restores when a database already exists on secondary.
+  - Added StatementTimeout to Invoke-Query to fix Issue#1358
 - Changes to SqlServerDsc
   - Added SqlAgentAlert resource.
   - Opt-in to the common test 'Common Test - Validation Localization'.
@@ -31,6 +39,15 @@
   - Fix minor issue that when unable to connect to an instance. Instead
     of showing a message saying that connect failed another unrelated
     error message could have been shown, because of an error in the code.
+  - Fix typo in test it block.
+- Changes to SqlDatabaseRole
+  - BREAKING CHANGE: Refactored to enable creation/deletion of the database role
+    itself as well as management of the role members. *Note that the resource no
+    longer adds database users.* ([issue #845](https://github.com/PowerShell/SqlServerDsc/issues/845),
+    [issue #847](https://github.com/PowerShell/SqlServerDsc/issues/847),
+    [issue #1252](https://github.com/PowerShell/SqlServerDsc/issues/1252),
+    [issue #1339](https://github.com/PowerShell/SqlServerDsc/issues/1339)).
+    [Paul Shamus @pshamus](https://github.com/pshamus)
 
 ## 12.5.0.0
 
