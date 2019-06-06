@@ -3364,6 +3364,11 @@ InModuleScope 'SqlServerDsc.Common' {
                                         } -PassThru
                                 )
                             }
+                            ConnectionContext = New-Object -TypeName Object |
+                                Add-Member -MemberType NoteProperty -Name ServerInstance -Value $result -PassThru |
+                                Add-Member -MemberType ScriptMethod -Name Disconnect -Value {
+                                    $script:ConnectionContextDisconnectMethodCallCount += 1
+                                } -PassThru -Force
                         }
                     )
                 )
@@ -3408,6 +3413,16 @@ InModuleScope 'SqlServerDsc.Common' {
     Describe 'DscResource.Common\Get-SqlPSCredential' -Tag 'Get-SqlPSCredential' {
         BeforeAll {
             $mockConnectSql = {
+
+                if ($InstanceName -eq 'MSSQLSERVER')
+                {
+                    $result = @('','ADMIN:')[$DAC.IsPresent] + $ServerName
+                }
+                else
+                {
+                    $result = @('','ADMIN:')[$DAC.IsPresent] + "$ServerName\$InstanceName"
+                }
+
                 return @(
                     (
                         New-Object -TypeName PSObject -Property @{
