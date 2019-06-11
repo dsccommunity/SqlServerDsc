@@ -62,7 +62,9 @@
   - Fix issue where calling Get would return an error because the database
     name list may have been returned as a string instead of as a string array
     ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
-
+- Changes to SqlServerSecureConnection
+  - Forced $Thumbprint to lowercase to fix issue#1350
+  
 ## 12.5.0.0
 
 - Changes to SqlServerSecureConnection
