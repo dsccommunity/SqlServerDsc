@@ -60,7 +60,7 @@ ConvertFrom-StringData @'
     GetMailServerCredentialId = Getting credential Id used by SMTP mail server '{0}' on instance '{1}'. (SQLCOMMON0057)
     GetServiceMasterKey = Getting service master key on instance '{0}'. (SQLCOMMON0058)
     GetEntropyForSqlInstance = Getting entropy information from the registry for instance '{0}'. (SQLCOMMON0059)
-    GetEncryptedCredential = Getting encrypted password for credential with id '{0}' on instance '{1}'. (SQLCOMMON0060)
-    UnknownSmkSize = Unknown size '{0}' of Service Master Key for instance '{1}'. Valid values are '16' and '32'. (SQLCOMMON0061)
+    GetEncryptedMessage = Getting encrypted message for credential with id '{0}' on instance '{1}'. (SQLCOMMON0060)
+    SmkSizeNotImplemented = Unknown size '{0}' of Service Master Key for instance '{1}'. Valid values are '16' and '32'. (SQLCOMMON0061)
     FailedCredentialDecryption = Decryption possibly failed or encrypted string was modfiied as magic number doesn't match. (SQLCOMMON0062)
 '@

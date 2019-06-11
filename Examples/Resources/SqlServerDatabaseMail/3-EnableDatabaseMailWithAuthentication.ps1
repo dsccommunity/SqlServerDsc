@@ -18,6 +18,7 @@ $ConfigurationData = @{
             Description    = 'Default mail account and profile.'
             LoggingLevel   = 'Normal'
             TcpPort        = 25
+            Authentication = 'Basic'
         }
     )
 }
@@ -29,7 +30,12 @@ Configuration Example
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
-        $SqlInstallCredential
+        $SqlInstallCredential,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SMTPAccountCredential
     )
 
     Import-DscResource -ModuleName 'SqlServerDsc'
@@ -59,6 +65,8 @@ Configuration Example
             Description          = $Node.Description
             LoggingLevel         = $Node.LoggingLevel
             TcpPort              = $Node.TcpPort
+            Authentication       = $Node.Authentication
+            SMTPAccount          = $SMTPAccountCredential
 
             PsDscRunAsCredential = $SqlInstallCredential
         }

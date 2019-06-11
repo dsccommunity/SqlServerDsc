@@ -1004,7 +1004,7 @@ InModuleScope 'SqlServerDsc.Common' {
     }
 
     Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
-        Context 'Restart-SqlService standalone instance' {
+        Context 'When Restart-SqlService operates on a standalone instance' {
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
@@ -1210,7 +1210,7 @@ InModuleScope 'SqlServerDsc.Common' {
             }
         }
 
-        Context 'Restart-SqlService clustered instance' {
+        Context 'When Restart-SqlService operates on a clustered instance' {
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
@@ -1340,10 +1340,6 @@ InModuleScope 'SqlServerDsc.Common' {
                 $TypeName -eq 'Microsoft.AnalysisServices.Server'
             }
 
-            $mockThrowLocalizedMessage = {
-                throw $Message
-            }
-
             $mockSetupCredentialUserName = 'TestUserName12345'
             $mockSetupCredentialPassword = 'StrongOne7.'
             $mockSetupCredentialSecurePassword = ConvertTo-SecureString -String $mockSetupCredentialPassword -AsPlainText -Force
@@ -1351,7 +1347,6 @@ InModuleScope 'SqlServerDsc.Common' {
         }
 
         BeforeEach {
-            Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftAnalysisServicesServer `
                 -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter `
@@ -1513,17 +1508,12 @@ InModuleScope 'SqlServerDsc.Common' {
                                                                     @('',"\$InstanceName")[$InstanceName -ne 'MSSQLSERVER']
                 return @($databasesObject)
             }
-
-            $mockThrowLocalizedMessage = {
-                throw $Message
-            }
         }
 
         BeforeEach {
             $script:ConnectionContextDisconnectMethodCallCount = 0
 
             Mock -CommandName Connect-SQL -MockWith $mockConnectSql -ModuleName $script:dscResourceName -Verifiable
-            Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
         }
 
         $queryParams = @{
@@ -1540,7 +1530,7 @@ InModuleScope 'SqlServerDsc.Common' {
             Query           = ''
         }
 
-        Context 'Execute a query with no results' {
+        Context 'When a query is executed and nothing is returned' {
             It 'Should execute the query silently' {
                 $queryParams.Query = "EXEC sp_configure 'show advanced option', '1'"
                 $mockExpectedQuery = $queryParams.Query.Clone()
@@ -1561,7 +1551,7 @@ InModuleScope 'SqlServerDsc.Common' {
             }
         }
 
-        Context 'Execute a query with results' {
+        Context 'When a query is executed and results are returned' {
             It 'Should execute the query and return a result set' {
                 $queryParams.Query = 'SELECT name FROM sys.databases'
                 $mockExpectedQuery = $queryParams.Query.Clone()
@@ -1582,7 +1572,7 @@ InModuleScope 'SqlServerDsc.Common' {
             }
         }
 
-        Context 'Execute a query with results using Dedicated Admin Connection and close the connection' {
+        Context 'When a query is executed using Dedicated Admin Connection and connection was closed' {
             It 'Should execute the query and return a result set' {
                 $queryParams.Query = 'SELECT name FROM sys.databases'
                 $mockExpectedQuery = $queryParams.Query.Clone()
@@ -1900,17 +1890,12 @@ InModuleScope 'SqlServerDsc.Common' {
             $mockGetModule_SQLPS_ParameterFilter = {
                 $FullyQualifiedName.Name -eq 'SQLPS' -and $ListAvailable -eq $true
             }
-
-            $mockThrowLocalizedMessage = {
-                throw $Message
-            }
         }
 
         BeforeEach {
             Mock -CommandName Push-Location -Verifiable
             Mock -CommandName Pop-Location -Verifiable
             Mock -CommandName Import-Module -MockWith $mockImportModule -Verifiable
-            Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
         }
 
         Context 'When module SqlServer is already loaded into the session' {
@@ -2456,10 +2441,6 @@ InModuleScope 'SqlServerDsc.Common' {
                 $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Server'
             }
 
-            $mockThrowLocalizedMessage = {
-                throw $Message
-            }
-
             $mockSetupCredentialUserName = 'TestUserName12345'
             $mockSetupCredentialPassword = 'StrongOne7.'
             $mockSetupCredentialSecurePassword = ConvertTo-SecureString -String $mockSetupCredentialPassword -AsPlainText -Force
@@ -2467,7 +2448,6 @@ InModuleScope 'SqlServerDsc.Common' {
         }
 
         BeforeEach {
-            Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
             Mock -CommandName Import-SQLPSModule
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
@@ -2932,7 +2912,7 @@ InModuleScope 'SqlServerDsc.Common' {
             }
         }
 
-        Context 'Invoke-SqlScript fails to import SQLPS module' {
+        Context 'When Invoke-SqlScript fails to import SQLPS module' {
             $throwMessage = "Failed to import SQLPS module."
 
             Mock -CommandName Import-SQLPSModule -MockWith {
@@ -2944,7 +2924,7 @@ InModuleScope 'SqlServerDsc.Common' {
             }
         }
 
-        Context 'Invoke-SqlScript is called with credentials' {
+        Context 'When Invoke-SqlScript is called with credentials' {
             BeforeAll {
                 $mockPasswordPlain = 'password'
                 $mockUsername = 'User'
@@ -2977,7 +2957,7 @@ InModuleScope 'SqlServerDsc.Common' {
             }
         }
 
-        Context 'Invoke-SqlScript fails to execute the SQL scripts' {
+        Context 'When Invoke-SqlScript fails to execute the SQL scripts' {
             $errorMessage = 'Failed to run SQL Script'
 
             Mock -CommandName Import-SQLPSModule -MockWith {}
@@ -3298,10 +3278,6 @@ InModuleScope 'SqlServerDsc.Common' {
                 )
             }
 
-            $mockThrowLocalizedMessage = {
-                throw $Message
-            }
-
             $queryParams = @{
                 SQLServer       = 'Server1'
                 SQLInstanceName = 'MSSQLSERVER'
@@ -3315,10 +3291,9 @@ InModuleScope 'SqlServerDsc.Common' {
             $mockExpectedQuery = "*SELECT credential_id* FROM msdb.dbo.sysmail_server* WHERE servername = '$($queryParams.MailServerName)'*"
 
             Mock -CommandName Connect-SQL -MockWith $mockConnectSql -ModuleName $script:dscResourceName -Verifiable
-            Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
         }
 
-        Context 'Get credential id' {
+        Context 'When credential id is returned' {
             It 'Should execute the query and return a credential id' {
                 Get-MailServerCredentialId @queryParams | Should -Be $mockCredentialId
 
@@ -3338,7 +3313,7 @@ InModuleScope 'SqlServerDsc.Common' {
 
     Describe 'DscResource.Common\Get-ServiceMasterKey' -Tag 'GetServiceMasterKey' {
         BeforeAll {
-            $mockExpectedQuery = '*FROM sys.key_encryptions* WHERE key_id=102 and (thumbprint=0x03 or thumbprint=0x0300000001)*'
+            $mockExpectedQuery = '*FROM sys.key_encryptions* WHERE key_id=102 and thumbprint<>0x01*'
 
             $mockConnectSql = {
                 return @(
@@ -3360,7 +3335,7 @@ InModuleScope 'SqlServerDsc.Common' {
                                                 throw
                                             }
 
-                                            return [pscustomobject] @{ Tables = @( @{ ServiceMasterKey = $mockEncryptedSMK } ) }
+                                            return [pscustomobject] @{ Tables = @( @{ key = [BitConverter]::GetBytes([int64]0) + $mockEncryptedSMK } ) }
                                         } -PassThru
                                 )
                             }
@@ -3389,23 +3364,23 @@ InModuleScope 'SqlServerDsc.Common' {
 
         BeforeEach {
             Mock -CommandName Connect-SQL -MockWith $mockConnectSql -ModuleName $script:dscResourceName -Verifiable
-            Mock -CommandName Get-ItemProperty `
-                 -MockWith { return [pscustomobject]@{ $queryParams.SQLInstanceName = $mockServiceInstanceId} } `
-                 -ParameterFilter { $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' } `
+            Mock -CommandName Get-ItemPropertyValue `
+                 -MockWith { return $mockServiceInstanceId } `
+                 -ParameterFilter { $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' -and $Name -eq $queryParams.SQLInstanceName } `
                  -Verifiable
 
-            Mock -CommandName Get-ItemProperty `
-                 -MockWith { return [pscustomobject]@{ Entropy = $mockEntropy } } `
+            Mock -CommandName Get-ItemPropertyValue `
+                 -MockWith { return $mockEntropy } `
                  -ParameterFilter { $Path -eq "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$mockServiceInstanceId\Security" } `
                  -Verifiable
         }
 
-        Context 'Get unencrypted service master key' {
+        Context 'When unencrypted service master key is returned' {
             It 'Should execute the query, decrypt and return a key' {
                 Get-ServiceMasterKey @queryParams | Should -Be $mockSMK
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                Assert-MockCalled -CommandName Get-ItemProperty -Scope It -Times 2 -Exactly
+                Assert-MockCalled -CommandName Get-ItemPropertyValue -Scope It -Times 2 -Exactly
             }
         }
     }
@@ -3442,11 +3417,38 @@ InModuleScope 'SqlServerDsc.Common' {
                                                 throw
                                             }
 
+                                            switch ($mockSMK.Length)
+                                            {
+                                                16
+                                                {
+                                                    $typeName = 'System.Security.Cryptography.TripleDESCryptoServiceProvider'
+                                                }
+
+                                                32
+                                                {
+                                                    $typeName = 'System.Security.Cryptography.AESCryptoServiceProvider'
+                                                }
+                                            }
+
+                                            $cryptoProvider         = New-Object -TypeName $typeName
+                                            $cryptoProvider.Padding = 'PKCS7'
+                                            $cryptoProvider.Mode    = 'CBC'
+                                            $cryptoProvider.Key     = $mockSMK
+                                            $mockIV                 = $cryptoProvider.IV
+                                            $encryptor              = $cryptoProvider.CreateEncryptor()
+                                            $memoryStream           = New-Object System.IO.MemoryStream
+                                            $cryptoStream           = New-Object System.Security.Cryptography.CryptoStream ($memoryStream, $encryptor, [System.Security.Cryptography.CryptoStreamMode]::Write)
+                                            $innerMessage           = [byte[]]('0x0D','0xF0', '0xAD', '0xBA') + [BitConverter]::GetBytes([int16]0) + [BitConverter]::GetBytes([int16]$mockUnicodePassword.Length) + $mockUnicodePassword
+                                            $cryptoStream.Write($innerMessage, 0, $innerMessage.Length)
+                                            $cryptoStream.Close()
+                                            $memoryStream.Close()
+                                            $cryptoProvider.Clear()
+                                            $mockEnc_message = $memoryStream.ToArray()
+
                                             return [pscustomobject] @{ Tables = @(
                                                                                     @{
                                                                                         username    = $mockUser
-                                                                                        iv          = $mockIV
-                                                                                        enc_message = $mockEnc_message
+                                                                                        enc_message = $mockIV + $mockEnc_message
                                                                                     }
                                                                                 )
                                                                     }
@@ -3456,10 +3458,6 @@ InModuleScope 'SqlServerDsc.Common' {
                         }
                     )
                 )
-            }
-
-            $mockThrowLocalizedMessage = {
-                throw $Message
             }
 
             $queryParams = @{
@@ -3476,28 +3474,13 @@ InModuleScope 'SqlServerDsc.Common' {
         BeforeEach {
             Mock -CommandName Get-ServiceMasterKey -MockWith { return $mockSMK } -Verifiable
             Mock -CommandName Connect-SQL -MockWith $mockConnectSql -ModuleName $script:dscResourceName -Verifiable
-            Mock -CommandName New-InvalidOperationException -MockWith $mockThrowLocalizedMessage -Verifiable
 
-            $mockExpectedQuery = "*FROM sys.credentials as cred* INNER JOIN sys.sysobjvalues AS obj* ON cred.credential_id = obj.objid* WHERE valclass=28 and valnum=2 and objid=$($queryParams.CredentialId)*"
+            $mockExpectedQuery = "*FROM sys.credentials as c* INNER JOIN sys.sysobjvalues AS o* ON c.credential_id = o.objid* WHERE valclass=28 and valnum=2 and objid=$($queryParams.CredentialId)*"
         }
 
-        Context 'Get SQL credential as PSCredential' {
+        Context 'When SQL credential is returned as PSCredential' {
             It 'Should execute the query, decrypt using 3DES and return a PSCredential object' {
-                $mockSMK                = [System.Text.Encoding]::UTF8.GetBytes('ABCDEFGHIJKLMNOP')
-                $cryptoProvider         = New-Object -TypeName System.Security.Cryptography.TripleDESCryptoServiceProvider
-                $cryptoProvider.Padding = 'PKCS7'
-                $cryptoProvider.Mode    = 'CBC'
-                $cryptoProvider.Key     = $mockSMK
-                $mockIV                 = $cryptoProvider.IV
-                $encryptor              = $cryptoProvider.CreateEncryptor()
-                $memoryStream           = New-Object System.IO.MemoryStream
-                $cryptoStream           = New-Object System.Security.Cryptography.CryptoStream ($memoryStream, $encryptor, [System.Security.Cryptography.CryptoStreamMode]::Write)
-                $innerMessage           = [byte[]]('0x0D','0xF0', '0xAD', '0xBA') + [BitConverter]::GetBytes([int16]0) + [BitConverter]::GetBytes([int16]$mockUnicodePassword.Length) + $mockUnicodePassword
-                $cryptoStream.Write($innerMessage, 0, $innerMessage.Length)
-                $cryptoStream.Close()
-                $memoryStream.Close()
-                $cryptoProvider.Clear()
-                $mockEnc_message = $memoryStream.ToArray()
+                $mockSMK = [System.Text.Encoding]::UTF8.GetBytes('ABCDEFGHIJKLMNOP')
 
                 $result = Get-SqlPSCredential @queryParams
 
@@ -3508,21 +3491,7 @@ InModuleScope 'SqlServerDsc.Common' {
             }
 
             It 'Should execute the query, decrypt using AES and return a PSCredential object' {
-                $mockSMK                = [System.Text.Encoding]::UTF8.GetBytes('ABCDEFGHIJKLMNOPQRSTUVWXYZ012345')
-                $cryptoProvider         = New-Object System.Security.Cryptography.AESCryptoServiceProvider
-                $cryptoProvider.Padding = 'PKCS7'
-                $cryptoProvider.Mode    = 'CBC'
-                $cryptoProvider.Key     = $mockSMK
-                $mockIV                 = $cryptoProvider.IV
-                $encryptor              = $cryptoProvider.CreateEncryptor()
-                $memoryStream           = New-Object System.IO.MemoryStream
-                $cryptoStream           = New-Object System.Security.Cryptography.CryptoStream ($memoryStream, $encryptor, [System.Security.Cryptography.CryptoStreamMode]::Write)
-                $innerMessage           = [byte[]]('0x0D','0xF0', '0xAD', '0xBA') + [BitConverter]::GetBytes([int16]0) + [BitConverter]::GetBytes([int16]$mockUnicodePassword.Length) + $mockUnicodePassword
-                $cryptoStream.Write($innerMessage, 0, $innerMessage.Length)
-                $cryptoStream.Close()
-                $memoryStream.Close()
-                $cryptoProvider.Clear()
-                $mockEnc_message = $memoryStream.ToArray()
+                $mockSMK = [System.Text.Encoding]::UTF8.GetBytes('ABCDEFGHIJKLMNOPQRSTUVWXYZ012345')
 
                 $result = Get-SqlPSCredential @queryParams
 

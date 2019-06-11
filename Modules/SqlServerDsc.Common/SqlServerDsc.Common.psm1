@@ -2548,9 +2548,8 @@ function Get-MailServerCredentialId
         String containing the SQL Server Database Engine instance to connect to.
 
     .NOTES
-        This function is based on Antti Rantasaari's script at https://github.com/NetSPI/Powershell-Modules/blob/master/Get-MSSQLCredentialPasswords.psm1
-        Antti Rantasaari 2014, NetSPI
-        License: BSD 3-Clause http://opensource.org/licenses/BSD-3-Clause
+        Details on Service Master Key protection could be found at
+        https://blogs.msdn.microsoft.com/stuartpa/2005/09/25/protecting-the-sql-server-2005-service-master-key-the-root-of-all-encryption/
 #>
 function Get-ServiceMasterKey
 {
@@ -2578,20 +2577,19 @@ function Get-ServiceMasterKey
     }
 
     $queryToGetServiceMasterKey = "
-        SELECT substring(crypt_property,9,len(crypt_property)-8) AS ServiceMasterKey
+        SELECT crypt_property AS 'key'
         FROM sys.key_encryptions
-        WHERE key_id=102 and (thumbprint=0x03 or thumbprint=0x0300000001)
+        WHERE key_id=102 and thumbprint<>0x01
     "
 
     Write-Verbose -Message ($script:localizedData.GetServiceMasterKey -f $SQLInstanceName) -Verbose
-    $smkEncryptedBytes = (Invoke-Query @invokeQueryParameters -Query $queryToGetServiceMasterKey).Tables[0].ServiceMasterKey
+    $encryptedServiceMasterKey = (Invoke-Query @invokeQueryParameters -Query $queryToGetServiceMasterKey).Tables[0].key | Select-Object -Skip 8
 
     Write-Verbose -Message ($script:localizedData.GetEntropyForSqlInstance -f $SQLInstanceName) -Verbose
-    $sqlInstanceId = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' -ErrorAction Stop).$SQLInstanceName
-    [byte[]]$entropy = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$sqlInstanceId\Security" -ErrorAction Stop).Entropy
+    $instanceId = Get-ItemPropertyValue -Path 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' -Name $SQLInstanceName
+    $entropy = Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\Security" -Name 'Entropy'
 
-    # Decrypt the service master key
-    $serviceMasterKey = [System.Security.Cryptography.ProtectedData]::Unprotect($smkEncryptedBytes, $entropy, 'LocalMachine')
+    $serviceMasterKey = [System.Security.Cryptography.ProtectedData]::Unprotect($encryptedServiceMasterKey, $entropy, [System.Security.Cryptography.DataProtectionScope]::LocalMachine)
 
     return $serviceMasterKey
 }
@@ -2608,9 +2606,9 @@ function Get-ServiceMasterKey
 
     .PARAMETER CredentialId
         Specifies Id of the credential for which MSFT_Credential should be returned.
-
     .NOTES
-        This function is partialy based on Antti Rantasaari's script at https://github.com/NetSPI/Powershell-Modules/blob/master/Get-MSSQLCredentialPasswords.psm1
+        Details on cryptographic message description could be found at
+        https://blogs.msdn.microsoft.com/sqlsecurity/2009/03/30/sql-server-encryptbykey-cryptographic-message-description/
 #>
 function Get-SqlPSCredential
 {
@@ -2643,56 +2641,60 @@ function Get-SqlPSCredential
 
     $smk = Get-ServiceMasterKey -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
 
-    <#
-        Choose the encryption algorithm based on the Service Master Key length - 3DES for 2008, AES for 2012+
-        Choose initialization vector (IV) length based on the algorithm
-    #>
-    switch($smk.Length)
+    switch ($smk.Length)
     {
-        16 { $cryptoProvider = New-Object System.Security.Cryptography.TripleDESCryptoServiceProvider }
+        16
+        {
+            $typeName = 'System.Security.Cryptography.TripleDESCryptoServiceProvider'
+        }
 
-        32 { $cryptoProvider = New-Object System.Security.Cryptography.AESCryptoServiceProvider }
+        32
+        {
+            $typeName = 'System.Security.Cryptography.AESCryptoServiceProvider'
+        }
 
         default
         {
-            $errorMessage = $script:localizedData.UnknownSmkSize -f $smk.Length, $SQLInstanceName
+            $errorMessage = $script:localizedData.SmkSizeNotImplemented -f $smk.Length, $SQLInstanceName
             New-InvalidResultException -Message $errorMessage
         }
     }
 
-    $cryptoProvider.Padding = 'PKCS7'
-    $cryptoProvider.Mode    = 'CBC'
-    $ivLen                  = $cryptoProvider.IV.length
-
-    $queryToGetEncryptedCredential = "
-        SELECT credential_identity AS username,substring(imageval,5,$ivLen) AS iv, substring(imageval,$($ivLen + 5),len(imageval)-$($ivLen + 4)) AS enc_message
-        FROM sys.credentials as cred
-        INNER JOIN sys.sysobjvalues AS obj
-        ON cred.credential_id = obj.objid
+    # Get encrypted message without encryption header which is 4 bytes
+    $queryToGetEncryptedMessage = "
+        SELECT credential_identity AS username, substring(imageval, 5, len(imageval)-4) AS enc_message
+        FROM sys.credentials as c
+        INNER JOIN sys.sysobjvalues AS o
+        ON c.credential_id = o.objid
         WHERE valclass=28 and valnum=2 and objid=$CredentialId
     "
 
-    Write-Verbose -Message ($script:localizedData.GetEncryptedCredential -f $CredentialId, $SQLInstanceName) -Verbose
-    $credInfo = (Invoke-Query @invokeQueryParameters -Query $queryToGetEncryptedCredential).Tables[0]
+    Write-Verbose -Message ($script:localizedData.GetEncryptedMessage -f $CredentialId, $SQLInstanceName) -Verbose
+    $credInfo = (Invoke-Query @invokeQueryParameters -Query $queryToGetEncryptedMessage).Tables[0]
 
-    $message       = New-Object Byte[]($credInfo.enc_message.Length)
-    $decryptor     = $cryptoProvider.CreateDecryptor($smk, $credInfo.iv)
-    $memoryStream  = New-Object System.IO.MemoryStream (,$credInfo.enc_message)
+    $cryptoProvider         = New-Object -TypeName $typeName
+    $cryptoProvider.Key     = $smk
+    # Extract and set Initialization Vector (IV)
+    $cryptoProvider.IV      = $credInfo.enc_message[0..$($cryptoProvider.IV.Length - 1)]
+    $cryptoProvider.Padding = 'PKCS7'
+    $cryptoProvider.Mode    = 'CBC'
+
+    # Set length of the inner message
+    $message       = New-Object Byte[]($credInfo.enc_message.Length - $cryptoProvider.IV.Length)
+    $decryptor     = $cryptoProvider.CreateDecryptor()
+    $memoryStream  = New-Object System.IO.MemoryStream (,$credInfo.enc_message[$cryptoProvider.IV.Length..($credInfo.enc_message.Length - 1)])
     $cryptoStream  = New-Object System.Security.Cryptography.CryptoStream ($memoryStream, $decryptor, [System.Security.Cryptography.CryptoStreamMode]::Read)
     $messageLength = $cryptoStream.Read($message, 0, $message.Length)
     $cryptoStream.Close()
     $memoryStream.Close()
     $cryptoProvider.Clear()
 
-    <#
-        verifying magic number using bytes from 0 to 3
-        according to https://blogs.msdn.microsoft.com/sqlsecurity/2009/03/30/sql-server-encryptbykey-cryptographic-message-description/
-    #>
+    # Verifying magic number using bytes from 0 to 3
     if ([System.BitConverter]::ToString($message[3..0]) -ne 'BA-AD-F0-0D')
     {
         Write-Warning -Message $script:localizedData.FailedCredentialDecryption
     }
-    # getting password length using bytes at 6 and 7
+    # Getting password length using bytes 6 and 7
     $len = [System.BitConverter]::ToInt16($message[6..7],0)
 
     # Convert password to secure string
