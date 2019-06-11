@@ -68,6 +68,12 @@ function Get-TargetResource
 
     if ($Ensure -eq 'Present')
     {
+        # Configuration manager requires thumbprint to be lowercase or it won't display the configured certificate.
+        if (-not [string]::IsNullOrEmpty($Thumbprint))
+        {
+            $Thumbprint = $Thumbprint.ToLower()
+        }
+
         $ensureValue = 'Present'
         $certificateSettings = Test-CertificatePermission -Thumbprint $Thumbprint -ServiceAccount $ServiceAccount
         if ($encryptionSettings.Certificate -ine $Thumbprint)
@@ -199,6 +205,12 @@ function Set-TargetResource
         $ServiceAccount
     )
 
+    # Configuration manager requires thumbprint to be lowercase or it won't display the configured certificate.
+    if (-not [string]::IsNullOrEmpty($Thumbprint))
+    {
+        $Thumbprint = $Thumbprint.ToLower()
+    }
+
     $parameters = @{
         InstanceName    = $InstanceName
         Thumbprint      = $Thumbprint
@@ -292,6 +304,12 @@ function Test-TargetResource
         [System.String]
         $ServiceAccount
     )
+
+    # Configuration manager requires thumbprint to be lowercase or it won't display the configured certificate.
+    if (-not [string]::IsNullOrEmpty($Thumbprint))
+    {
+        $Thumbprint = $Thumbprint.ToLower()
+    }
 
     $parameters = @{
         InstanceName    = $InstanceName
