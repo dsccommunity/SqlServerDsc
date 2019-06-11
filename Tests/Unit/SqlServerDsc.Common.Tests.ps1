@@ -3397,7 +3397,7 @@ InModuleScope 'SqlServerDsc.Common' {
             It 'Should throw the correct error' {
                 $mockSMK = [System.Text.Encoding]::UTF8.GetBytes('012345')
 
-                { Get-SqlPSCredential @queryParams} | Should -Throw ($script:localizedData.UnknownSmkSize -f $mockSMK.Length, $queryParams.SQLInstanceName)
+                { Get-SqlPSCredential @queryParams} | Should -Throw ($script:localizedData.SmkSizeNotImplemented -f $mockSMK.Length, $queryParams.SQLInstanceName)
 
                 Assert-MockCalled -CommandName Get-ServiceMasterKey -Scope It -Exactly 1
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly 0
