@@ -442,12 +442,13 @@ function Set-TargetResource
                         if ($PSBoundParameters.ContainsKey('Authentication'))
                         {
                             # Default Authentication is Anonymous so it's absent in the selection.
-                            switch($Authentication)
+                            switch ($Authentication)
                             {
                                 'Basic'
                                 {
                                     $mailServer.SetAccount($SMTPAccount.UserName, $SMTPAccount.Password)
                                 }
+
                                 'Windows'
                                 {
                                     $mailServer.UseDefaultCredentials = $true
@@ -605,10 +606,17 @@ function Set-TargetResource
                             )
                         )
 
-                        $mailServer.UseDefaultCredentials = switch($Authentication)
+                        $mailServer.UseDefaultCredentials = switch ($Authentication)
                         {
-                            'Windows' { $true }
-                            Default   { $false }
+                            'Windows'
+                            {
+                                $true
+                            }
+
+                            Default
+                            {
+                                $false
+                            }
                         }
 
                         if ($Authentication -ne 'Basic' -and $currentSMTPAccount.UserName)

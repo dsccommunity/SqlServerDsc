@@ -1210,7 +1210,9 @@ Resource to manage SQL Server Database Mail.
 #### Examples
 
 * [Enable Database Mail](/Examples/Resources/SqlServerDatabaseMail/1-EnableDatabaseMail.ps1)
-* [Disable Database Mail](/Examples/Resources/SqlServerDatabaseMail/2-DisableDatabaseMail.ps1)
+* [Enable Database Mail with SSL](/Examples/Resources/SqlServerDatabaseMail/2-EnableDatabaseMailWithSsl.ps1)
+* [Enable Database Mail with Basic Authentication](/Examples/Resources/SqlServerDatabaseMail/3-EnableDatabaseMailWithAuthentication.ps1)
+* [Disable Database Mail](/Examples/Resources/SqlServerDatabaseMail/4-DisableDatabaseMail.ps1)
 
 #### Known issues
 

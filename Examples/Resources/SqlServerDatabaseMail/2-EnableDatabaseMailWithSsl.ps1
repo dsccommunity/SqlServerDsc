@@ -18,6 +18,7 @@ $ConfigurationData = @{
             Description    = 'Default mail account and profile.'
             LoggingLevel   = 'Normal'
             TcpPort        = 25
+            EnableSsl      = $true
         }
     )
 }
@@ -59,6 +60,7 @@ Configuration Example
             Description          = $Node.Description
             LoggingLevel         = $Node.LoggingLevel
             TcpPort              = $Node.TcpPort
+            EnableSsl            = $Node.EnableSsl
 
             PsDscRunAsCredential = $SqlInstallCredential
         }

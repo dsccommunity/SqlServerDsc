@@ -15,9 +15,6 @@ $ConfigurationData = @{
             AccountName    = 'MyMail'
             ProfileName    = 'MyMailProfile'
             EmailAddress   = 'NoReply@company.local'
-            Description    = 'Default mail account and profile.'
-            LoggingLevel   = 'Normal'
-            TcpPort        = 25
         }
     )
 }
@@ -34,7 +31,8 @@ Configuration Example
 
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    Node localhost {
+
         SqlServerDatabaseMail 'DisableDatabaseMail'
         {
             Ensure               = 'Absent'
@@ -54,7 +52,6 @@ Configuration Example
         #>
         SqlServerConfiguration 'DisableDatabaseMailXPs'
         {
-
             ServerName     = $Node.ServerName
             InstanceName   = $Node.InstanceName
             OptionName     = 'Database Mail XPs'
