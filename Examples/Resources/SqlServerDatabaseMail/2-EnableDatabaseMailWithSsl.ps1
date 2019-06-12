@@ -1,8 +1,7 @@
 <#
     .EXAMPLE
-        This example will enable Database Mail on a SQL Server instance and
-        create a mail account with a default public profile.
-
+        This example will enable Database Mail with SSL on a SQL Server
+        instance and create a mail account with a default public profile.
 #>
 $ConfigurationData = @{
     AllNodes = @(
@@ -23,7 +22,7 @@ $ConfigurationData = @{
     )
 }
 
-Configuration Example
+Configuration EnableDatabaseMailWithSsl
 {
     param
     (
