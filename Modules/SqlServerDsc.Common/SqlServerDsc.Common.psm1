@@ -2448,6 +2448,11 @@ function Get-MailServerCredentialId
         Gets unencrypted Service Master Key for specified SQL Instance
         which will be used for credential password decryption.
 
+    .DESCRIPTION
+        Submission containing materials of a third party: Antti Rantasaari 2014, NetSPI
+        License: BSD 3-Clause https://opensource.org/licenses/BSD-3-Clause
+        Source: https://github.com/NetSPI/Powershell-Modules/blob/master/Get-MSSQLCredentialPasswords.psm1
+
     .PARAMETER SQLServer
         String containing the host name of the SQL Server to connect to.
 
