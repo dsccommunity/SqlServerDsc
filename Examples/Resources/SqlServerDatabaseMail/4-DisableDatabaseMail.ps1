@@ -19,7 +19,7 @@ $ConfigurationData = @{
     )
 }
 
-Configuration Example
+Configuration DisableDatabaseMail
 {
     param
     (

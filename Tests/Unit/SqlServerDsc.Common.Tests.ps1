@@ -3417,6 +3417,12 @@ InModuleScope 'SqlServerDsc.Common' {
                                                 throw
                                             }
 
+                                            <#
+                                                Code below will encrypt mock password so that function Get-SqlPSCredential() can
+                                                proceed with its decryption the same way it will work on SQL Server. As part of the
+                                                mocking process, key and IV which were used for password encryption will be passed
+                                                to the result along with encrypted password.
+                                            #>
                                             switch ($mockSMK.Length)
                                             {
                                                 16
@@ -3480,6 +3486,8 @@ InModuleScope 'SqlServerDsc.Common' {
 
         Context 'When SQL credential is returned as PSCredential' {
             It 'Should execute the query, decrypt using 3DES and return a PSCredential object' {
+
+                # Generating 128 bit 3DES key which will be used for password encryption and decryption
                 $mockSMK = [System.Text.Encoding]::UTF8.GetBytes('ABCDEFGHIJKLMNOP')
 
                 $result = Get-SqlPSCredential @queryParams
@@ -3491,6 +3499,8 @@ InModuleScope 'SqlServerDsc.Common' {
             }
 
             It 'Should execute the query, decrypt using AES and return a PSCredential object' {
+
+                # Generating 256 bit AES key which will be used for password encryption and decryption
                 $mockSMK = [System.Text.Encoding]::UTF8.GetBytes('ABCDEFGHIJKLMNOPQRSTUVWXYZ012345')
 
                 $result = Get-SqlPSCredential @queryParams

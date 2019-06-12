@@ -22,7 +22,7 @@ $ConfigurationData = @{
     )
 }
 
-Configuration Example
+Configuration EnableDatabaseMail
 {
     param
     (
