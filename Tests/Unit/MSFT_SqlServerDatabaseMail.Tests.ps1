@@ -54,6 +54,7 @@ try
     InModuleScope $script:dscResourceName {
         $mockServerName = 'localhost'
         $mockInstanceName = 'MSSQLSERVER'
+        $mockAccountId = 11
         $mockAccountName = 'MyMail'
         $mockEmailAddress = 'NoReply@company.local'
         $mockReplyToAddress = $mockEmailAddress
@@ -126,6 +127,7 @@ try
         # Contains mocked object that is used between several mocks.
         $mailAccountObject = {
             New-Object -TypeName Object |
+                Add-Member -MemberType NoteProperty -Name 'ID' -Value $mockAccountId -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockAccountName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'DisplayName' -Value $mockDisplayName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'EmailAddress' -Value $mockEmailAddress -PassThru |
@@ -346,7 +348,7 @@ try
                         $mockDynamicAuthenticationAccountValue = $mockSMTPAccountPresent.UserName
 
                         Mock -CommandName Get-MailServerCredentialId `
-                             -ParameterFilter {$MailServerName -eq $mockMailServerName}
+                             -ParameterFilter {$MailServerName -eq $mockMailServerName -and $AccountId -eq $mockAccountId}
                         Mock -CommandName Get-SqlPSCredential `
                              -MockWith { return $mockSMTPAccountPresent }
                     }
@@ -360,7 +362,7 @@ try
                                                                         Should -Be $mockSMTPAccountPresent.GetNetworkCredential().Password
 
                         Assert-MockCalled -CommandName Get-MailServerCredentialId `
-                                          -ParameterFilter {$MailServerName -eq $mockMailServerName} `
+                                          -ParameterFilter {$MailServerName -eq $mockMailServerName -and $AccountId -eq $mockAccountId} `
                                           -Exactly `
                                           -Times 1 `
                                           -Scope It

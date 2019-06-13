@@ -165,7 +165,8 @@ function Get-TargetResource
 
                     $credentialId = Get-MailServerCredentialId -SQLServer $ServerName `
                                                                -SQLInstanceName $InstanceName `
-                                                               -MailServerName $mailServer.Name
+                                                               -MailServerName $mailServer.Name `
+                                                               -AccountId $databaseMailAccount.ID
 
                     $returnValue['SMTPAccount'] = Get-SqlPSCredential -SQLServer $ServerName `
                                                                       -SQLInstanceName $InstanceName `
@@ -585,7 +586,8 @@ function Set-TargetResource
 
                         $credentialId = Get-MailServerCredentialId -SQLServer $ServerName `
                                                                    -SQLInstanceName $InstanceName `
-                                                                   -MailServerName $MailServerName
+                                                                   -MailServerName $MailServerName `
+                                                                   -AccountId $databaseMailAccount.ID
 
                         $currentSMTPAccount = Get-SqlPSCredential -SQLServer $ServerName `
                                                                   -SQLInstanceName $InstanceName `

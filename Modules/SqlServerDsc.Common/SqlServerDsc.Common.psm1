@@ -2403,6 +2403,9 @@ function Find-ExceptionByNumber
 
     .PARAMETER MailServerName
         Specifies name of the SMTP mail server for which credential Id should be returned.
+
+    .PARAMETER AccountId
+        Specifies ID of the mail account in which SMTP server were created.
 #>
 function Get-MailServerCredentialId
 {
@@ -2421,7 +2424,12 @@ function Get-MailServerCredentialId
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $MailServerName
+        $MailServerName,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Int32]
+        $AccountId
     )
 
     $invokeQueryParameters = @{
@@ -2434,11 +2442,11 @@ function Get-MailServerCredentialId
     $queryToGetCredentialId = "
         SELECT credential_id
         FROM msdb.dbo.sysmail_server
-        WHERE servername = '$MailServerName'
+        WHERE servername = '$MailServerName' and account_id = '$AccountId'
     "
 
     Write-Verbose -Message ($script:localizedData.GetMailServerCredentialId -f $MailServerName, $SQLInstanceName) -Verbose
-    $result = (Invoke-Query @invokeQueryParameters -Query $queryToGetCredentialId).Tables.credential_id
+    $result = (Invoke-Query @invokeQueryParameters -Query $queryToGetCredentialId).Tables[0].credential_id
 
     return $result
 }

@@ -3162,7 +3162,7 @@ InModuleScope 'SqlServerDsc.Common' {
                                                 throw
                                             }
 
-                                            return [pscustomobject] @{ Tables = @{ credential_id = $mockCredentialId } }
+                                            return [pscustomobject] @{ Tables = @( @{ credential_id = $mockCredentialId } ) }
                                         } -PassThru
                                 )
                             }
@@ -3175,13 +3175,14 @@ InModuleScope 'SqlServerDsc.Common' {
                 SQLServer       = 'Server1'
                 SQLInstanceName = 'MSSQLSERVER'
                 MailServerName  = 'smtp.account.local'
+                AccountId       = 11
             }
 
             $mockCredentialId = 65555
         }
 
         BeforeEach {
-            $mockExpectedQuery = "*SELECT credential_id* FROM msdb.dbo.sysmail_server* WHERE servername = '$($queryParams.MailServerName)'*"
+            $mockExpectedQuery = "*SELECT credential_id* FROM msdb.dbo.sysmail_server* WHERE servername = '$($queryParams.MailServerName)' and account_id = '$($queryParams.AccountId)'*"
 
             Mock -CommandName Connect-SQL -MockWith $mockConnectSql -ModuleName $script:dscResourceName -Verifiable
         }
