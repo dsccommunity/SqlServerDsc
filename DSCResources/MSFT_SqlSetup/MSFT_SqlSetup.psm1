@@ -1052,18 +1052,8 @@ function Set-TargetResource
         if ($PSBoundParameters.ContainsKey($parameterName))
         {
             $parameterValue = Get-Variable -Name $parameterName -ValueOnly
-
-            # Trim backslash, but only if the path contains a full path and not just a qualifier.
-            if ($parameterValue -and $parameterValue -notmatch '^[a-zA-Z]:\\$')
-            {
-                Set-Variable -Name $parameterName -Value $parameterValue.TrimEnd('\')
-            }
-
-            # If the path only contains a qualifier but no backslash ('M:'), then a backslash is added ('M:\').
-            if ($parameterValue -match '^[a-zA-Z]:$')
-            {
-                Set-Variable -Name $parameterName -Value "$parameterValue\"
-            }
+            $formattedPath = Format-Path -Path $parameterValue -TrailingSlash
+            Set-Variable -Name $parameterName -Value $formattedPath
         }
     }
 
@@ -1564,6 +1554,7 @@ function Set-TargetResource
                 }
                 else
                 {
+                    # Logic added as a fix for Issue#1254 SqlSetup:Fails when a root directory is specified
                     if ($currentSetupArgument.Value -match '^[a-zA-Z]:\\$')
                     {
                         $setupArgumentValue = $currentSetupArgument.Value
@@ -1578,7 +1569,6 @@ function Set-TargetResource
 
             $arguments += "/$($currentSetupArgument.Key.ToUpper())=$($setupArgumentValue) "
         }
-
     }
 
     # Replace sensitive values for verbose output
@@ -2150,6 +2140,8 @@ function Test-TargetResource
     {
         Write-Verbose -Message ($script:localizedData.FeaturesFound -f $getTargetResourceResult.Features)
     }
+
+    $result = $true
 
     if ($getTargetResourceResult.Features)
     {
