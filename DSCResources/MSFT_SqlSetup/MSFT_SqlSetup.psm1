@@ -1006,6 +1006,15 @@ function Set-TargetResource
         $FeatureFlag
     )
 
+    <#
+        Fixing issue 448, setting FailoverClusterGroupName to default value
+        if not specified in configuration.
+    #>
+    if (-not $PSBoundParameters.ContainsKey('FailoverClusterGroupName'))
+    {
+        $FailoverClusterGroupName = 'SQL Server ({0})' -f $InstanceName
+    }
+
     $getTargetResourceParameters = @{
         Action = $Action
         SourcePath = $SourcePath
@@ -1018,13 +1027,6 @@ function Set-TargetResource
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
     $InstanceName = $InstanceName.ToUpper()
-
-    # Fixing issue 448, setting FailoverClusterGroupName to default value if not specified in configuration
-
-    if(-not $PSBoundParameters.ContainsKey('FailoverClusterGroupName'))
-    {
-        $boundParameters.FailoverClusterGroupName = "SQL Server($InstanceName)"
-    }
 
     $parametersToEvaluateTrailingSlash = @(
         'InstanceDir',
@@ -1117,12 +1119,12 @@ function Set-TargetResource
     {
         { $_ -in ('10','11','12','13','14') }
         {
-            if((Get-Variable -Name 'InstallSharedDir' -ErrorAction SilentlyContinue) -and (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\FEE2E540D20152D4597229B6CFBC0A69' -ErrorAction SilentlyContinue))
+            if ((Get-Variable -Name 'InstallSharedDir' -ErrorAction SilentlyContinue) -and (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\FEE2E540D20152D4597229B6CFBC0A69' -ErrorAction SilentlyContinue))
             {
                 Set-Variable -Name 'InstallSharedDir' -Value ''
             }
 
-            if((Get-Variable -Name 'InstallSharedWOWDir' -ErrorAction SilentlyContinue) -and (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\A79497A344129F64CA7D69C56F5DD8B4' -ErrorAction SilentlyContinue))
+            if ((Get-Variable -Name 'InstallSharedWOWDir' -ErrorAction SilentlyContinue) -and (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\A79497A344129F64CA7D69C56F5DD8B4' -ErrorAction SilentlyContinue))
             {
                 Set-Variable -Name 'InstallSharedWOWDir' -Value ''
             }
@@ -1352,7 +1354,7 @@ function Set-TargetResource
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $SQLSvcAccount -ServiceType 'SQL')
         }
 
-        if($PSBoundParameters.ContainsKey('AgtSvcAccount'))
+        if ($PSBoundParameters.ContainsKey('AgtSvcAccount'))
         {
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $AgtSvcAccount -ServiceType 'AGT')
         }
@@ -1393,31 +1395,31 @@ function Set-TargetResource
         }
 
         # tempdb : define SqlTempdbFileCount
-        if($PSBoundParameters.ContainsKey('SqlTempdbFileCount'))
+        if ($PSBoundParameters.ContainsKey('SqlTempdbFileCount'))
         {
             $setupArguments += @{ SqlTempdbFileCount = $SqlTempdbFileCount }
         }
 
         # tempdb : define SqlTempdbFileSize
-        if($PSBoundParameters.ContainsKey('SqlTempdbFileSize'))
+        if ($PSBoundParameters.ContainsKey('SqlTempdbFileSize'))
         {
             $setupArguments += @{ SqlTempdbFileSize = $SqlTempdbFileSize }
         }
 
         # tempdb : define SqlTempdbFileGrowth
-        if($PSBoundParameters.ContainsKey('SqlTempdbFileGrowth'))
+        if ($PSBoundParameters.ContainsKey('SqlTempdbFileGrowth'))
         {
             $setupArguments += @{ SqlTempdbFileGrowth = $SqlTempdbFileGrowth }
         }
 
         # tempdb : define SqlTempdbLogFileSize
-        if($PSBoundParameters.ContainsKey('SqlTempdbLogFileSize'))
+        if ($PSBoundParameters.ContainsKey('SqlTempdbLogFileSize'))
         {
             $setupArguments += @{ SqlTempdbLogFileSize = $SqlTempdbLogFileSize }
         }
 
         # tempdb : define SqlTempdbLogFileGrowth
-        if($PSBoundParameters.ContainsKey('SqlTempdbLogFileGrowth'))
+        if ($PSBoundParameters.ContainsKey('SqlTempdbLogFileGrowth'))
         {
             $setupArguments += @{ SqlTempdbLogFileGrowth = $SqlTempdbLogFileGrowth }
         }
@@ -1494,7 +1496,7 @@ function Set-TargetResource
                 $setupArguments += @{ ASSysAdminAccounts =  @($PsDscContext.RunAsUser) }
             }
 
-            if($PSBoundParameters.ContainsKey("ASSysAdminAccounts"))
+            if ($PSBoundParameters.ContainsKey("ASSysAdminAccounts"))
             {
                 $setupArguments['ASSysAdminAccounts'] += $ASSysAdminAccounts
             }
@@ -1522,7 +1524,7 @@ function Set-TargetResource
     # Automatically include any additional arguments
     foreach ($argument in $argumentVars)
     {
-        if($argument -eq 'ProductKey')
+        if ($argument -eq 'ProductKey')
         {
             $setupArguments += @{ 'PID' = (Get-Variable -Name $argument -ValueOnly) }
         }
@@ -1562,7 +1564,7 @@ function Set-TargetResource
                 }
                 else
                 {
-                    if($currentSetupArgument.Value -match '^[a-zA-Z]:\\$')
+                    if ($currentSetupArgument.Value -match '^[a-zA-Z]:\\$')
                     {
                         $setupArgumentValue = $currentSetupArgument.Value
                     }
@@ -2117,6 +2119,15 @@ function Test-TargetResource
         $FeatureFlag
     )
 
+    <#
+        Fixing issue 448, setting FailoverClusterGroupName to default value
+        if not specified in configuration.
+    #>
+    if (-not $PSBoundParameters.ContainsKey('FailoverClusterGroupName'))
+    {
+        $FailoverClusterGroupName = 'SQL Server ({0})' -f $InstanceName
+    }
+
     $result = $true
 
     $getTargetResourceParameters = @{
@@ -2138,12 +2149,6 @@ function Test-TargetResource
     else
     {
         Write-Verbose -Message ($script:localizedData.FeaturesFound -f $getTargetResourceResult.Features)
-    }
-
-    # Fixing issue 448, setting FailoverClusterGroupName to default value if not specified in configuration.
-    if(-not $boundParameters.ContainsKey('FailoverClusterGroupName'))
-    {
-        $boundParameters.FailoverClusterGroupName = "SQL Server($InstanceName)"
     }
 
     if ($getTargetResourceResult.Features)
@@ -2178,7 +2183,7 @@ function Test-TargetResource
                 $result = $false
             }
         }
-    }#>
+    }
 
     return $result
 }

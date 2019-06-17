@@ -53,7 +53,7 @@ class MSFT_SqlSetup : OMI_BaseResource
     [Write, Description("Specifies the startup mode for SQL Server Analysis service."), ValueMap{"Automatic", "Disabled", "Manual"}, Values{"Automatic", "Disabled", "Manual"}] String AsSvcStartupType;
     [Write, Description("Specifies the startup mode for SQL Server Report service."), ValueMap{"Automatic", "Disabled", "Manual"}, Values{"Automatic", "Disabled", "Manual"}] String RSSVCStartupType;
     [Write, Description("Specifies the startup mode for SQL Server Browser service."), ValueMap{"Automatic", "Disabled", "Manual"}, Values{"Automatic", "Disabled", "Manual"}] String BrowserSvcStartupType;
-    [Write, Description("The name of the resource group to create for the clustered SQL Server instance.")] String FailoverClusterGroupName;
+    [Write, Description("The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (InstanceName)'.")] String FailoverClusterGroupName;
     [Write, Description("Array of IP Addresses to be assigned to the clustered SQL Server instance.")] String FailoverClusterIPAddress[];
     [Write, Description("Host name to be assigned to the clustered SQL Server instance.")] String FailoverClusterNetworkName;
     [Write, Description("Specifies the number of tempdb data files to be added by setup.")] UInt32 SqlTempdbFileCount;
