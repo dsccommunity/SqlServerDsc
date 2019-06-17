@@ -2118,8 +2118,6 @@ function Test-TargetResource
         $FailoverClusterGroupName = 'SQL Server ({0})' -f $InstanceName
     }
 
-    $result = $true
-
     $getTargetResourceParameters = @{
         Action = $Action
         SourcePath = $SourcePath
