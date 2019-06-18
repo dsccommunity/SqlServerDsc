@@ -50,6 +50,9 @@
   - Add an Action type of 'Upgrade'. This will ask setup to do a version
     upgrade where possible ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
   - Fix an error when testing for DQS installation ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
+  - Changed the logic of how default value of FailoverClusterGroupName is
+    set since that was preventing the resource to be able to be debugged
+    ([issue #448](https://github.com/PowerShell/SqlServerDsc/issues/448)).
 - Changes to SqlWindowsFirewall
   - Where a version upgrade has changed paths for a database engine, the
     existing firewall rule for that instance will be updated rather than
