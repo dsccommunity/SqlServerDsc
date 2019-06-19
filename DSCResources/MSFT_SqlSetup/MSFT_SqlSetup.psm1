@@ -29,6 +29,10 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlSetup'
     .PARAMETER InstanceName
         Name of the SQL instance to be installed.
 
+    .PARAMETER RSInstallMode
+        Install mode for Reporting Services. The value of this parameter cannot be determined post-install,
+        so the function will simply return the value of this parameter.
+
     .PARAMETER FailoverClusterNetworkName
         Host name to be assigned to the clustered SQL Server instance.
 
@@ -59,6 +63,11 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
+
+        [Parameter()]
+        [ValidateSet('SharePointFilesOnlyMode', 'DefaultNativeMode', 'FilesOnlyMode')]
+        [System.String]
+        $RSInstallMode,
 
         [Parameter()]
         [System.String]
@@ -551,6 +560,7 @@ function Get-TargetResource
         FTSvcAccountUsername = $fullTextServiceAccountUsername
         RSSvcAccountUsername = $reportingServiceAccountUsername
         RsSvcStartupType = $RsSvcStartupType
+        RSInstallMode = $RSInstallMode
         ASSvcAccountUsername = $analysisServiceAccountUsername
         AsSvcStartupType = $AsSvcStartupType
         ASCollation = $analysisCollation
