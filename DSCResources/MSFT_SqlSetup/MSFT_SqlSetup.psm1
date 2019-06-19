@@ -29,6 +29,10 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlSetup'
     .PARAMETER InstanceName
         Name of the SQL instance to be installed.
 
+    .PARAMETER RSInstallMode
+        Install mode for Reporting Services. The value of this parameter cannot be determined post-install,
+        so the function will simply return the value of this parameter.
+
     .PARAMETER FailoverClusterNetworkName
         Host name to be assigned to the clustered SQL Server instance.
 
@@ -59,6 +63,11 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
+
+        [Parameter()]
+        [ValidateSet('SharePointFilesOnlyMode', 'DefaultNativeMode', 'FilesOnlyMode')]
+        [System.String]
+        $RSInstallMode,
 
         [Parameter()]
         [System.String]
@@ -551,6 +560,7 @@ function Get-TargetResource
         FTSvcAccountUsername = $fullTextServiceAccountUsername
         RSSvcAccountUsername = $reportingServiceAccountUsername
         RsSvcStartupType = $RsSvcStartupType
+        RSInstallMode = $RSInstallMode
         ASSvcAccountUsername = $analysisServiceAccountUsername
         AsSvcStartupType = $AsSvcStartupType
         ASCollation = $analysisCollation
@@ -672,6 +682,9 @@ function Get-TargetResource
 
     .PARAMETER RSSvcAccount
         Service account for Reporting Services service.
+
+    .PARAMETER RSInstallMode
+        Install mode for Reporting Services.
 
     .PARAMETER ASSvcAccount
        Service account for Analysis Services service.
@@ -893,6 +906,11 @@ function Set-TargetResource
         [Parameter()]
         [System.Management.Automation.PSCredential]
         $RSSvcAccount,
+
+        [Parameter()]
+        [ValidateSet('SharePointFilesOnlyMode', 'DefaultNativeMode', 'FilesOnlyMode')]
+        [System.String]
+        $RSInstallMode,
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -1450,6 +1468,10 @@ function Set-TargetResource
         {
             $setupArguments += @{ RsSvcStartupType = $RsSvcStartupType}
         }
+        if ($PSBoundParameters.ContainsKey('RSInstallMode'))
+        {
+            $setupArguments += @{ RSINSTALLMODE = $RSInstallMode}
+        }
     }
 
     if ($Features.Contains('AS'))
@@ -1785,6 +1807,9 @@ function Set-TargetResource
     .PARAMETER RSSvcAccount
         Service account for Reporting Services service.
 
+    .PARAMETER RSInstallMode
+        Install mode for Reporting Services.
+
     .PARAMETER ASSvcAccount
        Service account for Analysis Services service.
 
@@ -1996,6 +2021,11 @@ function Test-TargetResource
         [Parameter()]
         [System.Management.Automation.PSCredential]
         $RSSvcAccount,
+
+        [Parameter()]
+        [ValidateSet('SharePointFilesOnlyMode', 'DefaultNativeMode', 'FilesOnlyMode')]
+        [System.String]
+        $RSInstallMode,
 
         [Parameter()]
         [System.Management.Automation.PSCredential]

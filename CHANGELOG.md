@@ -53,6 +53,7 @@
   - Changed the logic of how default value of FailoverClusterGroupName is
     set since that was preventing the resource to be able to be debugged
     ([issue #448](https://github.com/PowerShell/SqlServerDsc/issues/448)).
+  - Added RSInstallMode parameter ([issue #1163](https://github.com/PowerShell/SqlServerDsc/issues/1163)).
 - Changes to SqlWindowsFirewall
   - Where a version upgrade has changed paths for a database engine, the
     existing firewall rule for that instance will be updated rather than
