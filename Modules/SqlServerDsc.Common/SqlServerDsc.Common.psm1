@@ -1602,6 +1602,9 @@ function Restart-ReportingServicesService
     .PARAMETER WithResults
         Specifies if the query should return results.
 
+    .PARAMETER StatementTimeout
+        Set the query StatementTimeout in seconds. Default 600 seconds (10mins).
+
     .EXAMPLE
         Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master `
             -Query 'SELECT name FROM sys.databases' -WithResults
@@ -1655,7 +1658,11 @@ function Invoke-Query
 
         [Parameter()]
         [Switch]
-        $WithResults
+        $WithResults,
+
+        [ValidateNotNull()]
+        [System.Int32]
+        $StatementTimeout = 600
     )
 
     # If we don't have an smo object, then we try to use credentials
@@ -1666,9 +1673,10 @@ function Invoke-Query
     elseif ($PSCmdlet.ParameterSetName -eq 'SqlServer')
     {
         $connectSQLParamaters = @{
-            ServerName   = $SQLServer
-            InstanceName = $SQLInstanceName
-            LoginType    = $LoginType
+            ServerName       = $SQLServer
+            InstanceName     = $SQLInstanceName
+            LoginType        = $LoginType
+            StatementTimeout = $StatementTimeout
         }
 
         if ($PSBoundParameters.ContainsKey('DatabaseCredential'))
