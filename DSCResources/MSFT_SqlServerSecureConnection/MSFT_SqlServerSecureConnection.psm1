@@ -305,12 +305,6 @@ function Test-TargetResource
         $ServiceAccount
     )
 
-    # Configuration manager requires thumbprint to be lowercase or it won't display the configured certificate.
-    if (-not [string]::IsNullOrEmpty($Thumbprint))
-    {
-        $Thumbprint = $Thumbprint.ToLower()
-    }
-
     $parameters = @{
         InstanceName    = $InstanceName
         Thumbprint      = $Thumbprint
