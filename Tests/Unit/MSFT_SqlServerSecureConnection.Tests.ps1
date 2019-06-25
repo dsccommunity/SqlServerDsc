@@ -65,13 +65,12 @@ try
 
             [void] AddAccessRule([System.Security.AccessControl.FileSystemAccessRule] $object)
             {
-
             }
         }
 
         class MockedGetItem
         {
-            [string] $Thumbprint = '12345678'
+            [string] $Thumbprint = '1A11AB1AB1A11111A1111AB111111AB11ABCDEFA'
             [string] $PSPath = 'PathToItem'
             [string] $Path = 'PathToItem'
             [MockedAccessControl]$ACL = [MockedAccessControl]::new()
@@ -89,7 +88,7 @@ try
 
         $mockNamedInstanceName = 'INSTANCE'
         $mockDefaultInstanceName = 'MSSQLSERVER'
-        $mockThumbprint = '123456789'
+        $mockThumbprint = '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'
         $mockServiceAccount = 'SqlSvc'
 
         Describe 'SqlServerSecureConnection\Get-TargetResource' -Tag 'Get' {
@@ -117,14 +116,13 @@ try
                 It 'Should return the the state of present' {
                     $resultGetTargetResource = Get-TargetResource @defaultParameters
                     $resultGetTargetResource.InstanceName | Should -Be $mockNamedInstanceName
-                    $resultGetTargetResource.Thumbprint | Should -Be $mockThumbprint
+                    $resultGetTargetResource.Thumbprint | Should -BeExactly $mockThumbprint
                     $resultGetTargetResource.ServiceAccount | Should -Be $mockServiceAccount
                     $resultGetTargetResource.ForceEncryption | Should -Be $true
                     $resultGetTargetResource.Ensure | Should -Be 'Present'
 
                     Assert-MockCalled -CommandName Get-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
                 }
-
             }
 
             Context 'When the system is not in the desired state and Ensure is Present' {
@@ -306,7 +304,7 @@ try
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
                             InstanceName    = $mockNamedInstanceName
-                            Thumbprint      = '987654321'
+                            Thumbprint      = $mockThumbprint
                             ServiceAccount  = $mockServiceAccount
                             ForceEncryption = $false
                             Ensure          = 'Present'
