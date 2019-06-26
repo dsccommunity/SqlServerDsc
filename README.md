@@ -107,6 +107,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   resource to ensure an availability group is present or absent.
 * [**SqlAGDatabase**](#sqlagdatabase)
   to manage the database membership in Availability Groups.
+* [**SqlAgentAlert**](#sqlagentalert)
+  resource to manage SQL Agent Alerts.
 * [**SqlAgentOperator**](#sqlagentoperator)
   resource to manage SQL Agent Operators.
 * [**SqlAGListener**](#sqlaglistener)
@@ -126,8 +128,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   manage SQL database permissions.
 * [**SqlDatabaseRecoveryModel**](#sqldatabaserecoverymodel) resource
   to manage database recovery model.
-* [**SqlDatabaseRole**](#sqldatabaserole) resource to manage SQL
-  database roles.
+* [**SqlDatabaseRole**](#sqldatabaserole) resource to manage SQL database roles.
 * [**SqlRS**](#sqlrs) configures SQL Server Reporting.
   Services to use a database engine in another instance.
 * [**SqlRSSetup**](#sqlrssetup) Installs the standalone
@@ -295,6 +296,11 @@ group.
   login, control server, impersonate login, or control login permissions.
   If set to $false, the owner of the database will be the PsDscRunAsCredential.
   The default is '$false'.
+* **`[Boolean]` ReplaceExisting** _(Write)_: If set to $true, this adds the restore
+  option WITH REPLACE.
+  If set to $false, Existing databases and files will block the restore
+  and throw error.
+  The default is '$false'.
 * **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
   will only determine if a change is needed if the target node is the active
   host of the SQL Server Instance.
@@ -313,6 +319,36 @@ group.
 #### Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAGDatabase).
+
+### SqlAgentAlert
+
+This resource is used to add/remove SQL Agent Alerts. You can also
+update the severity or message id.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2008 or later.
+
+#### Parameters
+
+* **`[String]` Name** _(Key)_: The name of the SQL Agent Alert.
+* **`[String]` Ensure** _(Write)_: Specifies if the SQL Agent Alert should
+  be present or absent. Default is Present. { *Present* | Absent }
+* **`[String]` ServerName** _(Key)_: The host name of the SQL Server to be
+  configured. Default is $env:COMPUTERNAME.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` Severity** _(Write)_: The severity of the SQL Agent Alert.
+* **`[String]` MessageId** _(Write)_: The message id of the SQL Agent Alert.
+
+#### Examples
+
+* [Add a SQL Agent Alert](/Examples/Resources/SqlAgentAlert/1-AddAlert.ps1)
+* [Remove a SQL Agent Alert](/Examples/Resources/SqlAgentAlert/2-RemoveAlert.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAgentAlert).
 
 ### SqlAgentOperator
 
@@ -709,8 +745,9 @@ All issues are not listed here, see [here for all open issues](https://github.co
 
 ### SqlDatabaseRole
 
-This resource is used to add or remove role for a login in a database.
-Read more about database role in this article [CREATE ROLE (Transact-SQL)](https://msdn.microsoft.com/en-us/library/ms187936.aspx)
+This resource is used to create a database role when Ensure is set to 'Present'
+or remove a database role when Ensure is set to 'Absent'. The resource also
+manages members in both built-in and user created database roles.
 
 #### Requirements
 
@@ -719,22 +756,39 @@ Read more about database role in this article [CREATE ROLE (Transact-SQL)](https
 
 #### Parameters
 
-* **`[String]` Name** _(Key)_: The name of the login that will become a member, or
-  removed as a member, of the role(s).
 * **`[String]` ServerName** _(Key)_: The host name of the SQL Server to be configured.
 * **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **`[String]` Database** _(Key)_: The database in which the login (user) and role(s)
-  exist.
-* **`[String]` Ensure** _(Write)_: If 'Present' (the default value) then the login
-  (user) will be added to the role(s). If 'Absent' then the login (user) will be
-  removed from the role(s). { *Present* | Absent }.
-* **`[String[]]` Role**_(Required): One or more roles to which the login (user) will
-  be added or removed.
+* **`[String]` Database** _(Key)_: The name of the database in which the role should
+  be configured.
+* **`[String]` Name** _(Key)_: The name of the database role to be added or removed.
+* **`[String[]]` Members** _(Write)_: The members the database role should have.
+  This parameter will replace all the current database role members with the
+  specified members. Can only be used when parameter Ensure is set to 'Present'.
+* **`[String[]]` MembersToInclude** _(Write)_: The members the database role should
+  include. This parameter will only add members to a database role. Can only
+  be used when parameter Ensure is set to 'Present'. Can not be used at the same
+  time as parameter Members.
+* **`[String[]]` MembersToExclude** _(Write)_: The members the database role should
+  exclude. This parameter will only remove members from a database role. Can only
+  be used when parameter Ensure is set to 'Present'. Can not be used at the same
+  time as parameter Members.
+* **`[String]` Ensure** _(Write)_: If 'Present' (the default value) then the role
+  will be added to the database and the role membership will be set. If 'Absent'
+  then the role will be removed from the database. { *Present* | Absent }.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[String]` MembersInDesiredState** _(Read)_: Indicates whether the database
+  role members are in the desired state.
 
 #### Examples
 
-* [Add Role of a database](/Examples/Resources/SqlDatabaseRole/1-AddDatabaseRole.ps1)
-* [Remove Role of a database](/Examples/Resources/SqlDatabaseRole/2-RemoveDatabaseRole.ps1)
+* [Add Role to a database](/Examples/Resources/SqlDatabaseRole/1-AddDatabaseRole.ps1)
+* [Remove Role from a database](/Examples/Resources/SqlDatabaseRole/2-RemoveDatabaseRole.ps1)
+* [Enforce Role membership](/Examples/Resources/SqlDatabaseRole/3-EnforceDatabaseRoleMembers.ps1)
+* [Members to include in database role](/Examples/Resources/SqlDatabaseRole/4-MembersToIncludeInDatabaseRole.ps1)
+* [Members to exclude from database role](/Examples/Resources/SqlDatabaseRole/5-MembersToExcludeFromDatabaseRole.ps1)
+* [Members to include and exclude in a database role](/Examples/Resources/SqlDatabaseRole/6-MembersToIncludeAndExcludeInDatabaseRole.ps1)
 
 #### Known issues
 
@@ -1839,6 +1893,8 @@ need a '*SVCPASSWORD' argument in the setup arguments.
   service.
 * **`[PSCredential]` RSSvcAccount** _(Write)_: Service account for Reporting Services
   service.
+* **`[String]` RSInstallMode** _(Write)_: Reporting Services install mode.
+  { SharePointFilesOnlyMode | DefaultNativeMode | FilesOnlyMode }
 * **`[PSCredential]` ASSvcAccount** _(Write)_: Service account for Analysis Services
   service.
 * **`[String]` ASCollation** _(Write)_: Collation for Analysis Services.

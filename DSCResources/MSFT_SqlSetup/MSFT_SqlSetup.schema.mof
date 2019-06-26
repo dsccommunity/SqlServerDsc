@@ -1,7 +1,7 @@
 [ClassVersion("1.0.0.0"), FriendlyName("SqlSetup")]
 class MSFT_SqlSetup : OMI_BaseResource
 {
-    [Write, Description("The action to be performed. Default value is 'Install'."), ValueMap{"Install","InstallFailoverCluster","AddNode","PrepareFailoverCluster","CompleteFailoverCluster"}, Values{"Install","InstallFailoverCluster","AddNode","PrepareFailoverCluster","CompleteFailoverCluster"}] String Action;
+    [Write, Description("The action to be performed. Default value is 'Install'."), ValueMap{"Install","Upgrade","InstallFailoverCluster","AddNode","PrepareFailoverCluster","CompleteFailoverCluster"}, Values{"Install","Upgrade","InstallFailoverCluster","AddNode","PrepareFailoverCluster","CompleteFailoverCluster"}] String Action;
     [Write, Description("The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.")] String SourcePath;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("Credentials used to access the path set in the parameter 'SourcePath'.")] String SourceCredential;
     [Write, Description("Suppresses reboot.")] Boolean SuppressReboot;
@@ -35,6 +35,7 @@ class MSFT_SqlSetup : OMI_BaseResource
     [Read, Description("Output username for the Full Text service.")] String FTSvcAccountUsername;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("Service account for Reporting Services service.")] String RSSvcAccount;
     [Read, Description("Output username for the Reporting Services service.")] String RSSvcAccountUsername;
+    [Write, Description("Specifies the install mode for SQL Server Report service."), ValueMap{"SharePointFilesOnlyMode", "DefaultNativeMode", "FilesOnlyMode"}, Values{"SharePointFilesOnlyMode", "DefaultNativeMode", "FilesOnlyMode"}] String RSInstallMode;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("Service account for Analysis Services service.")] String ASSvcAccount;
     [Read, Description("Output username for the Analysis Services service.")] String ASSvcAccountUsername;
     [Write, Description("Collation for Analysis Services.")] String ASCollation;

@@ -207,7 +207,6 @@ try
     }
 
     Describe "$($script:dscResourceName)\Set-TargetResource" {
-        Mock -CommandName New-TerminatingError -ModuleName $script:dscResourceName
         Mock -CommandName Connect-SQL -MockWith {
             $mock = New-Object -TypeName PSObject -Property @{
                 Configuration = @{

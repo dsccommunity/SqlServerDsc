@@ -1,11 +1,8 @@
 $script:resourceModulePath = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
 $script:modulesFolderPath = Join-Path -Path $script:resourceModulePath -ChildPath 'Modules'
 
-$script:localizationModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.LocalizationHelper'
-Import-Module -Name (Join-Path -Path $script:localizationModulePath -ChildPath 'DscResource.LocalizationHelper.psm1')
-
-$script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common'
-Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'DscResource.Common.psm1')
+$script:resourceHelperModulePath = Join-Path -Path $script:modulesFolderPath -ChildPath 'SqlServerDsc.Common'
+Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath 'SqlServerDsc.Common.psm1')
 
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlWindowsFirewall'
 
@@ -444,7 +441,16 @@ function Set-TargetResource
 
                     if (-not (Test-IsFirewallRuleInDesiredState @databaseEngineFirewallRuleParameters))
                     {
-                        New-NetFirewallRule @databaseEngineFirewallRuleParameters
+                        if (Get-NetFirewallRule | Where-Object -FilterScript {
+                            $_.DisplayName -eq $databaseEngineFirewallRuleDisplayName
+                        })
+                        {
+                            Set-NetFirewallRule @databaseEngineFirewallRuleParameters
+                        }
+                        else
+                        {
+                            New-NetFirewallRule @databaseEngineFirewallRuleParameters
+                        }
                     }
                 }
 

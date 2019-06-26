@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Automated unit test for helper functions in module DscResource.Common.
+        Automated unit test for helper functions in module SqlServerDsc.Common.
 
     .NOTES
         To run this script locally, please make sure to first run the bootstrap
@@ -15,11 +15,11 @@ if (Test-SkipContinuousIntegrationTask -Type 'Unit')
     return
 }
 
-# Import the DscResource.Common module to test
+# Import the SqlServerDsc.Common module to test
 $script:resourceModulePath = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
-$script:modulesFolderPath = Join-Path -Path $script:resourceModulePath -ChildPath 'Modules\DscResource.Common'
+$script:modulesFolderPath = Join-Path -Path $script:resourceModulePath -ChildPath 'Modules\SqlServerDsc.Common'
 
-Import-Module -Name (Join-Path -Path $script:modulesFolderPath -ChildPath 'DscResource.Common.psm1') -Force
+Import-Module -Name (Join-Path -Path $script:modulesFolderPath -ChildPath 'SqlServerDsc.Common.psm1') -Force
 
 # Loading mocked classes
 Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
@@ -28,8 +28,8 @@ Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs
 # Importing SQLPS stubs
 Import-Module -Name (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Force -Global
 
-InModuleScope 'DscResource.Common' {
-    Describe 'DscResource.Common\Test-DscParameterState' -Tag 'TestDscParameterState' {
+InModuleScope 'SqlServerDsc.Common' {
+    Describe 'SqlServerDsc.Common\Test-DscParameterState' -Tag 'TestDscParameterState' {
         Context -Name 'When passing values' -Fixture {
             It 'Should return true for two identical tables' {
                 $mockDesiredValues = @{ Example = 'test' }
@@ -332,7 +332,7 @@ InModuleScope 'DscResource.Common' {
         Assert-VerifiableMock
     }
 
-    Describe 'DscResource.Common\Get-RegistryPropertyValue' -Tag 'GetRegistryPropertyValue' {
+    Describe 'SqlServerDsc.Common\Get-RegistryPropertyValue' -Tag 'GetRegistryPropertyValue' {
         BeforeAll {
             $mockWrongRegistryPath = 'HKLM:\SOFTWARE\AnyPath'
             $mockCorrectRegistryPath = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS'
@@ -399,7 +399,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Format-Path' -Tag 'FormatPath' {
+    Describe 'SqlServerDsc.Common\Format-Path' -Tag 'FormatPath' {
         BeforeAll {
             $mockCorrectPath = 'C:\Correct\Path'
             $mockPathWithTrailingBackslash = 'C:\Correct\Path\'
@@ -437,7 +437,7 @@ InModuleScope 'DscResource.Common' {
     }
 
     # Tests only the parts of the code that does not already get tested thru the other tests.
-    Describe 'DscResource.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy' {
+    Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy' {
         BeforeAll {
             $mockRobocopyExecutableName = 'Robocopy.exe'
             $mockRobocopyExecutableVersionWithoutUnbufferedIO = '6.2.9200.00000'
@@ -693,7 +693,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Get-TemporaryFolder' -Tag 'GetTemporaryFolder' {
+    Describe 'SqlServerDsc.Common\Get-TemporaryFolder' -Tag 'GetTemporaryFolder' {
         BeforeAll {
             $mockExpectedTempPath = [IO.Path]::GetTempPath()
         }
@@ -705,7 +705,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstallationMediaCopy' {
+    Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstallationMediaCopy' {
         BeforeAll {
             $mockSourcePathUNC = '\\server\share'
             $mockSourcePathUNCWithLeaf = '\\server\share\leaf'
@@ -797,7 +797,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
+    Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
         BeforeAll {
             $mockSourcePathUNC = '\\server\share'
 
@@ -864,7 +864,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Disconnect-UncPath' -Tag 'DisconnectUncPath' {
+    Describe 'SqlServerDsc.Common\Disconnect-UncPath' -Tag 'DisconnectUncPath' {
         BeforeAll {
             $mockSourcePathUNC = '\\server\share'
 
@@ -886,7 +886,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Test-PendingRestart' -Tag 'TestPendingRestart' {
+    Describe 'SqlServerDsc.Common\Test-PendingRestart' -Tag 'TestPendingRestart' {
         Context 'When there is a pending reboot' {
             BeforeAll {
                 Mock -CommandName Get-RegistryPropertyValue -MockWith {
@@ -916,7 +916,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Start-SqlSetupProcess' -Tag 'StartSqlSetupProcess' {
+    Describe 'SqlServerDsc.Common\Start-SqlSetupProcess' -Tag 'StartSqlSetupProcess' {
         Context 'When starting a process successfully' {
             It 'Should return exit code 0' {
                 $startSqlSetupProcessParameters = @{
@@ -943,7 +943,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Restart-SqlService' -Tag 'RestartSqlService' {
+    Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
         Context 'Restart-SqlService standalone instance' {
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith {
@@ -1250,7 +1250,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
+    Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
         BeforeAll {
             $mockInstanceName = 'TEST'
 
@@ -1386,7 +1386,7 @@ InModuleScope 'DscResource.Common' {
         Assert-VerifiableMock
     }
 
-    Describe 'DscResource.Common\Invoke-Query' -Tag 'InvokeQuery' {
+    Describe 'SqlServerDsc.Common\Invoke-Query' -Tag 'InvokeQuery' {
         BeforeAll {
             $mockExpectedQuery = ''
 
@@ -1488,7 +1488,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Update-AvailabilityGroupReplica' -Tag 'UpdateAvailabilityGroupReplica' {
+    Describe 'SqlServerDsc.Common\Update-AvailabilityGroupReplica' -Tag 'UpdateAvailabilityGroupReplica' {
         Context 'When the Availability Group Replica is altered' {
             It 'Should silently alter the Availability Group Replica' {
                 $availabilityReplica = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
@@ -1506,7 +1506,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEffectivePermissions' {
+    Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEffectivePermissions' {
 
         $mockAllServerPermissionsPresent = @(
             'Connect SQL',
@@ -1619,7 +1619,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Import-SQLPSModule' -Tag 'ImportSQLPSModule' {
+    Describe 'SqlServerDsc.Common\Import-SQLPSModule' -Tag 'ImportSQLPSModule' {
         BeforeAll {
             <#
                 This is the path to the latest version of SQLPS, to test that only the
@@ -1861,7 +1861,7 @@ InModuleScope 'DscResource.Common' {
         Assert-VerifiableMock
     }
 
-    Describe 'DscResource.Common\Get-SqlInstanceMajorVersion' -Tag 'GetSqlInstanceMajorVersion' {
+    Describe 'SqlServerDsc.Common\Get-SqlInstanceMajorVersion' -Tag 'GetSqlInstanceMajorVersion' {
         BeforeAll {
             $mockSqlMajorVersion = 13
             $mockInstanceName = 'TEST'
@@ -1942,7 +1942,7 @@ InModuleScope 'DscResource.Common' {
         Assert-VerifiableMock
     }
 
-    Describe 'DscResource.Common\Get-PrimaryReplicaServerObject' -Tag 'GetPrimaryReplicaServerObject' {
+    Describe 'SqlServerDsc.Common\Get-PrimaryReplicaServerObject' -Tag 'GetPrimaryReplicaServerObject' {
         BeforeEach {
             $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
             $mockServerObject.DomainInstanceName = 'Server1'
@@ -2014,7 +2014,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Test-AvailabilityReplicaSeedingModeAutomatic' -Tag 'TestAvailabilityReplicaSeedingModeAutomatic' {
+    Describe 'SqlServerDsc.Common\Test-AvailabilityReplicaSeedingModeAutomatic' -Tag 'TestAvailabilityReplicaSeedingModeAutomatic' {
 
         BeforeEach {
             $mockSqlVersion = 13
@@ -2110,7 +2110,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Test-ImpersonatePermissions' -Tag 'TestImpersonatePermissions' {
+    Describe 'SqlServerDsc.Common\Test-ImpersonatePermissions' -Tag 'TestImpersonatePermissions' {
         BeforeAll {
             $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter = {
                 $Permissions -eq @('IMPERSONATE ANY LOGIN')
@@ -2195,7 +2195,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Connect-SQL' -Tag 'ConnectSql' {
+    Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
         BeforeAll {
             $mockNewObject_MicrosoftDatabaseEngine = {
                 <#
@@ -2231,13 +2231,17 @@ InModuleScope 'DscResource.Common' {
                     Add-Member -MemberType NoteProperty -Name ConnectionContext -Value (
                         New-Object -TypeName Object |
                             Add-Member -MemberType NoteProperty -Name ServerInstance -Value $serverInstance -PassThru |
-                            #Add-Member -MemberType ScriptProperty -Name LoginSecure -Value { [System.Boolean] $mockExpectedDatabaseEngineLoginSecure } -PassThru -Force |
                             Add-Member -MemberType NoteProperty -Name LoginSecure -Value $true -PassThru |
                             Add-Member -MemberType NoteProperty -Name Login -Value '' -PassThru |
                             Add-Member -MemberType NoteProperty -Name SecurePassword -Value $null -PassThru |
                             Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
                             Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
                             Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
+                            Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
+                            Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
+                            Add-Member -MemberType ScriptMethod -Name Disconnect -Value {
+                                return $true
+                            } -PassThru |
                             Add-Member -MemberType ScriptMethod -Name Connect -Value {
                                 if ($mockExpectedDatabaseEngineInstance -eq 'MSSQLSERVER')
                                 {
@@ -2284,7 +2288,7 @@ InModuleScope 'DscResource.Common' {
                 -Verifiable
         }
 
-        Context 'When connecting to the default instance using Windows Authentication' {
+        Context 'When connecting to the default instance using integrated Windows Authentication' {
             It 'Should return the correct service instance' {
                 $mockExpectedDatabaseEngineServer = 'TestServer'
                 $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
@@ -2314,7 +2318,7 @@ InModuleScope 'DscResource.Common' {
             }
         }
 
-        Context 'When connecting to the named instance using Windows Authentication' {
+        Context 'When connecting to the named instance using integrated Windows Authentication' {
             It 'Should return the correct service instance' {
                 $mockExpectedDatabaseEngineServer = $env:COMPUTERNAME
                 $mockExpectedDatabaseEngineInstance = $mockInstanceName
@@ -2344,7 +2348,7 @@ InModuleScope 'DscResource.Common' {
             }
         }
 
-        Context 'When connecting to the named instance using Windows Authentication and different server name' {
+        Context 'When connecting to the named instance using integrated Windows Authentication and different server name' {
             It 'Should return the correct service instance' {
                 $mockExpectedDatabaseEngineServer = 'SERVER'
                 $mockExpectedDatabaseEngineInstance = $mockInstanceName
@@ -2366,6 +2370,7 @@ InModuleScope 'DscResource.Common' {
                     ServerName = $mockExpectedDatabaseEngineServer
                     InstanceName = $mockExpectedDatabaseEngineInstance
                     SetupCredential = $mockSetupCredential
+                    LoginType = 'WindowsUser'
                 }
 
                 $databaseEngineServerObject = Connect-SQL @testParameters
@@ -2386,6 +2391,7 @@ InModuleScope 'DscResource.Common' {
                 $mockExpectedDatabaseEngineInstance = $mockInstanceName
 
                 Mock -CommandName New-Object `
+                    -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                     -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter `
                     -Verifiable
 
@@ -2397,82 +2403,29 @@ InModuleScope 'DscResource.Common' {
             }
         }
 
-        Assert-VerifiableMock
-    }
+        Context 'When the logon type is WindowsUser or SqlLogin, but not credentials were passed' {
+            It 'Should throw the correct error' {
+                $mockExpectedDatabaseEngineServer = 'TestServer'
+                $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
 
-    Describe 'DscResource.Common\New-WarningMessage' -Tag 'NewWarningMessage' {
-        Context -Name 'When writing a localized warning message' -Fixture {
-            It 'Should write the error message without throwing' {
-                Mock -CommandName Write-Warning -Verifiable
-
-                { New-WarningMessage -WarningType 'NoKeyFound' } | Should -Not -Throw
-
-                Assert-MockCalled -CommandName Write-Warning -Exactly -Times 1
-            }
-        }
-
-        Context -Name 'When trying to write a localized warning message that does not exists' -Fixture {
-            It 'Should throw the correct error message' {
-                Mock -CommandName Write-Warning -Verifiable
-
-                { New-WarningMessage -WarningType 'UnknownDummyMessage' } | Should -Throw 'No Localization key found for ErrorType: ''UnknownDummyMessage''.'
-
-                Assert-MockCalled -CommandName Write-Warning -Exactly -Times 0
-            }
-        }
-
-        Assert-VerifiableMock
-    }
-
-    Describe 'DscResource.Common\New-TerminatingError' -Tag 'NewTerminatingError' {
-        Context -Name 'When building a localized error message' -Fixture {
-            It 'Should return the correct error record with the correct error message' {
-                $errorRecord = New-TerminatingError -ErrorType 'NoKeyFound' -FormatArgs 'Dummy error'
-                $errorRecord.Exception.Message | Should -Be 'No Localization key found for ErrorType: ''Dummy error''.'
-            }
-
-            It 'Should return the correct error record with the correct error message including InnerException' {
-                $errorRecord = New-TerminatingError -ErrorType 'NoKeyFound' -FormatArgs 'Dummy error' -InnerException 'Dummy exception'
-                $errorRecord.Exception.Message | Should -Be 'No Localization key found for ErrorType: ''Dummy error''. InnerException: Dummy exception'
-            }
-
-            It 'Should return the correct error record with a matching FullyQualifiedErrorId' {
-                $errorRecord = New-TerminatingError -ErrorType 'NoKeyFound' -FormatArgs 'Dummy error'
-                $errorRecord.FullyQualifiedErrorId | Should -Be 'DscResource.NoKeyFound'
-            }
-
-            It 'Should return the correct error record with a matching FullyQualifiedErrorId when there is no calling module' {
-                Mock -CommandName Get-PSCallStack -MockWith {
-                    , [PSCustomObject] @{
-                        ScriptName = ''
-                    }
+                 $connectSqlParameters = @{
+                    ServerName      = $mockExpectedDatabaseEngineServer
+                    LoginType       = 'WindowsUser'
                 }
-                $errorRecord = New-TerminatingError -ErrorType 'NoKeyFound' -FormatArgs 'Dummy error'
-                $errorRecord.FullyQualifiedErrorId | Should -Be 'NoKeyFound'
-            }
-        }
 
-        Context -Name 'When building a localized error message that does not exists' -Fixture {
-            It 'Should return the correct error record with the correct error message' {
-                $errorRecord = New-TerminatingError -ErrorType 'UnknownDummyMessage' -FormatArgs 'Dummy error'
-                $errorRecord.Exception.Message | Should -Be 'No Localization key found for ErrorType: ''UnknownDummyMessage''.'
-            }
+                $mockCorrectErrorMessage = $script:localizedData.CredentialsNotSpecified -f $connectSqlParameters.LoginType
 
-            It 'Should return the correct error record with the correct error message even if the NoKeyFound message is missing' {
-                $noKeyFound = $script:localizedData.NoKeyFound
-                $script:localizedData.Remove('NoKeyFound')
+                { Connect-SQL @connectSqlParameters } | Should -Throw $mockCorrectErrorMessage
 
-                $errorRecord = New-TerminatingError -ErrorType 'UnknownDummyMessage' -FormatArgs 'Dummy error'
-                $errorRecord.Exception.Message | Should -Be 'No Localization key found for ErrorType: ''UnknownDummyMessage''.'
-
-                $script:localizedData.NoKeyFound = $noKeyFound
+                Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                    -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
             }
         }
 
         Assert-VerifiableMock
     }
 
-    Describe 'DscResource.Common\Split-FullSQLInstanceName' {
+    Describe 'SqlServerDsc.Common\Split-FullSQLInstanceName' {
         Context 'When the "FullSQLInstanceName" parameter is not supplied' {
             It 'Should throw when the "FullSQLInstanceName" parameter is $null' {
                 { Split-FullSQLInstanceName -FullSQLInstanceName $null } | Should -Throw
@@ -2502,7 +2455,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Test-ClusterPermissions' {
+    Describe 'SqlServerDsc.Common\Test-ClusterPermissions' {
         BeforeAll {
             Mock -CommandName Test-LoginEffectivePermissions -MockWith {
                 $mockClusterServicePermissionsPresent
@@ -2591,7 +2544,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Restart-ReportingServicesService' -Tag 'RestartReportingServicesService' {
+    Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartReportingServicesService' {
         BeforeAll {
             $mockGetService = {
                 return @{
@@ -2712,7 +2665,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Test-ActiveNode' -Tag 'TestActiveNode' {
+    Describe 'SqlServerDsc.Common\Test-ActiveNode' -Tag 'TestActiveNode' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
 
@@ -2757,7 +2710,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
+    Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
         BeforeAll {
             $invokeScriptFileParameters = @{
                 ServerInstance = $env:COMPUTERNAME
@@ -2833,7 +2786,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Get-ServiceAccount' -Tag 'GetServiceAccount' {
+    Describe 'SqlServerDsc.Common\Get-ServiceAccount' -Tag 'GetServiceAccount' {
         BeforeAll {
             $mockLocalSystemAccountUserName = 'NT AUTHORITY\SYSTEM'
             $mockLocalSystemAccountCredential = New-Object System.Management.Automation.PSCredential $mockLocalSystemAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
@@ -2878,7 +2831,7 @@ InModuleScope 'DscResource.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Find-ExceptionByNumber'{
+    Describe 'SqlServerDsc.Common\Find-ExceptionByNumber'{
         BeforeAll {
             $mockInnerException = New-Object System.Exception "This is a mock inner excpetion object"
             $mockInnerException | Add-Member -Name 'Number' -Value 2 -MemberType NoteProperty
@@ -2900,6 +2853,209 @@ InModuleScope 'DscResource.Common' {
                 Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 3 | Should -Be $false
             }
         }
+    }
+
+    Describe 'DscResource.LocalizationHelper\Get-LocalizedData' {
+        $mockTestPath = {
+            return $mockTestPathReturnValue
+        }
+
+        $mockImportLocalizedData = {
+            $BaseDirectory | Should -Be $mockExpectedLanguagePath
+        }
+
+        BeforeEach {
+            Mock -CommandName Test-Path -MockWith $mockTestPath -Verifiable
+            Mock -CommandName Import-LocalizedData -MockWith $mockImportLocalizedData -Verifiable
+        }
+
+        Context 'When loading localized data for Swedish' {
+            $mockExpectedLanguagePath = 'sv-SE'
+            $mockTestPathReturnValue = $true
+
+            It 'Should call Import-LocalizedData with sv-SE language' {
+                Mock -CommandName Join-Path -MockWith {
+                    return 'sv-SE'
+                } -Verifiable
+
+                { Get-LocalizedData -ResourceName 'DummyResource' } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Join-Path -Exactly -Times 3 -Scope It
+                Assert-MockCalled -CommandName Test-Path -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Import-LocalizedData -Exactly -Times 1 -Scope It
+            }
+
+            $mockExpectedLanguagePath = 'en-US'
+            $mockTestPathReturnValue = $false
+
+            It 'Should call Import-LocalizedData and fallback to en-US if sv-SE language does not exist' {
+                Mock -CommandName Join-Path -MockWith {
+                    return $ChildPath
+                } -Verifiable
+
+                { Get-LocalizedData -ResourceName 'DummyResource' } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Join-Path -Exactly -Times 4 -Scope It
+                Assert-MockCalled -CommandName Test-Path -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Import-LocalizedData -Exactly -Times 1 -Scope It
+            }
+
+            Context 'When $ScriptRoot is set to a path' {
+                $mockExpectedLanguagePath = 'sv-SE'
+                $mockTestPathReturnValue = $true
+
+                It 'Should call Import-LocalizedData with sv-SE language' {
+                    Mock -CommandName Join-Path -MockWith {
+                        return 'sv-SE'
+                    } -Verifiable
+
+                    { Get-LocalizedData -ResourceName 'DummyResource' -ScriptRoot '.' } | Should -Not -Throw
+
+                    Assert-MockCalled -CommandName Join-Path -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Test-Path -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Import-LocalizedData -Exactly -Times 1 -Scope It
+                }
+
+                $mockExpectedLanguagePath = 'en-US'
+                $mockTestPathReturnValue = $false
+
+                It 'Should call Import-LocalizedData and fallback to en-US if sv-SE language does not exist' {
+                    Mock -CommandName Join-Path -MockWith {
+                        return $ChildPath
+                    } -Verifiable
+
+                    { Get-LocalizedData -ResourceName 'DummyResource' -ScriptRoot '.' } | Should -Not -Throw
+
+                    Assert-MockCalled -CommandName Join-Path -Exactly -Times 2 -Scope It
+                    Assert-MockCalled -CommandName Test-Path -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Import-LocalizedData -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When loading localized data for English' {
+            Mock -CommandName Join-Path -MockWith {
+                return 'en-US'
+            } -Verifiable
+
+            $mockExpectedLanguagePath = 'en-US'
+            $mockTestPathReturnValue = $true
+
+            It 'Should call Import-LocalizedData with en-US language' {
+                { Get-LocalizedData -ResourceName 'DummyResource' } | Should -Not -Throw
+            }
+        }
+
+        Assert-VerifiableMock
+    }
+
+    Describe 'DscResource.LocalizationHelper\New-InvalidResultException' {
+        Context 'When calling with Message parameter only' {
+            It 'Should throw the correct error' {
+                $mockErrorMessage = 'Mocked error'
+
+                { New-InvalidResultException -Message $mockErrorMessage } | Should -Throw $mockErrorMessage
+            }
+        }
+
+        Context 'When calling with both the Message and ErrorRecord parameter' {
+            It 'Should throw the correct error' {
+                $mockErrorMessage = 'Mocked error'
+                $mockExceptionErrorMessage = 'Mocked exception error message'
+
+                $mockException = New-Object -TypeName System.Exception -ArgumentList $mockExceptionErrorMessage
+                $mockErrorRecord = New-Object -TypeName System.Management.Automation.ErrorRecord -ArgumentList $mockException, $null, 'InvalidResult', $null
+
+                { New-InvalidResultException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should -Throw ('System.Exception: {0} ---> System.Exception: {1}' -f $mockErrorMessage, $mockExceptionErrorMessage)
+            }
+        }
+
+        Assert-VerifiableMock
+    }
+
+    Describe 'DscResource.LocalizationHelper\New-ObjectNotFoundException' {
+        Context 'When calling with Message parameter only' {
+            It 'Should throw the correct error' {
+                $mockErrorMessage = 'Mocked error'
+
+                { New-ObjectNotFoundException -Message $mockErrorMessage } | Should -Throw $mockErrorMessage
+            }
+        }
+
+        Context 'When calling with both the Message and ErrorRecord parameter' {
+            It 'Should throw the correct error' {
+                $mockErrorMessage = 'Mocked error'
+                $mockExceptionErrorMessage = 'Mocked exception error message'
+
+                $mockException = New-Object -TypeName System.Exception -ArgumentList $mockExceptionErrorMessage
+                $mockErrorRecord = New-Object -TypeName System.Management.Automation.ErrorRecord -ArgumentList $mockException, $null, 'InvalidResult', $null
+
+                { New-ObjectNotFoundException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should -Throw ('System.Exception: {0} ---> System.Exception: {1}' -f $mockErrorMessage, $mockExceptionErrorMessage)
+            }
+        }
+
+        Assert-VerifiableMock
+    }
+
+    Describe 'DscResource.LocalizationHelper\New-InvalidOperationException' {
+        Context 'When calling with Message parameter only' {
+            It 'Should throw the correct error' {
+                $mockErrorMessage = 'Mocked error'
+
+                { New-InvalidOperationException -Message $mockErrorMessage } | Should -Throw $mockErrorMessage
+            }
+        }
+
+        Context 'When calling with both the Message and ErrorRecord parameter' {
+            It 'Should throw the correct error' {
+                $mockErrorMessage = 'Mocked error'
+                $mockExceptionErrorMessage = 'Mocked exception error message'
+
+                $mockException = New-Object -TypeName System.Exception -ArgumentList $mockExceptionErrorMessage
+                $mockErrorRecord = New-Object -TypeName System.Management.Automation.ErrorRecord -ArgumentList $mockException, $null, 'InvalidResult', $null
+
+                { New-InvalidOperationException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should -Throw ('System.InvalidOperationException: {0} ---> System.Exception: {1}' -f $mockErrorMessage, $mockExceptionErrorMessage)
+            }
+        }
+
+        Assert-VerifiableMock
+    }
+
+    Describe 'DscResource.LocalizationHelper\New-NotImplementedException' {
+        Context 'When calling with Message parameter only' {
+            It 'Should throw the correct error' {
+                $mockErrorMessage = 'Mocked error'
+
+                { New-NotImplementedException -Message $mockErrorMessage } | Should -Throw $mockErrorMessage
+            }
+        }
+
+        Context 'When calling with both the Message and ErrorRecord parameter' {
+            It 'Should throw the correct error' {
+                $mockErrorMessage = 'Mocked error'
+                $mockExceptionErrorMessage = 'Mocked exception error message'
+
+                $mockException = New-Object -TypeName System.Exception -ArgumentList $mockExceptionErrorMessage
+                $mockErrorRecord = New-Object -TypeName System.Management.Automation.ErrorRecord -ArgumentList $mockException, $null, 'InvalidResult', $null
+
+                { New-NotImplementedException -Message $mockErrorMessage -ErrorRecord $mockErrorRecord } | Should -Throw ('System.NotImplementedException: {0} ---> System.Exception: {1}' -f $mockErrorMessage, $mockExceptionErrorMessage)
+            }
+        }
+
+        Assert-VerifiableMock
+    }
+
+    Describe 'DscResource.LocalizationHelper\New-InvalidArgumentException' {
+        Context 'When calling with both the Message and ArgumentName parameter' {
+            It 'Should throw the correct error' {
+                $mockErrorMessage = 'Mocked error'
+                $mockArgumentName = 'MockArgument'
+
+                { New-InvalidArgumentException -Message $mockErrorMessage -ArgumentName $mockArgumentName } | Should -Throw ('Parameter name: {0}' -f $mockArgumentName)
+            }
+        }
+
+        Assert-VerifiableMock
     }
 }
 

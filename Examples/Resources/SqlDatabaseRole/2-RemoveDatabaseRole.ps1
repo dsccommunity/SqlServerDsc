@@ -1,8 +1,9 @@
 <#
 .EXAMPLE
-    This example shows how to ensure that the user account CONTOSO\SQLAdmin
-    is not member of the "DeleteRole" SQL database role.
+    This example shows how to ensure that the database role named ReportViewer is not present in the AdventureWorks
+    database on instance sqltest.company.local\DSC.
 #>
+
 Configuration Example
 {
     param
@@ -16,14 +17,13 @@ Configuration Example
 
     node localhost
     {
-        SqlDatabaseRole Remove_Database_Role
+        SqlDatabaseRole ReportViewer_DropRole
         {
-            Ensure               = 'Absent'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            Name                 = 'CONTOSO\SQLAdmin'
-            Role                 = 'DeleteRole'
             Database             = 'AdventureWorks'
+            Name                 = 'ReportViewer'
+            Ensure               = 'Absent'
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }

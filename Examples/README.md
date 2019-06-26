@@ -9,6 +9,7 @@ These are the links to the examples for each individual resource.
 
 - [SqlAG](Resources/SqlAG)
 - [SqlAGDatabase](Resources/SqlAGDatabase)
+- [SqlAgentAlert](Resources/SqlAgentAlert)
 - [SqlAgentOperator](Resources/SqlAgentOperator)
 - [SqlAGListener](Resources/SqlAGListener)
 - [SqlAGReplica](Resources/SqlAGReplica)

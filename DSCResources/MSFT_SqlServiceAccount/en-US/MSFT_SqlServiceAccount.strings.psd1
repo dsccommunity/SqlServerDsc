@@ -11,4 +11,5 @@ ConvertFrom-StringData @'
     UnknownServiceType = Unknown or unsupported service type '{0}' specified!
     NotInstanceAware = Service type '{0}' is not instance aware.
     MissingParameter = Missing parameter detected for '{0}'!
+    GetConfiguration = Get the current service account for the service '{0}'.
 '@

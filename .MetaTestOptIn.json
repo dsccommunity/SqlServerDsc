@@ -7,5 +7,7 @@
      "Common Tests - New Error-Level Script Analyzer Rules",
      "Common Tests - Custom Script Analyzer Rules",
      "Common Tests - Validate Markdown Links",
-     "Common Tests - Relative Path Length"
+     "Common Tests - Relative Path Length",
+     "Common Tests - Validate Localization",
+     "Common Tests - Flagged Script Analyzer Rules"
 ]
