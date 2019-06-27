@@ -1614,8 +1614,8 @@ function Restart-ReportingServicesService
             -Query 'RESTORE DATABASE [NorthWinds] WITH RECOVERY'
 
     .EXAMPLE
-        Connect-SQL @sqlConnectionParameters | Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER `
-            -Database master -Query 'SELECT name FROM sys.databases' -WithResults
+        Connect-SQL @sqlConnectionParameters | Invoke-Query -Database master `
+            -Query 'SELECT name FROM sys.databases' -WithResults
 #>
 function Invoke-Query
 {
@@ -1665,14 +1665,13 @@ function Invoke-Query
         $StatementTimeout = 600
     )
 
-    # If we don't have an smo object, then we try to use credentials
     if ($PSCmdlet.ParameterSetName -eq 'SqlObject')
     {
-        $smoConnectObject = $SqlServerObject
+        $serverObject = $SqlServerObject
     }
     elseif ($PSCmdlet.ParameterSetName -eq 'SqlServer')
     {
-        $connectSQLParamaters = @{
+        $connectSQLParameters = @{
             ServerName       = $SQLServer
             InstanceName     = $SQLInstanceName
             LoginType        = $LoginType
@@ -1681,17 +1680,17 @@ function Invoke-Query
 
         if ($PSBoundParameters.ContainsKey('DatabaseCredential'))
         {
-            $connectSQLParamaters.SetupCredential = $DatabaseCredential
+            $connectSQLParameters.SetupCredential = $DatabaseCredential
         }
 
-        $smoConnectObject = Connect-SQL @connectSQLParamaters
+        $serverObject = Connect-SQL @connectSQLParameters
     }
 
     if ($WithResults)
     {
         try
         {
-            $result = $smoConnectObject.Databases[$Database].ExecuteWithResults($Query)
+            $result = $serverObject.Databases[$Database].ExecuteWithResults($Query)
         }
         catch
         {
@@ -1703,7 +1702,7 @@ function Invoke-Query
     {
         try
         {
-            $smoConnectObject.Databases[$Database].ExecuteNonQuery($Query)
+            $serverObject.Databases[$Database].ExecuteNonQuery($Query)
         }
         catch
         {

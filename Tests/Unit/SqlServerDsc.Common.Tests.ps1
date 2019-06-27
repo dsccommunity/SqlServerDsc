@@ -1529,7 +1529,7 @@ InModuleScope 'SqlServerDsc.Common' {
                 }
             }
 
-            Context 'Execute a query with piped SMO server object' {
+            Context 'Execute a query with results' {
                 It 'Should execute the query and return a result set' {
                     $queryParametersWithSMO.Query = 'SELECT name FROM sys.databases'
                     $mockExpectedQuery = $queryParametersWithSMO.Query.Clone()
@@ -1550,7 +1550,7 @@ InModuleScope 'SqlServerDsc.Common' {
                 }
             }
 
-            Context 'Execute a query with results' {
+            Context 'Execute a query with piped SMO server object' {
                 It 'Should execute the query and return a result set' {
                     $mockQuery = 'SELECT name FROM sys.databases'
                     $mockExpectedQuery = $mockQuery
