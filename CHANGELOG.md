@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 13.0.0.0
+
 - Changes to SqlServerDsc
   - Added SqlAgentAlert resource.
   - Opt-in to the common test 'Common Test - Validation Localization'.
