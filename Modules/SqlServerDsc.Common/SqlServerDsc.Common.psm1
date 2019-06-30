@@ -1569,47 +1569,69 @@ function Restart-ReportingServicesService
     }
 }
 
+
 <#
     .SYNOPSIS
-    Executes a query on the specified database.
+        Executes a query on the specified database.
 
     .PARAMETER SQLServer
-    The hostname of the server that hosts the SQL instance.
+        The hostname of the server that hosts the SQL instance.
 
     .PARAMETER SQLInstanceName
-    The name of the SQL instance that hosts the database.
+        The name of the SQL instance that hosts the database.
 
     .PARAMETER Database
-    Specify the name of the database to execute the query on.
+        Specify the name of the database to execute the query on.
 
     .PARAMETER Query
-    The query string to execute.
+        The query string to execute.
+
+    .PARAMETER DatabaseCredential
+        PSCredential object with the credentials to use to impersonate a user when connecting.
+        If this is not provided then the current user will be used to connect to the SQL Server Database Engine instance.
+
+    .PARAMETER LoginType
+        Specifies which type of logon credential should be used. The valid types are
+        Integrated, WindowsUser, and SqlLogin. If WindowsUser or SqlLogin are specified
+        then the SetupCredential needs to be specified as well.
+
+    .PARAMETER SqlServerObject
+        You can pass in an object type of 'Microsoft.SqlServer.Management.Smo.Server'. This can also be passed in
+        through the pipeline allowing you to use connect-sql | invoke-query if you wish.
 
     .PARAMETER WithResults
-    Specifies if the query should return results.
+        Specifies if the query should return results.
 
     .PARAMETER StatementTimeout
-    Set the query StatementTimeout in seconds. Default 600 seconds (10mins).
+        Set the query StatementTimeout in seconds. Default 600 seconds (10mins).
 
     .EXAMPLE
-    Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master -Query 'SELECT name FROM sys.databases' -WithResults
+        Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master `
+            -Query 'SELECT name FROM sys.databases' -WithResults
 
     .EXAMPLE
-    Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master -Query 'RESTORE DATABASE [NorthWinds] WITH RECOVERY'
+        Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master `
+            -Query 'RESTORE DATABASE [NorthWinds] WITH RECOVERY'
+
+    .EXAMPLE
+        Connect-SQL @sqlConnectionParameters | Invoke-Query -Database master `
+            -Query 'SELECT name FROM sys.databases' -WithResults
 #>
 function Invoke-Query
 {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName='SqlServer')]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Alias("ServerName")]
+        [Parameter(ParameterSetName='SqlServer')]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLServer,
+        $SQLServer = $env:COMPUTERNAME,
 
-        [Parameter(Mandatory = $true)]
+        [Alias("InstanceName")]
+        [Parameter(ParameterSetName='SqlServer')]
         [System.String]
-        $SQLInstanceName,
+        $SQLInstanceName = 'MSSQLSERVER',
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -1619,19 +1641,52 @@ function Invoke-Query
         [System.String]
         $Query,
 
+        [Alias("SetupCredential")]
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $DatabaseCredential,
+
+        [Parameter()]
+        [ValidateSet('Integrated', 'WindowsUser', 'SqlLogin')]
+        [System.String]
+        $LoginType = 'Integrated',
+
+        [Parameter(ValueFromPipeline, ParameterSetName='SqlObject', Mandatory = $true)]
+        [ValidateNotNull()]
+        [Microsoft.SqlServer.Management.Smo.Server]
+        $SqlServerObject,
+
         [Parameter()]
         [Switch]
         $WithResults,
 
-        [Parameter()]
         [ValidateNotNull()]
         [System.Int32]
         $StatementTimeout = 600
     )
 
-    $serverObject = Connect-SQL -ServerName $SQLServer -InstanceName $SQLInstanceName -StatementTimeout $StatementTimeout
+    if ($PSCmdlet.ParameterSetName -eq 'SqlObject')
+    {
+        $serverObject = $SqlServerObject
+    }
+    elseif ($PSCmdlet.ParameterSetName -eq 'SqlServer')
+    {
+        $connectSQLParameters = @{
+            ServerName       = $SQLServer
+            InstanceName     = $SQLInstanceName
+            LoginType        = $LoginType
+            StatementTimeout = $StatementTimeout
+        }
 
-    if ( $WithResults )
+        if ($PSBoundParameters.ContainsKey('DatabaseCredential'))
+        {
+            $connectSQLParameters.SetupCredential = $DatabaseCredential
+        }
+
+        $serverObject = Connect-SQL @connectSQLParameters
+    }
+
+    if ($WithResults)
     {
         try
         {

@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Changes to common module: Invoke-Query
+  - Fixes issues in [issue #1355](https://github.com/PowerShell/SqlServerDsc/issues/1355)
+  - Works together with Connect-SQL now
+  - Parameters and Aliases now match that of Connect-SQL
+  - Can now pass in credentials
+  - Can now pass in 'Microsoft.SqlServer.Management.Smo.Server' object
+  - Can also pipe in 'Microsoft.SqlServer.Management.Smo.Server' object
+  - Can pipe Connect-SQL | Invoke-Query
+  - Added default vaules to Invoke-Query
+
 ## 13.0.0.0
 
 - Changes to SqlServerDsc
