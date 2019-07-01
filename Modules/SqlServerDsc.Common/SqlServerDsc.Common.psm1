@@ -2550,9 +2550,9 @@ function Get-MailServerCredentialId
         which will be used for credential password decryption.
 
     .DESCRIPTION
-        Submission containing materials of a third party: Antti Rantasaari 2014, NetSPI
-        License: BSD 3-Clause https://opensource.org/licenses/BSD-3-Clause
-        Source: https://github.com/NetSPI/Powershell-Modules/blob/master/Get-MSSQLCredentialPasswords.psm1
+        Inspired by the work of Antti Rantasaari 2014, NetSPI
+        (https://github.com/NetSPI/Powershell-Modules/blob/master/Get-MSSQLCredentialPasswords.psm1)
+        that is under BSD-3 license.
 
     .PARAMETER SQLServer
         String containing the host name of the SQL Server to connect to.

@@ -1444,7 +1444,6 @@ InModuleScope 'SqlServerDsc.Common' {
     Describe 'SqlServerDsc.Common\Invoke-Query' -Tag 'InvokeQuery' {
         BeforeAll {
             $mockExpectedQuery = ''
-            $mockExpectedInstance = 'MSSQLSERVER'
 
             $mockSetupCredentialUserName = 'TestUserName12345'
             $mockSetupCredentialPassword = 'StrongOne7.'
@@ -1596,8 +1595,8 @@ InModuleScope 'SqlServerDsc.Common' {
             }
         }
 
-        Context 'Pass in an SMO Server Object' {
-            Context 'Execute a query with no results' {
+        Context 'When SMO Server Object was passed in' {
+            Context 'When a query is executed and nothing is returned' {
                 It 'Should execute the query silently' {
                     $queryParametersWithSMO.Query = "EXEC sp_configure 'show advanced option', '1'"
                     $mockExpectedQuery = $queryParametersWithSMO.Query.Clone()
@@ -1618,7 +1617,7 @@ InModuleScope 'SqlServerDsc.Common' {
                 }
             }
 
-            Context 'Execute a query with results' {
+            Context 'When a query is executed and results are returned' {
                 It 'Should execute the query and return a result set' {
                     $queryParametersWithSMO.Query = 'SELECT name FROM sys.databases'
                     $mockExpectedQuery = $queryParametersWithSMO.Query.Clone()
@@ -1639,7 +1638,7 @@ InModuleScope 'SqlServerDsc.Common' {
                 }
             }
 
-            Context 'Execute a query with piped SMO server object' {
+            Context 'When a query is executed with piped SMO server object' {
                 It 'Should execute the query and return a result set' {
                     $mockQuery = 'SELECT name FROM sys.databases'
                     $mockExpectedQuery = $mockQuery
@@ -3340,11 +3339,6 @@ InModuleScope 'SqlServerDsc.Common' {
                                         } -PassThru
                                 )
                             }
-                            ConnectionContext = New-Object -TypeName Object |
-                                Add-Member -MemberType NoteProperty -Name ServerInstance -Value $result -PassThru |
-                                Add-Member -MemberType ScriptMethod -Name Disconnect -Value {
-                                    $script:ConnectionContextDisconnectMethodCallCount += 1
-                                } -PassThru -Force
                         }
                     )
                 )
@@ -3386,18 +3380,12 @@ InModuleScope 'SqlServerDsc.Common' {
         }
     }
 
-    Describe 'DscResource.Common\Get-SqlPSCredential' -Tag 'Get-SqlPSCredential' {
+    Describe 'DscResource.Common\Get-SqlPSCredential' -Tag 'GetSqlPSCredential' {
         BeforeAll {
             $mockConnectSql = {
 
-                if ($InstanceName -eq 'MSSQLSERVER')
-                {
-                    $result = @('','ADMIN:')[$DAC.IsPresent] + $ServerName
-                }
-                else
-                {
-                    $result = @('','ADMIN:')[$DAC.IsPresent] + "$ServerName\$InstanceName"
-                }
+                $instance = @('','ADMIN:')[$DAC.IsPresent] + $ServerName + `
+                            @('',"\$InstanceName")[$InstanceName -ne 'MSSQLSERVER']
 
                 return @(
                     (
@@ -3462,6 +3450,9 @@ InModuleScope 'SqlServerDsc.Common' {
                                         } -PassThru
                                 )
                             }
+                            ConnectionContext = New-Object -TypeName Object |
+                                Add-Member -MemberType NoteProperty -Name ServerInstance -Value $instance -PassThru |
+                                Add-Member -MemberType ScriptMethod -Name Disconnect -Value {} -PassThru -Force
                         }
                     )
                 )
