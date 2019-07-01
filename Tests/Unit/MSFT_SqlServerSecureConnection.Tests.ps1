@@ -70,7 +70,7 @@ try
 
         class MockedGetItem
         {
-            [string] $Thumbprint = '1A11AB1AB1A11111A1111AB111111AB11ABCDEFA'
+            [string] $Thumbprint = '1a11ab1ab1a11111a1111ab111111ab11abcdefa'
             [string] $PSPath = 'PathToItem'
             [string] $Path = 'PathToItem'
             [MockedAccessControl]$ACL = [MockedAccessControl]::new()
@@ -300,6 +300,27 @@ try
 
             Context 'When the system is not in the desired state' {
 
+                Context 'When Thumbprint contain upper-case' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                InstanceName    = $mockNamedInstanceName
+                                Thumbprint      = $mockThumbprint.ToUpper()
+                            }
+                        } -Verifiable
+                    }
+
+                    It 'Should configure with lower-case' {
+                        { Set-TargetResource @defaultParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq $mockThumbprint.ToLower() }
+
+                        Assert-MockCalled -CommandName Set-CertificatePermission -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq $mockThumbprint.ToLower() }
+
+                        Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                    }
+                }
+
                 Context 'When only certificate permissions are set' {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
@@ -334,6 +355,7 @@ try
                         }
                     }
                     Mock -CommandName Test-CertificatePermission -MockWith { return $false }
+
                     It 'Should configure only certificate permissions' {
                         { Set-TargetResource @defaultParameters } | Should -Not -Throw
 
