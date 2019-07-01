@@ -1,6 +1,6 @@
 @{
   # Version number of this module.
-  moduleVersion = '12.5.0.0'
+  moduleVersion = '13.0.0.0'
 
   # ID used to uniquely identify this module
   GUID = '693ee082-ed36-45a7-b490-88b07c86b42f'
@@ -49,89 +49,78 @@
           # IconUri = ''
 
           # ReleaseNotes of this module
-        ReleaseNotes = '- Changes to SqlServerSecureConnection
-  - Updated README and added example for SqlServerSecureConnection,
-    instructing users to use the "SYSTEM" service account instead of
-    "LocalSystem".
-- Changes to SqlScript
-  - Correctly passes the `$VerbosePreference` to the helper function
-    `Invoke-SqlScript` so that `PRINT` statements is outputted correctly
-    when verbose output is requested, e.g
-    `Start-DscConfiguration -Verbose`.
-  - Added en-US localization ([issue 624](https://github.com/PowerShell/SqlServerDsc/issues/624)).
-  - Added additional unit tests for code coverage.
-- Changes to SqlScriptQuery
-  - Correctly passes the `$VerbosePreference` to the helper function
-    `Invoke-SqlScript` so that `PRINT` statements is outputted correctly
-    when verbose output is requested, e.g
-    `Start-DscConfiguration -Verbose`.
+        ReleaseNotes = '- Changes to SqlServerDsc
+  - Added SqlAgentAlert resource.
+  - Opt-in to the common test "Common Test - Validation Localization".
+  - Opt-in to the common test "Common Test - Flagged Script Analyzer Rules"
+    ([issue 1101](https://github.com/PowerShell/SqlServerDsc/issues/1101)).
+  - Removed the helper function `New-TerminatingError`, `New-WarningMessage`
+    and `New-VerboseMessage` in favor of the the new
+    [localization helper functions](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.mdlocalization).
+  - Combine DscResource.LocalizationHelper and DscResource.Common into
+    SqlServerDsc.Common ([issue 1357](https://github.com/PowerShell/SqlServerDsc/issues/1357)).
+  - Update Assert-TestEnvironment.ps1 to not error if strict mode is enabled
+    and there are no missing dependencies ([issue 1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
+- Changes to SqlServerDsc.Common
+  - Added StatementTimeout to function "Connect-SQL" with default 600 seconds (10mins).
+  - Added StatementTimeout to function "Invoke-Query" with default 600 seconds (10mins)
+    ([issue 1358](https://github.com/PowerShell/SqlServerDsc/issues/1358)).
+  - Changes to helper function Connect-SQL
+    - The function now make it more clear that when using the parameter
+      `SetupCredential` is impersonates that user, and by default it does
+      not impersonates a user but uses the credential that the resource
+      is run as (for example the built-in credential parameter
+      `PsDscRunAsCredential`). [@kungfu71186](https://github.com/kungfu71186)
+    - Added parameter alias `-DatabaseCredential` for the parameter
+      `-SetupCredential`. [@kungfu71186](https://github.com/kungfu71186)
+- Changes to SqlAG
   - Added en-US localization.
-  - Added additional unit tests for code coverage.
-- Changes to SqlSetup
-  - Concatenated Robocopy localization strings ([issue 694](https://github.com/PowerShell/SqlServerDsc/issues/694)).
-  - Made the error message more descriptive when the Set-TargetResource
-    function calls the Test-TargetResource function to verify the desired
-    state.
-- Changes to SqlWaitForAG
-  - Added en-US localization ([issue 625](https://github.com/PowerShell/SqlServerDsc/issues/625)).
-- Changes to SqlServerPermission
-  - Added en-US localization ([issue 619](https://github.com/PowerShell/SqlServerDsc/issues/619)).
-- Changes to SqlServerMemory
-  - Added en-US localization ([issue 617](https://github.com/PowerShell/SqlServerDsc/issues/617)).
-  - No longer will the resource set the MinMemory value if it was provided
-    in a configuration that also set the `Ensure` parameter to "Absent"
-    ([issue 1329](https://github.com/PowerShell/SqlServerDsc/issues/1329)).
-  - Refactored unit tests to simplify them add add slightly more code
-    coverage.
-- Changes to SqlServerMaxDop
-  - Added en-US localization ([issue 616](https://github.com/PowerShell/SqlServerDsc/issues/616)).
-- Changes to SqlRS
-  - Reporting Services are restarted after changing settings, unless
-    `$SuppressRestart` parameter is set ([issue 1331](https://github.com/PowerShell/SqlServerDsc/issues/1331)).
-    `$SuppressRestart` will also prevent Reporting Services restart after initialization.
-  - Fixed one of the error handling to use localization, and made the
-    error message more descriptive when the Set-TargetResource function
-    calls the Test-TargetResource function to verify the desired
-    state. *This was done prior to adding full en-US localization.*
-  - Fixed ([issue 1258](https://github.com/PowerShell/SqlServerDsc/issues/1258)).
-    When initializing Reporting Services, there is no need to execute `InitializeReportServer`
-    CIM method, since executing `SetDatabaseConnection` CIM method initializes
-    Reporting Services.
-  - [issue 864](https://github.com/PowerShell/SqlServerDsc/issues/864) SqlRs
-    can now initialise SSRS 2017 instances
-- Changes to SqlServerLogin
-  - Added en-US localization ([issue 615](https://github.com/PowerShell/SqlServerDsc/issues/615)).
-  - Added unit tests to improved code coverage.
-- Changes to SqlWindowsFirewall
-  - Added en-US localization ([issue 614](https://github.com/PowerShell/SqlServerDsc/issues/614)).
-- Changes to SqlServerEndpoint
-  - Added en-US localization ([issue 611](https://github.com/PowerShell/SqlServerDsc/issues/611)).
-- Changes to SqlServerEndpointPermission
-  - Added en-US localization ([issue 612](https://github.com/PowerShell/SqlServerDsc/issues/612)).
-- Changes to SqlServerEndpointState
-  - Added en-US localization ([issue 613](https://github.com/PowerShell/SqlServerDsc/issues/613)).
-- Changes to SqlDatabaseRole
-  - Added en-US localization ([issue 610](https://github.com/PowerShell/SqlServerDsc/issues/610)).
-- Changes to SqlDatabaseRecoveryModel
-  - Added en-US localization ([issue 609](https://github.com/PowerShell/SqlServerDsc/issues/609)).
-- Changes to SqlDatabasePermission
-  - Added en-US localization ([issue 608](https://github.com/PowerShell/SqlServerDsc/issues/608)).
-- Changes to SqlDatabaseOwner
-  - Added en-US localization ([issue 607](https://github.com/PowerShell/SqlServerDsc/issues/607)).
-- Changes to SqlDatabase
-  - Added en-US localization ([issue 606](https://github.com/PowerShell/SqlServerDsc/issues/606)).
-- Changes to SqlAGListener
-  - Added en-US localization ([issue 604](https://github.com/PowerShell/SqlServerDsc/issues/604)).
+- Changes to SqlAGReplica
+  - Added en-US localization.
+  - Improved verbose message output when creating availability group replica,
+    removing a availability group replica, and joining the availability
+    group replica to the availability group.
 - Changes to SqlAlwaysOnService
-  - Added en-US localization ([issue 603](https://github.com/PowerShell/SqlServerDsc/issues/608)).
-- Changes to SqlAlias
-  - Added en-US localization ([issue 602](https://github.com/PowerShell/SqlServerDsc/issues/602)).
-  - Removed ShouldProcess for the code, since it has no purpose in a DSC
-    resource ([issue 242](https://github.com/PowerShell/SqlServerDsc/issues/242)).
-- Changes to SqlServerReplication
-  - Added en-US localization ([issue 620](https://github.com/PowerShell/SqlServerDsc/issues/620)).
-  - Refactored Get-TargetResource slightly so it provide better verbose
-    messages.
+  - Now outputs the correct verbose message when restarting the service.
+- Changes to SqlServerMemory
+  - Now outputs the correct verbose messages when calculating the dynamic
+    memory, and when limiting maximum memory.
+- Changes to SqlServerRole
+  - Now outputs the correct verbose message when the members of a role is
+    not in desired state.
+- Changes to SqlAgentOperator
+  - Fix minor issue that when unable to connect to an instance. Instead
+    of showing a message saying that connect failed another unrelated
+    error message could have been shown, because of an error in the code.
+  - Fix typo in test it block.
+- Changes to SqlDatabaseRole
+  - BREAKING CHANGE: Refactored to enable creation/deletion of the database role
+    itself as well as management of the role members. *Note that the resource no
+    longer adds database users.* ([issue 845](https://github.com/PowerShell/SqlServerDsc/issues/845),
+    [issue 847](https://github.com/PowerShell/SqlServerDsc/issues/847),
+    [issue 1252](https://github.com/PowerShell/SqlServerDsc/issues/1252),
+    [issue 1339](https://github.com/PowerShell/SqlServerDsc/issues/1339)).
+    [Paul Shamus @pshamus](https://github.com/pshamus)
+- Changes to SqlSetup
+  - Add an Action type of "Upgrade". This will ask setup to do a version
+    upgrade where possible ([issue 1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
+  - Fix an error when testing for DQS installation ([issue 1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
+  - Changed the logic of how default value of FailoverClusterGroupName is
+    set since that was preventing the resource to be able to be debugged
+    ([issue 448](https://github.com/PowerShell/SqlServerDsc/issues/448)).
+  - Added RSInstallMode parameter ([issue 1163](https://github.com/PowerShell/SqlServerDsc/issues/1163)).
+- Changes to SqlWindowsFirewall
+  - Where a version upgrade has changed paths for a database engine, the
+    existing firewall rule for that instance will be updated rather than
+    another one created ([issue 1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
+    Other firewall rules can be fixed to work in the same way later.
+- Changes to SqlAGDatabase
+  - Added new parameter "ReplaceExisting" with default false.
+    This allows forced restores when a database already exists on secondary.
+  - Added StatementTimeout to Invoke-Query to fix Issue1358
+  - Fix issue where calling Get would return an error because the database
+    name list may have been returned as a string instead of as a string array
+    ([issue 1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
 
 '
 
@@ -139,6 +128,7 @@
 
   } # End of PrivateData hashtable
   }
+
 
 
 

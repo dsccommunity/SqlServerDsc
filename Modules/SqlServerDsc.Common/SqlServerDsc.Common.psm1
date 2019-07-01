@@ -929,9 +929,16 @@ function Start-SqlSetupProcess
         If this is not provided then the current user will be used to connect to the SQL Server Database Engine instance.
 
     .PARAMETER LoginType
-        If the SetupCredential is set, specify with this parameter, which type
-        of credentials are set: Native SQL login or Windows user Login. Default
-        value is 'WindowsUser'.
+        Specifies which type of logon credential should be used. The valid types
+        are Integrated, WindowsUser, or SqlLogin. If WindowsUser or SqlLogin are
+        specified then the parameter SetupCredential needs to be specified as well.
+        If set to 'Integrated' then the credentials that the resource current are
+        run with will be used.
+        If set to 'WindowsUser' then the it will impersonate using the Windows
+        login specified in the parameter SetupCredential.
+        If set to 'WindowsUser' then the it will impersonate using the native SQL
+        login specified in the parameter SetupCredential.
+        Default value is 'Integrated'.
 
     .PARAMETER StatementTimeout
         Set the query StatementTimeout in seconds. Default 600 seconds (10mins).
@@ -953,13 +960,14 @@ function Connect-SQL
 
         [Parameter()]
         [ValidateNotNull()]
+        [Alias('DatabaseCredential')]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
         [Parameter()]
-        [ValidateSet('WindowsUser', 'SqlLogin')]
+        [ValidateSet('Integrated', 'WindowsUser', 'SqlLogin')]
         [System.String]
-        $LoginType = 'WindowsUser',
+        $LoginType = 'Integrated',
 
         [Parameter()]
         [ValidateNotNull()]
@@ -975,48 +983,66 @@ function Connect-SQL
     }
     else
     {
-        $databaseEngineInstance = "$ServerName\$InstanceName"
+        $databaseEngineInstance = '{0}\{1}' -f $ServerName, $InstanceName
     }
 
-    $sql = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
-    $sql.ConnectionContext.ServerInstance = $databaseEngineInstance
-    $sql.ConnectionContext.StatementTimeout = $StatementTimeout
-    $sql.ConnectionContext.ApplicationName = 'SqlServerDsc'
+    $sqlServerObject  = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+    $sqlConnectionContext = $sqlServerObject.ConnectionContext
 
-    if ($SetupCredential)
+    $sqlConnectionContext.ServerInstance = $databaseEngineInstance
+    $sqlConnectionContext.StatementTimeout = $StatementTimeout
+    $sqlConnectionContext.ApplicationName = 'SqlServerDsc'
+
+    if ($LoginType -eq 'Integrated')
     {
-        if ($LoginType -eq 'SqlLogin')
-        {
-            $connectUsername = $SetupCredential.Username
-
-            $sql.ConnectionContext.LoginSecure = $false
-            $sql.ConnectionContext.Login = $SetupCredential.Username
-            $sql.ConnectionContext.SecurePassword = $SetupCredential.Password
-        }
-
-        if ($LoginType -eq 'WindowsUser')
-        {
-            $connectUsername = $SetupCredential.GetNetworkCredential().UserName
-
-            $sql.ConnectionContext.ConnectAsUser = $true
-            $sql.ConnectionContext.ConnectAsUserPassword = $SetupCredential.GetNetworkCredential().Password
-            $sql.ConnectionContext.ConnectAsUserName = $SetupCredential.GetNetworkCredential().UserName
-        }
-
-        Write-Verbose -Message (
-            'Connecting using the credential ''{0}'' and the login type ''{1}''.' `
-                -f $connectUsername, $LoginType
-        ) -Verbose
+        <#
+            This is only used for verbose messaging and not for the connection
+            string since this is using Integrated Security=true (SSPI).
+        #>
+        $connectUserName = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
     }
+    else
+    {
+        if ($SetupCredential)
+        {
+            $connectUsername = $SetupCredential.UserName
+
+            if ($LoginType -eq 'SqlLogin')
+            {
+                $sqlConnectionContext.LoginSecure = $false
+                $sqlConnectionContext.Login = $connectUsername
+                $sqlConnectionContext.SecurePassword = $SetupCredential.Password
+            }
+
+            if ($LoginType -eq 'WindowsUser')
+            {
+                $sqlConnectionContext.ConnectAsUser = $true
+                $sqlConnectionContext.ConnectAsUserName = $connectUsername
+                $sqlConnectionContext.ConnectAsUserPassword = $SetupCredential.GetNetworkCredential().Password
+            }
+        }
+        else
+        {
+            $errorMessage = $script:localizedData.CredentialsNotSpecified -f $LoginType
+            New-InvalidArgumentException -ArgumentName 'SetupCredential' -Message $errorMessage
+        }
+    }
+
+    Write-Verbose -Message (
+        $script:localizedData.ConnectingUsingCredentials -f $connectUsername, $LoginType
+    ) -Verbose
 
     try
     {
-        $sql.ConnectionContext.Connect()
+        $sqlConnectionContext.Connect()
 
-        if ( $sql.Status -match '^Online$' )
+        if ($sqlServerObject.Status -match '^Online$')
         {
-            Write-Verbose -Message ($script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance) -Verbose
-            return $sql
+            Write-Verbose -Message (
+                $script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance
+            ) -Verbose
+
+            return $sqlServerObject
         }
         else
         {
@@ -1026,7 +1052,18 @@ function Connect-SQL
     catch
     {
         $errorMessage = $script:localizedData.FailedToConnectToDatabaseEngineInstance -f $databaseEngineInstance
-        New-InvalidOperationException -Message $errorMessage
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+    }
+    finally
+    {
+        <#
+            Connect will ensure we actually can connect, but we need to disconnect
+            from the session so we don't have anything hanging. If we need run a
+            method on the returned $sqlServerObject it will automatically open a
+            new session and then close, therefore we don't need to keep this
+            session open.
+        #>
+        $sqlConnectionContext.Disconnect()
     }
 }
 
@@ -1537,47 +1574,69 @@ function Restart-ReportingServicesService
     }
 }
 
+
 <#
     .SYNOPSIS
-    Executes a query on the specified database.
+        Executes a query on the specified database.
 
     .PARAMETER SQLServer
-    The hostname of the server that hosts the SQL instance.
+        The hostname of the server that hosts the SQL instance.
 
     .PARAMETER SQLInstanceName
-    The name of the SQL instance that hosts the database.
+        The name of the SQL instance that hosts the database.
 
     .PARAMETER Database
-    Specify the name of the database to execute the query on.
+        Specify the name of the database to execute the query on.
 
     .PARAMETER Query
-    The query string to execute.
+        The query string to execute.
+
+    .PARAMETER DatabaseCredential
+        PSCredential object with the credentials to use to impersonate a user when connecting.
+        If this is not provided then the current user will be used to connect to the SQL Server Database Engine instance.
+
+    .PARAMETER LoginType
+        Specifies which type of logon credential should be used. The valid types are
+        Integrated, WindowsUser, and SqlLogin. If WindowsUser or SqlLogin are specified
+        then the SetupCredential needs to be specified as well.
+
+    .PARAMETER SqlServerObject
+        You can pass in an object type of 'Microsoft.SqlServer.Management.Smo.Server'. This can also be passed in
+        through the pipeline allowing you to use connect-sql | invoke-query if you wish.
 
     .PARAMETER WithResults
-    Specifies if the query should return results.
+        Specifies if the query should return results.
 
     .PARAMETER StatementTimeout
-    Set the query StatementTimeout in seconds. Default 600 seconds (10mins).
+        Set the query StatementTimeout in seconds. Default 600 seconds (10mins).
 
     .EXAMPLE
-    Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master -Query 'SELECT name FROM sys.databases' -WithResults
+        Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master `
+            -Query 'SELECT name FROM sys.databases' -WithResults
 
     .EXAMPLE
-    Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master -Query 'RESTORE DATABASE [NorthWinds] WITH RECOVERY'
+        Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master `
+            -Query 'RESTORE DATABASE [NorthWinds] WITH RECOVERY'
+
+    .EXAMPLE
+        Connect-SQL @sqlConnectionParameters | Invoke-Query -Database master `
+            -Query 'SELECT name FROM sys.databases' -WithResults
 #>
 function Invoke-Query
 {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName='SqlServer')]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Alias("ServerName")]
+        [Parameter(ParameterSetName='SqlServer')]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLServer,
+        $SQLServer = $env:COMPUTERNAME,
 
-        [Parameter(Mandatory = $true)]
+        [Alias("InstanceName")]
+        [Parameter(ParameterSetName='SqlServer')]
         [System.String]
-        $SQLInstanceName,
+        $SQLInstanceName = 'MSSQLSERVER',
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -1587,19 +1646,52 @@ function Invoke-Query
         [System.String]
         $Query,
 
+        [Alias("SetupCredential")]
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $DatabaseCredential,
+
+        [Parameter()]
+        [ValidateSet('Integrated', 'WindowsUser', 'SqlLogin')]
+        [System.String]
+        $LoginType = 'Integrated',
+
+        [Parameter(ValueFromPipeline, ParameterSetName='SqlObject', Mandatory = $true)]
+        [ValidateNotNull()]
+        [Microsoft.SqlServer.Management.Smo.Server]
+        $SqlServerObject,
+
         [Parameter()]
         [Switch]
         $WithResults,
 
-        [Parameter()]
         [ValidateNotNull()]
         [System.Int32]
         $StatementTimeout = 600
     )
 
-    $serverObject = Connect-SQL -ServerName $SQLServer -InstanceName $SQLInstanceName -StatementTimeout $StatementTimeout
+    if ($PSCmdlet.ParameterSetName -eq 'SqlObject')
+    {
+        $serverObject = $SqlServerObject
+    }
+    elseif ($PSCmdlet.ParameterSetName -eq 'SqlServer')
+    {
+        $connectSQLParameters = @{
+            ServerName       = $SQLServer
+            InstanceName     = $SQLInstanceName
+            LoginType        = $LoginType
+            StatementTimeout = $StatementTimeout
+        }
 
-    if ( $WithResults )
+        if ($PSBoundParameters.ContainsKey('DatabaseCredential'))
+        {
+            $connectSQLParameters.SetupCredential = $DatabaseCredential
+        }
+
+        $serverObject = Connect-SQL @connectSQLParameters
+    }
+
+    if ($WithResults)
     {
         try
         {

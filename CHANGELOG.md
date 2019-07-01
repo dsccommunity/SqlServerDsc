@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Changes to common module: Invoke-Query
+  - Fixes issues in [issue #1355](https://github.com/PowerShell/SqlServerDsc/issues/1355)
+  - Works together with Connect-SQL now
+  - Parameters and Aliases now match that of Connect-SQL
+  - Can now pass in credentials
+  - Can now pass in 'Microsoft.SqlServer.Management.Smo.Server' object
+  - Can also pipe in 'Microsoft.SqlServer.Management.Smo.Server' object
+  - Can pipe Connect-SQL | Invoke-Query
+  - Added default vaules to Invoke-Query
+
+## 13.0.0.0
+
 - Changes to SqlServerDsc
   - Added SqlAgentAlert resource.
   - Opt-in to the common test 'Common Test - Validation Localization'.
@@ -18,6 +30,14 @@
   - Added StatementTimeout to function 'Connect-SQL' with default 600 seconds (10mins).
   - Added StatementTimeout to function 'Invoke-Query' with default 600 seconds (10mins)
     ([issue #1358](https://github.com/PowerShell/SqlServerDsc/issues/1358)).
+  - Changes to helper function Connect-SQL
+    - The function now make it more clear that when using the parameter
+      `SetupCredential` is impersonates that user, and by default it does
+      not impersonates a user but uses the credential that the resource
+      is run as (for example the built-in credential parameter
+      `PsDscRunAsCredential`). [@kungfu71186](https://github.com/kungfu71186)
+    - Added parameter alias `-DatabaseCredential` for the parameter
+      `-SetupCredential`. [@kungfu71186](https://github.com/kungfu71186)
 - Changes to SqlAG
   - Added en-US localization.
 - Changes to SqlAGReplica
@@ -50,6 +70,10 @@
   - Add an Action type of 'Upgrade'. This will ask setup to do a version
     upgrade where possible ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
   - Fix an error when testing for DQS installation ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
+  - Changed the logic of how default value of FailoverClusterGroupName is
+    set since that was preventing the resource to be able to be debugged
+    ([issue #448](https://github.com/PowerShell/SqlServerDsc/issues/448)).
+  - Added RSInstallMode parameter ([issue #1163](https://github.com/PowerShell/SqlServerDsc/issues/1163)).
 - Changes to SqlWindowsFirewall
   - Where a version upgrade has changed paths for a database engine, the
     existing firewall rule for that instance will be updated rather than

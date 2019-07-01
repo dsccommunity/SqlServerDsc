@@ -29,6 +29,10 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlSetup'
     .PARAMETER InstanceName
         Name of the SQL instance to be installed.
 
+    .PARAMETER RSInstallMode
+        Install mode for Reporting Services. The value of this parameter cannot be determined post-install,
+        so the function will simply return the value of this parameter.
+
     .PARAMETER FailoverClusterNetworkName
         Host name to be assigned to the clustered SQL Server instance.
 
@@ -59,6 +63,11 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
+
+        [Parameter()]
+        [ValidateSet('SharePointFilesOnlyMode', 'DefaultNativeMode', 'FilesOnlyMode')]
+        [System.String]
+        $RSInstallMode,
 
         [Parameter()]
         [System.String]
@@ -551,6 +560,7 @@ function Get-TargetResource
         FTSvcAccountUsername = $fullTextServiceAccountUsername
         RSSvcAccountUsername = $reportingServiceAccountUsername
         RsSvcStartupType = $RsSvcStartupType
+        RSInstallMode = $RSInstallMode
         ASSvcAccountUsername = $analysisServiceAccountUsername
         AsSvcStartupType = $AsSvcStartupType
         ASCollation = $analysisCollation
@@ -672,6 +682,9 @@ function Get-TargetResource
 
     .PARAMETER RSSvcAccount
         Service account for Reporting Services service.
+
+    .PARAMETER RSInstallMode
+        Install mode for Reporting Services.
 
     .PARAMETER ASSvcAccount
        Service account for Analysis Services service.
@@ -895,6 +908,11 @@ function Set-TargetResource
         $RSSvcAccount,
 
         [Parameter()]
+        [ValidateSet('SharePointFilesOnlyMode', 'DefaultNativeMode', 'FilesOnlyMode')]
+        [System.String]
+        $RSInstallMode,
+
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $ASSvcAccount,
 
@@ -967,7 +985,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $FailoverClusterGroupName = "SQL Server ($InstanceName)",
+        $FailoverClusterGroupName,
 
         [Parameter()]
         [System.String[]]
@@ -1005,6 +1023,15 @@ function Set-TargetResource
         [System.String[]]
         $FeatureFlag
     )
+
+    <#
+        Fixing issue 448, setting FailoverClusterGroupName to default value
+        if not specified in configuration.
+    #>
+    if (-not $PSBoundParameters.ContainsKey('FailoverClusterGroupName'))
+    {
+        $FailoverClusterGroupName = 'SQL Server ({0})' -f $InstanceName
+    }
 
     $getTargetResourceParameters = @{
         Action = $Action
@@ -1100,12 +1127,12 @@ function Set-TargetResource
     {
         { $_ -in ('10','11','12','13','14') }
         {
-            if((Get-Variable -Name 'InstallSharedDir' -ErrorAction SilentlyContinue) -and (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\FEE2E540D20152D4597229B6CFBC0A69' -ErrorAction SilentlyContinue))
+            if ((Get-Variable -Name 'InstallSharedDir' -ErrorAction SilentlyContinue) -and (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\FEE2E540D20152D4597229B6CFBC0A69' -ErrorAction SilentlyContinue))
             {
                 Set-Variable -Name 'InstallSharedDir' -Value ''
             }
 
-            if((Get-Variable -Name 'InstallSharedWOWDir' -ErrorAction SilentlyContinue) -and (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\A79497A344129F64CA7D69C56F5DD8B4' -ErrorAction SilentlyContinue))
+            if ((Get-Variable -Name 'InstallSharedWOWDir' -ErrorAction SilentlyContinue) -and (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\A79497A344129F64CA7D69C56F5DD8B4' -ErrorAction SilentlyContinue))
             {
                 Set-Variable -Name 'InstallSharedWOWDir' -Value ''
             }
@@ -1335,7 +1362,7 @@ function Set-TargetResource
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $SQLSvcAccount -ServiceType 'SQL')
         }
 
-        if($PSBoundParameters.ContainsKey('AgtSvcAccount'))
+        if ($PSBoundParameters.ContainsKey('AgtSvcAccount'))
         {
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $AgtSvcAccount -ServiceType 'AGT')
         }
@@ -1376,31 +1403,31 @@ function Set-TargetResource
         }
 
         # tempdb : define SqlTempdbFileCount
-        if($PSBoundParameters.ContainsKey('SqlTempdbFileCount'))
+        if ($PSBoundParameters.ContainsKey('SqlTempdbFileCount'))
         {
             $setupArguments += @{ SqlTempdbFileCount = $SqlTempdbFileCount }
         }
 
         # tempdb : define SqlTempdbFileSize
-        if($PSBoundParameters.ContainsKey('SqlTempdbFileSize'))
+        if ($PSBoundParameters.ContainsKey('SqlTempdbFileSize'))
         {
             $setupArguments += @{ SqlTempdbFileSize = $SqlTempdbFileSize }
         }
 
         # tempdb : define SqlTempdbFileGrowth
-        if($PSBoundParameters.ContainsKey('SqlTempdbFileGrowth'))
+        if ($PSBoundParameters.ContainsKey('SqlTempdbFileGrowth'))
         {
             $setupArguments += @{ SqlTempdbFileGrowth = $SqlTempdbFileGrowth }
         }
 
         # tempdb : define SqlTempdbLogFileSize
-        if($PSBoundParameters.ContainsKey('SqlTempdbLogFileSize'))
+        if ($PSBoundParameters.ContainsKey('SqlTempdbLogFileSize'))
         {
             $setupArguments += @{ SqlTempdbLogFileSize = $SqlTempdbLogFileSize }
         }
 
         # tempdb : define SqlTempdbLogFileGrowth
-        if($PSBoundParameters.ContainsKey('SqlTempdbLogFileGrowth'))
+        if ($PSBoundParameters.ContainsKey('SqlTempdbLogFileGrowth'))
         {
             $setupArguments += @{ SqlTempdbLogFileGrowth = $SqlTempdbLogFileGrowth }
         }
@@ -1441,6 +1468,10 @@ function Set-TargetResource
         {
             $setupArguments += @{ RsSvcStartupType = $RsSvcStartupType}
         }
+        if ($PSBoundParameters.ContainsKey('RSInstallMode'))
+        {
+            $setupArguments += @{ RSINSTALLMODE = $RSInstallMode}
+        }
     }
 
     if ($Features.Contains('AS'))
@@ -1477,7 +1508,7 @@ function Set-TargetResource
                 $setupArguments += @{ ASSysAdminAccounts =  @($PsDscContext.RunAsUser) }
             }
 
-            if($PSBoundParameters.ContainsKey("ASSysAdminAccounts"))
+            if ($PSBoundParameters.ContainsKey("ASSysAdminAccounts"))
             {
                 $setupArguments['ASSysAdminAccounts'] += $ASSysAdminAccounts
             }
@@ -1505,7 +1536,7 @@ function Set-TargetResource
     # Automatically include any additional arguments
     foreach ($argument in $argumentVars)
     {
-        if($argument -eq 'ProductKey')
+        if ($argument -eq 'ProductKey')
         {
             $setupArguments += @{ 'PID' = (Get-Variable -Name $argument -ValueOnly) }
         }
@@ -1546,7 +1577,7 @@ function Set-TargetResource
                 else
                 {
                     # Logic added as a fix for Issue#1254 SqlSetup:Fails when a root directory is specified
-                    if($currentSetupArgument.Value -match '^[a-zA-Z]:\\$')
+                    if ($currentSetupArgument.Value -match '^[a-zA-Z]:\\$')
                     {
                         $setupArgumentValue = $currentSetupArgument.Value
                     }
@@ -1560,7 +1591,6 @@ function Set-TargetResource
 
             $arguments += "/$($currentSetupArgument.Key.ToUpper())=$($setupArgumentValue) "
         }
-
     }
 
     # Replace sensitive values for verbose output
@@ -1777,6 +1807,9 @@ function Set-TargetResource
     .PARAMETER RSSvcAccount
         Service account for Reporting Services service.
 
+    .PARAMETER RSInstallMode
+        Install mode for Reporting Services.
+
     .PARAMETER ASSvcAccount
        Service account for Analysis Services service.
 
@@ -1990,6 +2023,11 @@ function Test-TargetResource
         $RSSvcAccount,
 
         [Parameter()]
+        [ValidateSet('SharePointFilesOnlyMode', 'DefaultNativeMode', 'FilesOnlyMode')]
+        [System.String]
+        $RSInstallMode,
+
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $ASSvcAccount,
 
@@ -2062,7 +2100,7 @@ function Test-TargetResource
 
         [Parameter(ParameterSetName = 'ClusterInstall')]
         [System.String]
-        $FailoverClusterGroupName = "SQL Server ($InstanceName)",
+        $FailoverClusterGroupName,
 
         [Parameter(ParameterSetName = 'ClusterInstall')]
         [System.String[]]
@@ -2100,6 +2138,15 @@ function Test-TargetResource
         [System.String[]]
         $FeatureFlag
     )
+
+    <#
+        Fixing issue 448, setting FailoverClusterGroupName to default value
+        if not specified in configuration.
+    #>
+    if (-not $PSBoundParameters.ContainsKey('FailoverClusterGroupName'))
+    {
+        $FailoverClusterGroupName = 'SQL Server ({0})' -f $InstanceName
+    }
 
     $getTargetResourceParameters = @{
         Action = $Action

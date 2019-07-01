@@ -2874,6 +2874,7 @@ try
                             UpdateEnabled = 'True'
                             UpdateSource = 'C:\Updates\' # Regression test for issue #720
                             ASServerMode = 'TABULAR'
+                            RSInstallMode = 'DefaultNativeMode'
                             SqlSvcStartupType = $mockSqlSvcStartupType
                             AgtSvcStartupType = $mockAgtSvcStartupType
                             AsSvcStartupType = $mockAsSvcStartupType
@@ -2907,6 +2908,7 @@ try
                             UpdateEnabled = 'True'
                             UpdateSource = 'C:\Updates' # Regression test for issue #720
                             ASServerMode = 'TABULAR'
+                            RSInstallMode = 'DefaultNativeMode'
                             SqlSvcStartupType = $mockSqlSvcStartupType
                             AgtSvcStartupType = $mockAgtSvcStartupType
                             AsSvcStartupType = $mockAsSvcStartupType
