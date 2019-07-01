@@ -92,7 +92,7 @@ try
                 $resourceCurrentState.Authentication | Should -Be $ConfigurationData.AllNodes.Authentication
                 <#
                     Possibly LCM protects credentials objects and instead of real values NULL is returned.
-                    In the same time unit tests for Get() function shows correct results.
+                    At the same time unit tests for Get() function shows correct results.
                 #>
                 $resourceCurrentState.SMTPAccount.UserName | Should -BeNullOrEmpty
                 $resourceCurrentState.SMTPAccount.Password | Should -BeNullOrEmpty

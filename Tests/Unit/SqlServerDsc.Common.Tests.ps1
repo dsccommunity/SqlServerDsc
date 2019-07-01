@@ -2591,12 +2591,12 @@ InModuleScope 'SqlServerDsc.Common' {
             }
         }
 
-        Context 'When the logon type is WindowsUser or SqlLogin, but not credentials were passed' {
+        Context 'When the logon type is WindowsUser or SqlLogin, but no credentials were passed' {
             It 'Should throw the correct error' {
                 $mockExpectedDatabaseEngineServer = 'TestServer'
                 $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
 
-                 $connectSqlParameters = @{
+                $connectSqlParameters = @{
                     ServerName      = $mockExpectedDatabaseEngineServer
                     LoginType       = 'WindowsUser'
                 }

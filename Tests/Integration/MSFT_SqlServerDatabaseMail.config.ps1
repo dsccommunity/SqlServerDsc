@@ -54,7 +54,7 @@ Configuration MSFT_SqlServerDatabaseMail_Add_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node $AllNodes.NodeName
+    Node $AllNodes.NodeName
     {
         SqlServerConfiguration 'EnableDatabaseMailXPs'
         {
@@ -104,7 +104,7 @@ Configuration MSFT_SqlServerDatabaseMail_Remove_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node $AllNodes.NodeName
+    Node $AllNodes.NodeName
     {
         SqlServerDatabaseMail 'Integration_Test'
         {
