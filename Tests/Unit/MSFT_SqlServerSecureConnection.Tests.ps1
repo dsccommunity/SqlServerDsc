@@ -122,6 +122,7 @@ try
                     $resultGetTargetResource.Ensure | Should -Be 'Present'
 
                     Assert-MockCalled -CommandName Get-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Test-CertificatePermission -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq $mockThumbprint.ToLower() }
                 }
             }
 
