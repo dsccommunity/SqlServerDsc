@@ -1469,16 +1469,14 @@ function Restart-SqlService
             # Make sure we have an SMO object to test Status
             if ($testConnectionServerObject)
             {
-                if ($testConnectionServerObject.Status -ne 'Online')
-                {
-                    # Waiting 2 seconds to not hammer the SQL Server instance.
-                    Start-Sleep -Seconds 2
-                }
-                else
+                if ($testConnectionServerObject.Status -eq 'Online')
                 {
                     break
                 }
             }
+
+            # Waiting 2 seconds to not hammer the SQL Server instance.
+            Start-Sleep -Seconds 2
         } until ($connectTimer.Elapsed.Seconds -ge $Timeout)
 
         $connectTimer.Stop()
