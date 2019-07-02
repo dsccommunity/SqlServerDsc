@@ -65,13 +65,12 @@ try
 
             [void] AddAccessRule([System.Security.AccessControl.FileSystemAccessRule] $object)
             {
-
             }
         }
 
         class MockedGetItem
         {
-            [string] $Thumbprint = '12345678'
+            [string] $Thumbprint = '1a11ab1ab1a11111a1111ab111111ab11abcdefa'
             [string] $PSPath = 'PathToItem'
             [string] $Path = 'PathToItem'
             [MockedAccessControl]$ACL = [MockedAccessControl]::new()
@@ -89,7 +88,7 @@ try
 
         $mockNamedInstanceName = 'INSTANCE'
         $mockDefaultInstanceName = 'MSSQLSERVER'
-        $mockThumbprint = '123456789'
+        $mockThumbprint = '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'
         $mockServiceAccount = 'SqlSvc'
 
         Describe 'SqlServerSecureConnection\Get-TargetResource' -Tag 'Get' {
@@ -117,14 +116,14 @@ try
                 It 'Should return the the state of present' {
                     $resultGetTargetResource = Get-TargetResource @defaultParameters
                     $resultGetTargetResource.InstanceName | Should -Be $mockNamedInstanceName
-                    $resultGetTargetResource.Thumbprint | Should -Be $mockThumbprint
+                    $resultGetTargetResource.Thumbprint | Should -BeExactly $mockThumbprint
                     $resultGetTargetResource.ServiceAccount | Should -Be $mockServiceAccount
                     $resultGetTargetResource.ForceEncryption | Should -Be $true
                     $resultGetTargetResource.Ensure | Should -Be 'Present'
 
                     Assert-MockCalled -CommandName Get-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Test-CertificatePermission -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq $mockThumbprint.ToLower() }
                 }
-
             }
 
             Context 'When the system is not in the desired state and Ensure is Present' {
@@ -302,11 +301,32 @@ try
 
             Context 'When the system is not in the desired state' {
 
+                Context 'When Thumbprint contain upper-case' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                InstanceName    = $mockNamedInstanceName
+                                Thumbprint      = $mockThumbprint.ToUpper()
+                            }
+                        } -Verifiable
+                    }
+
+                    It 'Should configure with lower-case' {
+                        { Set-TargetResource @defaultParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq $mockThumbprint.ToLower() }
+
+                        Assert-MockCalled -CommandName Set-CertificatePermission -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq $mockThumbprint.ToLower() }
+
+                        Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                    }
+                }
+
                 Context 'When only certificate permissions are set' {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
                             InstanceName    = $mockNamedInstanceName
-                            Thumbprint      = '987654321'
+                            Thumbprint      = $mockThumbprint
                             ServiceAccount  = $mockServiceAccount
                             ForceEncryption = $false
                             Ensure          = 'Present'
@@ -336,6 +356,7 @@ try
                         }
                     }
                     Mock -CommandName Test-CertificatePermission -MockWith { return $false }
+
                     It 'Should configure only certificate permissions' {
                         { Set-TargetResource @defaultParameters } | Should -Not -Throw
 
