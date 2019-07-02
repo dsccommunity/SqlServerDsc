@@ -1465,15 +1465,18 @@ function Restart-SqlService
         {
             # This call, if it fails, will take between ~9-10 seconds to return.
             $testConnectionServerObject = Connect-SQL -ServerName $SQLServer -InstanceName $SQLInstanceName -ErrorAction SilentlyContinue
-            if ($testConnectionServerObject -and $testConnectionServerObject.Status -ne 'Online')
+
+            # Make sure we have an SMO object to test Status
+            if ($testConnectionServerObject)
             {
-                # Waiting 2 seconds to not hammer the SQL Server instance.
-                Start-Sleep -Seconds 2
+                if ($testConnectionServerObject.Status -eq 'Online')
+                {
+                    break
+                }
             }
-            else
-            {
-                break
-            }
+
+            # Waiting 2 seconds to not hammer the SQL Server instance.
+            Start-Sleep -Seconds 2
         } until ($connectTimer.Elapsed.Seconds -ge $Timeout)
 
         $connectTimer.Stop()
