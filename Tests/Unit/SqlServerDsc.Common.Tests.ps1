@@ -1147,6 +1147,18 @@ InModuleScope 'SqlServerDsc.Common' {
                         $PSBoundParameters.ContainsKey('ErrorAction') -eq $true
                     } -Scope It -Exactly -Times 1
                 }
+                
+                It 'Should wait for timeout before throwing error message' {
+                    $errorMessage = $localizedData.FailedToConnectToInstanceTimeout -f $env:ComputerName, 'MSSQLSERVER', 10
+
+                    {
+                        Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'MSSQLSERVER' -Timeout 10
+                    } | Should -Throw $errorMessage
+
+                    Assert-MockCalled -CommandName Connect-SQL -ParameterFilter {
+                        $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
+                    } -Scope It -Exactly -Times 1
+                }
             }
         }
 
