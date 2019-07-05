@@ -1132,11 +1132,11 @@ InModuleScope 'SqlServerDsc.Common' {
 
                 $mockDynamicStatus = 'Offline'
 
-                It 'Should throw the correct error message' {
-                    $errorMessage = $localizedData.FailedToConnectToInstanceTimeout -f $env:ComputerName, 'MSSQLSERVER', 1
+                It 'Should wait for timeout before throwing error message' {
+                    $errorMessage = $localizedData.FailedToConnectToInstanceTimeout -f $env:ComputerName, 'MSSQLSERVER', 4
 
                     {
-                        Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'MSSQLSERVER' -Timeout 1
+                        Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'MSSQLSERVER' -Timeout 4
                     } | Should -Throw $errorMessage
 
                     Assert-MockCalled -CommandName Connect-SQL -ParameterFilter {
@@ -1145,7 +1145,7 @@ InModuleScope 'SqlServerDsc.Common' {
 
                     Assert-MockCalled -CommandName Connect-SQL -ParameterFilter {
                         $PSBoundParameters.ContainsKey('ErrorAction') -eq $true
-                    } -Scope It -Exactly -Times 1
+                    } -Scope It -Exactly -Times 2
                 }
             }
         }
