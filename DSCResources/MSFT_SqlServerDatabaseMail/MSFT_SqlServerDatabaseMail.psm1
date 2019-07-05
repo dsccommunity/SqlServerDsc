@@ -75,6 +75,9 @@ function Get-TargetResource
         ReplyToAddress = $null
         Description    = $null
         TcpPort        = $null
+        EnableSsl      = $null
+        Authentication = $null
+        SMTPAccount    = $null
     }
 
     Write-Verbose -Message (
@@ -142,6 +145,37 @@ function Get-TargetResource
 
                 $returnValue['MailServerName'] = $mailServer.Name
                 $returnValue['TcpPort'] = $mailServer.Port
+                $returnValue['EnableSsl'] = $mailServer.EnableSsl
+
+                <#
+                    When UseDefaultCredentials is True, Database Mail uses the
+                    credentials of the SQL Server Database Engine service. When
+                    this parameter is False, Database Mail uses the **@username**
+                    and **@password** for authentication on the SMTP server.
+                    If **@username** and **@password** are NULL, then Database Mail
+                    uses anonymous authentication.
+                #>
+                if ($mailServer.UseDefaultCredentials)
+                {
+                    $returnValue['Authentication'] = 'Windows'
+                }
+                elseif ($mailServer.UserName)
+                {
+                    $returnValue['Authentication'] = 'Basic'
+
+                    $credentialId = Get-MailServerCredentialId -SQLServer $ServerName `
+                                                               -SQLInstanceName $InstanceName `
+                                                               -MailServerName $mailServer.Name `
+                                                               -AccountId $databaseMailAccount.ID
+
+                    $returnValue['SMTPAccount'] = Get-SqlPSCredential -SQLServer $ServerName `
+                                                                      -SQLInstanceName $InstanceName `
+                                                                      -CredentialId $credentialId
+                }
+                else
+                {
+                    $returnValue['Authentication'] = 'Anonymous'
+                }
 
                 # Currently only one profile is handled, so this make sure only the first string (profile name) is returned.
                 $returnValue['ProfileName'] = $databaseMail.Profiles | Select-Object -First 1 -ExpandProperty Name
@@ -224,6 +258,15 @@ function Get-TargetResource
     .PARAMETER TcpPort
         The TCP port used for communication. Default value is port 25.
 
+    .PARAMETER EnableSsl
+        Specifies whether to encrypt communication using Secure Sockets Layer or not.
+
+    .PARAMETER Authentication
+        SMTP authentication mode to be used. Default value is 'Anonymous'.
+
+    .PARAMETER SMTPAccount
+        Account used for SMTP authentication if 'Basic' mode was chosen.
+
     .NOTES
         Information about the different properties can be found here
         https://docs.microsoft.com/en-us/sql/relational-databases/database-mail/configure-database-mail.
@@ -283,8 +326,28 @@ function Set-TargetResource
 
         [Parameter()]
         [System.UInt16]
-        $TcpPort = 25
+        $TcpPort = 25,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableSsl,
+
+        [Parameter()]
+        [ValidateSet('Anonymous', 'Basic', 'Windows')]
+        [System.String]
+        $Authentication = 'Anonymous',
+
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $SMTPAccount
     )
+
+    if (-not $PSBoundParameters.ContainsKey('SMTPAccount') -and `
+                            $Authentication -eq 'Basic')
+    {
+        $errorMessage = $script:localizedData.SMTPAccountMissingParameter
+        New-InvalidArgumentException -ArgumentName 'SMTPAccount' -Message $errorMessage
+    }
 
     Write-Verbose -Message (
         $script:localizedData.ConnectToSqlInstance `
@@ -370,6 +433,28 @@ function Set-TargetResource
                         if ($PSBoundParameters.ContainsKey('TcpPort'))
                         {
                             $mailServer.Port = $TcpPort
+                        }
+
+                        if ($PSBoundParameters.ContainsKey('EnableSsl'))
+                        {
+                            $mailServer.EnableSsl = $EnableSsl
+                        }
+
+                        if ($PSBoundParameters.ContainsKey('Authentication'))
+                        {
+                            # Default Authentication is Anonymous so it's absent in the selection.
+                            switch ($Authentication)
+                            {
+                                'Basic'
+                                {
+                                    $mailServer.SetAccount($SMTPAccount.UserName, $SMTPAccount.Password)
+                                }
+
+                                'Windows'
+                                {
+                                    $mailServer.UseDefaultCredentials = $true
+                                }
+                            }
                         }
 
                         $mailServer.Alter()
@@ -472,6 +557,118 @@ function Set-TargetResource
 
                         $mailServer.Port = $TcpPort
                         $mailServer.Alter()
+                    }
+
+                    $currentEnableSsl = $mailServer.EnableSsl
+                    if ($currentEnableSsl -ne $EnableSsl)
+                    {
+                        Write-Verbose -Message (
+                            $script:localizedData.UpdatingPropertyOfMailServer -f @(
+                                $currentEnableSsl
+                                $EnableSsl
+                                $script:localizedData.MailServerPropertyEnableSsl
+                            )
+                        )
+
+                        $mailServer.EnableSsl = $EnableSsl
+                        $mailServer.Alter()
+                    }
+
+                    # Checking current SMTP Authentication mode and SMTP Account
+                    $currentSMTPAccount = $null
+                    if ($mailServer.UseDefaultCredentials)
+                    {
+                        $currentAuthentication = 'Windows'
+                    }
+                    elseif ($mailServer.UserName)
+                    {
+                        $currentAuthentication = 'Basic'
+
+                        $credentialId = Get-MailServerCredentialId -SQLServer $ServerName `
+                                                                   -SQLInstanceName $InstanceName `
+                                                                   -MailServerName $MailServerName `
+                                                                   -AccountId $databaseMailAccount.ID
+
+                        $currentSMTPAccount = Get-SqlPSCredential -SQLServer $ServerName `
+                                                                  -SQLInstanceName $InstanceName `
+                                                                  -CredentialId $credentialId
+                    }
+                    else
+                    {
+                        $currentAuthentication = 'Anonymous'
+                    }
+
+                    if ($currentAuthentication -ne $Authentication)
+                    {
+                        Write-Verbose -Message (
+                            $script:localizedData.UpdatingPropertyOfMailServer -f @(
+                                $currentAuthentication
+                                $Authentication
+                                $script:localizedData.MailServerPropertyAuthentication
+                            )
+                        )
+
+                        $mailServer.UseDefaultCredentials = switch ($Authentication)
+                        {
+                            'Windows'
+                            {
+                                $true
+                            }
+
+                            Default
+                            {
+                                $false
+                            }
+                        }
+
+                        if ($Authentication -ne 'Basic' -and $currentSMTPAccount.UserName)
+                        {
+                            Write-Verbose -Message (
+                                $script:localizedData.UpdatingPropertyOfMailServer -f @(
+                                    $currentSMTPAccount.UserName
+                                    ''
+                                    $script:localizedData.MailServerPropertySMTPAccount
+                                )
+                            )
+                            $mailServer.UserName = ''
+                        }
+
+                        $mailServer.Alter()
+                    }
+
+                    if ($Authentication -eq 'Basic')
+                    {
+                        if ($SMTPAccount.UserName -ne $currentSMTPAccount.UserName)
+                        {
+                            Write-Verbose -Message (
+                                $script:localizedData.UpdatingPropertyOfMailServer -f @(
+                                    $currentSMTPAccount.UserName
+                                    $SMTPAccount.UserName
+                                    $script:localizedData.MailServerPropertySMTPAccount
+                                )
+                            )
+
+                            $mailServer.SetAccount($SMTPAccount.UserName, $SMTPAccount.Password)
+                        }
+                        elseif (([System.String]::IsNullOrEmpty($currentSMTPAccount.Password) -and $SMTPAccount.Password) -or `
+                                ([System.String]::IsNullOrEmpty($SMTPAccount.Password) -and $currentSMTPAccount.Password) -or `
+                                ($currentSMTPAccount.GetNetworkCredential().Password -ne `
+                                                            $SMTPAccount.GetNetworkCredential().Password))
+                        {
+                            <#
+                                Message will not include real password values unless password is not set.
+                                This was done on purpose.
+                            #>
+                            Write-Verbose -Message (
+                                $script:localizedData.UpdatingPropertyOfMailServer -f @(
+                                    $currentSMTPAccount.Password
+                                    $SMTPAccount.Password
+                                    $script:localizedData.MailServerPropertySMTPAccountPassword
+                                )
+                            )
+
+                            $mailServer.SetPassword($SMTPAccount.Password)
+                        }
                     }
                 }
 
@@ -623,6 +820,15 @@ function Set-TargetResource
 
     .PARAMETER TcpPort
         The TCP port used for communication. Default value is port 25.
+
+    .PARAMETER EnableSsl
+        Specifies whether to encrypt communication using Secure Sockets Layer or not.
+
+    .PARAMETER Authentication
+        SMTP authentication mode to be used. Default value is 'Anonymous'.
+
+    .PARAMETER SMTPAccount
+        Account used for SMTP authentication if 'Basic' mode was chosen.
 #>
 function Test-TargetResource
 {
@@ -679,7 +885,20 @@ function Test-TargetResource
 
         [Parameter()]
         [System.UInt16]
-        $TcpPort = 25
+        $TcpPort = 25,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableSsl,
+
+        [Parameter()]
+        [ValidateSet('Anonymous', 'Basic', 'Windows')]
+        [System.String]
+        $Authentication = 'Anonymous',
+
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $SMTPAccount
     )
 
     $getTargetResourceParameters = @{
@@ -701,10 +920,7 @@ function Test-TargetResource
 
     if ($Ensure -eq 'Present')
     {
-        $returnValue = Test-DscParameterState `
-            -CurrentValues $getTargetResourceResult `
-            -DesiredValues $PSBoundParameters `
-            -ValuesToCheck @(
+        $valuesToCheck = @(
             'AccountName'
             'EmailAddress'
             'MailServerName'
@@ -715,7 +931,27 @@ function Test-TargetResource
             'DisplayName'
             'Description'
             'LoggingLevel'
+            'EnableSsl'
+            'Authentication'
         )
+
+        # If current or desired Authentication is set to 'Basic' we need to include SMTPAccount property
+        if ('Basic' -in @($Authentication, $getTargetResourceResult.Authentication))
+        {
+            $valuesToCheck += 'SMTPAccount'
+
+            # Ignore SMTPAccount property value if it was specified with Authentication not set to 'Basic'
+            if ($Authentication -ne 'Basic' -and $PSBoundParameters.ContainsKey('SMTPAccount'))
+            {
+                Write-Warning -Message $script:localizedData.SMTPAccountIgnoringParameter
+                $PSBoundParameters['SMTPAccount'] = [System.Management.Automation.PSCredential]::Empty
+            }
+        }
+
+        $returnValue = Test-DscParameterState `
+            -CurrentValues $getTargetResourceResult `
+            -DesiredValues $PSBoundParameters `
+            -ValuesToCheck $valuesToCheck
     }
     else
     {

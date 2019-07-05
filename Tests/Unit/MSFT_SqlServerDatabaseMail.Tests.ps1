@@ -54,6 +54,7 @@ try
     InModuleScope $script:dscResourceName {
         $mockServerName = 'localhost'
         $mockInstanceName = 'MSSQLSERVER'
+        $mockAccountId = 11
         $mockAccountName = 'MyMail'
         $mockEmailAddress = 'NoReply@company.local'
         $mockReplyToAddress = $mockEmailAddress
@@ -62,6 +63,41 @@ try
         $mockDisplayName = $mockMailServerName
         $mockDescription = 'My mail description'
         $mockTcpPort = 25
+        $mockEnableSsl = $true
+
+        $mockAuthenticationWindows = 'Windows'
+        $mockAuthenticationWindowsDisabled = $false
+        $mockAuthenticationBasic = 'Basic'
+        $mockAuthenticationBasicDisabled = ''
+        $mockAuthenticationAnonymous = 'Anonymous'
+
+        $mockSMTPAccountAbsent  = $null
+        $mockSMTPAccountPresent = New-Object `
+                    -TypeName System.Management.Automation.PSCredential `
+                    -ArgumentList @('mockUser', `
+                                (ConvertTo-SecureString -String 'mockPassword' `
+                                                        -AsPlainText `
+                                                        -Force
+                                )
+                    )
+
+        $mockSMTPAccountPresentDifferentUser = New-Object `
+                    -TypeName System.Management.Automation.PSCredential `
+                    -ArgumentList @('mockAnotherUser', `
+                                (ConvertTo-SecureString -String 'mockPassword' `
+                                                        -AsPlainText `
+                                                        -Force
+                                )
+                    )
+
+        $mockSMTPAccountPresentDifferentPassword = New-Object `
+                    -TypeName System.Management.Automation.PSCredential `
+                    -ArgumentList @('mockUser', `
+                                (ConvertTo-SecureString -String 'mockAnotherPassword' `
+                                                        -AsPlainText `
+                                                        -Force
+                                )
+                    )
 
         $mockDatabaseMailDisabledConfigValue = 0
         $mockDatabaseMailEnabledConfigValue = 1
@@ -91,6 +127,7 @@ try
         # Contains mocked object that is used between several mocks.
         $mailAccountObject = {
             New-Object -TypeName Object |
+                Add-Member -MemberType NoteProperty -Name 'ID' -Value $mockAccountId -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockAccountName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'DisplayName' -Value $mockDisplayName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'EmailAddress' -Value $mockEmailAddress -PassThru |
@@ -101,12 +138,21 @@ try
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockMailServerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'Port' -Value $mockTcpPort -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'EnableSsl' -Value $mockEnableSsl -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'UseDefaultCredentials' -Value $mockDynamicAuthenticationValue -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'UserName' -Value $mockDynamicAuthenticationAccountValue -PassThru |
                         Add-Member -MemberType ScriptMethod -Name 'Rename' -Value {
-                        $script:MailServerRenameMethodCallCount += 1
-                    } -PassThru |
+                            $script:MailServerRenameMethodCallCount += 1
+                        } -PassThru |
+                        Add-Member -MemberType ScriptMethod -Name 'SetAccount' -Value {
+                            $script:MailServerSetAccountMethodCallCount += 1
+                        } -PassThru |
+                        Add-Member -MemberType ScriptMethod -Name 'SetPassword' -Value {
+                            $script:MailServerSetPasswordMethodCallCount += 1
+                        } -PassThru |
                         Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                        $script:MailServerAlterMethodCallCount += 1
-                    } -PassThru -Force
+                            $script:MailServerAlterMethodCallCount += 1
+                        } -PassThru -Force
                 )
             } -PassThru |
                 Add-Member -MemberType ScriptMethod -Name 'Create' -Value {
@@ -199,6 +245,8 @@ try
                 $mockDynamicDescription = $mockDescription
                 $mockDynamicAgentMailType = $mockAgentMailTypeDatabaseMail
                 $mockDynamicDatabaseMailProfile = $mockProfileName
+                $mockDynamicAuthenticationValue = $mockAuthenticationWindowsDisabled
+                $mockDynamicAuthenticationAccountValue = $mockAuthenticationBasicDisabled
             }
 
             BeforeEach {
@@ -239,6 +287,9 @@ try
                         $getTargetResourceResult.ReplyToAddress | Should -BeNullOrEmpty
                         $getTargetResourceResult.Description | Should -BeNullOrEmpty
                         $getTargetResourceResult.TcpPort | Should -BeNullOrEmpty
+                        $getTargetResourceResult.EnableSsl | Should -BeNullOrEmpty
+                        $getTargetResourceResult.Authentication | Should -BeNullOrEmpty
+                        $getTargetResourceResult.SMTPAccount | Should -BeNullOrEmpty
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
                     }
@@ -271,8 +322,64 @@ try
                         $getTargetResourceResult.ReplyToAddress | Should -Be $mockReplyToAddress
                         $getTargetResourceResult.Description | Should -Be $mockDescription
                         $getTargetResourceResult.TcpPort | Should -Be $mockTcpPort
+                        $getTargetResourceResult.EnableSsl | Should -Be $mockEnableSsl
+                        $getTargetResourceResult.Authentication | Should -Be $mockAuthenticationAnonymous
+                        $getTargetResourceResult.SMTPAccount | Should -Be $mockSMTPAccountAbsent
 
                         Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                Context 'When the current authentication is ''Windows''' {
+                    BeforeAll {
+                        $mockDynamicAuthenticationValue = -not $mockAuthenticationWindowsDisabled
+                    }
+
+                    It 'Should return the correct value for property Authentication' {
+                        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+                        $getTargetResourceResult.Authentication | Should -Be $mockAuthenticationWindows
+                        $getTargetResourceResult.SMTPAccount    | Should -Be $mockSMTPAccountAbsent
+                    }
+                }
+
+                Context 'When the current authentication is ''Basic''' {
+                    BeforeAll {
+                        $mockDynamicAuthenticationValue        = $mockAuthenticationWindowsDisabled
+                        $mockDynamicAuthenticationAccountValue = $mockSMTPAccountPresent.UserName
+
+                        Mock -CommandName Get-MailServerCredentialId `
+                             -ParameterFilter {$MailServerName -eq $mockMailServerName -and $AccountId -eq $mockAccountId}
+                        Mock -CommandName Get-SqlPSCredential `
+                             -MockWith { return $mockSMTPAccountPresent }
+                    }
+
+                    It 'Should return the correct value for property Authentication' {
+                        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
+                        $getTargetResourceResult.Authentication       | Should -Be $mockAuthenticationBasic
+                        $getTargetResourceResult.SMTPAccount.UserName | Should -Be $mockSMTPAccountPresent.UserName
+                        $getTargetResourceResult.SMTPAccount.GetNetworkCredential().Password | `
+                                                                        Should -Be $mockSMTPAccountPresent.GetNetworkCredential().Password
+
+                        Assert-MockCalled -CommandName Get-MailServerCredentialId `
+                                          -ParameterFilter {$MailServerName -eq $mockMailServerName -and $AccountId -eq $mockAccountId} `
+                                          -Exactly `
+                                          -Times 1 `
+                                          -Scope It
+                        Assert-MockCalled -CommandName Get-SqlPSCredential -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                Context 'When the current authentication is ''Anonymous''' {
+                    BeforeAll {
+                        $mockDynamicAuthenticationValue        = $mockAuthenticationWindowsDisabled
+                        $mockDynamicAuthenticationAccountValue = $mockAuthenticationBasicDisabled
+                    }
+
+                    It 'Should return the correct value for property Authentication' {
+                        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+                        $getTargetResourceResult.Authentication | Should -Be $mockAuthenticationAnonymous
+                        $getTargetResourceResult.SMTPAccount    | Should -Be $mockSMTPAccountAbsent
                     }
                 }
 
@@ -343,10 +450,16 @@ try
                 $mockDynamicDescription = $mockDescription
                 $mockDynamicAgentMailType = $mockAgentMailTypeDatabaseMail
                 $mockDynamicDatabaseMailProfile = $mockProfileName
+                $mockDynamicAuthenticationValue = $mockAuthenticationWindowsDisabled
+                $mockDynamicAuthenticationAccountValue = $mockSMTPAccountPresent.UserName
             }
 
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+                Mock -CommandName Get-MailServerCredentialId -Verifiable
+                Mock -CommandName Get-SqlPSCredential `
+                     -MockWith { return $mockSMTPAccountPresent } `
+                     -Verifiable
 
                 $testTargetResourceParameters = $mockDefaultParameters.Clone()
             }
@@ -373,6 +486,9 @@ try
                         $testTargetResourceParameters['Description'] = $mockDescription
                         $testTargetResourceParameters['LoggingLevel'] = $mockLoggingLevelExtended
                         $testTargetResourceParameters['TcpPort'] = $mockTcpPort
+                        $testTargetResourceParameters['EnableSsl'] = $mockEnableSsl
+                        $testTargetResourceParameters['Authentication'] = $mockAuthenticationBasic
+                        $testTargetResourceParameters['SMTPAccount'] = $mockSMTPAccountPresent
                     }
 
                     It 'Should return the state as $true' {
@@ -409,6 +525,9 @@ try
                         Description    = $mockDescription
                         LoggingLevel   = $mockLoggingLevelExtended
                         TcpPort        = $mockTcpPort
+                        EnableSsl      = $mockEnableSsl
+                        Authentication = $mockAuthenticationBasic
+                        SMTPAccount    = $mockSMTPAccountPresent
                     }
 
                     $testCaseAccountNameIsMissing = $defaultTestCase.Clone()
@@ -447,6 +566,23 @@ try
                     $testCaseTcpPortIsWrong['TestName'] = 'TcpPort is wrong'
                     $testCaseTcpPortIsWrong['TcpPort'] = 2525
 
+                    $testCaseEnableSslIsWrong = $defaultTestCase.Clone()
+                    $testCaseEnableSslIsWrong['TestName'] = 'EnableSsl is wrong'
+                    $testCaseEnableSslIsWrong['EnableSsl'] = $false
+
+                    $testCaseAuthenticationIsWrong = $defaultTestCase.Clone()
+                    $testCaseAuthenticationIsWrong['TestName'] = 'Authentication is wrong'
+                    $testCaseAuthenticationIsWrong['Authentication'] = 'Windows'
+
+                    $testCaseSMTPAccountIsWrong = $defaultTestCase.Clone()
+                    $testCaseSMTPAccountIsWrong['TestName'] = 'SMTP account is wrong'
+                    $testCaseSMTPAccountIsWrong['Authentication'] = 'Basic'
+                    $testCaseSMTPAccountIsWrong['SMTPAccount'] = $mockSMTPAccountPresentDifferentUser
+
+                    $testCaseSMTPAccountPasswordIsWrong = $defaultTestCase.Clone()
+                    $testCaseSMTPAccountPasswordIsWrong['TestName'] = 'password for SMTP account is wrong'
+                    $testCaseSMTPAccountPasswordIsWrong['SMTPAccount'] = $mockSMTPAccountPresentDifferentPassword
+
                     $testCases = @(
                         $testCaseAccountNameIsMissing
                         $testCaseEmailAddressIsWrong
@@ -456,7 +592,11 @@ try
                         $testCaseReplyToAddressIsWrong
                         $testCaseDescriptionIsWrong
                         $testCaseLoggingLevelIsWrong
-                        $testCaseTcpPortIsWrong
+                        $testCaseTcpPortIsWrong,
+                        $testCaseEnableSslIsWrong,
+                        $testCaseAuthenticationIsWrong,
+                        $testCaseSMTPAccountIsWrong,
+                        $testCaseSMTPAccountPasswordIsWrong
                     )
 
                     It 'Should return the state as $false when <TestName>' -TestCases $testCases {
@@ -470,7 +610,10 @@ try
                             $ReplyToAddress,
                             $Description,
                             $LoggingLevel,
-                            $TcpPort
+                            $TcpPort,
+                            $EnableSsl,
+                            $Authentication,
+                            $SMTPAccount
                         )
 
                         $testTargetResourceParameters['AccountName'] = $AccountName
@@ -482,11 +625,14 @@ try
                         $testTargetResourceParameters['Description'] = $Description
                         $testTargetResourceParameters['LoggingLevel'] = $LoggingLevel
                         $testTargetResourceParameters['TcpPort'] = $TcpPort
+                        $testTargetResourceParameters['EnableSsl'] = $EnableSsl
+                        $testTargetResourceParameters['Authentication'] = $Authentication
+                        $testTargetResourceParameters['SMTPAccount'] = $SMTPAccount
 
                         $testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
                         $testTargetResourceResult | Should -Be $false
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -501,6 +647,8 @@ try
                 $mockDynamicDescription = $mockDescription
                 $mockDynamicAgentMailType = $mockAgentMailTypeDatabaseMail
                 $mockDynamicDatabaseMailProfile = $mockProfileName
+                $mockDynamicAuthenticationValue = $mockAuthenticationWindowsDisabled
+                $mockDynamicAuthenticationAccountValue = $mockSMTPAccountPresent.UserName
             }
 
             BeforeEach {
@@ -513,10 +661,17 @@ try
                     $TypeName -eq 'Microsoft.SqlServer.Management.SMO.Mail.MailProfile'
                 } -Verifiable
 
+                Mock -CommandName Get-MailServerCredentialId -Verifiable
+                Mock -CommandName Get-SqlPSCredential `
+                     -MockWith { return $mockSMTPAccountPresent } `
+                     -Verifiable
+
                 $setTargetResourceParameters = $mockDefaultParameters.Clone()
 
                 $script:MailAccountCreateMethodCallCount = 0
                 $script:MailServerRenameMethodCallCount = 0
+                $script:MailServerSetAccountMethodCallCount = 0
+                $script:MailServerSetPasswordMethodCallCount = 0
                 $script:MailServerAlterMethodCallCount = 0
                 $script:MailAccountAlterMethodCallCount = 0
                 $script:MailProfileCreateMethodCallCount = 0
@@ -546,6 +701,8 @@ try
                         { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
                         $script:MailAccountCreateMethodCallCount | Should -Be 0
                         $script:MailServerRenameMethodCallCount | Should -Be 0
+                        $script:MailServerSetAccountMethodCallCount | Should -Be 0
+                        $script:MailServerSetPasswordMethodCallCount | Should -Be 0
                         $script:MailServerAlterMethodCallCount | Should -Be 0
                         $script:MailAccountAlterMethodCallCount | Should -Be 0
                         $script:MailProfileCreateMethodCallCount | Should -Be 0
@@ -568,12 +725,17 @@ try
                         $setTargetResourceParameters['Description'] = $mockDescription
                         $setTargetResourceParameters['LoggingLevel'] = $mockLoggingLevelExtended
                         $setTargetResourceParameters['TcpPort'] = $mockTcpPort
+                        $setTargetResourceParameters['EnableSsl'] = $mockEnableSsl
+                        $setTargetResourceParameters['Authentication'] = $mockAuthenticationBasic
+                        $setTargetResourceParameters['SMTPAccount'] = $mockSMTPAccountPresent
                     }
 
                     It 'Should call the correct methods without throwing' {
                         { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
                         $script:MailAccountCreateMethodCallCount | Should -Be 0
                         $script:MailServerRenameMethodCallCount | Should -Be 0
+                        $script:MailServerSetAccountMethodCallCount | Should -Be 0
+                        $script:MailServerSetPasswordMethodCallCount | Should -Be 0
                         $script:MailServerAlterMethodCallCount | Should -Be 0
                         $script:MailAccountAlterMethodCallCount | Should -Be 0
                         $script:MailProfileCreateMethodCallCount | Should -Be 0
@@ -625,10 +787,14 @@ try
                             $setTargetResourceParameters['Description'] = $mockDescription
                             $setTargetResourceParameters['LoggingLevel'] = $mockLoggingLevelExtended
                             $setTargetResourceParameters['TcpPort'] = $mockTcpPort
+                            $setTargetResourceParameters['EnableSsl'] = $mockEnableSsl
+                            $setTargetResourceParameters['Authentication'] = $mockAuthenticationBasic
+                            $setTargetResourceParameters['SMTPAccount'] = $mockSMTPAccountPresent
 
                             { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
                             $script:MailAccountCreateMethodCallCount | Should -Be 1
                             $script:MailServerRenameMethodCallCount | Should -Be 1
+                            $script:MailServerSetAccountMethodCallCount | Should -Be 1
                             $script:MailServerAlterMethodCallCount | Should -Be 1
                             $script:MailAccountAlterMethodCallCount | Should -Be 0
 
@@ -647,6 +813,9 @@ try
                             Description    = $mockDescription
                             LoggingLevel   = $mockLoggingLevelExtended
                             TcpPort        = $mockTcpPort
+                            EnableSsl      = $mockEnableSsl
+                            Authentication = $mockAuthenticationBasic
+                            SMTPAccount    = $mockSMTPAccountPresent
                         }
 
                         $testCaseEmailAddressIsWrong = $defaultTestCase.Clone()
@@ -685,6 +854,24 @@ try
                         $testCaseTcpPortIsWrong['TestName'] = 'TcpPort is wrong'
                         $testCaseTcpPortIsWrong['TcpPort'] = 2525
 
+                        $testCaseEnableSslIsWrong = $defaultTestCase.Clone()
+                        $testCaseEnableSslIsWrong['TestName'] = 'EnableSsl is wrong'
+                        $testCaseEnableSslIsWrong['EnableSsl'] = $false
+
+                        $testCaseAuthenticationIsWrong = $defaultTestCase.Clone()
+                        $testCaseAuthenticationIsWrong['TestName'] = 'Authentication is wrong'
+                        $testCaseAuthenticationIsWrong['Authentication'] = 'Windows'
+
+                        $testCaseSMTPAccountIsWrong = $defaultTestCase.Clone()
+                        $testCaseSMTPAccountIsWrong['TestName'] = 'SMTP account is wrong'
+                        $testCaseSMTPAccountIsWrong['Authentication'] = 'Basic'
+                        $testCaseSMTPAccountIsWrong['SMTPAccount'] = $mockSMTPAccountPresentDifferentUser
+
+                        $testCaseSMTPAccountPasswordIsWrong = $defaultTestCase.Clone()
+                        $testCaseSMTPAccountPasswordIsWrong['TestName'] = 'password for SMTP account is wrong'
+                        $testCaseSMTPAccountPasswordIsWrong['SMTPAccount'] = $mockSMTPAccountPresentDifferentPassword
+
+
                         $testCases = @(
                             $testCaseEmailAddressIsWrong
                             $testCaseMailServerNameIsWrong
@@ -694,7 +881,11 @@ try
                             $testCaseDescriptionIsWrong
                             $testCaseLoggingLevelIsWrong_Normal
                             $testCaseLoggingLevelIsWrong_Verbose
-                            $testCaseTcpPortIsWrong
+                            $testCaseTcpPortIsWrong,
+                            $testCaseEnableSslIsWrong,
+                            $testCaseAuthenticationIsWrong,
+                            $testCaseSMTPAccountIsWrong,
+                            $testCaseSMTPAccountPasswordIsWrong
                         )
 
                         It 'Should return the state as $false when <TestName>' -TestCases $testCases {
@@ -709,7 +900,10 @@ try
                                 $ReplyToAddress,
                                 $Description,
                                 $LoggingLevel,
-                                $TcpPort
+                                $TcpPort,
+                                $EnableSsl,
+                                $Authentication,
+                                $SMTPAccount
                             )
 
                             $setTargetResourceParameters['AccountName'] = $AccountName
@@ -721,6 +915,9 @@ try
                             $setTargetResourceParameters['Description'] = $Description
                             $setTargetResourceParameters['LoggingLevel'] = $LoggingLevel
                             $setTargetResourceParameters['TcpPort'] = $TcpPort
+                            $setTargetResourceParameters['EnableSsl'] = $EnableSsl
+                            $setTargetResourceParameters['Authentication'] = $Authentication
+                            $setTargetResourceParameters['SMTPAccount'] = $SMTPAccount
 
                             { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
 
@@ -729,6 +926,8 @@ try
                             if ($TestName -like '*MailServerName*')
                             {
                                 $script:MailServerRenameMethodCallCount | Should -Be 1
+                                $script:MailServerSetAccountMethodCallCount | Should -Be 0
+                                $script:MailServerSetPasswordMethodCallCount | Should -Be 0
                                 $script:MailServerAlterMethodCallCount | Should -Be 1
                                 $script:MailAccountAlterMethodCallCount | Should -Be 0
                                 $script:MailProfileCreateMethodCallCount | Should -Be 0
@@ -738,10 +937,40 @@ try
                                 $script:JobServerAlterMethodCallCount | Should -Be 0
                                 $script:LoggingLevelAlterMethodCallCount | Should -Be 0
                             }
-                            elseif ($TestName -like '*TcpPort*')
+                            elseif ($TestName -match 'TcpPort|EnableSsl|Authentication')
                             {
                                 $script:MailServerRenameMethodCallCount | Should -Be 0
+                                $script:MailServerSetAccountMethodCallCount | Should -Be 0
+                                $script:MailServerSetPasswordMethodCallCount | Should -Be 0
                                 $script:MailServerAlterMethodCallCount | Should -Be 1
+                                $script:MailAccountAlterMethodCallCount | Should -Be 0
+                                $script:MailProfileCreateMethodCallCount | Should -Be 0
+                                $script:MailProfileAlterMethodCallCount | Should -Be 0
+                                $script:MailProfileAddPrincipalMethodCallCount | Should -Be 0
+                                $script:MailProfileAddAccountMethodCallCount | Should -Be 0
+                                $script:JobServerAlterMethodCallCount | Should -Be 0
+                                $script:LoggingLevelAlterMethodCallCount | Should -Be 0
+                            }
+                            elseif ($TestName -like 'SMTP account*')
+                            {
+                                $script:MailServerRenameMethodCallCount | Should -Be 0
+                                $script:MailServerSetAccountMethodCallCount | Should -Be 1
+                                $script:MailServerSetPasswordMethodCallCount | Should -Be 0
+                                $script:MailServerAlterMethodCallCount | Should -Be 0
+                                $script:MailAccountAlterMethodCallCount | Should -Be 0
+                                $script:MailProfileCreateMethodCallCount | Should -Be 0
+                                $script:MailProfileAlterMethodCallCount | Should -Be 0
+                                $script:MailProfileAddPrincipalMethodCallCount | Should -Be 0
+                                $script:MailProfileAddAccountMethodCallCount | Should -Be 0
+                                $script:JobServerAlterMethodCallCount | Should -Be 0
+                                $script:LoggingLevelAlterMethodCallCount | Should -Be 0
+                            }
+                            elseif ($TestName -like 'password*')
+                            {
+                                $script:MailServerRenameMethodCallCount | Should -Be 0
+                                $script:MailServerSetAccountMethodCallCount | Should -Be 0
+                                $script:MailServerSetPasswordMethodCallCount | Should -Be 1
+                                $script:MailServerAlterMethodCallCount | Should -Be 0
                                 $script:MailAccountAlterMethodCallCount | Should -Be 0
                                 $script:MailProfileCreateMethodCallCount | Should -Be 0
                                 $script:MailProfileAlterMethodCallCount | Should -Be 0
@@ -753,6 +982,8 @@ try
                             elseif ($TestName -like '*ProfileName*')
                             {
                                 $script:MailServerRenameMethodCallCount | Should -Be 0
+                                $script:MailServerSetAccountMethodCallCount | Should -Be 0
+                                $script:MailServerSetPasswordMethodCallCount | Should -Be 0
                                 $script:MailServerAlterMethodCallCount | Should -Be 0
                                 $script:MailAccountAlterMethodCallCount | Should -Be 0
                                 $script:MailProfileCreateMethodCallCount | Should -Be 1
@@ -765,6 +996,8 @@ try
                             elseif ($TestName -like '*LoggingLevel*')
                             {
                                 $script:MailServerRenameMethodCallCount | Should -Be 0
+                                $script:MailServerSetAccountMethodCallCount | Should -Be 0
+                                $script:MailServerSetPasswordMethodCallCount | Should -Be 0
                                 $script:MailServerAlterMethodCallCount | Should -Be 0
                                 $script:MailAccountAlterMethodCallCount | Should -Be 0
                                 $script:MailProfileCreateMethodCallCount | Should -Be 0
@@ -777,6 +1010,8 @@ try
                             else
                             {
                                 $script:MailServerRenameMethodCallCount | Should -Be 0
+                                $script:MailServerSetAccountMethodCallCount | Should -Be 0
+                                $script:MailServerSetPasswordMethodCallCount | Should -Be 0
                                 $script:MailServerAlterMethodCallCount | Should -Be 0
                                 $script:MailAccountAlterMethodCallCount | Should -Be 1
                                 $script:MailProfileCreateMethodCallCount | Should -Be 0
@@ -787,7 +1022,9 @@ try
                                 $script:LoggingLevelAlterMethodCallCount | Should -Be 0
                             }
 
-                            Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-MailServerCredentialId -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-SqlPSCredential -Exactly -Times 1 -Scope It
                         }
                     }
                 }
@@ -801,4 +1038,3 @@ finally
 {
     Invoke-TestCleanup
 }
-

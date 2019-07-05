@@ -62,4 +62,11 @@ ConvertFrom-StringData @'
     ClusterLoginPermissionsPresent = The cluster login '{0}' has the required permissions. (SQLCOMMON0053)
     ConnectingUsingCredentials = Connecting using the credential '{0}' and the login type '{1}'. (SQLCOMMON0054)
     CredentialsNotSpecified = The Logon type of '{0}' was specified which requires credentials, but the credentials parameter was not specified. (SQLCOMMON0055)
+    DisconnectFromSQLInstance = Disconnected from '{0}' instance. (SQLCOMMON0056)
+    GetMailServerCredentialId = Getting credential Id used by SMTP mail server '{0}' on instance '{1}'. (SQLCOMMON0057)
+    GetServiceMasterKey = Getting service master key on instance '{0}'. (SQLCOMMON0058)
+    GetEntropyForSqlInstance = Getting entropy information from the registry for instance '{0}'. (SQLCOMMON0059)
+    GetEncryptedMessage = Getting encrypted message for credential with id '{0}' on instance '{1}'. (SQLCOMMON0060)
+    SmkSizeNotImplemented = Unknown size '{0}' of Service Master Key for instance '{1}'. Valid values are '16' and '32'. (SQLCOMMON0061)
+    FailedCredentialDecryption = Decryption possibly failed or encrypted string was modfiied as magic number doesn't match. (SQLCOMMON0062)
 '@

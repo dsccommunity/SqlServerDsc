@@ -477,6 +477,30 @@ function Test-DscParameterState
                                 }
                             }
 
+                            'PSCredential'
+                            {
+                                if ($CurrentValues.$fieldName.UserName -ne $DesiredValues.$fieldName.UserName)
+                                {
+                                    Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
+                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName.UserName), $($DesiredValues.$fieldName.UserName)) -Verbose
+
+                                    $returnValue = $false
+                                }
+                                elseif (([System.String]::IsNullOrEmpty($CurrentValues.$fieldName.Password) -and $DesiredValues.$fieldName.Password) -or
+                                    ([System.String]::IsNullOrEmpty($DesiredValues.$fieldName.Password) -and $CurrentValues.$fieldName.Password) -or
+                                    ($CurrentValues.$fieldName.GetNetworkCredential().Password -ne $DesiredValues.$fieldName.GetNetworkCredential().Password))
+                                {
+                                    <#
+                                        Message will not include real password values unless password is not set.
+                                        This was done on purpose.
+                                    #>
+                                    Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
+                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName.Password), $($DesiredValues.$fieldName.Password)) -Verbose
+
+                                    $returnValue = $false
+                                }
+                            }
+
                             default
                             {
                                 Write-Warning -Message ($script:localizedData.UnableToCompareProperty `
@@ -940,6 +964,9 @@ function Start-SqlSetupProcess
         login specified in the parameter SetupCredential.
         Default value is 'Integrated'.
 
+    .PARAMETER DAC
+        Specifies whether Dedicated Admin Connection should be established instead of an ordinary one.
+
     .PARAMETER StatementTimeout
         Set the query StatementTimeout in seconds. Default 600 seconds (10mins).
 #>
@@ -970,6 +997,10 @@ function Connect-SQL
         $LoginType = 'Integrated',
 
         [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $DAC,
+
+        [Parameter()]
         [ValidateNotNull()]
         [System.Int32]
         $StatementTimeout = 600
@@ -988,6 +1019,13 @@ function Connect-SQL
 
     $sqlServerObject  = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
     $sqlConnectionContext = $sqlServerObject.ConnectionContext
+
+    if ($DAC.IsPresent)
+    {
+        # Changing instance name to use Dedicated Admin Connection
+        $databaseEngineInstance = "ADMIN:$databaseEngineInstance"
+        $sqlConnectionContext.NonPooledConnection = $true
+    }
 
     $sqlConnectionContext.ServerInstance = $databaseEngineInstance
     $sqlConnectionContext.StatementTimeout = $StatementTimeout
@@ -1605,6 +1643,9 @@ function Restart-ReportingServicesService
     .PARAMETER WithResults
         Specifies if the query should return results.
 
+    .PARAMETER UsingDAC
+        Specifies whether Dedicated Admin Connection should be used to execute query.
+
     .PARAMETER StatementTimeout
         Set the query StatementTimeout in seconds. Default 600 seconds (10mins).
 
@@ -1625,14 +1666,14 @@ function Invoke-Query
     [CmdletBinding(DefaultParameterSetName='SqlServer')]
     param
     (
-        [Alias("ServerName")]
         [Parameter(ParameterSetName='SqlServer')]
+        [Alias("ServerName")]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
-        [Alias("InstanceName")]
         [Parameter(ParameterSetName='SqlServer')]
+        [Alias("InstanceName")]
         [System.String]
         $SQLInstanceName = 'MSSQLSERVER',
 
@@ -1644,8 +1685,8 @@ function Invoke-Query
         [System.String]
         $Query,
 
-        [Alias("SetupCredential")]
         [Parameter()]
+        [Alias("SetupCredential")]
         [System.Management.Automation.PSCredential]
         $DatabaseCredential,
 
@@ -1660,9 +1701,14 @@ function Invoke-Query
         $SqlServerObject,
 
         [Parameter()]
-        [Switch]
+        [System.Management.Automation.SwitchParameter]
         $WithResults,
 
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $UsingDAC,
+
+        [Parameter()]
         [ValidateNotNull()]
         [System.Int32]
         $StatementTimeout = 600
@@ -1678,6 +1724,7 @@ function Invoke-Query
             ServerName       = $SQLServer
             InstanceName     = $SQLInstanceName
             LoginType        = $LoginType
+            DAC              = $UsingDAC.IsPresent
             StatementTimeout = $StatementTimeout
         }
 
@@ -1689,28 +1736,36 @@ function Invoke-Query
         $serverObject = Connect-SQL @connectSQLParameters
     }
 
-    if ($WithResults)
+    try
     {
-        try
+        if ($WithResults.IsPresent)
         {
             $result = $serverObject.Databases[$Database].ExecuteWithResults($Query)
         }
-        catch
-        {
-            $errorMessage = $script:localizedData.ExecuteQueryWithResultsFailed -f $Database
-            New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-        }
-    }
-    else
-    {
-        try
+        else
         {
             $serverObject.Databases[$Database].ExecuteNonQuery($Query)
         }
-        catch
+    }
+    catch
+    {
+        if ($WithResults.IsPresent)
+        {
+            $errorMessage = $script:localizedData.ExecuteQueryWithResultsFailed -f $Database
+        }
+        else
         {
             $errorMessage = $script:localizedData.ExecuteNonQueryFailed -f $Database
-            New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+        }
+
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+    }
+    finally
+    {
+        if ($UsingDAC.IsPresent)
+        {
+            $serverObject.ConnectionContext.Disconnect()
+            Write-Verbose -Message ($script:localizedData.DisconnectFromSQLInstance -f $serverObject.ConnectionContext.ServerInstance) -Verbose
         }
     }
 
@@ -2431,6 +2486,240 @@ function Find-ExceptionByNumber
     return $errorFound
 }
 
+<#
+    .SYNOPSIS
+        Gets credential Id used to hold account authentication information for specified SMTP
+        mail server on the SQL Instance.
+
+    .PARAMETER SQLServer
+        String containing the host name of the SQL Server to connect to.
+
+    .PARAMETER SQLInstanceName
+        String containing the SQL Server Database Engine instance to connect to.
+
+    .PARAMETER MailServerName
+        Specifies name of the SMTP mail server for which credential Id should be returned.
+
+    .PARAMETER AccountId
+        Specifies ID of the mail account in which SMTP server were created.
+#>
+function Get-MailServerCredentialId
+{
+    [CmdletBinding()]
+    [OutputType([System.Int32])]
+    param (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $SQLServer,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $SQLInstanceName,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $MailServerName,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Int32]
+        $AccountId
+    )
+
+    $invokeQueryParameters = @{
+        SQLServer       = $SQLServer
+        SQLInstanceName = $SQLInstanceName
+        Database        = 'master'
+        WithResults     = $true
+    }
+
+    $queryToGetCredentialId = "
+        SELECT credential_id
+        FROM msdb.dbo.sysmail_server
+        WHERE servername = '$MailServerName' and account_id = '$AccountId'
+    "
+
+    Write-Verbose -Message ($script:localizedData.GetMailServerCredentialId -f $MailServerName, $SQLInstanceName) -Verbose
+    $result = (Invoke-Query @invokeQueryParameters -Query $queryToGetCredentialId).Tables[0].credential_id
+
+    return $result
+}
+
+<#
+    .SYNOPSIS
+        Gets unencrypted Service Master Key for specified SQL Instance
+        which will be used for credential password decryption.
+
+    .DESCRIPTION
+        Inspired by the work of Antti Rantasaari 2014, NetSPI
+        (https://github.com/NetSPI/Powershell-Modules/blob/master/Get-MSSQLCredentialPasswords.psm1)
+        that is under BSD-3 license.
+
+    .PARAMETER SQLServer
+        String containing the host name of the SQL Server to connect to.
+
+    .PARAMETER SQLInstanceName
+        String containing the SQL Server Database Engine instance to connect to.
+
+    .NOTES
+        Details on Service Master Key protection could be found at
+        https://blogs.msdn.microsoft.com/stuartpa/2005/09/25/protecting-the-sql-server-2005-service-master-key-the-root-of-all-encryption/
+#>
+function Get-ServiceMasterKey
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $SQLServer,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $SQLInstanceName
+    )
+
+    Add-Type -AssemblyName System.Security
+
+    $invokeQueryParameters = @{
+        SQLServer       = $SQLServer
+        SQLInstanceName = $SQLInstanceName
+        Database        = 'master'
+        WithResults     = $true
+    }
+
+    $queryToGetServiceMasterKey = "
+        SELECT crypt_property AS 'key'
+        FROM sys.key_encryptions
+        WHERE key_id=102 and thumbprint<>0x01
+    "
+
+    Write-Verbose -Message ($script:localizedData.GetServiceMasterKey -f $SQLInstanceName) -Verbose
+    $encryptedServiceMasterKey = (Invoke-Query @invokeQueryParameters -Query $queryToGetServiceMasterKey).Tables[0].key | Select-Object -Skip 8
+
+    Write-Verbose -Message ($script:localizedData.GetEntropyForSqlInstance -f $SQLInstanceName) -Verbose
+    $instanceId = Get-ItemPropertyValue -Path 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' -Name $SQLInstanceName
+    $entropy = Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\Security" -Name 'Entropy'
+
+    $serviceMasterKey = [System.Security.Cryptography.ProtectedData]::Unprotect($encryptedServiceMasterKey, $entropy, [System.Security.Cryptography.DataProtectionScope]::LocalMachine)
+
+    return $serviceMasterKey
+}
+
+<#
+    .SYNOPSIS
+        Gets MSFT_Credential object for specified credential Id on specified SQL Instance.
+
+    .PARAMETER SQLServer
+        String containing the host name of the SQL Server to connect to.
+
+    .PARAMETER SQLInstanceName
+        String containing the SQL Server Database Engine instance to connect to.
+
+    .PARAMETER CredentialId
+        Specifies Id of the credential for which MSFT_Credential should be returned.
+    .NOTES
+        Details on cryptographic message description could be found at
+        https://blogs.msdn.microsoft.com/sqlsecurity/2009/03/30/sql-server-encryptbykey-cryptographic-message-description/
+#>
+function Get-SqlPSCredential
+{
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCredential])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $SQLServer,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $SQLInstanceName,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Int32]
+        $CredentialId
+    )
+
+    $invokeQueryParameters = @{
+        SQLServer       = $SQLServer
+        SQLInstanceName = $SQLInstanceName
+        Database        = 'master'
+        WithResults     = $true
+        UsingDAC        = $true
+    }
+
+    $smk = Get-ServiceMasterKey -SQLServer $SQLServer -SQLInstanceName $SQLInstanceName
+
+    switch ($smk.Length)
+    {
+        16
+        {
+            $typeName = 'System.Security.Cryptography.TripleDESCryptoServiceProvider'
+        }
+
+        32
+        {
+            $typeName = 'System.Security.Cryptography.AESCryptoServiceProvider'
+        }
+
+        default
+        {
+            $errorMessage = $script:localizedData.SmkSizeNotImplemented -f $smk.Length, $SQLInstanceName
+            New-InvalidResultException -Message $errorMessage
+        }
+    }
+
+    # Get encrypted message without encryption header which is 4 bytes
+    $queryToGetEncryptedMessage = "
+        SELECT credential_identity AS username, substring(imageval, 5, len(imageval)-4) AS enc_message
+        FROM sys.credentials as c
+        INNER JOIN sys.sysobjvalues AS o
+        ON c.credential_id = o.objid
+        WHERE valclass=28 and valnum=2 and objid=$CredentialId
+    "
+
+    Write-Verbose -Message ($script:localizedData.GetEncryptedMessage -f $CredentialId, $SQLInstanceName) -Verbose
+    $credInfo = (Invoke-Query @invokeQueryParameters -Query $queryToGetEncryptedMessage).Tables[0]
+
+    $cryptoProvider         = New-Object -TypeName $typeName
+    $cryptoProvider.Key     = $smk
+    # Extract and set Initialization Vector (IV)
+    $cryptoProvider.IV      = $credInfo.enc_message[0..$($cryptoProvider.IV.Length - 1)]
+    $cryptoProvider.Padding = 'PKCS7'
+    $cryptoProvider.Mode    = 'CBC'
+
+    # Set length of the inner message
+    $message       = New-Object Byte[]($credInfo.enc_message.Length - $cryptoProvider.IV.Length)
+    $decryptor     = $cryptoProvider.CreateDecryptor()
+    $memoryStream  = New-Object System.IO.MemoryStream (,$credInfo.enc_message[$cryptoProvider.IV.Length..($credInfo.enc_message.Length - 1)])
+    $cryptoStream  = New-Object System.Security.Cryptography.CryptoStream ($memoryStream, $decryptor, [System.Security.Cryptography.CryptoStreamMode]::Read)
+    $messageLength = $cryptoStream.Read($message, 0, $message.Length)
+    $cryptoStream.Close()
+    $memoryStream.Close()
+    $cryptoProvider.Clear()
+
+    # Verifying magic number using bytes from 0 to 3
+    if ([System.BitConverter]::ToString($message[3..0]) -ne 'BA-AD-F0-0D')
+    {
+        Write-Warning -Message $script:localizedData.FailedCredentialDecryption
+    }
+    # Getting password length using bytes 6 and 7
+    $len = [System.BitConverter]::ToInt16($message[6..7],0)
+
+    # Convert password to secure string
+    $securePassword = New-Object System.Security.SecureString
+    [char[]][System.Text.Encoding]::Unicode.GetString($message, 8, $len) | ForEach-Object {$securePassword.AppendChar($_)}
+
+    return New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($credInfo.username, $securePassword)
+}
+
 $script:localizedData = Get-LocalizedData -ResourceName 'SqlServerDsc.Common' -ScriptRoot $PSScriptRoot
 
 Export-ModuleMember -Function @(
@@ -2468,4 +2757,7 @@ Export-ModuleMember -Function @(
     'New-InvalidResultException'
     'New-NotImplementedException'
     'Get-LocalizedData'
+    'Get-MailServerCredentialId'
+    'Get-ServiceMasterKey'
+    'Get-SqlPSCredential'
 )

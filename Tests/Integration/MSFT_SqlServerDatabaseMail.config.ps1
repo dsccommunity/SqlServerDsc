@@ -31,6 +31,11 @@ else
                 Description     = 'Default mail account and profile.'
                 LoggingLevel    = 'Normal'
                 TcpPort         = 25
+                EnableSsl       = $true
+                Authentication  = 'Basic'
+
+                SMTPUser        = 'testUser'
+                SMTPPassword    = 'testP@$sw0rd'
 
                 CertificateFile = $env:DscPublicCertificatePath
             }
@@ -49,7 +54,7 @@ Configuration MSFT_SqlServerDatabaseMail_Add_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node $AllNodes.NodeName
+    Node $AllNodes.NodeName
     {
         SqlServerConfiguration 'EnableDatabaseMailXPs'
         {
@@ -74,6 +79,12 @@ Configuration MSFT_SqlServerDatabaseMail_Add_Config
             Description          = $Node.Description
             LoggingLevel         = $Node.LoggingLevel
             TcpPort              = $Node.TcpPort
+            EnableSsl            = $Node.EnableSsl
+            Authentication       = $Node.Authentication
+
+            SMTPAccount          = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.SMTPUser, (ConvertTo-SecureString -String $Node.SMTPPassword -AsPlainText -Force))
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -93,7 +104,7 @@ Configuration MSFT_SqlServerDatabaseMail_Remove_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node $AllNodes.NodeName
+    Node $AllNodes.NodeName
     {
         SqlServerDatabaseMail 'Integration_Test'
         {

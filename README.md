@@ -1195,11 +1195,24 @@ Resource to manage SQL Server Database Mail.
 * **`[String]` LoggingLevel** _(Write)_: The logging level that the Database Mail
   will use. If not specified the default logging level is 'Extended'.
   { Normal | *Extended* | Verbose }.
+* **`[Boolean]` EnableSsl** _(Write)_: Specifies whether to encrypt
+  communication using Secure Sockets Layer or not.
+* **`[String]` Authentication** _(Write)_: SMTP authentication mode to be used.
+  Default value is 'Anonymous'. Valid values are:
+  * *Windows* : Credentials of the SQL Server Database Engine will be used to
+  authenticate against SMTP server.
+  * *Basic* : Credentials specified using parameter **SMTPAccount** will be
+  used to authenticate against SMTP server.
+  * *Anonymous* : No credentials will be used for authentication.
+* **`[PSCredential]` SMTPAccount** _(Write)_: Account used for 'Basic' SMTP
+  authentication setup.
 
 #### Examples
 
 * [Enable Database Mail](/Examples/Resources/SqlServerDatabaseMail/1-EnableDatabaseMail.ps1)
-* [Disable Database Mail](/Examples/Resources/SqlServerDatabaseMail/2-DisableDatabaseMail.ps1)
+* [Enable Database Mail with SSL](/Examples/Resources/SqlServerDatabaseMail/2-EnableDatabaseMailWithSsl.ps1)
+* [Enable Database Mail with Basic Authentication](/Examples/Resources/SqlServerDatabaseMail/3-EnableDatabaseMailWithAuthentication.ps1)
+* [Disable Database Mail](/Examples/Resources/SqlServerDatabaseMail/4-DisableDatabaseMail.ps1)
 
 #### Known issues
 

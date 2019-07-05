@@ -1,8 +1,8 @@
 <#
     .EXAMPLE
-        This example will enable Database Mail on a SQL Server instance and
-        create a mail account with a default public profile.
-
+        This example will enable Database Mail with Basic Authentication on a
+        SQL Server instance and create a mail account with a default public
+        profile.
 #>
 $ConfigurationData = @{
     AllNodes = @(
@@ -18,18 +18,24 @@ $ConfigurationData = @{
             Description    = 'Default mail account and profile.'
             LoggingLevel   = 'Normal'
             TcpPort        = 25
+            Authentication = 'Basic'
         }
     )
 }
 
-Configuration EnableDatabaseMail
+Configuration EnableDatabaseMailWithAuthentication
 {
     param
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
-        $SqlInstallCredential
+        $SqlInstallCredential,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SMTPAccountCredential
     )
 
     Import-DscResource -ModuleName 'SqlServerDsc'
@@ -59,6 +65,8 @@ Configuration EnableDatabaseMail
             Description          = $Node.Description
             LoggingLevel         = $Node.LoggingLevel
             TcpPort              = $Node.TcpPort
+            Authentication       = $Node.Authentication
+            SMTPAccount          = $SMTPAccountCredential
 
             PsDscRunAsCredential = $SqlInstallCredential
         }
