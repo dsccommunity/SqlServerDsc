@@ -2388,7 +2388,7 @@ function ConvertTo-StartupType
         $StartMode
     )
 
-    If ($StartMode -eq 'Auto')
+    if ($StartMode -eq 'Auto')
     {
         $StartMode = 'Automatic'
     }
