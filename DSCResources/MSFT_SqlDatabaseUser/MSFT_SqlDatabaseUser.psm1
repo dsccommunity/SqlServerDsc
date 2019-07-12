@@ -232,7 +232,7 @@ function Set-TargetResource
                     }
                     catch
                     {
-                        $errorMessage = $script:localizedData.DropDatabaseUser -f $Name, $Database
+                        $errorMessage = $script:localizedData.DropDatabaseUserError -f $Name, $Database
                         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                     }
                 }
