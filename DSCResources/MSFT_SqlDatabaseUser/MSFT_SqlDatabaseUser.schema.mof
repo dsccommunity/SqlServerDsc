@@ -1,0 +1,11 @@
+[ClassVersion("1.0.0.0"), FriendlyName("SqlDatabaseUser")]
+class MSFT_SqlDatabaseUser : OMI_BaseResource
+{
+    [Key, Description("The host name of the SQL Server to be configured.")] String ServerName;
+    [Key, Description("The name of the SQL instance to be configured.")] String InstanceName;
+    [Key, Description("The name of the database to configure the user.")] String Database;
+    [Key, Description("The name of the login associated with the user.")] String LoginName;
+    [Key, Description("The name of the database user.")] String Name;
+    [Read, Description("Indicates whether the database user is in the desired state.")] Boolean UserInDesiredState;
+    [Write, Description("If 'Present' (the default value) then the user will be added to the database and, if needed, the login mapping will be updated. If 'Absent' then the user will be removed from the database."), ValueMap{"Present", "Absent"}, Values{"Present", "Absent"}] String Ensure;
+};

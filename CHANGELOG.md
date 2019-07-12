@@ -3,6 +3,9 @@
 ## Unreleased
 
 - Changes to SqlServerDsc
+  - New DSC resource SqlDatabaseUser
+    - Adds ability to create database users with more fine-grained control (e.g.
+      re-mapping of orphaned logins, different login and user names)
   - Changes to helper function Invoke-Query
     - Fixes issues in [issue #1355](https://github.com/PowerShell/SqlServerDsc/issues/1355).
     - Works together with Connect-SQL now.

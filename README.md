@@ -129,6 +129,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * [**SqlDatabaseRecoveryModel**](#sqldatabaserecoverymodel) resource
   to manage database recovery model.
 * [**SqlDatabaseRole**](#sqldatabaserole) resource to manage SQL database roles.
+* [**SqlDatabaseUser**](#sqldatabaseuser) resource to manage SQL database users.
 * [**SqlRS**](#sqlrs) configures SQL Server Reporting.
   Services to use a database engine in another instance.
 * [**SqlRSSetup**](#sqlrssetup) Installs the standalone
@@ -793,6 +794,43 @@ manages members in both built-in and user created database roles.
 #### Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseRole).
+
+### SqlDatabaseUser
+
+This resource is used to create a database user when Ensure is set to 'Present'
+or remove a database user when Ensure is set to 'Absent'. The resource also
+allows re-mapping of SQL logins to existing database users.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2008 or later.
+
+#### Parameters
+
+* **`[String]` ServerName** _(Key)_: The host name of the SQL Server to be configured.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` Database** _(Key)_: The name of the database to configure the user.
+* **`[String]` LoginName** _(Key)_: The name of the login associated with the user.
+* **`[String]` Name** _(Key)_: The name of the database user to be added or removed.
+* **`[String]` Ensure** _(Write)_: If 'Present' (the default value) then the user
+  will be added to the database and, if needed, the login mapping will be updated.
+  If 'Absent' then the user will be removed from the database. { *Present* |
+  Absent }.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[String]` UserInDesiredState** _(Read)_: Indicates whether the database
+  user is in the desired state.
+
+#### Examples
+
+* [Add User to a database](/Examples/Resources/SqlDatabaseUser/1-AddDatabaseUser.ps1)
+* [Remove User from a database](/Examples/Resources/SqlDatabaseUser/2-RemoveDatabaseUser.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseUser).
 
 ### SqlRS
 
