@@ -1,9 +1,9 @@
 <#
-.EXAMPLE
-    This example shows how to ensure that the database users ReportAdmin, CONTOSO\ReportEditors, CONTOSO\ReportViewers,
-    and are present in the AdventureWorks database on instance sqltest.company.local\DSC.
+    .EXAMPLE
+        This example shows how to ensure that the database users ReportAdmin,
+        CONTOSO\ReportEditors, and CONTOSO\ReportViewers are present in the
+        AdventureWorks database in the instance sqltest.company.local\DSC.
 #>
-
 Configuration Example
 {
     param
@@ -22,9 +22,10 @@ Configuration Example
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
             Database             = 'AdventureWorks'
-            LoginName            = 'ReportAdmin'
             Name                 = 'ReportAdmin'
-            Ensure               = 'Present'
+            UserType             = 'Login'
+            LoginName            = 'ReportAdmin'
+
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
@@ -33,9 +34,10 @@ Configuration Example
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
             Database             = 'AdventureWorks'
-            LoginName            = 'CONTOSO\ReportEditor'
             Name                 = 'CONTOSO\ReportEditor'
-            Ensure               = 'Present'
+            UserType             = 'Login'
+            LoginName            = 'CONTOSO\ReportEditor'
+
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
@@ -44,9 +46,10 @@ Configuration Example
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
             Database             = 'AdventureWorks'
-            LoginName            = 'CONTOSO\ReportViewer'
             Name                 = 'CONTOSO\ReportViewer'
-            Ensure               = 'Present'
+            UserType             = 'Login'
+            LoginName            = 'CONTOSO\ReportViewer'
+
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }

@@ -851,8 +851,11 @@ SQL login.
 
 #### Examples
 
-* [Add User to a database](/Examples/Resources/SqlDatabaseUser/1-AddDatabaseUser.ps1)
-* [Remove User from a database](/Examples/Resources/SqlDatabaseUser/2-RemoveDatabaseUser.ps1)
+* [Add a database user to a database, with a SQL login](/Examples/Resources/SqlDatabaseUser/1-AddDatabaseUserWithLogin.ps1)
+* [Add a database user to a database, without a SQL login](/Examples/Resources/SqlDatabaseUser/2-AddDatabaseUserWithoutLogin.ps1)
+* [Add a database user to a database, mapped to an asymmetric key](/Examples/Resources/SqlDatabaseUser/3-AddDatabaseUserMappedToAsymmetricKey.ps1)
+* [Add a database user to a database, mapped to a certificate](/Examples/Resources/SqlDatabaseUser/4-AddDatabaseUserMappedToCertificate.ps1)
+* [Remove database user from a database](/Examples/Resources/SqlDatabaseUser/5-RemoveDatabaseUser.ps1)
 
 #### Known issues
 
