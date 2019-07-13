@@ -3,9 +3,11 @@
 ## Unreleased
 
 - Changes to SqlServerDsc
-  - New DSC resource SqlDatabaseUser
-    - Adds ability to create database users with more fine-grained control (e.g.
-      re-mapping of orphaned logins, different login and user names)
+  - New DSC resource SqlDatabaseUser ([issue #1350](https://github.com/PowerShell/SqlServerDsc/issues/846)).
+    - Adds ability to create database users with more fine-grained control,
+      e.g. re-mapping of orphaned logins or a different login. Supports
+      creating a user with or without login name, and database users mapped
+      to a certificate or asymmetric key.
   - Changes to helper function Invoke-Query
     - Fixes issues in [issue #1355](https://github.com/PowerShell/SqlServerDsc/issues/1355).
     - Works together with Connect-SQL now.
@@ -14,7 +16,7 @@
     - Can now pass in 'Microsoft.SqlServer.Management.Smo.Server' object.
     - Can also pipe in 'Microsoft.SqlServer.Management.Smo.Server' object.
     - Can pipe Connect-SQL | Invoke-Query.
-    - Added default vaules to Invoke-Query.
+    - Added default values to Invoke-Query.
 - Changes to SqlServerSecureConnection
   - Forced $Thumbprint to lowercase to fix [issue #1350](https://github.com/PowerShell/SqlServerDsc/issues/1350).
 - Changes to SqlSetup

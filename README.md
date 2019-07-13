@@ -797,9 +797,12 @@ All issues are not listed here, see [here for all open issues](https://github.co
 
 ### SqlDatabaseUser
 
-This resource is used to create a database user when Ensure is set to 'Present'
-or remove a database user when Ensure is set to 'Absent'. The resource also
-allows re-mapping of SQL logins to existing database users.
+This resource is used to create a database users. A database user can be
+created with or without a login, and a database users can be mapped to a
+certificate or asymmetric key. The resource also allows re-mapping of the
+SQL login.
+
+> **Note:** This resource does not yet support [Contained Databases](https://docs.microsoft.com/en-us/sql/relational-databases/databases/contained-databases).
 
 #### Requirements
 
@@ -808,20 +811,43 @@ allows re-mapping of SQL logins to existing database users.
 
 #### Parameters
 
-* **`[String]` ServerName** _(Key)_: The host name of the SQL Server to be configured.
-* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **`[String]` Database** _(Key)_: The name of the database to configure the user.
-* **`[String]` LoginName** _(Key)_: The name of the login associated with the user.
-* **`[String]` Name** _(Key)_: The name of the database user to be added or removed.
-* **`[String]` Ensure** _(Write)_: If 'Present' (the default value) then the user
-  will be added to the database and, if needed, the login mapping will be updated.
-  If 'Absent' then the user will be removed from the database. { *Present* |
-  Absent }.
+* **`[String]` Name** _(Key)_: Specifies the name of the database user to
+  be added or removed.
+* **`[String]` ServerName** _(Key)_: Specifies the host name of the SQL
+  Server on which the instance exist.
+* **`[String]` InstanceName** _(Key)_: Specifies the SQL instance in which
+  the database exist.
+* **`[String]` DatabaseName** _(Key)_: Specifies the name of the database in
+  which to configure the user.
+* **`[String]` LoginName** _(Write)_: Specifies the name of the SQL login to
+  associate with the database user. This must be specified if parameter
+  UserType is set to 'Login'.
+* **`[String]` AsymmetricKeyName** _(Write)_: Specifies the name of the
+  asymmetric key to associate with the database user. This must be
+  specified if parameter UserType is set to 'AsymmetricKey'.
+* **`[String]` CertificateName** _(Write)_: Specifies the name of the
+  certificate to associate with the database user. This must be specified
+  if parameter UserType is set to 'Certificate'.
+* **`[String]` UserType** _(Write)_: Specifies the user type of the database
+  user. Valid values are 'Login', 'NoLogin', 'Certificate', or 'AsymmetricKey'.
+  Defaults to 'NoLogin'. { Login | *NoLogin* | Certificate | AsymmetricKey }.
+* **`[String]` Ensure** _(Write)_: Specifies if the user should be present
+  or absent. If 'Present' then the user will be added to the database and,
+  if needed, the login mapping will be updated. If 'Absent' then the user
+  will be removed from the database. Defaults to 'Present'.
+  { *Present* | Absent }.
 
 #### Read-Only Properties from Get-TargetResource
 
-* **`[String]` UserInDesiredState** _(Read)_: Indicates whether the database
-  user is in the desired state.
+* **`[String]` AuthenticationType** _(Read)_: Returns the authentication
+  type of the SQL login connected to the database user. This will return either 'Windows',
+  'Instance' or 'None'. The value 'Windows' means the SQL login is using
+  Windows Authentication, 'Instance' means that the SQL login
+  is using SQL authentication, and 'None' means that the database user have
+  no SQL login connected to it.
+* **`[String]` LoginType** _(Read)_: Returns the login type of the SQL
+  login connected to the database user. If no SQL login is connected to
+  the database user this returns `$null`.
 
 #### Examples
 
