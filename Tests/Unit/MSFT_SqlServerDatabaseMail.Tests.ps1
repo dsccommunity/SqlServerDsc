@@ -192,7 +192,7 @@ try
             } -PassThru -Force
         }
 
-        Describe "MSFT_SqlServerDatabaseMail\Get-TargetResource" -Tag 'Get' {
+        Describe 'MSFT_SqlServerDatabaseMail\Get-TargetResource' -Tag 'Get' {
             BeforeAll {
                 $mockDynamicDatabaseMailEnabledRunValue = $mockDatabaseMailEnabledConfigValue
                 $mockDynamicLoggingLevelValue = $mockLoggingLevelExtendedValue
@@ -336,7 +336,7 @@ try
             Assert-VerifiableMock
         }
 
-        Describe "MSFT_SqlServerDatabaseMail\Test-TargetResource" -Tag 'Test' {
+        Describe 'MSFT_SqlServerDatabaseMail\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 $mockDynamicDatabaseMailEnabledRunValue = $mockDatabaseMailEnabledConfigValue
                 $mockDynamicLoggingLevelValue = $mockLoggingLevelExtendedValue
@@ -494,7 +494,7 @@ try
             Assert-VerifiableMock
         }
 
-        Describe "MSFT_SqlServerDatabaseMail\Set-TargetResource" -Tag 'Set' {
+        Describe 'MSFT_SqlServerDatabaseMail\Set-TargetResource' -Tag 'Set' {
             BeforeAll {
                 $mockDynamicDatabaseMailEnabledRunValue = $mockDatabaseMailEnabledConfigValue
                 $mockDynamicLoggingLevelValue = $mockLoggingLevelExtendedValue
