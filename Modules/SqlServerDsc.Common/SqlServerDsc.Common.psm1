@@ -1625,14 +1625,14 @@ function Invoke-Query
     [CmdletBinding(DefaultParameterSetName='SqlServer')]
     param
     (
-        [Alias("ServerName")]
         [Parameter(ParameterSetName='SqlServer')]
+        [Alias('ServerName')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $SQLServer = $env:COMPUTERNAME,
 
-        [Alias("InstanceName")]
         [Parameter(ParameterSetName='SqlServer')]
+        [Alias('InstanceName')]
         [System.String]
         $SQLInstanceName = 'MSSQLSERVER',
 
@@ -1644,8 +1644,8 @@ function Invoke-Query
         [System.String]
         $Query,
 
-        [Alias("SetupCredential")]
         [Parameter()]
+        [Alias('SetupCredential')]
         [System.Management.Automation.PSCredential]
         $DatabaseCredential,
 
@@ -1663,6 +1663,7 @@ function Invoke-Query
         [Switch]
         $WithResults,
 
+        [Parameter()]
         [ValidateNotNull()]
         [System.Int32]
         $StatementTimeout = 600
