@@ -828,14 +828,14 @@ SQL login.
 * **`[String]` CertificateName** _(Write)_: Specifies the name of the
   certificate to associate with the database user. This must be specified
   if parameter UserType is set to 'Certificate'.
-* **`[String]` UserType** _(Write)_: Specifies the user type of the database
+* **`[String]` UserType** _(Write)_: Specifies the type of the database
   user. Valid values are 'Login', 'NoLogin', 'Certificate', or 'AsymmetricKey'.
   Defaults to 'NoLogin'. { Login | *NoLogin* | Certificate | AsymmetricKey }.
-* **`[String]` Ensure** _(Write)_: Specifies if the user should be present
-  or absent. If 'Present' then the user will be added to the database and,
-  if needed, the login mapping will be updated. If 'Absent' then the user
-  will be removed from the database. Defaults to 'Present'.
-  { *Present* | Absent }.
+* **`[String]` Ensure** _(Write)_: Specifies if the database user should
+  be present or absent. If 'Present' then the database user will be added
+  to the database and, if needed, the login mapping will be updated. If
+  'Absent' then the database user will be removed from the database.
+  Defaults to 'Present'. { *Present* | Absent }.
 
 #### Read-Only Properties from Get-TargetResource
 

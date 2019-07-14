@@ -8,7 +8,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlDatabaseUser'
 
 <#
     .SYNOPSIS
-        Returns the current state of the user in a database.
+        Returns the current state of the database user in a database.
 
     .PARAMETER Name
         Specifies the name of the database user to be added or removed.
@@ -20,7 +20,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlDatabaseUser'
         Specifies the SQL instance in which the database exist.
 
     .PARAMETER DatabaseName
-        Specifies the name of the database in which to configure the user.
+        Specifies the name of the database in which to configure the database user.
 #>
 function Get-TargetResource
 {
@@ -103,7 +103,7 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-        Creates, removes or updates a  user in a database.
+        Creates, removes or updates a database user in a database.
 
     .PARAMETER Name
         Specifies the name of the database user to be added or removed.
@@ -115,7 +115,7 @@ function Get-TargetResource
         Specifies the SQL instance in which the database exist.
 
     .PARAMETER DatabaseName
-        Specifies the name of the database in which to configure the user.
+        Specifies the name of the database in which to configure the database user.
 
     .PARAMETER LoginName
         Specifies the name of the SQL login to associate with the database user.
@@ -130,14 +130,14 @@ function Get-TargetResource
         user. This must be specified if parameter UserType is set to 'Certificate'.
 
     .PARAMETER UserType
-        Specifies the user type of the database user. Valid values are 'Login',
-        'NoLogin', 'Certificate', or 'AsymmetricKey'. Defaults to 'Login'.
+        Specifies the type of the database user. Valid values are 'Login',
+        'NoLogin', 'Certificate', or 'AsymmetricKey'. Defaults to 'NoLogin'.
 
     .PARAMETER Ensure
-        Specifies if the user should be present or absent. If 'Present' then the
-        user will be added to the database and, if needed, the login mapping will
-        be updated. If 'Absent' then the user will be removed from the database.
-        Defaults to 'Present'.
+        Specifies if the database user should be present or absent. If 'Present'
+        then the user will be added to the database and, if needed, the login
+        mapping will be updated. If 'Absent' then the user will be removed from
+        the database. Defaults to 'Present'.
 #>
 function Set-TargetResource
 {
@@ -395,7 +395,7 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-        Determines if the user in a database is in desired state.
+        Determines if the database user in a database is in desired state.
 
     .PARAMETER Name
         Specifies the name of the database user to be added or removed.
@@ -407,7 +407,7 @@ function Set-TargetResource
         Specifies the SQL instance in which the database exist.
 
     .PARAMETER DatabaseName
-        Specifies the name of the database in which to configure the user.
+        Specifies the name of the database in which to configure the database user.
 
     .PARAMETER LoginName
         Specifies the name of the SQL login to associate with the database user.
@@ -421,11 +421,15 @@ function Set-TargetResource
         Specifies the name of the certificate to associate with the database
         user. This must be specified if parameter UserType is set to 'Certificate'.
 
+    .PARAMETER UserType
+        Specifies the type of the database user. Valid values are 'Login',
+        'NoLogin', 'Certificate', or 'AsymmetricKey'. Defaults to 'NoLogin'.
+
     .PARAMETER Ensure
-        Specifies if the user should be present or absent. If 'Present' then the
-        user will be added to the database and, if needed, the login mapping will
-        be updated. If 'Absent' then the user will be removed from the database.
-        Defaults to 'Present'.
+        Specifies if the database user should be present or absent. If 'Present'
+        then the user will be added to the database and, if needed, the login
+        mapping will be updated. If 'Absent' then the user will be removed from
+        the database. Defaults to 'Present'.
 #>
 function Test-TargetResource
 {
@@ -558,7 +562,7 @@ function ConvertTo-UserType
         [System.String]
         $AuthenticationType,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [System.String]
         $LoginType
     )
@@ -597,6 +601,28 @@ function ConvertTo-UserType
     return $userType
 }
 
+<#
+    .SYNOPSIS
+        Test if a SQL login exist on the instance. Throws and error
+        if it does not exist.
+
+    .PARAMETER LoginName
+        Specifies the name of the SQL login to associate with the database user.
+
+    .PARAMETER AsymmetricKeyName
+        Specifies the name of the asymmetric key to associate with the database
+        user.
+
+    .PARAMETER CertificateName
+        Specifies the name of the certificate to associate with the database
+        user.
+
+    .PARAMETER UserType
+        Specifies the type of the database user. Defaults to 'NoLogin'.
+
+    .PARAMETER RemainingArguments
+        Not used.
+#>
 function Assert-Parameters
 {
     [CmdletBinding()]
@@ -673,6 +699,9 @@ function Assert-Parameters
 
     .PARAMETER LoginName
         Specifies the name of the SQL login to be evaluated.
+
+    .PARAMETER RemainingArguments
+        Not used.
 #>
 function Assert-SqlLogin
 {
@@ -714,10 +743,17 @@ function Assert-SqlLogin
         Specifies the host name of the SQL Server on which the instance exist.
 
     .PARAMETER InstanceName
-        Specifies the SQL instance in which the SQL login should be evaluated.
+        Specifies the SQL instance in which the database exist.
 
     .PARAMETER DatabaseName
-        Specifies the name of the SQL login to be evaluated.
+        Specifies the name of the database in which the certificate should be
+        evaluated.
+
+    .PARAMETER CertificateName
+        Specifies the name of the certificate to be evaluated.
+
+    .PARAMETER RemainingArguments
+        Not used.
 #>
 function Assert-DatabaseCertificate
 {
@@ -756,17 +792,24 @@ function Assert-DatabaseCertificate
 
 <#
     .SYNOPSIS
-        Test if a database certificate exist in the database. Throws and error
+        Test if a database asymmetric key exist in the database. Throws and error
         if it does not exist.
 
     .PARAMETER ServerName
         Specifies the host name of the SQL Server on which the instance exist.
 
     .PARAMETER InstanceName
-        Specifies the SQL instance in which the SQL login should be evaluated.
+        Specifies the SQL instance in which the database exists.
 
     .PARAMETER DatabaseName
-        Specifies the name of the SQL login to be evaluated.
+        Specifies the name of the database in which the asymmetric key should be
+        evaluated.
+
+    .PARAMETER AsymmetricKeyName
+        Specifies the name of the asymmetric key to be evaluated.
+
+    .PARAMETER RemainingArguments
+        Not used.
 #>
 function Assert-DatabaseAsymmetricKey
 {
