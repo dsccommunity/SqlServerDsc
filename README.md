@@ -836,6 +836,10 @@ SQL login.
   to the database and, if needed, the login mapping will be updated. If
   'Absent' then the database user will be removed from the database.
   Defaults to 'Present'. { *Present* | Absent }.
+* **`[Boolean]` Force** _(Write)_: Specifies if it is allowed to re-create
+  the database user if either the user type, the asymmetric key, or the
+  certificate changes. Defaults to $false not allowing database users to
+  be re-created.
 
 #### Read-Only Properties from Get-TargetResource
 

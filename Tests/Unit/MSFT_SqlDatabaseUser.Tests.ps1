@@ -689,6 +689,7 @@ try
                             $setTargetResourceParameters = $mockDefaultParameters.Clone()
                             $setTargetResourceParameters['AsymmetricKeyName'] = 'OtherAsymmetricKey1'
                             $setTargetResourceParameters['UserType'] = 'AsymmetricKey'
+                            $setTargetResourceParameters['Force'] = $true
                         }
 
                         It 'Should not throw and should call the correct mocks' {
@@ -727,6 +728,7 @@ try
                             $setTargetResourceParameters = $mockDefaultParameters.Clone()
                             $setTargetResourceParameters['CertificateName'] = 'OtherCertificate1'
                             $setTargetResourceParameters['UserType'] = 'Certificate'
+                            $setTargetResourceParameters['Force'] = $true
                         }
 
                         It 'Should not throw and should call the correct mocks' {
@@ -765,6 +767,7 @@ try
                             $setTargetResourceParameters = $mockDefaultParameters.Clone()
                             $setTargetResourceParameters['LoginName'] = 'OtherLogin1'
                             $setTargetResourceParameters['UserType'] = 'Login'
+                            $setTargetResourceParameters['Force'] = $true
                         }
 
                         It 'Should not throw and should call the correct mocks' {
@@ -779,6 +782,37 @@ try
                             Assert-MockCalled -CommandName Invoke-Query -ParameterFilter {
                                 $Query -eq ('CREATE USER [{0}] FOR LOGIN [{1}];' -f $mockName, 'OtherLogin1')
                             } -Exactly -Times 1 -Scope It
+                        }
+                    }
+
+                    Context 'When the configuration has not opt-in to re-create a database user' {
+                        BeforeAll {
+                            Mock -CommandName Get-TargetResource -MockWith {
+                                return @{
+                                    Ensure             = 'Present'
+                                    Name               = $mockName
+                                    ServerName         = $mockServerName
+                                    InstanceName       = $mockInstanceName
+                                    DatabaseName       = $mockDatabaseName
+                                    LoginName          = $mockLoginName
+                                    AsymmetricKeyName  = $mockAsymmetricKeyName
+                                    CertificateName    = $null
+                                    UserType           = 'Certificate'
+                                    AuthenticationType = $mockAuthenticationType
+                                    LoginType          = 'Certificate'
+                                }
+                            }
+
+                            $setTargetResourceParameters = $mockDefaultParameters.Clone()
+                            $setTargetResourceParameters['LoginName'] = 'OtherLogin1'
+                            $setTargetResourceParameters['UserType'] = 'Login'
+                        }
+
+                        It 'Should not throw and should call the correct mocks' {
+                            { Set-TargetResource @setTargetResourceParameters } | Should -Throw  $script:localizedData.ForceNotEnabled
+
+                            Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Invoke-Query -Exactly -Times 0 -Scope It
                         }
                     }
                 }

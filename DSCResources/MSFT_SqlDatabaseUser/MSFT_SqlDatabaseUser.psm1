@@ -188,7 +188,11 @@ function Set-TargetResource
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
-        $Ensure = 'Present'
+        $Ensure = 'Present',
+
+        [Parameter()]
+        [System.Boolean]
+        $Force = $false
     )
 
     Assert-Parameters @PSBoundParameters
@@ -305,10 +309,11 @@ function Set-TargetResource
         }
     }
 
-    # Throw if Force is not $true
-    if ($recreateDatabaseUser)
+    # Throw if not opt-in to re-create database user.
+    if ($recreateDatabaseUser -and -not $Force)
     {
-        # TODO: ADD FORCE PARAMETER
+        $errorMessage = $script:localizedData.ForceNotEnabled
+        New-InvalidOperationException -Message $errorMessage
     }
 
     if (($Ensure -eq 'Absent' -and $getTargetResourceResult.Ensure -ne $Ensure) -or $recreateDatabaseUser)
@@ -481,7 +486,11 @@ function Test-TargetResource
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
-        $Ensure = 'Present'
+        $Ensure = 'Present',
+
+        [Parameter()]
+        [System.Boolean]
+        $Force = $false
     )
 
     Assert-Parameters @PSBoundParameters
