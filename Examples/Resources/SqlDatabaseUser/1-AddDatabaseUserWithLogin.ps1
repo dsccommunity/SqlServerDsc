@@ -21,7 +21,7 @@ Configuration Example
         {
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            Database             = 'AdventureWorks'
+            DatabaseName         = 'AdventureWorks'
             Name                 = 'ReportAdmin'
             UserType             = 'Login'
             LoginName            = 'ReportAdmin'
@@ -33,7 +33,7 @@ Configuration Example
         {
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            Database             = 'AdventureWorks'
+            DatabaseName         = 'AdventureWorks'
             Name                 = 'CONTOSO\ReportEditor'
             UserType             = 'Login'
             LoginName            = 'CONTOSO\ReportEditor'
@@ -45,7 +45,7 @@ Configuration Example
         {
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            Database             = 'AdventureWorks'
+            DatabaseName         = 'AdventureWorks'
             Name                 = 'CONTOSO\ReportViewer'
             UserType             = 'Login'
             LoginName            = 'CONTOSO\ReportViewer'

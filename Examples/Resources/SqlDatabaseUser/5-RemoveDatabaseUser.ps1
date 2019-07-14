@@ -21,7 +21,7 @@ Configuration Example
             Ensure               = 'Absent'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            Database             = 'AdventureWorks'
+            DatabaseName         = 'AdventureWorks'
             Name                 = 'CONTOSO\ReportViewer'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
