@@ -21,6 +21,7 @@ These are the links to the examples for each individual resource.
 - [SqlDatabasePermission](Resources/SqlDatabasePermission)
 - [SqlDatabaseRecoveryModel](Resources/SqlDatabaseRecoveryModel)
 - [SqlDatabaseRole](Resources/SqlDatabaseRole)
+- [SqlDatabaseUser](Resources/SqlDatabaseUser)
 - [SqlRS](Resources/SqlRS)
 - [SqlRSSetup](Resources/SqlRSSetup)
 - [SqlScript](Resources/SqlScript)
