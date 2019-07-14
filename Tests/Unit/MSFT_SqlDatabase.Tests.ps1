@@ -170,7 +170,7 @@ try
 
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
                 }
             }
 
@@ -196,7 +196,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
                 }
             }
 
@@ -234,7 +234,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
                 }
             }
 
@@ -251,7 +251,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -281,7 +281,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
                 }
             }
 
@@ -298,7 +298,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -339,11 +339,11 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
                 }
 
                 It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Database' {
-                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database'
                     } -Scope Context
                 }
@@ -364,7 +364,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -383,7 +383,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
-                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database'
                     } -Scope It
                 }
@@ -413,7 +413,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -436,7 +436,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 

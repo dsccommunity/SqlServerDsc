@@ -217,7 +217,7 @@ try
                         $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
                         $getTargetResourceResult.Ensure | Should -Be 'Absent'
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should return the same values as passed as parameters' {
@@ -225,7 +225,7 @@ try
                         $result.ServerName | Should -Be $getTargetResourceParameters.ServerName
                         $result.InstanceName | Should -Be $getTargetResourceParameters.InstanceName
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should return $null for the rest of the properties' {
@@ -240,7 +240,7 @@ try
                         $getTargetResourceResult.Description | Should -BeNullOrEmpty
                         $getTargetResourceResult.TcpPort | Should -BeNullOrEmpty
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -249,7 +249,7 @@ try
                         $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
                         $getTargetResourceResult.Ensure | Should -Be 'Present'
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should return the same values as passed as parameters' {
@@ -257,7 +257,7 @@ try
                         $result.ServerName | Should -Be $getTargetResourceParameters.ServerName
                         $result.InstanceName | Should -Be $getTargetResourceParameters.InstanceName
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should return the correct values for the rest of the properties' {
@@ -272,7 +272,7 @@ try
                         $getTargetResourceResult.Description | Should -Be $mockDescription
                         $getTargetResourceResult.TcpPort | Should -Be $mockTcpPort
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -362,7 +362,7 @@ try
                         $testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
                         $testTargetResourceResult | Should -Be $true
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -379,7 +379,7 @@ try
                         $testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
                         $testTargetResourceResult | Should -Be $true
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -394,7 +394,7 @@ try
                         $testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
                         $testTargetResourceResult | Should -Be $false
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -486,7 +486,7 @@ try
                         $testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
                         $testTargetResourceResult | Should -Be $false
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -557,7 +557,7 @@ try
                         $script:MailProfileDropMethodCallCount | Should -Be 0
                         $script:MailAccountDropMethodCallCount | Should -Be 0
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -585,7 +585,7 @@ try
                         $script:MailProfileDropMethodCallCount | Should -Be 0
                         $script:MailAccountDropMethodCallCount | Should -Be 0
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -613,7 +613,7 @@ try
                                 Set-TargetResource @setTargetResourceParameters
                             } | Should -Throw $script:localizedData.DatabaseMailDisabled
 
-                            Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                         }
                     }
 
@@ -632,7 +632,7 @@ try
                             $script:MailServerAlterMethodCallCount | Should -Be 1
                             $script:MailAccountAlterMethodCallCount | Should -Be 0
 
-                            Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                         }
                     }
 
@@ -787,7 +787,7 @@ try
                                 $script:LoggingLevelAlterMethodCallCount | Should -Be 0
                             }
 
-                            Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                         }
                     }
                 }
