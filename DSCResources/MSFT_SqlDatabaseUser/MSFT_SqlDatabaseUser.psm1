@@ -19,7 +19,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlDatabaseUser'
     .PARAMETER InstanceName
         Specifies the SQL instance in which the database exist.
 
-    .PARAMETER Database
+    .PARAMETER DatabaseName
         Specifies the name of the database in which to configure the user.
 #>
 function Get-TargetResource
@@ -56,7 +56,7 @@ function Get-TargetResource
         Name               = $Name
         ServerName         = $ServerName
         InstanceName       = $InstanceName
-        Database           = $DatabaseName
+        DatabaseName       = $DatabaseName
         LoginName          = $null
         AsymmetricKeyName  = $null
         CertificateName    = $null
@@ -114,7 +114,7 @@ function Get-TargetResource
     .PARAMETER InstanceName
         Specifies the SQL instance in which the database exist.
 
-    .PARAMETER Database
+    .PARAMETER DatabaseName
         Specifies the name of the database in which to configure the user.
 
     .PARAMETER LoginName
@@ -204,21 +204,25 @@ function Set-TargetResource
         Name         = $Name
     }
 
+    # Get-TargetResource will also help us to test if the database exist.
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    # Default parameters for the cmdlet Invoke-Query used throughout.
+    $invokeQueryParameters = @{
+        ServerName   = $ServerName
+        InstanceName = $InstanceName
+        Database     = $DatabaseName
+    }
+
+    $recreateDatabaseUser = $false
 
     if ($getTargetResourceResult.Ensure -eq $Ensure)
     {
         if ($Ensure -eq 'Present')
         {
             # Update database user properties, if needed.
-            try
+            if ($UserType -eq $getTargetResourceResult.UserType)
             {
-                Write-Verbose -Message (
-                    $script:localizedData.UpdateDatabaseUser -f $Name, $DatabaseName, $UserType
-                )
-
                 switch ($UserType)
                 {
                     'Login'
@@ -230,22 +234,25 @@ function Set-TargetResource
                             )
 
                             # Assert that the login exist.
-                            if (-not $sqlServerObject.Logins[$LoginName])
-                            {
-                                $errorMessage = $script:localizedData.SqlLoginNotFound -f $LoginName
-                                New-ObjectNotFoundException -Message $errorMessage
-                            }
+                            Assert-SqlLogin @PSBoundParameters
 
-                            <#
-                                Must provide 'WITH NAME' and set to the same name, otherwise
-                                the database user could be renamed in certain conditions.
-                                See remarks section in this article:
-                                https://docs.microsoft.com/en-us/sql/t-sql/statements/alter-user-transact-sql#remarks
-                            #>
-                            $sqlServerObject |
-                                Invoke-Query -Database $DatabaseName -Query (
+                            try
+                            {
+                                <#
+                                    Must provide 'WITH NAME' and set to the same name, otherwise
+                                    the database user could be renamed in certain conditions.
+                                    See remarks section in this article:
+                                    https://docs.microsoft.com/en-us/sql/t-sql/statements/alter-user-transact-sql#remarks
+                                #>
+                                Invoke-Query @invokeQueryParameters -Query (
                                     'ALTER USER [{0}] WITH NAME = [{1}], LOGIN = [{2}];' -f $Name, $Name, $LoginName
                                 )
+                            }
+                            catch
+                            {
+                                $errorMessage = $script:localizedData.FailedUpdateDatabaseUser -f $Name, $DatabaseName, $UserType
+                                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                            }
                         }
                     }
 
@@ -254,29 +261,14 @@ function Set-TargetResource
                         if ($getTargetResourceResult.AsymmetricKeyName -ne $AsymmetricKeyName)
                         {
                             <#
-                                Must re-create the database user since it is not allowed to alter
-                                a database user with an asymmetric key.
-                            #>
+                                    Not allowed to alter a database user mapped to an asymmetric key,
+                                    the database user need to be re-created.
+                                #>
                             Write-Verbose -Message (
-                                $script:localizedData.RecreateDatabaseUser -f $Name, $DatabaseName, $UserType
+                                $script:localizedData.ChangingAsymmetricKey -f $Name, $getTargetResourceResult.AsymmetricKeyName, $AsymmetricKeyName, $DatabaseName
                             )
 
-                            # Assert that the asymmetry key exist.
-                            if (-not $sqlServerObject.Databases[$DatabaseName].AsymmetricKeys[$AsymmetricKeyName])
-                            {
-                                $errorMessage = $script:localizedData.AsymmetryKeyNotFound -f $AsymmetricKeyName, $DatabaseName
-                                New-ObjectNotFoundException -Message $errorMessage
-                            }
-
-                            $sqlServerObject |
-                            Invoke-Query -Database $DatabaseName -Query (
-                                'DROP USER [{0}];' -f $Name
-                            )
-
-                            $sqlServerObject |
-                                Invoke-Query -Database $DatabaseName -Query (
-                                    'CREATE USER [{0}] FOR ASYMMETRIC KEY [{1}];' -f $Name, $AsymmetricKeyName
-                                )
+                            $recreateDatabaseUser = $true
                         }
                     }
 
@@ -285,132 +277,118 @@ function Set-TargetResource
                         if ($getTargetResourceResult.CertificateName -ne $CertificateName)
                         {
                             <#
-                                Must re-create the database user since it is not allowed to alter
-                                a database user with an certificate.
-                            #>
+                                    Not allowed to alter a database user mapped to a certificate,
+                                    the database user need to be re-created.
+                                #>
                             Write-Verbose -Message (
-                                $script:localizedData.RecreateDatabaseUser -f $Name, $DatabaseName, $UserType
+                                $script:localizedData.ChangingCertificate -f $Name, $getTargetResourceResult.CertificateName, $CertificateName, $DatabaseName
                             )
 
-                            # Assert that the certificate exist.
-                            if (-not $sqlServerObject.Databases[$DatabaseName].Certificates[$CertificateName])
-                            {
-                                $errorMessage = $script:localizedData.CertificateNotFound -f $CertificateName, $DatabaseName
-                                New-ObjectNotFoundException -Message $errorMessage
-                            }
-
-                            $sqlServerObject |
-                            Invoke-Query -Database $DatabaseName -Query (
-                                'DROP USER [{0}];' -f $Name
-                            )
-
-                            $sqlServerObject |
-                                Invoke-Query -Database $DatabaseName -Query (
-                                    'CREATE USER [{0}] FOR CERTIFICATE [{1}];' -f $Name, $CertificateName
-                                )
+                            $recreateDatabaseUser = $true
                         }
                     }
                 }
             }
-            catch
+            else
             {
-                $errorMessage = $script:localizedData.FailedUpdateDatabaseUser -f $Name, $DatabaseName, $UserType
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                <#
+                        Current database user have a different user type, the
+                        database user need to be re-created.
+                    #>
+                Write-Verbose -Message (
+                    $script:localizedData.ChangingUserType -f $Name, $getTargetResourceResult.UserType, $UserType, $DatabaseName
+                )
+
+                $recreateDatabaseUser = $true
             }
+
         }
     }
-    else
+
+    # Throw if Force is not $true
+    if ($recreateDatabaseUser)
     {
-        if ($Ensure -eq 'Present')
+        # TODO: ADD FORCE PARAMETER
+    }
+
+    if (($Ensure -eq 'Absent' -and $getTargetResourceResult.Ensure -ne $Ensure) -or $recreateDatabaseUser)
+    {
+        # Drop the database user.
+        try
         {
-            # Create the database user.
-            try
+            Write-Verbose -Message (
+                $script:localizedData.DropDatabaseUser -f $Name, $DatabaseName
+            )
+
+            Invoke-Query @invokeQueryParameters -Query (
+                'DROP USER [{0}];' -f $Name
+            )
+        }
+        catch
+        {
+            $errorMessage = $script:localizedData.FailedDropDatabaseUser -f $Name, $DatabaseName
+            New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+        }
+    }
+
+    <#
+        This evaluation is made to handle creation and re-creation of a database
+        user to minimize the logic when the user has a different user type, or
+        when there are restrictions on altering an existing database user.
+    #>
+    if (($Ensure -eq 'Present' -and $getTargetResourceResult.Ensure -ne $Ensure) -or $recreateDatabaseUser)
+    {
+        # Create the database user.
+        try
+        {
+            Write-Verbose -Message (
+                $script:localizedData.CreateDatabaseUser -f $Name, $DatabaseName, $UserType
+            )
+
+            switch ($UserType)
             {
-                Write-Verbose -Message (
-                    $script:localizedData.CreateDatabaseUser -f $Name, $DatabaseName, $UserType
-                )
-
-                switch ($UserType)
+                'Login'
                 {
-                    'Login'
-                    {
-                        # Assert that the login exist.
-                        if (-not $sqlServerObject.Logins[$LoginName])
-                        {
-                            $errorMessage = $script:localizedData.SqlLoginNotFound -f $LoginName
-                            New-ObjectNotFoundException -Message $errorMessage
-                        }
+                    # Assert that the login exist.
+                    Assert-SqlLogin @PSBoundParameters
 
-                        $sqlServerObject |
-                            Invoke-Query -Database $DatabaseName -Query (
-                                'CREATE USER [{0}] FOR LOGIN [{1}];' -f $Name, $LoginName
-                            )
-                    }
+                    Invoke-Query @invokeQueryParameters -Query (
+                        'CREATE USER [{0}] FOR LOGIN [{1}];' -f $Name, $LoginName
+                    )
+                }
 
-                    'NoLogin'
-                    {
-                        $sqlServerObject |
-                            Invoke-Query -Database $DatabaseName -Query (
-                                'CREATE USER [{0}] WITHOUT LOGIN;' -f $Name
-                            )
-                    }
+                'NoLogin'
+                {
+                    Invoke-Query @invokeQueryParameters -Query (
+                        'CREATE USER [{0}] WITHOUT LOGIN;' -f $Name
+                    )
+                }
 
-                    'AsymmetricKey'
-                    {
-                        # Assert that the asymmetric key exist.
-                        if (-not $sqlServerObject.Databases[$DatabaseName].AsymmetricKeys[$AsymmetricKeyName])
-                        {
-                            $errorMessage = $script:localizedData.AsymmetryKeyNotFound -f $AsymmetricKeyName, $DatabaseName
-                            New-ObjectNotFoundException -Message $errorMessage
-                        }
+                'AsymmetricKey'
+                {
+                    # Assert that the asymmetric key exist.
+                    Assert-DatabaseAsymmetricKey @PSBoundParameters
 
-                        $sqlServerObject |
-                            Invoke-Query -Database $DatabaseName -Query (
-                                'CREATE USER [{0}] FOR ASYMMETRIC KEY [{1}];' -f $Name, $AsymmetricKeyName
-                            )
-                    }
+                    Invoke-Query @invokeQueryParameters -Query (
+                        'CREATE USER [{0}] FOR ASYMMETRIC KEY [{1}];' -f $Name, $AsymmetricKeyName
+                    )
+                }
 
-                    'Certificate'
-                    {
-                        # Assert that the certificate exist.
-                        if (-not $sqlServerObject.Databases[$DatabaseName].Certificates[$CertificateName])
-                        {
-                            $errorMessage = $script:localizedData.CertificateNotFound -f $CertificateName, $DatabaseName
-                            New-ObjectNotFoundException -Message $errorMessage
-                        }
+                'Certificate'
+                {
+                    # Assert that the certificate exist.
+                    Assert-DatabaseCertificate @PSBoundParameters
 
-                        $sqlServerObject |
-                            Invoke-Query -Database $DatabaseName -Query (
-                                'CREATE USER [{0}] FOR CERTIFICATE [{1}];' -f $Name, $CertificateName
-                            )
-                    }
+                    Invoke-Query @invokeQueryParameters -Query (
+                        'CREATE USER [{0}] FOR CERTIFICATE [{1}];' -f $Name, $CertificateName
+                    )
                 }
             }
-            catch
-            {
-                $errorMessage = $script:localizedData.FailedCreateDatabaseUser -f $Name, $DatabaseName, $UserType
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-            }
         }
-        else
+        catch
         {
-            # Drop the database user.
-            try
-            {
-                Write-Verbose -Message (
-                    $script:localizedData.DropDatabaseUser -f $Name, $DatabaseName, $UserType
-                )
-
-                $sqlServerObject |
-                    Invoke-Query -Database $DatabaseName -Query (
-                        'DROP USER [{0}];' -f $Name
-                    )
-            }
-            catch
-            {
-                $errorMessage = $script:localizedData.FailedDropDatabaseUser -f $Name, $DatabaseName, $UserType
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-            }
+            $errorMessage = $script:localizedData.FailedCreateDatabaseUser -f $Name, $DatabaseName, $UserType
+            New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
         }
     }
 }
@@ -428,7 +406,7 @@ function Set-TargetResource
     .PARAMETER InstanceName
         Specifies the SQL instance in which the database exist.
 
-    .PARAMETER Database
+    .PARAMETER DatabaseName
         Specifies the name of the database in which to configure the user.
 
     .PARAMETER LoginName
@@ -538,6 +516,10 @@ function Test-TargetResource
                 'UserType'
             )
         }
+        else
+        {
+            $testTargetResourceReturnValue = $true
+        }
     }
     else
     {
@@ -564,7 +546,7 @@ function Test-TargetResource
     .PARAMETER AuthenticationType
         The authentication type for the database user.
 
-    .PARAMETER AuthenticationType
+    .PARAMETER LoginType
         The login type of the database user.
 #>
 function ConvertTo-UserType
@@ -637,7 +619,7 @@ function Assert-Parameters
         $UserType = 'NoLogin',
 
         # Catch all other splatted parameters from $PSBoundParameters
-        [Parameter(ValueFromRemainingArguments)]
+        [Parameter(ValueFromRemainingArguments = $true)]
         $RemainingArguments
     )
 
@@ -657,6 +639,167 @@ function Assert-Parameters
     {
         $errorMessage = $script:localizedData.AsymmetricKeyNameProvidedWithWrongUserType -f $UserType
         New-InvalidArgumentException -ArgumentName 'Action' -Message $errorMessage
+    }
+
+    if ($UserType -eq 'Login' -and -not $PSBoundParameters.ContainsKey('LoginName'))
+    {
+        $errorMessage = $script:localizedData.LoginUserTypeWithoutLoginName -f $UserType
+        New-InvalidArgumentException -ArgumentName 'Action' -Message $errorMessage
+    }
+
+    if ($UserType -eq 'AsymmetricKey' -and -not $PSBoundParameters.ContainsKey('AsymmetricKeyName'))
+    {
+        $errorMessage = $script:localizedData.AsymmetricKeyUserTypeWithoutAsymmetricKeyName -f $UserType
+        New-InvalidArgumentException -ArgumentName 'Action' -Message $errorMessage
+    }
+
+    if ($UserType -eq 'Certificate' -and -not $PSBoundParameters.ContainsKey('CertificateName'))
+    {
+        $errorMessage = $script:localizedData.CertificateUserTypeWithoutCertificateName -f $UserType
+        New-InvalidArgumentException -ArgumentName 'Action' -Message $errorMessage
+    }
+}
+
+<#
+    .SYNOPSIS
+        Test if a SQL login exist on the instance. Throws and error
+        if it does not exist.
+
+    .PARAMETER ServerName
+        Specifies the host name of the SQL Server on which the instance exist.
+
+    .PARAMETER InstanceName
+        Specifies the SQL instance in which the SQL login should be evaluated.
+
+    .PARAMETER LoginName
+        Specifies the name of the SQL login to be evaluated.
+#>
+function Assert-SqlLogin
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ServerName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $LoginName,
+
+        # Catch all other splatted parameters from $PSBoundParameters
+        [Parameter(ValueFromRemainingArguments = $true)]
+        $RemainingArguments
+    )
+
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+
+    if (-not $sqlServerObject.Logins[$LoginName])
+    {
+        $errorMessage = $script:localizedData.SqlLoginNotFound -f $LoginName
+        New-ObjectNotFoundException -Message $errorMessage
+    }
+}
+
+<#
+    .SYNOPSIS
+        Test if a database certificate exist in the database. Throws and error
+        if it does not exist.
+
+    .PARAMETER ServerName
+        Specifies the host name of the SQL Server on which the instance exist.
+
+    .PARAMETER InstanceName
+        Specifies the SQL instance in which the SQL login should be evaluated.
+
+    .PARAMETER DatabaseName
+        Specifies the name of the SQL login to be evaluated.
+#>
+function Assert-DatabaseCertificate
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ServerName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $DatabaseName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $CertificateName,
+
+        # Catch all other splatted parameters from $PSBoundParameters
+        [Parameter(ValueFromRemainingArguments = $true)]
+        $RemainingArguments
+    )
+
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+
+    if (-not $sqlServerObject.Databases[$DatabaseName].Certificates[$CertificateName])
+    {
+        $errorMessage = $script:localizedData.CertificateNotFound -f $CertificateName, $DatabaseName
+        New-ObjectNotFoundException -Message $errorMessage
+    }
+}
+
+<#
+    .SYNOPSIS
+        Test if a database certificate exist in the database. Throws and error
+        if it does not exist.
+
+    .PARAMETER ServerName
+        Specifies the host name of the SQL Server on which the instance exist.
+
+    .PARAMETER InstanceName
+        Specifies the SQL instance in which the SQL login should be evaluated.
+
+    .PARAMETER DatabaseName
+        Specifies the name of the SQL login to be evaluated.
+#>
+function Assert-DatabaseAsymmetricKey
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ServerName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $DatabaseName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $AsymmetricKeyName,
+
+        # Catch all other splatted parameters from $PSBoundParameters
+        [Parameter(ValueFromRemainingArguments = $true)]
+        $RemainingArguments
+    )
+
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+
+    if (-not $sqlServerObject.Databases[$DatabaseName].AsymmetricKeys[$AsymmetricKeyName])
+    {
+        $errorMessage = $script:localizedData.AsymmetryKeyNotFound -f $AsymmetricKeyName, $DatabaseName
+        New-ObjectNotFoundException -Message $errorMessage
     }
 }
 
