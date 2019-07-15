@@ -1016,6 +1016,15 @@ function Connect-SQL
 
             if ($LoginType -eq 'WindowsUser')
             {
+                # If credential has domain attached then remove or connect will fail
+                if ($connectUsername -match '\\') {
+                    $connectUsername = $connectUsername.Split('\')[1]
+                }
+                elseif ($connectUsername -match '@') {
+                    $connectUsername = $connectUsername.Split('\')[0]
+                }
+
+                $sqlConnectionContext.LoginSecure = $true
                 $sqlConnectionContext.ConnectAsUser = $true
                 $sqlConnectionContext.ConnectAsUserName = $connectUsername
                 $sqlConnectionContext.ConnectAsUserPassword = $SetupCredential.GetNetworkCredential().Password
