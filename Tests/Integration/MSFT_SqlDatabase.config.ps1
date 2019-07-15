@@ -43,7 +43,7 @@ Configuration MSFT_SqlDatabase_AddDatabase1_Config
 
     node $AllNodes.NodeName
     {
-        SqlDatabase 'CreateDatabase1'
+        SqlDatabase 'Integration_Test'
         {
             Ensure       = 'Present'
             ServerName   = $Node.ServerName
@@ -67,7 +67,7 @@ Configuration MSFT_SqlDatabase_AddDatabase2_Config
 
     node $AllNodes.NodeName
     {
-        SqlDatabase 'CreateDatabase2'
+        SqlDatabase 'Integration_Test'
         {
             Ensure       = 'Present'
             ServerName   = $Node.ServerName
@@ -92,7 +92,7 @@ Configuration MSFT_SqlDatabase_RemoveDatabase2_Config
 
     node $AllNodes.NodeName
     {
-        SqlDatabase 'RemoveDatabase2'
+        SqlDatabase 'Integration_Test'
         {
             Ensure       = 'Absent'
             ServerName   = $Node.ServerName
