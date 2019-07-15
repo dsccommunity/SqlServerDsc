@@ -131,6 +131,19 @@ tests creates an Active Directory Detached Cluster with an IP address of
 
 The tests will leave the AlwaysOn service disabled.
 
+## SqlDatabase
+
+**Run order:** 2
+
+**Depends on:** SqlSetup
+
+The integration test will leave a database for other integration tests to
+use.
+
+Database | Collation
+--- | --- | ---
+Database1 | Finnish_Swedish_CI_AS
+
 ## SqlDatabaseDefaultLocation
 
 **Run order:** 2
