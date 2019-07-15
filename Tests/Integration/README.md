@@ -11,6 +11,9 @@ configurations then the run order for the new integration tests should be set to
 a higher run order number than the highest run order of the dependent integration
 tests.
 
+**Below are the integration tests listed in the run order, and with the dependency
+to each other. Dependencies are made to speed up the testing.**
+
 ## SqlSetup
 
 **Run order:** 1
@@ -168,12 +171,67 @@ The integration tests will leave the following logins on the SQL Server instance
 
 Login | Type | Password | Permission
 --- | --- | --- | ---
-DscUser1 | Windows | P@ssw0rd1 | *None*
-DscUser2 | Windows | P@ssw0rd1 | *None*
+DscUser1 | Windows User | See above | *None*
+DscUser2 | Windows User | See above | *None*
 DscUser4 | SQL | P@ssw0rd1 | *None*
+DscSqlUsers1 | Windows Group | -- | *None*
 
 > **Note:** Login DscUser3 was create disabled and was used to test removal of
 > a login.
+
+## SqlAgentAlert
+
+**Run order:** 2
+
+**Depends on:** SqlSetup
+
+*The integration tests will clean up and not leave anything on the build
+worker.*
+
+## SqlAgentOperator
+
+**Run order:** 2
+
+**Depends on:** SqlSetup
+
+*The integration tests will clean up and not leave anything on the build
+worker.*
+
+## SqlServerDatabaseMail
+
+**Run order:** 2
+
+**Depends on:** SqlSetup
+
+*The integration tests will clean up and not leave anything on the build
+worker.*
+
+## SqlServerEndpoint
+
+**Run order:** 2
+
+**Depends on:** SqlSetup
+
+*The integration tests will clean up and not leave anything on the build
+worker.*
+
+## SqlServerNetwork
+
+**Run order:** 2
+
+**Depends on:** SqlSetup
+
+*The integration tests will clean up and not leave anything on the build
+worker.*
+
+## SqlServiceAccount
+
+**Run order:** 2
+
+**Depends on:** SqlSetup
+
+*The integration tests will clean up and not leave anything on the build
+worker.*
 
 ## SqlRS
 
@@ -181,8 +239,12 @@ DscUser4 | SQL | P@ssw0rd1 | *None*
 
 **Depends on:** SqlSetup, SqlRSSetup
 
-The integration tests will install the following instances and leave it on the
-AppVeyor build worker for other integration tests to use.
+When running integration tests for SQL Server 2016 the integration tests
+will install the following instances and leave it on the AppVeyor build
+worker for other integration tests to use.
+When running integration tests for SQL Server 2017 the Reporting Services
+instance installed by the resource SqlRSSetup is started, and then stopped
+again after the integration tests has run.
 
 Instance | Feature | Description
 --- | --- | ---
@@ -254,3 +316,12 @@ Database name | Owner
 --- | ---
 ScriptDatabase3 | $env:COMPUTERNAME\SqlAdmin
 ScriptDatabase4 | DscAdmin1
+
+## SqlServerSecureConnection
+
+**Run order:** 5
+
+**Depends on:** SqlSetup
+
+*The integration tests will clean up and not leave anything on the build
+worker.*
