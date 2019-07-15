@@ -52,7 +52,7 @@ else
         Creates a database user with a login against a SQL login which is of type
         Windows user.
 #>
-Configuration MSFT_SqlDatabase_AddDatabaseUser1_Config
+Configuration MSFT_SqlDatabaseUser_AddDatabaseUser1_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -79,7 +79,7 @@ Configuration MSFT_SqlDatabase_AddDatabaseUser1_Config
     .SYNOPSIS
         Creates a database user with a login against a SQL login which is of type SQL.
 #>
-Configuration MSFT_SqlDatabase_AddDatabaseUser2_Config
+Configuration MSFT_SqlDatabaseUser_AddDatabaseUser2_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -106,7 +106,7 @@ Configuration MSFT_SqlDatabase_AddDatabaseUser2_Config
     .SYNOPSIS
         Creates a database user without a login.
 #>
-Configuration MSFT_SqlDatabase_AddDatabaseUser3_Config
+Configuration MSFT_SqlDatabaseUser_AddDatabaseUser3_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -133,7 +133,7 @@ Configuration MSFT_SqlDatabase_AddDatabaseUser3_Config
         Creates a database user with a login against a SQL login which is of type
         Windows Group.
 #>
-Configuration MSFT_SqlDatabase_AddDatabaseUser4_Config
+Configuration MSFT_SqlDatabaseUser_AddDatabaseUser4_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -160,7 +160,7 @@ Configuration MSFT_SqlDatabase_AddDatabaseUser4_Config
     .SYNOPSIS
         Removes a database user.
 #>
-Configuration MSFT_SqlDatabase_RemoveDatabaseUser4_Config
+Configuration MSFT_SqlDatabaseUser_RemoveDatabaseUser4_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
