@@ -576,7 +576,8 @@ All issues are not listed here, see [here for all open issues](https://github.co
 ### SqlDatabase
 
 This resource is used to create or delete a database. For more information about
-SQL Server databases, please read the following articles [Create a Database](https://docs.microsoft.com/en-us/sql/relational-databases/databases/create-a-database) and [Delete a Database](https://docs.microsoft.com/en-us/sql/relational-databases/databases/delete-a-database).
+SQL Server databases, please read the following articles [Create a Database](https://docs.microsoft.com/en-us/sql/relational-databases/databases/create-a-database)
+and [Delete a Database](https://docs.microsoft.com/en-us/sql/relational-databases/databases/delete-a-database).
 
 #### Requirements
 
