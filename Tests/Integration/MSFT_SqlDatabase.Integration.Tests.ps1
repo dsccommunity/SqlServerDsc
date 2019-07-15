@@ -129,7 +129,7 @@ try
                 }
 
                 $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DatabaseName1
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DatabaseName2
                 $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                 $resourceCurrentState.InstanceName  | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.Collation | Should -Be $ConfigurationData.AllNodes.Collation
