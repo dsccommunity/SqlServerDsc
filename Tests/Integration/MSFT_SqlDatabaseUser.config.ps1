@@ -58,7 +58,7 @@ Configuration MSFT_SqlDatabase_AddDatabaseUser1_Config
 
     node $AllNodes.NodeName
     {
-        SqlDatabase 'Integration_Test'
+        SqlDatabaseUser 'Integration_Test'
         {
             Ensure       = 'Present'
             ServerName   = $Node.ServerName
@@ -85,7 +85,7 @@ Configuration MSFT_SqlDatabase_AddDatabaseUser2_Config
 
     node $AllNodes.NodeName
     {
-        SqlDatabase 'Integration_Test'
+        SqlDatabaseUser 'Integration_Test'
         {
             Ensure       = 'Present'
             ServerName   = $Node.ServerName
@@ -112,7 +112,7 @@ Configuration MSFT_SqlDatabase_AddDatabaseUser3_Config
 
     node $AllNodes.NodeName
     {
-        SqlDatabase 'Integration_Test'
+        SqlDatabaseUser 'Integration_Test'
         {
             Ensure       = 'Present'
             ServerName   = $Node.ServerName
@@ -139,7 +139,7 @@ Configuration MSFT_SqlDatabase_AddDatabaseUser4_Config
 
     node $AllNodes.NodeName
     {
-        SqlDatabase 'Integration_Test'
+        SqlDatabaseUser 'Integration_Test'
         {
             Ensure       = 'Present'
             ServerName   = $Node.ServerName
@@ -166,7 +166,7 @@ Configuration MSFT_SqlDatabase_RemoveDatabaseUser4_Config
 
     node $AllNodes.NodeName
     {
-        SqlDatabase 'Integration_Test'
+        SqlDatabaseUser 'Integration_Test'
         {
             Ensure       = 'Absent'
             ServerName   = $Node.ServerName
