@@ -165,7 +165,7 @@ try
                     $result.ServerName | Should -Be $testParameters.ServerName
                     $result.InstanceName | Should -Be $testParameters.InstanceName
                     $result.Name | Should -Be $testParameters.Name
-                    $result.Collation | Should -Be $testParameters.Collation
+                    $result.Collation | Should -BeNullOrEmpty
                 }
 
 
@@ -175,7 +175,6 @@ try
             }
 
             Context 'When the system is in the desired state for a database' {
-
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     Name      = 'AdventureWorks'

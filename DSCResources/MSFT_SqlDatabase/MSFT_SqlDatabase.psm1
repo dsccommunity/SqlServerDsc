@@ -68,8 +68,6 @@ function Get-TargetResource
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
     if ($sqlServerObject)
     {
-        $sqlDatabaseCollation = $sqlServerObject.Collation
-
         # Check database exists
         $sqlDatabaseObject = $sqlServerObject.Databases[$Name]
 
@@ -299,11 +297,6 @@ function Test-TargetResource
     $getTargetResourceResult = Get-TargetResource @PSBoundParameters
     $isDatabaseInDesiredState = $true
 
-    if (-not $PSBoundParameters.ContainsKey('Collation'))
-    {
-        $Collation = $getTargetResourceResult.Collation
-    }
-
     switch ($Ensure)
     {
         'Absent'
@@ -328,7 +321,7 @@ function Test-TargetResource
 
                 $isDatabaseInDesiredState = $false
             }
-            elseif ($getTargetResourceResult.Collation -ne $Collation)
+            elseif ($PSBoundParameters.ContainsKey('Collation') -and $getTargetResourceResult.Collation -ne $Collation)
             {
                 Write-Verbose -Message (
                     $script:localizedData.CollationWrong -f $Name, $getTargetResourceResult.Collation, $Collation
