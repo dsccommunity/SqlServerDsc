@@ -25,6 +25,8 @@ Configuration Example
             ServerName   = 'sqltest.company.local'
             InstanceName = 'DSC'
             Name         = 'Contoso'
+
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlDatabase Create_Database_with_different_collation
@@ -34,6 +36,8 @@ Configuration Example
             InstanceName = 'DSC'
             Name         = 'AdventureWorks'
             Collation    = 'SQL_Latin1_General_Pref_CP850_CI_AS'
+
+            PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }
 }
