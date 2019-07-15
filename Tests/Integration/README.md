@@ -189,8 +189,8 @@ DscUser2 | Windows User | See above | *None*
 DscUser4 | SQL | P@ssw0rd1 | *None*
 DscSqlUsers1 | Windows Group | -- | *None*
 
-> **Note:** Login DscUser3 was create disabled and was used to test removal of
-> a login.
+>**Note:** The login 'DscUser3' was used to test creating a SQL login as
+>disabled and was also used to test removal of a SQL login.
 
 ## SqlAgentAlert
 
@@ -287,6 +287,19 @@ Server Role | Members
 --- | ---
 DscServerRole1 | DscUser1, DscUser2
 DscServerRole2 | DscUser4
+
+## SqlDatabaseUser
+
+**Run order:** 3
+
+**Depends on:** SqlSetup, SqlServerLogin
+
+The integration test will leave a database user for other integration tests
+to use.
+
+User name | Login
+--- | --- | ---
+Database1 | Finnish_Swedish_CI_AS
 
 ## SqlScript
 
