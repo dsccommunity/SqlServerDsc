@@ -16,6 +16,8 @@
   - Forced $Thumbprint to lowercase to fix [issue #1350](https://github.com/PowerShell/SqlServerDsc/issues/1350).
 - Changes to SqlSetup
   - Correct minor style violation [issue #1387](https://github.com/PowerShell/SqlServerDsc/issues/1387).
+- Changes to Connect-SQL
+  - If WindowsUser credential has domain attached then remove or connect will fail.
 
 ## 13.0.0.0
 
