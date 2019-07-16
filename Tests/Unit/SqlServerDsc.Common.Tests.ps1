@@ -2466,6 +2466,7 @@ InModuleScope 'SqlServerDsc.Common' {
                 $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should -BeExactly $mockSetupCredential.GetNetworkCredential().Password
                 $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should -BeExactly $mockSetupCredential.GetNetworkCredential().UserName
                 $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
+                $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $true
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
                     -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
