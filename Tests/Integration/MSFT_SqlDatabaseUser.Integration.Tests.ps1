@@ -367,8 +367,8 @@ try
                 $resourceCurrentState.LoginName | Should -BeNullOrEmpty
                 $resourceCurrentState.AsymmetricKeyName | Should -BeNullOrEmpty
                 $resourceCurrentState.CertificateName | Should -Be $ConfigurationData.AllNodes.CertificateName
-                $resourceCurrentState.AuthenticationType | Should -Be 'Windows'
-                $resourceCurrentState.LoginType | Should -Be 'WindowsGroup'
+                $resourceCurrentState.AuthenticationType | Should -Be 'None'
+                $resourceCurrentState.LoginType | Should -Be 'Certificate'
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -421,10 +421,10 @@ try
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User6_Name
                 $resourceCurrentState.UserType | Should -Be $ConfigurationData.AllNodes.User6_UserType
                 $resourceCurrentState.LoginName | Should -BeNullOrEmpty
-                $resourceCurrentState.AsymmetricKeyName | Should $ConfigurationData.AllNodes.AsymmetricKeyName
+                $resourceCurrentState.AsymmetricKeyName | Should -Be $ConfigurationData.AllNodes.AsymmetricKeyName
                 $resourceCurrentState.CertificateName | Should -Be -BeNullOrEmpty
-                $resourceCurrentState.AuthenticationType | Should -Be 'Windows'
-                $resourceCurrentState.LoginType | Should -Be 'WindowsGroup'
+                $resourceCurrentState.AuthenticationType | Should -Be 'None'
+                $resourceCurrentState.LoginType | Should -Be 'AsymmetricKey'
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {

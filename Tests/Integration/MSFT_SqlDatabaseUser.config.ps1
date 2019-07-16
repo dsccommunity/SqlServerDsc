@@ -166,6 +166,33 @@ Configuration MSFT_SqlDatabaseUser_AddDatabaseUser4_Config
 
 <#
     .SYNOPSIS
+        Re-creates a database user which had a login, to a user without login.
+#>
+Configuration MSFT_SqlDatabaseUser_AddDatabaseUser4_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlDatabaseUser 'Integration_Test'
+        {
+            Ensure       = 'Present'
+            ServerName   = $Node.ServerName
+            InstanceName = $Node.InstanceName
+            DatabaseName = $Node.DatabaseName
+            Name         = $Node.User4_Name
+            UserType     = 'NoLogin'
+            Force        = $true
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
         Removes a database user.
 #>
 Configuration MSFT_SqlDatabaseUser_RemoveDatabaseUser4_Config
@@ -272,13 +299,13 @@ SELECT Name FROM [$(DatabaseName)].sys.asymmetric_keys WHERE Name = '$(Asymmetri
 '@
 
             TestQuery    = @'
-if (select count(name) from [$(DatabaseName)].sys.certificates where name = '$(AsymmetricKeyName)') = 0
+if (select count(name) from [$(DatabaseName)].sys.asymmetric_keys where name = '$(AsymmetricKeyName)') = 0
 BEGIN
-    RAISERROR ('Did not find the certificate [$(AsymmetricKeyName)]', 16, 1)
+    RAISERROR ('Did not find the asymmetric key [$(AsymmetricKeyName)]', 16, 1)
 END
 ELSE
 BEGIN
-    PRINT 'Found the certificate [$(AsymmetricKeyName)]'
+    PRINT 'Found the asymmetric key [$(AsymmetricKeyName)]'
 END
 '@
 
