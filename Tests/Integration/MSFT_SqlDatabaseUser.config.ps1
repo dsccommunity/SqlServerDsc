@@ -74,7 +74,7 @@ Configuration MSFT_SqlDatabaseUser_AddDatabaseUser1_Config
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
@@ -101,7 +101,7 @@ Configuration MSFT_SqlDatabaseUser_AddDatabaseUser2_Config
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
@@ -127,7 +127,7 @@ Configuration MSFT_SqlDatabaseUser_AddDatabaseUser3_Config
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
@@ -155,7 +155,7 @@ Configuration MSFT_SqlDatabaseUser_AddDatabaseUser4_Config
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
@@ -180,7 +180,7 @@ Configuration MSFT_SqlDatabaseUser_RemoveDatabaseUser4_Config
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
@@ -195,7 +195,7 @@ Configuration MSFT_SqlDatabaseUser_AddDatabaseUser5_Config
 
     node $AllNodes.NodeName
     {
-        SqlScriptQuery 'Integration_Test'
+        SqlScriptQuery 'CreateDatabaseCertificate'
         {
             ServerInstance = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
 
@@ -228,7 +228,7 @@ CREATE CERTIFICATE [$(CertificateName)]
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Admin_Username, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
 
         SqlDatabaseUser 'Integration_Test'
@@ -243,7 +243,7 @@ CREATE CERTIFICATE [$(CertificateName)]
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }

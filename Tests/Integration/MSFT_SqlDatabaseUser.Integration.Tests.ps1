@@ -83,7 +83,7 @@ try
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.DatabaseName  | Should -Be $ConfigurationData.AllNodes.DatabaseName
                 $resourceCurrentState.Name  | Should -Be $ConfigurationData.AllNodes.User1_Name
-                $resourceCurrentState.UserType  | Should -Be $ConfigurationData.AllNodes.User1_Type
+                $resourceCurrentState.UserType  | Should -Be $ConfigurationData.AllNodes.User1_UserType
                 $resourceCurrentState.LoginName  | Should -Be $ConfigurationData.AllNodes.User1_LoginName
                 $resourceCurrentState.AsymmetricKeyName  | Should -BeNullOrEmpty
                 $resourceCurrentState.CertificateName  | Should -BeNullOrEmpty
@@ -139,7 +139,7 @@ try
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.DatabaseName  | Should -Be $ConfigurationData.AllNodes.DatabaseName
                 $resourceCurrentState.Name  | Should -Be $ConfigurationData.AllNodes.User2_Name
-                $resourceCurrentState.UserType  | Should -Be $ConfigurationData.AllNodes.User2_Type
+                $resourceCurrentState.UserType  | Should -Be $ConfigurationData.AllNodes.User2_UserType
                 $resourceCurrentState.LoginName  | Should -Be $ConfigurationData.AllNodes.User2_LoginName
                 $resourceCurrentState.AsymmetricKeyName  | Should -BeNullOrEmpty
                 $resourceCurrentState.CertificateName  | Should -BeNullOrEmpty
@@ -195,7 +195,7 @@ try
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.DatabaseName  | Should -Be $ConfigurationData.AllNodes.DatabaseName
                 $resourceCurrentState.Name  | Should -Be $ConfigurationData.AllNodes.User3_Name
-                $resourceCurrentState.UserType  | Should -Be $ConfigurationData.AllNodes.User3_Type
+                $resourceCurrentState.UserType  | Should -Be $ConfigurationData.AllNodes.User3_UserType
                 $resourceCurrentState.LoginName  | Should -Be $ConfigurationData.AllNodes.User3_LoginName
                 $resourceCurrentState.AsymmetricKeyName  | Should -BeNullOrEmpty
                 $resourceCurrentState.CertificateName  | Should -BeNullOrEmpty
@@ -251,7 +251,7 @@ try
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.DatabaseName  | Should -Be $ConfigurationData.AllNodes.DatabaseName
                 $resourceCurrentState.Name  | Should -Be $ConfigurationData.AllNodes.User4_Name
-                $resourceCurrentState.UserType  | Should -Be $ConfigurationData.AllNodes.User4_Type
+                $resourceCurrentState.UserType  | Should -Be $ConfigurationData.AllNodes.User4_UserType
                 $resourceCurrentState.LoginName  | Should -Be $ConfigurationData.AllNodes.User4_LoginName
                 $resourceCurrentState.AsymmetricKeyName  | Should -BeNullOrEmpty
                 $resourceCurrentState.CertificateName  | Should -BeNullOrEmpty
@@ -363,7 +363,7 @@ try
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.DatabaseName  | Should -Be $ConfigurationData.AllNodes.DatabaseName
                 $resourceCurrentState.Name  | Should -Be $ConfigurationData.AllNodes.User5_Name
-                $resourceCurrentState.UserType  | Should -Be $ConfigurationData.AllNodes.User5_Type
+                $resourceCurrentState.UserType  | Should -Be $ConfigurationData.AllNodes.User5_UserType
                 $resourceCurrentState.LoginName  | Should -BeNullOrEmpty
                 $resourceCurrentState.AsymmetricKeyName  | Should -BeNullOrEmpty
                 $resourceCurrentState.CertificateName  | Should -Be $ConfigurationData.AllNodes.CertificateName
