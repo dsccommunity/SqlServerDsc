@@ -168,7 +168,7 @@ Configuration MSFT_SqlDatabaseUser_AddDatabaseUser4_Config
     .SYNOPSIS
         Re-creates a database user which had a login, to a user without login.
 #>
-Configuration MSFT_SqlDatabaseUser_AddDatabaseUser4_Config
+Configuration MSFT_SqlDatabaseUser_RecreateDatabaseUser4_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
