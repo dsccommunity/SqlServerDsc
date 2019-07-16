@@ -196,7 +196,7 @@ try
                 $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User3_Name
                 $resourceCurrentState.UserType | Should -Be $ConfigurationData.AllNodes.User3_UserType
-                $resourceCurrentState.LoginName | Should -Be $ConfigurationData.AllNodes.User3_LoginName
+                $resourceCurrentState.LoginName | Should -BeNullOrEmpty
                 $resourceCurrentState.AsymmetricKeyName | Should -BeNullOrEmpty
                 $resourceCurrentState.CertificateName | Should -BeNullOrEmpty
                 $resourceCurrentState.AuthenticationType | Should -Be 'None'

@@ -221,6 +221,7 @@ END
             SetQuery     = @'
 USE [$(DatabaseName)];
 CREATE CERTIFICATE [$(CertificateName)]
+    ENCRYPTION BY PASSWORD = 'P@ssw0rd1'
     WITH SUBJECT = 'SqlServerDsc Integration Test';
 '@
 
@@ -284,7 +285,8 @@ END
             SetQuery     = @'
 USE [$(DatabaseName)];
 CREATE ASYMMETRIC KEY [$(AsymmetricKeyName)]
-    WITH ALGORITHM = RSA_2048;
+    WITH ALGORITHM = RSA_2048
+    ENCRYPTION BY PASSWORD = 'P@ssw0rd1';
 '@
 
             QueryTimeout = 30
