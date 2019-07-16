@@ -1021,7 +1021,7 @@ function Connect-SQL
                     $connectUsername = $connectUsername.Split('\')[1]
                 }
                 elseif ($connectUsername -match '@') {
-                    $connectUsername = $connectUsername.Split('\')[0]
+                    $connectUsername = $connectUsername.Split('@')[0]
                 }
 
                 $sqlConnectionContext.LoginSecure = $true
