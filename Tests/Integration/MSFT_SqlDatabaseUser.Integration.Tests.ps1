@@ -478,7 +478,7 @@ try
                 $resourceCurrentState.UserType | Should -Be $ConfigurationData.AllNodes.User6_UserType
                 $resourceCurrentState.LoginName | Should -BeNullOrEmpty
                 $resourceCurrentState.AsymmetricKeyName | Should -Be $ConfigurationData.AllNodes.AsymmetricKeyName
-                $resourceCurrentState.CertificateName | Should -Be -BeNullOrEmpty
+                $resourceCurrentState.CertificateName | Should -BeNullOrEmpty
                 $resourceCurrentState.AuthenticationType | Should -Be 'None'
                 $resourceCurrentState.LoginType | Should -Be 'AsymmetricKey'
             }
