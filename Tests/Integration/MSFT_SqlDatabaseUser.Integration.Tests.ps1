@@ -306,7 +306,7 @@ try
                 $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.DatabaseName  | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                $resourceCurrentState.Name  | Should -Be $ConfigurationData.AllNodes.User1_Name
+                $resourceCurrentState.Name  | Should -Be $ConfigurationData.AllNodes.User4_Name
                 $resourceCurrentState.UserType  | Should -BeNullOrEmpty
                 $resourceCurrentState.LoginName  | Should -BeNullOrEmpty
                 $resourceCurrentState.AsymmetricKeyName  | Should -BeNullOrEmpty

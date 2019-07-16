@@ -65,7 +65,7 @@ Configuration MSFT_SqlDatabaseUser_AddDatabaseUser1_Config
             InstanceName = $Node.InstanceName
             DatabaseName = $Node.DatabaseName
             Name         = $Node.User1_Name
-            UserType     = $Node.User1_Type
+            UserType     = $Node.User1_UserType
             LoginName    = $Node.User1_LoginName
 
             PsDscRunAsCredential = New-Object `
@@ -92,7 +92,7 @@ Configuration MSFT_SqlDatabaseUser_AddDatabaseUser2_Config
             InstanceName = $Node.InstanceName
             DatabaseName = $Node.DatabaseName
             Name         = $Node.User2_Name
-            UserType     = $Node.User2_Type
+            UserType     = $Node.User2_UserType
             LoginName    = $Node.User2_LoginName
 
             PsDscRunAsCredential = New-Object `
@@ -119,7 +119,7 @@ Configuration MSFT_SqlDatabaseUser_AddDatabaseUser3_Config
             InstanceName = $Node.InstanceName
             DatabaseName = $Node.DatabaseName
             Name         = $Node.User3_Name
-            UserType     = $Node.User3_Type
+            UserType     = $Node.User3_UserType
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -146,7 +146,7 @@ Configuration MSFT_SqlDatabaseUser_AddDatabaseUser4_Config
             InstanceName = $Node.InstanceName
             DatabaseName = $Node.DatabaseName
             Name         = $Node.User4_Name
-            UserType     = $Node.User4_Type
+            UserType     = $Node.User4_UserType
             LoginName    = $Node.User4_LoginName
 
             PsDscRunAsCredential = New-Object `
