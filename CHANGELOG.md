@@ -23,9 +23,14 @@
 - Changes to SqlSetup
   - Correct minor style violation [issue #1387](https://github.com/PowerShell/SqlServerDsc/issues/1387).
 - Changes to SqlDatabase
+  - Get-TargetResource now correctly return `$null` for the collation property
+    when the database does not exist ([issue #1395](https://github.com/PowerShell/SqlServerDsc/issues/1395)).
+  - No longer enforces the collation property if the Collation parameter
+    is not part of the configuration ([issue #1396](https://github.com/PowerShell/SqlServerDsc/issues/1396)).
   - Updated resource description in README.md
   - Fix examples to use `PsDscRunAsCredential` ([issue #760](https://github.com/PowerShell/SqlServerDsc/issues/760)).
   - Added integration tests ([issue #739](https://github.com/PowerShell/SqlServerDsc/issues/739)).
+  - Updated unit tests to the latest template ([issue #1068](https://github.com/PowerShell/SqlServerDsc/issues/1068)).
 
 ## 13.0.0.0
 
