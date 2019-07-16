@@ -307,7 +307,7 @@ try
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User4_Name
-                $resourceCurrentState.UserType | Should -Be $ConfigurationData.AllNodes.User4_UserType
+                $resourceCurrentState.UserType | Should -Be 'NoLogin'
                 $resourceCurrentState.LoginName | Should -BeNullOrEmpty
                 $resourceCurrentState.AsymmetricKeyName | Should -BeNullOrEmpty
                 $resourceCurrentState.CertificateName | Should -BeNullOrEmpty
