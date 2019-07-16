@@ -42,6 +42,10 @@ else
                 User4_Name      = 'User4'
                 User4_UserType  = 'Login'
                 User4_LoginName = 'DscSqlUsers1' # Windows Group
+
+                User5_Name      = 'User5'
+                User5_UserType  = 'Certificate'
+                CertificateName = 'Certificate1'
             }
         )
     }
@@ -173,6 +177,69 @@ Configuration MSFT_SqlDatabaseUser_RemoveDatabaseUser4_Config
             InstanceName = $Node.InstanceName
             DatabaseName = $Node.DatabaseName
             Name         = $Node.User4_Name
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Creates a database user mapped to a certificate.
+#>
+Configuration MSFT_SqlDatabaseUser_AddDatabaseUser5_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlScriptQuery 'Integration_Test'
+        {
+            ServerInstance = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
+
+            GetQuery     = @'
+SELECT Name FROM [$(DatabaseName)].sys.certificates WHERE Name = '$(CertificateName)' FOR JSON AUTO
+'@
+
+            TestQuery    = @'
+if (select count(name) from [$(DatabaseName)].sys.certificates where name = '$(CertificateName)') = 0
+BEGIN
+    RAISERROR ('Did not find the certificate [$(CertificateName)]', 16, 1)
+END
+ELSE
+BEGIN
+    PRINT 'Found the certificate [$(CertificateName)]'
+END
+'@
+
+            SetQuery     = @'
+USE [TestDB];
+CREATE CERTIFICATE [$(CertificateName)]
+    WITH SUBJECT = 'SqlServerDsc Integration Test';
+'@
+
+            QueryTimeout = 30
+            Variable     = @(
+                ('DatabaseName={0}' -f $Node.DatabaseName)
+                ('CertificateName={0}' -f $Node.CertificateName)
+            )
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_Username, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+        }
+
+        SqlDatabaseUser 'Integration_Test'
+        {
+            Ensure          = 'Present'
+            ServerName      = $Node.ServerName
+            InstanceName    = $Node.InstanceName
+            DatabaseName    = $Node.DatabaseName
+            Name            = $Node.User5_Name
+            UserType        = $Node.User5_UserType
+            CertificateName = $Node.CertificateName
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
