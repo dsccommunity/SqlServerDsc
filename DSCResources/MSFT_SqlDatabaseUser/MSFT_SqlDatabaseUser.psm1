@@ -83,6 +83,7 @@ function Get-TargetResource
             $returnValue['AsymmetricKeyName'] = $sqlUserObject.AsymmetricKey
             $returnValue['CertificateName'] = $sqlUserObject.Certificate
             $returnValue['AuthenticationType'] = $sqlUserObject.AuthenticationType
+            $returnValue['LoginType'] = $sqlUserObject.LoginType
             $returnValue['UserType'] = ConvertTo-UserType -AuthenticationType $sqlUserObject.AuthenticationType -LoginType $sqlUserObject.LoginType
         }
         else

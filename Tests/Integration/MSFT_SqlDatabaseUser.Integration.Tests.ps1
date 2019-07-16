@@ -81,14 +81,14 @@ try
                 $resourceCurrentState.Ensure | Should -Be 'Present'
                 $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                $resourceCurrentState.DatabaseName  | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                $resourceCurrentState.Name  | Should -Be $ConfigurationData.AllNodes.User1_Name
-                $resourceCurrentState.UserType  | Should -Be $ConfigurationData.AllNodes.User1_UserType
-                $resourceCurrentState.LoginName  | Should -Be $ConfigurationData.AllNodes.User1_LoginName
-                $resourceCurrentState.AsymmetricKeyName  | Should -BeNullOrEmpty
-                $resourceCurrentState.CertificateName  | Should -BeNullOrEmpty
-                $resourceCurrentState.AuthenticationType  | Should -Be 'Windows'
-                $resourceCurrentState.LoginType  | Should -Be 'WindowsUser'
+                $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
+                $resourceCurrentState.UserType | Should -Be $ConfigurationData.AllNodes.User1_UserType
+                $resourceCurrentState.LoginName | Should -Be $ConfigurationData.AllNodes.User1_LoginName
+                $resourceCurrentState.AsymmetricKeyName | Should -BeNullOrEmpty
+                $resourceCurrentState.CertificateName | Should -BeNullOrEmpty
+                $resourceCurrentState.AuthenticationType | Should -Be 'Windows'
+                $resourceCurrentState.LoginType | Should -Be 'WindowsUser'
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -137,14 +137,14 @@ try
                 $resourceCurrentState.Ensure | Should -Be 'Present'
                 $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                $resourceCurrentState.DatabaseName  | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                $resourceCurrentState.Name  | Should -Be $ConfigurationData.AllNodes.User2_Name
-                $resourceCurrentState.UserType  | Should -Be $ConfigurationData.AllNodes.User2_UserType
-                $resourceCurrentState.LoginName  | Should -Be $ConfigurationData.AllNodes.User2_LoginName
-                $resourceCurrentState.AsymmetricKeyName  | Should -BeNullOrEmpty
-                $resourceCurrentState.CertificateName  | Should -BeNullOrEmpty
-                $resourceCurrentState.AuthenticationType  | Should -Be 'Instance'
-                $resourceCurrentState.LoginType  | Should -Be 'SqlLogin'
+                $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User2_Name
+                $resourceCurrentState.UserType | Should -Be $ConfigurationData.AllNodes.User2_UserType
+                $resourceCurrentState.LoginName | Should -Be $ConfigurationData.AllNodes.User2_LoginName
+                $resourceCurrentState.AsymmetricKeyName | Should -BeNullOrEmpty
+                $resourceCurrentState.CertificateName | Should -BeNullOrEmpty
+                $resourceCurrentState.AuthenticationType | Should -Be 'Instance'
+                $resourceCurrentState.LoginType | Should -Be 'SqlLogin'
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -193,14 +193,14 @@ try
                 $resourceCurrentState.Ensure | Should -Be 'Present'
                 $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                $resourceCurrentState.DatabaseName  | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                $resourceCurrentState.Name  | Should -Be $ConfigurationData.AllNodes.User3_Name
-                $resourceCurrentState.UserType  | Should -Be $ConfigurationData.AllNodes.User3_UserType
-                $resourceCurrentState.LoginName  | Should -Be $ConfigurationData.AllNodes.User3_LoginName
-                $resourceCurrentState.AsymmetricKeyName  | Should -BeNullOrEmpty
-                $resourceCurrentState.CertificateName  | Should -BeNullOrEmpty
-                $resourceCurrentState.AuthenticationType  | Should -Be 'None'
-                $resourceCurrentState.LoginType  | Should -Be 'SqlLogin'
+                $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User3_Name
+                $resourceCurrentState.UserType | Should -Be $ConfigurationData.AllNodes.User3_UserType
+                $resourceCurrentState.LoginName | Should -Be $ConfigurationData.AllNodes.User3_LoginName
+                $resourceCurrentState.AsymmetricKeyName | Should -BeNullOrEmpty
+                $resourceCurrentState.CertificateName | Should -BeNullOrEmpty
+                $resourceCurrentState.AuthenticationType | Should -Be 'None'
+                $resourceCurrentState.LoginType | Should -Be 'SqlLogin'
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -249,14 +249,14 @@ try
                 $resourceCurrentState.Ensure | Should -Be 'Present'
                 $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                $resourceCurrentState.DatabaseName  | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                $resourceCurrentState.Name  | Should -Be $ConfigurationData.AllNodes.User4_Name
-                $resourceCurrentState.UserType  | Should -Be $ConfigurationData.AllNodes.User4_UserType
-                $resourceCurrentState.LoginName  | Should -Be $ConfigurationData.AllNodes.User4_LoginName
-                $resourceCurrentState.AsymmetricKeyName  | Should -BeNullOrEmpty
-                $resourceCurrentState.CertificateName  | Should -BeNullOrEmpty
-                $resourceCurrentState.AuthenticationType  | Should -Be 'Windows'
-                $resourceCurrentState.LoginType  | Should -Be 'WindowsGroup'
+                $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User4_Name
+                $resourceCurrentState.UserType | Should -Be $ConfigurationData.AllNodes.User4_UserType
+                $resourceCurrentState.LoginName | Should -Be $ConfigurationData.AllNodes.User4_LoginName
+                $resourceCurrentState.AsymmetricKeyName | Should -BeNullOrEmpty
+                $resourceCurrentState.CertificateName | Should -BeNullOrEmpty
+                $resourceCurrentState.AuthenticationType | Should -Be 'Windows'
+                $resourceCurrentState.LoginType | Should -Be 'WindowsGroup'
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -305,14 +305,14 @@ try
                 $resourceCurrentState.Ensure | Should -Be 'Absent'
                 $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                $resourceCurrentState.DatabaseName  | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                $resourceCurrentState.Name  | Should -Be $ConfigurationData.AllNodes.User4_Name
-                $resourceCurrentState.UserType  | Should -BeNullOrEmpty
-                $resourceCurrentState.LoginName  | Should -BeNullOrEmpty
-                $resourceCurrentState.AsymmetricKeyName  | Should -BeNullOrEmpty
-                $resourceCurrentState.CertificateName  | Should -BeNullOrEmpty
-                $resourceCurrentState.AuthenticationType  | Should -BeNullOrEmpty
-                $resourceCurrentState.LoginType  | Should -BeNullOrEmpty
+                $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User4_Name
+                $resourceCurrentState.UserType | Should -BeNullOrEmpty
+                $resourceCurrentState.LoginName | Should -BeNullOrEmpty
+                $resourceCurrentState.AsymmetricKeyName | Should -BeNullOrEmpty
+                $resourceCurrentState.CertificateName | Should -BeNullOrEmpty
+                $resourceCurrentState.AuthenticationType | Should -BeNullOrEmpty
+                $resourceCurrentState.UserType | Should -BeNullOrEmpty
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -361,14 +361,14 @@ try
                 $resourceCurrentState.Ensure | Should -Be 'Present'
                 $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                $resourceCurrentState.DatabaseName  | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                $resourceCurrentState.Name  | Should -Be $ConfigurationData.AllNodes.User5_Name
-                $resourceCurrentState.UserType  | Should -Be $ConfigurationData.AllNodes.User5_UserType
-                $resourceCurrentState.LoginName  | Should -BeNullOrEmpty
-                $resourceCurrentState.AsymmetricKeyName  | Should -BeNullOrEmpty
-                $resourceCurrentState.CertificateName  | Should -Be $ConfigurationData.AllNodes.CertificateName
-                $resourceCurrentState.AuthenticationType  | Should -Be 'Windows'
-                $resourceCurrentState.LoginType  | Should -Be 'WindowsGroup'
+                $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User5_Name
+                $resourceCurrentState.UserType | Should -Be $ConfigurationData.AllNodes.User5_UserType
+                $resourceCurrentState.LoginName | Should -BeNullOrEmpty
+                $resourceCurrentState.AsymmetricKeyName | Should -BeNullOrEmpty
+                $resourceCurrentState.CertificateName | Should -Be $ConfigurationData.AllNodes.CertificateName
+                $resourceCurrentState.AuthenticationType | Should -Be 'Windows'
+                $resourceCurrentState.LoginType | Should -Be 'WindowsGroup'
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -417,14 +417,14 @@ try
                 $resourceCurrentState.Ensure | Should -Be 'Present'
                 $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                $resourceCurrentState.DatabaseName  | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                $resourceCurrentState.Name  | Should -Be $ConfigurationData.AllNodes.User6_Name
-                $resourceCurrentState.UserType  | Should -Be $ConfigurationData.AllNodes.User6_UserType
-                $resourceCurrentState.LoginName  | Should -BeNullOrEmpty
-                $resourceCurrentState.AsymmetricKeyName  | Should $ConfigurationData.AllNodes.AsymmetricKeyName
-                $resourceCurrentState.CertificateName  | Should -Be -BeNullOrEmpty
-                $resourceCurrentState.AuthenticationType  | Should -Be 'Windows'
-                $resourceCurrentState.LoginType  | Should -Be 'WindowsGroup'
+                $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User6_Name
+                $resourceCurrentState.UserType | Should -Be $ConfigurationData.AllNodes.User6_UserType
+                $resourceCurrentState.LoginName | Should -BeNullOrEmpty
+                $resourceCurrentState.AsymmetricKeyName | Should $ConfigurationData.AllNodes.AsymmetricKeyName
+                $resourceCurrentState.CertificateName | Should -Be -BeNullOrEmpty
+                $resourceCurrentState.AuthenticationType | Should -Be 'Windows'
+                $resourceCurrentState.LoginType | Should -Be 'WindowsGroup'
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
