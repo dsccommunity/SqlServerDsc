@@ -16,36 +16,40 @@ else
     $ConfigurationData = @{
         AllNodes = @(
             @{
-                NodeName        = 'localhost'
-                CertificateFile = $env:DscPublicCertificatePath
+                NodeName          = 'localhost'
+                CertificateFile   = $env:DscPublicCertificatePath
 
-                UserName        = "$env:COMPUTERNAME\SqlAdmin"
-                Password        = 'P@ssw0rd1'
+                UserName          = "$env:COMPUTERNAME\SqlAdmin"
+                Password          = 'P@ssw0rd1'
 
-                ServerName      = $env:COMPUTERNAME
-                InstanceName    = 'DSCSQLTEST'
+                ServerName        = $env:COMPUTERNAME
+                InstanceName      = 'DSCSQLTEST'
 
                 # This is created by the SqlDatabase integration tests.
-                DatabaseName    = 'Database1'
+                DatabaseName      = 'Database1'
 
-                User1_Name      = 'User1'
-                User1_UserType  = 'Login'
-                User1_LoginName = 'DscUser1' # Windows User
+                User1_Name        = 'User1'
+                User1_UserType    = 'Login'
+                User1_LoginName   = 'DscUser1' # Windows User
 
-                User2_Name      = 'User2'
-                User2_UserType  = 'Login'
-                User2_LoginName = 'DscUser4' # SQL login
+                User2_Name        = 'User2'
+                User2_UserType    = 'Login'
+                User2_LoginName   = 'DscUser4' # SQL login
 
-                User3_Name      = 'User3'
-                User3_UserType  = 'NoLogin'
+                User3_Name        = 'User3'
+                User3_UserType    = 'NoLogin'
 
-                User4_Name      = 'User4'
-                User4_UserType  = 'Login'
-                User4_LoginName = 'DscSqlUsers1' # Windows Group
+                User4_Name        = 'User4'
+                User4_UserType    = 'Login'
+                User4_LoginName   = 'DscSqlUsers1' # Windows Group
 
-                User5_Name      = 'User5'
-                User5_UserType  = 'Certificate'
-                CertificateName = 'Certificate1'
+                User5_Name        = 'User5'
+                User5_UserType    = 'Certificate'
+                CertificateName   = 'Certificate1'
+
+                User6_Name        = 'User5'
+                User6_UserType    = 'AsymmetricKey'
+                AsymmetricKeyName = 'AsymmetricKey1'
             }
         )
     }
@@ -215,7 +219,7 @@ END
 '@
 
             SetQuery     = @'
-USE [TestDB];
+USE [$(DatabaseName)];
 CREATE CERTIFICATE [$(CertificateName)]
     WITH SUBJECT = 'SqlServerDsc Integration Test';
 '@
@@ -240,6 +244,69 @@ CREATE CERTIFICATE [$(CertificateName)]
             Name            = $Node.User5_Name
             UserType        = $Node.User5_UserType
             CertificateName = $Node.CertificateName
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Creates a database user mapped to an asymmetric key.
+#>
+Configuration MSFT_SqlDatabaseUser_AddDatabaseUser6_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlScriptQuery 'CreateDatabaseAsymmetricKey'
+        {
+            ServerInstance = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
+
+            GetQuery     = @'
+SELECT Name FROM [$(DatabaseName)].sys.asymmetric_keys WHERE Name = '$(AsymmetricKeyName)' FOR JSON AUTO
+'@
+
+            TestQuery    = @'
+if (select count(name) from [$(DatabaseName)].sys.certificates where name = '$(AsymmetricKeyName)') = 0
+BEGIN
+    RAISERROR ('Did not find the certificate [$(AsymmetricKeyName)]', 16, 1)
+END
+ELSE
+BEGIN
+    PRINT 'Found the certificate [$(AsymmetricKeyName)]'
+END
+'@
+
+            SetQuery     = @'
+USE [$(DatabaseName)];
+CREATE ASYMMETRIC KEY [$(AsymmetricKeyName)]
+    WITH ALGORITHM = RSA_2048;
+'@
+
+            QueryTimeout = 30
+            Variable     = @(
+                ('DatabaseName={0}' -f $Node.DatabaseName)
+                ('AsymmetricKeyName={0}' -f $Node.AsymmetricKeyName)
+            )
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+
+        SqlDatabaseUser 'Integration_Test'
+        {
+            Ensure            = 'Present'
+            ServerName        = $Node.ServerName
+            InstanceName      = $Node.InstanceName
+            DatabaseName      = $Node.DatabaseName
+            Name              = $Node.User6_Name
+            UserType          = $Node.User6_UserType
+            AsymmetricKeyName = $Node.AsymmetricKeyName
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
