@@ -184,13 +184,13 @@ The integration tests will leave the following logins on the SQL Server instance
 
 Login | Type | Password | Permission
 --- | --- | --- | ---
-DscUser1 | Windows User | See above | *None*
-DscUser2 | Windows User | See above | *None*
+`$env:COMPUTERNAME`\DscUser1 | Windows User | See above | *None*
+`$env:COMPUTERNAME`\DscUser2 | Windows User | See above | *None*
 DscUser4 | SQL | P@ssw0rd1 | *None*
-DscSqlUsers1 | Windows Group | -- | *None*
+`$env:COMPUTERNAME`\DscSqlUsers1 | Windows Group | -- | *None*
 
->**Note:** The login 'DscUser3' was used to test creating a SQL login as
->disabled and was also used to test removal of a SQL login.
+>**Note:** The `$env:COMPUTERNAME` is reference to the build workers computer
+>name. The SQL login could for example be 'APPVYR-WIN\DscUser1'.
 
 ## SqlAgentAlert
 
@@ -292,14 +292,41 @@ DscServerRole2 | DscUser4
 
 **Run order:** 3
 
-**Depends on:** SqlSetup, SqlServerLogin
+**Depends on:** SqlSetup, SqlServerLogin, SqlDatabase
 
-The integration test will leave a database user for other integration tests
+The integration test will leave these database users for other integration tests
 to use.
 
-User name | Login
+**Database name:** Database1
+
+Name | Type | LoginType | Login | Certificate | Asymmetric Key
+--- | --- | --- | --- | --- | ---
+User1 | Login | WindowsUser | `$env:COMPUTERNAME`\DscUser1 | - | -
+User2 | Login | SqlLogin | DscUser4 | - | -
+User3 | NoLogin | SqlLogin | - | - | -
+User5 | Certificate | Certificate | - | Certificate1 | -
+User6 | AsymmetricKey | AsymmetricKey | - | - | AsymmetricKey1
+
+>**Note:** The `$env:COMPUTERNAME` is reference to the build workers computer
+>name. The SQL login could for example be 'APPVYR-WIN\DscUser1'.
+
+The integration test will leave this database certificate for other integration
+tests to use.
+
+**Database name:** Database1
+
+Name | Subject | Password
 --- | --- | ---
-Database1 | Finnish_Swedish_CI_AS
+Certificate1 | SqlServerDsc Integration Test | P@ssw0rd1
+
+The integration test will leave this database asymmetric key for other integration
+tests to use.
+
+**Database name:** Database1
+
+Name | Algorithm | Password
+--- | --- | ---
+AsymmetricKey1 | RSA_2048 | P@ssw0rd1
 
 ## SqlScript
 
