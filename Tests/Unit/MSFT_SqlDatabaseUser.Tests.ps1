@@ -136,6 +136,7 @@ try
                         $getTargetResourceResult.AsymmetricKeyName | Should -BeNullOrEmpty
                         $getTargetResourceResult.CertificateName | Should -BeNullOrEmpty
                         $getTargetResourceResult.AuthenticationType | Should -BeNullOrEmpty
+                        $getTargetResourceResult.LoginType | Should -BeNullOrEmpty
                         $getTargetResourceResult.UserType | Should -BeNullOrEmpty
                     }
                 }
@@ -164,6 +165,7 @@ try
                         $getTargetResourceResult.AsymmetricKeyName | Should -Be $mockAsymmetricKeyName
                         $getTargetResourceResult.CertificateName | Should -Be $mockCertificateName
                         $getTargetResourceResult.AuthenticationType | Should -Be $mockAuthenticationType
+                        $getTargetResourceResult.LoginType | Should -Be 'WindowsUser'
                         $getTargetResourceResult.UserType | Should -Be $mockUserType
                     }
                 }
