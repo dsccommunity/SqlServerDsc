@@ -30,7 +30,7 @@ else
 
                 User1_Name        = 'User1'
                 User1_UserType    = 'Login'
-                User1_LoginName   = 'DscUser1' # Windows User
+                User1_LoginName   =  "$env:COMPUTERNAME\DscUser1" # Windows User
 
                 User2_Name        = 'User2'
                 User2_UserType    = 'Login'
@@ -41,13 +41,13 @@ else
 
                 User4_Name        = 'User4'
                 User4_UserType    = 'Login'
-                User4_LoginName   = 'DscSqlUsers1' # Windows Group
+                User4_LoginName   = "$env:COMPUTERNAME\DscSqlUsers1" # Windows Group
 
                 User5_Name        = 'User5'
                 User5_UserType    = 'Certificate'
                 CertificateName   = 'Certificate1'
 
-                User6_Name        = 'User5'
+                User6_Name        = 'User6'
                 User6_UserType    = 'AsymmetricKey'
                 AsymmetricKeyName = 'AsymmetricKey1'
             }
