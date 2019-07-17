@@ -176,6 +176,9 @@ function Get-TargetResource
 
     .PARAMETER ServiceAccount
         Name of the account running the SQL Server service.
+
+    .PARAMETER RestartService
+        If set to $false then the required restart will be suppressed. You will need to restart the service before changes will take effect. The default value is $true.
 #>
 function Set-TargetResource
 {
