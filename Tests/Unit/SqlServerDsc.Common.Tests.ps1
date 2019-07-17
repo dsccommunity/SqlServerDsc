@@ -1284,10 +1284,10 @@ InModuleScope 'SqlServerDsc.Common' {
                 throw $Message
             }
 
-            $mockSetupCredentialUserName = 'TestUserName12345'
-            $mockSetupCredentialPassword = 'StrongOne7.'
-            $mockSetupCredentialSecurePassword = ConvertTo-SecureString -String $mockSetupCredentialPassword -AsPlainText -Force
-            $mockSetupCredential = New-Object -TypeName PSCredential -ArgumentList ($mockSetupCredentialUserName, $mockSetupCredentialSecurePassword)
+            $mockSqlCredentialUserName = 'TestUserName12345'
+            $mockSqlCredentialPassword = 'StrongOne7.'
+            $mockSqlCredentialSecurePassword = ConvertTo-SecureString -String $mockSqlCredentialPassword -AsPlainText -Force
+            $mockSqlCredential = New-Object -TypeName PSCredential -ArgumentList ($mockSqlCredentialUserName, $mockSqlCredentialSecurePassword)
         }
 
         BeforeEach {
@@ -1322,9 +1322,9 @@ InModuleScope 'SqlServerDsc.Common' {
 
         Context 'When connecting to the named instance using Windows Authentication impersonation' {
             It 'Should not throw when connecting' {
-                $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName;User ID=$mockSetupCredentialUserName;Password=$mockSetupCredentialPassword"
+                $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName;User ID=$mockSqlCredentialUserName;Password=$mockSqlCredentialPassword"
 
-                { Connect-SQLAnalysis -SQLInstanceName $mockInstanceName -SetupCredential $mockSetupCredential } | Should -Not -Throw
+                { Connect-SQLAnalysis -SQLInstanceName $mockInstanceName -SetupCredential $mockSqlCredential } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
                     -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
@@ -1390,10 +1390,10 @@ InModuleScope 'SqlServerDsc.Common' {
         BeforeAll {
             $mockExpectedQuery = ''
 
-            $mockSetupCredentialUserName = 'TestUserName12345'
-            $mockSetupCredentialPassword = 'StrongOne7.'
-            $mockSetupCredentialSecurePassword = ConvertTo-SecureString -String $mockSetupCredentialPassword -AsPlainText -Force
-            $mockSetupCredential = New-Object -TypeName PSCredential -ArgumentList ($mockSetupCredentialUserName, $mockSetupCredentialSecurePassword)
+            $mockSqlCredentialUserName = 'TestUserName12345'
+            $mockSqlCredentialPassword = 'StrongOne7.'
+            $mockSqlCredentialSecurePassword = ConvertTo-SecureString -String $mockSqlCredentialPassword -AsPlainText -Force
+            $mockSqlCredential = New-Object -TypeName PSCredential -ArgumentList ($mockSqlCredentialUserName, $mockSqlCredentialSecurePassword)
 
             $masterDatabaseObject = New-Object -TypeName PSObject
             $masterDatabaseObject | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'master'
@@ -1456,7 +1456,7 @@ InModuleScope 'SqlServerDsc.Common' {
             SQLInstanceName    = 'MSSQLSERVER'
             Database           = 'master'
             Query              = ''
-            DatabaseCredential = $mockSetupCredential
+            DatabaseCredential = $mockSqlCredential
         }
 
         $queryParametersWithSMO = @{
@@ -2360,10 +2360,15 @@ InModuleScope 'SqlServerDsc.Common' {
                 throw $Message
             }
 
-            $mockSetupCredentialUserName = 'TestUserName12345'
-            $mockSetupCredentialPassword = 'StrongOne7.'
-            $mockSetupCredentialSecurePassword = ConvertTo-SecureString -String $mockSetupCredentialPassword -AsPlainText -Force
-            $mockSetupCredential = New-Object -TypeName PSCredential -ArgumentList ($mockSetupCredentialUserName, $mockSetupCredentialSecurePassword)
+            $mockSqlCredentialUserName = 'TestUserName12345'
+            $mockSqlCredentialPassword = 'StrongOne7.'
+            $mockSqlCredentialSecurePassword = ConvertTo-SecureString -String $mockSqlCredentialPassword -AsPlainText -Force
+            $mockSqlCredential = New-Object -TypeName PSCredential -ArgumentList ($mockSqlCredentialUserName, $mockSqlCredentialSecurePassword)
+
+            $mockWinCredentialUserName = 'DOMAIN\TestUserName12345'
+            $mockWinCredentialPassword = 'StrongerOne7.'
+            $mockWinCredentialSecurePassword = ConvertTo-SecureString -String $mockWinCredentialPassword -AsPlainText -Force
+            $mockWinCredential = New-Object -TypeName PSCredential -ArgumentList ($mockWinCredentialUserName, $mockWinCredentialSecurePassword)
         }
 
         BeforeEach {
@@ -2394,10 +2399,10 @@ InModuleScope 'SqlServerDsc.Common' {
                 $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
                 $mockExpectedDatabaseEngineLoginSecure = $false
 
-                $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -SetupCredential $mockSetupCredential -LoginType 'SqlLogin'
+                $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -SetupCredential $mockSqlCredential -LoginType 'SqlLogin'
                 $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $false
-                $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSetupCredentialUserName
-                $databaseEngineServerObject.ConnectionContext.SecurePassword | Should -Be $mockSetupCredentialSecurePassword
+                $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSqlCredentialUserName
+                $databaseEngineServerObject.ConnectionContext.SecurePassword | Should -Be $mockSqlCredentialSecurePassword
                 $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly $mockExpectedDatabaseEngineServer
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
@@ -2424,10 +2429,10 @@ InModuleScope 'SqlServerDsc.Common' {
                 $mockExpectedDatabaseEngineInstance = $mockInstanceName
                 $mockExpectedDatabaseEngineLoginSecure = $false
 
-                $databaseEngineServerObject = Connect-SQL -InstanceName $mockExpectedDatabaseEngineInstance -SetupCredential $mockSetupCredential -LoginType 'SqlLogin'
+                $databaseEngineServerObject = Connect-SQL -InstanceName $mockExpectedDatabaseEngineInstance -SetupCredential $mockSqlCredential -LoginType 'SqlLogin'
                 $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $false
-                $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSetupCredentialUserName
-                $databaseEngineServerObject.ConnectionContext.SecurePassword | Should -Be $mockSetupCredentialSecurePassword
+                $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSqlCredentialUserName
+                $databaseEngineServerObject.ConnectionContext.SecurePassword | Should -Be $mockSqlCredentialSecurePassword
                 $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
 
                 Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
@@ -2456,15 +2461,15 @@ InModuleScope 'SqlServerDsc.Common' {
                 $testParameters = @{
                     ServerName = $mockExpectedDatabaseEngineServer
                     InstanceName = $mockExpectedDatabaseEngineInstance
-                    SetupCredential = $mockSetupCredential
+                    SetupCredential = $mockWinCredential
                     LoginType = 'WindowsUser'
                 }
 
                 $databaseEngineServerObject = Connect-SQL @testParameters
                 $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
                 $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
-                $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should -BeExactly $mockSetupCredential.GetNetworkCredential().Password
-                $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should -BeExactly $mockSetupCredential.GetNetworkCredential().UserName
+                $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should -BeExactly $mockWinCredential.GetNetworkCredential().Password
+                $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should -BeExactly $mockWinCredential.GetNetworkCredential().UserName
                 $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
                 $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $true
 

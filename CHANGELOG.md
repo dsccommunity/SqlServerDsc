@@ -17,7 +17,8 @@
 - Changes to SqlSetup
   - Correct minor style violation [issue #1387](https://github.com/PowerShell/SqlServerDsc/issues/1387).
 - Changes to Connect-SQL
-  - If WindowsUser credential has domain attached then remove or connect will fail.
+  - When impersonating WindowsUser credential use the NetworkCredential UserName.
+  - Added addtional verbose logging.
 
 ## 13.0.0.0
 

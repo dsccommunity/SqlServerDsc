@@ -988,7 +988,6 @@ function Connect-SQL
 
     $sqlServerObject  = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
     $sqlConnectionContext = $sqlServerObject.ConnectionContext
-
     $sqlConnectionContext.ServerInstance = $databaseEngineInstance
     $sqlConnectionContext.StatementTimeout = $StatementTimeout
     $sqlConnectionContext.ApplicationName = 'SqlServerDsc'
@@ -1000,15 +999,25 @@ function Connect-SQL
             string since this is using Integrated Security=true (SSPI).
         #>
         $connectUserName = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+
+        Write-Verbose -Message (
+            $script:localizedData.ConnectingUsingIntegrated -f $connectUsername
+        ) -Verbose
     }
     else
     {
         if ($SetupCredential)
         {
+            $connectUserName = $SetupCredential.GetNetworkCredential().UserName
+
+            Write-Verbose -Message (
+                $script:localizedData.ConnectingUsingImpersonation -f $connectUsername, $LoginType
+            ) -Verbose
+
             if ($LoginType -eq 'SqlLogin')
             {
                 $sqlConnectionContext.LoginSecure = $false
-                $sqlConnectionContext.Login = $SetupCredential.UserName
+                $sqlConnectionContext.Login = $connectUserName
                 $sqlConnectionContext.SecurePassword = $SetupCredential.Password
             }
 
@@ -1016,7 +1025,7 @@ function Connect-SQL
             {
                 $sqlConnectionContext.LoginSecure = $true
                 $sqlConnectionContext.ConnectAsUser = $true
-                $sqlConnectionContext.ConnectAsUserName = $SetupCredential.GetNetworkCredential().Username
+                $sqlConnectionContext.ConnectAsUserName = $connectUserName
                 $sqlConnectionContext.ConnectAsUserPassword = $SetupCredential.GetNetworkCredential().Password
             }
         }
@@ -1026,10 +1035,6 @@ function Connect-SQL
             New-InvalidArgumentException -ArgumentName 'SetupCredential' -Message $errorMessage
         }
     }
-
-    Write-Verbose -Message (
-        $script:localizedData.ConnectingUsingCredentials -f $connectUsername, $LoginType
-    ) -Verbose
 
     try
     {
