@@ -140,7 +140,7 @@ try
 
                 It 'Should call the mock function Connect-SQL' {
                     $result = Get-TargetResource @testParameters
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 $mockDynamicEndpointName = 'UnknownEndPoint'
@@ -149,7 +149,7 @@ try
                     It 'Should throw the correct error message' {
                         { Get-TargetResource @testParameters } | Should -Throw ($script:localizedData.UnexpectedErrorFromGet -f $testParameters.Name)
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -179,7 +179,7 @@ try
 
                 It 'Should call the mock function Connect-SQL' {
                     $result = Get-TargetResource @testParameters
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -203,7 +203,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 $mockDynamicPrincipal = $mockPrincipal
@@ -215,7 +215,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -229,7 +229,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 $mockDynamicPrincipal = $mockOtherPrincipal
@@ -241,7 +241,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -268,7 +268,7 @@ try
                     $script:mockMethodGrantRan | Should -Be $true
                     $script:mockMethodRevokeRan | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope It
                 }
 
                 $mockDynamicPrincipal = $mockPrincipal
@@ -283,7 +283,7 @@ try
                     $script:mockMethodGrantRan | Should -Be $false
                     $script:mockMethodRevokeRan | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope It
                 }
 
                 $mockDynamicEndpointName = 'UnknownEndPoint'
@@ -298,7 +298,7 @@ try
 
                         { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.EndpointNotFound -f $testParameters.Name)
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -318,7 +318,7 @@ try
                     $script:mockMethodGrantRan | Should -Be $false
                     $script:mockMethodRevokeRan | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 $mockDynamicPrincipal = $mockOtherPrincipal
@@ -333,7 +333,7 @@ try
                     $script:mockMethodGrantRan | Should -Be $false
                     $script:mockMethodRevokeRan | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 

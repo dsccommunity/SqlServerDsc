@@ -15,24 +15,24 @@ if (Test-SkipContinuousIntegrationTask -Type 'Unit')
     return
 }
 
+#region HEADER
 $script:dscModuleName = 'SqlServerDsc'
 $script:dscResourceName = 'MSFT_SqlDatabase'
 
-#region HEADER
-
-# Unit Test Template Version: 1.2.0
+# Unit Test Template Version: 1.2.4
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-    (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
+    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DscResource.Tests'))
 }
 
-Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
 
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:dscModuleName `
     -DSCResourceName $script:dscResourceName `
+    -ResourceType 'Mof' `
     -TestType Unit
 
 #endregion HEADER
@@ -143,7 +143,7 @@ try
         }
         #endregion
 
-        Describe "MSFT_SqlDatabase\Get-TargetResource" -Tag 'Get' {
+        Describe 'MSFT_SqlDatabase\Get-TargetResource' -Tag 'Get' {
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
@@ -165,17 +165,16 @@ try
                     $result.ServerName | Should -Be $testParameters.ServerName
                     $result.InstanceName | Should -Be $testParameters.InstanceName
                     $result.Name | Should -Be $testParameters.Name
-                    $result.Collation | Should -Be $testParameters.Collation
+                    $result.Collation | Should -BeNullOrEmpty
                 }
 
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
                 }
             }
 
             Context 'When the system is in the desired state for a database' {
-
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     Name      = 'AdventureWorks'
@@ -196,14 +195,14 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
                 }
             }
 
             Assert-VerifiableMock
         }
 
-        Describe "MSFT_SqlDatabase\Test-TargetResource" -Tag 'Test' {
+        Describe 'MSFT_SqlDatabase\Test-TargetResource' -Tag 'Test' {
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
@@ -234,7 +233,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
                 }
             }
 
@@ -251,7 +250,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -281,7 +280,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
                 }
             }
 
@@ -298,14 +297,14 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
             Assert-VerifiableMock
         }
 
-        Describe "MSFT_SqlDatabase\Set-TargetResource" -Tag 'Set' {
+        Describe 'MSFT_SqlDatabase\Set-TargetResource' -Tag 'Set' {
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
                 Mock -CommandName New-Object -MockWith $mockNewObjectDatabase -ParameterFilter {
@@ -339,11 +338,11 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
                 }
 
                 It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Database' {
-                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database'
                     } -Scope Context
                 }
@@ -364,7 +363,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -383,7 +382,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
-                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database'
                     } -Scope It
                 }
@@ -413,7 +412,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -436,7 +435,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 

@@ -114,7 +114,7 @@ try
 
                     It 'Should call the mock function Connect-SQL' {
                         $result = Get-TargetResource @testParameters
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -135,7 +135,7 @@ try
 
                     It 'Should call the mock function Connect-SQL' {
                         $result = Get-TargetResource @testParameters
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -145,7 +145,7 @@ try
                     It 'Should throw the correct error message' {
                         { Get-TargetResource @testParameters } | Should -Throw ($script:localizedData.EndpointErrorVerifyExist -f $testParameters.Name)
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -170,7 +170,7 @@ try
 
                     It 'Should call the mock function Connect-SQL' {
                         $result = Get-TargetResource @testParameters
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -191,7 +191,7 @@ try
 
                     It 'Should call the mock function Connect-SQL' {
                         $result = Get-TargetResource @testParameters
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -216,7 +216,7 @@ try
                         $result = Test-TargetResource @testParameters
                         $result | Should -Be $false
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -229,7 +229,7 @@ try
                         $result = Test-TargetResource @testParameters
                         $result | Should -Be $false
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -244,7 +244,7 @@ try
                         $result = Test-TargetResource @testParameters
                         $result | Should -Be $true
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -257,7 +257,7 @@ try
                         $result = Test-TargetResource @testParameters
                         $result | Should -Be $true
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -269,7 +269,7 @@ try
 
                         { Test-TargetResource @testParameters } | Should -Throw $script:localizedData.UnexpectedErrorFromGet
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                     }
                 }
             }
@@ -294,7 +294,7 @@ try
 
                         Set-TargetResource @testParameters
 
-                        Assert-MockCalled Set-SqlHADREndpoint -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Set-SqlHADREndpoint -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -306,7 +306,7 @@ try
 
                         Set-TargetResource @testParameters
 
-                        Assert-MockCalled Set-SqlHADREndpoint -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Set-SqlHADREndpoint -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -320,7 +320,7 @@ try
 
                         Set-TargetResource @testParameters
 
-                        Assert-MockCalled Set-SqlHADREndpoint -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Set-SqlHADREndpoint -Exactly -Times 0 -Scope It
                     }
                 }
 
@@ -332,7 +332,7 @@ try
 
                         Set-TargetResource @testParameters
 
-                        Assert-MockCalled Set-SqlHADREndpoint -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Set-SqlHADREndpoint -Exactly -Times 0 -Scope It
                     }
                 }
 
@@ -344,7 +344,7 @@ try
 
                         { Set-TargetResource @testParameters } | Should -Throw $script:localizedData.UnexpectedErrorFromGet
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                     }
                 }
             }

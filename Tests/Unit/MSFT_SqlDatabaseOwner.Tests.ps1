@@ -126,7 +126,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -152,7 +152,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -198,7 +198,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -217,7 +217,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -244,7 +244,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -262,7 +262,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -280,7 +280,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -299,7 +299,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -319,7 +319,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 

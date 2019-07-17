@@ -3,6 +3,11 @@
 ## Unreleased
 
 - Changes to SqlServerDsc
+  - New DSC resource SqlDatabaseUser ([issue #846](https://github.com/PowerShell/SqlServerDsc/issues/846)).
+    - Adds ability to create database users with more fine-grained control,
+      e.g. re-mapping of orphaned logins or a different login. Supports
+      creating a user with or without login name, and database users mapped
+      to a certificate or asymmetric key.
   - Changes to helper function Invoke-Query
     - Fixes issues in [issue #1355](https://github.com/PowerShell/SqlServerDsc/issues/1355).
     - Works together with Connect-SQL now.
@@ -11,14 +16,24 @@
     - Can now pass in 'Microsoft.SqlServer.Management.Smo.Server' object.
     - Can also pipe in 'Microsoft.SqlServer.Management.Smo.Server' object.
     - Can pipe Connect-SQL | Invoke-Query.
-    - Added default vaules to Invoke-Query.
+    - Added default values to Invoke-Query.
+  - Minor style fixes in unit tests.
+  - Changes to helper function Connect-SQL
+    - When impersonating WindowsUser credential use the NetworkCredential UserName.
+    - Added addtional verbose logging.
 - Changes to SqlServerSecureConnection
   - Forced $Thumbprint to lowercase to fix [issue #1350](https://github.com/PowerShell/SqlServerDsc/issues/1350).
 - Changes to SqlSetup
   - Correct minor style violation [issue #1387](https://github.com/PowerShell/SqlServerDsc/issues/1387).
-- Changes to Connect-SQL
-  - When impersonating WindowsUser credential use the NetworkCredential UserName.
-  - Added addtional verbose logging.
+- Changes to SqlDatabase
+  - Get-TargetResource now correctly return `$null` for the collation property
+    when the database does not exist ([issue #1395](https://github.com/PowerShell/SqlServerDsc/issues/1395)).
+  - No longer enforces the collation property if the Collation parameter
+    is not part of the configuration ([issue #1396](https://github.com/PowerShell/SqlServerDsc/issues/1396)).
+  - Updated resource description in README.md
+  - Fix examples to use `PsDscRunAsCredential` ([issue #760](https://github.com/PowerShell/SqlServerDsc/issues/760)).
+  - Added integration tests ([issue #739](https://github.com/PowerShell/SqlServerDsc/issues/739)).
+  - Updated unit tests to the latest template ([issue #1068](https://github.com/PowerShell/SqlServerDsc/issues/1068)).
 
 ## 13.0.0.0
 

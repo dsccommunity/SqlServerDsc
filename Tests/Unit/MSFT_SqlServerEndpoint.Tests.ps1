@@ -194,7 +194,7 @@ try
 
                 It 'Should call the mock function Connect-SQL' {
                     Get-TargetResource @testParameters | Out-Null
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -219,7 +219,7 @@ try
 
                 It 'Should call the mock function Connect-SQL' {
                     $result = Get-TargetResource @testParameters
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 # Make sure the mock return the endpoint with wrong endpoint type
@@ -265,7 +265,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return that desired state is absent when wanted desired state is to be Present (setting all parameters)' {
@@ -277,7 +277,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 # Make sure the mock do return the correct endpoint
@@ -289,7 +289,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 # Make sure the mock do return the correct endpoint, but does not return the correct endpoint listener port
@@ -304,7 +304,7 @@ try
                         $result = Test-TargetResource @testParameters
                         $result | Should -Be $false
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -324,7 +324,7 @@ try
                         $result = Test-TargetResource @testParameters
                         $result | Should -Be $false
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -344,7 +344,7 @@ try
                         $result = Test-TargetResource @testParameters
                         $result | Should -Be $false
 
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -360,7 +360,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 # Make sure the mock does not return the correct endpoint
@@ -372,7 +372,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -413,7 +413,7 @@ try
                     $script:mockMethodAlterRan | Should -Be $false
                     $script:mockMethodDropRan | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 # Set all method call tests variables to $false
@@ -443,7 +443,7 @@ try
                     $script:mockMethodAlterRan | Should -Be $false
                     $script:mockMethodDropRan | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 # Set all method call tests variables to $false
@@ -470,7 +470,7 @@ try
                     $script:mockMethodAlterRan | Should -Be $false
                     $script:mockMethodDropRan | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 # Set all method call tests variables to $false
@@ -502,7 +502,7 @@ try
                     $script:mockMethodAlterRan | Should -Be $true
                     $script:mockMethodDropRan | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 # Set all method call tests variables to $false
@@ -534,7 +534,7 @@ try
                     $script:mockMethodAlterRan | Should -Be $true
                     $script:mockMethodDropRan | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 # Set all method call tests variables to $false
@@ -566,7 +566,7 @@ try
                     $script:mockMethodAlterRan | Should -Be $true
                     $script:mockMethodDropRan | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 # Make sure the mock does not return the correct endpoint
@@ -650,7 +650,7 @@ try
                     $script:mockMethodAlterRan | Should -Be $false
                     $script:mockMethodDropRan | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 # Make sure the mock does not return the correct endpoint
@@ -677,7 +677,7 @@ try
                     $script:mockMethodAlterRan | Should -Be $false
                     $script:mockMethodDropRan | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 

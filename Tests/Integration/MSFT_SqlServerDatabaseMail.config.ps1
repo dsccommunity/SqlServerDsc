@@ -120,5 +120,3 @@ Configuration MSFT_SqlServerDatabaseMail_Remove_Config
         }
     }
 }
-
-

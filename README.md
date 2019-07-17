@@ -129,6 +129,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * [**SqlDatabaseRecoveryModel**](#sqldatabaserecoverymodel) resource
   to manage database recovery model.
 * [**SqlDatabaseRole**](#sqldatabaserole) resource to manage SQL database roles.
+* [**SqlDatabaseUser**](#sqldatabaseuser) resource to manage SQL database users.
 * [**SqlRS**](#sqlrs) configures SQL Server Reporting.
   Services to use a database engine in another instance.
 * [**SqlRSSetup**](#sqlrssetup) Installs the standalone
@@ -575,10 +576,8 @@ All issues are not listed here, see [here for all open issues](https://github.co
 ### SqlDatabase
 
 This resource is used to create or delete a database. For more information about
-database, please read:
-
-* [Create a Database](https://msdn.microsoft.com/en-us/library/ms186312.aspx).
-* [Delete a Database](https://msdn.microsoft.com/en-us/library/ms177419.aspx).
+SQL Server databases, please read the following articles [Create a Database](https://docs.microsoft.com/en-us/sql/relational-databases/databases/create-a-database)
+and [Delete a Database](https://docs.microsoft.com/en-us/sql/relational-databases/databases/delete-a-database).
 
 #### Requirements
 
@@ -793,6 +792,76 @@ manages members in both built-in and user created database roles.
 #### Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseRole).
+
+### SqlDatabaseUser
+
+This resource is used to create a database users. A database user can be
+created with or without a login, and a database users can be mapped to a
+certificate or asymmetric key. The resource also allows re-mapping of the
+SQL login.
+
+> **Note:** This resource does not yet support [Contained Databases](https://docs.microsoft.com/en-us/sql/relational-databases/databases/contained-databases).
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2008 or later.
+
+#### Parameters
+
+* **`[String]` Name** _(Key)_: Specifies the name of the database user to
+  be added or removed.
+* **`[String]` ServerName** _(Key)_: Specifies the host name of the SQL
+  Server on which the instance exist.
+* **`[String]` InstanceName** _(Key)_: Specifies the SQL instance in which
+  the database exist.
+* **`[String]` DatabaseName** _(Key)_: Specifies the name of the database in
+  which to configure the user.
+* **`[String]` LoginName** _(Write)_: Specifies the name of the SQL login to
+  associate with the database user. This must be specified if parameter
+  UserType is set to 'Login'.
+* **`[String]` AsymmetricKeyName** _(Write)_: Specifies the name of the
+  asymmetric key to associate with the database user. This must be
+  specified if parameter UserType is set to 'AsymmetricKey'.
+* **`[String]` CertificateName** _(Write)_: Specifies the name of the
+  certificate to associate with the database user. This must be specified
+  if parameter UserType is set to 'Certificate'.
+* **`[String]` UserType** _(Write)_: Specifies the type of the database
+  user. Valid values are 'Login', 'NoLogin', 'Certificate', or 'AsymmetricKey'.
+  Defaults to 'NoLogin'. { Login | *NoLogin* | Certificate | AsymmetricKey }.
+* **`[String]` Ensure** _(Write)_: Specifies if the database user should
+  be present or absent. If 'Present' then the database user will be added
+  to the database and, if needed, the login mapping will be updated. If
+  'Absent' then the database user will be removed from the database.
+  Defaults to 'Present'. { *Present* | Absent }.
+* **`[Boolean]` Force** _(Write)_: Specifies if the resource is allowed
+  to re-create the database user if either the user type, the asymmetric
+  key, or the certificate changes. Defaults to $false not allowing
+  database users to be re-created.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[String]` AuthenticationType** _(Read)_: Returns the authentication
+  type of the SQL login connected to the database user. This will return either 'Windows',
+  'Instance' or 'None'. The value 'Windows' means the SQL login is using
+  Windows Authentication, 'Instance' means that the SQL login
+  is using SQL authentication, and 'None' means that the database user have
+  no SQL login connected to it.
+* **`[String]` LoginType** _(Read)_: Returns the login type of the SQL
+  login connected to the database user. If no SQL login is connected to
+  the database user this returns `$null`.
+
+#### Examples
+
+* [Add a database user to a database, with a SQL login](/Examples/Resources/SqlDatabaseUser/1-AddDatabaseUserWithLogin.ps1)
+* [Add a database user to a database, without a SQL login](/Examples/Resources/SqlDatabaseUser/2-AddDatabaseUserWithoutLogin.ps1)
+* [Add a database user to a database, mapped to an asymmetric key](/Examples/Resources/SqlDatabaseUser/3-AddDatabaseUserMappedToAsymmetricKey.ps1)
+* [Add a database user to a database, mapped to a certificate](/Examples/Resources/SqlDatabaseUser/4-AddDatabaseUserMappedToCertificate.ps1)
+* [Remove database user from a database](/Examples/Resources/SqlDatabaseUser/5-RemoveDatabaseUser.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseUser).
 
 ### SqlRS
 
