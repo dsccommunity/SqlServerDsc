@@ -18,6 +18,9 @@
     - Can pipe Connect-SQL | Invoke-Query.
     - Added default values to Invoke-Query.
   - Minor style fixes in unit tests.
+  - Changes to helper function Connect-SQL
+    - When impersonating WindowsUser credential use the NetworkCredential UserName.
+    - Added addtional verbose logging.
 - Changes to SqlServerSecureConnection
   - Forced $Thumbprint to lowercase to fix [issue #1350](https://github.com/PowerShell/SqlServerDsc/issues/1350).
 - Changes to SqlSetup
