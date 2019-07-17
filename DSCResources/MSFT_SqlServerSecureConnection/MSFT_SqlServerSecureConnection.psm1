@@ -202,7 +202,11 @@ function Set-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ServiceAccount
+        $ServiceAccount,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestartService = $true
     )
 
     # Configuration manager requires thumbprint to be lowercase or it won't display the configured certificate.
@@ -250,11 +254,13 @@ function Set-TargetResource
         Set-EncryptedConnectionSetting -InstanceName $InstanceName -Thumbprint '' -ForceEncryption $false
     }
 
-    Write-Verbose -Message (
-        $script:localizedData.RestartingService `
-            -f $InstanceName
-    )
-    Restart-SqlService -SQLServer localhost -SQLInstanceName $InstanceName
+    if ($RestartService) {
+        Write-Verbose -Message (
+            $script:localizedData.RestartingService `
+                -f $InstanceName
+        )
+        Restart-SqlService -SQLServer localhost -SQLInstanceName $InstanceName
+    }
 }
 
 <#
