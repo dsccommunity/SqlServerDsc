@@ -1495,6 +1495,19 @@ InModuleScope $script:subModuleName {
                 }
             }
 
+            Context 'When connecting to the default instance using the correct service instance but does not return a correct Analysis Service object' {
+                It 'Should throw the correct error' {
+                    $mockExpectedDataSource = ''
+
+                    Mock -CommandName New-Object `
+                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter `
+                        -Verifiable
+
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                }
+            }
+
             Context 'When authentication using NetBIOS domain' {
                 It 'Should not throw when connecting' {
                     $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName;User ID=$mockNetBiosSqlCredentialUserName;Password=$mockNetBiosSqlCredentialPassword"
