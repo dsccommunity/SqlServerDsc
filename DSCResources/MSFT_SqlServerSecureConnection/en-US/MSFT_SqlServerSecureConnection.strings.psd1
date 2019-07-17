@@ -17,4 +17,5 @@ ConvertFrom-StringData @'
     InstanceNotFound = SQL instance '{0}' not found on SQL Server.
     PrivateKeyPath = Certificate private key is located at '{0}'.
     CouldNotFindEncryptionValues = Could not find encryption values in registry for instance '{0}'.
+    SuppressRequiredRestart = Service '{0}' restart has been suppressed. Changes will not take effect until the service is restarted.
 '@

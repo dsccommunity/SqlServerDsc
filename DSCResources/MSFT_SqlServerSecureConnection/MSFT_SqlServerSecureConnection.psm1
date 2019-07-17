@@ -176,6 +176,9 @@ function Get-TargetResource
 
     .PARAMETER ServiceAccount
         Name of the account running the SQL Server service.
+
+    .PARAMETER RestartService
+        If set to $false then the required restart will be suppressed. You will need to restart the service before changes will take effect. The default value is $true.
 #>
 function Set-TargetResource
 {
@@ -202,7 +205,11 @@ function Set-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ServiceAccount
+        $ServiceAccount,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestartService = $true
     )
 
     # Configuration manager requires thumbprint to be lowercase or it won't display the configured certificate.
@@ -226,8 +233,7 @@ function Set-TargetResource
         if ($ForceEncryption -ne $encryptionState.ForceEncryption -or $Thumbprint -ne $encryptionState.Thumbprint)
         {
             Write-Verbose -Message (
-                $script:localizedData.SetEncryptionSetting `
-                    -f $InstanceName, $Thumbprint, $ForceEncryption
+                $script:localizedData.SetEncryptionSetting -f $InstanceName, $Thumbprint, $ForceEncryption
             )
             Set-EncryptedConnectionSetting -InstanceName $InstanceName -Thumbprint $Thumbprint -ForceEncryption $ForceEncryption
         }
@@ -235,8 +241,7 @@ function Set-TargetResource
         if ((Test-CertificatePermission -Thumbprint $Thumbprint -ServiceAccount $ServiceAccount) -eq $false)
         {
             Write-Verbose -Message (
-                $script:localizedData.SetCertificatePermission `
-                    -f $Thumbprint, $ServiceAccount
+                $script:localizedData.SetCertificatePermission -f $Thumbprint, $ServiceAccount
             )
             Set-CertificatePermission -Thumbprint $Thumbprint -ServiceAccount $ServiceAccount
         }
@@ -244,17 +249,24 @@ function Set-TargetResource
     else
     {
         Write-Verbose -Message (
-            $script:localizedData.RemoveEncryptionSetting `
-                -f $InstanceName
+            $script:localizedData.RemoveEncryptionSetting -f $InstanceName
         )
         Set-EncryptedConnectionSetting -InstanceName $InstanceName -Thumbprint '' -ForceEncryption $false
     }
 
-    Write-Verbose -Message (
-        $script:localizedData.RestartingService `
-            -f $InstanceName
-    )
-    Restart-SqlService -SQLServer localhost -SQLInstanceName $InstanceName
+    if ($RestartService)
+    {
+        Write-Verbose -Message (
+            $script:localizedData.RestartingService -f $InstanceName
+        )
+        Restart-SqlService -SQLServer localhost -SQLInstanceName $InstanceName
+    }
+    else
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SuppressRequiredRestart -f $InstanceName
+        )
+    }
 }
 
 <#

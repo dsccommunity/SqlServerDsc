@@ -283,6 +283,7 @@ try
                     Thumbprint      = $mockThumbprint
                     ServiceAccount  = $mockServiceAccount
                     ForceEncryption = $true
+                    RestartService  = $true
                     Ensure          = 'Present'
                 }
 
@@ -315,11 +316,32 @@ try
                         { Set-TargetResource @defaultParameters } | Should -Not -Throw
 
                         Assert-MockCalled -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq $mockThumbprint.ToLower() }
-
                         Assert-MockCalled -CommandName Set-CertificatePermission -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq $mockThumbprint.ToLower() }
-
                         Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
                     }
+                }
+
+                Context 'When RestartService is false' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                InstanceName    = $mockNamedInstanceName
+                                Thumbprint      = $mockThumbprint.ToUpper()
+                            }
+                        } -Verifiable
+                    }
+
+                    $defaultParameters.RestartService = $false
+
+                    It 'Should suppress restarting the SQL service' {
+                        { Set-TargetResource @defaultParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq $mockThumbprint.ToLower() }
+                        Assert-MockCalled -CommandName Set-CertificatePermission -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq $mockThumbprint.ToLower() }
+                        Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
+                    }
+
+                    $defaultParameters.RestartService = $true
                 }
 
                 Context 'When only certificate permissions are set' {
