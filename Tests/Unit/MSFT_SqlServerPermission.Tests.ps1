@@ -108,7 +108,7 @@ try
 
                     It 'Should call the mock function Connect-SQL' {
                         Get-TargetResource @testParameters | Out-Null
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -138,7 +138,7 @@ try
 
                     It 'Should call the mock function Connect-SQL' {
                         Get-TargetResource @testParameters | Out-Null
-                        Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -188,7 +188,7 @@ try
 
                 It 'Should call the mock function Connect-SQL' {
                     Get-TargetResource @testParameters | Out-Null
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -220,7 +220,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return that desired state is absent when wanted desired state is to be Absent' {
@@ -232,7 +232,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -245,7 +245,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return that desired state is present when wanted desired state is to be Absent' {
@@ -256,7 +256,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -287,7 +287,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope It
                 }
 
                 It 'Should not throw error when desired state is to be Absent' {
@@ -297,7 +297,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope It
                 }
             }
 
@@ -309,7 +309,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should not throw error when desired state is to be Absent' {
@@ -319,7 +319,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 Context 'When the Set-TargetResource throws an error' {

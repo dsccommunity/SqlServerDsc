@@ -135,11 +135,11 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should call the mock function Test-ActiveNode' {
-                    Assert-MockCalled Test-ActiveNode -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Test-ActiveNode -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -177,11 +177,11 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should not call the mock function Get-CimInstance' {
-                    Assert-MockCalled Get-CimInstance -Exactly -Times 0 -Scope Context
+                    Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope Context
                 }
             }
 
@@ -200,11 +200,11 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should not call the mock function Get-CimInstance' {
-                    Assert-MockCalled Get-CimInstance -Exactly -Times 0 -Scope Context
+                    Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope Context
                 }
             }
 
@@ -222,11 +222,11 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_Processor' {
-                    Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
+                    Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 1 -ParameterFilter {
                         $ClassName -eq 'Win32_Processor'
                     } -Scope Context
                 }
@@ -246,11 +246,11 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_Processor' {
-                    Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
+                    Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 1 -ParameterFilter {
                         $ClassName -eq 'Win32_Processor'
                     } -Scope Context
                 }
@@ -270,11 +270,11 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_Processor' {
-                    Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
+                    Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 1 -ParameterFilter {
                         $ClassName -eq 'Win32_Processor'
                     } -Scope Context
                 }
@@ -295,11 +295,11 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_Processor' {
-                    Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
+                    Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 1 -ParameterFilter {
                         $ClassName -eq 'Win32_Processor'
                     } -Scope Context
                 }
@@ -317,7 +317,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -342,7 +342,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -360,7 +360,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -376,7 +376,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -422,7 +422,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -440,7 +440,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -460,7 +460,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -481,11 +481,11 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should call the mock function Get-CimInstance with ClassName equal to Win32_Processor' {
-                    Assert-MockCalled Get-CimInstance -Exactly -Times 1 -ParameterFilter {
+                    Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 1 -ParameterFilter {
                         $ClassName -eq 'Win32_Processor'
                     } -Scope Context
                 }
@@ -506,7 +506,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 

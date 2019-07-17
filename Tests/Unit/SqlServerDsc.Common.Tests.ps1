@@ -353,7 +353,7 @@ InModuleScope 'SqlServerDsc.Common' {
                 $result = Get-RegistryPropertyValue -Path $mockWrongRegistryPath -Name $mockPropertyName
                 $result | Should -BeNullOrEmpty
 
-                Assert-MockCalled Get-ItemProperty -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It
             }
         }
 
@@ -368,7 +368,7 @@ InModuleScope 'SqlServerDsc.Common' {
                 $result = Get-RegistryPropertyValue -Path $mockWrongRegistryPath -Name $mockPropertyName
                 $result | Should -BeNullOrEmpty
 
-                Assert-MockCalled Get-ItemProperty -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It
             }
         }
 
@@ -394,7 +394,7 @@ InModuleScope 'SqlServerDsc.Common' {
                 $result = Get-RegistryPropertyValue -Path $mockCorrectRegistryPath -Name $mockPropertyName
                 $result | Should -Be $mockPropertyValue
 
-                Assert-MockCalled Get-ItemProperty -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It
             }
         }
     }
