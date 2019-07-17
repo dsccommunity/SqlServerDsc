@@ -233,8 +233,7 @@ function Set-TargetResource
         if ($ForceEncryption -ne $encryptionState.ForceEncryption -or $Thumbprint -ne $encryptionState.Thumbprint)
         {
             Write-Verbose -Message (
-                $script:localizedData.SetEncryptionSetting `
-                    -f $InstanceName, $Thumbprint, $ForceEncryption
+                $script:localizedData.SetEncryptionSetting -f $InstanceName, $Thumbprint, $ForceEncryption
             )
             Set-EncryptedConnectionSetting -InstanceName $InstanceName -Thumbprint $Thumbprint -ForceEncryption $ForceEncryption
         }
@@ -242,8 +241,7 @@ function Set-TargetResource
         if ((Test-CertificatePermission -Thumbprint $Thumbprint -ServiceAccount $ServiceAccount) -eq $false)
         {
             Write-Verbose -Message (
-                $script:localizedData.SetCertificatePermission `
-                    -f $Thumbprint, $ServiceAccount
+                $script:localizedData.SetCertificatePermission -f $Thumbprint, $ServiceAccount
             )
             Set-CertificatePermission -Thumbprint $Thumbprint -ServiceAccount $ServiceAccount
         }
@@ -251,18 +249,23 @@ function Set-TargetResource
     else
     {
         Write-Verbose -Message (
-            $script:localizedData.RemoveEncryptionSetting `
-                -f $InstanceName
+            $script:localizedData.RemoveEncryptionSetting -f $InstanceName
         )
         Set-EncryptedConnectionSetting -InstanceName $InstanceName -Thumbprint '' -ForceEncryption $false
     }
 
-    if ($RestartService) {
+    if ($RestartService)
+    {
         Write-Verbose -Message (
-            $script:localizedData.RestartingService `
-                -f $InstanceName
+            $script:localizedData.RestartingService -f $InstanceName
         )
         Restart-SqlService -SQLServer localhost -SQLInstanceName $InstanceName
+    }
+    else
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SuppressRequiredRestart -f $InstanceName
+        )
     }
 }
 

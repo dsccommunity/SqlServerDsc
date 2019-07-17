@@ -321,7 +321,7 @@ try
                     }
                 }
 
-                Context 'When RestartService is $false' {
+                Context 'When RestartService is false' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
