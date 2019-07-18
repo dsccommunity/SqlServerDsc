@@ -1075,10 +1075,10 @@ function Connect-SQL
     .SYNOPSIS
         Connect to a SQL Server Analysis Service and return the server object.
 
-    .PARAMETER SQLServer
+    .PARAMETER ServerName
         String containing the host name of the SQL Server to connect to.
 
-    .PARAMETER SQLInstanceName
+    .PARAMETER InstanceName
         String containing the SQL Server Analysis Service instance to connect to.
 
     .PARAMETER SetupCredential
@@ -1093,12 +1093,12 @@ function Connect-SQLAnalysis
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $ServerName = $env:COMPUTERNAME,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER',
+        $InstanceName = 'MSSQLSERVER',
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -1109,13 +1109,13 @@ function Connect-SQLAnalysis
 
     $null = [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.AnalysisServices')
 
-    if ($SQLInstanceName -eq 'MSSQLSERVER')
+    if ($InstanceName -eq 'MSSQLSERVER')
     {
-        $analysisServiceInstance = $SQLServer
+        $analysisServiceInstance = $ServerName
     }
     else
     {
-        $analysisServiceInstance = "$SQLServer\$SQLInstanceName"
+        $analysisServiceInstance = "$ServerName\$InstanceName"
     }
 
     if ($SetupCredential)
@@ -1158,7 +1158,7 @@ function Connect-SQLAnalysis
     .SYNOPSIS
         Returns the major SQL version for the specific instance.
 
-    .PARAMETER SQLInstanceName
+    .PARAMETER InstanceName
         String containing the name of the SQL instance to be configured. Default value is 'MSSQLSERVER'.
 
     .OUTPUTS
@@ -1172,15 +1172,15 @@ function Get-SqlInstanceMajorVersion
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER'
+        $InstanceName = 'MSSQLSERVER'
     )
 
-    $sqlInstanceId = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL').$SQLInstanceName
+    $sqlInstanceId = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL').$InstanceName
     $sqlVersion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$sqlInstanceId\Setup").Version
 
     if (-not $sqlVersion)
     {
-        $errorMessage = $script:localizedData.SqlServerVersionIsInvalid -f $SQLInstanceName
+        $errorMessage = $script:localizedData.SqlServerVersionIsInvalid -f $InstanceName
         New-InvalidResultException -Message $errorMessage
     }
 
@@ -1321,10 +1321,10 @@ function Import-SQLPSModule
     .SYNOPSIS
         Restarts a SQL Server instance and associated services
 
-    .PARAMETER SQLServer
+    .PARAMETER ServerName
         Hostname of the SQL Server to be configured
 
-    .PARAMETER SQLInstanceName
+    .PARAMETER InstanceName
         Name of the SQL instance to be configured. Default is 'MSSQLSERVER'
 
     .PARAMETER Timeout
@@ -1345,16 +1345,16 @@ function Import-SQLPSModule
         resource when it's used to disable protocol.
 
     .EXAMPLE
-        Restart-SqlService -SQLServer localhost
+        Restart-SqlService -ServerName localhost
 
     .EXAMPLE
-        Restart-SqlService -SQLServer localhost -SQLInstanceName 'NamedInstance'
+        Restart-SqlService -ServerName localhost -InstanceName 'NamedInstance'
 
     .EXAMPLE
-        Restart-SqlService -SQLServer localhost -SQLInstanceName 'NamedInstance' -SkipClusterCheck -SkipWaitForOnline
+        Restart-SqlService -ServerName localhost -InstanceName 'NamedInstance' -SkipClusterCheck -SkipWaitForOnline
 
     .EXAMPLE
-        Restart-SqlService -SQLServer CLU01 -Timeout 300
+        Restart-SqlService -ServerName CLU01 -Timeout 300
 #>
 function Restart-SqlService
 {
@@ -1363,11 +1363,11 @@ function Restart-SqlService
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $SQLServer,
+        $ServerName,
 
         [Parameter()]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER',
+        $InstanceName = 'MSSQLSERVER',
 
         [Parameter()]
         [System.UInt32]
@@ -1385,7 +1385,7 @@ function Restart-SqlService
     if (-not $SkipClusterCheck.IsPresent)
     {
         ## Connect to the instance
-        $serverObject = Connect-SQL -ServerName $SQLServer -InstanceName $SQLInstanceName
+        $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
 
         if ($serverObject.IsClustered)
         {
@@ -1430,13 +1430,13 @@ function Restart-SqlService
 
     if ($restartWindowsService)
     {
-        if ($SQLInstanceName -eq 'MSSQLSERVER')
+        if ($InstanceName -eq 'MSSQLSERVER')
         {
             $serviceName = 'MSSQLSERVER'
         }
         else
         {
-            $serviceName = 'MSSQL${0}' -f $SQLInstanceName
+            $serviceName = 'MSSQL${0}' -f $InstanceName
         }
 
         Write-Verbose -Message ($script:localizedData.GetServiceInformation -f 'SQL Server') -Verbose
@@ -1459,7 +1459,7 @@ function Restart-SqlService
         }
     }
 
-    Write-Verbose -Message ($script:localizedData.WaitingInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout) -Verbose
+    Write-Verbose -Message ($script:localizedData.WaitingInstanceTimeout -f $ServerName, $InstanceName, $Timeout) -Verbose
 
     if (-not $SkipWaitForOnline.IsPresent)
     {
@@ -1468,7 +1468,7 @@ function Restart-SqlService
         do
         {
             # This call, if it fails, will take between ~9-10 seconds to return.
-            $testConnectionServerObject = Connect-SQL -ServerName $SQLServer -InstanceName $SQLInstanceName -ErrorAction SilentlyContinue
+            $testConnectionServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction SilentlyContinue
 
             # Make sure we have an SMO object to test Status
             if ($testConnectionServerObject)
@@ -1488,7 +1488,7 @@ function Restart-SqlService
         # Was the timeout period reach before able to connect to the SQL Server instance?
         if (-not $testConnectionServerObject -or $testConnectionServerObject.Status -ne 'Online')
         {
-            $errorMessage = $script:localizedData.FailedToConnectToInstanceTimeout -f $SQLServer, $SQLInstanceName, $Timeout
+            $errorMessage = $script:localizedData.FailedToConnectToInstanceTimeout -f $ServerName, $InstanceName, $Timeout
             New-InvalidOperationException -Message $errorMessage
         }
     }
@@ -1498,7 +1498,7 @@ function Restart-SqlService
     .SYNOPSIS
         Restarts a Reporting Services instance and associated services
 
-    .PARAMETER SQLInstanceName
+    .PARAMETER InstanceName
         Name of the instance to be restarted. Default is 'MSSQLSERVER'
         (the default instance).
 
@@ -1513,14 +1513,14 @@ function Restart-ReportingServicesService
     (
         [Parameter()]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER',
+        $InstanceName = 'MSSQLSERVER',
 
         [Parameter()]
         [System.UInt16]
         $WaitTime = 0
     )
 
-    if ($SQLInstanceName -eq 'SSRS')
+    if ($InstanceName -eq 'SSRS')
     {
         # Check if we're dealing with SSRS 2017
         $ServiceName = 'SQLServerReportingServices'
@@ -1537,9 +1537,9 @@ function Restart-ReportingServicesService
             Pre-2017 SSRS support multiple instances, check if we're dealing
             with a named instance.
         #>
-        if (-not ($SQLInstanceName -eq 'MSSQLSERVER'))
+        if (-not ($InstanceName -eq 'MSSQLSERVER'))
         {
-            $ServiceName += '${0}' -f $SQLInstanceName
+            $ServiceName += '${0}' -f $InstanceName
         }
 
         Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
@@ -1794,10 +1794,10 @@ function Update-AvailabilityGroupReplica
     .SYNOPSIS
         Impersonates a login and determines whether required permissions are present.
 
-    .PARAMETER SQLServer
+    .PARAMETER ServerName
         String containing the host name of the SQL Server to connect to.
 
-    .PARAMETER SQLInstanceName
+    .PARAMETER InstanceName
         String containing the SQL Server Database Engine instance to connect to.
 
     .PARAMETER LoginName
@@ -1834,11 +1834,11 @@ function Test-LoginEffectivePermissions
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLServer,
+        $ServerName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName,
+        $InstanceName,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -1863,8 +1863,8 @@ function Test-LoginEffectivePermissions
     $permissionsPresent = $false
 
     $invokeQueryParameters = @{
-        ServerName   = $SQLServer
-        InstanceName = $SQLInstanceName
+        ServerName   = $ServerName
+        InstanceName = $InstanceName
         Database     = 'master'
         WithResults  = $true
     }
@@ -1888,7 +1888,7 @@ function Test-LoginEffectivePermissions
         "
     }
 
-    Write-Verbose -Message ($script:localizedData.GetEffectivePermissionForLogin -f $LoginName, $sqlInstanceName) -Verbose
+    Write-Verbose -Message ($script:localizedData.GetEffectivePermissionForLogin -f $LoginName, $InstanceName) -Verbose
 
     $loginEffectivePermissionsResult = Invoke-Query @invokeQueryParameters -Query $queryToGetEffectivePermissionsForLogin
     $loginEffectivePermissions = $loginEffectivePermissionsResult.Tables.Rows.permission_name
@@ -1912,10 +1912,10 @@ function Test-LoginEffectivePermissions
     .SYNOPSIS
         Determine if the seeding mode of the specified availability group is automatic.
 
-    .PARAMETER SQLServer
+    .PARAMETER ServerName
         The hostname of the server that hosts the SQL instance.
 
-    .PARAMETER SQLInstanceName
+    .PARAMETER InstanceName
         The name of the SQL instance that hosts the availability group.
 
     .PARAMETER AvailabilityGroupName
@@ -1931,11 +1931,11 @@ function Test-AvailabilityReplicaSeedingModeAutomatic
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLServer,
+        $ServerName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $SQLInstanceName,
+        $InstanceName,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -1951,14 +1951,14 @@ function Test-AvailabilityReplicaSeedingModeAutomatic
     # Assume automatic seeding is disabled by default
     $availabilityReplicaSeedingModeAutomatic = $false
 
-    $serverObject = Connect-SQL -ServerName $SQLServer -InstanceName $SQLInstanceName
+    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
 
     # Only check the seeding mode if this is SQL 2016 or newer
     if ( $serverObject.Version -ge 13 )
     {
         $invokeQueryParams = @{
-            ServerName   = $SQLServer
-            InstanceName = $SQLInstanceName
+            ServerName   = $ServerName
+            InstanceName = $InstanceName
             Database     = 'master'
             WithResults  = $true
         }
@@ -2042,87 +2042,93 @@ function Test-ImpersonatePermissions
 
     # The impersonate any login permission only exists in SQL 2014 and above
     $testLoginEffectivePermissionsParams = @{
-        SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
-        SQLInstanceName = $ServerObject.ServiceName
-        LoginName       = $ServerObject.ConnectionContext.TrueLogin
-        Permissions     = @('IMPERSONATE ANY LOGIN')
+        ServerName   = $ServerObject.ComputerNamePhysicalNetBIOS
+        InstanceName = $ServerObject.ServiceName
+        LoginName    = $ServerObject.ConnectionContext.TrueLogin
+        Permissions  = @('IMPERSONATE ANY LOGIN')
     }
 
     $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+
     if ($impersonatePermissionsPresent)
     {
-        Write-Verbose -Message ( 'The login "{0}" has impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName ) -Verbose
+        Write-Verbose -Message ( 'The login "{0}" has impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.ServerName, $testLoginEffectivePermissionsParams.SInstanceName ) -Verbose
         return $impersonatePermissionsPresent
     }
     else
     {
-        Write-Verbose -Message ( 'The login "{0}" does not have impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName ) -Verbose
+        Write-Verbose -Message ( 'The login "{0}" does not have impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.ServerName, $testLoginEffectivePermissionsParams.InstanceName ) -Verbose
     }
 
     # Check for sysadmin / control server permission which allows impersonation
     $testLoginEffectivePermissionsParams = @{
-        SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
-        SQLInstanceName = $ServerObject.ServiceName
-        LoginName       = $ServerObject.ConnectionContext.TrueLogin
-        Permissions     = @('CONTROL SERVER')
+        ServerName   = $ServerObject.ComputerNamePhysicalNetBIOS
+        InstanceName = $ServerObject.ServiceName
+        LoginName    = $ServerObject.ConnectionContext.TrueLogin
+        Permissions  = @('CONTROL SERVER')
     }
+
     $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+
     if ($impersonatePermissionsPresent)
     {
-        Write-Verbose -Message ( 'The login "{0}" has control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName ) -Verbose
+        Write-Verbose -Message ( 'The login "{0}" has control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.ServerName, $testLoginEffectivePermissionsParams.InstanceName ) -Verbose
         return $impersonatePermissionsPresent
     }
     else
     {
-        Write-Verbose -Message ( 'The login "{0}" does not have control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName ) -Verbose
+        Write-Verbose -Message ( 'The login "{0}" does not have control server permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.ServerName, $testLoginEffectivePermissionsParams.InstanceName ) -Verbose
     }
 
     if (-not [System.String]::IsNullOrEmpty($SecurableName))
     {
         # Check for login-specific impersonation permissions
         $testLoginEffectivePermissionsParams = @{
-            SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
-            SQLInstanceName = $ServerObject.ServiceName
-            LoginName       = $ServerObject.ConnectionContext.TrueLogin
-            Permissions     = @('IMPERSONATE')
-            SecurableClass  = 'LOGIN'
-            SecurableName   = $SecurableName
+            ServerName     = $ServerObject.ComputerNamePhysicalNetBIOS
+            InstanceName   = $ServerObject.ServiceName
+            LoginName      = $ServerObject.ConnectionContext.TrueLogin
+            Permissions    = @('IMPERSONATE')
+            SecurableClass = 'LOGIN'
+            SecurableName  = $SecurableName
         }
 
         $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+
         if ($impersonatePermissionsPresent)
         {
-            Write-Verbose -Message ( 'The login "{0}" has impersonate permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName ) -Verbose
+            Write-Verbose -Message ( 'The login "{0}" has impersonate permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.ServerName, $testLoginEffectivePermissionsParams.InstanceName, $SecurableName ) -Verbose
             return $impersonatePermissionsPresent
         }
         else
         {
-            Write-Verbose -Message ( 'The login "{0}" does not have impersonate permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName ) -Verbose
+            Write-Verbose -Message ( 'The login "{0}" does not have impersonate permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.ServerName, $testLoginEffectivePermissionsParams.InstanceName, $SecurableName ) -Verbose
         }
 
         # Check for login-specific control permissions
         $testLoginEffectivePermissionsParams = @{
-            SQLServer       = $ServerObject.ComputerNamePhysicalNetBIOS
-            SQLInstanceName = $ServerObject.ServiceName
-            LoginName       = $ServerObject.ConnectionContext.TrueLogin
-            Permissions     = @('CONTROL')
-            SecurableClass  = 'LOGIN'
-            SecurableName   = $SecurableName
+            ServerName     = $ServerObject.ComputerNamePhysicalNetBIOS
+            InstanceName   = $ServerObject.ServiceName
+            LoginName      = $ServerObject.ConnectionContext.TrueLogin
+            Permissions    = @('CONTROL')
+            SecurableClass = 'LOGIN'
+            SecurableName  = $SecurableName
         }
 
         $impersonatePermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams
+
         if ($impersonatePermissionsPresent)
         {
-            Write-Verbose -Message ( 'The login "{0}" has control permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName ) -Verbose
+            Write-Verbose -Message ( 'The login "{0}" has control permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.ServerName, $testLoginEffectivePermissionsParams.InstanceName, $SecurableName ) -Verbose
             return $impersonatePermissionsPresent
         }
         else
         {
-            Write-Verbose -Message ( 'The login "{0}" does not have control permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName, $SecurableName ) -Verbose
+            Write-Verbose -Message ( 'The login "{0}" does not have control permissions on the instance "{1}\{2}" for the login "{3}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.ServerName, $testLoginEffectivePermissionsParams.InstanceName, $SecurableName ) -Verbose
         }
     }
 
-    Write-Verbose -Message ( 'The login "{0}" does not have any impersonate permissions required on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.SQLServer, $testLoginEffectivePermissionsParams.SQLInstanceName ) -Verbose
+    Write-Verbose -Message ( 'The login "{0}" does not have any impersonate permissions required on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.ServerName, $testLoginEffectivePermissionsParams.InstanceName ) -Verbose
+
     return $impersonatePermissionsPresent
 }
 
@@ -2130,11 +2136,11 @@ function Test-ImpersonatePermissions
     .SYNOPSIS
         Takes a SQL Instance name in the format of 'Server\Instance' and splits it into a hash table prepared to be passed into Connect-SQL.
 
-    .PARAMETER FullSQLInstanceName
+    .PARAMETER FullSqlInstanceName
         The full SQL instance name string to be split.
 
     .OUTPUTS
-        Hash table with the properties SQLServer and SQLInstanceName.
+        Hash table with the properties ServerName and InstanceName.
 #>
 function Split-FullSqlInstanceName
 {
@@ -2143,10 +2149,10 @@ function Split-FullSqlInstanceName
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $FullSQLInstanceName
+        $FullSqlInstanceName
     )
 
-    $sqlServer, $sqlInstanceName = $FullSQLInstanceName.Split('\')
+    $sqlServer, $sqlInstanceName = $FullSqlInstanceName.Split('\')
 
     if ( [System.String]::IsNullOrEmpty($sqlInstanceName) )
     {
@@ -2191,10 +2197,10 @@ function Test-ClusterPermissions
         if ( $ServerObject.Logins[$loginName] -and -not $clusterPermissionsPresent )
         {
             $testLoginEffectivePermissionsParams = @{
-                SQLServer       = $sqlServer
-                SQLInstanceName = $sqlInstanceName
-                LoginName       = $loginName
-                Permissions     = $availabilityGroupManagementPerms
+                ServerName   = $sqlServer
+                InstanceName = $sqlInstanceName
+                LoginName    = $loginName
+                Permissions  = $availabilityGroupManagementPerms
             }
 
             $clusterPermissionsPresent = Test-LoginEffectivePermissions @testLoginEffectivePermissionsParams

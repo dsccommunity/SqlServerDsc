@@ -336,7 +336,7 @@ function Get-TargetResource
         $analysisServiceAccountUsername = $analysisServiceCimInstance.StartName
         $AsSvcStartupType = ConvertTo-StartupType -StartMode $analysisServiceCimInstance.StartMode
 
-        $analysisServer = Connect-SQLAnalysis -SQLServer $sqlHostName -SQLInstanceName $InstanceName
+        $analysisServer = Connect-SQLAnalysis -ServerName $sqlHostName -InstanceName $InstanceName
 
         $analysisCollation = $analysisServer.ServerProperties['CollationName'].Value
         $analysisDataDirectory = $analysisServer.ServerProperties['DataDir'].Value

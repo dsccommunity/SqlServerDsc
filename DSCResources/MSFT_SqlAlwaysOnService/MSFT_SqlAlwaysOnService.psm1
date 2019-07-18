@@ -150,7 +150,7 @@ function Set-TargetResource
     )
 
     # Now restart the SQL service so that all dependent services are also returned to their previous state
-    Restart-SqlService -SQLServer $ServerName -SQLInstanceName $InstanceName -Timeout $RestartTimeout
+    Restart-SqlService -ServerName $ServerName -InstanceName $InstanceName -Timeout $RestartTimeout
 
     # Verify always on was set
     if ( -not ( Test-TargetResource @PSBoundParameters ) )

@@ -11,7 +11,7 @@
   - Changes to helper function Invoke-Query
     - Fixes issues in [issue #1355](https://github.com/PowerShell/SqlServerDsc/issues/1355).
     - Works together with Connect-SQL now.
-    - Parameters now match that of Connect-SQL.
+    - Parameters now match that of Connect-SQL ([issue #1392](https://github.com/PowerShell/SqlServerDsc/issues/1392)).
     - Can now pass in credentials.
     - Can now pass in 'Microsoft.SqlServer.Management.Smo.Server' object.
     - Can also pipe in 'Microsoft.SqlServer.Management.Smo.Server' object.
@@ -26,6 +26,20 @@
   - Changes to helper function Connect-SQL
     - When impersonating WindowsUser credential use the NetworkCredential UserName.
     - Added additional verbose logging.
+  - Changes to helper function Connect-SQLAnalysis
+    - Parameters now match that of Connect-SQL ([issue #1392](https://github.com/PowerShell/SqlServerDsc/issues/1392)).
+  - Changes to helper function Restart-SqlService
+    - Parameters now match that of Connect-SQL ([issue #1392](https://github.com/PowerShell/SqlServerDsc/issues/1392)).
+  - Changes to helper function Restart-ReportingServicesService
+    - Parameters now match that of Connect-SQL ([issue #1392](https://github.com/PowerShell/SqlServerDsc/issues/1392)).
+  - Changes to helper function Split-FullSqlInstanceName
+    - Parameters and function name changed to use correct casing.
+  - Changes to helper function Get-SqlInstanceMajorVersion
+    - Parameters now match that of Connect-SQL ([issue #1392](https://github.com/PowerShell/SqlServerDsc/issues/1392)).
+  - Changes to helper function Test-LoginEffectivePermissions
+    - Parameters now match that of Connect-SQL ([issue #1392](https://github.com/PowerShell/SqlServerDsc/issues/1392)).
+  - Changes to helper function Test-AvailabilityReplicaSeedingModeAutomatic
+    - Parameters now match that of Connect-SQL ([issue #1392](https://github.com/PowerShell/SqlServerDsc/issues/1392)).
 - Changes to SqlServerSecureConnection
   - Forced $Thumbprint to lowercase to fix [issue #1350](https://github.com/PowerShell/SqlServerDsc/issues/1350).
   - Add parameter SuppressRestart with default value false.

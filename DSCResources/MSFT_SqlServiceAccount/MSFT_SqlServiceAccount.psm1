@@ -260,7 +260,8 @@ function Set-TargetResource
     if ($RestartService)
     {
         Write-Verbose -Message ($script:localizedData.RestartingService -f $InstanceName)
-        Restart-SqlService -SQLServer $ServerName -SQLInstanceName $InstanceName
+
+        Restart-SqlService -ServerName $ServerName -InstanceName $InstanceName
     }
 }
 

@@ -316,7 +316,7 @@ function Set-TargetResource
                 $availabilityReplicaFilestreamLevel = @{}
                 foreach ( $availabilityGroupReplica in $secondaryReplicas )
                 {
-                    $connectSqlParameters = Split-FullSQLInstanceName -FullSQLInstanceName $availabilityGroupReplica.Name
+                    $connectSqlParameters = Split-FullSqlInstanceName -FullSqlInstanceName $availabilityGroupReplica.Name
                     $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
                     $availabilityReplicaFilestreamLevel.Add($availabilityGroupReplica.Name, $currentAvailabilityGroupReplicaServerObject.FilestreamLevel)
                 }
@@ -334,7 +334,7 @@ function Set-TargetResource
                 $availabilityReplicaContainmentEnabled = @{}
                 foreach ( $availabilityGroupReplica in $secondaryReplicas )
                 {
-                    $connectSqlParameters = Split-FullSQLInstanceName -FullSQLInstanceName $availabilityGroupReplica.Name
+                    $connectSqlParameters = Split-FullSqlInstanceName -FullSqlInstanceName $availabilityGroupReplica.Name
                     $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
                     $availabilityReplicaContainmentEnabled.Add($availabilityGroupReplica.Name, $currentAvailabilityGroupReplicaServerObject.Configuration.ContainmentEnabled.ConfigValue)
                 }
@@ -355,7 +355,7 @@ function Set-TargetResource
             $availabilityReplicaMissingDirectories = @{}
             foreach ( $availabilityGroupReplica in $secondaryReplicas )
             {
-                $connectSqlParameters = Split-FullSQLInstanceName -FullSQLInstanceName $availabilityGroupReplica.Name
+                $connectSqlParameters = Split-FullSqlInstanceName -FullSqlInstanceName $availabilityGroupReplica.Name
                 $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
 
                 $missingDirectories = @()
@@ -393,7 +393,7 @@ function Set-TargetResource
                 $availabilityReplicaMissingCertificates = @{}
                 foreach ( $availabilityGroupReplica in $secondaryReplicas )
                 {
-                    $connectSqlParameters = Split-FullSQLInstanceName -FullSQLInstanceName $availabilityGroupReplica.Name
+                    $connectSqlParameters = Split-FullSqlInstanceName -FullSqlInstanceName $availabilityGroupReplica.Name
                     $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
                     [System.Array]$installedCertificateThumbprints = $currentAvailabilityGroupReplicaServerObject.Databases['master'].Certificates | ForEach-Object { [System.BitConverter]::ToString($_.Thumbprint) }
 
@@ -540,7 +540,7 @@ function Set-TargetResource
                     foreach ( $availabilityGroupReplica in $secondaryReplicas )
                     {
                         # Connect to the replica
-                        $connectSqlParameters = Split-FullSQLInstanceName -FullSQLInstanceName $availabilityGroupReplica.Name
+                        $connectSqlParameters = Split-FullSqlInstanceName -FullSqlInstanceName $availabilityGroupReplica.Name
                         $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
                         $currentReplicaAvailabilityGroupObject = $currentAvailabilityGroupReplicaServerObject.AvailabilityGroups[$AvailabilityGroupName]
 
