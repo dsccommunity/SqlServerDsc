@@ -1465,14 +1465,16 @@ InModuleScope 'SqlServerDsc.Common' {
             Database           = 'master'
         }
 
-        Context 'Execute a query with no results' {
+        Context 'When executing a query with no results' {
+            AfterEach {
+                Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+            }
+
             It 'Should execute the query silently' {
                 $queryParams.Query = "EXEC sp_configure 'show advanced option', '1'"
                 $mockExpectedQuery = $queryParams.Query.Clone()
 
                 { Invoke-Query @queryParams } | Should -Not -Throw
-
-                Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
 
             It 'Should throw the correct error, ExecuteNonQueryFailed, when executing the query fails' {
@@ -1481,12 +1483,37 @@ InModuleScope 'SqlServerDsc.Common' {
                 { Invoke-Query @queryParams } | Should -Throw (
                     $script:localizedData.ExecuteNonQueryFailed -f $queryParams.Database
                 )
+            }
 
-                Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+            Context 'When text should be redacted' {
+                BeforeAll {
+                    Mock -CommandName Write-Verbose -ParameterFilter {
+                        $Message -eq (
+                            $script:localizedData.ExecuteNonQuery -f
+                                "select * from MyTable where password = '*******' and password = '*******'"
+                        )
+                    } -MockWith {
+                        <#
+                            MUST return another message than the parameter filter
+                            is looking for, otherwise we get into a endless loop.
+                            We returning the to show in the output how the verbose
+                            message was redacted.
+                        #>
+                        Write-Verbose -Message ('MOCK OUTPUT: {0}' -f $Message) -Verbose
+                    }
+                }
+
+                It 'Should execute the query silently and redact text in the verbose output' {
+                    $queryParams.Query = "select * from MyTable where password = 'Pa\ssw0rd1' and password = 'secret passphrase'"
+                    $mockExpectedQuery = $queryParams.Query.Clone()
+
+                    # The `Secret PassPhrase` is using the casing like this to test case-insensitive replace.
+                    { Invoke-Query @queryParams -RedactText @('Pa\sSw0rd1','Secret PassPhrase') } | Should -Not -Throw
+                }
             }
         }
 
-        Context 'Execute a query with results' {
+        Context 'When executing a query with results' {
             It 'Should execute the query and return a result set' {
                 $queryParams.Query = 'SELECT name FROM sys.databases'
                 $mockExpectedQuery = $queryParams.Query.Clone()
@@ -1505,9 +1532,36 @@ InModuleScope 'SqlServerDsc.Common' {
 
                 Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
+
+            Context 'When text should be redacted' {
+                BeforeAll {
+                    Mock -CommandName Write-Verbose -ParameterFilter {
+                        $Message -eq (
+                            $script:localizedData.ExecuteQueryWithResults -f
+                                "select * from MyTable where password = '*******' and password = '*******'"
+                        )
+                    } -MockWith {
+                        <#
+                            MUST return another message than the parameter filter
+                            is looking for, otherwise we get into a endless loop.
+                            We returning the to show in the output how the verbose
+                            message was redacted.
+                        #>
+                        Write-Verbose -Message ('MOCK OUTPUT: {0}' -f $Message) -Verbose
+                    }
+                }
+
+                It 'Should execute the query silently and redact text in the verbose output' {
+                    $queryParams.Query = "select * from MyTable where password = 'Pa\ssw0rd1' and password = 'secret passphrase'"
+                    $mockExpectedQuery = $queryParams.Query.Clone()
+
+                    # The `Secret PassPhrase` is using the casing like this to test case-insensitive replace.
+                    { Invoke-Query @queryParams -RedactText @('Pa\sSw0rd1','Secret PassPhrase') -WithResults } | Should -Not -Throw
+                }
+            }
         }
 
-        Context 'Pass in an SMO Server Object' {
+        Context 'When passing in an SMO Server Object' {
             Context 'Execute a query with no results' {
                 It 'Should execute the query silently' {
                     $queryParametersWithSMO.Query = "EXEC sp_configure 'show advanced option', '1'"
@@ -1529,7 +1583,7 @@ InModuleScope 'SqlServerDsc.Common' {
                 }
             }
 
-            Context 'Execute a query with results' {
+            Context 'When executing a query with results' {
                 It 'Should execute the query and return a result set' {
                     $queryParametersWithSMO.Query = 'SELECT name FROM sys.databases'
                     $mockExpectedQuery = $queryParametersWithSMO.Query.Clone()
@@ -1550,7 +1604,7 @@ InModuleScope 'SqlServerDsc.Common' {
                 }
             }
 
-            Context 'Execute a query with piped SMO server object' {
+            Context 'When executing a query with piped SMO server object' {
                 It 'Should execute the query and return a result set' {
                     $mockQuery = 'SELECT name FROM sys.databases'
                     $mockExpectedQuery = $mockQuery

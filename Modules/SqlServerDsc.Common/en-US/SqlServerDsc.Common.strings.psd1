@@ -57,4 +57,6 @@ ConvertFrom-StringData @'
     ConnectingUsingIntegrated = Connecting as current user '{0}' using integrated security. (SQLCOMMON0054)
     CredentialsNotSpecified = The Logon type of '{0}' was specified which requires credentials, but the credentials parameter was not specified. (SQLCOMMON0055)
     ConnectingUsingImpersonation = Impersonate credential '{0}' with login type '{1}'. (SQLCOMMON0056)
+    ExecuteQueryWithResults = Returning the results of the query `{0}`. (SQLCOMMON0057)
+    ExecuteNonQuery = Executing the query `{0}`. (SQLCOMMON0058)
 '@

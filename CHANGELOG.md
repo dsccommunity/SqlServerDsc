@@ -17,6 +17,11 @@
     - Can also pipe in 'Microsoft.SqlServer.Management.Smo.Server' object.
     - Can pipe Connect-SQL | Invoke-Query.
     - Added default values to Invoke-Query.
+    - Now it will output verbose messages of the query that is run, so it
+      not as quiet of what it is doing when a user asks for verbose output
+      ([issue #1404](https://github.com/PowerShell/SqlServerDsc/issues/1404)).
+    - It is possible to redact text in the verbose output by providing
+      strings in the new parameter `RedactText`.
   - Minor style fixes in unit tests.
   - Changes to helper function Connect-SQL
     - When impersonating WindowsUser credential use the NetworkCredential UserName.

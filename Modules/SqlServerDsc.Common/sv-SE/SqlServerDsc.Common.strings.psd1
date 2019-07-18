@@ -62,5 +62,7 @@ ConvertFrom-StringData @'
     ClusterLoginPermissionsPresent = The cluster login '{0}' has the required permissions. (SQLCOMMON0053)
     ConnectingUsingIntegrated = Anslutning som nuvarande användare '{0}' med integrerad säkerhet. (SQLCOMMON0054)
     CredentialsNotSpecified = The Logon type of '{0}' was specified which requires credentials, but the credentials parameter was not specified. (SQLCOMMON0055)
-    ConnectingUsingImpersonation = Impersoner credential '{0}' med inloggningstyp '{1}'. (SQLCOMMON0056)
+    ConnectingUsingImpersonation = Uppträder som behörigheten '{0}' med inloggningstyp '{1}'. (SQLCOMMON0056)
+    ExecuteQueryWithResults = Returnerar resultatet av frågan `{0}`. (SQLCOMMON0057)
+    ExecuteNonQuery = Exekverar frågan `{0}`. (SQLCOMMON0058)
 '@
