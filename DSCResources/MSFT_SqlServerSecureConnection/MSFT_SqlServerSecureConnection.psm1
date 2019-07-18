@@ -24,6 +24,9 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerSecureCon
 
     .PARAMETER ServiceAccount
         Name of the account running the SQL Server service. If parameter is set to "LocalSystem", then a connection error is displayed. Use "SYSTEM" instead, in that case.
+
+    .PARAMETER RestartService
+        If set to $false then the required restart will be suppressed. You will need to restart the service before changes will take effect. The default value is $true.
 #>
 function Get-TargetResource
 {
@@ -51,7 +54,11 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ServiceAccount
+        $ServiceAccount,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestartService = $true
     )
 
     Write-Verbose -Message (
@@ -287,6 +294,9 @@ function Set-TargetResource
 
     .PARAMETER ServiceAccount
         Name of the account running the SQL Server service.
+
+    .PARAMETER RestartService
+        If set to $false then the required restart will be suppressed. You will need to restart the service before changes will take effect. The default value is $true.
 #>
 function Test-TargetResource
 {
@@ -314,7 +324,11 @@ function Test-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ServiceAccount
+        $ServiceAccount,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestartService = $true
     )
 
     $parameters = @{
