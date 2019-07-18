@@ -26,6 +26,9 @@
   - Changes to helper function Connect-SQL
     - When impersonating WindowsUser credential use the NetworkCredential UserName.
     - Added additional verbose logging.
+    - Connect-SQL now uses parameter sets to more intuitive evaluate that
+      the correct parameters are used in different scenarios
+      ([issue #1403](https://github.com/PowerShell/SqlServerDsc/issues/1403)).
   - Changes to helper function Connect-SQLAnalysis
     - Parameters now match that of Connect-SQL ([issue #1392](https://github.com/PowerShell/SqlServerDsc/issues/1392)).
   - Changes to helper function Restart-SqlService
