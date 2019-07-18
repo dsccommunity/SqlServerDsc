@@ -11,7 +11,7 @@
   - Changes to helper function Invoke-Query
     - Fixes issues in [issue #1355](https://github.com/PowerShell/SqlServerDsc/issues/1355).
     - Works together with Connect-SQL now.
-    - Parameters and Aliases now match that of Connect-SQL.
+    - Parameters now match that of Connect-SQL.
     - Can now pass in credentials.
     - Can now pass in 'Microsoft.SqlServer.Management.Smo.Server' object.
     - Can also pipe in 'Microsoft.SqlServer.Management.Smo.Server' object.
@@ -25,7 +25,7 @@
   - Minor style fixes in unit tests.
   - Changes to helper function Connect-SQL
     - When impersonating WindowsUser credential use the NetworkCredential UserName.
-    - Added addtional verbose logging.
+    - Added additional verbose logging.
 - Changes to SqlServerSecureConnection
   - Forced $Thumbprint to lowercase to fix [issue #1350](https://github.com/PowerShell/SqlServerDsc/issues/1350).
   - Add parameter SuppressRestart with default value false.

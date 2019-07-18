@@ -918,10 +918,10 @@ function Start-SqlSetupProcess
     .SYNOPSIS
         Connect to a SQL Server Database Engine and return the server object.
 
-    .PARAMETER SQLServer
+    .PARAMETER ServerName
         String containing the host name of the SQL Server to connect to.
 
-    .PARAMETER SQLInstanceName
+    .PARAMETER InstanceName
         String containing the SQL Server Database Engine instance to connect to.
 
     .PARAMETER SetupCredential
@@ -1581,10 +1581,10 @@ function Restart-ReportingServicesService
     .SYNOPSIS
         Executes a query on the specified database.
 
-    .PARAMETER SQLServer
+    .PARAMETER ServerName
         The hostname of the server that hosts the SQL instance.
 
-    .PARAMETER SQLInstanceName
+    .PARAMETER InstanceName
         The name of the SQL instance that hosts the database.
 
     .PARAMETER Database
@@ -1619,11 +1619,11 @@ function Restart-ReportingServicesService
         be interpreted as regular expressions (RegEx).
 
     .EXAMPLE
-        Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master `
+        Invoke-Query -ServerName Server1 -InstanceName MSSQLSERVER -Database master `
             -Query 'SELECT name FROM sys.databases' -WithResults
 
     .EXAMPLE
-        Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master `
+        Invoke-Query -ServerName Server1 -InstanceName MSSQLSERVER -Database master `
             -Query 'RESTORE DATABASE [NorthWinds] WITH RECOVERY'
 
     .EXAMPLE
@@ -1642,15 +1642,13 @@ function Invoke-Query
     param
     (
         [Parameter(ParameterSetName='SqlServer')]
-        [Alias('ServerName')]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $SQLServer = $env:COMPUTERNAME,
+        $ServerName = $env:COMPUTERNAME,
 
         [Parameter(ParameterSetName='SqlServer')]
-        [Alias('InstanceName')]
         [System.String]
-        $SQLInstanceName = 'MSSQLSERVER',
+        $InstanceName = 'MSSQLSERVER',
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -1696,8 +1694,8 @@ function Invoke-Query
     elseif ($PSCmdlet.ParameterSetName -eq 'SqlServer')
     {
         $connectSQLParameters = @{
-            ServerName       = $SQLServer
-            InstanceName     = $SQLInstanceName
+            ServerName       = $ServerName
+            InstanceName     = $InstanceName
             LoginType        = $LoginType
             StatementTimeout = $StatementTimeout
         }
@@ -1865,10 +1863,10 @@ function Test-LoginEffectivePermissions
     $permissionsPresent = $false
 
     $invokeQueryParameters = @{
-        SQLServer       = $SQLServer
-        SQLInstanceName = $SQLInstanceName
-        Database        = 'master'
-        WithResults     = $true
+        ServerName   = $SQLServer
+        InstanceName = $SQLInstanceName
+        Database     = 'master'
+        WithResults  = $true
     }
 
     if ( [System.String]::IsNullOrEmpty($SecurableName) )
@@ -1959,10 +1957,10 @@ function Test-AvailabilityReplicaSeedingModeAutomatic
     if ( $serverObject.Version -ge 13 )
     {
         $invokeQueryParams = @{
-            SQLServer       = $SQLServer
-            SQLInstanceName = $SQLInstanceName
-            Database        = 'master'
-            WithResults     = $true
+            ServerName   = $SQLServer
+            InstanceName = $SQLInstanceName
+            Database     = 'master'
+            WithResults  = $true
         }
 
         $queryToGetSeedingMode = "

@@ -1452,8 +1452,8 @@ InModuleScope 'SqlServerDsc.Common' {
         }
 
         $queryParams = @{
-            SQLServer          = 'Server1'
-            SQLInstanceName    = 'MSSQLSERVER'
+            ServerName         = 'Server1'
+            InstanceName       = 'MSSQLSERVER'
             Database           = 'master'
             Query              = ''
             DatabaseCredential = $mockSqlCredential
@@ -1461,7 +1461,7 @@ InModuleScope 'SqlServerDsc.Common' {
 
         $queryParametersWithSMO = @{
             Query              = ''
-            SqlServerObject = $mockSMOServer
+            SqlServerObject    = $mockSMOServer
             Database           = 'master'
         }
 
