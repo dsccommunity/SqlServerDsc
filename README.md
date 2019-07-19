@@ -1768,9 +1768,10 @@ In that case, the 'SYSTEM' service account can be used.
 * **`[Boolean]` ForceEncryption** _(Write)_: If all connections to the SQL
   instance should be encrypted. If this parameter is not assigned a value,
   the default is, set to *True*, that all connections must be encrypted.
-* **`[Boolean]` RestartService** _(Write)_: If set to $false then the required
+* **`[Boolean]` SuppressRestart** _(Write)_: If set to $true then the required
   restart will be suppressed. You will need to restart the service before
-  changes will take effect. The default value is $true.
+  changes will take effect. The default value is $false.
+  Not used in Test-TargetResource.
 
 #### Examples
 

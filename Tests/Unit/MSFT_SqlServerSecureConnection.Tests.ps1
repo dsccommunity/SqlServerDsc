@@ -283,7 +283,7 @@ try
                     Thumbprint      = $mockThumbprint
                     ServiceAccount  = $mockServiceAccount
                     ForceEncryption = $true
-                    RestartService  = $true
+                    SuppressRestart = $false
                     Ensure          = 'Present'
                 }
 
@@ -321,7 +321,7 @@ try
                     }
                 }
 
-                Context 'When RestartService is false' {
+                Context 'When SuppressRestart is true' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
@@ -331,7 +331,7 @@ try
                         } -Verifiable
                     }
 
-                    $defaultParameters.RestartService = $false
+                    $defaultParameters.SuppressRestart = $true
 
                     It 'Should suppress restarting the SQL service' {
                         { Set-TargetResource @defaultParameters } | Should -Not -Throw
@@ -341,7 +341,7 @@ try
                         Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
                     }
 
-                    $defaultParameters.RestartService = $true
+                    $defaultParameters.SuppressRestart = $false
                 }
 
                 Context 'When only certificate permissions are set' {
