@@ -155,6 +155,7 @@ function Get-TargetResource
         ForceEncryption = [System.Boolean] $encryptionSettings.ForceEncryption
         Ensure          = [System.String] $ensureValue
         ServiceAccount  = [System.String] $ServiceAccount
+        SuppressRestart = $false
     }
 }
 
@@ -178,7 +179,8 @@ function Get-TargetResource
         Name of the account running the SQL Server service.
 
     .PARAMETER SuppressRestart
-        If set to $true then the required restart will be suppressed. You will need to restart the service before changes will take effect.
+        If set to $true then the required restart will be suppressed.
+        You will need to restart the service before changes will take effect.
         The default value is $false.
 #>
 function Set-TargetResource
@@ -236,6 +238,7 @@ function Set-TargetResource
             Write-Verbose -Message (
                 $script:localizedData.SetEncryptionSetting -f $InstanceName, $Thumbprint, $ForceEncryption
             )
+
             Set-EncryptedConnectionSetting -InstanceName $InstanceName -Thumbprint $Thumbprint -ForceEncryption $ForceEncryption
         }
 
@@ -244,6 +247,7 @@ function Set-TargetResource
             Write-Verbose -Message (
                 $script:localizedData.SetCertificatePermission -f $Thumbprint, $ServiceAccount
             )
+
             Set-CertificatePermission -Thumbprint $Thumbprint -ServiceAccount $ServiceAccount
         }
     }
@@ -252,6 +256,7 @@ function Set-TargetResource
         Write-Verbose -Message (
             $script:localizedData.RemoveEncryptionSetting -f $InstanceName
         )
+
         Set-EncryptedConnectionSetting -InstanceName $InstanceName -Thumbprint '' -ForceEncryption $false
     }
 
@@ -266,6 +271,7 @@ function Set-TargetResource
         Write-Verbose -Message (
             $script:localizedData.RestartingService -f $InstanceName
         )
+
         Restart-SqlService -SQLServer localhost -SQLInstanceName $InstanceName
     }
 }
@@ -290,7 +296,8 @@ function Set-TargetResource
         Name of the account running the SQL Server service.
 
     .PARAMETER SuppressRestart
-        If set to $true then the required restart will be suppressed. You will need to restart the service before changes will take effect.
+        If set to $true then the required restart will be suppressed.
+        You will need to restart the service before changes will take effect.
         The default value is $false.
         Not used in Test-TargetResource.
 #>

@@ -1771,7 +1771,6 @@ In that case, the 'SYSTEM' service account can be used.
 * **`[Boolean]` SuppressRestart** _(Write)_: If set to $true then the required
   restart will be suppressed. You will need to restart the service before
   changes will take effect. The default value is $false.
-  Not used in Test-TargetResource.
 
 #### Examples
 
