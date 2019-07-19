@@ -23,7 +23,7 @@
     - Added addtional verbose logging.
 - Changes to SqlServerSecureConnection
   - Forced $Thumbprint to lowercase to fix [issue #1350](https://github.com/PowerShell/SqlServerDsc/issues/1350).
-  - Add parameter RestartService with default value false.
+  - Add parameter SuppressRestart with default value false.
     This allows users to suppress restarts after changes have been made.
     Changes will not take effect until the service has been restarted.
 - Changes to SqlSetup
