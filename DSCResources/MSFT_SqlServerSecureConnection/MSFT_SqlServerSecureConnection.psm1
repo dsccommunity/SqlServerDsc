@@ -24,6 +24,11 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerSecureCon
 
     .PARAMETER ServiceAccount
         Name of the account running the SQL Server service. If parameter is set to "LocalSystem", then a connection error is displayed. Use "SYSTEM" instead, in that case.
+
+    .PARAMETER SuppressRestart
+        If set to $true then the required restart will be suppressed.
+        You will need to restart the service before changes will take effect.
+        The default value is $false.
 #>
 function Get-TargetResource
 {
@@ -51,7 +56,11 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ServiceAccount
+        $ServiceAccount,
+
+        [Parameter()]
+        [System.Boolean]
+        $SuppressRestart = $false
     )
 
     Write-Verbose -Message (
@@ -155,7 +164,7 @@ function Get-TargetResource
         ForceEncryption = [System.Boolean] $encryptionSettings.ForceEncryption
         Ensure          = [System.String] $ensureValue
         ServiceAccount  = [System.String] $ServiceAccount
-        SuppressRestart = $false
+        SuppressRestart = [System.Boolean] $SuppressRestart
     }
 }
 
@@ -227,6 +236,7 @@ function Set-TargetResource
         ForceEncryption = $ForceEncryption
         Ensure          = $Ensure
         ServiceAccount  = $ServiceAccount
+        SuppressRestart = $SuppressRestart
     }
 
     $encryptionState = Get-TargetResource @parameters
@@ -299,7 +309,6 @@ function Set-TargetResource
         If set to $true then the required restart will be suppressed.
         You will need to restart the service before changes will take effect.
         The default value is $false.
-        Not used in Test-TargetResource.
 #>
 function Test-TargetResource
 {
@@ -340,6 +349,7 @@ function Test-TargetResource
         ForceEncryption = $ForceEncryption
         Ensure          = $Ensure
         ServiceAccount  = $ServiceAccount
+        SuppressRestart = $SuppressRestart
     }
 
     Write-Verbose -Message (
