@@ -236,7 +236,6 @@ function Set-TargetResource
         ForceEncryption = $ForceEncryption
         Ensure          = $Ensure
         ServiceAccount  = $ServiceAccount
-        SuppressRestart = $SuppressRestart
     }
 
     $encryptionState = Get-TargetResource @parameters
@@ -282,7 +281,7 @@ function Set-TargetResource
             $script:localizedData.RestartingService -f $InstanceName
         )
 
-        Restart-SqlService -SQLServer localhost -SQLInstanceName $InstanceName
+        Restart-SqlService -ServerName localhost -InstanceName $InstanceName
     }
 }
 
@@ -309,6 +308,8 @@ function Set-TargetResource
         If set to $true then the required restart will be suppressed.
         You will need to restart the service before changes will take effect.
         The default value is $false.
+
+        Not used in Test-TargetResource.
 #>
 function Test-TargetResource
 {
@@ -349,7 +350,6 @@ function Test-TargetResource
         ForceEncryption = $ForceEncryption
         Ensure          = $Ensure
         ServiceAccount  = $ServiceAccount
-        SuppressRestart = $SuppressRestart
     }
 
     Write-Verbose -Message (

@@ -316,7 +316,7 @@ function Set-TargetResource
                 $availabilityReplicaFilestreamLevel = @{}
                 foreach ( $availabilityGroupReplica in $secondaryReplicas )
                 {
-                    $connectSqlParameters = Split-FullSQLInstanceName -FullSQLInstanceName $availabilityGroupReplica.Name
+                    $connectSqlParameters = Split-FullSqlInstanceName -FullSqlInstanceName $availabilityGroupReplica.Name
                     $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
                     $availabilityReplicaFilestreamLevel.Add($availabilityGroupReplica.Name, $currentAvailabilityGroupReplicaServerObject.FilestreamLevel)
                 }
@@ -334,7 +334,7 @@ function Set-TargetResource
                 $availabilityReplicaContainmentEnabled = @{}
                 foreach ( $availabilityGroupReplica in $secondaryReplicas )
                 {
-                    $connectSqlParameters = Split-FullSQLInstanceName -FullSQLInstanceName $availabilityGroupReplica.Name
+                    $connectSqlParameters = Split-FullSqlInstanceName -FullSqlInstanceName $availabilityGroupReplica.Name
                     $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
                     $availabilityReplicaContainmentEnabled.Add($availabilityGroupReplica.Name, $currentAvailabilityGroupReplicaServerObject.Configuration.ContainmentEnabled.ConfigValue)
                 }
@@ -355,14 +355,14 @@ function Set-TargetResource
             $availabilityReplicaMissingDirectories = @{}
             foreach ( $availabilityGroupReplica in $secondaryReplicas )
             {
-                $connectSqlParameters = Split-FullSQLInstanceName -FullSQLInstanceName $availabilityGroupReplica.Name
+                $connectSqlParameters = Split-FullSqlInstanceName -FullSqlInstanceName $availabilityGroupReplica.Name
                 $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
 
                 $missingDirectories = @()
                 foreach ( $databaseFileDirectory in $databaseFileDirectories )
                 {
                     $fileExistsQuery = "EXEC master.dbo.xp_fileexist '$databaseFileDirectory'"
-                    $fileExistsResult = Invoke-Query -SQLServer $currentAvailabilityGroupReplicaServerObject.NetName -SQLInstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $fileExistsQuery -WithResults
+                    $fileExistsResult = Invoke-Query -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $fileExistsQuery -WithResults
 
                     if ( $fileExistsResult.Tables.Rows.'File is a Directory' -ne 1 )
                     {
@@ -393,7 +393,7 @@ function Set-TargetResource
                 $availabilityReplicaMissingCertificates = @{}
                 foreach ( $availabilityGroupReplica in $secondaryReplicas )
                 {
-                    $connectSqlParameters = Split-FullSQLInstanceName -FullSQLInstanceName $availabilityGroupReplica.Name
+                    $connectSqlParameters = Split-FullSqlInstanceName -FullSqlInstanceName $availabilityGroupReplica.Name
                     $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
                     [System.Array]$installedCertificateThumbprints = $currentAvailabilityGroupReplicaServerObject.Databases['master'].Certificates | ForEach-Object { [System.BitConverter]::ToString($_.Thumbprint) }
 
@@ -540,13 +540,13 @@ function Set-TargetResource
                     foreach ( $availabilityGroupReplica in $secondaryReplicas )
                     {
                         # Connect to the replica
-                        $connectSqlParameters = Split-FullSQLInstanceName -FullSQLInstanceName $availabilityGroupReplica.Name
+                        $connectSqlParameters = Split-FullSqlInstanceName -FullSqlInstanceName $availabilityGroupReplica.Name
                         $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
                         $currentReplicaAvailabilityGroupObject = $currentAvailabilityGroupReplicaServerObject.AvailabilityGroups[$AvailabilityGroupName]
 
                         # Restore the database
-                        Invoke-Query -SQLServer $currentAvailabilityGroupReplicaServerObject.NetName -SQLInstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreDatabaseQueryString -StatementTimeout 0
-                        Invoke-Query -SQLServer $currentAvailabilityGroupReplicaServerObject.NetName -SQLInstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreLogQueryString -StatementTimeout 0
+                        Invoke-Query -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreDatabaseQueryString -StatementTimeout 0
+                        Invoke-Query -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreLogQueryString -StatementTimeout 0
 
                         # Add the database to the Availability Group
                         Add-SqlAvailabilityDatabase -InputObject $currentReplicaAvailabilityGroupObject -Database $databaseToAddToAvailabilityGroup
