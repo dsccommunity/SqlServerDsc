@@ -1594,8 +1594,9 @@ function Restart-ReportingServicesService
         The query string to execute.
 
     .PARAMETER DatabaseCredential
-        PSCredential object with the credentials to use to impersonate a user when connecting.
-        If this is not provided then the current user will be used to connect to the SQL Server Database Engine instance.
+        PSCredential object with the credentials to use to impersonate a user
+        when connecting. If this is not provided then the current user will be
+        used to connect to the SQL Server Database Engine instance.
 
     .PARAMETER LoginType
         Specifies which type of logon credential should be used. The valid types are
@@ -1603,14 +1604,19 @@ function Restart-ReportingServicesService
         then the SetupCredential needs to be specified as well.
 
     .PARAMETER SqlServerObject
-        You can pass in an object type of 'Microsoft.SqlServer.Management.Smo.Server'. This can also be passed in
-        through the pipeline allowing you to use connect-sql | invoke-query if you wish.
+        You can pass in an object type of 'Microsoft.SqlServer.Management.Smo.Server'.
+        This can also be passed in through the pipeline. See examples.
 
     .PARAMETER WithResults
         Specifies if the query should return results.
 
     .PARAMETER StatementTimeout
         Set the query StatementTimeout in seconds. Default 600 seconds (10mins).
+
+    .PARAMETER RedactText
+        One or more strings to redact from the query when verbose messages are
+        written to the console. Strings here will be escaped so they will not
+        be interpreted as regular expressions (RegEx).
 
     .EXAMPLE
         Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database master `
@@ -1623,6 +1629,12 @@ function Restart-ReportingServicesService
     .EXAMPLE
         Connect-SQL @sqlConnectionParameters | Invoke-Query -Database master `
             -Query 'SELECT name FROM sys.databases' -WithResults
+
+    .EXAMPLE
+        Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database MyDatabase `
+            -Query "select * from MyTable where password = 'Pa\ssw0rd1' and password = 'secret passphrase'" `
+            -WithResults -RedactText @('Pa\sSw0rd1','Secret PassPhrase') -Verbose
+
 #>
 function Invoke-Query
 {
@@ -1670,7 +1682,11 @@ function Invoke-Query
         [Parameter()]
         [ValidateNotNull()]
         [System.Int32]
-        $StatementTimeout = 600
+        $StatementTimeout = 600,
+
+        [Parameter()]
+        [System.String[]]
+        $RedactText
     )
 
     if ($PSCmdlet.ParameterSetName -eq 'SqlObject')
@@ -1694,10 +1710,27 @@ function Invoke-Query
         $serverObject = Connect-SQL @connectSQLParameters
     }
 
+    $redactedQuery = $Query
+
+    foreach ($redactString in $RedactText)
+    {
+        <#
+            Escaping the string to handle strings which could look like
+            regular expressions, like passwords.
+        #>
+        $escapedRedactedString = [System.Text.RegularExpressions.Regex]::Escape($redactString)
+
+        $redactedQuery = $redactedQuery -ireplace $escapedRedactedString,'*******'
+    }
+
     if ($WithResults)
     {
         try
         {
+            Write-Verbose -Message (
+                $script:localizedData.ExecuteQueryWithResults -f $redactedQuery
+            ) -Verbose
+
             $result = $serverObject.Databases[$Database].ExecuteWithResults($Query)
         }
         catch
@@ -1710,6 +1743,10 @@ function Invoke-Query
     {
         try
         {
+            Write-Verbose -Message (
+                $script:localizedData.ExecuteNonQuery -f $redactedQuery
+            ) -Verbose
+
             $serverObject.Databases[$Database].ExecuteNonQuery($Query)
         }
         catch
