@@ -24,6 +24,11 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerSecureCon
 
     .PARAMETER ServiceAccount
         Name of the account running the SQL Server service. If parameter is set to "LocalSystem", then a connection error is displayed. Use "SYSTEM" instead, in that case.
+
+    .PARAMETER SuppressRestart
+        If set to $true then the required restart will be suppressed.
+        You will need to restart the service before changes will take effect.
+        The default value is $false.
 #>
 function Get-TargetResource
 {
@@ -51,7 +56,11 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ServiceAccount
+        $ServiceAccount,
+
+        [Parameter()]
+        [System.Boolean]
+        $SuppressRestart = $false
     )
 
     Write-Verbose -Message (
@@ -155,6 +164,7 @@ function Get-TargetResource
         ForceEncryption = [System.Boolean] $encryptionSettings.ForceEncryption
         Ensure          = [System.String] $ensureValue
         ServiceAccount  = [System.String] $ServiceAccount
+        SuppressRestart = [System.Boolean] $SuppressRestart
     }
 }
 
@@ -176,6 +186,11 @@ function Get-TargetResource
 
     .PARAMETER ServiceAccount
         Name of the account running the SQL Server service.
+
+    .PARAMETER SuppressRestart
+        If set to $true then the required restart will be suppressed.
+        You will need to restart the service before changes will take effect.
+        The default value is $false.
 #>
 function Set-TargetResource
 {
@@ -202,7 +217,11 @@ function Set-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ServiceAccount
+        $ServiceAccount,
+
+        [Parameter()]
+        [System.Boolean]
+        $SuppressRestart = $false
     )
 
     # Configuration manager requires thumbprint to be lowercase or it won't display the configured certificate.
@@ -217,6 +236,7 @@ function Set-TargetResource
         ForceEncryption = $ForceEncryption
         Ensure          = $Ensure
         ServiceAccount  = $ServiceAccount
+        SuppressRestart = $SuppressRestart
     }
 
     $encryptionState = Get-TargetResource @parameters
@@ -226,35 +246,44 @@ function Set-TargetResource
         if ($ForceEncryption -ne $encryptionState.ForceEncryption -or $Thumbprint -ne $encryptionState.Thumbprint)
         {
             Write-Verbose -Message (
-                $script:localizedData.SetEncryptionSetting `
-                    -f $InstanceName, $Thumbprint, $ForceEncryption
+                $script:localizedData.SetEncryptionSetting -f $InstanceName, $Thumbprint, $ForceEncryption
             )
+
             Set-EncryptedConnectionSetting -InstanceName $InstanceName -Thumbprint $Thumbprint -ForceEncryption $ForceEncryption
         }
 
         if ((Test-CertificatePermission -Thumbprint $Thumbprint -ServiceAccount $ServiceAccount) -eq $false)
         {
             Write-Verbose -Message (
-                $script:localizedData.SetCertificatePermission `
-                    -f $Thumbprint, $ServiceAccount
+                $script:localizedData.SetCertificatePermission -f $Thumbprint, $ServiceAccount
             )
+
             Set-CertificatePermission -Thumbprint $Thumbprint -ServiceAccount $ServiceAccount
         }
     }
     else
     {
         Write-Verbose -Message (
-            $script:localizedData.RemoveEncryptionSetting `
-                -f $InstanceName
+            $script:localizedData.RemoveEncryptionSetting -f $InstanceName
         )
+
         Set-EncryptedConnectionSetting -InstanceName $InstanceName -Thumbprint '' -ForceEncryption $false
     }
 
-    Write-Verbose -Message (
-        $script:localizedData.RestartingService `
-            -f $InstanceName
-    )
-    Restart-SqlService -SQLServer localhost -SQLInstanceName $InstanceName
+    if ($SuppressRestart)
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SuppressRequiredRestart -f $InstanceName
+        )
+    }
+    else
+    {
+        Write-Verbose -Message (
+            $script:localizedData.RestartingService -f $InstanceName
+        )
+
+        Restart-SqlService -SQLServer localhost -SQLInstanceName $InstanceName
+    }
 }
 
 <#
@@ -275,6 +304,11 @@ function Set-TargetResource
 
     .PARAMETER ServiceAccount
         Name of the account running the SQL Server service.
+
+    .PARAMETER SuppressRestart
+        If set to $true then the required restart will be suppressed.
+        You will need to restart the service before changes will take effect.
+        The default value is $false.
 #>
 function Test-TargetResource
 {
@@ -302,7 +336,11 @@ function Test-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ServiceAccount
+        $ServiceAccount,
+
+        [Parameter()]
+        [System.Boolean]
+        $SuppressRestart = $false
     )
 
     $parameters = @{
@@ -311,6 +349,7 @@ function Test-TargetResource
         ForceEncryption = $ForceEncryption
         Ensure          = $Ensure
         ServiceAccount  = $ServiceAccount
+        SuppressRestart = $SuppressRestart
     }
 
     Write-Verbose -Message (
