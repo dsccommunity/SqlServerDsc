@@ -1509,11 +1509,11 @@ InModuleScope 'SqlServerDsc.Common' {
                 }
 
                 It 'Should execute the query silently and redact text in the verbose output' {
-                    $queryParams.Query = "select * from MyTable where password = 'Pa\ssw0rd1' and password = 'secret passphrase'"
-                    $mockExpectedQuery = $queryParams.Query.Clone()
+                    $queryParameters.Query = "select * from MyTable where password = 'Pa\ssw0rd1' and password = 'secret passphrase'"
+                    $mockExpectedQuery = $queryParameters.Query.Clone()
 
                     # The `Secret PassPhrase` is using the casing like this to test case-insensitive replace.
-                    { Invoke-Query @queryParams -RedactText @('Pa\sSw0rd1','Secret PassPhrase') } | Should -Not -Throw
+                    { Invoke-Query @queryParameters -RedactText @('Pa\sSw0rd1','Secret PassPhrase') } | Should -Not -Throw
                 }
             }
         }
@@ -1587,11 +1587,11 @@ InModuleScope 'SqlServerDsc.Common' {
                 }
 
                 It 'Should execute the query silently and redact text in the verbose output' {
-                    $queryParams.Query = "select * from MyTable where password = 'Pa\ssw0rd1' and password = 'secret passphrase'"
-                    $mockExpectedQuery = $queryParams.Query.Clone()
+                    $queryParameters.Query = "select * from MyTable where password = 'Pa\ssw0rd1' and password = 'secret passphrase'"
+                    $mockExpectedQuery = $queryParameters.Query.Clone()
 
                     # The `Secret PassPhrase` is using the casing like this to test case-insensitive replace.
-                    { Invoke-Query @queryParams -RedactText @('Pa\sSw0rd1','Secret PassPhrase') -WithResults } | Should -Not -Throw
+                    { Invoke-Query @queryParameters -RedactText @('Pa\sSw0rd1','Secret PassPhrase') -WithResults } | Should -Not -Throw
                 }
             }
         }
