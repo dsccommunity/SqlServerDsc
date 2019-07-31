@@ -92,7 +92,7 @@ try
                 )
             )
         }
-    #endregion
+        #endregion
 
         Describe "MSFT_SqlAgentFailsafe\Get-TargetResource" -Tag 'Get' {
             BeforeEach {
@@ -104,16 +104,20 @@ try
                     Mock -CommandName Connect-SQL -MockWith {
                         return $null
                     }
+
                     $testParameters = $mockDefaultParameters
+
                     $testParameters += @{
                         Name   = 'FailsafeOp'
                     }
+
                     { Get-TargetResource @testParameters } | Should -Throw ($script:localizedData.ConnectServerFailed -f $testParameters.ServerName, $testParameters.InstanceName)
                 }
             }
 
             Context 'When the system is not in the desired state' {
                 $testParameters = $mockDefaultParameters
+
                 $testParameters += @{
                     Name         = 'DifferentOp'
                 }
@@ -135,8 +139,8 @@ try
             }
 
             Context 'When the system is in the desired state for a sql agent failsafe operator' {
-
                 $testParameters = $mockDefaultParameters
+
                 $testParameters += @{
                     Name         = 'FailsafeOp'
                 }
@@ -157,9 +161,7 @@ try
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
                 }
-
             }
-
             Assert-VerifiableMock
         }
 
@@ -171,6 +173,7 @@ try
             Context 'When the system is not in the desired state and Ensure is set to Present' {
                 It 'Should return the state as false when desired sql agent failsafe operator does not exist' {
                     $testParameters = $mockDefaultParameters
+
                     $testParameters += @{
                         Name                = 'MissingFailsafe'
                         NotificationMethod  = 'NotifyEmail'
@@ -183,6 +186,7 @@ try
 
                 It 'Should return the state as false when desired sql agent failsafe operator exists but has the incorrect notification method' {
                     $testParameters = $mockDefaultParameters
+
                     $testParameters += @{
                         Name               = 'FailsafeOp'
                         Ensure             = 'Present'
@@ -196,12 +200,12 @@ try
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
                 }
-
             }
 
             Context 'When the system is not in the desired state and Ensure is set to Absent' {
                 It 'Should return the state as false when non-desired sql agent failsafe operator exists' {
                     $testParameters = $mockDefaultParameters
+
                     $testParameters += @{
                         Name   = 'FailsafeOp'
                         Ensure = 'Absent'
@@ -214,12 +218,12 @@ try
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
-
             }
 
             Context 'When the system is in the desired state and Ensure is set to Present' {
                 It 'Should return the state as true when desired sql agent failsafe operator exist' {
                     $testParameters = $mockDefaultParameters
+
                     $testParameters += @{
                         Name      = 'FailsafeOp'
                         Ensure    = 'Present'
@@ -231,6 +235,7 @@ try
 
                 It 'Should return the state as true when desired sql agent failsafe operator exists and has the correct notification method' {
                     $testParameters = $mockDefaultParameters
+
                     $testParameters += @{
                         Name               = 'FailsafeOp'
                         Ensure             = 'Present'
@@ -244,12 +249,12 @@ try
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
                 }
-
             }
 
             Context 'When the system is in the desired state and Ensure is set to Absent' {
                 It 'Should return the state as true when desired sql agent failsafe operator does not exist' {
                     $testParameters = $mockDefaultParameters
+
                     $testParameters += @{
                         Name   = 'NotFailsafe'
                         Ensure = 'Absent'
@@ -262,9 +267,7 @@ try
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
-
             }
-
             Assert-VerifiableMock
         }
 
@@ -279,11 +282,14 @@ try
                     Mock -CommandName Connect-SQL -MockWith {
                         return $null
                     }
+
                     $testParameters = $mockDefaultParameters
+
                     $testParameters += @{
                         Name   = 'FailsafeOp'
                         Ensure = 'Present'
                     }
+
                     { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.ConnectServerFailed -f $testParameters.ServerName, $testParameters.InstanceName)
                 }
             }
@@ -291,40 +297,48 @@ try
             Context 'When the system is not in the desired state and Ensure is set to Present'{
                 It 'Should not throw when adding the sql agent failsafe operator' {
                     $testParameters = $mockDefaultParameters
+
                     $testParameters += @{
                         Name   = 'Newfailsafe'
                         Ensure = 'Present'
                     }
+
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should not throw when changing the severity'  {
                     $testParameters = $mockDefaultParameters
+
                     $testParameters += @{
                         Name                = 'Newfailsafe'
                         Ensure              = 'Present'
                         NotificationMethod  = 'Pager'
                     }
+
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 It 'Should throw when notification method is not valid' {
                     $testParameters = $mockDefaultParameters
+
                     $testParameters += @{
                         Name                = 'Newfailsafe'
                         Ensure              = 'Present'
                         NotificationMethod  = 'Letter'
                     }
+
                     { Set-TargetResource @testParameters } | Should -Throw
                 }
 
                 $mockInvalidOperationForAlterMethod = $true
                 It 'Should throw the correct error when Alter() method was called with invalid operation' {
                     $testParameters = $mockDefaultParameters
+
                     $testParameters += @{
                         Name   = 'NewFailsafe'
                         Ensure = 'Present'
                     }
+
                     $errorMessage = ($script:localizedData.UpdateFailsafeOperatorError -f $testParameters.Name, $testParameters.ServerName, $testParameters.InstanceName)
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
@@ -332,26 +346,29 @@ try
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 3 -Scope Context
                 }
-
             }
 
             Context 'When the system is not in the desired state and Ensure is set to Absent' {
                 It 'Should not throw when removing the sql agent failsafe operator' {
                     $testParameters = $mockDefaultParameters
+
                     $testParameters += @{
                         Name   = 'FailsafeOp'
                         Ensure = 'Absent'
                     }
+
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
                 $mockInvalidOperationForAlterMethod = $true
                 It 'Should throw the correct error when Alter() method was called with invalid operation' {
                     $testParameters = $mockDefaultParameters
+
                     $testParameters += @{
                         Name   = 'FailsafeOp'
                         Ensure = 'Absent'
                     }
+
                     $errorMessage = ($script:localizedData.UpdateFailsafeOperatorError -f $testParameters.Name, $testParameters.ServerName, $testParameters.InstanceName)
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
                 }
@@ -359,9 +376,8 @@ try
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope Context
                 }
-
             }
-             Assert-VerifiableMock
+            Assert-VerifiableMock
         }
     }
 }

@@ -8,16 +8,16 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlAgentFailsafe'
 
 <#
     .SYNOPSIS
-    This function gets the SQL Agent Failsafe Operator.
+        This function gets the SQL Agent Failsafe Operator.
 
     .PARAMETER Name
-    The name of the SQL Agent Failsafe Operator.
+        The name of the SQL Agent Failsafe Operator.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured. Default is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 #>
 function Get-TargetResource
 {
@@ -25,7 +25,6 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
@@ -39,11 +38,10 @@ function Get-TargetResource
         [ValidateNotNullOrEmpty()]
         [System.String]
         $InstanceName
-
     )
 
     $returnValue = @{
-        Name               = $null
+        Name               = $Name
         Ensure             = 'Absent'
         ServerName         = $ServerName
         InstanceName       = $InstanceName
@@ -57,16 +55,19 @@ function Get-TargetResource
         Write-Verbose -Message (
             $script:localizedData.GetSqlAgentFailsafe
         )
-        $sqlFailsafetObject = $sqlServerObject.JobServer.AlertSystem | Where-Object -FilterScript {$_.FailSafeOperator -eq $Name}
-        if ($sqlFailsafetObject)
+
+        $sqlAlertSystemObject = $sqlServerObject.JobServer.AlertSystem | Where-Object -FilterScript {$_.FailSafeOperator -eq $Name}
+
+        if ($sqlAlertSystemObject)
         {
             Write-Verbose -Message (
                 $script:localizedData.SqlFailsafePresent `
                     -f $Name
             )
+
             $returnValue['Ensure'] = 'Present'
-            $returnValue['Name'] = $sqlFailsafetObject.FailSafeOperator
-            $returnValue['NotificationMethod'] = $sqlFailsafetObject.NotificationMethod
+            $returnValue['Name'] = $sqlAlertSystemObject.FailSafeOperator
+            $returnValue['NotificationMethod'] = $sqlAlertSystemObject.NotificationMethod
         }
         else
         {
@@ -87,22 +88,22 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-    This function sets the SQL Agent Failsafe Operator.
+        This function sets the SQL Agent Failsafe Operator.
 
     .PARAMETER Ensure
-    Specifies if the SQL Agent Failsafe Operator should be present or absent. Default is Present
+        Specifies if the SQL Agent Failsafe Operator should be present or absent. Default is Present
 
     .PARAMETER Name
-    The name of the SQL Agent Failsafe Operator.
+        The name of the SQL Agent Failsafe Operator.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured. Default is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 
     .PARAMETER NotificationMethod
-    The method of notification for the Failsafe Operator.
+        The method of notification for the Failsafe Operator.
 #>
 function Set-TargetResource
 {
@@ -133,7 +134,6 @@ function Set-TargetResource
         [ValidateSet('None', 'NotifyEmail', 'Pager', 'NetSend', 'NotifyAll')]
         [System.String]
         $NotificationMethod
-
     )
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
@@ -146,21 +146,25 @@ function Set-TargetResource
             {
                 try
                 {
-                    $sqlFailsafetObject = $sqlServerObject.JobServer.AlertSystem
+                    $sqlAlertSystemObject = $sqlServerObject.JobServer.AlertSystem
+
                     Write-Verbose -Message (
                         $script:localizedData.UpdateFailsafeOperator `
                             -f $Name
                     )
-                    $sqlFailsafetObject.FailSafeOperator = $Name
+
+                    $sqlAlertSystemObject.FailSafeOperator = $Name
                     if ($PSBoundParameters.ContainsKey('NotificationMethod'))
                     {
                         Write-Verbose -Message (
                             $script:localizedData.UpdateNotificationMethod `
                                 -f $NotificationMethod, $Name
                         )
-                        $sqlFailsafetObject.NotificationMethod = $NotificationMethod
+
+                        $sqlAlertSystemObject.NotificationMethod = $NotificationMethod
                     }
-                    $sqlFailsafetObject.Alter()
+
+                    $sqlAlertSystemObject.Alter()
                 }
                 catch
                 {
@@ -168,17 +172,20 @@ function Set-TargetResource
                     New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                 }
             }
+
             'Absent'
             {
                 try
                 {
-                    $sqlFailsafetObject = $sqlServerObject.JobServer.AlertSystem
+                    $sqlAlertSystemObject = $sqlServerObject.JobServer.AlertSystem
+
                     Write-Verbose -Message (
                         $script:localizedData.RemoveFailsafeOperator
                     )
-                    $sqlFailsafetObject.FailSafeOperator = $null
-                    $sqlFailsafetObject.NotificationMethod = 'None'
-                    $sqlFailsafetObject.Alter()
+
+                    $sqlAlertSystemObject.FailSafeOperator = $null
+                    $sqlAlertSystemObject.NotificationMethod = 'None'
+                    $sqlAlertSystemObject.Alter()
                 }
                 catch
                 {
@@ -197,22 +204,22 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-    This function tests the SQL Agent Failsafe Operator.
+        This function tests the SQL Agent Failsafe Operator.
 
     .PARAMETER Ensure
-    Specifies if the SQL Agent Failsafe Operator should be present or absent. Default is Present
+        Specifies if the SQL Agent Failsafe Operator should be present or absent. Default is Present
 
     .PARAMETER Name
-    The name of the SQL Agent Failsafe Operator.
+        The name of the SQL Agent Failsafe Operator.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured. Default is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 
     .PARAMETER NotificationMethod
-    The method of notification for the Failsafe Operator.
+        The method of notification for the Failsafe Operator.
 #>
 function Test-TargetResource
 {
@@ -243,7 +250,6 @@ function Test-TargetResource
         [ValidateSet('None', 'NotifyEmail', 'Pager', 'NetSend', 'NotifyAll')]
         [System.String]
         $NotificationMethod
-
     )
 
     $getTargetResourceParameters = @{

@@ -338,7 +338,7 @@ update the severity or message id.
 * **`[String]` Name** _(Key)_: The name of the SQL Agent Alert.
 * **`[String]` Ensure** _(Write)_: Specifies if the SQL Agent Alert should
   be present or absent. Default is Present. { *Present* | Absent }
-* **`[String]` ServerName** _(Key)_: The host name of the SQL Server to be
+* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be
   configured. Default is $env:COMPUTERNAME.
 * **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
 * **`[String]` Severity** _(Write)_: The severity of the SQL Agent Alert.
@@ -368,11 +368,11 @@ update the Notification method.
 * **`[String]` Name** _(Key)_: The name of the SQL Agent Failsafe Operator.
 * **`[String]` Ensure** _(Write)_: Specifies if the SQL Agent Failsafe Operator
   should be present or absent. Default is Present. { *Present* | Absent }
-* **`[String]` ServerName** _(Key)_: The host name of the SQL Server to be
+* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be
   configured. Default is $env:COMPUTERNAME.
 * **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **`[String]` Notification Method** _(Write)_: The method of notification for the
-  Failsafe Operator.
+* **`[String]` NotificationMethod** _(Write)_: The method of notification for the
+  Failsafe Operator. The default is none.
 
 #### Examples
 
@@ -398,7 +398,7 @@ the operators email address.
 * **`[String]` Name** _(Key)_: The name of the SQL Agent Operator.
 * **`[String]` Ensure** _(Write)_: Specifies if the SQL Agent Operator should
   be present or absent. Default is Present. { *Present* | Absent }
-* **`[String]` ServerName** _(Key)_: The host name of the SQL Server to be
+* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be
   configured. Default is $env:COMPUTERNAME.
 * **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
 * **`[String]` EmailAddress** _(Write)_: The email address to be used for
