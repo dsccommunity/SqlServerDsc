@@ -128,7 +128,7 @@ try
 
                 $resourceCurrentState.Ensure | Should -Be 'Absent'
                 $resourceCurrentState.Name | Should -BeNullOrEmpty
-                $resourceCurrentState.NotificationMethod | Should 'None'
+                $resourceCurrentState.NotificationMethod | Should -BeNullOrEmpty
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {

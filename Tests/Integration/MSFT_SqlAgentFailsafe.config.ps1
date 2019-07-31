@@ -25,7 +25,7 @@ else
                 InstanceName        = 'DSCSQLTEST'
 
                 Name                = 'FailsafeOp'
-                NotificationMethod  = 'Email'
+                NotificationMethod  = 'NotifyEmail'
 
                 CertificateFile     = $env:DscPublicCertificatePath
             }
