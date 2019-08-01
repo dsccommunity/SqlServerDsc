@@ -41,7 +41,7 @@ function Get-TargetResource
     )
 
     $returnValue = @{
-        Name               = $Name
+        Name               = $null
         Ensure             = 'Absent'
         ServerName         = $ServerName
         InstanceName       = $InstanceName
