@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Changes to SqlServerDsc
+  - New DSC resource SqlAgentFailsafe
   - New DSC resource SqlDatabaseUser ([issue #846](https://github.com/PowerShell/SqlServerDsc/issues/846)).
     - Adds ability to create database users with more fine-grained control,
       e.g. re-mapping of orphaned logins or a different login. Supports
