@@ -1,6 +1,6 @@
 @{
   # Version number of this module.
-  moduleVersion = '13.0.0.0'
+  moduleVersion = '13.1.0.0'
 
   # ID used to uniquely identify this module
   GUID = '693ee082-ed36-45a7-b490-88b07c86b42f'
@@ -50,77 +50,63 @@
 
           # ReleaseNotes of this module
         ReleaseNotes = '- Changes to SqlServerDsc
-  - Added SqlAgentAlert resource.
-  - Opt-in to the common test "Common Test - Validation Localization".
-  - Opt-in to the common test "Common Test - Flagged Script Analyzer Rules"
-    ([issue 1101](https://github.com/PowerShell/SqlServerDsc/issues/1101)).
-  - Removed the helper function `New-TerminatingError`, `New-WarningMessage`
-    and `New-VerboseMessage` in favor of the the new
-    [localization helper functions](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.mdlocalization).
-  - Combine DscResource.LocalizationHelper and DscResource.Common into
-    SqlServerDsc.Common ([issue 1357](https://github.com/PowerShell/SqlServerDsc/issues/1357)).
-  - Update Assert-TestEnvironment.ps1 to not error if strict mode is enabled
-    and there are no missing dependencies ([issue 1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
-- Changes to SqlServerDsc.Common
-  - Added StatementTimeout to function "Connect-SQL" with default 600 seconds (10mins).
-  - Added StatementTimeout to function "Invoke-Query" with default 600 seconds (10mins)
-    ([issue 1358](https://github.com/PowerShell/SqlServerDsc/issues/1358)).
+  - New DSC resource SqlAgentFailsafe
+  - New DSC resource SqlDatabaseUser ([issue 846](https://github.com/PowerShell/SqlServerDsc/issues/846)).
+    - Adds ability to create database users with more fine-grained control,
+      e.g. re-mapping of orphaned logins or a different login. Supports
+      creating a user with or without login name, and database users mapped
+      to a certificate or asymmetric key.
+  - Changes to helper function Invoke-Query
+    - Fixes issues in [issue 1355](https://github.com/PowerShell/SqlServerDsc/issues/1355).
+    - Works together with Connect-SQL now.
+    - Parameters now match that of Connect-SQL ([issue 1392](https://github.com/PowerShell/SqlServerDsc/issues/1392)).
+    - Can now pass in credentials.
+    - Can now pass in "Microsoft.SqlServer.Management.Smo.Server" object.
+    - Can also pipe in "Microsoft.SqlServer.Management.Smo.Server" object.
+    - Can pipe Connect-SQL | Invoke-Query.
+    - Added default values to Invoke-Query.
+    - Now it will output verbose messages of the query that is run, so it
+      not as quiet of what it is doing when a user asks for verbose output
+      ([issue 1404](https://github.com/PowerShell/SqlServerDsc/issues/1404)).
+    - It is possible to redact text in the verbose output by providing
+      strings in the new parameter `RedactText`.
+  - Minor style fixes in unit tests.
   - Changes to helper function Connect-SQL
-    - The function now make it more clear that when using the parameter
-      `SetupCredential` is impersonates that user, and by default it does
-      not impersonates a user but uses the credential that the resource
-      is run as (for example the built-in credential parameter
-      `PsDscRunAsCredential`). [@kungfu71186](https://github.com/kungfu71186)
-    - Added parameter alias `-DatabaseCredential` for the parameter
-      `-SetupCredential`. [@kungfu71186](https://github.com/kungfu71186)
-- Changes to SqlAG
-  - Added en-US localization.
-- Changes to SqlAGReplica
-  - Added en-US localization.
-  - Improved verbose message output when creating availability group replica,
-    removing a availability group replica, and joining the availability
-    group replica to the availability group.
-- Changes to SqlAlwaysOnService
-  - Now outputs the correct verbose message when restarting the service.
-- Changes to SqlServerMemory
-  - Now outputs the correct verbose messages when calculating the dynamic
-    memory, and when limiting maximum memory.
-- Changes to SqlServerRole
-  - Now outputs the correct verbose message when the members of a role is
-    not in desired state.
-- Changes to SqlAgentOperator
-  - Fix minor issue that when unable to connect to an instance. Instead
-    of showing a message saying that connect failed another unrelated
-    error message could have been shown, because of an error in the code.
-  - Fix typo in test it block.
-- Changes to SqlDatabaseRole
-  - BREAKING CHANGE: Refactored to enable creation/deletion of the database role
-    itself as well as management of the role members. *Note that the resource no
-    longer adds database users.* ([issue 845](https://github.com/PowerShell/SqlServerDsc/issues/845),
-    [issue 847](https://github.com/PowerShell/SqlServerDsc/issues/847),
-    [issue 1252](https://github.com/PowerShell/SqlServerDsc/issues/1252),
-    [issue 1339](https://github.com/PowerShell/SqlServerDsc/issues/1339)).
-    [Paul Shamus @pshamus](https://github.com/pshamus)
+    - When impersonating WindowsUser credential use the NetworkCredential UserName.
+    - Added additional verbose logging.
+    - Connect-SQL now uses parameter sets to more intuitive evaluate that
+      the correct parameters are used in different scenarios
+      ([issue 1403](https://github.com/PowerShell/SqlServerDsc/issues/1403)).
+  - Changes to helper function Connect-SQLAnalysis
+    - Parameters now match that of Connect-SQL ([issue 1392](https://github.com/PowerShell/SqlServerDsc/issues/1392)).
+  - Changes to helper function Restart-SqlService
+    - Parameters now match that of Connect-SQL ([issue 1392](https://github.com/PowerShell/SqlServerDsc/issues/1392)).
+  - Changes to helper function Restart-ReportingServicesService
+    - Parameters now match that of Connect-SQL ([issue 1392](https://github.com/PowerShell/SqlServerDsc/issues/1392)).
+  - Changes to helper function Split-FullSqlInstanceName
+    - Parameters and function name changed to use correct casing.
+  - Changes to helper function Get-SqlInstanceMajorVersion
+    - Parameters now match that of Connect-SQL ([issue 1392](https://github.com/PowerShell/SqlServerDsc/issues/1392)).
+  - Changes to helper function Test-LoginEffectivePermissions
+    - Parameters now match that of Connect-SQL ([issue 1392](https://github.com/PowerShell/SqlServerDsc/issues/1392)).
+  - Changes to helper function Test-AvailabilityReplicaSeedingModeAutomatic
+    - Parameters now match that of Connect-SQL ([issue 1392](https://github.com/PowerShell/SqlServerDsc/issues/1392)).
+- Changes to SqlServerSecureConnection
+  - Forced $Thumbprint to lowercase to fix [issue 1350](https://github.com/PowerShell/SqlServerDsc/issues/1350).
+  - Add parameter SuppressRestart with default value false.
+    This allows users to suppress restarts after changes have been made.
+    Changes will not take effect until the service has been restarted.
 - Changes to SqlSetup
-  - Add an Action type of "Upgrade". This will ask setup to do a version
-    upgrade where possible ([issue 1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
-  - Fix an error when testing for DQS installation ([issue 1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
-  - Changed the logic of how default value of FailoverClusterGroupName is
-    set since that was preventing the resource to be able to be debugged
-    ([issue 448](https://github.com/PowerShell/SqlServerDsc/issues/448)).
-  - Added RSInstallMode parameter ([issue 1163](https://github.com/PowerShell/SqlServerDsc/issues/1163)).
-- Changes to SqlWindowsFirewall
-  - Where a version upgrade has changed paths for a database engine, the
-    existing firewall rule for that instance will be updated rather than
-    another one created ([issue 1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
-    Other firewall rules can be fixed to work in the same way later.
-- Changes to SqlAGDatabase
-  - Added new parameter "ReplaceExisting" with default false.
-    This allows forced restores when a database already exists on secondary.
-  - Added StatementTimeout to Invoke-Query to fix Issue1358
-  - Fix issue where calling Get would return an error because the database
-    name list may have been returned as a string instead of as a string array
-    ([issue 1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
+  - Correct minor style violation [issue 1387](https://github.com/PowerShell/SqlServerDsc/issues/1387).
+- Changes to SqlDatabase
+  - Get-TargetResource now correctly return `$null` for the collation property
+    when the database does not exist ([issue 1395](https://github.com/PowerShell/SqlServerDsc/issues/1395)).
+  - No longer enforces the collation property if the Collation parameter
+    is not part of the configuration ([issue 1396](https://github.com/PowerShell/SqlServerDsc/issues/1396)).
+  - Updated resource description in README.md
+  - Fix examples to use `PsDscRunAsCredential` ([issue 760](https://github.com/PowerShell/SqlServerDsc/issues/760)).
+  - Added integration tests ([issue 739](https://github.com/PowerShell/SqlServerDsc/issues/739)).
+  - Updated unit tests to the latest template ([issue 1068](https://github.com/PowerShell/SqlServerDsc/issues/1068)).
 
 '
 
@@ -128,6 +114,7 @@
 
   } # End of PrivateData hashtable
   }
+
 
 
 

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 13.1.0.0
+
 - Changes to SqlServerDsc
   - New DSC resource SqlAgentFailsafe
   - New DSC resource SqlDatabaseUser ([issue #846](https://github.com/PowerShell/SqlServerDsc/issues/846)).
