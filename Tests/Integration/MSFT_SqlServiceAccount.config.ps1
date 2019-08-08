@@ -196,13 +196,13 @@ Configuration MSFT_SqlServiceAccount_StopSqlServerDefaultInstance_Config
 
     node $AllNodes.NodeName
     {
-        Service ('StartSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
+        Service ('StopSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
         {
             Name  = 'SQLSERVERAGENT'
             State = 'Stopped'
         }
 
-        Service ('StartSqlServerDefaultInstance{0}' -f $Node.DefaultInstanceName)
+        Service ('StopSqlServerDefaultInstance{0}' -f $Node.DefaultInstanceName)
         {
             Name  = $Node.DefaultInstanceName
             State = 'Stopped'

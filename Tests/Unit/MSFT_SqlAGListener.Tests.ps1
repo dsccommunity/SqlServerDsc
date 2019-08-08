@@ -153,7 +153,7 @@ try
 
                 It 'Should call the mock function Get-SQLAlwaysOnAvailabilityGroupListener' {
                     $result = Get-TargetResource @testParameters
-                    Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -190,7 +190,7 @@ try
 
                 It 'Should call the mock function Connect-SQL' {
                     $result = Get-TargetResource @testParameters
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -227,7 +227,7 @@ try
 
                 It 'Should call the mock function Connect-SQL' {
                     $result = Get-TargetResource @testParameters
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -260,7 +260,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
 
                 Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
@@ -285,7 +285,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return that desired state is absent when IP address is different' {
@@ -297,7 +297,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return that desired state is absent when DHCP is absent but should be present' {
@@ -309,7 +309,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return that desired state is absent when DHCP is the only set parameter' {
@@ -318,7 +318,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
 
                 Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
@@ -346,7 +346,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -376,7 +376,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return that desired state is absent when IP address is the only set parameter' {
@@ -385,7 +385,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
 
                 Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
@@ -410,7 +410,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -426,7 +426,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
 
-                    Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
 
                 Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
@@ -454,7 +454,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
 
-                    Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return that desired state is present when IP address is the only set parameter' {
@@ -463,7 +463,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
 
-                    Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return that desired state is present when port is the only set parameter' {
@@ -472,7 +472,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
 
-                    Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -502,7 +502,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
 
-                    Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return that desired state is present when DHCP is the only set parameter' {
@@ -511,7 +511,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
 
-                    Assert-MockCalled Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -549,10 +549,10 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
-                    Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
-                    Assert-MockCalled Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Assert-MockCalled -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
                 }
 
                 $mockDynamicListenerName = $mockUnknownListenerName
@@ -565,10 +565,10 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
-                    Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
-                    Assert-MockCalled Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Assert-MockCalled -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
                 }
 
                 $mockDynamicListenerName = $mockUnknownListenerName
@@ -580,10 +580,10 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
-                    Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
-                    Assert-MockCalled Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Assert-MockCalled -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
                 }
 
                 $mockDynamicIsDhcp = $false
@@ -597,10 +597,10 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
-                    Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
                 }
 
                 $mockDynamicIsDhcp = $false
@@ -614,10 +614,10 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
-                    Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
                 }
 
                 $mockDynamicIsDhcp = $false
@@ -631,10 +631,10 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
-                    Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Set-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
-                    Assert-MockCalled Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Assert-MockCalled -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 1 -Scope It
                 }
 
                 $mockDynamicIsDhcp = $false
@@ -649,10 +649,10 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
-                    Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Assert-MockCalled -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
                 }
 
                 $mockDynamicListenerName = $mockKnownListenerName
@@ -664,10 +664,10 @@ try
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                     $script:mockMethodDropRan | Should -Be $true # Should have made one call to the Drop() method.
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
-                    Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Assert-MockCalled -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
                 }
 
                 $mockDynamicAvailabilityGroup = $mockUnknownAvailabilityGroup
@@ -765,10 +765,10 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
-                    Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Assert-MockCalled -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
                 }
 
                 $mockDynamicIsDhcp = $false
@@ -781,10 +781,10 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 2 -Scope It
-                    Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Assert-MockCalled -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
                 }
 
                 $mockDynamicListenerName = $mockUnknownListenerName
@@ -796,10 +796,10 @@ try
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                     $script:mockMethodDropRan | Should -Be $false # Should not have called Drop() method.
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
-                    Assert-MockCalled New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
 
                 }
             }

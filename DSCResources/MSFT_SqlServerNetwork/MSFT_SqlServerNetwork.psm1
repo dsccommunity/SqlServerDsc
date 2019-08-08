@@ -215,9 +215,9 @@ function Set-TargetResource
     if ($RestartService -and $isRestartNeeded)
     {
         $restartSqlServiceParameters = @{
-            SQLServer       = $ServerName
-            SQLInstanceName = $InstanceName
-            Timeout         = $RestartTimeout
+            ServerName   = $ServerName
+            InstanceName = $InstanceName
+            Timeout      = $RestartTimeout
         }
 
         if ($getTargetResourceResult.IsEnabled -eq $false -and $IsEnabled -eq $true)

@@ -191,14 +191,14 @@ try
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should -Be 'Absent'
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the members as null' {
                     $result = Get-TargetResource @testParameters
                     $result.Members | Should -Be $null
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
@@ -207,7 +207,7 @@ try
                     $result.InstanceName | Should -Be $testParameters.InstanceName
                     $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -221,14 +221,14 @@ try
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should -Not -Be 'Absent'
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the members as not null' {
                     $result = Get-TargetResource @testParameters
                     $result.Members | Should -Not -Be $null
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 # Regression test for issue #790
@@ -236,7 +236,7 @@ try
                     $result = Get-TargetResource @testParameters
                     ($result.Members -is [System.String[]]) | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
@@ -245,7 +245,7 @@ try
                     $result.InstanceName | Should -Be $testParameters.InstanceName
                     $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -264,7 +264,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -279,14 +279,14 @@ try
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should -Be 'Present'
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the members as not null' {
                     $result = Get-TargetResource @testParameters
                     $result.Members | Should -Be $testParameters.Members
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 # Regression test for issue #790
@@ -294,7 +294,7 @@ try
                     $result = Get-TargetResource @testParameters
                     ($result.Members -is [System.String[]]) | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
@@ -303,7 +303,7 @@ try
                     $result.InstanceName | Should -Be $testParameters.InstanceName
                     $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -318,14 +318,14 @@ try
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should -Be 'Present'
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the members as not null' {
                     $result = Get-TargetResource @testParameters
                     $result.Members | Should -Not -Be $null
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 # Regression test for issue #790
@@ -333,7 +333,7 @@ try
                     $result = Get-TargetResource @testParameters
                     ($result.Members -is [System.String[]]) | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
@@ -343,7 +343,7 @@ try
                     $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
                     $result.MembersToInclude | Should -Be $testParameters.MembersToInclude
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -358,7 +358,7 @@ try
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should -Be 'Present'
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
@@ -368,7 +368,7 @@ try
                     $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
                     $result.MembersToExclude | Should -Be $testParameters.MembersToExclude
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -387,7 +387,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
 
             }
@@ -407,7 +407,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -421,14 +421,14 @@ try
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should -Be 'Absent'
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the members as null' {
                     $result = Get-TargetResource @testParameters
                     $result.Members | Should -Be $null
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
@@ -437,7 +437,7 @@ try
                     $result.InstanceName | Should -Be $testParameters.InstanceName
                     $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -452,14 +452,14 @@ try
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should -Be 'Absent'
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the members as not null' {
                     $result = Get-TargetResource @testParameters
                     $result.Members | Should -Not -Be $null
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 # Regression test for issue #790
@@ -467,7 +467,7 @@ try
                     $result = Get-TargetResource @testParameters
                     ($result.Members -is [System.String[]]) | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
@@ -476,7 +476,7 @@ try
                     $result.InstanceName | Should -Be $testParameters.InstanceName
                     $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -491,14 +491,14 @@ try
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should -Be 'Absent'
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the members as not null' {
                     $result = Get-TargetResource @testParameters
                     $result.Members | Should -Not -Be $null
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 # Regression test for issue #790
@@ -506,7 +506,7 @@ try
                     $result = Get-TargetResource @testParameters
                     ($result.Members -is [System.String[]]) | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
@@ -516,7 +516,7 @@ try
                     $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
                     $result.MembersToInclude | Should -Be $testParameters.MembersToInclude
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -531,7 +531,7 @@ try
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should -Be 'Absent'
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return the same values as passed as parameters' {
@@ -541,7 +541,7 @@ try
                     $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
                     $result.MembersToExclude | Should -Be $testParameters.MembersToExclude
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -564,7 +564,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -579,7 +579,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -594,7 +594,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -610,7 +610,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -628,7 +628,7 @@ try
 
                     { Test-TargetResource @testParameters } | Should -Throw $errorMessage
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -644,7 +644,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -660,7 +660,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -678,7 +678,7 @@ try
 
                     { Test-TargetResource @testParameters } | Should -Throw $errorMessage
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -694,7 +694,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -710,7 +710,7 @@ try
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -737,7 +737,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -755,7 +755,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -771,11 +771,11 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.ServerRole' {
-                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.ServerRole'
                     } -Scope Context
                 }
@@ -797,11 +797,11 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.ServerRole' {
-                    Assert-MockCalled New-Object -Exactly -Times 1 -ParameterFilter {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.ServerRole'
                     } -Scope Context
                 }
@@ -821,7 +821,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -839,7 +839,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -856,7 +856,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -877,7 +877,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -897,7 +897,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -914,7 +914,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -935,7 +935,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -956,7 +956,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -976,7 +976,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -995,7 +995,7 @@ try
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 

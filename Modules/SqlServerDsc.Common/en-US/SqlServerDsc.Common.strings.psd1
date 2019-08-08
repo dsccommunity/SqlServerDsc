@@ -54,6 +54,8 @@ ConvertFrom-StringData @'
     ClusterLoginMissingPermissions = The account '{0}' is missing one or more of the following permissions: {1} (SQLCOMMON0051)
     ClusterLoginMissingRecommendedPermissions = The recommended account '{0}' is missing one or more of the following permissions: {1} (SQLCOMMON0052)
     ClusterLoginPermissionsPresent = The cluster login '{0}' has the required permissions. (SQLCOMMON0053)
-    ConnectingUsingCredentials = Connecting using the credential '{0}' and the login type '{1}'. (SQLCOMMON0054)
-    CredentialsNotSpecified = The Logon type of '{0}' was specified which requires credentials, but the credentials parameter was not specified. (SQLCOMMON0055)
+    ConnectingUsingIntegrated = Connecting as current user '{0}' using integrated security. (SQLCOMMON0054)
+    ConnectingUsingImpersonation = Impersonate credential '{0}' with login type '{1}'. (SQLCOMMON0056)
+    ExecuteQueryWithResults = Returning the results of the query `{0}`. (SQLCOMMON0057)
+    ExecuteNonQuery = Executing the query `{0}`. (SQLCOMMON0058)
 '@

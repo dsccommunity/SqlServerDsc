@@ -159,13 +159,13 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 1 -Scope Context
                 }
             }
@@ -200,13 +200,13 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 1 -Scope Context
                 }
             }
@@ -241,13 +241,13 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 1 -Scope Context
                 }
             }
@@ -285,13 +285,13 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 1 -Scope Context
                 }
             }
@@ -349,13 +349,13 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 1 -Scope Context
                 }
             }
@@ -390,15 +390,15 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should not call the Get-ItemProperty for the Wow6432Node-path' {
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 0 -Scope Context
                 }
             }
@@ -450,15 +450,15 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should not call the Get-ItemProperty for the Wow6432Node-path' {
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 0 -Scope Context
                 }
             }
@@ -493,15 +493,15 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should not call the Get-ItemProperty for the Wow6432Node-path' {
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 0 -Scope Context
                 }
             }
@@ -579,13 +579,13 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 1 -Scope Context
                 }
             }
@@ -620,13 +620,13 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 1 -Scope Context
                 }
             }
@@ -661,13 +661,13 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 1 -Scope Context
                 }
             }
@@ -708,15 +708,15 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should not call the Get-ItemProperty for the Wow6432Node-path' {
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 0 -Scope Context
                 }
             }
@@ -774,13 +774,13 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 1 -Scope Context
                 }
             }
@@ -838,15 +838,15 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
                 }
 
                 It 'Should not call the Get-ItemProperty for the Wow6432Node-path' {
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 0 -Scope Context
                 }
             }
@@ -1108,7 +1108,7 @@ try
                 It "Should return true from the test method" {
                     Test-TargetResource @testParameters | Should -Be $true
 
-                    Assert-MockCalled Get-TargetResource -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -1123,13 +1123,13 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 1 -Scope Context
                 }
             }
@@ -1145,13 +1145,13 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 1 -Scope Context
                 }
             }
@@ -1167,13 +1167,13 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 1 -Scope Context
                 }
             }
@@ -1189,13 +1189,13 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 1 -Scope Context
                 }
             }
@@ -1228,13 +1228,13 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 1 -Scope Context
                 }
             }
@@ -1250,13 +1250,13 @@ try
                 }
 
                 It 'Should call the mocked functions exactly 1 time each' {
-                    Assert-MockCalled Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
+                    Assert-MockCalled -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
                         -Exactly -Times 1 -Scope Context
 
-                    Assert-MockCalled Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
+                    Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
                         -Exactly -Times 1 -Scope Context
                 }
             }

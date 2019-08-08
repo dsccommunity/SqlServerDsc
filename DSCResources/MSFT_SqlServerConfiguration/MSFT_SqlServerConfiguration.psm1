@@ -171,7 +171,7 @@ function Set-TargetResource
                 -f $ServerName, $InstanceName
         )
 
-        Restart-SqlService -SQLServer $ServerName -SQLInstanceName $InstanceName -Timeout $RestartTimeout
+        Restart-SqlService -ServerName $ServerName -InstanceName $InstanceName -Timeout $RestartTimeout
     }
     else
     {

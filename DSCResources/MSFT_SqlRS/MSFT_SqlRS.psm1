@@ -726,7 +726,7 @@ function Set-TargetResource
         elseif ( $restartReportingService -and (-not $SuppressRestart) )
         {
             Write-Verbose -Message $script:localizedData.Restart
-            Restart-ReportingServicesService -SQLInstanceName $InstanceName -WaitTime 30
+            Restart-ReportingServicesService -InstanceName $InstanceName -WaitTime 30
         }
     }
 

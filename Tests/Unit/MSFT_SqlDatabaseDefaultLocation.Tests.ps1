@@ -154,7 +154,7 @@ try
                     $getTargetResourceResult.ServerName | Should -Be $mockDefaultParameters.ServerName
                     $getTargetResourceResult.InstanceName | Should -Be $mockDefaultParameters.InstanceName
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
         }
@@ -197,7 +197,7 @@ try
                     $testTargetResourceResult = Test-TargetResource @mockDefaultParameters -Type $Type -Path $Path
                     $testTargetResourceResult | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -213,7 +213,7 @@ try
                     $testTargetResourceResult = Test-TargetResource @mockDefaultParameters -Type $Type -Path $AlterPath
                     $testTargetResourceResult | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
             Context 'When the ProcessOnlyOnActiveNode parameter is passed' {
@@ -310,8 +310,8 @@ try
                     {Set-TargetResource @mockDefaultParameters @setTargetResourceParameters} | Should -Not -Throw
                     $script:WasMethodAlterCalled | Should -Be $true
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
-                    Assert-MockCalled Restart-SqlService -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should throw when the path is invalid.' -TestCases $testCases {
@@ -331,8 +331,8 @@ try
                     {Set-TargetResource @mockDefaultParameters @setTargetResourceParameters} | Should -Throw $throwInvalidPath
                     $script:WasMethodAlterCalled | Should -Be $false
 
-                    Assert-MockCalled Connect-SQL -Exactly -Times 0 -Scope It
-                    Assert-MockCalled Restart-SqlService -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
                 }
             }
 
@@ -357,8 +357,8 @@ try
 
                 {Set-TargetResource @mockDefaultParameters @setTargetResourceParameters} | Should -Throw $throwInvalidOperation
 
-                Assert-MockCalled Connect-SQL -Exactly -Times 1 -Scope It
-                Assert-MockCalled Restart-SqlService -Exactly -Times 0 -Scope It
+                Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
             }
         }
     }
