@@ -2128,7 +2128,7 @@ InModuleScope 'SqlServerDsc.Common' {
         }
 
         $mockConnectSql = {
-            Param
+            param
             (
                 [Parameter()]
                 [System.String]
@@ -2195,7 +2195,7 @@ InModuleScope 'SqlServerDsc.Common' {
         BeforeEach {
             $mockSqlVersion = 13
             $mockConnectSql = {
-                Param
+                param
                 (
                     [Parameter()]
                     [System.String]
