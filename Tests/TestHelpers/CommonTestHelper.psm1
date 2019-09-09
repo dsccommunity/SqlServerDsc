@@ -178,7 +178,7 @@ function Remove-IntegrationLoopbackAdapter
 #>
 function Get-NetIPAddressNetwork
 {
-    Param
+    param
     (
         [Parameter(Mandatory = $true)]
         [IPAddress]

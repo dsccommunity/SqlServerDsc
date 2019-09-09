@@ -126,7 +126,7 @@ function Write-ModuleStubFile
                     $endOfParameter = $true
                 }
 
-                # Format Param line
+                # Format param line
                 'param\($'
                 {
                     $line = $line -replace 'param\(','param'

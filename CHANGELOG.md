@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Changes to SqlServerDsc
+  - Fix keywords to lower-case to align with guideline.
+
 ## 13.1.0.0
 
 - Changes to SqlServerDsc
