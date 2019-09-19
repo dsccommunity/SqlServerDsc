@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 13.2.0.0
+
+- Changes to SqlServerDsc
+  - Fix keywords to lower-case to align with guideline.
+  - Fix keywords to have space before a parenthesis to align with guideline.
+
 ## 13.1.0.0
 
 - Changes to SqlServerDsc

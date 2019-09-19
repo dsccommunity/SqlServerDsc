@@ -827,19 +827,19 @@ function Test-TargetResource
 
     $currentConfig = Get-TargetResource @getTargetResourceParameters
 
-    if ( -not $currentConfig.IsInitialized )
+    if (-not $currentConfig.IsInitialized)
     {
         Write-Verbose -Message "Reporting services $DatabaseServerName\$DatabaseInstanceName are not initialized."
         $result = $false
     }
 
-    if ( -not [System.String]::IsNullOrEmpty($ReportServerVirtualDirectory) -and ($ReportServerVirtualDirectory -ne $currentConfig.ReportServerVirtualDirectory) )
+    if (-not [System.String]::IsNullOrEmpty($ReportServerVirtualDirectory) -and ($ReportServerVirtualDirectory -ne $currentConfig.ReportServerVirtualDirectory))
     {
         Write-Verbose -Message "Report server virtual directory on $DatabaseServerName\$DatabaseInstanceName is $($currentConfig.ReportServerVirtualDir), should be $ReportServerVirtualDirectory."
         $result = $false
     }
 
-    if ( -not [System.String]::IsNullOrEmpty($ReportsVirtualDirectory) -and ($ReportsVirtualDirectory -ne $currentConfig.ReportsVirtualDirectory) )
+    if (-not [System.String]::IsNullOrEmpty($ReportsVirtualDirectory) -and ($ReportsVirtualDirectory -ne $currentConfig.ReportsVirtualDirectory))
     {
         Write-Verbose -Message "Reports virtual directory on $DatabaseServerName\$DatabaseInstanceName is $($currentConfig.ReportsVirtualDir), should be $ReportsVirtualDirectory."
         $result = $false
@@ -850,7 +850,7 @@ function Test-TargetResource
         DifferenceObject = $ReportServerReservedUrl
     }
 
-    if ( ($null -ne $ReportServerReservedUrl) -and ($null -ne (Compare-Object @compareParameters)) )
+    if (($null -ne $ReportServerReservedUrl) -and ($null -ne (Compare-Object @compareParameters)))
     {
         Write-Verbose -Message "Report server reserved URLs on $DatabaseServerName\$DatabaseInstanceName are $($currentConfig.ReportServerReservedUrl -join ', '), should be $($ReportServerReservedUrl -join ', ')."
         $result = $false
@@ -861,13 +861,13 @@ function Test-TargetResource
         DifferenceObject = $ReportsReservedUrl
     }
 
-    if ( ($null -ne $ReportsReservedUrl) -and ($null -ne (Compare-Object @compareParameters)) )
+    if (($null -ne $ReportsReservedUrl) -and ($null -ne (Compare-Object @compareParameters)))
     {
         Write-Verbose -Message "Reports reserved URLs on $DatabaseServerName\$DatabaseInstanceName are $($currentConfig.ReportsReservedUrl -join ', ')), should be $($ReportsReservedUrl -join ', ')."
         $result = $false
     }
 
-    if ( $PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl )
+    if ($PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl)
     {
         Write-Verbose -Message "The value for using SSL are not in desired state. Should be '$UseSsl', but was '$($currentConfig.UseSsl)'."
         $result = $false
@@ -897,28 +897,31 @@ function Get-ReportingServicesData
 
     $instanceNamesRegistryKey = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS'
 
-    if ( Get-ItemProperty -Path $instanceNamesRegistryKey -Name $InstanceName -ErrorAction SilentlyContinue )
+    if (Get-ItemProperty -Path $instanceNamesRegistryKey -Name $InstanceName -ErrorAction SilentlyContinue)
     {
         $instanceId = (Get-ItemProperty -Path $instanceNamesRegistryKey -Name $InstanceName).$InstanceName
 
-        if( Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\MSSQLServer\CurrentVersion" )
+        if (Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\MSSQLServer\CurrentVersion")
         {
             # SQL Server 2017 SSRS stores current SQL Server version to a different Registry path.
-            $sqlVersion = [int]((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$InstanceId\MSSQLServer\CurrentVersion" -Name "CurrentVersion").CurrentVersion).Split(".")[0]
+            $sqlVersion = [int]((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$InstanceId\MSSQLServer\CurrentVersion" -Name 'CurrentVersion').CurrentVersion).Split('.')[0]
         }
-        else {
-            $sqlVersion = [int]((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\Setup" -Name "Version").Version).Split(".")[0]
+        else
+        {
+            $sqlVersion = [int]((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\Setup" -Name 'Version').Version).Split('.')[0]
         }
+
         $reportingServicesConfiguration = Get-CimInstance -ClassName MSReportServer_ConfigurationSetting -Namespace "root\Microsoft\SQLServer\ReportServer\RS_$InstanceName\v$sqlVersion\Admin"
         $reportingServicesConfiguration = $reportingServicesConfiguration | Where-Object -FilterScript {
             $_.InstanceName -eq $InstanceName
         }
+
         <#
             SQL Server Reporting Services Web Portal application name changed
             in SQL Server 2016.
             https://docs.microsoft.com/en-us/sql/reporting-services/breaking-changes-in-sql-server-reporting-services-in-sql-server-2016
         #>
-        if ( $sqlVersion -ge 13 )
+        if ($sqlVersion -ge 13)
         {
             $reportsApplicationName = 'ReportServerWebApp'
         }
@@ -973,7 +976,7 @@ function Invoke-RsCimMethod
         ErrorAction = 'Stop'
     }
 
-    if ( $PSBoundParameters.ContainsKey('Arguments') )
+    if ($PSBoundParameters.ContainsKey('Arguments'))
     {
         $invokeCimMethodParameters['Arguments'] = $Arguments
     }
@@ -984,9 +987,9 @@ function Invoke-RsCimMethod
         If an general error occur in the Invoke-CimMethod, like calling a method
         that does not exist, returns $null in $invokeCimMethodResult.
     #>
-    if ( $invokeCimMethodResult -and $invokeCimMethodResult.HRESULT -ne 0 )
+    if ($invokeCimMethodResult -and $invokeCimMethodResult.HRESULT -ne 0)
     {
-        if ( $invokeCimMethodResult | Get-Member -Name 'ExtendedErrors' )
+        if ($invokeCimMethodResult | Get-Member -Name 'ExtendedErrors')
         {
             <#
                 The returned object property ExtendedErrors is an array

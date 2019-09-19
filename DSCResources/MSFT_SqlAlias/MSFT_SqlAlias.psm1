@@ -253,7 +253,7 @@ function Test-TargetResource
 
     if ($Ensure -eq $currentValues.Ensure)
     {
-        if( $Ensure -eq 'Absent' )
+        if ($Ensure -eq 'Absent')
         {
             Write-Verbose -Message (
                 $script:localizedData.ClientAliasMissing -f $Name

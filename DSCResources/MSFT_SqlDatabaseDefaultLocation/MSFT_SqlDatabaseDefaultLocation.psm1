@@ -23,7 +23,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlDatabaseDefault
         The path to the default directory to be configured.
         Not used in Get-TargetResource
 #>
-Function Get-TargetResource
+function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -110,7 +110,7 @@ Function Get-TargetResource
         Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
         Not used in Set-TargetResource.
 #>
-Function Set-TargetResource
+function Set-TargetResource
 {
     [CmdletBinding()]
     param

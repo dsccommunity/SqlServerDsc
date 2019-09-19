@@ -284,7 +284,8 @@ function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param(
+    param
+    (
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]

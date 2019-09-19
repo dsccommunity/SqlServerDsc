@@ -187,7 +187,7 @@ try
         #region Function mocks
 
         $mockConnectSqlServer1 = {
-            Param
+            param
             (
                 [Parameter()]
                 [System.String]
@@ -290,7 +290,7 @@ try
         }
 
         $mockConnectSqlServer2 = {
-            Param
+            param
             (
                 [Parameter()]
                 [System.String]
@@ -410,7 +410,7 @@ try
         }
 
         $mockConnectSqlServer3 = {
-            Param
+            param
             (
                 [Parameter()]
                 [System.String]
@@ -533,7 +533,7 @@ try
         $mockAvailabilityGroupReplicaPropertyValue = '' # Set dynamically during runtime
 
         $mockUpdateAvailabilityGroupReplica = {
-            Param
+            param
             (
                 [Parameter()]
                 [Microsoft.SqlServer.Management.Smo.AvailabilityReplica]
