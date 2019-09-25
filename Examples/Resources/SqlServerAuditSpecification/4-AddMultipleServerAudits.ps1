@@ -38,7 +38,7 @@ Configuration Example
             PsDscRunAsCredential      = $SqlAdministratorCredential
         }
 
-        SqlServerAuditSpecification 'ServerAuditSpecification_AuditAudit'
+        SqlServerAuditSpecification ServerAuditSpecification_AuditAudit
         {
             Ensure                    = 'Present'
             ServerName                = 'sqltest.company.local'
@@ -48,13 +48,13 @@ Configuration Example
             Enabled                   = $true
             AuditChangeGroup          = $true
             TraceChangeGroup          = $true
-            DependsOn                 = "[SqlServerAudit]SecuritylogAudit_Server"
+            DependsOn                 = "[SqlServerAudit]SecuritylogAudit_Server01"
             PsDscRunAsCredential      = $SqlAdministratorCredential
         }
 
 
 
-        SqlServerAuditSpecification 'ServerAuditSpecification_AdminAudit'
+        SqlServerAuditSpecification ServerAuditSpecification_AdminAudit
         {
             Ensure                                = 'Present'
             ServerName                            = 'sqltest.company.local'
@@ -85,7 +85,7 @@ Configuration Example
             ServerRoleMemberChangeGroup           = $true
             ServerStateChangeGroup                = $true
             TraceChangeGroup                      = $true
-            DependsOn                             = "[SqlServerAudit]SecuritylogAudit_Server"
+            DependsOn                             = "[SqlServerAudit]SecuritylogAudit_Server02"
             PsDscRunAsCredential                  = $SqlAdministratorCredential
         }
     }

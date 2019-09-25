@@ -22,9 +22,9 @@ Configuration Example
             Ensure               = 'Present'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            Name                 = 'FileAudit'
-            DestinationType      = 'SecLogAudit'
-            OnFailure            = 'CONTINUE'
+            Name                 = 'SecLogAudit'
+            DestinationType      = 'SecurityLog'
+            OnFailure            = 'SHUTDOWN'
             Enabled              = $true
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
