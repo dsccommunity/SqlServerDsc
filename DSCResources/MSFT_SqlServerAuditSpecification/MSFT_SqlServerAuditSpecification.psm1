@@ -602,7 +602,7 @@ function Set-TargetResource
             }
             catch
             {
-                $errorMessage = $script:localizedData.FailedCreateAuditSpecification -f $Name, $serverName, $instanceName
+                $errorMessage = $script:localizedData.FailedUpdateAuditSpecification -f $Name, $serverName, $instanceName
                 New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }
 
