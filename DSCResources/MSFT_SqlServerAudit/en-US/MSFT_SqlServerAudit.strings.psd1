@@ -12,6 +12,8 @@ ConvertFrom-StringData @'
     FailedUpdateAudit = Failed updating audit '{0}' on server '{1}' instance '{2}'. (SSA0011)
     ChangingAuditDestinationType = The audit '{0}' currently has destination type '{1}', but expected it to be '{2}'. Re-creating audit '{0}' on server {3} instance '{4}'. (SSA0012)
     CreateFolder = Creating folder {0}. (SSA0013)
-    ImposibleFileCombination = Both MaximumFiles and MaximumRolloverFiles have been defined. This is not a supported configuration. (SSA0014)
+    AddFilter = Setting filter '{0}' of audit {1} on server '{2}' instance '{3}' to the desired state. (SSA0014)
+    FailedAddFilter = Failed setting filter '{0}' of audit {1} on server '{2}' instance '{3}'. (SSA0015)
+    ImposibleFileCombination = Both MaximumFiles and MaximumRolloverFiles have been defined. This is not a supported configuration. (SSA0016)
     ForceNotEnabled = Unable to re-create the server audit. The server audit needs to be re-created but the configuration has not opt-in to re-create the audit. To opt-in set the parameter Force to $true.
 '@

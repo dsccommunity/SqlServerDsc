@@ -472,6 +472,45 @@ function Set-TargetResource
         }
     }
 
+    if ($Ensure -eq 'Present' -and $getTargetResourceResult.Filter -ne $Filter)
+    {
+        try
+        {
+            Write-Verbose -Message (
+                $script:localizedData.AddFilter -f $Filter, $Name, $serverName, $instanceName
+            )
+
+            #if curent audit state is enabled, disable it before setting filter.
+            if ($getTargetResourceResult.Enabled -eq $true)
+            {
+                Disable-Audit -Name $Name -ServerName $ServerName -InstanceName $InstanceName
+            }
+
+            if($null -ne $Filter -and $Filter -ne ''){
+                Write-Verbose -Message (
+                    'New Filter : {1}  Old Filter : {2}' -f $Name, $Filter, $getTargetResourceResult.Filter
+                )
+                Invoke-Query @invokeQueryParameters -Query (
+                    'ALTER SERVER AUDIT [{0}] WHERE {1};' -f $Name, $Filter
+                )
+            }
+            else
+            {
+                Write-Verbose -Message (
+                    'REMOVE : New Filter : {1}  Old Filter : {2}' -f $Name, $Filter, $getTargetResourceResult.Filter
+                )
+                Invoke-Query @invokeQueryParameters -Query (
+                    'ALTER SERVER AUDIT [{0}] REMOVE WHERE;' -f $Name
+                )
+            }
+        }
+        catch
+        {
+            $errorMessage = $script:localizedData.FailedAddFilter -f $Filter, $Name, $ServerName, $InstanceName
+            New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+        }
+    }
+
     if ($Ensure -eq 'Present' -and $getTargetResourceResult.Enabled -ne $Enabled)
     {
         if($Enabled -eq $true) {
@@ -660,6 +699,20 @@ function Test-TargetResource
                     'ReserveDiskSpace'
                     'Filter'
             )
+            <#
+                WORKAROUND for possible bug?
+                Test-DscParameterState does not see if a parameter is removed as parameter
+                but still exists in the DSC resource.
+
+                When in desired state do some aditional tests.
+                When not in desired state, aditional testing is not needed.
+            #>
+            if($testTargetResourceReturnValue){
+                if($getTargetResourceResult.Filter -ne $Filter)
+                {
+                    $testTargetResourceReturnValue = $false
+                }
+            }
         }
         else
         {

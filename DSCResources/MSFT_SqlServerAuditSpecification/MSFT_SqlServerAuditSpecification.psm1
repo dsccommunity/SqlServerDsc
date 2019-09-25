@@ -8,8 +8,8 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerAuditSpec
 
 <#
     Trough the function Get-DatabaseObjectNameFromPSValueName the Capital letters in Get- Test- and Set-TargetResource
-    get converted from FulltextGroup and AuditChangeGroup to FULLTEXT_GROUP and AUDIT_CHANGE_GROUP. This is the naming
-    of audit specification within SQL Server.
+    parameters get converted (example: FulltextGroup and AuditChangeGroup to FULLTEXT_GROUP and AUDIT_CHANGE_GROUP).
+    This is the naming of audit specification within SQL Server.
 
     DO NOT CHANGE THE CAPITALS IN THE PARAMETERS!!!!!
 
@@ -137,7 +137,7 @@ function Get-TargetResource
         $DataSetAuditSpecification = Invoke-Query @invokeQueryParameters -WithResults -Query (
                 'Select audit_action_name
                 from sys.server_audit_specification_details
-                where server_specification_id = {0}'  -f
+                where server_specification_id = {0}' -f
             $dataSetRow.server_specification_id)
 
         #this should always happen!!!!!
@@ -189,7 +189,7 @@ function Get-TargetResource
             $returnValue['UserChangePasswordGroup']               = $resultSet['USER_CHANGE_PASSWORD_GROUP']
             $returnValue['UserDefinedAuditGroup']                 = $resultSet['USER_DEFINED_AUDIT_GROUP']
             $returnValue['TransactionGroup']                      = $resultSet['TRANSACTION_GROUP']
-            $returnValue['Enabled']                               = $dataSetRow.is_state_enabled  #$enabled
+            $returnValue['Enabled']                               = $dataSetRow.is_state_enabled
         }
     }
     return $returnValue
@@ -602,6 +602,9 @@ function Set-TargetResource
             }
             catch
             {
+                #If something went wrong, try to recreate te resource.
+                $recreateAudit = $true
+
                 $errorMessage = $script:localizedData.FailedUpdateAuditSpecification -f $Name, $serverName, $instanceName
                 New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }
@@ -612,7 +615,7 @@ function Set-TargetResource
         }
     }
 
-    # Throw if not opt-in to re-create database user.
+    # Throw if not opt-in to re-create server audit specification.
     if ($recreateAudit -and -not $Force)
     {
         $errorMessage = $script:localizedData.ForceNotEnabled
