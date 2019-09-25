@@ -1,0 +1,27 @@
+import-module sqlserverdsc
+
+Configuration MSFT_SqlServerAuditDemo
+{
+    Import-DscResource -ModuleName SqlServerDSC -ModuleVersion '13.1.0.0'
+    Import-DscResource –ModuleName 'PSDesiredStateConfiguration'
+
+    node localhost
+    {
+        SqlServerAudit 'AF1'
+        {
+            Ensure               = 'Present'
+            ServerName           = 'SQL2019-01'
+            InstanceName         = 'INST01'
+            Name                 = 'SAdt'
+            DestinationType      = 'File'
+            FilePath             = 'C:\Temp\audit\5'
+            Enabled              = $true
+            MaximumFileSize      = 10
+            MaximumFileSizeUnit  = 'MB'
+            MaximumRolloverFiles = 11
+        }
+    }
+}
+MSFT_SqlServerAuditDemo -OutputPath c:\temp
+
+Start-DscConfiguration -Path 'C:\temp\' -Wait -force -Verbose
