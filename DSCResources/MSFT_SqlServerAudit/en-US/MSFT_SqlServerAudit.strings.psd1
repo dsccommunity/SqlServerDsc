@@ -17,15 +17,5 @@ ConvertFrom-StringData @'
 	ChangingAuditDestinationType = The audit '{0}' currently has destination type '{1}', but expected it to be '{2}'. Re-creating audit '{0}' on server {3} instance '{4}'. (SSA0016)
     CreateFolder = Creating folder {0}. (SSA0017)
     ImposibleFileCombination = Both MaximumFiles and MaximumRolloverFiles have been defined. This is not a supported configuration. (SSA0018)
-
-    CertificateNameProvidedWithWrongUserType = A certificate name was provided but the user type is '{0}'. Change to the correct user type or remove the certificate name. (SDU0011)
-    SqlLoginNotFound = The SQL login '{0}' does not exist in the SQL Server instance. Failed to create the database user. (SDU0016)
-    CertificateNotFound = The certificate '{0}' does not exist in the database '{1}'. Failed to create the database user. (SDU0017)
-    AsymmetryKeyNotFound = The asymmetry key '{0}' does not exist in the database '{1}'. Failed to create the database user. (SDU0018)
-    ChangingAsymmetricKey = The database user '{0}' currently have the asymmetric key '{1}', but expected it to be '{2}'. Re-creating the database user '{0}' in the database '{3}'. (SDU0023)
-    ChangingCertificate = The database user '{0}' currently have the certificate '{1}', but expected it to be '{2}'. Re-creating the database user '{0}' in the database '{3}'. (SDU0024)
-    LoginUserTypeWithoutLoginName = No login name was provided with the user type '{0}'. Add a login name to the configuration. (SDU0025)
-    AsymmetricKeyUserTypeWithoutAsymmetricKeyName = No asymmetric key name was provided with the user type '{0}'. Add a asymmetric key name to the configuration. (SDU0026)
-    CertificateUserTypeWithoutCertificateName = No certificate name was provided with the user type '{0}'. Add a certificate name to the configuration. (SDU0027)
     ForceNotEnabled = Unable to re-create the server audit. The server audit needs to be re-created but the configuration has not opt-in to re-create the audit. To opt-in set the parameter Force to $true.
 '@
