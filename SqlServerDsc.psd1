@@ -20,6 +20,9 @@
   # Minimum version of the Windows PowerShell engine required by this module
   PowerShellVersion = '5.0'
 
+  # Adds dependency to ReverseDSC
+  RequiredModules = @(@{ModuleName = "ReverseDSC"; RequiredVersion = "1.9.4.6"; })
+
   # Minimum version of the common language runtime (CLR) required by this module
   CLRVersion = '4.0'
 
@@ -27,7 +30,7 @@
   FunctionsToExport = '*'
 
   # Cmdlets to export from this module
-  CmdletsToExport = '*'
+  CmdletsToExport = 'Export-SQLServerConfiguration'
 
   RequiredAssemblies = @()
 
@@ -58,29 +61,7 @@
       } # End of PSData hashtable
 
   } # End of PrivateData hashtable
-  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
+  NestedModules     = @('Modules\ReverseDSCCollector.psm1')
+}

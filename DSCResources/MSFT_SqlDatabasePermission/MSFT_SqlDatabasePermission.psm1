@@ -409,4 +409,81 @@ function Test-TargetResource
         -ValuesToCheck @('Name', 'Ensure', 'PermissionState')
 }
 
+function Export-TargetResource
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+
+    $InformationPreference = 'Continue'
+
+    $sqlDatabaseObject = Connect-SQL
+    $databases = $sqlDatabaseObject.Databases
+    $permissionTypes = @('Grant', 'Deny', 'GrantWithGrant')
+    $sb = [System.Text.StringBuilder]::new()
+
+    $valueInstanceName = $sqlDatabaseObject.InstanceName
+    if ([System.String]::IsNullOrEmpty($valueInstanceName))
+    {
+        $valueInstanceName = 'MSSQLSERVER'
+    }
+    foreach ($database in $databases)
+    {
+        $logins = $sqlDatabaseObject.Logins
+
+        foreach ($login in $logins)
+        {
+            foreach ($permissionType in $permissionTypes)
+            {
+                try
+                {
+                    $databasePermissionInfo = $database.EnumDatabasePermissions($login.Name) | Where-Object -FilterScript {
+                        $_.PermissionState -eq $permissionType
+                    }
+                    $getSqlDatabasePermissionResult = @()
+                    foreach ($currentDatabasePermissionInfo in $databasePermissionInfo)
+                    {
+                        $permissionProperty = ($currentDatabasePermissionInfo.PermissionType | Get-Member -MemberType Property).Name
+
+                        foreach ($currentPermissionProperty in $permissionProperty)
+                        {
+                            if ($currentDatabasePermissionInfo.PermissionType."$currentPermissionProperty")
+                            {
+                                $getSqlDatabasePermissionResult += $currentPermissionProperty
+                            }
+                        }
+                    }
+
+                    if (!([System.String]::IsNullOrEmpty($getSqlDatabasePermissionResult)))
+                    {
+                        $params = @{
+                            Database        = $database.Name
+                            Name            = $login.Name
+                            InstanceName    = $valueInstanceName
+                            ServerName      = $sqlDatabaseObject.NetName
+                            PermissionState = $permissionType
+                            Permissions     = $getSqlDatabasePermissionResult
+                        }
+
+                        $current = Get-TargetResource @params
+
+                        if ($current.Ensure -eq 'Present')
+                        {
+                            [void]$sb.AppendLine('        SqlDatabasePermission ' + (New-GUID).ToString())
+                            [void]$sb.AppendLine('        {')
+                            $dscBlock = Get-DSCBlock -Params $current -ModulePath $PSScriptRoot
+                            [void]$sb.Append($dscBlock)
+                            [void]$sb.AppendLine('        }')
+                        }
+                    }
+                }
+                catch
+                {
+                    Write-Verbose $_
+                }
+            }
+        }
+    }
+    return $sb.ToString()
+}
+
 Export-ModuleMember -Function *-TargetResource
