@@ -609,7 +609,7 @@ function Set-TargetResource
                 New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }
 
-            if($Enabled -eq $true){
+            if ($Enabled -eq $true){
                 Enable-AuditSpecification -ServerName $serverName -Name $Name -InstanceName $instanceName
             }
         }
@@ -692,7 +692,7 @@ function Set-TargetResource
                 $AuditName,
                 $auditSpecificationAddDropString)
 
-            if($Enabled -eq $true){
+            if ($Enabled -eq $true){
                 Enable-AuditSpecification -ServerName $serverName -Name $Name -InstanceName $instanceName
             }
         }
@@ -1168,7 +1168,7 @@ function Test-TargetResource
         The datatable can have one or two columns.
         When the datatable has one column, the hashtable wil use $true as value for the second collomn.
 #>
-Function Convert-ToHashTable
+function Convert-ToHashTable
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -1179,11 +1179,11 @@ Function Convert-ToHashTable
         $DataTable
     )
     $resultSet = @{}
-    ForEach ($Item in $DataTable){
-        if($DataTable.Columns.Count -eq 1){
+    foreach ($Item in $DataTable){
+        if ($DataTable.Columns.Count -eq 1){
             $resultSet.Add($Item[0], $true)
         }
-        if($DataSet.Columns.Count -eq 2){
+        if ($DataSet.Columns.Count -eq 2){
             $resultSet.Add($Item[0], $Item[1])
         }
     }
@@ -1329,13 +1329,14 @@ function Get-AuditSpecificationMutationString
     )
     $resultString = ''
     $CurrentValues.GetEnumerator() | %{
-        if($null -eq $_.Value -or $_.Value -eq ''){
+        if ($null -eq $_.Value -or $_.Value -eq ''){
             $val = 'False'
         }
-        else{
+        else
+        {
             $val = $_.Value
         }
-         $resultString += Test-SingleRow -CurrentKey $_.Key -CurrentValue $val -DesiredValues $DesiredValues
+        $resultString += Test-SingleRow -CurrentKey $_.Key -CurrentValue $val -DesiredValues $DesiredValues
     }
     return $resultString.TrimEnd(',')
 }
@@ -1381,22 +1382,27 @@ function Test-SingleRow
         $CurrentKey -ne 'Ensure' -and
         $CurrentKey -ne 'Force')
     {
-        if($null -eq $DesiredValues.$CurrentKey){
+        if($null -eq $DesiredValues.$CurrentKey)
+        {
             $desiredValue = 'False'
         }
-        else{
+        else
+        {
             $desiredValue = $DesiredValues.$CurrentKey
         }
 
         #When not equal
-        if($CurrentValue -ne $desiredValue){
+        if ($CurrentValue -ne $desiredValue)
+        {
             $DatabaseCompatibleKeyString = Get-DatabaseObjectNameFromPSParamName -InString $CurrentKey
 
-            if($desiredValue -eq 'True'){
+            if ($desiredValue -eq 'True')
+            {
                 #When desired, add it.
                 $ret = 'ADD ({0}),' -f $DatabaseCompatibleKeyString
             }
-            else{
+            else
+            {
                 #When not wanted, drop it.
                 $ret = 'DROP ({0}),' -f $DatabaseCompatibleKeyString
             }
