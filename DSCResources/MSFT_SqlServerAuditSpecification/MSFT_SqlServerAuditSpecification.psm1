@@ -117,12 +117,12 @@ function Get-TargetResource
 
     $DataSetAudit = Invoke-Query @invokeQueryParameters -WithResults -Query (
         'Select
-	        s.server_specification_id,
-	        s.is_state_enabled,
-	        a.name as auditName
+            s.server_specification_id,
+            s.is_state_enabled,
+            a.name as auditName
         FROM sys.server_audits AS a
         JOIN sys.server_audit_specifications AS s
-	        ON a.audit_guid = s.audit_guid
+            ON a.audit_guid = s.audit_guid
         where s.name = ''{0}''' -f
         $Name)
 
@@ -661,9 +661,9 @@ function Set-TargetResource
             #only one audit spec for each audit per database/server can exist.
             $DataSetAudit = Invoke-Query @invokeQueryParameters -WithResults -Query (
                 'select sas.name from
-	                sys.server_audits sa inner join
-	                sys.server_audit_specifications sas
-		                on sa.audit_guid = sas.audit_guid
+                    sys.server_audits sa inner join
+                    sys.server_audit_specifications sas
+                        on sa.audit_guid = sas.audit_guid
                  where sa.name = ''{0}''' -f
                 $AuditName)
             if ($null -eq $DataSetAudit -or $DataSetAudit.Tables[0].Rows.Count -gt 0)
@@ -1181,10 +1181,10 @@ Function Convert-ToHashTable
     $resultSet = @{}
     ForEach ($Item in $DataTable){
         if($DataTable.Columns.Count -eq 1){
-	        $resultSet.Add($Item[0], $true)
+            $resultSet.Add($Item[0], $true)
         }
         if($DataSet.Columns.Count -eq 2){
-	        $resultSet.Add($Item[0], $Item[1])
+            $resultSet.Add($Item[0], $Item[1])
         }
     }
     return $resultSet

@@ -188,7 +188,7 @@ function Set-TargetResource
         $MaximumFileSizeUnit = 'MB',
 
         [Parameter()]
-        [System.String]
+        [System.UInt32]
         $MaximumRolloverFiles,
 
         [Parameter()]
