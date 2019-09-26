@@ -266,4 +266,43 @@ function Test-TargetResource
     return $result
 }
 
+function Export-TargetResource
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+
+    $InformationPreference = 'Continue'
+
+    $sqlDatabaseObject = Connect-SQL
+
+    $options = $sqlDatabaseObject.Configuration.Properties
+    $sb = [System.Text.StringBuilder]::new()
+
+    $valueInstanceName = $sqlDatabaseObject.InstanceName
+    if ([System.String]::IsNullOrEmpty($valueInstanceName))
+    {
+        $valueInstanceName = 'MSSQLSERVER'
+    }
+
+    $i = 1
+    foreach ($option in $options)
+    {
+        Write-Information "    [$i/$($options.Count)] $($option.DisplayName)"
+        $params = @{
+            InstanceName = $valueInstanceName
+            ServerName   = $sqlDatabaseObject.NetName
+            OptionName   = $option.DisplayName
+            OptionValue  = 0
+        }
+        $results = Get-TargetResource @params
+        [void]$sb.AppendLine('        SQLServerConfiguration ' + (New-GUID).ToString())
+        [void]$sb.AppendLine('        {')
+        $dscBlock = Get-DSCBlock -Params $results -ModulePath $PSScriptRoot
+        [void]$sb.Append($dscBlock)
+        [void]$sb.AppendLine('        }')
+        $i++
+    }
+    return $sb.ToString()
+}
+
 Export-ModuleMember -Function *-TargetResource
