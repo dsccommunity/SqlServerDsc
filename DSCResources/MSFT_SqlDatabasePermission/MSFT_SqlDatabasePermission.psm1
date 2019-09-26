@@ -426,14 +426,20 @@ function Export-TargetResource
     {
         $valueInstanceName = 'MSSQLSERVER'
     }
+
+    $i = 1
     foreach ($database in $databases)
     {
+        Write-Information "    [$i/$($databases.Count)] Extracting Permissions for Database {$($database.Name)}"
         $logins = $sqlDatabaseObject.Logins
 
+        $j = 1
         foreach ($login in $logins)
         {
+            Write-Information "        [$j/$($logins.Count)] Permissions for user {$($login.Name)}"
             foreach ($permissionType in $permissionTypes)
             {
+                Write-Information "            --> $permissionType"
                 try
                 {
                     $databasePermissionInfo = $database.EnumDatabasePermissions($login.Name) | Where-Object -FilterScript {
@@ -442,6 +448,7 @@ function Export-TargetResource
                     $getSqlDatabasePermissionResult = @()
                     foreach ($currentDatabasePermissionInfo in $databasePermissionInfo)
                     {
+                        Write-Information "                    Found {$($currentDatabasePermissionInfo.PermissionType)}"
                         $permissionProperty = ($currentDatabasePermissionInfo.PermissionType | Get-Member -MemberType Property).Name
 
                         foreach ($currentPermissionProperty in $permissionProperty)
@@ -481,7 +488,9 @@ function Export-TargetResource
                     Write-Verbose $_
                 }
             }
+            $j++
         }
+        $i++
     }
     return $sb.ToString()
 }

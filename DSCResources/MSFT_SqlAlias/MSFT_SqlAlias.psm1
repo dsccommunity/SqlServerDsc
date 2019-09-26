@@ -307,4 +307,52 @@ function Test-TargetResource
     return $result
 }
 
+function Export-TargetResource
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+
+    $InformationPreference = 'Continue'
+
+    $sqlDatabaseObject = Connect-SQL
+    $databases = $sqlDatabaseObject.Databases
+    $sb = [System.Text.StringBuilder]::new()
+
+    $valueInstanceName = $sqlDatabaseObject.InstanceName
+    if ([System.String]::IsNullOrEmpty($valueInstanceName))
+    {
+        $valueInstanceName = 'MSSQLSERVER'
+    }
+
+    if (((Get-CimInstance -ClassName win32_OperatingSystem).OSArchitecture) -eq '64-bit')
+    {
+        $itemValue = Get-Item -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' `
+                                                 -ErrorAction SilentlyContinue
+    }
+    else
+    {
+        $itemValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' `
+                                      -ErrorAction SilentlyContinue
+    }
+    $i = 1
+    foreach ($item in $itemValue.Property)
+    {
+         Write-Information "    [$i/$($itemValue.Property.Count)] Extracting Setting for Alias {$item}"
+        $params = @{
+            ServerName   = $sqlDatabaseObject.NetName
+            Name         = $item
+        }
+        $results = Get-TargetResource @params
+        [void]$sb.AppendLine('        SQLAlias ' + (New-GUID).ToString())
+        [void]$sb.AppendLine('        {')
+        $dscBlock = Get-DSCBlock -Params $results -ModulePath $PSScriptRoot
+        [void]$sb.Append($dscBlock)
+        [void]$sb.AppendLine('        }')
+        $i++
+    }
+
+    return $sb.ToString()
+}
+
+
 Export-ModuleMember -Function *-TargetResource

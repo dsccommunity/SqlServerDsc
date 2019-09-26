@@ -2,7 +2,7 @@ function Export-SQLServerConfiguration
 {
     [CmdletBinding()]
     [OutputType([System.String])]
-
+    $InformationPreference = 'Continue'
     $sb = [System.Text.StringBuilder]::new()
     [void]$sb.AppendLine("Configuration SQLServerConfiguration")
     [void]$sb.AppendLine("{")
@@ -18,8 +18,13 @@ function Export-SQLServerConfiguration
     foreach ($ResourceModule in $AllResources)
     {
         Import-Module $ResourceModule.FullName | Out-Null
-        $exportString = Export-TargetResource
-        [void]$sb.Append($exportString)
+        $module = Get-Module ($ResourceModule.Name.Split('.')[0]) | Where-Object -FilterScript {$_.ExportedCommands.Keys -contains 'Export-TargetResource'}
+        if ($null -ne $module)
+        {
+            Write-Information "Exporting $($module.Name)"
+            $exportString = Export-TargetResource
+            [void]$sb.Append($exportString)
+        }
     }
 
     [void]$sb.AppendLine("    }")
