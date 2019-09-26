@@ -66,7 +66,7 @@ function Get-TargetResource
     # Check if database exists.
     $sqlServerAuditObject = $sqlServerObject.Audits[$Name]
 
-    if($sqlServerAuditObject)
+    if ($sqlServerAuditObject)
     {
         Write-Verbose -Message (
             $script:localizedData.AuditExist -f $Name, $ServerName
@@ -223,15 +223,17 @@ function Set-TargetResource
     )
 
     #sanitize user input.
-    if(($MaximumFiles) -and ($MaximumRolloverFiles)){
+    if (($MaximumFiles) -and ($MaximumRolloverFiles))
+    {
         $errorMessage = $script:localizedData.ImposibleFileCombination
         New-InvalidOperationException -Message $errorMessage
     }
-    if($FilePath){
+    if ($FilePath)
+    {
         $FilePath = $FilePath.Trimend('\') + '\'
 
         #Test if audit file location exists, and create if it does not.
-        if(-not (Test-Path -Path $FilePath))
+        if (-not (Test-Path -Path $FilePath))
         {
             Write-Verbose -Message (
                 $script:localizedData.CreateFolder -f $FilePath.Trimend('\')
@@ -623,7 +625,7 @@ function Test-TargetResource
         $MaximumFileSizeUnit = 'MB',
 
         [Parameter()]
-        [System.String]
+        [System.UInt32]
         $MaximumRolloverFiles = '10',
 
         [Parameter()]
@@ -658,7 +660,8 @@ function Test-TargetResource
     )
 
     #sanitize user input.
-    if($FilePath){
+    if ($FilePath)
+    {
         $FilePath = $FilePath.Trimend('\') + '\'
         $PSBoundParameters['FilePath'] = $FilePath.Trimend('\') + '\'
     }
@@ -707,8 +710,9 @@ function Test-TargetResource
                 When in desired state do some aditional tests.
                 When not in desired state, aditional testing is not needed.
             #>
-            if($testTargetResourceReturnValue){
-                if($getTargetResourceResult.Filter -ne $Filter)
+            if ($testTargetResourceReturnValue)
+            {
+                if ($getTargetResourceResult.Filter -ne $Filter)
                 {
                     $testTargetResourceReturnValue = $false
                 }
