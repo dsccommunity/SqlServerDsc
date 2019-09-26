@@ -29,6 +29,7 @@ function Export-SQLServerConfiguration
 
     [void]$sb.AppendLine("    }")
     [void]$sb.AppendLine("}")
+    [void]$sb.AppendLine("SQLServerConfiguration")
 
     #region Prompt the user for a location to save the extract and generate the files
     if ($null -eq $Path -or "" -eq $Path)

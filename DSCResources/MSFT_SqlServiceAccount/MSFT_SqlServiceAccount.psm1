@@ -265,6 +265,51 @@ function Set-TargetResource
     }
 }
 
+function Export-TargetResource
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+
+    $InformationPreference = 'Continue'
+
+    $sqlDatabaseObject = Connect-SQL
+
+    $sb = [System.Text.StringBuilder]::new()
+
+    $valueInstanceName = $sqlDatabaseObject.InstanceName
+    if ([System.String]::IsNullOrEmpty($valueInstanceName))
+    {
+        $valueInstanceName = 'MSSQLSERVER'
+    }
+    $ServerName = $sqlDatabaseObject.NetName
+    $serviceTypes = @('DatabaseEngine', 'SQLServerAgent', 'Search', 'IntegrationServices', 'AnalysisServices', 'ReportingServices', 'SQLServerBrowser', 'NotificationServices')
+    foreach ($type in $ServiceTypes)
+    {
+        Write-Information "    {$type}"
+        $serviceObject = Get-ServiceObject -ServerName $ServerName -InstanceName $valueInstanceName -ServiceType $type -ErrorAction SilentlyContinue
+
+        if ($null -ne $serviceObject)
+        {
+            $serviceAccountName = $serviceObject.ServiceAccount -ireplace '^([\.])\\(.*)$', "$ServerName\`$2"
+            $secpasswd = ConvertTo-SecureString "fakePass" -AsPlainText -Force
+            $accountCreds = New-Object System.Management.Automation.PSCredential ($serviceAccountName, $secpasswd)
+            $params = @{
+                InstanceName   = $valueInstanceName
+                ServerName     = $sqlDatabaseObject.NetName
+                ServiceType    = $type
+                ServiceAccount = $accountCreds
+            }
+            $results = Get-TargetResource @params
+            [void]$sb.AppendLine('        SQLServiceAccount ' + (New-GUID).ToString())
+            [void]$sb.AppendLine('        {')
+            $dscBlock = Get-DSCBlock -Params $results -ModulePath $PSScriptRoot
+            [void]$sb.Append($dscBlock)
+            [void]$sb.AppendLine('        }')
+        }
+    }
+    return $sb.ToString()
+}
+
 <#
     .SYNOPSIS
         Gets an SMO Service object instance for the requested service and type.

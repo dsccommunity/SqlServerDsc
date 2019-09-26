@@ -343,6 +343,11 @@ function Export-TargetResource
             Name         = $item
         }
         $results = Get-TargetResource @params
+        $PipeName = $results.PipeName
+        if ([System.String]::IsNullOrEmpty($PipeName))
+        {
+            $results.Remove("PipeName")
+        }
         [void]$sb.AppendLine('        SQLAlias ' + (New-GUID).ToString())
         [void]$sb.AppendLine('        {')
         $dscBlock = Get-DSCBlock -Params $results -ModulePath $PSScriptRoot

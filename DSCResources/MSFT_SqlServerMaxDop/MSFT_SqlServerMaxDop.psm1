@@ -325,6 +325,7 @@ function Export-TargetResource
         InstanceName = $valueInstanceName
     }
     $results = Get-TargetResource @params
+    $results.Remove("IsActiveNode")
     [void]$sb.AppendLine('        SQLServerMaxDop ' + (New-GUID).ToString())
     [void]$sb.AppendLine('        {')
     $dscBlock = Get-DSCBlock -Params $results -ModulePath $PSScriptRoot

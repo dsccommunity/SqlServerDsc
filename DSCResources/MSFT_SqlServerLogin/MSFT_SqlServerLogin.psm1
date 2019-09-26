@@ -555,7 +555,41 @@ function Test-TargetResource
 
     return $testPassed
 }
+function Export-TargetResource
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
 
+    $InformationPreference = 'Continue'
+
+    $sqlDatabaseObject = Connect-SQL
+    $sb = [System.Text.StringBuilder]::new()
+
+    $valueInstanceName = $sqlDatabaseObject.InstanceName
+    if ([System.String]::IsNullOrEmpty($valueInstanceName))
+    {
+        $valueInstanceName = 'MSSQLSERVER'
+    }
+
+    $i = 1
+    foreach($login in $sqlDatabaseObject.Logins)
+    {
+        Write-Information "    [$i/$($sqlDatabaseObject.Logins.Count)] $($login.Name)"
+        $params = @{
+            InstanceName = $valueInstanceName
+            ServerName   = $sqlDatabaseObject.NetName
+            Name         = $login.Name
+        }
+        $results = Get-TargetResource @params
+        [void]$sb.AppendLine('        SQLServerLogin ' + (New-GUID).ToString())
+        [void]$sb.AppendLine('        {')
+        $dscBlock = Get-DSCBlock -Params $results -ModulePath $PSScriptRoot
+        [void]$sb.Append($dscBlock)
+        [void]$sb.AppendLine('        }')
+        $i++
+    }
+    return $sb.ToString()
+}
 <#
     .SYNOPSIS
     Alters a login.
