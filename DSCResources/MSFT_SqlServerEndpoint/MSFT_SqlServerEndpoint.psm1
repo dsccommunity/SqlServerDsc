@@ -358,4 +358,47 @@ function Test-TargetResource
     return $result
 }
 
+function Export-TargetResource
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+
+    $InformationPreference = 'Continue'
+
+    $sqlDatabaseObject = Connect-SQL
+    $sb = [System.Text.StringBuilder]::new()
+
+    $valueInstanceName = $sqlDatabaseObject.InstanceName
+    if ([System.String]::IsNullOrEmpty($valueInstanceName))
+    {
+        $valueInstanceName = 'MSSQLSERVER'
+    }
+
+    $endpoints = $sqlDatabaseObject.Endpoints
+
+    $i = 1
+    foreach ($endpoint in $endpoints)
+    {
+        Write-Information "    [$i/$($endpoints.Count)] $($endpoint.Name)"
+
+        if ($endpoint.EndpointType -eq 'DatabaseMirroring')
+        {
+            $params = @{
+                InstanceName = $valueInstanceName
+                ServerName   = $sqlDatabaseObject.NetName
+                EndPointName = $endpoint.Name
+            }
+            $results = Get-TargetResource @params
+            [void]$sb.AppendLine('        SQLServerEndpoint ' + (New-GUID).ToString())
+            [void]$sb.AppendLine('        {')
+            $dscBlock = Get-DSCBlock -Params $results -ModulePath $PSScriptRoot
+            [void]$sb.Append($dscBlock)
+            [void]$sb.AppendLine('        }')
+        }
+        $i++
+    }
+
+    return $sb.ToString()
+}
+
 Export-ModuleMember -Function *-TargetResource
