@@ -291,7 +291,7 @@ function Export-TargetResource
         if ($null -ne $serviceObject)
         {
             $serviceAccountName = $serviceObject.ServiceAccount -ireplace '^([\.])\\(.*)$', "$ServerName\`$2"
-            $secpasswd = ConvertTo-SecureString "fakePass" -AsPlainText -Force
+            $secpasswd = [System.Security.SecureString]::new()
             $accountCreds = New-Object System.Management.Automation.PSCredential ($serviceAccountName, $secpasswd)
             $params = @{
                 InstanceName   = $valueInstanceName

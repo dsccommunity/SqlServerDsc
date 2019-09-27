@@ -572,7 +572,7 @@ function Export-TargetResource
     }
 
     $i = 1
-    foreach($login in $sqlDatabaseObject.Logins)
+    foreach ($login in $sqlDatabaseObject.Logins)
     {
         Write-Information "    [$i/$($sqlDatabaseObject.Logins.Count)] $($login.Name)"
         $params = @{

@@ -519,7 +519,7 @@ function Export-TargetResource
         $j = 1
         if ($null -ne $roles.Count)
         {
-            foreach($role in $roles)
+            foreach ($role in $roles)
             {
                 Write-Information "        [$j/$($roles.Count)] $role.Name"
                 $params = @{
