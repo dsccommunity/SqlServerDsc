@@ -609,7 +609,8 @@ function Set-TargetResource
                 New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }
 
-            if ($Enabled -eq $true){
+            if ($Enabled -eq $true)
+            {
                 Enable-AuditSpecification -ServerName $serverName -Name $Name -InstanceName $instanceName
             }
         }
@@ -692,7 +693,8 @@ function Set-TargetResource
                 $AuditName,
                 $auditSpecificationAddDropString)
 
-            if ($Enabled -eq $true){
+            if ($Enabled -eq $true)
+            {
                 Enable-AuditSpecification -ServerName $serverName -Name $Name -InstanceName $instanceName
             }
         }
@@ -1179,11 +1181,14 @@ function Convert-ToHashTable
         $DataTable
     )
     $resultSet = @{}
-    foreach ($Item in $DataTable){
-        if ($DataTable.Columns.Count -eq 1){
+    foreach ($Item in $DataTable)
+    {
+        if ($DataTable.Columns.Count -eq 1)
+        {
             $resultSet.Add($Item[0], $true)
         }
-        if ($DataSet.Columns.Count -eq 2){
+        if ($DataSet.Columns.Count -eq 2)
+        {
             $resultSet.Add($Item[0], $Item[1])
         }
     }
@@ -1328,8 +1333,9 @@ function Get-AuditSpecificationMutationString
         $DesiredValues
     )
     $resultString = ''
-    $CurrentValues.GetEnumerator() | %{
-        if ($null -eq $_.Value -or $_.Value -eq ''){
+    $CurrentValues.GetEnumerator() | ForEach-Object {
+        if ($null -eq $_.Value -or $_.Value -eq '')
+        {
             $val = 'False'
         }
         else
@@ -1373,7 +1379,7 @@ function Test-SingleRow
         $DesiredValues
     )
 
-    $ret = ''
+    $return = ''
     if ($CurrentKey -ne 'Name' -and
         $CurrentKey -ne 'ServerName' -and
         $CurrentKey -ne 'InstanceName' -and
@@ -1399,16 +1405,16 @@ function Test-SingleRow
             if ($desiredValue -eq 'True')
             {
                 #When desired, add it.
-                $ret = 'ADD ({0}),' -f $DatabaseCompatibleKeyString
+                $return = 'ADD ({0}),' -f $DatabaseCompatibleKeyString
             }
             else
             {
                 #When not wanted, drop it.
-                $ret = 'DROP ({0}),' -f $DatabaseCompatibleKeyString
+                $return = 'DROP ({0}),' -f $DatabaseCompatibleKeyString
             }
         }
     }
-    return $ret
+    return $return
 }
 
 

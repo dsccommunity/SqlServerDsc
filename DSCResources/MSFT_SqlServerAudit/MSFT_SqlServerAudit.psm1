@@ -273,15 +273,18 @@ function Set-TargetResource
                     'File'
                     {
                         $strReserveDiskSpace = 'OFF'
-                        if($ReserveDiskSpace){
+                        if ($ReserveDiskSpace)
+                        {
                             $strReserveDiskSpace = 'ON'
                         }
 
                         $strFiles = ''
-                        if($MaximumFiles){
+                        if ($MaximumFiles)
+                        {
                             $strFiles = 'MAX_FILES = {0},' -f $MaximumFiles
                         }
-                        if($MaximumRolloverFiles){
+                        if ($MaximumRolloverFiles)
+                        {
                             $strFiles = 'MAX_ROLLOVER_FILES = {0},' -f $MaximumRolloverFiles
                         }
 
@@ -414,15 +417,18 @@ function Set-TargetResource
             'File'
             {
                 $strReserveDiskSpace = 'OFF'
-                if($ReserveDiskSpace){
+                if ($ReserveDiskSpace)
+                {
                     $strReserveDiskSpace = 'ON'
                 }
 
                 $strFiles = ''
-                if($MaximumFiles){
+                if ($MaximumFiles)
+                {
                     $strFiles = 'MAX_FILES = {0},' -f $MaximumFiles
                 }
-                if($MaximumRolloverFiles){
+                if ($MaximumRolloverFiles)
+                {
                     $strFiles = 'MAX_ROLLOVER_FILES = {0},' -f $MaximumRolloverFiles
                 }
 
@@ -488,19 +494,14 @@ function Set-TargetResource
                 Disable-Audit -Name $Name -ServerName $ServerName -InstanceName $InstanceName
             }
 
-            if($null -ne $Filter -and $Filter -ne ''){
-                Write-Verbose -Message (
-                    'New Filter : {1}  Old Filter : {2}' -f $Name, $Filter, $getTargetResourceResult.Filter
-                )
+            if ($null -ne $Filter -and $Filter -ne '')
+            {
                 Invoke-Query @invokeQueryParameters -Query (
                     'ALTER SERVER AUDIT [{0}] WHERE {1};' -f $Name, $Filter
                 )
             }
             else
             {
-                Write-Verbose -Message (
-                    'REMOVE : New Filter : {1}  Old Filter : {2}' -f $Name, $Filter, $getTargetResourceResult.Filter
-                )
                 Invoke-Query @invokeQueryParameters -Query (
                     'ALTER SERVER AUDIT [{0}] REMOVE WHERE;' -f $Name
                 )
@@ -515,10 +516,12 @@ function Set-TargetResource
 
     if ($Ensure -eq 'Present' -and $getTargetResourceResult.Enabled -ne $Enabled)
     {
-        if($Enabled -eq $true) {
+        if ($Enabled -eq $true)
+        {
             Enable-Audit -Name $Name -ServerName $ServerName -InstanceName $InstanceName
         }
-        else {
+        else
+        {
             Disable-Audit -Name $Name -ServerName $ServerName -InstanceName $InstanceName
         }
     }
