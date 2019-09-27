@@ -1388,7 +1388,7 @@ function Test-SingleRow
         $CurrentKey -ne 'Ensure' -and
         $CurrentKey -ne 'Force')
     {
-        if($null -eq $DesiredValues.$CurrentKey)
+        if ($null -eq $DesiredValues.$CurrentKey)
         {
             $desiredValue = 'False'
         }
