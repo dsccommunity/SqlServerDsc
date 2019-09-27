@@ -88,9 +88,9 @@ function Set-ObtainRequiredCredentials
 
     foreach($credential in $Global:CredsRepo)
     {
-        if(!$credential.ToLower().StartsWith("builtin"))
+        if (!$credential.ToLower().StartsWith("builtin"))
         {
-            if(!$chckAzure.Checked)
+            if (!$chckAzure.Checked)
             {
                 $credsContent += "    " + (Resolve-Credentials $credential) + " = Get-Credential -UserName `"" + $credential + "`" -Message `"Please provide credentials`"`r`n"
             }

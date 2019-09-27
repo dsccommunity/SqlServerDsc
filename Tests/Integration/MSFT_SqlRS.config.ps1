@@ -17,7 +17,7 @@ else
     $mockLastDrive = ((Get-Volume).DriveLetter | Sort-Object | Select-Object -Last 1)
     $mockIsoMediaDriveLetter = [char](([int][char]$mockLastDrive) + 1)
 
-    if($script:sqlVersion -eq '140')
+    if ($script:sqlVersion -eq '140')
     {
         # SQL2017
         $instanceName = 'SSRS'
@@ -103,7 +103,7 @@ Configuration MSFT_SqlRS_CreateDependencies_Config
             Ensure = 'Present'
         }
 
-        if($script:sqlVersion -eq '130')
+        if ($script:sqlVersion -eq '130')
         {
             SqlSetup 'InstallReportingServicesInstance'
             {
@@ -136,7 +136,7 @@ Configuration MSFT_SqlRS_CreateDependencies_Config
             MSFT_SqlRSSetup.Integration.Tests.ps1 will have installed SSRS 2017.
             We just need to start SSRS.
         #>
-        elseif($script:sqlVersion -eq '140')
+        elseif ($script:sqlVersion -eq '140')
         {
             Service 'StartReportingServicesInstance'
             {
@@ -249,7 +249,7 @@ Configuration MSFT_SqlRS_StopReportingServicesInstance_Config
 
     node $AllNodes.NodeName
     {
-        if($script:sqlVersion -eq '130')
+        if ($script:sqlVersion -eq '130')
         {
             Service ('StopReportingServicesInstance{0}' -f $Node.InstanceName)
             {
@@ -257,7 +257,7 @@ Configuration MSFT_SqlRS_StopReportingServicesInstance_Config
                 State = 'Stopped'
             }
         }
-        elseif($script:sqlVersion -eq '140')
+        elseif ($script:sqlVersion -eq '140')
         {
             Service 'StopReportingServicesInstance'
             {
