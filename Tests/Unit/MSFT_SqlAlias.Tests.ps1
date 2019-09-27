@@ -79,6 +79,55 @@ try
             TcpPort = '1433'
             Ensure = 'Present'
         }
+        $mockConnectSQL = {
+            return @(
+                (
+                    New-Object -TypeName Object |
+                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Collation -Value $mockSqlDatabaseCollation -PassThru |
+                        Add-Member -MemberType ScriptMethod -Name EnumCollations -Value {
+                        return @(
+                            ( New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty Name -Value $mockSqlDatabaseCollation -PassThru
+                            ),
+                            ( New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty Name -Value 'SQL_Latin1_General_CP1_CS_AS' -PassThru
+                            ),
+                            ( New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty Name -Value 'SQL_Latin1_General_Pref_CP850_CI_AS' -PassThru
+                            )
+                        )
+                    } -PassThru -Force |
+                        Add-Member -MemberType ScriptProperty -Name Databases -Value {
+                        return @{
+                            $mockSqlDatabaseName = ( New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name Collation -Value $mockSqlDatabaseCollation -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name Drop -Value {
+                                    if ($mockInvalidOperationForDropMethod)
+                                    {
+                                        throw 'Mock Drop Method was called with invalid operation.'
+                                    }
+
+                                    if ( $this.Name -ne $mockExpectedDatabaseNameToDrop )
+                                    {
+                                        throw "Called mocked Drop() method without dropping the right database. Expected '{0}'. But was '{1}'." `
+                                            -f $mockExpectedDatabaseNameToDrop, $this.Name
+                                    }
+                                } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name Alter -Value {
+                                    if ($mockInvalidOperationForAlterMethod)
+                                    {
+                                        throw 'Mock Alter Method was called with invalid operation.'
+                                    }
+                                } -PassThru
+                            )
+                        }
+                    } -PassThru -Force
+                )
+            )
+        }
 
         Describe 'SqlAlias\Get-TargetResource' {
             # Mocking for protocol TCP
@@ -1262,6 +1311,9 @@ try
             }
         }
         Describe 'SqlAlias\Export-TargetResource' {
+            BeforeEach {
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+            }
             # Mocking for protocol TCP
             Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $name } -MockWith {
                 return @{
