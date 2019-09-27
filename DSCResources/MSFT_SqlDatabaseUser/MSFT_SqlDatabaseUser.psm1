@@ -552,6 +552,63 @@ function Test-TargetResource
     return $testTargetResourceReturnValue
 }
 
+function Export-TargetResource
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+
+    $InformationPreference = 'Continue'
+
+    $sqlServerObject = Connect-SQL
+    $sb = [System.Text.StringBuilder]::new()
+
+    $valueInstanceName = $sqlServerObject.InstanceName
+    if ([System.String]::IsNullOrEmpty($valueInstanceName))
+    {
+        $valueInstanceName = 'MSSQLSERVER'
+    }
+
+    $databases = $sqlServerObject.Databases
+
+    $i = 1
+    foreach ($database in $databases)
+    {
+        Write-Information "    [$i/$($databases.Count)] Scanning Users in Database {$($database.Name)}"
+
+        $sqlDatabaseObject = $sqlServerObject.Databases[$database.Name]
+
+        $users = $sqlDatabaseObject.Users
+
+        $j = 1
+
+        if ($null -ne $users.Count)
+        {
+            foreach ($user in $users)
+            {
+                Write-Information "        [$j/$($users.Count)] Getting settings for User {$($user.Name)}"
+                $params = @{
+                    InstanceName = $valueInstanceName
+                    ServerName   = $sqlServerObject.NetName
+                    DatabaseName = $database.Name
+                    Name         = $user.Name
+                }
+                $results = Get-TargetResource @params
+                $results.Remove("LoginType")
+                $results.Remove("AuthenticationType")
+                [void]$sb.AppendLine('        SQLDatabaseUser ' + (New-GUID).ToString())
+                [void]$sb.AppendLine('        {')
+                $dscBlock = Get-DSCBlock -Params $results -ModulePath $PSScriptRoot
+                [void]$sb.Append($dscBlock)
+                [void]$sb.AppendLine('        }')
+                $j++
+            }
+        }
+        $i++
+    }
+
+    return $sb.ToString()
+}
+
 <#
     .SYNOPSIS
         Convert a database user's authentication type property to the correct
