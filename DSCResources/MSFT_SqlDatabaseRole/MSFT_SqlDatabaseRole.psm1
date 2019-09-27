@@ -491,6 +491,59 @@ function Test-TargetResource
     $isDatabaseRoleInDesiredState
 }
 
+function Export-TargetResource
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+
+    $InformationPreference = 'Continue'
+
+    $sqlDatabaseObject = Connect-SQL
+    $sb = [System.Text.StringBuilder]::new()
+
+    $valueInstanceName = $sqlDatabaseObject.InstanceName
+    if ([System.String]::IsNullOrEmpty($valueInstanceName))
+    {
+        $valueInstanceName = 'MSSQLSERVER'
+    }
+
+    $databases = $sqlDatabaseObject.Databases
+
+    $i = 1
+    foreach ($database in $databases)
+    {
+        Write-Information "    [$i/$($databases.Count)] Roles for Database {$($database.Name)}"
+
+        $roles = $sqlDatabaseObject.Databases[$database.Name].Roles
+
+        $j = 1
+        if ($null -ne $roles.Count)
+        {
+            foreach($role in $roles)
+            {
+                Write-Information "        [$j/$($roles.Count)] $role.Name"
+                $params = @{
+                    InstanceName = $valueInstanceName
+                    ServerName   = $sqlDatabaseObject.NetName
+                    Database     = $database.Name
+                    Name         = $role.Name
+                }
+                $results = Get-TargetResource @params
+                $results.Remove("MembersInDesiredState")
+                [void]$sb.AppendLine('        SQLDatabaseRole ' + (New-GUID).ToString())
+                [void]$sb.AppendLine('        {')
+                $dscBlock = Get-DSCBlock -Params $results -ModulePath $PSScriptRoot
+                [void]$sb.Append($dscBlock)
+                [void]$sb.AppendLine('        }')
+                $j++
+            }
+        }
+        $i++
+    }
+
+    return $sb.ToString()
+}
+
 <#
     .SYNOPSIS
         Adds a member to a database role in the SQL Server instance provided.
