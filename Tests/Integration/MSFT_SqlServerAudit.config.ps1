@@ -27,7 +27,7 @@ else
 
                 AuditName1            = 'FileAudit'
                 DestinationType1      = 'File'
-                FilePath1             = 'C:\Temp\audit'
+                FilePath1             = 'C:\Temp\audit\'
                 MaximumFileSize1      = 10
                 MaximumFileSizeUnit1  = 'MB'
                 MaximumRolloverFiles1 = 11
