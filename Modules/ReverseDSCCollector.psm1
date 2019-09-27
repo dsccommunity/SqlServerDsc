@@ -3,10 +3,13 @@ function Export-SQLServerConfiguration
     [CmdletBinding()]
     [OutputType([System.String])]
     $InformationPreference = 'Continue'
+
+    Add-ConfigurationDataEntry -Node 'localhost' -Key "ServerNumber" -Value "1" -Description "Identifier for the Current Server"
     $sb = [System.Text.StringBuilder]::new()
     [void]$sb.AppendLine("Configuration SQLServerConfiguration")
     [void]$sb.AppendLine("{")
     [void]$sb.AppendLine("    Import-DSCResource -ModuleName SQLServerDSC")
+    [void]$sb.AppendLine("    <# Credentials #>")
     [void]$sb.AppendLine("    Node localhost")
     [void]$sb.AppendLine("    {")
 
@@ -29,7 +32,8 @@ function Export-SQLServerConfiguration
 
     [void]$sb.AppendLine("    }")
     [void]$sb.AppendLine("}")
-    [void]$sb.AppendLine("SQLServerConfiguration")
+    [void]$sb.AppendLine("SQLServerConfiguration -ConfigurationData .\ConfigurationData.psd1")
+    $FullContent = Set-ObtainRequiredCredentials -Content $sb.ToString()
 
     #region Prompt the user for a location to save the extract and generate the files
     if ($null -eq $Path -or "" -eq $Path)
@@ -62,8 +66,43 @@ function Export-SQLServerConfiguration
         $OutputDSCPath += "\"
     }
     $outputDSCFile = $OutputDSCPath + "SQLServerConfiguration.ps1"
-    $sb.ToString() | Out-File $outputDSCFile
+    $FullContent | Out-File $outputDSCFile
+    $outputConfigurationData = $OutputDSCPath + "ConfigurationData.psd1"
+    New-ConfigurationDataDocument -Path $outputConfigurationData
 
     Invoke-Item -Path $OutputDSCPath
     #endregion
+}
+
+function Set-ObtainRequiredCredentials
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    Param(
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Content
+    )
+    $InformationPreference = 'Continue'
+    $credsContent = ""
+
+    foreach($credential in $Global:CredsRepo)
+    {
+        if(!$credential.ToLower().StartsWith("builtin"))
+        {
+            if(!$chckAzure.Checked)
+            {
+                $credsContent += "    " + (Resolve-Credentials $credential) + " = Get-Credential -UserName `"" + $credential + "`" -Message `"Please provide credentials`"`r`n"
+            }
+            else
+            {
+                $resolvedName = (Resolve-Credentials $credential)
+                $credsContent += "    " + $resolvedName + " = Get-AutomationPSCredential -Name " + ($resolvedName.Replace("$", "")) + "`r`n"
+            }
+        }
+    }
+    $credsContent += "`r`n"
+    $startPosition = $Content.IndexOf("<# Credentials #>") + 19
+    $Content = $Content.Insert($startPosition, $credsContent)
+    return $Content
 }

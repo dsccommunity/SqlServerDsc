@@ -529,6 +529,17 @@ function Export-TargetResource
                     Name         = $role.Name
                 }
                 $results = Get-TargetResource @params
+
+                if ($null -eq $results.MembersToInclude)
+                {
+                    $results.Remove("MembersToInclude")
+                }
+
+                if ($null -eq $results.MembersToExclude)
+                {
+                    $results.Remove("MembersToExclude")
+                }
+
                 $results.Remove("MembersInDesiredState")
                 [void]$sb.AppendLine('        SQLDatabaseRole ' + (New-GUID).ToString())
                 [void]$sb.AppendLine('        {')

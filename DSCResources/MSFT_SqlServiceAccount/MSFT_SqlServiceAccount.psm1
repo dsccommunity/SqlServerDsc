@@ -302,7 +302,14 @@ function Export-TargetResource
             $results = Get-TargetResource @params
             [void]$sb.AppendLine('        SQLServiceAccount ' + (New-GUID).ToString())
             [void]$sb.AppendLine('        {')
+
+            $ServiceAccountName = $results.ServiceAccountName
+            Save-Credentials -UserName $ServiceAccountName
+            $results.Remove('ServiceAccountName')
+            $credsVariable = Resolve-Credentials -Username $ServiceAccountName
+            $results.Add('ServiceAccount', $credsVariable)
             $dscBlock = Get-DSCBlock -Params $results -ModulePath $PSScriptRoot
+            $dscBlock = Convert-DSCStringParamToVariable -DSCBlock $dscBlock -ParameterName "ServiceAccount"
             [void]$sb.Append($dscBlock)
             [void]$sb.AppendLine('        }')
         }
