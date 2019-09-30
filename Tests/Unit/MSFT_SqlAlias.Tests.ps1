@@ -1311,9 +1311,8 @@ try
             }
         }
         Describe 'SqlAlias\Export-TargetResource' {
-            BeforeEach {
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
-            }
+            Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+
             # Mocking for protocol TCP
             Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $name } -MockWith {
                 return @{
