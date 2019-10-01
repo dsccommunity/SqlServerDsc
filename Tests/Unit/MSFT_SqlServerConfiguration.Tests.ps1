@@ -77,6 +77,180 @@ $invalidOption = @{
     RestartTimeout = 120
 }
 
+$mockConnectSQL = {
+    return @(
+        (
+            New-Object -TypeName Object |
+            Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru |
+            Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru |
+            Add-Member -MemberType NoteProperty -Name NetName -Value $mockServerName -PassThru |
+            Add-Member -MemberType ScriptProperty -Name Databases -Value {
+                return @{
+                    $mockSqlDatabase = @((
+                            New-Object -TypeName Object |
+                            Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
+                            Add-Member -MemberType ScriptProperty -Name Users -Value {
+                                return @{
+                                    $mockSqlServerLogin1 = @((
+                                            New-Object -TypeName Object |
+                                            Add-Member -MemberType ScriptMethod -Name IsMember -Value {
+                                                param
+                                                (
+                                                    [Parameter()]
+                                                    [System.String]
+                                                    $Name
+                                                )
+                                                if ($Name -eq $mockExpectedSqlDatabaseRole)
+                                                {
+                                                    return $true
+                                                }
+                                                else
+                                                {
+                                                    return $false
+                                                }
+                                            } -PassThru
+                                        ))
+                                    $mockSqlServerLogin2 = @((
+                                            New-Object -TypeName Object |
+                                            Add-Member -MemberType ScriptMethod -Name IsMember -Value {
+                                                return $true
+                                            } -PassThru
+                                        ))
+                                    $mockSqlServerLogin3 = @((
+                                            New-Object -TypeName Object |
+                                            Add-Member -MemberType ScriptMethod -Name IsMember -Value {
+                                                return $true
+                                            } -PassThru
+                                        ))
+
+                                }
+                            } -PassThru |
+                            Add-Member -MemberType ScriptProperty -Name Roles -Value {
+                                return @{
+                                    $mockSqlDatabaseRole1 = @((
+                                            New-Object -TypeName Object |
+                                            Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseRole1 -PassThru |
+                                            Add-Member -MemberType ScriptMethod -Name AddMember -Value {
+                                                param
+                                                (
+                                                    [Parameter()]
+                                                    [System.String]
+                                                    $Name
+                                                )
+                                                if ($mockInvalidOperationForAddMemberMethod)
+                                                {
+                                                    throw 'Mock AddMember Method was called with invalid operation.'
+                                                }
+                                                if ($Name -ne $mockExpectedMemberToAdd)
+                                                {
+                                                    throw "Called mocked AddMember() method without adding the right user. Expected '{0}'. But was '{1}'." `
+                                                        -f $mockExpectedMemberToAdd, $Name
+                                                }
+                                            } -PassThru |
+                                            Add-Member -MemberType ScriptMethod -Name Drop -Value {
+                                                if ($mockInvalidOperationForDropMethod)
+                                                {
+                                                    throw 'Mock Drop Method was called with invalid operation.'
+                                                }
+
+                                                if ($Name -ne $mockExpectedSqlDatabaseRole)
+                                                {
+                                                    throw "Called mocked Drop() method without dropping the right database role. Expected '{0}'. But was '{1}'." `
+                                                        -f $mockExpectedSqlDatabaseRole, $Name
+                                                }
+                                            } -PassThru |
+                                            Add-Member -MemberType ScriptMethod -Name DropMember -Value {
+                                                param
+                                                (
+                                                    [Parameter()]
+                                                    [System.String]
+                                                    $Name
+                                                )
+                                                if ($mockInvalidOperationForDropMemberMethod)
+                                                {
+                                                    throw 'Mock DropMember Method was called with invalid operation.'
+                                                }
+                                                if ($Name -ne $mockExpectedMemberToDrop)
+                                                {
+                                                    throw "Called mocked Drop() method without adding the right user. Expected '{0}'. But was '{1}'." `
+                                                        -f $mockExpectedMemberToDrop, $Name
+                                                }
+                                            } -PassThru |
+                                            Add-Member -MemberType ScriptMethod -Name EnumMembers -Value {
+                                                if ($mockInvalidOperationForEnumMethod)
+                                                {
+                                                    throw 'Mock EnumMembers Method was called with invalid operation.'
+                                                }
+                                                else
+                                                {
+                                                    $mockEnumMembers
+                                                }
+                                            } -PassThru
+                                        ))
+                                    $mockSqlDatabaseRole2 = @((
+                                            New-Object -TypeName Object |
+                                            Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseRole2 -PassThru |
+                                            Add-Member -MemberType ScriptMethod -Name AddMember -Value {
+                                                param
+                                                (
+                                                    [Parameter()]
+                                                    [System.String]
+                                                    $Name
+                                                )
+                                                if ($mockInvalidOperationForAddMemberMethod)
+                                                {
+                                                    throw 'Mock AddMember Method was called with invalid operation.'
+                                                }
+                                                if ($Name -ne $mockExpectedMemberToAdd)
+                                                {
+                                                    throw "Called mocked AddMember() method without adding the right user. Expected '{0}'. But was '{1}'." `
+                                                        -f $mockExpectedMemberToAdd, $Name
+                                                }
+                                            } -PassThru |
+                                            Add-Member -MemberType ScriptMethod -Name DropMember -Value {
+                                                param
+                                                (
+                                                    [Parameter()]
+                                                    [System.String]
+                                                    $Name
+                                                )
+                                                if ($mockInvalidOperationForDropMemberMethod)
+                                                {
+                                                    throw 'Mock DropMember Method was called with invalid operation.'
+                                                }
+                                                if ($Name -ne $mockExpectedMemberToDrop)
+                                                {
+                                                    throw "Called mocked Drop() method without adding the right user. Expected '{0}'. But was '{1}'." `
+                                                        -f $mockExpectedMemberToDrop, $Name
+                                                }
+                                            } -PassThru
+                                        ))
+                                }
+                            }-PassThru -Force
+                        ))
+                }
+            } -PassThru -Force |
+            Add-Member -MemberType ScriptProperty -Name Logins -Value {
+                return @{
+                    $mockSqlServerLogin1 = @((
+                            New-Object -TypeName Object |
+                            Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLogin1Type -PassThru
+                        ))
+                    $mockSqlServerLogin2 = @((
+                            New-Object -TypeName Object |
+                            Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLogin2Type -PassThru
+                        ))
+                    $mockSqlServerLogin3 = @((
+                            New-Object -TypeName Object |
+                            Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLogin3Type -PassThru
+                        ))
+                }
+            } -PassThru -Force
+
+        )
+    )
+}
+
 try
 {
     Describe "$($script:dscResourceName)\Get-TargetResource" {

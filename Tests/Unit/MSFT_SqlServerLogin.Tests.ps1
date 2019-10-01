@@ -214,6 +214,7 @@ try
             } -PassThru -Force
 
             $mock = New-Object -TypeName PSObject -Property @{
+                NetName = 'localhost'
                 LoginMode = 'Mixed'
                 Logins = @{
                     $windowsUser.Name = $windowsUser

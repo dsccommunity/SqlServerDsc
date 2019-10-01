@@ -78,6 +78,7 @@ try
                     # New-Object -TypeName Object |
                     New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server |
                         Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name NetName -Value $mockServerName -PassThru -Force |
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru -Force |
                         Add-Member -MemberType ScriptProperty -Name Configuration -Value {
                         return @( ( New-Object -TypeName Object |

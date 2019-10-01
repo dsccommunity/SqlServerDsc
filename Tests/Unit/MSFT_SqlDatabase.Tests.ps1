@@ -76,6 +76,7 @@ try
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name NetName -Value $mockServerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name Collation -Value $mockSqlDatabaseCollation -PassThru |
                         Add-Member -MemberType ScriptMethod -Name EnumCollations -Value {
                         return @(

@@ -73,33 +73,45 @@ try
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name NetName -Value $mockServerName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Collation -Value $mockSqlDatabaseCollation -PassThru |
+                        Add-Member -MemberType ScriptMethod -Name EnumCollations -Value {
+                        return @(
+                            ( New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty Name -Value $mockSqlDatabaseCollation -PassThru
+                            ),
+                            ( New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty Name -Value 'SQL_Latin1_General_CP1_CS_AS' -PassThru
+                            ),
+                            ( New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty Name -Value 'SQL_Latin1_General_Pref_CP850_CI_AS' -PassThru
+                            )
+                        )
+                    } -PassThru -Force |
                         Add-Member -MemberType ScriptProperty -Name Databases -Value {
                         return @{
-                            $mockSqlDatabaseName = @((
-                                    New-Object -TypeName Object |
-                                        Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
-                                        Add-Member -MemberType NoteProperty -Name Owner -Value $mockDatabaseOwner -PassThru |
-                                        Add-Member -MemberType ScriptMethod -Name SetOwner -Value {
-                                        if ($mockInvalidOperationForSetOwnerMethod)
-                                        {
-                                            throw 'Mock of method SetOwner() was called with invalid operation.'
-                                        }
+                            $mockSqlDatabaseName = ( New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name Collation -Value $mockSqlDatabaseCollation -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name Drop -Value {
+                                    if ($mockInvalidOperationForDropMethod)
+                                    {
+                                        throw 'Mock Drop Method was called with invalid operation.'
+                                    }
 
-                                        if ( $this.Owner -ne $mockExpectedDatabaseOwner )
-                                        {
-                                            throw "Called mocked SetOwner() method without setting the right login. Expected '{0}'. But was '{1}'." `
-                                                -f $mockExpectedDatabaseOwner, $this.Owner
-                                        }
-                                    } -PassThru -Force
-                                ))
-                        }
-                    } -PassThru -Force |
-                        Add-Member -MemberType ScriptProperty -Name Logins -Value {
-                        return @{
-                            $mockSqlServerLogin = @((
-                                    New-Object -TypeName Object |
-                                        Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru
-                                ))
+                                    if ( $this.Name -ne $mockExpectedDatabaseNameToDrop )
+                                    {
+                                        throw "Called mocked Drop() method without dropping the right database. Expected '{0}'. But was '{1}'." `
+                                            -f $mockExpectedDatabaseNameToDrop, $this.Name
+                                    }
+                                } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name Alter -Value {
+                                    if ($mockInvalidOperationForAlterMethod)
+                                    {
+                                        throw 'Mock Alter Method was called with invalid operation.'
+                                    }
+                                } -PassThru
+                            )
                         }
                     } -PassThru -Force
                 )

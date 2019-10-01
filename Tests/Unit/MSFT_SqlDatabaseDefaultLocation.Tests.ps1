@@ -90,20 +90,54 @@ try
         }
 
         $mockConnectSQL = {
-            return New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server |
-                Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru -Force |
-                Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru -Force |
-                Add-Member -MemberType NoteProperty -Name DefaultFile -Value $mockSqlDataPath -PassThru -Force |
-                Add-Member -MemberType NoteProperty -Name DefaultLog -Value $mockSqlLogPath -PassThru -Force |
-                # Ending backslash is removed because of regression test for issue #1307.
-                Add-Member -MemberType NoteProperty -Name BackupDirectory -Value $mockSqlBackupPath.TrimEnd('\') -PassThru -Force |
-                Add-Member -MemberType ScriptMethod -Name Alter -Value {
-                if ($mockInvalidOperationForAlterMethod)
-                {
-                    throw 'Mock Alter Method was called with invalid operation.'
-                }
-                $script:WasMethodAlterCalled = $true
-            } -PassThru -Force
+            return @(
+                (
+                    New-Object -TypeName Object |
+                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name NetName -Value $mockServerName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Collation -Value $mockSqlDatabaseCollation -PassThru |
+                        Add-Member -MemberType ScriptMethod -Name EnumCollations -Value {
+                        return @(
+                            ( New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty Name -Value $mockSqlDatabaseCollation -PassThru
+                            ),
+                            ( New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty Name -Value 'SQL_Latin1_General_CP1_CS_AS' -PassThru
+                            ),
+                            ( New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty Name -Value 'SQL_Latin1_General_Pref_CP850_CI_AS' -PassThru
+                            )
+                        )
+                    } -PassThru -Force |
+                        Add-Member -MemberType ScriptProperty -Name Databases -Value {
+                        return @{
+                            $mockSqlDatabaseName = ( New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name Collation -Value $mockSqlDatabaseCollation -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name Drop -Value {
+                                    if ($mockInvalidOperationForDropMethod)
+                                    {
+                                        throw 'Mock Drop Method was called with invalid operation.'
+                                    }
+
+                                    if ( $this.Name -ne $mockExpectedDatabaseNameToDrop )
+                                    {
+                                        throw "Called mocked Drop() method without dropping the right database. Expected '{0}'. But was '{1}'." `
+                                            -f $mockExpectedDatabaseNameToDrop, $this.Name
+                                    }
+                                } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name Alter -Value {
+                                    if ($mockInvalidOperationForAlterMethod)
+                                    {
+                                        throw 'Mock Alter Method was called with invalid operation.'
+                                    }
+                                } -PassThru
+                            )
+                        }
+                    } -PassThru -Force
+                )
+            )
         }
         #endregion
 

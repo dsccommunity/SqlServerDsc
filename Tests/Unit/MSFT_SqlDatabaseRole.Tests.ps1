@@ -95,9 +95,10 @@ try
                     New-Object -TypeName Object |
                     Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru |
                     Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru |
+                    Add-Member -MemberType NoteProperty -Name NetName -Value $mockServerName -PassThru |
                     Add-Member -MemberType ScriptProperty -Name Databases -Value {
                         return @{
-                            $mockSqlDatabaseName = @((
+                            $mockSqlDatabase = @((
                                     New-Object -TypeName Object |
                                     Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
                                     Add-Member -MemberType ScriptProperty -Name Users -Value {
