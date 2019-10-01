@@ -861,7 +861,9 @@ try
             Assert-VerifiableMock
         }
 
-        Describe 'SQLDatabasePermission\Export-TargetResource' {
+        Describe 'SqlDatabasePermission\Export-TargetResource' {
+            Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+
             # Mocking for protocol TCP
             Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $name } -MockWith {
                 return @{
