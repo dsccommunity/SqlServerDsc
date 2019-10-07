@@ -1,12 +1,11 @@
 # Change log for SqlServerDsc
 
 ## Unreleased
-- Changes to SqlServerDsc
-  - Fix typo in SqlSetup strings ([issue #1419](https://github.com/PowerShell/SqlServerDsc/issues/1419))
 
 - Changes to SqlServerDsc
   - Fix keywords to lower-case to align with guideline.
   - Fix keywords to have space before a parenthesis to align with guideline.
+  - Fix typo in SqlSetup strings ([issue #1419](https://github.com/PowerShell/SqlServerDsc/issues/1419))
 
 ## 13.1.0.0
 
