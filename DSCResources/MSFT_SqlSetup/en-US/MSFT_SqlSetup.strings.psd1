@@ -55,7 +55,7 @@ ConvertFrom-StringData @'
     SetupFailed = Please see the 'Summary.txt' log file in the 'Setup Bootstrap\\Log' folder.
     Reboot = Rebooting target node.
     SuppressReboot = Suppressing reboot of target node.
-    TestFailedAfterSet = Test-TargetResource function returned false when Set-TargetResource function verified the desired state. This indicates that the Set-TargetResource did not correctly set set the desired state, or that the function Test-TargetResource does not correctly evaluate the desired state.
+    TestFailedAfterSet = Test-TargetResource function returned false when Set-TargetResource function verified the desired state. This indicates that the Set-TargetResource did not correctly set the desired state, or that the function Test-TargetResource does not correctly evaluate the desired state.
     FeaturesFound = Found features already installed: {0}
     NoFeaturesFound = No features are installed.
     UnableToFindFeature = Unable to find feature '{0}' among the installed features: '{1}'.
