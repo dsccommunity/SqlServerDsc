@@ -2379,7 +2379,7 @@ InModuleScope 'SqlServerDsc.Common' {
                     But since the mock New-Object will also be called without arguments, we first
                     have to evaluate if $ArgumentList contains values.
                 #>
-                if( $ArgumentList.Count -gt 0)
+                if ( $ArgumentList.Count -gt 0)
                 {
                     $serverInstance = $ArgumentList[0]
                 }

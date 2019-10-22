@@ -2929,7 +2929,7 @@ try
                         Assert-MockCalled -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
                     }
 
-                    if( $mockSqlMajorVersion -in (13,14) )
+                    if ( $mockSqlMajorVersion -in (13,14) )
                     {
                         It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016 and 2017' {
                             $testParameters += @{
@@ -3048,7 +3048,7 @@ try
                         Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
                     }
 
-                    if( $mockSqlMajorVersion -in (13,14) )
+                    if ( $mockSqlMajorVersion -in (13,14) )
                     {
                         It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016 and 2017' {
                             $testParameters.Features = 'SSMS'
@@ -3146,7 +3146,7 @@ try
                         Assert-MockCalled -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
                     }
 
-                    if( $mockSqlMajorVersion -in (13,14) )
+                    if ( $mockSqlMajorVersion -in (13,14) )
                     {
                         It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016 and 2017' {
                             $testParameters.Features = 'SSMS'
@@ -3248,7 +3248,7 @@ try
                         Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
                     }
 
-                    if( $mockSqlMajorVersion -in (13,14) )
+                    if ( $mockSqlMajorVersion -in (13,14) )
                     {
                         It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016 and 2017' {
                             $testParameters.Features = $($testParameters.Features), 'SSMS' -join ','

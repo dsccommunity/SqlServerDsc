@@ -78,6 +78,7 @@ try
                     # New-Object -TypeName Object |
                     New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server |
                         Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name NetName -Value $mockServerName -PassThru -Force |
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru -Force |
                         Add-Member -MemberType ScriptProperty -Name Configuration -Value {
                         return @( ( New-Object -TypeName Object |
@@ -729,6 +730,66 @@ try
 
                 It 'Should throw the correct error' {
                     { Get-SqlDscDynamicMaxMemory } | Should -Throw $script:localizedData.ErrorGetDynamicMaxMemory
+                }
+            }
+        }
+
+        Describe 'SqlServerMemory\Export-TargetResource' {
+            Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+
+            # Mocking for protocol TCP
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $name } -MockWith {
+                return @{
+                    'MyAlias' = 'DBMSSOCN,sqlnode.company.local,1433'
+                }
+            } -Verifiable
+
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node -and $Name -eq $name } -MockWith {
+                return @{
+                    'MyAlias' = 'DBMSSOCN,sqlnode.company.local,1433'
+                }
+            } -Verifiable
+
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $nameDifferentTcpPort } -MockWith {
+                return @{
+                    'DifferentTcpPort' = 'DBMSSOCN,sqlnode.company.local,1500'
+                }
+            } -Verifiable
+
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node -and $Name -eq $nameDifferentTcpPort } -MockWith {
+                return @{
+                    'DifferentTcpPort' = 'DBMSSOCN,sqlnode.company.local,1500'
+                }
+            } -Verifiable
+
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $nameDifferentServerNameTcp } -MockWith {
+                return @{
+                    'DifferentServerNameTcp' = 'DBMSSOCN,unknownserver.company.local,1433'
+                }
+            } -Verifiable
+
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node -and $Name -eq $nameDifferentServerNameTcp } -MockWith {
+                return @{
+                    'DifferentServerNameTcp' = 'DBMSSOCN,unknownserver.company.local,1433'
+                }
+            } -Verifiable
+
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $unknownName } -MockWith {
+                return $null
+            } -Verifiable
+
+            # Mocking 64-bit OS
+            Mock -CommandName Get-CimInstance -MockWith {
+                return New-Object -TypeName Object |
+                    Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
+            } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -Verifiable
+
+            Context 'Extract the existing configuration' {
+                $result = Export-TargetResource
+
+
+                It 'Should return content from the extraction' {
+                    $result | Should -Not -Be $null
                 }
             }
         }

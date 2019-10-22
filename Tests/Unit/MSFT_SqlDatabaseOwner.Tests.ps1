@@ -73,33 +73,45 @@ try
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name NetName -Value $mockServerName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Collation -Value $mockSqlDatabaseCollation -PassThru |
+                        Add-Member -MemberType ScriptMethod -Name EnumCollations -Value {
+                        return @(
+                            ( New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty Name -Value $mockSqlDatabaseCollation -PassThru
+                            ),
+                            ( New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty Name -Value 'SQL_Latin1_General_CP1_CS_AS' -PassThru
+                            ),
+                            ( New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty Name -Value 'SQL_Latin1_General_Pref_CP850_CI_AS' -PassThru
+                            )
+                        )
+                    } -PassThru -Force |
                         Add-Member -MemberType ScriptProperty -Name Databases -Value {
                         return @{
-                            $mockSqlDatabaseName = @((
-                                    New-Object -TypeName Object |
-                                        Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
-                                        Add-Member -MemberType NoteProperty -Name Owner -Value $mockDatabaseOwner -PassThru |
-                                        Add-Member -MemberType ScriptMethod -Name SetOwner -Value {
-                                        if ($mockInvalidOperationForSetOwnerMethod)
-                                        {
-                                            throw 'Mock of method SetOwner() was called with invalid operation.'
-                                        }
+                            $mockSqlDatabaseName = ( New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name Collation -Value $mockSqlDatabaseCollation -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name Drop -Value {
+                                    if ($mockInvalidOperationForDropMethod)
+                                    {
+                                        throw 'Mock Drop Method was called with invalid operation.'
+                                    }
 
-                                        if ( $this.Owner -ne $mockExpectedDatabaseOwner )
-                                        {
-                                            throw "Called mocked SetOwner() method without setting the right login. Expected '{0}'. But was '{1}'." `
-                                                -f $mockExpectedDatabaseOwner, $this.Owner
-                                        }
-                                    } -PassThru -Force
-                                ))
-                        }
-                    } -PassThru -Force |
-                        Add-Member -MemberType ScriptProperty -Name Logins -Value {
-                        return @{
-                            $mockSqlServerLogin = @((
-                                    New-Object -TypeName Object |
-                                        Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLoginType -PassThru
-                                ))
+                                    if ( $this.Name -ne $mockExpectedDatabaseNameToDrop )
+                                    {
+                                        throw "Called mocked Drop() method without dropping the right database. Expected '{0}'. But was '{1}'." `
+                                            -f $mockExpectedDatabaseNameToDrop, $this.Name
+                                    }
+                                } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name Alter -Value {
+                                    if ($mockInvalidOperationForAlterMethod)
+                                    {
+                                        throw 'Mock Alter Method was called with invalid operation.'
+                                    }
+                                } -PassThru
+                            )
                         }
                     } -PassThru -Force
                 )
@@ -324,6 +336,66 @@ try
             }
 
             Assert-VerifiableMock
+        }
+
+        Describe 'SqlDatabaseOwner\Export-TargetResource' {
+            Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+
+            # Mocking for protocol TCP
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $name } -MockWith {
+                return @{
+                    'MyAlias' = 'DBMSSOCN,sqlnode.company.local,1433'
+                }
+            } -Verifiable
+
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node -and $Name -eq $name } -MockWith {
+                return @{
+                    'MyAlias' = 'DBMSSOCN,sqlnode.company.local,1433'
+                }
+            } -Verifiable
+
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $nameDifferentTcpPort } -MockWith {
+                return @{
+                    'DifferentTcpPort' = 'DBMSSOCN,sqlnode.company.local,1500'
+                }
+            } -Verifiable
+
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node -and $Name -eq $nameDifferentTcpPort } -MockWith {
+                return @{
+                    'DifferentTcpPort' = 'DBMSSOCN,sqlnode.company.local,1500'
+                }
+            } -Verifiable
+
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $nameDifferentServerNameTcp } -MockWith {
+                return @{
+                    'DifferentServerNameTcp' = 'DBMSSOCN,unknownserver.company.local,1433'
+                }
+            } -Verifiable
+
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node -and $Name -eq $nameDifferentServerNameTcp } -MockWith {
+                return @{
+                    'DifferentServerNameTcp' = 'DBMSSOCN,unknownserver.company.local,1433'
+                }
+            } -Verifiable
+
+            Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $unknownName } -MockWith {
+                return $null
+            } -Verifiable
+
+            # Mocking 64-bit OS
+            Mock -CommandName Get-CimInstance -MockWith {
+                return New-Object -TypeName Object |
+                    Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
+            } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } -Verifiable
+
+            Context 'Extract the existing configuration' {
+                $result = Export-TargetResource
+
+
+                It 'Should return content from the extraction' {
+                    $result | Should -Not -Be $null
+                }
+            }
         }
     }
 }

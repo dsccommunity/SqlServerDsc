@@ -220,4 +220,42 @@ function Test-TargetResource
         -ValuesToCheck @('Name', 'Database')
 }
 
+function Export-TargetResource
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+
+    $InformationPreference = 'Continue'
+
+    $sqlDatabaseObject = Connect-SQL
+    $databases = $sqlDatabaseObject.Databases
+    $sb = [System.Text.StringBuilder]::new()
+
+    $valueInstanceName = $sqlDatabaseObject.InstanceName
+    if ([System.String]::IsNullOrEmpty($valueInstanceName))
+    {
+        $valueInstanceName = 'MSSQLSERVER'
+    }
+
+    $i = 1
+    foreach ($database in $databases)
+    {
+        Write-Information "    [$i/$($databases.Count)] Extracting Owners for Database {$($database.Name)}"
+        $params = @{
+            Database     = $database.Name
+            Name         = '*'
+            InstanceName = $valueInstanceName
+        }
+        $results = Get-TargetResource @params
+        [void]$sb.AppendLine('        SqlDatabaseOwner ' + (New-GUID).ToString())
+        [void]$sb.AppendLine('        {')
+        $dscBlock = Get-DSCBlock -Params $results -ModulePath $PSScriptRoot
+        [void]$sb.Append($dscBlock)
+        [void]$sb.AppendLine('        }')
+        $i++
+    }
+
+    return $sb.ToString()
+}
+
 Export-ModuleMember -Function *-TargetResource

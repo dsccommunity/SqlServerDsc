@@ -301,3 +301,58 @@ function Test-TargetResource
     return $isDefaultPathInDesiredState
 }
 
+function Export-TargetResource
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+
+    $InformationPreference = 'Continue'
+
+    $sqlDatabaseObject = Connect-SQL
+    $sb = [System.Text.StringBuilder]::new()
+
+    $valueInstanceName = $sqlDatabaseObject.InstanceName
+    if ([System.String]::IsNullOrEmpty($valueInstanceName))
+    {
+        $valueInstanceName = 'MSSQLSERVER'
+    }
+
+    $types = ('Data', 'Log', 'Backup')
+    foreach ($type in $types)
+    {
+        Write-Information "    {$type}"
+        switch ($type)
+        {
+            'Data'
+            {
+                $currentPath = $sqlDatabaseObject.DefaultFile
+            }
+
+            'Log'
+            {
+                $currentPath = $sqlDatabaseObject.DefaultLog
+            }
+
+            'Backup'
+            {
+                $currentPath = $sqlDatabaseObject.BackupDirectory
+            }
+        }
+        $params = @{
+            InstanceName = $valueInstanceName
+            ServerName   = $sqlDatabaseObject.NetName
+            Type         = $type
+            Path         = $currentPath
+        }
+        $results = Get-TargetResource @params
+        $results.Remove("IsActiveNode")
+        [void]$sb.AppendLine('        SQLDatabaseDefaultLocation ' + (New-GUID).ToString())
+        [void]$sb.AppendLine('        {')
+        $dscBlock = Get-DSCBlock -Params $results -ModulePath $PSScriptRoot
+        [void]$sb.Append($dscBlock)
+        [void]$sb.AppendLine('        }')
+    }
+
+    return $sb.ToString()
+}
+

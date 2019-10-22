@@ -265,6 +265,58 @@ function Set-TargetResource
     }
 }
 
+function Export-TargetResource
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+
+    $InformationPreference = 'Continue'
+
+    $sqlDatabaseObject = Connect-SQL
+
+    $sb = [System.Text.StringBuilder]::new()
+
+    $valueInstanceName = $sqlDatabaseObject.InstanceName
+    if ([System.String]::IsNullOrEmpty($valueInstanceName))
+    {
+        $valueInstanceName = 'MSSQLSERVER'
+    }
+    $ServerName = $sqlDatabaseObject.NetName
+    $serviceTypes = @('DatabaseEngine', 'SQLServerAgent', 'Search', 'IntegrationServices', 'AnalysisServices', 'ReportingServices', 'SQLServerBrowser', 'NotificationServices')
+    foreach ($type in $ServiceTypes)
+    {
+        Write-Information "    {$type}"
+        $serviceObject = Get-ServiceObject -ServerName $ServerName -InstanceName $valueInstanceName -ServiceType $type -ErrorAction SilentlyContinue
+
+        if ($null -ne $serviceObject)
+        {
+            $serviceAccountName = $serviceObject.ServiceAccount -ireplace '^([\.])\\(.*)$', "$ServerName\`$2"
+            $secpasswd = [System.Security.SecureString]::new()
+            $accountCreds = New-Object System.Management.Automation.PSCredential ($serviceAccountName, $secpasswd)
+            $params = @{
+                InstanceName   = $valueInstanceName
+                ServerName     = $sqlDatabaseObject.NetName
+                ServiceType    = $type
+                ServiceAccount = $accountCreds
+            }
+            $results = Get-TargetResource @params
+            [void]$sb.AppendLine('        SQLServiceAccount ' + (New-GUID).ToString())
+            [void]$sb.AppendLine('        {')
+
+            $ServiceAccountName = $results.ServiceAccountName
+            Save-Credentials -UserName $ServiceAccountName
+            $results.Remove('ServiceAccountName')
+            $credsVariable = Resolve-Credentials -Username $ServiceAccountName
+            $results.Add('ServiceAccount', $credsVariable)
+            $dscBlock = Get-DSCBlock -Params $results -ModulePath $PSScriptRoot
+            $dscBlock = Convert-DSCStringParamToVariable -DSCBlock $dscBlock -ParameterName "ServiceAccount"
+            [void]$sb.Append($dscBlock)
+            [void]$sb.AppendLine('        }')
+        }
+    }
+    return $sb.ToString()
+}
+
 <#
     .SYNOPSIS
         Gets an SMO Service object instance for the requested service and type.

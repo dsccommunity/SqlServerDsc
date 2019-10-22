@@ -371,6 +371,35 @@ function Test-TargetResource
     return $isServerMemoryInDesiredState
 }
 
+function Export-TargetResource
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+
+    $InformationPreference = 'Continue'
+
+    $sqlDatabaseObject = Connect-SQL
+    $sb = [System.Text.StringBuilder]::new()
+
+    $valueInstanceName = $sqlDatabaseObject.InstanceName
+    if ([System.String]::IsNullOrEmpty($valueInstanceName))
+    {
+        $valueInstanceName = 'MSSQLSERVER'
+    }
+    $params = @{
+        InstanceName = $valueInstanceName
+    }
+    $results = Get-TargetResource @params
+    $results.Remove("IsActiveNode")
+    [void]$sb.AppendLine('        SQLServerMemory ' + (New-GUID).ToString())
+    [void]$sb.AppendLine('        {')
+    $dscBlock = Get-DSCBlock -Params $results -ModulePath $PSScriptRoot
+    [void]$sb.Append($dscBlock)
+    [void]$sb.AppendLine('        }')
+
+    return $sb.ToString()
+}
+
 <#
     .SYNOPSIS
     This cmdlet is used to return the Dynamic MaxMemory of a SQL Instance
