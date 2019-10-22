@@ -9,11 +9,23 @@ function Export-SQLServerConfiguration
         $Path
     )
     $InformationPreference = 'Continue'
+    $VerbosePreference     = 'SilentlyContinue'
 
     Add-ConfigurationDataEntry -Node 'localhost' -Key "ServerNumber" -Value "1" -Description "Identifier for the Current Server"
     $sb = [System.Text.StringBuilder]::new()
+    [void]$sb.AppendLine("param(")
+    [void]$sb.AppendLine("    [parameter()]")
+    [void]$sb.AppendLine("    [System.String]")
+    [void]$sb.AppendLine("    `$ConfigurationDataPath")
+    [void]$sb.AppendLine(")")
     [void]$sb.AppendLine("Configuration SQLServerConfiguration")
     [void]$sb.AppendLine("{")
+    [void]$sb.AppendLine("    param(")
+    [void]$sb.AppendLine("        [parameter()]")
+    [void]$sb.AppendLine("        [System.String]")
+    [void]$sb.AppendLine("        `$ConfigurationDataPath")
+    [void]$sb.AppendLine("    )")
+    [void]$sb.AppendLine("")
     [void]$sb.AppendLine("    Import-DSCResource -ModuleName SQLServerDSC")
     [void]$sb.AppendLine("    <# Credentials #>")
     [void]$sb.AppendLine("    Node localhost")
@@ -38,7 +50,7 @@ function Export-SQLServerConfiguration
 
     [void]$sb.AppendLine("    }")
     [void]$sb.AppendLine("}")
-    [void]$sb.AppendLine("SQLServerConfiguration -ConfigurationData .\ConfigurationData.psd1")
+    [void]$sb.AppendLine("SQLServerConfiguration -ConfigurationData `$ConfigurationDataPath")
     $FullContent = Set-ObtainRequiredCredentials -Content $sb.ToString()
 
     #region Prompt the user for a location to save the extract and generate the files

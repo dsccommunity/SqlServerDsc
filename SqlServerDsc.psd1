@@ -21,7 +21,7 @@
   PowerShellVersion = '5.0'
 
   # Adds dependency to ReverseDSC
-  RequiredModules = @(@{ModuleName = "ReverseDSC"; RequiredVersion = "1.9.4.6"; })
+  RequiredModules = @(@{ModuleName = "ReverseDSC"; RequiredVersion = "1.9.4.7"; })
 
   # Minimum version of the common language runtime (CLR) required by this module
   CLRVersion = '4.0'
