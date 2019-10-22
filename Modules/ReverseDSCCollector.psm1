@@ -2,6 +2,12 @@ function Export-SQLServerConfiguration
 {
     [CmdletBinding()]
     [OutputType([System.String])]
+
+    param(
+        [Parameter()]
+        [System.String]
+        $Path
+    )
     $InformationPreference = 'Continue'
 
     Add-ConfigurationDataEntry -Node 'localhost' -Key "ServerNumber" -Value "1" -Description "Identifier for the Current Server"
