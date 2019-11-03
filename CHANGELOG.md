@@ -4,6 +4,8 @@
 
 - Changes to SqlServerDsc
   - Add .gitattributes file to checkout file correctly with CRLF.
+  - Updated .vscode/analyzersettings.psd1 file to correct use PSSA rules
+    and custom rules in VS Code.
 
 ## 13.2.0.0
 
