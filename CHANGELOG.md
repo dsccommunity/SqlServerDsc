@@ -6,6 +6,8 @@
   - Add .gitattributes file to checkout file correctly with CRLF.
   - Updated .vscode/analyzersettings.psd1 file to correct use PSSA rules
     and custom rules in VS Code.
+- Changes to SqlServerMaxDop
+  - Fix line endings in code which did not use the correct format.
 
 ## 13.2.0.0
 
