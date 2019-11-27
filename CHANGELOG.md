@@ -2,12 +2,20 @@
 
 ## Unreleased
 
+- Changes to SqlServerDsc
+  - Add .gitattributes file to checkout file correctly with CRLF.
+  - Updated .vscode/analyzersettings.psd1 file to correct use PSSA rules
+    and custom rules in VS Code.
+  - Fix hashtables to align with style guideline ([issue #1437](https://github.com/PowerShell/SqlServerDsc/issues/1437)).
+- Changes to SqlServerMaxDop
+  - Fix line endings in code which did not use the correct format.
+
 ## 13.2.0.0
 
 - Changes to SqlServerDsc
   - Fix keywords to lower-case to align with guideline.
   - Fix keywords to have space before a parenthesis to align with guideline.
-  - Fix typo in SqlSetup strings ([issue #1419](https://github.com/PowerShell/SqlServerDsc/issues/1419))
+  - Fix typo in SqlSetup strings ([issue #1419](https://github.com/PowerShell/SqlServerDsc/issues/1419)).
 
 ## 13.1.0.0
 
