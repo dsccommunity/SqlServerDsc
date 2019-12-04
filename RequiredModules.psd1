@@ -14,6 +14,7 @@
     ModuleBuilder        = 'latest'
     ChangelogManagement  = 'latest'
     Sampler              = 'latest'
+    'DscResource.Test'   = 'latest'
 
     #required for DSC authoring
     # xDscResourceDesigner = 'latest'
