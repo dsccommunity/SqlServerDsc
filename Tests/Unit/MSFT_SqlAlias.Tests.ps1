@@ -18,30 +18,18 @@ if (Test-SkipContinuousIntegrationTask -Type 'Unit')
 $script:dscModuleName = 'SqlServerDsc'
 $script:dscResourceName = 'MSFT_SqlAlias'
 
-#region HEADER
-
-# Unit Test Template Version: 1.2.1
-$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
-{
-    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))
-}
-
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
-
-$TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:dscModuleName `
-    -DSCResourceName $script:dscResourceName `
-    -TestType Unit
-
-#endregion HEADER
-
 function Invoke-TestSetup {
+    Import-Module -Name DscResource.Test -Force
+
+    $script:testEnvironment = Initialize-TestEnvironment `
+        -DSCModuleName $script:dscModuleName `
+        -DSCResourceName $script:dscResourceName `
+        -ResourceType 'Mof' `
+        -TestType Unit
 }
 
 function Invoke-TestCleanup {
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment
+    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
 
 # Begin Testing

@@ -23,7 +23,7 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 }
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
-$TestEnvironment = Initialize-TestEnvironment `
+$script:testEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:dscModuleName `
     -DSCResourceName $script:dscResourceName `
     -TestType Integration
@@ -618,6 +618,6 @@ try
 finally
 {
     #region FOOTER
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment
+    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
     #endregion
 }
