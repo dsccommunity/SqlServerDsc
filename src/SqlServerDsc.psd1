@@ -1,21 +1,21 @@
 @{
   # Version number of this module.
-  moduleVersion = '13.2.0.0'
+  moduleVersion = '0.0.1'
 
   # ID used to uniquely identify this module
   GUID = '693ee082-ed36-45a7-b490-88b07c86b42f'
 
   # Author of this module
-  Author = 'Microsoft Corporation'
+  Author = 'DSC Community'
 
   # Company or vendor of this module
-  CompanyName = 'Microsoft Corporation'
+  CompanyName = 'DSC Community'
 
   # Copyright statement for this module
-  Copyright = '(c) 2018 Microsoft Corporation. All rights reserved.'
+  Copyright = 'Copyright the DSC Community contributors. All rights reserved.'
 
   # Description of the functionality provided by this module
-  Description = 'Module with DSC Resources for deployment and configuration of Microsoft SQL Server.'
+  Description = 'Module with DSC resources for deployment and configuration of Microsoft SQL Server.'
 
   # Minimum version of the Windows PowerShell engine required by this module
   PowerShellVersion = '5.0'
@@ -24,10 +24,16 @@
   CLRVersion = '4.0'
 
   # Functions to export from this module
-  FunctionsToExport = '*'
+  FunctionsToExport = @()
 
   # Cmdlets to export from this module
-  CmdletsToExport = '*'
+  CmdletsToExport = @()
+
+  # Variables to export from this module
+  VariablesToExport = @()
+
+  # Aliases to export from this module
+  AliasesToExport = @()
 
   RequiredAssemblies = @()
 
@@ -49,11 +55,7 @@
           # IconUri = ''
 
           # ReleaseNotes of this module
-        ReleaseNotes = '- Changes to SqlServerDsc
-  - Fix keywords to lower-case to align with guideline.
-  - Fix keywords to have space before a parenthesis to align with guideline.
-
-'
+        ReleaseNotes = ''
 
       } # End of PSData hashtable
 
