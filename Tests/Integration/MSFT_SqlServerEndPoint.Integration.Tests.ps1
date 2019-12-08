@@ -13,23 +13,14 @@ $script:dscModuleName = 'SqlServerDsc'
 $script:dscResourceFriendlyName = 'SqlServerEndpoint'
 $script:dscResourceName = "MSFT_$($script:dscResourceFriendlyName)"
 
-#region HEADER
-# Integration Test Template Version: 1.3.2
-[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-    (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
-{
-    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DscResource.Tests'))
-}
+Import-Module -Name DscResource.Test -Force
 
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
 $script:testEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:dscModuleName `
     -DSCResourceName $script:dscResourceName `
-    -TestType Integration
-#endregion
+    -ResourceType 'Mof' `
+    -TestType 'Integration'
 
-# Using try/finally to always cleanup.
 try
 {
     #region Integration Tests
@@ -140,7 +131,5 @@ try
 }
 finally
 {
-    #region FOOTER
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
-    #endregion
 }

@@ -24,7 +24,7 @@ $script:testEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:dscModuleName `
     -DSCResourceName $script:dscResourceName `
     -ResourceType 'Mof' `
-    -TestType Unit
+    -TestType 'Unit'
 
 $disableHadr = @{
     Ensure       = 'Absent'

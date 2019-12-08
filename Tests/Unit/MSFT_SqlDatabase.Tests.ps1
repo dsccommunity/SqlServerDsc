@@ -23,7 +23,7 @@ function Invoke-TestSetup
         -DSCModuleName $script:dscModuleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
-        -TestType Unit
+        -TestType 'Unit'
 }
 
 function Invoke-TestCleanup

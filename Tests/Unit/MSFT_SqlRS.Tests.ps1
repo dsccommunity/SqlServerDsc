@@ -25,7 +25,7 @@ function Invoke-TestSetup
         -DSCModuleName $script:dscModuleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
-        -TestType Unit
+        -TestType 'Unit'
 
     # Importing SQLPS stubs
     Import-Module -Name (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Force -Global
