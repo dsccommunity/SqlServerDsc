@@ -100,6 +100,7 @@ stages:
       - job: test_windows_ps
         pool:
           vmImage: 'win1803'
+        timeoutInMinutes: 0
         steps:
           - task: DownloadBuildArtifacts@0
             inputs:
@@ -119,7 +120,6 @@ stages:
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
-
 
           # Publish code coverage results
           - task: PublishCodeCoverageResults@1
