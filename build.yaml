@@ -40,6 +40,7 @@ BuildWorkflow:
     - Create_changelog_release_output
 
   pack:
+    - build
     - package_module_nupkg
 
   # defining test task to be run when invoking `./build.ps1 -Tasks test`
