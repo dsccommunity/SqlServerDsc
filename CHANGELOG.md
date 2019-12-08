@@ -36,14 +36,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - None
 
-## 13.2.0.0
+## [13.2.0.0] - 2019-09-18
+
+### Changed
 
 - Changes to SqlServerDsc
   - Fix keywords to lower-case to align with guideline.
   - Fix keywords to have space before a parenthesis to align with guideline.
   - Fix typo in SqlSetup strings ([issue #1419](https://github.com/PowerShell/SqlServerDsc/issues/1419)).
 
-## 13.1.0.0
+## [13.1.0.0] - 2019-08-07
+
+### Changed
 
 - Changes to SqlServerDsc
   - New DSC resource SqlAgentFailsafe
@@ -104,7 +108,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added integration tests ([issue #739](https://github.com/PowerShell/SqlServerDsc/issues/739)).
   - Updated unit tests to the latest template ([issue #1068](https://github.com/PowerShell/SqlServerDsc/issues/1068)).
 
-## 13.0.0.0
+## [13.0.0.0] - 2019-06-26
+
+### Changed
 
 - Changes to SqlServerDsc
   - Added SqlAgentAlert resource.
@@ -179,7 +185,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     name list may have been returned as a string instead of as a string array
     ([issue #1368](https://github.com/PowerShell/SqlServerDsc/issues/1368)).
 
-## 12.5.0.0
+## [12.5.0.0] - 2019-05-15
+
+### Changed
 
 - Changes to SqlServerSecureConnection
   - Updated README and added example for SqlServerSecureConnection,
@@ -265,7 +273,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Refactored Get-TargetResource slightly so it provide better verbose
     messages.
 
-## 12.4.0.0
+## [12.4.0.0] - 2019-04-03
+
+### Changed
 
 - Changes to SqlServerDsc
   - Added new resources.
@@ -343,7 +353,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     when the backup file path was changed, and the path was ending with
     a backslash ([issue #1307](https://github.com/PowerShell/SqlServerDsc/issues/1307)).
 
-## 12.3.0.0
+## [12.3.0.0] - 2019-02-20
+
+### Changed
 
 - Changes to SqlServerDsc
   - Reverting the change that was made as part of the
@@ -406,7 +418,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ([issue #744](https://github.com/PowerShell/SqlServerDsc/issues/744)).
     [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
 
-## 12.2.0.0
+## [12.2.0.0] - 2019-01-09
+
+### Changed
 
 - Changes to SqlServerDsc
   - During testing in AppVeyor the Build Worker is restarted in the install
@@ -421,7 +435,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change to SqlServerLogin so it doesn't check properties for absent logins.
   - Fix for ([issue #1096](https://github.com/PowerShell/SqlServerDsc/issues/1096))
 
-## 12.1.0.0
+## [12.1.0.0] - 2018-10-24
+
+### Changed
 
 - Changes to SqlServerDsc
   - Add support for validating the code with the DSC ResourceKit
@@ -476,7 +492,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     when a SQL Server installation is not present on the node running the
     unit test ([issue #983](https://github.com/PowerShell/SqlServerDsc/issues/983)).
 
-## 12.0.0.0
+## [12.0.0.0] - 2018-09-05
+
+### Changed
 
 - Changes to SqlServerDatabaseMail
   - DisplayName is now properly treated as display name
@@ -499,7 +517,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     AsSvcStartupType, IsSvcStartupType and RsSvcStartupType ([issue #1165](https://github.com/PowerShell/SqlServerDsc/issues/1165).
     [Maxime Daniou (@mdaniou)](https://github.com/mdaniou)
 
-## 11.4.0.0
+## [11.4.0.0] - 2018-07-25
+
+### Changed
 
 - Changes to SqlServerDsc
   - Updated helper function Restart-SqlService to have to new optional parameters
@@ -531,7 +551,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     version of SQL Server was installed side-by-side so that SQLPS module should
     be used instead.
 
-## 11.3.0.0
+## [11.3.0.0] - 2018-06-13
+
+### Changed
 
 - Changes to SqlServerDsc
   - Moved decoration for integration test to resolve a breaking change in
@@ -543,7 +565,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Added SqlScriptQueryResource. [Chase Wilson (@chasewilson)](https://github.com/chasewilson)
   - Fix for issue #779 [Paul Kelly (@prkelly)](https://github.com/prkelly)
 
-## 11.2.0.0
+## [11.2.0.0] - 2018-05-02
 
 - Changes to SqlServerDsc
   - Added new test helper functions in the CommonTestHelpers module. These are used
@@ -583,7 +605,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changes to SqlServerDatabaseMail
   - Fixed Script Analyzer rule error.
 
-## 11.1.0.0
+## [11.1.0.0] - 2018-03-21
+
+### Changed
 
 - Changes to SqlServerDsc
   - Updated the PULL\_REQUEST\_TEMPLATE with an improved task list and modified
@@ -612,7 +636,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - SqlAlias ([issue #999](https://github.com/PowerShell/SqlServerDsc/issues/999)).
     - SqlWindowsFirewall ([issue #1089](https://github.com/PowerShell/SqlServerDsc/issues/1089)).
 
-## 11.0.0.0
+## [11.0.0.0] - 2018-02-07
+
+### Changed
 
 - Changes to SqlServerDsc
   - BREAKING CHANGE: Resource SqlRSSecureConnectionLevel was remove
@@ -778,7 +804,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed minor typos in comment-based help.
   - Style cleanup in code.
 
-## 10.0.0.0
+## [10.0.0.0] - 2017-12-14
+
+### Changed
 
 - BREAKING CHANGE: Resource module has been renamed to SqlServerDsc
   ([issue #916](https://github.com/PowerShell/SqlServerDsc/issues/916)).
@@ -899,7 +927,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     to ServerName and InstanceName respectively
     ([issue #308](https://github.com/PowerShell/SqlServerDsc/issues/308)).
 
-## 9.0.0.0
+## [9.0.0.0] - 2017-11-15
+
+### Changed
 
 - Changes to xSQLServer
   - Updated Pester syntax to v4
@@ -961,7 +991,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the resource will only determine if a change is needed if the target node
     is the active host of the SQL Server instance ([issue #882](https://github.com/PowerShell/xSQLServer/issues/882)).
 
-## 8.2.0.0
+## [8.2.0.0] - 2017-10-05
+
+### Changed
 
 - Changes to xSQLServer
   - Updated appveyor.yml so that integration tests run in order and so that
@@ -1074,7 +1106,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - xSQLServerDatabaseDefaultLocation
     ([issue #656](https://github.com/PowerShell/xSQLServer/issues/656))
 
-## 8.1.0.0
+## [8.1.0.0] - 2017-08-23
+
+### Changed
 
 - Changes to xSQLServer
   - Added back .markdownlint.json so that lint rule MD013 is enforced.
@@ -1142,7 +1176,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added a simple integration test ([issue #709](https://github.com/PowerShell/xSQLServer/issues/709)).
   - Fixed PS Script Analyzer errors ([issue #729](https://github.com/PowerShell/xSQLServer/issues/729))
 
-## 8.0.0.0
+## [8.0.0.0] - 2017-07-12
+
+### Changed
 
 - BREAKING CHANGE: The module now requires WMF 5.
   - This is required for class-based resources
@@ -1275,7 +1311,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     of the Availability Group instead of wrongly using the 'AvailabilityMode'
     property of the Availability Group.
 
-## 7.1.0.0
+## [7.1.0.0] - 2017-05-31
+
+### Changed
 
 - Changes to xSQLServerMemory
   - Changed the way SQLServer parameter is passed from Test-TargetResource to
@@ -1383,7 +1421,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     in the helper function Test-SQLDscParameterState, is now incorporated into
     Test-SQLDscParameterState (issue #589).
 
-## 7.0.0.0
+## [7.0.0.0] - 2017-04-19
+
+### Changed
 
 - Examples
   - xSQLServerDatabaseRole
@@ -1532,7 +1572,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated tests for this resource, because they failed when Import-SQLPSModule
     was updated.
 
-## 6.0.0.0
+## [6.0.0.0] - 2017-03-08
+
+### Changed
 
 - Changes to xSQLServerConfiguration
   - BREAKING CHANGE: The parameter SQLInstanceName is now mandatory.
@@ -1594,9 +1636,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changes to xSQLServerDatabaseOwner
   - Fixed code style, added updated parameter descriptions to schema.mof and README.md.
 
-## 5.0.0.0
+## [5.0.0.0] - 2017-01-25
 
-- Improvements how tests are initiated in AppVeyor
+### Changed
+
+ Improvements how tests are initiated in AppVeyor
   - Removed previous workaround (issue #201) from unit tests.
   - Changes in appveyor.yml so that SQL modules are removed before common test is
     run.
@@ -1742,7 +1786,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Now Restart-SqlService will correctly show the services it restarts. Also
     fixed PSSA warnings.
 
-## 4.0.0.0
+## [4.0.0.0] - 2016-12-14
+
+### Changed
 
 - Fixes in xSQLServerConfiguration
   - Added support for clustered SQL instances.
@@ -1791,7 +1837,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     instances on the same machine.
 - Moved Restart-SqlService from MSFT_xSQLServerConfiguration.psm1 to xSQLServerHelper.psm1.
 
-## 3.0.0.0
+## [3.0.0.0] - 2016-11-02
+
+### Changed
 
 - xSQLServerHelper
   - added functions
@@ -1804,7 +1852,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added tests for resources
   - MSFT_xSQLServerDatabaseOwner
 
-## 2.0.0.0
+## [2.0.0.0] - 2016-09-21
+
+### Changed
 
 - Added resources
   - xSQLServerReplication
@@ -1843,7 +1893,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - BREAKING CHANGE: Made SQLInstance parameter a key so that multiple instances
     on the same server can be configured
 
-## 1.8.0.0
+## [1.8.0.0] - 2016-08-10
+
+### Changed
 
 - Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
 - Added Support for SQL Server 2016
@@ -1865,12 +1917,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - New-TerminatingError - *added optional parameter `InnerException` to be able
     to give the user more information in the returned message*
 
-## 1.7.0.0
+## [1.7.0.0] - 2016-06-29
+
+### Changed
 
 - Resources Added
   - xSQLServerConfiguration
 
-## 1.6.0.0
+## [1.6.0.0] - 2016-05-18
+
+### Changed
 
 - Resources Added
   - xSQLAOGroupEnsure
@@ -1909,12 +1965,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Examples
   - Added xSQLServerConfiguration resource example
 
-## 1.5.0.0
+## [1.5.0.0] - 2016-03-30
+
+### Changed
 
 - Added new resource xSQLServerDatabase that allows adding an empty database to
   a server
 
-## 1.4.0.0
+## [1.4.0.0] - 2016-02-02
+
+### Changed
 
 - Resources Added
   - xSQLDatabaseRecoveryModeAdded
@@ -1962,22 +2022,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     this is not boolean in WMF 5.0 RTM
   - Added xSQLServerNetwork example
 
-## 1.3.0.0
+## [1.3.0.0] - 2015-05-01
+
+### Changed
 
 - xSqlServerSetup
   - Make Features case-insensitive.
 
-## 1.2.1.0
+## [1.2.1.0] - 2015-04-23
+
+### Changed
 
 - Increased timeout for setup process to start to 60 seconds.
 
-## 1.2.0.0
+## [1.2.0.0] - 2014-12-18
+
+### Changed
 
 - Updated release with the following new resources
   - xSQLServerFailoverClusterSetup
   - xSQLServerRSConfig
 
-## 1.1.0.0
+## [1.1.0.0] - 2014-10-24
+
+### Changed
 
 - Initial release with the following resources
   - xSQLServerSetup
