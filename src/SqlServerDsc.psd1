@@ -41,6 +41,8 @@
   PrivateData = @{
 
       PSData = @{
+          # Set to a prerelease string value if the release should be a prerelease.
+          Prerelease = ''
 
           # Tags applied to this module. These help with module discovery in online galleries.
           Tags = @('DesiredStateConfiguration', 'DSC', 'DSCResourceKit', 'DSCResource')
@@ -52,10 +54,10 @@
           ProjectUri = 'https://github.com/PowerShell/SqlServerDsc'
 
           # A URL to an icon representing this module.
-          # IconUri = ''
+          IconUri = 'https://dsccommunity.org/images/DSC_Logo_300p.png'
 
           # ReleaseNotes of this module
-        ReleaseNotes = ''
+          ReleaseNotes = ''
 
       } # End of PSData hashtable
 
