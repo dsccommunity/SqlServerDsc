@@ -9,6 +9,7 @@
 CopyDirectories:
   - DSCResources
   - en-US
+  - Modules
 # SemVer: '1.2.3'
 # Suffix to add to Root module PSM1 after merge (here, the Set-Alias exporting IB tasks)
 # suffix: suffix.ps1
@@ -18,11 +19,11 @@ VersionedOutputDirectory: true
 #      ModuleBuilder Submodules Configuration      #
 ####################################################
 
-NestedModule:
-  SqlServerDsc.Common:
-    Path: ./src/Modules/SqlServerDsc.Common/SqlServerDsc.Common.psd1
-    OutputDirectory: ./output/SqlServerDsc/$ModuleVersionFolder/Modules/SqlServerDsc.Common
-    VersionedOutputDirectory: false
+# NestedModule:
+#   SqlServerDsc.Common:
+#     Path: ./src/Modules/SqlServerDsc.Common/SqlServerDsc.Common.psd1
+#     OutputDirectory: ./output/SqlServerDsc/$ModuleVersionFolder/Modules/SqlServerDsc.Common
+#     VersionedOutputDirectory: false
 
 ####################################################
 #       Sampler Pipeline Configuration             #
