@@ -8,21 +8,30 @@
         https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
+Write-Verbose "DEBUG1" -Verbose
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
-
+Write-Verbose "DEBUG2" -Verbose
 if (Test-SkipContinuousIntegrationTask -Type 'Unit')
 {
     return
 }
 
+Write-Verbose "DEBUG3" -Verbose
 $script:dscModuleName = 'SqlServerDsc'
 $script:dscResourceName = 'MSFT_SqlAG'
 
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-
+Write-Verbose "DEBUG4" -Verbose
 function Invoke-TestSetup
 {
+    Write-Verbose "DEBUG6" -Verbose
     Import-Module -Name DscResource.Test -Force
+    Write-Verbose "DEBUG7" -Verbose
+
+    Write-Verbose ((Get-module).Name -join ', ') -Verbose
+
+    Write-Verbose ('DSCModuleName: {0}' -f $script:dscModuleName) -Verbose
+    Write-Verbose ('DSCResourceName: {0}' -f $script:dscResourceName) -Verbose
 
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
@@ -30,22 +39,30 @@ function Invoke-TestSetup
         -ResourceType 'Mof' `
         -TestType 'Unit'
 
+    Write-Verbose "DEBUG8" -Verbose
+
     # Loading mocked classes
     Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
 
+    Write-Verbose "DEBUG9" -Verbose
+
     # Load the default SQL Module stub
     Import-SQLModuleStub
+
+    Write-Verbose "DEBUG10" -Verbose
 }
 
 function Invoke-TestCleanup
 {
-    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
+    #Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
 
 # Begin Testing
 try
 {
+    Write-Verbose "DEBUG5" -Verbose
     Invoke-TestSetup
+    Write-Verbose "DEBUG11" -Verbose
 
     InModuleScope $script:dscResourceName {
         # This is relative to the path of the resource module script, not test test script.
