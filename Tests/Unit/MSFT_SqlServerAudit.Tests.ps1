@@ -79,6 +79,14 @@ try
         $mockDynamicEndpointListenerIpAddress = $mockEndpointListenerIpAddress
         $mockDynamicEndpointOwner = $mockEndpointOwner
 
+        $testProductVersion = @(
+            14, # SQL Server 2017
+            13, # SQL Server 2016
+            12, # SQL Server 2014
+            11, # SQL Server 2012
+            10  # SQL Server 2008 and 2008 R2
+        )
+
         $mockAuditObject = {
             # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
             return New-Object -TypeName Object |

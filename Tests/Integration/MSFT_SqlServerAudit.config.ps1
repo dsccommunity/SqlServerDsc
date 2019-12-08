@@ -42,7 +42,7 @@ else
 
 <#
     .SYNOPSIS
-        Creates a database with standard collation.
+        Creates a Server Audit with File destination.
 #>
 Configuration MSFT_SqlServerAudit_AddFileAudit_Config
 {
