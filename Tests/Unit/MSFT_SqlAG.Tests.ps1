@@ -29,15 +29,7 @@ function Invoke-TestSetup
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Unit'
-}
 
-function Invoke-TestCleanup
-{
-    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
-}
-
-function Invoke-TestSetup
-{
     # Loading mocked classes
     Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
 
