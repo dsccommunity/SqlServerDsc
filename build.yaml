@@ -66,10 +66,10 @@ Pester: #Passthru, OutputFile, CodeCoverageOutputFile not supported
   # Default is to use the tests folder in the project folder or source folder (if present)
   # can use it to prioritize: tests/QA, tests/Unit, tests/Integration
   Script:
-  # - tests/QA/module.tests.ps1
-  # - tests/QA
-  # - tests/Unit
-  # - tests/Integration
+  # - Tests/QA/module.tests.ps1
+  # - Tests/QA
+  # - Tests/Unit
+  # - Tests/Integration
   ExcludeTag:
   Tag:
   CodeCoverageThreshold: 50 # Set to 0 to bypass
