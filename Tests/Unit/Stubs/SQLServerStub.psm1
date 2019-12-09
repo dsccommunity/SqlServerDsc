@@ -1557,7 +1557,7 @@ function Remove-SqlAvailabilityGroup {
 }
 
 function Remove-SqlAvailabilityReplica {
-    [CmdletBinding(DefaultParameterSetName='ByPath', ConfirmImpact='Medium')]
+    [CmdletBinding(SupportsShouldProcess=$true, DefaultParameterSetName='ByPath', ConfirmImpact='Medium')]
     param(
         [Parameter(ParameterSetName='ByPath', Mandatory=$true, Position=1)]
         [ValidateNotNullOrEmpty()]
