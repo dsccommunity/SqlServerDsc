@@ -61,7 +61,7 @@ function Import-SQLModuleStub
         # Build the path to the module stub
         $moduleStubPath = Join-Path -Path ( Join-Path -Path ( Join-Path -Path ( Split-Path -Path $PSScriptRoot -Parent ) -ChildPath Unit ) -ChildPath Stubs ) -ChildPath "$($stubModuleName).psm1"
 
-        Import-Module -Name $moduleStubPath -Force -Global -WarningAction SilentlyContinue
+        Import-Module -Name $moduleStubPath -Force -Global -WarningAction 'SilentlyContinue'
     }
 }
 
