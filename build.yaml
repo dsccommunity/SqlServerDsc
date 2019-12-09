@@ -48,6 +48,7 @@ BuildWorkflow:
   test:
     - Pester_Tests_Stop_On_Fail
     - Pester_if_Code_Coverage_Under_Threshold
+    - DscResource_Tests_Stop_On_Fail
 
   publish:
     - Publish_release_to_GitHub
@@ -62,8 +63,6 @@ Pester: #Passthru, OutputFile, CodeCoverageOutputFile not supported
   OutputFormat: NUnitXML
   # Will look at every *.ps1 & *.psm1 under ModulePath, excepts when $_.FullName -match (Join-Path $ProjectPath $ExcludeFromCodeCoverageItem)
   ExcludeFromCodeCoverage:
-    - tasks
-    - Template
   # Default is to use the tests folder in the project folder or source folder (if present)
   # can use it to prioritize: tests/QA, tests/Unit, tests/Integration
   Script:
@@ -75,6 +74,13 @@ Pester: #Passthru, OutputFile, CodeCoverageOutputFile not supported
   Tag:
   CodeCoverageThreshold: 50 # Set to 0 to bypass
 
+DscTest:
+  # OutputFolder:
+  OutputFormat: NUnitXML
+  # ExcludeTag:
+  # ExcludeSourceFile:
+  # ExcludeModuleFile:
+  # Tag:
 
 Resolve-Dependency: #Parameters for Resolve-Dependency
   #PSDependTarget: ./output/modules
