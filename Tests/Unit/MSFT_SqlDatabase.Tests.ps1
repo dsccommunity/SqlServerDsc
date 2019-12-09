@@ -15,6 +15,9 @@ if (Test-SkipContinuousIntegrationTask -Type 'Unit')
     return
 }
 
+$script:dscModuleName = 'SqlServerDsc'
+$script:dscResourceName = 'MSFT_SqlDatabase'
+
 function Invoke-TestSetup
 {
     Import-Module -Name DscResource.Test -Force
@@ -28,7 +31,7 @@ function Invoke-TestSetup
 
 function Invoke-TestCleanup
 {
-    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
+    #Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
 
 # Begin Testing
