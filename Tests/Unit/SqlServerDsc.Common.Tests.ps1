@@ -16,31 +16,30 @@ if (Test-SkipContinuousIntegrationTask -Type 'Unit')
 }
 
 #region HEADER
-$ProjectPath = "$PSScriptRoot\..\..\.." | Convert-Path
-$ProjectName = (Get-ChildItem $ProjectPath\*\*.psd1 | Where-Object {
+$script:projectPath = "$PSScriptRoot\..\.." | Convert-Path
+$script:projectName = (Get-ChildItem -Path "$script:projectPath\*\*.psd1" | Where-Object -FilterScript {
         ($_.Directory.Name -match 'source|src' -or $_.Directory.Name -eq $_.BaseName) -and
-        $(try { Test-ModuleManifest $_.FullName -ErrorAction Stop }catch{$false}) }
-    ).BaseName
+        $(try { Test-ModuleManifest -Path $_.FullName -ErrorAction Stop } catch { $false })
+    }).BaseName
 
-$script:ParentModule = Get-Module $ProjectName -ListAvailable | Select-Object -First 1
-$script:SubModulesFolder = Join-Path -Path $script:ParentModule.ModuleBase -ChildPath 'Modules'
-Remove-Module $script:ParentModule -Force -ErrorAction SilentlyContinue
+$script:parentModule = Get-Module -Name $script:projectName -ListAvailable | Select-Object -First 1
+$script:subModulesFolder = Join-Path -Path $script:parentModule.ModuleBase -ChildPath 'Modules'
+Remove-Module -Name $script:parentModule -Force -ErrorAction 'SilentlyContinue'
 
-$script:SubModuleName = (Split-Path $PSCommandPath -Leaf) -replace '\.Tests.ps1'
-$script:SubmoduleFile = Join-Path $script:SubModulesFolder "$($script:SubModuleName)/$($script:SubModuleName).psm1"
+$script:subModuleName = (Split-Path -Path $PSCommandPath -Leaf) -replace '\.Tests.ps1'
+$script:subModuleFile = Join-Path -Path $script:subModulesFolder -ChildPath "$($script:subModuleName)/$($script:subModuleName).psm1"
 
+Import-Module $script:subModuleFile -Force -ErrorAction Stop
 #endregion HEADER
-
-Import-Module $script:SubmoduleFile -Force -ErrorAction Stop
 
 # Loading mocked classes
 Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
 Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SqlPowerShellSqlExecutionException.cs')
 
-# Importing SQLPS stubs
-Import-Module -Name (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Force -Global
+# Load the default SQL Module stub
+Import-SQLModuleStub
 
-InModuleScope $script:SubModuleName {
+InModuleScope $script:subModuleName {
     Describe 'SqlServerDsc.Common\Test-DscParameterState' -Tag 'TestDscParameterState' {
         Context -Name 'When passing values' -Fixture {
             It 'Should return true for two identical tables' {
