@@ -28,8 +28,8 @@ function Invoke-TestSetup
         -ResourceType 'Mof' `
         -TestType 'Unit'
 
-    # Importing SQLPS stubs
-    Import-Module -Name (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SQLPSStub.psm1') -Force -Global
+    # Load the default SQL Module stub
+    Import-SQLModuleStub
 }
 
 function Invoke-TestCleanup

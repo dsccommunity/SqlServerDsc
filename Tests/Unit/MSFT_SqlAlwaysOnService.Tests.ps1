@@ -50,6 +50,9 @@ $enableHadrNamedInstance = @{
     InstanceName = 'NamedInstance'
 }
 
+# Load the default SQL Module stub
+Import-SQLModuleStub
+
 # Begin Testing
 try
 {
@@ -123,9 +126,6 @@ try
     }
 
     Describe "$($script:dscResourceName)\Set-TargetResource" {
-        # Loading stub cmdlets
-        Import-Module -Name ( Join-Path -Path ( Join-Path -Path $PSScriptRoot -ChildPath Stubs ) -ChildPath SQLPSStub.psm1 ) -Force
-
         Mock -CommandName Disable-SqlAlwaysOn -ModuleName $script:dscResourceName
         Mock -CommandName Enable-SqlAlwaysOn -ModuleName $script:dscResourceName
         Mock -CommandName Import-SQLPSModule -ModuleName $script:dscResourceName
