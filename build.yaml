@@ -102,7 +102,8 @@ Pester: #Passthru, OutputFile, CodeCoverageOutputFile not supported
 DscTest:
   # OutputFolder:
   OutputFormat: NUnitXML
-  # ExcludeTag:
+  ExcludeTag:
+    - 'Common Tests - New Error-Level Script Analyzer Rules'
   # ExcludeSourceFile:
   # ExcludeModuleFile:
   # Tag:
