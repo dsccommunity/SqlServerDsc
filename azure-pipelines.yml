@@ -90,7 +90,7 @@ stages:
       #       inputs:
       #         codeCoverageTool: 'JaCoCo'
       #         summaryFileLocation: 'output/testResults/CodeCov*.xml'
-      - job: HQRM_test
+      - job: HQRM_Test
         pool:
           vmImage: 'win1803'
         timeoutInMinutes: 0
@@ -112,10 +112,13 @@ stages:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
 
-      - job: test_windows_ps
+      - job: Unit_Test
         pool:
           vmImage: 'win1803'
         timeoutInMinutes: 0
+        variables:
+          # This sets environment variable $env:CONFIGURATION.
+          configuration: Unit
         steps:
           - task: DownloadBuildArtifacts@0
             inputs:
@@ -138,6 +141,56 @@ stages:
             inputs:
               codeCoverageTool: 'JaCoCo'
               summaryFileLocation: 'output/testResults/CodeCov*.xml'
+
+      - job: Integration_Test_SQL2016
+        pool:
+          vmImage: 'win1803'
+        timeoutInMinutes: 0
+        variables:
+          # This sets environment variable $env:CONFIGURATION.
+          configuration: Integration_SQL2016
+        steps:
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: 'output'
+              downloadPath: '$(Build.SourcesDirectory)'
+          - task: PowerShell@2
+            name: Test
+            inputs:
+              filePath: './build.ps1'
+              arguments: '-tasks test'
+              pwsh: false
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: 'output/testResults/NUnit*.xml'
+
+      - job: Integration_Test_SQL2017
+        pool:
+          vmImage: 'win1803'
+        timeoutInMinutes: 0
+        variables:
+          # This sets environment variable $env:CONFIGURATION.
+          configuration: Integration_SQL2017
+        steps:
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: 'output'
+              downloadPath: '$(Build.SourcesDirectory)'
+          - task: PowerShell@2
+            name: Test
+            inputs:
+              filePath: './build.ps1'
+              arguments: '-tasks test'
+              pwsh: false
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: 'output/testResults/NUnit*.xml'
       # - job: test_macos
       #   pool:
       #     vmImage: 'macos-latest'
