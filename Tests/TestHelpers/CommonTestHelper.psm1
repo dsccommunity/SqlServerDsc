@@ -334,13 +334,17 @@ function Test-SkipContinuousIntegrationTask
 
     $result = $false
 
-    if ($Type -eq 'Integration' -and -not $env:APPVEYOR -eq $true)
+    if ($Type -eq 'Integration' -and -not $env:CI -eq $true)
     {
-        Write-Warning -Message ('{1} test for {0} will be skipped unless $env:APPVEYOR is set to $true' -f $Name, $Type)
+        Write-Warning -Message ('{1} test for {0} will be skipped unless $env:CI is set to $true' -f $Name, $Type)
         $result = $true
     }
 
-    if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -notin $Category)
+    <#
+        If running in CI then check if it should run in the
+        current category set in $env:CONFIGURATION.
+    #>
+    if ($env:CI -eq $true -and -not (Test-ContinuousIntegrationTaskCategory -Category $Category))
     {
         Write-Verbose -Message ('{1} tests in {0} will be skipped unless $env:CONFIGURATION is set to ''{1}''.' -f $Name, ($Category -join ''', or ''')) -Verbose
         $result = $true
@@ -371,7 +375,7 @@ function Test-ContinuousIntegrationTaskCategory
 
     $result = $false
 
-    if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -in $Category)
+    if ($env:CI -eq $true -and $env:CONFIGURATION -in $Category)
     {
         $result = $true
     }
