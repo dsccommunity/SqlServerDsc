@@ -224,7 +224,7 @@ function Set-TargetResource
         Suppressing this rule because $global:DSCMachineStatus is only set,
         never used (by design of Desired State Configuration).
     #>
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function', Target='DSCMachineStatus')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [CmdletBinding()]
     param
     (

@@ -698,7 +698,7 @@ function Get-TemporaryFolder
 {
     [CmdletBinding()]
     [OutputType([System.String])]
-    param()
+    param ()
 
     return [IO.Path]::GetTempPath()
 }
