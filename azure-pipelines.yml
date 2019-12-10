@@ -50,24 +50,21 @@ stages:
       #         downloadType: 'single'
       #         artifactName: 'output'
       #         downloadPath: '$(Build.SourcesDirectory)'
-
       #     - task: PowerShell@2
       #       name: Test
       #       inputs:
       #         filePath: './build.ps1'
       #         arguments: '-tasks test'
-
       #     - task: PublishTestResults@2
       #       inputs:
       #         testResultsFormat: 'NUnit'
       #         testResultsFiles: 'output/testResults/NUnit*.xml'
-
-
       #     # Publish code coverage results
       #     - task: PublishCodeCoverageResults@1
       #       inputs:
       #         codeCoverageTool: 'JaCoCo'
       #         summaryFileLocation: 'output/testResults/CodeCov*.xml'
+
       # - job: test_windows_core
       #   pool:
       #     vmImage: 'win1803'
@@ -78,25 +75,43 @@ stages:
       #         downloadType: 'single'
       #         artifactName: 'output'
       #         downloadPath: '$(Build.SourcesDirectory)'
-
       #     - task: PowerShell@2
       #       name: Test
       #       inputs:
       #         filePath: './build.ps1'
       #         arguments: '-tasks test'
       #         pwsh: true
-
       #     - task: PublishTestResults@2
       #       inputs:
       #         testResultsFormat: 'NUnit'
       #         testResultsFiles: 'output/testResults/NUnit*.xml'
-
-
       #     # Publish code coverage results
       #     - task: PublishCodeCoverageResults@1
       #       inputs:
       #         codeCoverageTool: 'JaCoCo'
       #         summaryFileLocation: 'output/testResults/CodeCov*.xml'
+      - job: HQRM_test
+        pool:
+          vmImage: 'win1803'
+        timeoutInMinutes: 0
+        steps:
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: 'output'
+              downloadPath: '$(Build.SourcesDirectory)'
+          - task: PowerShell@2
+            name: Test
+            inputs:
+              filePath: './build.ps1'
+              arguments: '-tasks hqrmtest'
+              pwsh: false
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: 'output/testResults/NUnit*.xml'
+
       - job: test_windows_ps
         pool:
           vmImage: 'win1803'
@@ -108,19 +123,16 @@ stages:
               downloadType: 'single'
               artifactName: 'output'
               downloadPath: '$(Build.SourcesDirectory)'
-
           - task: PowerShell@2
             name: Test
             inputs:
               filePath: './build.ps1'
               arguments: '-tasks test'
               pwsh: false
-
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
-
           # Publish code coverage results
           - task: PublishCodeCoverageResults@1
             inputs:
