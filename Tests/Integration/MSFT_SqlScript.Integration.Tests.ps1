@@ -1,12 +1,3 @@
-<#
-    This is used to make sure the integration test run in the correct order.
-    The integration test should run after the integration tests SqlServerLogin
-    and SqlServerRole, so any problems in those will be caught first, since
-    these integration tests are using those resources.
-#>
-[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 4)]
-param()
-
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
 if (Test-SkipContinuousIntegrationTask -Type 'Integration' -Category @('Integration_SQL2016','Integration_SQL2017'))

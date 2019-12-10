@@ -1,7 +1,3 @@
-# This is used to make sure the integration test run in the correct order.
-[Microsoft.DscResourceKit.IntegrationTest(OrderNumber = 2)]
-param()
-
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
 # Run only for SQL 2017 integration testing.
