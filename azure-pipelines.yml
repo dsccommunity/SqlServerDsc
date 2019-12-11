@@ -117,6 +117,8 @@ stages:
           vmImage: 'win1803'
         timeoutInMinutes: 0
         variables:
+          # This sets environment variable $env:CI.
+          CI: true
           # This sets environment variable $env:CONFIGURATION.
           configuration: Unit
         steps:
@@ -147,6 +149,8 @@ stages:
           vmImage: 'win1803'
         timeoutInMinutes: 0
         variables:
+          # This sets environment variable $env:CI.
+          CI: true
           # This sets environment variable $env:CONFIGURATION.
           configuration: Integration_SQL2016
         steps:
@@ -172,6 +176,8 @@ stages:
           vmImage: 'win1803'
         timeoutInMinutes: 0
         variables:
+          # This sets environment variable $env:CI.
+          CI: true
           # This sets environment variable $env:CONFIGURATION.
           configuration: Integration_SQL2017
         steps:
