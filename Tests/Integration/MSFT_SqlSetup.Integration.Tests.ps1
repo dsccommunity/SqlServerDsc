@@ -5,10 +5,13 @@ if (Test-SkipContinuousIntegrationTask -Type 'Integration' -Category @('Integrat
     return
 }
 
-# Prerequisites modules needed for integration tests
-Install-Module -Name 'PSDscResources'
-Install-Module -Name 'StorageDsc'
-Install-Module -Name 'NetworkingDsc'
+<#
+    Prerequisites modules needed for integration tests
+    (uses force because the repository is not trusted)
+#>
+Install-Module -Name 'PSDscResources' -Force
+Install-Module -Name 'StorageDsc' -Force
+Install-Module -Name 'NetworkingDsc' -Force
 
 $script:dscModuleName = 'SqlServerDsc'
 $script:dscResourceFriendlyName = 'SqlSetup'
