@@ -52,7 +52,6 @@ function Show-SqlBootstrapLog
     Write-Verbose -Message $('-' * 80) -Verbose
 }
 
-
 <#
     This is used in both the configuration file and in this script file
     to run the correct tests depending of what version of SQL Server is
@@ -70,22 +69,6 @@ else
 }
 
 Write-Verbose -Message ('Running integration tests for SQL Server version {0}' -f $script:sqlVersion) -Verbose
-
-<#
-    Workaround for issue #774. In the appveyor.yml file the folder
-    C:\Program Files (x86)\Microsoft SQL Server\**\Tools\PowerShell\Modules
-    was renamed to
-    C:\Program Files (x86)\Microsoft SQL Server\**\Tools\PowerShell\Modules.old
-    here we rename back the folder to the correct name. Only the version need
-    for our tests are renamed.
-#>
-$sqlPsModulePath = 'C:\Program Files (x86)\Microsoft SQL Server\{0}\Tools\PowerShell\*.old' -f $script:sqlVersion
-$sqlModulePath = Get-ChildItem -Path $sqlPsModulePath
-$sqlModulePath | ForEach-Object -Process {
-    $newFolderName = (Split-Path -Path $_ -Leaf) -replace '\.old'
-    Write-Verbose ('Renaming ''{0}'' to ''..\{1}''' -f $_, $newFolderName) -Verbose
-    Rename-Item $_ -NewName $newFolderName -Force
-}
 
 try
 {
