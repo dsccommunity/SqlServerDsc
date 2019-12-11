@@ -9,9 +9,11 @@ if (Test-SkipContinuousIntegrationTask -Type 'Integration' -Category @('Integrat
     Prerequisites modules needed for integration tests
     (uses force because the repository is not trusted)
 #>
-Install-Module -Name 'PSDscResources' -Force
-Install-Module -Name 'StorageDsc' -Force
-Install-Module -Name 'NetworkingDsc' -Force
+Install-Module -Name 'PSDscResources' -Force -Verbose
+Install-Module -Name 'StorageDsc' -Force -Verbose
+Install-Module -Name 'NetworkingDsc' -Force -Verbose
+
+$null = New-DscSelfSignedCertificate -Verbose
 
 $script:dscModuleName = 'SqlServerDsc'
 $script:dscResourceFriendlyName = 'SqlSetup'
