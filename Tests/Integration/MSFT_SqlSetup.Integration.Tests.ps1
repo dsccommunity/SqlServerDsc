@@ -5,6 +5,11 @@ if (Test-SkipContinuousIntegrationTask -Type 'Integration' -Category @('Integrat
     return
 }
 
+# Prerequisites modules needed for integration tests
+Install-Module -Name 'PSDscResources'
+Install-Module -Name 'StorageDsc'
+Install-Module -Name 'NetworkingDsc'
+
 $script:dscModuleName = 'SqlServerDsc'
 $script:dscResourceFriendlyName = 'SqlSetup'
 $script:dscResourceName = "MSFT_$($script:dscResourceFriendlyName)"
