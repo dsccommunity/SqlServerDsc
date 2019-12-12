@@ -16,4 +16,9 @@
     'DscResource.Test'          = 'latest'
     'DscResource.AnalyzerRules' = 'latest'
     xDscResourceDesigner        = 'latest'
+
+    # Prerequisites modules needed for examples or integration tests
+    PSDscResources = 'latest'
+    StorageDsc     = 'latest'
+    NetworkingDsc  = 'latest'
 }
