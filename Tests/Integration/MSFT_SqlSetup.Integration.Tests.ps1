@@ -89,6 +89,8 @@ Install-Module -Name 'PSDscResources' -Force
 Install-Module -Name 'StorageDsc' -Force
 Install-Module -Name 'NetworkingDsc' -Force
 
+winrm quickconfig -quiet -force
+
 $null = New-DscSelfSignedCertificate -Verbose
 Initialize-LocalConfigurationManager -Encrypt:$true -DisableConsistency:$DisableConsistency
 
