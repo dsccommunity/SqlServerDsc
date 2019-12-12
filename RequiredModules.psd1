@@ -18,7 +18,7 @@
     xDscResourceDesigner        = 'latest'
 
     # Prerequisites modules needed for examples or integration tests
-    PSDscResources = 'latest'
-    StorageDsc     = 'latest'
-    NetworkingDsc  = 'latest'
+    # PSDscResources = 'latest'
+    # StorageDsc     = 'latest'
+    # NetworkingDsc  = 'latest'
 }
