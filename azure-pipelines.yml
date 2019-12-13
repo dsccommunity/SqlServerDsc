@@ -163,8 +163,8 @@ stages:
           - task: PowerShell@2
             name: ConfigureWinRM
             inputs:
-              filePath: 'winrm'
-              arguments: 'quickconfig -quiet'
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
               pwsh: false
           - task: PowerShell@2
             name: Test
@@ -196,8 +196,8 @@ stages:
           - task: PowerShell@2
             name: ConfigureWinRM
             inputs:
-              filePath: 'winrm'
-              arguments: 'quickconfig -quiet'
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
               pwsh: false
           - task: PowerShell@2
             name: Test
