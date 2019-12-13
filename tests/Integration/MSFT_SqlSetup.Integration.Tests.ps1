@@ -17,6 +17,8 @@ $script:testEnvironment = Initialize-TestEnvironment `
     -ResourceType 'Mof' `
     -TestType 'Integration'
 
+get-module -ListAvailable | % { Write-verbose "$($_.Name) ($($_.Path))" -Verbose }
+
 <#
     .SYNOPSIS
         This function will output the Setup Bootstrap Summary.txt log file.
