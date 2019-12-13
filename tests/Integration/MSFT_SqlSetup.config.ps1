@@ -160,8 +160,8 @@ $SqlAgentServiceSecondaryCredential = New-Object `
 #>
 Configuration MSFT_SqlSetup_CreateDependencies_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources'
-    Import-DscResource -ModuleName 'StorageDsc'
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'StorageDsc' -ModuleVersion '4.9.0.0'
 
     node $AllNodes.NodeName
     {
@@ -311,7 +311,7 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
 #>
 Configuration MSFT_SqlSetup_StopServicesInstance_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources'
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
 
     node $AllNodes.NodeName
     {
@@ -383,7 +383,7 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineDefaultInstanceAsUser_Config
 #>
 Configuration MSFT_SqlSetup_StopSqlServerDefaultInstance_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources'
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
 
     node $AllNodes.NodeName
     {
@@ -443,7 +443,7 @@ Configuration MSFT_SqlSetup_InstallTabularAnalysisServicesAsSystem_Config
 #>
 Configuration MSFT_SqlSetup_StopTabularAnalysisServices_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources'
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
 
     node $AllNodes.NodeName
     {
@@ -465,7 +465,7 @@ Configuration MSFT_SqlSetup_StopTabularAnalysisServices_Config
 #>
 Configuration MSFT_SqlSetup_StartServicesInstance_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources'
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
 
     node $AllNodes.NodeName
     {
