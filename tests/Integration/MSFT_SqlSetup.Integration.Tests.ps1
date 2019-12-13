@@ -585,6 +585,10 @@ try
         }
     }
 }
+catch
+{
+    throw $_
+}
 finally
 {
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
