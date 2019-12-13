@@ -146,7 +146,7 @@ stages:
 
       - job: Integration_Test_SQL2016
         pool:
-          vmImage: 'win1803'
+          vmImage: 'vs2015-win2012r2'
         timeoutInMinutes: 0
         variables:
           # This sets environment variable $env:CI.
@@ -179,7 +179,7 @@ stages:
 
       - job: Integration_Test_SQL2017
         pool:
-          vmImage: 'win1803'
+          vmImage: 'vs2015-win2012r2'
         timeoutInMinutes: 0
         variables:
           # This sets environment variable $env:CI.
