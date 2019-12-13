@@ -18,8 +18,14 @@ $script:testEnvironment = Initialize-TestEnvironment `
     -TestType 'Integration'
 
 Write-Verbose -Message ('Machine: {0}' -f [Environment]::GetEnvironmentVariable('PSModulePath','Machine')) -Verbose
-Write-Verbose -Message ('User: {0}' -f $env:PSModulePath) -Verbose
 
+$Path = 'D:\_work\1\s\output;C:\Users\VssAdministrator\Documents\WindowsPowerShell\Modules;C:\Program Files\WindowsPowerShell\Modules;C:\windows\system32\WindowsPowerShell\v1.0\Modules'
+$env:PSModulePath = $Path
+[System.Environment]::SetEnvironmentVariable('PSModulePath', $Path, [System.EnvironmentVariableTarget]::Machine)
+
+
+Write-Verbose -Message ('Machine: {0}' -f [Environment]::GetEnvironmentVariable('PSModulePath','Machine')) -Verbose
+Write-Verbose -Message ('User: {0}' -f $env:PSModulePath) -Verbose
 
 get-module -ListAvailable | % { Write-verbose "$($_.Name) ($($_.Path))" -Verbose }
 
