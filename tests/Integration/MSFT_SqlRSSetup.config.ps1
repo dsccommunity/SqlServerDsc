@@ -77,7 +77,7 @@ Configuration MSFT_SqlRSSetup_InstallReportingServicesAsUser_Config
 #>
 Configuration MSFT_SqlRSSetup_StopReportingServicesInstance_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources'
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
 
     node $AllNodes.NodeName
     {

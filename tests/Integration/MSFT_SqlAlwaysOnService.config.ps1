@@ -70,8 +70,8 @@ else
 #>
 Configuration MSFT_SqlAlwaysOnService_CreateDependencies_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources'
-    Import-DscResource -ModuleName 'NetworkingDsc'
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'NetworkingDsc' -ModuleVersion '7.4.0.0'
 
     node $AllNodes.NodeName
     {
@@ -198,7 +198,7 @@ Configuration MSFT_SqlAlwaysOnService_CreateDependencies_Config
 #>
 Configuration MSFT_SqlAlwaysOnService_CleanupDependencies_Config
 {
-    Import-DscResource -ModuleName 'NetworkingDsc'
+    Import-DscResource -ModuleName 'NetworkingDsc' -ModuleVersion '7.4.0.0'
 
     node $AllNodes.NodeName
     {

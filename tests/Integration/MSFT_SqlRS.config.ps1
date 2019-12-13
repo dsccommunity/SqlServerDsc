@@ -68,8 +68,8 @@ else
 #>
 Configuration MSFT_SqlRS_CreateDependencies_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources'
-    Import-DscResource -ModuleName 'StorageDsc'
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'StorageDsc' -ModuleVersion '4.9.0.0'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
@@ -245,7 +245,7 @@ Configuration MSFT_SqlRS_InstallReportingServices_RestoreToNoSsl_Config
 #>
 Configuration MSFT_SqlRS_StopReportingServicesInstance_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources'
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
 
     node $AllNodes.NodeName
     {

@@ -51,7 +51,7 @@ else
 #>
 Configuration MSFT_SqlServerLogin_CreateDependencies_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources'
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
 
     node $AllNodes.NodeName
     {

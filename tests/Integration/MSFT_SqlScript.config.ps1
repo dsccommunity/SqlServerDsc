@@ -66,7 +66,7 @@ CREATE DATABASE [$(DatabaseName)]
 #>
 Configuration MSFT_SqlScript_CreateDependencies_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources'
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
