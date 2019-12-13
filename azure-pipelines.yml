@@ -161,7 +161,7 @@ stages:
               artifactName: 'output'
               downloadPath: '$(Build.SourcesDirectory)'
           - task: PowerShell@2
-            name: Test
+            name: ConfigureWinRM
             inputs:
               filePath: 'winrm'
               arguments: 'quickconfig -quiet'
@@ -194,7 +194,7 @@ stages:
               artifactName: 'output'
               downloadPath: '$(Build.SourcesDirectory)'
           - task: PowerShell@2
-            name: Test
+            name: ConfigureWinRM
             inputs:
               filePath: 'winrm'
               arguments: 'quickconfig -quiet'
