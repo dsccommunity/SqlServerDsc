@@ -17,6 +17,10 @@ $script:testEnvironment = Initialize-TestEnvironment `
     -ResourceType 'Mof' `
     -TestType 'Integration'
 
+Write-Verbose -Message ('Machine: {0}' -f [Environment]::GetEnvironmentVariable('PSModulePath','Machine')) -Verbose
+Write-Verbose -Message ('User: {0}' -f $env:PSModulePath) -Verbose
+
+
 get-module -ListAvailable | % { Write-verbose "$($_.Name) ($($_.Path))" -Verbose }
 
 <#
