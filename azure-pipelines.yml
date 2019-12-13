@@ -163,6 +163,12 @@ stages:
           - task: PowerShell@2
             name: Test
             inputs:
+              filePath: 'winrm'
+              arguments: 'quickconfig -quiet'
+              pwsh: false
+          - task: PowerShell@2
+            name: Test
+            inputs:
               filePath: './build.ps1'
               arguments: '-tasks test'
               pwsh: false
@@ -187,6 +193,12 @@ stages:
               downloadType: 'single'
               artifactName: 'output'
               downloadPath: '$(Build.SourcesDirectory)'
+          - task: PowerShell@2
+            name: Test
+            inputs:
+              filePath: 'winrm'
+              arguments: 'quickconfig -quiet'
+              pwsh: false
           - task: PowerShell@2
             name: Test
             inputs:
