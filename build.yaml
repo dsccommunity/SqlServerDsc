@@ -65,6 +65,8 @@ Pester: #Passthru, OutputFile, CodeCoverageOutputFile not supported
   OutputFormat: NUnitXML
   # Will look at every *.ps1 & *.psm1 under ModulePath, excepts when $_.FullName -match (Join-Path $ProjectPath $ExcludeFromCodeCoverageItem)
   ExcludeFromCodeCoverage:
+    - DSCResources
+    - Modules
   Script:
     # Run the script in order. First all of unit tests in no particular order,
     # and then all the integration tests in a specific group order.
