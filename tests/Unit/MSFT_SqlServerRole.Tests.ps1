@@ -1046,7 +1046,6 @@ try
                 Context 'When defining an explicit list of members.' {
                     It 'Should not throw when the member is a Role' {
                         $mockExpectedMemberToAdd = $mockSqlServerChildRole
-
                         $testParameters = $mockDefaultParameters.Clone()
 
                         $testParameters += @{
