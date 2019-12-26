@@ -33,6 +33,10 @@ param(
     [parameter()]
     $PesterTag,
 
+    [Parameter()]
+    [string[]]
+    $PesterScript,
+
     # Filter which tags to exclude when invoking Pester tests
     # This is used in the Invoke-Pester.pester.build.ps1 tasks
     [string[]]
