@@ -184,10 +184,11 @@ try
 
             return @($mockObject)
         }
+
         #endregion
 
         Describe "MSFT_SqlServerRole\Get-TargetResource" -Tag 'Get' {
-            BeforeEach {
+            BeforeAll {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
 
@@ -591,7 +592,7 @@ try
         }
 
         Describe "MSFT_SqlServerRole\Test-TargetResource" -Tag 'Test' {
-            BeforeEach {
+            BeforeAll {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
 
@@ -760,7 +761,7 @@ try
         }
 
         Describe "MSFT_SqlServerRole\Set-TargetResource" -Tag 'Set' {
-            BeforeEach {
+            BeforeAll {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
                 Mock -CommandName New-Object -MockWith $mockNewObjectServerRole -ParameterFilter {
                     $TypeName -eq 'Microsoft.SqlServer.Management.Smo.ServerRole'
@@ -1171,4 +1172,3 @@ finally
 {
     Invoke-TestCleanup
 }
-
