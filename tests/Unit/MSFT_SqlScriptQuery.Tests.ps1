@@ -24,7 +24,14 @@ $script:dscResourceName = 'MSFT_SqlScriptQuery'
 
 function Invoke-TestSetup
 {
-    Import-Module -Name DscResource.Test -Force
+    try
+    {
+        Import-Module -Name DscResource.Test -Force
+    }
+    catch [System.IO.FileNotFoundException]
+    {
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+    }
 
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
@@ -44,8 +51,6 @@ function Invoke-TestCleanup
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
 
-
-# Begin Testing
 try
 {
     Invoke-TestSetup

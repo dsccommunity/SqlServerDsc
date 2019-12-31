@@ -18,7 +18,14 @@ if (Test-SkipContinuousIntegrationTask -Type 'Unit')
 $script:dscModuleName = 'SqlServerDsc'
 $script:dscResourceName = 'MSFT_SqlAlwaysOnService'
 
-Import-Module -Name DscResource.Test -Force
+try
+{
+    Import-Module -Name DscResource.Test -Force
+}
+catch [System.IO.FileNotFoundException]
+{
+    throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+}
 
 $script:testEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:dscModuleName `
@@ -53,7 +60,6 @@ $enableHadrNamedInstance = @{
 # Load the default SQL Module stub
 Import-SQLModuleStub
 
-# Begin Testing
 try
 {
     Describe "$($script:dscResourceName)\Get-TargetResource" {

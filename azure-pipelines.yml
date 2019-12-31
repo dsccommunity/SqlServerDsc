@@ -37,60 +37,10 @@ stages:
               ArtifactName: 'output'
               publishLocation: 'Container'
 
-  - stage: test_module
-    dependsOn: Build_artefact
+  - stage: Test
+    dependsOn: Build
     jobs:
-      # - job: test_linux
-      #   pool:
-      #     vmImage: 'ubuntu 16.04'
-      #   steps:
-      #     - task: DownloadBuildArtifacts@0
-      #       inputs:
-      #         buildType: 'current'
-      #         downloadType: 'single'
-      #         artifactName: 'output'
-      #         downloadPath: '$(Build.SourcesDirectory)'
-      #     - task: PowerShell@2
-      #       name: Test
-      #       inputs:
-      #         filePath: './build.ps1'
-      #         arguments: '-tasks test'
-      #     - task: PublishTestResults@2
-      #       inputs:
-      #         testResultsFormat: 'NUnit'
-      #         testResultsFiles: 'output/testResults/NUnit*.xml'
-      #     # Publish code coverage results
-      #     - task: PublishCodeCoverageResults@1
-      #       inputs:
-      #         codeCoverageTool: 'JaCoCo'
-      #         summaryFileLocation: 'output/testResults/CodeCov*.xml'
-
-      # - job: test_windows_core
-      #   pool:
-      #     vmImage: 'win1803'
-      #   steps:
-      #     - task: DownloadBuildArtifacts@0
-      #       inputs:
-      #         buildType: 'current'
-      #         downloadType: 'single'
-      #         artifactName: 'output'
-      #         downloadPath: '$(Build.SourcesDirectory)'
-      #     - task: PowerShell@2
-      #       name: Test
-      #       inputs:
-      #         filePath: './build.ps1'
-      #         arguments: '-tasks test'
-      #         pwsh: true
-      #     - task: PublishTestResults@2
-      #       inputs:
-      #         testResultsFormat: 'NUnit'
-      #         testResultsFiles: 'output/testResults/NUnit*.xml'
-      #     # Publish code coverage results
-      #     - task: PublishCodeCoverageResults@1
-      #       inputs:
-      #         codeCoverageTool: 'JaCoCo'
-      #         summaryFileLocation: 'output/testResults/CodeCov*.xml'
-      - job: HQRM_Test
+      - job: Test_HQRM
         pool:
           vmImage: 'win1803'
         timeoutInMinutes: 0
@@ -105,23 +55,25 @@ stages:
             name: Test
             inputs:
               filePath: './build.ps1'
-              arguments: '-tasks hqrmtest'
+              arguments: '-Tasks hqrmtest'
               pwsh: false
           - task: PublishTestResults@2
+            condition: succeededOrFailed()
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
+              testRunTitle: 'HQRM'
 
-      - job: Unit_Test
+      - job: Test_Unit
         pool:
           vmImage: 'win1803'
         timeoutInMinutes: 0
-        variables:
-          # This sets environment variable $env:CI.
-          CI: true
-          # This sets environment variable $env:CONFIGURATION.
-          configuration: Unit
         steps:
+          - powershell: |
+              $repositoryOwner,$repositoryName = $env:BUILD_REPOSITORY_NAME -split '/'
+              echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
+              echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
+            name: DscBuildVariable
           - task: DownloadBuildArtifacts@0
             inputs:
               buildType: 'current'
@@ -132,19 +84,22 @@ stages:
             name: Test
             inputs:
               filePath: './build.ps1'
-              arguments: '-tasks test'
+              arguments: "-Tasks test -PesterScript 'tests/Unit'"
               pwsh: false
           - task: PublishTestResults@2
+            condition: succeededOrFailed()
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
-          # Publish code coverage results
+              testRunTitle: 'Unit (Windows Server Core)'
           - task: PublishCodeCoverageResults@1
+            condition: succeededOrFailed()
             inputs:
               codeCoverageTool: 'JaCoCo'
               summaryFileLocation: 'output/testResults/CodeCov*.xml'
+              pathToSources: '$(Build.SourcesDirectory)/output/$(DscBuildVariable.RepositoryName)'
 
-      - job: Integration_Test_SQL2016
+      - job: Test_Integration_SQL2016
         pool:
           vmImage: 'windows-2019'
         timeoutInMinutes: 0
@@ -166,18 +121,43 @@ stages:
               targetType: 'inline'
               script: 'winrm quickconfig -quiet'
               pwsh: false
-          - task: PowerShell@2
+          - powershell: |
+              ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterScript @(
+                  # Run the integration tests in a specific group order.
+                  # Group 1
+                  'tests/Integration/MSFT_SqlSetup.Integration.Tests.ps1'
+                  # Group 2
+                  'tests/Integration/MSFT_SqlAgentAlert.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlServerNetwork.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlServerLogin.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlServerEndPoint.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlServerDatabaseMail.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlRSSetup.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlDatabase.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlAlwaysOnService.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlAgentOperator.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlServiceAccount.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlAgentFailsafe.Integration.Tests.ps1'
+                  # Group 3
+                  'tests/Integration/MSFT_SqlServerRole.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlRS.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlDatabaseUser.Integration.Tests.ps1'
+                  # Group 4
+                  'tests/Integration/MSFT_SqlScript.Integration.Tests.ps1'
+                  # Group 5
+                  'tests/Integration/MSFT_SqlServerSecureConnection.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlScriptQuery.Integration.Tests.ps1'
+              )
             name: Test
-            inputs:
-              filePath: './build.ps1'
-              arguments: '-tasks test'
-              pwsh: false
           - task: PublishTestResults@2
+            condition: succeededOrFailed()
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
+              testRunTitle: 'Integration (SQL Server 2016 / Windows Server 2019)'
 
-      - job: Integration_Test_SQL2017
+      - job: Test_Integration_SQL2017
         pool:
           vmImage: 'windows-2019'
         timeoutInMinutes: 0
@@ -199,47 +179,44 @@ stages:
               targetType: 'inline'
               script: 'winrm quickconfig -quiet'
               pwsh: false
-          - task: PowerShell@2
+          - powershell: |
+              ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterScript @(
+                  # Run the integration tests in a specific group order.
+                  # Group 1
+                  'tests/Integration/MSFT_SqlSetup.Integration.Tests.ps1'
+                  # Group 2
+                  'tests/Integration/MSFT_SqlAgentAlert.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlServerNetwork.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlServerLogin.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlServerEndPoint.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlServerDatabaseMail.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlRSSetup.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlDatabase.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlAlwaysOnService.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlAgentOperator.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlServiceAccount.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlAgentFailsafe.Integration.Tests.ps1'
+                  # Group 3
+                  'tests/Integration/MSFT_SqlServerRole.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlRS.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlDatabaseUser.Integration.Tests.ps1'
+                  # Group 4
+                  'tests/Integration/MSFT_SqlScript.Integration.Tests.ps1'
+                  # Group 5
+                  'tests/Integration/MSFT_SqlServerSecureConnection.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlScriptQuery.Integration.Tests.ps1'
+              )
             name: Test
-            inputs:
-              filePath: './build.ps1'
-              arguments: '-tasks test'
-              pwsh: false
           - task: PublishTestResults@2
+            condition: succeededOrFailed()
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
-      # - job: test_macos
-      #   pool:
-      #     vmImage: 'macos-latest'
-      #   steps:
-      #     - task: DownloadBuildArtifacts@0
-      #       inputs:
-      #         buildType: 'current'
-      #         downloadType: 'single'
-      #         artifactName: 'output'
-      #         downloadPath: '$(Build.SourcesDirectory)'
-
-      #     - task: PowerShell@2
-      #       name: Test
-      #       inputs:
-      #         filePath: './build.ps1'
-      #         arguments: '-tasks test'
-      #         pwsh: true
-
-      #     - task: PublishTestResults@2
-      #       inputs:
-      #         testResultsFormat: 'NUnit'
-      #         testResultsFiles: 'output/testResults/NUnit*.xml'
-
-      #     # Publish code coverage results
-      #     - task: PublishCodeCoverageResults@1
-      #       inputs:
-      #         codeCoverageTool: 'JaCoCo'
-      #         summaryFileLocation: 'output/testResults/CodeCov*.xml'
+              testRunTitle: 'Integration (SQL Server 2017 / Windows Server 2019)'
 
   - stage: Deploy
-    dependsOn: test_module
+    dependsOn: Test
     # Only execute deploy stage if we're on master and previous stage succeeded
     condition: |
       and(

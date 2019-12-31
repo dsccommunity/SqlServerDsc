@@ -27,7 +27,7 @@ $script:subModulesFolder = Join-Path -Path $script:parentModule.ModuleBase -Chil
 Remove-Module -Name $script:parentModule -Force -ErrorAction 'SilentlyContinue'
 
 $script:subModuleName = (Split-Path -Path $PSCommandPath -Leaf) -replace '\.Tests.ps1'
-$script:subModuleFile = Join-Path -Path $script:subModulesFolder -ChildPath "$($script:subModuleName)/$($script:subModuleName).psm1"
+$script:subModuleFile = Join-Path -Path $script:subModulesFolder -ChildPath "$($script:subModuleName)"
 
 Import-Module $script:subModuleFile -Force -ErrorAction Stop
 #endregion HEADER
