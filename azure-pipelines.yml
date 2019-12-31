@@ -7,10 +7,9 @@ trigger:
     - "v*"
     exclude:
     - "*-*"
-#variables:
 
 stages:
-  - stage: Build_artefact
+  - stage: Build
     jobs:
       - job: BuildModuleJob
         pool:
