@@ -2,10 +2,10 @@ TOPIC
     about_SqlServerDsc
 
 SHORT DESCRIPTION
-    DSC resources for deployment and configuration of SQL Server.
+    DSC resources for deployment and configuration of Microsoft SQL Server.
 
 LONG DESCRIPTION
-    This module contains DSC resources for deployment and configuration of SQL Server.
+    This module contains DSC resources for deployment and configuration of Microsoft SQL Server.
 
 EXAMPLES
     PS C:\> Get-DscResource -Module SqlServerDsc
@@ -15,11 +15,11 @@ NOTE:
     writing code, sharing opinions, and provided feedback.
 
 TROUBLESHOOTING NOTE:
-    Look in Github repository for read about issues and submit a new issue.
-    https://github.com/dsccommunity/SqlServerDsc/issues
+    Go to the Github repository for read about issues, submit a new issue, and read
+    about new releases. https://github.com/dsccommunity/SqlServerDsc
 
 SEE ALSO
-  - https://github.com/dsccommunity/SqlServerDsc
+    - https://github.com/dsccommunity/SqlServerDsc
 
 KEYWORDS
-      DSC, DscResource, SqlServer
+    DSC, DscResource, SqlServer
