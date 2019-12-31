@@ -1696,7 +1696,7 @@ change log short.
 - Added common test (xSQLServerCommon.Tests) for xSQLServer module
   - Now all markdown files will be style checked when tests are running in AppVeyor
     after sending in a pull request.
-  - Now all [Examples](/Examples/Resources) will be tested by compiling to a .mof
+  - Now all [Examples](/source/Examples/Resources) will be tested by compiling to a .mof
     file after sending in a pull request.
 - Changes to xSQLServerDatabaseOwner
   - The example 'SetDatabaseOwner' can now compile, it wrongly had a `DependsOn`

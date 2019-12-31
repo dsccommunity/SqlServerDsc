@@ -58,7 +58,7 @@ Windows Server 2008 R2 SP1, Windows Server 2012 and Windows Server 2012 R2.
 
 ## Examples
 
-You can review the [Examples](/Examples) directory in the SqlServerDsc module
+You can review the [Examples](/source/Examples) directory in the SqlServerDsc module
 for some general use scenarios for all of the resources that are in the module.
 
 ## Change log
@@ -208,7 +208,7 @@ It will also manage the Availability Group replica on the specified node.
 
 #### Examples
 
-* [Add a SQL Server Always On Availability Group](/source/source/Examples/Resources/SqlAG/1-CreateAvailabilityGroup.ps1)
+* [Add a SQL Server Always On Availability Group](/source/Examples/Resources/SqlAG/1-CreateAvailabilityGroup.ps1)
 * [Add a SQL Server Always On Availability Group and explicitly defines its properties](/source/Examples/Resources/SqlAG/3-CreateAvailabilityGroupDetailed.ps1)
 * [Remove a SQL Server Always On Availability Group](/source/Examples/Resources/SqlAG/2-RemoveAvailabilityGroup.ps1)
 
@@ -905,9 +905,9 @@ Initializes and configures SQL Reporting Services server.
 
 #### Examples
 
-* [Default configuration](Examples/Resources/SqlRS/1-DefaultConfiguration.ps1)
-* [Custom virtual directories and reserved URLs](Examples/Resources/SqlRS/2-CustomConfiguration.ps1)
-* [Custom virtual directory and using SSL](Examples/Resources/SqlRS/3-CustomConfigurationUsingSsl.ps1)
+* [Default configuration](/source/Examples/Resources/SqlRS/1-DefaultConfiguration.ps1)
+* [Custom virtual directories and reserved URLs](/source/Examples/Resources/SqlRS/2-CustomConfiguration.ps1)
+* [Custom virtual directory and using SSL](/source/Examples/Resources/SqlRS/3-CustomConfigurationUsingSsl.ps1)
 * [Complete example with two instances in default configuration](/source/Examples/Resources/SqlRS/4-CompleteWithTwoInstances.ps1)
 
 #### Known issues
@@ -1026,8 +1026,8 @@ used, then the installation will run as SYSTEM.
 
 #### Examples
 
-* [Install Reporting Services](Examples/Resources/SqlRSSetup/1-InstallReportingServices.ps1)
-* [Uninstall Reporting Services](Examples/Resources/SqlRSSetup/2-UninstallReportingServices.ps1)
+* [Install Reporting Services](/source/Examples/Resources/SqlRSSetup/1-InstallReportingServices.ps1)
+* [Uninstall Reporting Services](/source/Examples/Resources/SqlRSSetup/2-UninstallReportingServices.ps1)
 
 #### Known issues
 
@@ -1770,9 +1770,9 @@ In that case, the 'SYSTEM' service account can be used.
 
 #### Examples
 
-* [Force Secure Connection](Examples/Resources/SqlServerSecureConnection/1-ForceSecureConnection.ps1).
-* [Secure Connection but not required](Examples/Resources/SqlServerSecureConnection/2-SecureConnectionNotForced.ps1).
-* [Secure Connection disabled](Examples/Resources/SqlServerSecureConnection/3-SecureConnectionAbsent.ps1).
+* [Force Secure Connection](/source/Examples/Resources/SqlServerSecureConnection/1-ForceSecureConnection.ps1).
+* [Secure Connection but not required](/source/Examples/Resources/SqlServerSecureConnection/2-SecureConnectionNotForced.ps1).
+* [Secure Connection disabled](/source/Examples/Resources/SqlServerSecureConnection/3-SecureConnectionAbsent.ps1).
 * [Secure Connection Using "SYSTEM" Account](/source/Examples/Resources/SqlServerSecureConnection/4-SecureConnectionUsingSYSTEMAccount.ps1).
 
 #### Known issues
