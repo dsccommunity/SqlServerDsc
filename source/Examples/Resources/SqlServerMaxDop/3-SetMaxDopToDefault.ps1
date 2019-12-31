@@ -1,7 +1,7 @@
 <#
-.EXAMPLE
-    This example shows how to set max degree of parallelism server
-    configuration option with the default configuration.
+    .DESCRIPTION
+        This example shows how to set max degree of parallelism server
+        configuration option with the default configuration.
 #>
 Configuration Example
 {
@@ -12,11 +12,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlServerMaxDop Set_SQLServerMaxDop_ToDefault
+        SqlServerMaxDop 'Set_SQLServerMaxDop_ToDefault'
         {
             Ensure               = 'Absent'
             ServerName           = 'sqltest.company.local'

@@ -1,5 +1,5 @@
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example shows how to ensure that the database user CONTOSO\ReportViewers
         is absent from the AdventureWorks database in the instance sqltest.company.local\DSC.
 #>
@@ -12,11 +12,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlDatabaseUser ContosoReportViewer_RemoveUser
+        SqlDatabaseUser 'ContosoReportViewer_RemoveUser'
         {
             Ensure               = 'Absent'
             ServerName           = 'sqltest.company.local'

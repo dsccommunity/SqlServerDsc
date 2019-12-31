@@ -1,17 +1,18 @@
 <#
-.EXAMPLE
-    This example shows how to run SQL script using SQL Authentication.
+    .DESCRIPTION
+        This example shows how to run SQL script using SQL Authentication.
 #>
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SqlCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     Node localhost
     {

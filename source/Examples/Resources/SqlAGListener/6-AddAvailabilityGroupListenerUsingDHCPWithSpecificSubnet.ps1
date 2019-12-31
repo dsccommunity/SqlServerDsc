@@ -1,6 +1,6 @@
 <#
-.EXAMPLE
-    This example will add an Availability Group listener using DHCP with a specific subnet.
+    .DESCRIPTION
+        This example will add an Availability Group listener using DHCP with a specific subnet.
 #>
 Configuration Example
 {
@@ -11,11 +11,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlAGListener AvailabilityGroupListenerWithSameNameAsVCO
+        SqlAGListener 'AvailabilityGroupListenerWithSameNameAsVCO'
         {
             Ensure               = 'Present'
             ServerName           = 'SQLNODE01.company.local'

@@ -1,5 +1,5 @@
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example shows how to ensure that the database users ReportAdmin,
         CONTOSO\ReportEditors, and CONTOSO\ReportViewers are present in the
         AdventureWorks database in the instance sqltest.company.local\DSC.
@@ -13,11 +13,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlDatabaseUser ReportAdmin_AddUser
+        SqlDatabaseUser 'ReportAdmin_AddUser'
         {
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
@@ -29,7 +29,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlDatabaseUser ContosoReportEditor_AddUser
+        SqlDatabaseUser 'ContosoReportEditor_AddUser'
         {
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
@@ -41,7 +41,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlDatabaseUser ContosoReportViewer_AddUser
+        SqlDatabaseUser 'ContosoReportViewer_AddUser'
         {
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'

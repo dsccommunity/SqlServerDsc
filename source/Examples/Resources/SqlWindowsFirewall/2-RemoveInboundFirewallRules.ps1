@@ -1,6 +1,6 @@
 <#
-.EXAMPLE
-    This example shows how to remove the default rules for the supported features.
+    .DESCRIPTION
+        This example shows how to remove the default rules for the supported features.
 #>
 Configuration Example
 {
@@ -11,11 +11,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlWindowsFirewall Remove_FirewallRules_For_SQL2012
+        SqlWindowsFirewall 'Remove_FirewallRules_For_SQL2012'
         {
             Ensure               = 'Absent'
             Features             = 'SQLENGINE,AS,RS,IS'
@@ -25,7 +25,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlWindowsFirewall Remove_FirewallRules_For_SQL2016
+        SqlWindowsFirewall 'Remove_FirewallRules_For_SQL2016'
         {
             Ensure           = 'Absent'
             Features         = 'SQLENGINE'

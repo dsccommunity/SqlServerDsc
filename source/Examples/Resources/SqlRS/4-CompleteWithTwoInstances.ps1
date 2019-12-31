@@ -1,40 +1,15 @@
 <#
-.EXAMPLE
-    This example installs to instances where the first named instance is used for
-    the Reporting Services databases, and the second named instance is used for
-    Reporting Services. After installing the two instances, the configuration
-    performs a default SQL Server Reporting Services configuration. It will
-    initialize SQL Server Reporting Services and register the default
-    Report Server Web Service and Report Manager URLs:
+    .DESCRIPTION
+        This example installs to instances where the first named instance is used for
+        the Reporting Services databases, and the second named instance is used for
+        Reporting Services. After installing the two instances, the configuration
+        performs a default SQL Server Reporting Services configuration. It will
+        initialize SQL Server Reporting Services and register the default
+        Report Server Web Service and Report Manager URLs:
 
-    Report Manager: http://localhost:80/Reports_RS
-    Report Server Web Service: http://localhost:80/ReportServer_RS
+        Report Manager: http://localhost:80/Reports_RS
+        Report Server Web Service: http://localhost:80/ReportServer_RS
 #>
-
-$ConfigurationData = @{
-    AllNodes = @(
-        @{
-            NodeName                   = 'localhost'
-
-            # This is values used for the Reporting Services instance.
-            InstanceName               = 'RS'
-            Features                   = 'RS'
-
-            # This is values used for the Database Engine instance.
-            DatabaseServerName         = $env:COMPUTERNAME
-            DatabaseServerInstanceName = 'RSDB'
-            DatabaseServerFeatures     = 'SQLENGINE'
-            DatabaseServerCollation    = 'Finnish_Swedish_CI_AS'
-
-            # This is values used for both instances.
-            MediaPath                  = 'Z:\Sql2016Media'
-            InstallSharedDir           = 'C:\Program Files\Microsoft SQL Server'
-            InstallSharedWOWDir        = 'C:\Program Files (x86)\Microsoft SQL Server'
-            UpdateEnabled              = 'False'
-            BrowserSvcStartupType      = 'Automatic'
-        }
-    )
-}
 
 Configuration Example
 {
@@ -67,10 +42,11 @@ Configuration Example
         $ReportingServicesServiceCredential
     )
 
-    Import-DscResource -ModuleName PSDscResources
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName PSDscResources -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
-    Node localhost {
+    Node localhost
+    {
         WindowsFeature 'NetFramework45'
         {
             Name   = 'NET-Framework-45-Core'
@@ -79,16 +55,16 @@ Configuration Example
 
         SqlSetup 'InstallDatabaseEngine'
         {
-            InstanceName          = $Node.DatabaseServerInstanceName
-            Features              = $Node.DatabaseServerFeatures
-            SourcePath            = $Node.MediaPath
-            BrowserSvcStartupType = $Node.BrowserSvcStartupType
-            SQLCollation          = $Node.DatabaseServerCollation
+            InstanceName          = 'RSDB'
+            Features              = 'SQLENGINE'
+            SourcePath            = 'Z:\Sql2016Media'
+            BrowserSvcStartupType = 'Automatic'
+            SQLCollation          = 'Finnish_Swedish_CI_AS'
             SQLSvcAccount         = $SqlServiceCredential
             AgtSvcAccount         = $SqlAgentServiceCredential
-            InstallSharedDir      = $Node.InstallSharedDir
-            InstallSharedWOWDir   = $Node.InstallSharedWOWDir
-            UpdateEnabled         = $Node.UpdateEnabled
+            InstallSharedDir      = 'C:\Program Files\Microsoft SQL Server'
+            InstallSharedWOWDir   = 'C:\Program Files (x86)\Microsoft SQL Server'
+            UpdateEnabled         = 'False'
 
             SQLSysAdminAccounts   = @(
                 $SqlAdministratorCredential.UserName
@@ -103,14 +79,14 @@ Configuration Example
 
         SqlSetup 'InstallReportingServicesInstance'
         {
-            InstanceName          = $Node.InstanceName
-            Features              = $Node.Features
-            SourcePath            = $Node.MediaPath
-            BrowserSvcStartupType = $Node.BrowserSvcStartupType
+            InstanceName          = 'RS'
+            Features              = 'RS'
+            SourcePath            = 'Z:\Sql2016Media'
+            BrowserSvcStartupType = 'Automatic'
             RSSvcAccount          = $ReportingServicesServiceCredential
-            InstallSharedDir      = $Node.InstallSharedDir
-            InstallSharedWOWDir   = $Node.InstallSharedWOWDir
-            UpdateEnabled         = $Node.UpdateEnabled
+            InstallSharedDir      = 'C:\Program Files\Microsoft SQL Server'
+            InstallSharedWOWDir   = 'C:\Program Files (x86)\Microsoft SQL Server'
+            UpdateEnabled         = 'False'
 
             PsDscRunAsCredential  = $SqlInstallCredential
 
@@ -123,11 +99,16 @@ Configuration Example
         SqlRS 'ConfigureReportingServiceInstance'
         {
             # Instance name for the Reporting Services.
-            InstanceName         = $Node.InstanceName
+            InstanceName         = 'RS'
 
-            # Instance for Reporting Services databases.
-            DatabaseServerName   = $Node.DatabaseServerName
-            DatabaseInstanceName = $Node.DatabaseServerInstanceName
+            <#
+                Instance for Reporting Services databases.
+                Tge value $env:COMPUTERNAME can only be used if the configuration
+                is compiled on the node that should contain the instance 'RSDB'.
+                If not, set to the node name.
+            #>
+            DatabaseServerName   = $env:COMPUTERNAME
+            DatabaseInstanceName = 'RSDB'
 
             PsDscRunAsCredential = $SqlInstallCredential
 

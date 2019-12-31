@@ -1,6 +1,7 @@
 <#
-.EXAMPLE
-    This example will add an Availability Group listener with a different than the cluster role VCO.
+    .DESCRIPTION
+        This example will add an Availability Group listener with a different
+        than the cluster role VCO.
 #>
 Configuration Example
 {
@@ -11,11 +12,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlAGListener AvailabilityGroupListenerWithDifferentNameAsVCO
+        SqlAGListener 'AvailabilityGroupListenerWithDifferentNameAsVCO'
         {
             Ensure               = 'Present'
             ServerName           = 'SQLNODE01.company.local'

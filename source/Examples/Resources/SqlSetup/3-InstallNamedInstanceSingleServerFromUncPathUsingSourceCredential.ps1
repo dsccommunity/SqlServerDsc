@@ -1,6 +1,7 @@
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example shows how to install a named instance of SQL Server on a single server, from an UNC path.
+
     .NOTES
         Assumes the credentials assigned to SourceCredential have read permission on the share and on the UNC path.
         The media will be copied locally, using impersonation with the credentials provided in SourceCredential, so
@@ -15,27 +16,27 @@ Configuration Example
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlInstallCredential,
 
         [Parameter()]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlAdministratorCredential = $SqlInstallCredential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlServiceCredential,
 
         [Parameter()]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlAgentServiceCredential = $SqlServiceCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {

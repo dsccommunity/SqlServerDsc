@@ -1,6 +1,7 @@
 <#
-    .EXAMPLE
-        This example will add a Database Mirror endpoint with specific listener port, listener IP address and owner.
+    .DESCRIPTION
+        This example will add a Database Mirror endpoint with specific listener port,
+        listener IP address and owner.
 #>
 Configuration Example
 {
@@ -11,11 +12,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlServerEndpoint SQLConfigureEndpoint
+        SqlServerEndpoint 'SQLConfigureEndpoint'
         {
             Ensure               = 'Present'
 

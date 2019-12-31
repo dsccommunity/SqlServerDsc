@@ -1,26 +1,8 @@
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example will enable Database Mail on a SQL Server instance and
         create a mail account with a default public profile.
-
 #>
-$ConfigurationData = @{
-    AllNodes = @(
-        @{
-            NodeName       = 'localhost'
-            ServerName     = $env:COMPUTERNAME
-            InstanceName   = 'DSCSQLTEST'
-
-            MailServerName = 'mail.company.local'
-            AccountName    = 'MyMail'
-            ProfileName    = 'MyMailProfile'
-            EmailAddress   = 'NoReply@company.local'
-            Description    = 'Default mail account and profile.'
-            LoggingLevel   = 'Normal'
-            TcpPort        = 25
-        }
-    )
-}
 
 Configuration Example
 {
@@ -34,12 +16,13 @@ Configuration Example
 
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node localhost
+    {
         SqlServerConfiguration 'EnableDatabaseMailXPs'
         {
 
-            ServerName     = $Node.ServerName
-            InstanceName   = $Node.InstanceName
+            ServerName     = $Node.NodeName
+            InstanceName   = 'DSCSQLTEST'
             OptionName     = 'Database Mail XPs'
             OptionValue    = 1
             RestartService = $false
@@ -48,17 +31,17 @@ Configuration Example
         SqlServerDatabaseMail 'EnableDatabaseMail'
         {
             Ensure               = 'Present'
-            ServerName           = $Node.ServerName
-            InstanceName         = $Node.InstanceName
-            AccountName          = $Node.AccountName
-            ProfileName          = $Node.ProfileName
-            EmailAddress         = $Node.EmailAddress
-            ReplyToAddress       = $Node.EmailAddress
-            DisplayName          = $Node.MailServerName
-            MailServerName       = $Node.MailServerName
-            Description          = $Node.Description
-            LoggingLevel         = $Node.LoggingLevel
-            TcpPort              = $Node.TcpPort
+            ServerName           = $Node.NodeName
+            InstanceName         = 'DSCSQLTEST'
+            AccountName          = 'MyMail'
+            ProfileName          = 'MyMailProfile'
+            EmailAddress         = 'NoReply@company.local'
+            ReplyToAddress       = 'NoReply@company.local'
+            DisplayName          = 'mail.company.local'
+            MailServerName       = 'mail.company.local'
+            Description          = 'Default mail account and profile.'
+            LoggingLevel         = 'Normal'
+            TcpPort              = 25
 
             PsDscRunAsCredential = $SqlInstallCredential
         }

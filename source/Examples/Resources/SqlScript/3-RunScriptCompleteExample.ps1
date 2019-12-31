@@ -1,7 +1,7 @@
 <#
-.EXAMPLE
-    This example shows one way to create the SQL script files and how to run
-    those files.
+    .DESCRIPTION
+        This example shows one way to create the SQL script files and how to run
+        those files.
 #>
 
 $ConfigurationData = @{
@@ -36,6 +36,8 @@ END
             SetSqlScript      = @'
 CREATE DATABASE [$(DatabaseName)]
 '@
+            # Not recommended in production. Only set here to pass CI.
+            PsDscAllowPlainTextPassword = $true
         }
     )
 }
@@ -50,10 +52,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName 'PSDscResources'
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
+    node localhost
+    {
         Script 'CreateFile_GetSqlScript'
         {
             SetScript  = {

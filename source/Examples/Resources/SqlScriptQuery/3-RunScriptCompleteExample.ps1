@@ -1,37 +1,7 @@
 <#
-.EXAMPLE
-    This example uses the Configuration Data to pass the Query Strings fo SqlScriptQuery Resource.
+    .DESCRIPTION
+        This example uses the Configuration Data to pass the Query Strings fo SqlScriptQuery Resource.
 #>
-
-$ConfigurationData = @{
-    AllNodes = @(
-        @{
-            NodeName     = 'localhost'
-            ServerName   = $env:COMPUTERNAME
-            InstanceName = 'DSCTEST'
-            DatabaseName = 'ScriptDatabase1'
-
-            GetSqlQuery  = @'
-SELECT Name FROM sys.databases WHERE Name = '$(DatabaseName)' FOR JSON AUTO
-'@
-
-            TestSqlQuery = @'
-if (select count(name) from sys.databases where name = '$(DatabaseName)') = 0
-BEGIN
-    RAISERROR ('Did not find database [$(DatabaseName)]', 16, 1)
-END
-ELSE
-BEGIN
-    PRINT 'Found database [$(DatabaseName)]'
-END
-'@
-
-            SetSqlQuery  = @'
-CREATE DATABASE [$(DatabaseName)]
-'@
-        }
-    )
-}
 
 Configuration Example
 {
@@ -43,21 +13,38 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName 'PSDscResources'
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
-
-        SqlScriptQuery 'Integration_Test'
+    node localhost
+    {
+        SqlScriptQuery 'CreateDatabase_ScriptDatabase1'
         {
-            ServerInstance       = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
+            ServerInstance       = "$($env:COMPUTERNAME)\DSCTEST"
 
-            GetQuery             = $Node.GetSqlQuery
-            TestQuery            = $Node.TestSqlQuery
-            SetQuery             = $Node.SetSqlQuery
+            GetQuery             = @'
+SELECT Name FROM sys.databases WHERE Name = '$(DatabaseName)' FOR JSON AUTO
+'@
+
+            TestQuery            = @'
+if (select count(name) from sys.databases where name = '$(DatabaseName)') = 0
+BEGIN
+    RAISERROR ('Did not find database [$(DatabaseName)]', 16, 1)
+END
+ELSE
+BEGIN
+    PRINT 'Found database [$(DatabaseName)]'
+END
+'@
+
+            SetQuery             = @'
+CREATE DATABASE [$(DatabaseName)]
+'@
+
             Variable             = @(
-                ('DatabaseName={0}' -f $Node.DatabaseName)
+                ('DatabaseName={0}' -f 'ScriptDatabase1')
             )
+
             QueryTimeout         = 30
 
             PsDscRunAsCredential = $SqlAdministratorCredential

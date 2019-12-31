@@ -1,7 +1,6 @@
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example will remove an Database Mirror endpoint from two instances.
-
 #>
 Configuration Example
 {
@@ -12,26 +11,26 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlServerEndpoint SQLConfigureEndpoint-Instance1
+        SqlServerEndpoint 'SQLConfigureEndpoint-Instance1'
         {
             Ensure               = 'Absent'
 
             EndpointName         = 'HADR'
-            InstanceName      = 'INST1'
+            InstanceName         = 'INST1'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlServerEndpoint SQLConfigureEndpoint-Instance2
+        SqlServerEndpoint 'SQLConfigureEndpoint-Instance2'
         {
             Ensure               = 'Absent'
 
             EndpointName         = 'HADR'
-            InstanceName      = 'INST2'
+            InstanceName         = 'INST2'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
         }

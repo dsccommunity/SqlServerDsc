@@ -1,5 +1,5 @@
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example shows how to install a named instance of SQL Server on a single server.
 
     .NOTES
@@ -12,27 +12,27 @@ Configuration Example
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlInstallCredential,
 
         [Parameter()]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlAdministratorCredential = $SqlInstallCredential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlServiceCredential,
 
         [Parameter()]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlAgentServiceCredential = $SqlServiceCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDSC
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
@@ -79,7 +79,7 @@ Configuration Example
             SourcePath            = 'C:\InstallMedia\SQL2016RTM'
             UpdateEnabled         = 'False'
             ForceReboot           = $false
-            
+
             SqlSvcStartupType     = 'Automatic'
             AgtSvcStartupType     = 'Disabled'
             AsSvcStartupType      = 'Automatic'

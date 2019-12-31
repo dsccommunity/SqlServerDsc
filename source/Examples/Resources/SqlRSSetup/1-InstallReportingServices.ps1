@@ -1,5 +1,5 @@
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example shows how to install a Microsoft SQL Server Reporting Service
         instance (2017 or newer).
 #>
@@ -14,7 +14,7 @@ Configuration Example
         $SqlInstallCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {

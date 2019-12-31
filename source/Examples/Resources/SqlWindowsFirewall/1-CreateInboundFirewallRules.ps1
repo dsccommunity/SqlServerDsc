@@ -1,6 +1,6 @@
 <#
-.EXAMPLE
-    This example shows how to create the default rules for the supported features.
+    .DESCRIPTION
+        This example shows how to create the default rules for the supported features.
 #>
 Configuration Example
 {
@@ -11,11 +11,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlWindowsFirewall Create_FirewallRules_For_SQL2012
+        SqlWindowsFirewall 'Create_FirewallRules_For_SQL2012'
         {
             Ensure               = 'Present'
             Features             = 'SQLENGINE,AS,RS,IS'
@@ -25,7 +25,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlWindowsFirewall Create_FirewallRules_For_SQL2016
+        SqlWindowsFirewall 'Create_FirewallRules_For_SQL2016'
         {
             Ensure           = 'Present'
             Features         = 'SQLENGINE'

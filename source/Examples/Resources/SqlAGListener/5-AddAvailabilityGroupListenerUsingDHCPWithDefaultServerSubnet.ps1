@@ -1,6 +1,7 @@
 <#
-.EXAMPLE
-    This example will add an Availability Group listener using DHCP on the default server subnet.
+    .DESCRIPTION
+        This example will add an Availability Group listener using DHCP on the
+        default server subnet.
 #>
 Configuration Example
 {
@@ -11,18 +12,22 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlAGListener AvailabilityGroupListenerWithSameNameAsVCO
+        SqlAGListener 'AvailabilityGroupListenerWithSameNameAsVCO'
         {
             Ensure               = 'Present'
             ServerName           = 'SQLNODE01.company.local'
             InstanceName         = 'MSSQLSERVER'
             AvailabilityGroup    = 'AG-01'
             Name                 = 'AG-01'
-            DHCP                 = $true    # Also not specifying parameter DHCP will default to using DHCP with the default server subnet.
+            <#
+                If not specifying parameter DHCP, then the default will be
+                DHCP with the default server subnet.
+            #>
+            DHCP                 = $true
             Port                 = 5301
 
             PsDscRunAsCredential = $SqlAdministratorCredential

@@ -1,7 +1,7 @@
 <#
-.EXAMPLE
-    This example shows how to set max degree of parallelism server
-    configuration option with the value equal to 1.
+    .DESCRIPTION
+        This example shows how to set max degree of parallelism server
+        configuration option with the value equal to 1.
 #>
 Configuration Example
 {
@@ -12,11 +12,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlServerMaxDop Set_SQLServerMaxDop_ToOne
+        SqlServerMaxDop 'Set_SQLServerMaxDop_ToOne'
         {
             Ensure               = 'Present'
             DynamicAlloc         = $false

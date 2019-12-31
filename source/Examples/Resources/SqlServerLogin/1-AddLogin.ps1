@@ -1,17 +1,13 @@
 <#
-.EXAMPLE
-This example shows how to ensure that the Windows user 'CONTOSO\WindowsUser' exists.
-
-.EXAMPLE
-This example shows how to ensure that the Windows group 'CONTOSO\WindowsGroup' exists.
-
-.EXAMPLE
-This example shows how to ensure that the SQL Login 'SqlLogin' exists.
+    .DESCRIPTION
+        This example shows how to ensure that the Windows user 'CONTOSO\WindowsUser',
+        Windows group 'CONTOSO\WindowsGroup', and the SQL Login 'SqlLogin' exists.
 #>
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SqlAdministratorCredential,
@@ -21,10 +17,11 @@ Configuration Example
         $LoginCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
-        SqlServerLogin Add_WindowsUser
+    node localhost
+    {
+        SqlServerLogin 'Add_WindowsUser'
         {
             Ensure               = 'Present'
             Name                 = 'CONTOSO\WindowsUser'
@@ -34,7 +31,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlServerLogin Add_DisabledWindowsUser
+        SqlServerLogin 'Add_DisabledWindowsUser'
         {
             Ensure               = 'Present'
             Name                 = 'CONTOSO\WindowsUser2'
@@ -45,7 +42,7 @@ Configuration Example
             Disabled             = $true
         }
 
-        SqlServerLogin Add_WindowsGroup
+        SqlServerLogin 'Add_WindowsGroup'
         {
             Ensure               = 'Present'
             Name                 = 'CONTOSO\WindowsGroup'
@@ -55,7 +52,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlServerLogin Add_SqlLogin
+        SqlServerLogin 'Add_SqlLogin'
         {
             Ensure                         = 'Present'
             Name                           = 'SqlLogin'

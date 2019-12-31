@@ -1,6 +1,7 @@
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example shows how to add a node to an existing SQL Server failover cluster.
+
     .NOTES
         This example assumes that a Failover Cluster is already present with the first SQL Server Failover Cluster
         node already installed.
@@ -21,7 +22,7 @@
         also means that at this time PsDscRunAsCredential can not be used to access media on the UNC share.
 
         There is currently a bug that prevents the resource to logon to the instance if the current node is not the
-        active node. This is beacuse the resource tries to logon using the SYSTEM account instead of the credentials
+        active node. This is because the resource tries to logon using the SYSTEM account instead of the credentials
         in SetupCredential, and the resource does not currently support the built-in PsDscRunAsCredential either (see
         issue #444).
 #>
@@ -31,27 +32,27 @@ Configuration Example
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlInstallCredential,
 
         [Parameter()]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlAdministratorCredential = $SqlInstallCredential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlServiceCredential,
 
         [Parameter()]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlAgentServiceCredential = $SqlServiceCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {

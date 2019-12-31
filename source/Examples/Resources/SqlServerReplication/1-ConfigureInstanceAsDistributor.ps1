@@ -1,6 +1,6 @@
 <#
-.EXAMPLE
-    This example shows how to configure a SQL Server instance as the distributor.
+    .DESCRIPTION
+        This example shows how to configure a SQL Server instance as the distributor.
 #>
 Configuration Example
 {
@@ -11,11 +11,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlServerReplication distributor
+        SqlServerReplication 'distributor'
         {
             Ensure               = 'Present'
             InstanceName         = 'MSSQLSERVER'

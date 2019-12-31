@@ -1,6 +1,7 @@
 <#
-    .EXAMPLE
-        This example will make sure that the endpoint DefaultMirrorEndpoint is in stopped state, if not it will stop the endpoint.
+    .DESCRIPTION
+        This example will make sure that the endpoint DefaultMirrorEndpoint is
+        in stopped state, if not it will stop the endpoint.
 #>
 Configuration Example
 {
@@ -11,11 +12,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlServerEndpointState StopEndpoint
+        SqlServerEndpointState 'StopEndpoint'
         {
             ServerName           = 'SQLNODE01.company.local'
             InstanceName         = 'MSSQLSERVER'

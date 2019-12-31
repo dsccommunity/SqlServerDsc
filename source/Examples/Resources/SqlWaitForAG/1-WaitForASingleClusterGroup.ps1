@@ -1,5 +1,5 @@
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example will wait for the cluster role/group 'AGTest1'.
 #>
 Configuration Example
@@ -11,11 +11,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlWaitForAG SQLConfigureAG-WaitAGTest1
+        SqlWaitForAG 'SQLConfigureAG-WaitAGTest1'
         {
             Name                 = 'AGTest1'
             RetryIntervalSec     = 20

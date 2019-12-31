@@ -1,26 +1,8 @@
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example will remove the mail profile and the mail account and
         disable Database Mail on a SQL Server instance.
-
 #>
-$ConfigurationData = @{
-    AllNodes = @(
-        @{
-            NodeName       = 'localhost'
-            ServerName     = $env:COMPUTERNAME
-            InstanceName   = 'DSCSQLTEST'
-
-            MailServerName = 'mail.company.local'
-            AccountName    = 'MyMail'
-            ProfileName    = 'MyMailProfile'
-            EmailAddress   = 'NoReply@company.local'
-            Description    = 'Default mail account and profile.'
-            LoggingLevel   = 'Normal'
-            TcpPort        = 25
-        }
-    )
-}
 
 Configuration Example
 {
@@ -38,12 +20,12 @@ Configuration Example
         SqlServerDatabaseMail 'DisableDatabaseMail'
         {
             Ensure               = 'Absent'
-            ServerName           = $Node.ServerName
-            InstanceName         = $Node.InstanceName
-            AccountName          = $Node.AccountName
-            ProfileName          = $Node.ProfileName
-            EmailAddress         = $Node.EmailAddress
-            MailServerName       = $Node.MailServerName
+            ServerName           = $Node.NodeName
+            InstanceName         = 'DSCSQLTEST'
+            AccountName          = 'MyMail'
+            ProfileName          = 'MyMailProfile'
+            EmailAddress         = 'NoReply@company.local'
+            MailServerName       = 'mail.company.local'
 
             PsDscRunAsCredential = $SqlInstallCredential
         }
@@ -55,8 +37,8 @@ Configuration Example
         SqlServerConfiguration 'DisableDatabaseMailXPs'
         {
 
-            ServerName     = $Node.ServerName
-            InstanceName   = $Node.InstanceName
+            ServerName     = $Node.NodeName
+            InstanceName   = 'DSCSQLTEST'
             OptionName     = 'Database Mail XPs'
             OptionValue    = 0
             RestartService = $false

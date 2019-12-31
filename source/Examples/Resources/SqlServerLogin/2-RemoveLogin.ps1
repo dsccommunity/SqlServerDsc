@@ -1,20 +1,16 @@
 <#
-.EXAMPLE
-This example shows how to remove the Windows user 'CONTOSO\WindowsUser'.
-
-.EXAMPLE
-This example shows how to remove Windows group 'CONTOSO\WindowsGroup'.
-
-.EXAMPLE
-This example shows how to remove the SQL Login 'SqlLogin'.
+    .DESCRIPTION
+        This example shows how to remove the Windows user 'CONTOSO\WindowsUser',
+        Windows group 'CONTOSO\WindowsGroup', and the SQL Login 'SqlLogin'.
 #>
 
 Configuration Example
 {
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node localhost {
-        SqlServerLogin Remove_WindowsUser
+    node localhost
+    {
+        SqlServerLogin 'Remove_WindowsUser'
         {
             Ensure       = 'Absent'
             Name         = 'CONTOSO\WindowsUser'
@@ -23,7 +19,7 @@ Configuration Example
             InstanceName = 'DSC'
         }
 
-        SqlServerLogin Remove_WindowsGroup
+        SqlServerLogin 'Remove_WindowsGroup'
         {
             Ensure       = 'Absent'
             Name         = 'CONTOSO\WindowsGroup'
@@ -32,7 +28,7 @@ Configuration Example
             InstanceName = 'DSC'
         }
 
-        SqlServerLogin Remove_SqlLogin
+        SqlServerLogin 'Remove_SqlLogin'
         {
             Ensure       = 'Absent'
             Name         = 'SqlLogin'

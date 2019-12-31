@@ -1,5 +1,5 @@
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example shows how to ensure that the database user User1 are
         mapped to the certificate Certificate1 in the AdventureWorks database in
         the instance sqltest.company.local\DSC.
@@ -13,11 +13,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlDatabaseUser ReportAdmin_AddUser
+        SqlDatabaseUser 'ReportAdmin_AddUser'
         {
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'

@@ -1,6 +1,7 @@
 <#
-    .EXAMPLE
-        This example will add a Database Mirror endpoint, to two instances, using the default values.
+    .DESCRIPTION
+        This example will add a Database Mirror endpoint, to two instances, using
+        the default values.
 
 #>
 Configuration Example
@@ -12,11 +13,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlServerEndpoint SQLConfigureEndpoint-Instance1
+        SqlServerEndpoint 'SQLConfigureEndpoint-Instance1'
         {
             EndpointName         = 'HADR'
             InstanceName         = 'INST1'
@@ -24,7 +25,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlServerEndpoint SQLConfigureEndpoint-Instances2
+        SqlServerEndpoint 'SQLConfigureEndpoint-Instances2'
         {
             EndpointName         = 'HADR'
             InstanceName         = 'INST2'

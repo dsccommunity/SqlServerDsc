@@ -1,12 +1,12 @@
 <#
-.EXAMPLE
-    This example shows how to set max degree of parallelism server
-    configuration option with the automatic configuration.
+    .DESCRIPTION
+        This example shows how to set max degree of parallelism server
+        configuration option with the automatic configuration.
 
-    In the event this is applied to a Failover Cluster Instance (FCI), the
-    ProcessOnlyOnActiveNode property will tell the Test-TargetResource function
-    to evaluate if any changes are needed if the node is actively hosting the
-    SQL Server instance.
+        In the event this is applied to a Failover Cluster Instance (FCI), the
+        ProcessOnlyOnActiveNode property will tell the Test-TargetResource function
+        to evaluate if any changes are needed if the node is actively hosting the
+        SQL Server instance.
 #>
 Configuration Example
 {
@@ -17,11 +17,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlServerMaxDop Set_SQLServerMaxDop_ToAuto
+        SqlServerMaxDop 'Set_SQLServerMaxDop_ToAuto'
         {
             Ensure                  = 'Present'
             DynamicAlloc            = $true

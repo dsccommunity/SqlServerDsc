@@ -1,18 +1,20 @@
 <#
-.EXAMPLE
-    These two example shows how to run SQL script using Windows Authentication.
-    First example shows how the resource is run as account SYSTEM. And the second example shows how the resource is run with a user account.
+    .DESCRIPTION
+        These two example shows how to run SQL script using Windows Authentication.
+        First example shows how the resource is run as account SYSTEM. And the second
+        example shows how the resource is run with a user account.
 #>
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $WindowsCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     Node localhost
     {

@@ -1,7 +1,7 @@
 <#
-.EXAMPLE
-    This example shows how to enable SQL Server Always On high availability and
-    disaster recovery (HADR).
+    .DESCRIPTION
+        This example shows how to enable SQL Server Always On high availability and
+        disaster recovery (HADR).
 #>
 Configuration Example
 {
@@ -12,7 +12,7 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {

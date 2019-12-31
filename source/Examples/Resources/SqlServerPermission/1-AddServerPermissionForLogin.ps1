@@ -1,5 +1,5 @@
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example will add the server permissions AlterAnyAvailabilityGroup and ViewServerState
         to the login 'NT AUTHORITY\SYSTEM' and 'NT SERVICE\ClusSvc' to the default instance.
 #>
@@ -12,7 +12,7 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDSC
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {

@@ -1,5 +1,5 @@
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example shows how to ensure that the database user User1 are present
         in the AdventureWorks database in the instance sqltest.company.local\DSC.
 #>
@@ -12,11 +12,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlDatabaseUser AddUser1
+        SqlDatabaseUser 'AddUser1'
         {
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'

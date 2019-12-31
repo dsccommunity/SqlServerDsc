@@ -1,7 +1,8 @@
 <#
-    .EXAMPLE
-        This example will add connect permission to both an Always On primary replica and an
-        Always On secondary replica, and where each replica has a different SQL service account.
+    .DESCRIPTION
+        This example will add connect permission to both an Always On primary
+        replica and an Always On secondary replica, and where each replica has
+        a different SQL service account.
 #>
 
 $ConfigurationData = @{
@@ -9,6 +10,9 @@ $ConfigurationData = @{
         @{
             NodeName        = '*'
             InstanceName = 'MSSQLSERVER'
+
+            # Not recommended for production. Only set here to pass CI.
+            PsDscAllowPlainTextPassword = $true
         },
 
         @{
@@ -40,11 +44,11 @@ Configuration Example
         $SqlServiceNode2Credential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.Where{$_.Role -eq 'PrimaryReplica' }.NodeName
     {
-        SqlServerEndpointPermission SQLConfigureEndpointPermissionPrimary
+        SqlServerEndpointPermission 'SQLConfigureEndpointPermissionPrimary'
         {
             Ensure               = 'Present'
             ServerName           = $Node.NodeName
@@ -56,7 +60,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlServerEndpointPermission SQLConfigureEndpointPermissionSecondary
+        SqlServerEndpointPermission 'SQLConfigureEndpointPermissionSecondary'
         {
             Ensure               = 'Present'
             ServerName           = $Node.NodeName
@@ -71,7 +75,7 @@ Configuration Example
 
     Node $AllNodes.Where{ $_.Role -eq 'SecondaryReplica' }.NodeName
     {
-        SqlServerEndpointPermission SQLConfigureEndpointPermissionPrimary
+        SqlServerEndpointPermission 'SQLConfigureEndpointPermissionPrimary'
         {
             Ensure               = 'Present'
             ServerName           = $Node.NodeName
@@ -83,7 +87,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlServerEndpointPermission SQLConfigureEndpointPermissionSecondary
+        SqlServerEndpointPermission 'SQLConfigureEndpointPermissionSecondary'
         {
             Ensure               = 'Present'
             ServerName           = $Node.NodeName

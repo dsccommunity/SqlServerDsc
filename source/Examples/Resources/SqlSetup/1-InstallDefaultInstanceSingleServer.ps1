@@ -1,7 +1,8 @@
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example shows how to install a default instance of SQL Server, and
         Analysis Services in Tabular mode, on a single server.
+
     .NOTES
         SQL Server setup is run using the SYSTEM account. Even if SetupCredential is provided
         it is not used to install SQL Server at this time (see issue #139).
@@ -12,27 +13,27 @@ Configuration Example
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlInstallCredential,
 
         [Parameter()]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlAdministratorCredential = $SqlInstallCredential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlServiceCredential,
 
         [Parameter()]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlAgentServiceCredential = $SqlServiceCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {

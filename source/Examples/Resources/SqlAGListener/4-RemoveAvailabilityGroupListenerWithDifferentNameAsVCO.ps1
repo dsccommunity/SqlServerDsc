@@ -1,6 +1,7 @@
 <#
-.EXAMPLE
-    This example will remove an Availability Group listener with the same name as the cluster role VCO.
+    .DESCRIPTION
+        This example will remove an Availability Group listener with the same
+        name as the cluster role VCO.
 #>
 Configuration Example
 {
@@ -11,11 +12,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlAGListener RemoveAvailabilityGroupListenerWithSameNameAsVCO
+        SqlAGListener 'RemoveAvailabilityGroupListenerWithSameNameAsVCO'
         {
             Ensure               = 'Absent'
             ServerName           = 'SQLNODE01.company.local'

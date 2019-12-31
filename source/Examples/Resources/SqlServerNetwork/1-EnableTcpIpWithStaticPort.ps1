@@ -1,8 +1,8 @@
 <#
-.EXAMPLE
-    This example will enable TCP/IP protocol and set the custom static port to 4509.
-    When RestartService is set to $true the resource will also restart the SQL service.
-    The resource will be run as the account provided in $SystemAdministratorAccount.
+    .DESCRIPTION
+        This example will enable TCP/IP protocol and set the custom static port to 4509.
+        When RestartService is set to $true the resource will also restart the SQL service.
+        The resource will be run as the account provided in $SystemAdministratorAccount.
 #>
 Configuration Example
 {
@@ -13,7 +13,7 @@ Configuration Example
         $SystemAdministratorAccount
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
@@ -25,6 +25,7 @@ Configuration Example
             TCPDynamicPort       = $false
             TCPPort              = 4509
             RestartService       = $true
+
             PsDscRunAsCredential = $SystemAdministratorAccount
         }
     }

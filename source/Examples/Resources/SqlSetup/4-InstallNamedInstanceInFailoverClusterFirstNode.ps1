@@ -1,12 +1,13 @@
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example shows how to install the first node in a SQL Server failover cluster.
+
     .NOTES
         This example assumes that a Failover Cluster is already present with a Cluster Name Object (CNO), IP-address.
         This example also assumes that that all necessary shared disks is present, and formatted with the correct
-        drive letter, to accomdate the paths used during SQL Server setup. Minimum is one shared disk.
+        drive letter, to accommodate the paths used during SQL Server setup. Minimum is one shared disk.
         This example also assumes that the Cluster Name Object (CNO) has the permission to manage Computer Objects in
-        the Organizational Unit (OU) where the CNO Computer Object resides in Active Directory. This is neccessary
+        the Organizational Unit (OU) where the CNO Computer Object resides in Active Directory. This is necessary
         so that SQL Server setup can create a Virtual Computer Object (VCO) for the cluster group
         (Windows Server 2012 R2 and earlier) or cluster role (Windows Server 2016 and later). Also so that the
         Virtual Computer Object (VCO) can be removed when the Failover CLuster instance is uninstalled.
@@ -25,7 +26,7 @@
         also means that at this time PsDscRunAsCredential can not be used to access media on the UNC share.
 
         There is currently a bug that prevents the resource to logon to the instance if the current node is not the
-        active node. This is beacuse the resource tries to logon using the SYSTEM account instead of the credentials
+        active node. This is because the resource tries to logon using the SYSTEM account instead of the credentials
         in SetupCredential, and the resource does not currently support the built-in PsDscRunAsCredential either (see
         issue #444).
 #>
@@ -35,27 +36,27 @@ Configuration Example
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlInstallCredential,
 
         [Parameter()]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlAdministratorCredential = $SqlInstallCredential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlServiceCredential,
 
         [Parameter()]
-        [ValidateNotNullorEmpty()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         $SqlAgentServiceCredential = $SqlServiceCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {

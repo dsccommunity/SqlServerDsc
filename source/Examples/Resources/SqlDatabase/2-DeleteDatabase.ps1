@@ -1,7 +1,7 @@
 <#
-.EXAMPLE
-    This example shows how to remove a database with
-    the database name equal to 'AdventureWorks'.
+    .DESCRIPTION
+        This example shows how to remove a database with
+        the database name equal to 'AdventureWorks'.
 #>
 Configuration Example
 {
@@ -12,16 +12,16 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlDatabase Delete_Database
+        SqlDatabase 'Delete_Database'
         {
-            Ensure       = 'Absent'
-            ServerName   = 'sqltest.company.local'
-            InstanceName = 'DSC'
-            Name         = 'AdventureWorks'
+            Ensure               = 'Absent'
+            ServerName           = 'sqltest.company.local'
+            InstanceName         = 'DSC'
+            Name                 = 'AdventureWorks'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
         }

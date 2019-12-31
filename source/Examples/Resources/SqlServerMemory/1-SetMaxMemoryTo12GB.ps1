@@ -1,7 +1,7 @@
 <#
-.EXAMPLE
-    This example shows how to set the minimum and maximum memory
-    configuration option with the value equal to 1024 and 12288.
+    .DESCRIPTION
+        This example shows how to set the minimum and maximum memory
+        configuration option with the value equal to 1024 and 12288.
 #>
 Configuration Example
 {
@@ -12,11 +12,11 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlServerMemory Set_SQLServerMaxMemory_To12GB
+        SqlServerMemory 'Set_SQLServerMaxMemory_To12GB'
         {
             Ensure               = 'Present'
             DynamicAlloc         = $false
@@ -24,6 +24,7 @@ Configuration Example
             MaxMemory            = 12288
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
+
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
     }

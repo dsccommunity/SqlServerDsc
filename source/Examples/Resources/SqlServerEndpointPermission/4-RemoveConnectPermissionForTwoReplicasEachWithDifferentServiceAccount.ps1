@@ -1,5 +1,5 @@
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example will remove connect permission to both an Always On primary replica and an
         Always On secondary replica, and where each replica has a different SQL service account.
 #>
@@ -9,6 +9,9 @@ $ConfigurationData = @{
         @{
             NodeName        = '*'
             InstanceName = 'MSSQLSERVER'
+
+            # Not recommended for production. Only set here to pass CI.
+            PsDscAllowPlainTextPassword = $true
         },
 
         @{
@@ -40,11 +43,11 @@ Configuration Example
         $SqlServiceNode2Credential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.Where{$_.Role -eq 'PrimaryReplica' }.NodeName
     {
-        SqlServerEndpointPermission RemoveSQLConfigureEndpointPermissionPrimary
+        SqlServerEndpointPermission 'RemoveSQLConfigureEndpointPermissionPrimary'
         {
             Ensure               = 'Absent'
             ServerName           = $Node.NodeName
@@ -56,7 +59,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlServerEndpointPermission RemoveSQLConfigureEndpointPermissionSecondary
+        SqlServerEndpointPermission 'RemoveSQLConfigureEndpointPermissionSecondary'
         {
             Ensure               = 'Absent'
             ServerName           = $Node.NodeName
@@ -71,7 +74,7 @@ Configuration Example
 
     Node $AllNodes.Where{ $_.Role -eq 'SecondaryReplica' }.NodeName
     {
-        SqlServerEndpointPermission RemoveSQLConfigureEndpointPermissionPrimary
+        SqlServerEndpointPermission 'RemoveSQLConfigureEndpointPermissionPrimary'
         {
             Ensure               = 'Absent'
             ServerName           = $Node.NodeName
@@ -83,7 +86,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlServerEndpointPermission RemoveSQLConfigureEndpointPermissionSecondary
+        SqlServerEndpointPermission 'RemoveSQLConfigureEndpointPermissionSecondary'
         {
             Ensure               = 'Absent'
             ServerName           = $Node.NodeName

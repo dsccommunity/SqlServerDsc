@@ -1,117 +1,88 @@
 <#
-.EXAMPLE
-    This example shows how to ensure that the Availability Group Replica 'SQL2' exists in the Availability Group 'TestAG'.
+    .DESCRIPTION
+        This example shows how to ensure that the Availability Group Replica 'SQL2'
+        exists in the Availability Group 'TestAG'.
 
-    In the event this is applied to a Failover Cluster Instance (FCI), the
-    ProcessOnlyOnActiveNode property will tell the Test-TargetResource function
-    to evaluate if any changes are needed if the node is actively hosting the
-    SQL Server Instance.
+        In the event this is applied to a Failover Cluster Instance (FCI), the
+        ProcessOnlyOnActiveNode property will tell the Test-TargetResource function
+        to evaluate if any changes are needed if the node is actively hosting the
+        SQL Server Instance.
 #>
-
-$ConfigurationData = @{
-    AllNodes = @(
-        @{
-            NodeName                = '*'
-            InstanceName            = 'MSSQLSERVER'
-            AvailabilityGroupName   = 'TestAG'
-            ProcessOnlyOnActiveNode = $true
-        },
-
-        @{
-            NodeName = 'SQL1'
-            Role     = 'PrimaryReplica'
-        },
-
-        @{
-            NodeName = 'SQL2'
-            Role     = 'SecondaryReplica'
-        }
-    )
-}
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     Node $AllNodes.NodeName
     {
         # Adding the required service account to allow the cluster to log into SQL
-        SqlServerLogin AddNTServiceClusSvc
+        SqlServerLogin 'AddNTServiceClusSvc'
         {
             Ensure               = 'Present'
             Name                 = 'NT SERVICE\ClusSvc'
             LoginType            = 'WindowsUser'
             ServerName           = $Node.NodeName
-            InstanceName         = $Node.InstanceName
+            InstanceName         = 'MSSQLSERVER'
+
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         # Add the required permissions to the cluster service login
-        SqlServerPermission AddNTServiceClusSvcPermissions
+        SqlServerPermission 'AddNTServiceClusSvcPermissions'
         {
             DependsOn            = '[SqlServerLogin]AddNTServiceClusSvc'
             Ensure               = 'Present'
             ServerName           = $Node.NodeName
-            InstanceName         = $Node.InstanceName
+            InstanceName         = 'MSSQLSERVER'
             Principal            = 'NT SERVICE\ClusSvc'
             Permission           = 'AlterAnyAvailabilityGroup', 'ViewServerState'
+
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         # Create a DatabaseMirroring endpoint
-        SqlServerEndpoint HADREndpoint
+        SqlServerEndpoint 'HADREndpoint'
         {
             EndPointName         = 'HADR'
             Ensure               = 'Present'
             Port                 = 5022
             ServerName           = $Node.NodeName
-            InstanceName         = $Node.InstanceName
+            InstanceName         = 'MSSQLSERVER'
+
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
         SqlAlwaysOnService EnableHADR
         {
             Ensure               = 'Present'
-            InstanceName         = $Node.InstanceName
+            InstanceName         = 'MSSQLSERVER'
             ServerName           = $Node.NodeName
+
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        if ( $Node.Role -eq 'PrimaryReplica' )
+        # Add the availability group replica to the availability group
+        SqlAGReplica 'AddReplica'
         {
-            # Create the availability group on the instance tagged as the primary replica
-            SqlAG AddTestAG
-            {
-                Ensure               = 'Present'
-                Name                 = $Node.AvailabilityGroupName
-                InstanceName         = $Node.InstanceName
-                ServerName           = $Node.NodeName
-                DependsOn            = '[SqlAlwaysOnService]EnableHADR', '[SqlServerEndpoint]HADREndpoint', '[SqlServerPermission]AddNTServiceClusSvcPermissions'
-                PsDscRunAsCredential = $SqlAdministratorCredential
-            }
-        }
+            Ensure                     = 'Present'
+            Name                       = $Node.NodeName
+            AvailabilityGroupName      = 'TestAG'
+            ServerName                 = $Node.NodeName
+            InstanceName               = 'MSSQLSERVER'
+            PrimaryReplicaServerName   = 'SQL1'
+            PrimaryReplicaInstanceName = 'MSSQLSERVER'
+            ProcessOnlyOnActiveNode    = $true
 
-        if ( $Node.Role -eq 'SecondaryReplica' )
-        {
-            # Add the availability group replica to the availability group
-            SqlAGReplica AddReplica
-            {
-                Ensure                     = 'Present'
-                Name                       = $Node.NodeName
-                AvailabilityGroupName      = $Node.AvailabilityGroupName
-                ServerName                 = $Node.NodeName
-                InstanceName               = $Node.InstanceName
-                PrimaryReplicaServerName   = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).NodeName
-                PrimaryReplicaInstanceName = ( $AllNodes | Where-Object { $_.Role -eq 'PrimaryReplica' } ).InstanceName
-                DependsOn                  = '[SqlAlwaysOnService]EnableHADR'
-                ProcessOnlyOnActiveNode    = $Node.ProcessOnlyOnActiveNode
-            }
+            DependsOn                  = '[SqlAlwaysOnService]EnableHADR'
+
+            PsDscRunAsCredential       = $SqlAdministratorCredential
         }
     }
 }

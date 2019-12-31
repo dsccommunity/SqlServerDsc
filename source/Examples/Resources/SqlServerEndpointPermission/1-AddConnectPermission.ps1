@@ -1,7 +1,7 @@
 <#
-    .EXAMPLE
-        This example will add connect permission to the credentials provided in $SqlServiceCredential
-        to the endpoint named 'DefaultMirrorEndpoint'.
+    .DESCRIPTION
+        This example will add connect permission to the credentials provided in
+        $SqlServiceCredential to the endpoint named 'DefaultMirrorEndpoint'.
 #>
 Configuration Example
 {
@@ -16,11 +16,11 @@ Configuration Example
         $SqlServiceCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDsc
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        SqlServerEndpointPermission SQLConfigureEndpointPermission
+        SqlServerEndpointPermission 'SQLConfigureEndpointPermission'
         {
             Ensure               = 'Present'
             ServerName           = 'SQLTEST'

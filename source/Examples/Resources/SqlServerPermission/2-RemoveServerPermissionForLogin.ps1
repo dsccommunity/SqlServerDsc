@@ -1,5 +1,5 @@
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example will remove the server permissions AlterAnyAvailabilityGroup and ViewServerState
         from the login 'NT AUTHORITY\SYSTEM'.
 #>
@@ -12,12 +12,12 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName SqlServerDSC
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
         # Add permission
-        SqlServerPermission SQLConfigureServerPermission
+        SqlServerPermission 'SQLConfigureServerPermission'
         {
             Ensure               = 'Absent'
             ServerName           = 'SQLNODE01.company.local'
