@@ -83,18 +83,13 @@ function New-IntegrationLoopbackAdapter
         $AdapterName
     )
 
-    # Ensure the loopback adapter module is downloaded
     $LoopbackAdapterModuleName = 'LoopbackAdapter'
-    $LoopbackAdapterModulePath = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules\$LoopbackAdapterModuleName"
 
-    # This is a helper function from DscResource.Tests\TestHelper.psm1.
-    Install-ModuleFromPowerShellGallery `
-        -ModuleName $LoopbackAdapterModuleName `
-        -DestinationPath $LoopbackAdapterModulePath
-
-    $LoopbackAdapterModule = Join-Path `
-        -Path $LoopbackAdapterModulePath `
-        -ChildPath "$($LoopbackAdapterModuleName).psm1"
+    # Ensure the loopback adapter module is downloaded
+    if (-not (Get-Module -Name $LoopbackAdapterModuleName -ListAvailable))
+    (
+        throw ('Missing module ''{0}''' -f $LoopbackAdapterModuleName)
+    )
 
     # Import the loopback adapter module
     Import-Module -Name $LoopbackAdapterModule -Force
@@ -274,15 +269,15 @@ function New-SQLSelfSignedCertificate
 
     $certificate = New-SelfSignedCertificateEx @newSelfSignedCertificateExParameters
 
-    Write-Info -Message ('Created self-signed certificate ''{0}'' with thumbprint ''{1}''.' -f $certificate.Subject, $certificate.Thumbprint)
+    Write-Verbose -Message ('Created self-signed certificate ''{0}'' with thumbprint ''{1}''.' -f $certificate.Subject, $certificate.Thumbprint)
 
     # Update a machine and session environment variable with the path to the private certificate.
     Set-EnvironmentVariable -Name 'SqlPrivateCertificatePath' -Value $sqlPrivateCertificatePath -Machine
-    Write-Info -Message ('Environment variable $env:SqlPrivateCertificatePath set to ''{0}''' -f $env:SqlPrivateCertificatePath)
+    Write-Verbose -Message ('Environment variable $env:SqlPrivateCertificatePath set to ''{0}''' -f $env:SqlPrivateCertificatePath)
 
     # Update a machine and session environment variable with the thumbprint of the certificate.
     Set-EnvironmentVariable -Name 'SqlCertificateThumbprint' -Value $certificate.Thumbprint -Machine
-    Write-Info -Message ('Environment variable $env:SqlCertificateThumbprint set to ''{0}''' -f $env:SqlCertificateThumbprint)
+    Write-Verbose -Message ('Environment variable $env:SqlCertificateThumbprint set to ''{0}''' -f $env:SqlCertificateThumbprint)
 
     return $certificate
 }

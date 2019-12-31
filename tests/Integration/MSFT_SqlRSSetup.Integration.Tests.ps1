@@ -40,11 +40,11 @@ try
         $script:mockSourceMediaDisplayName = 'Microsoft SQL Server Reporting Services (October 2017)'
         $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/E/6/4/E6477A2A-9B58-40F7-8AD6-62BB8491EA78/SQLServerReportingServices.exe'
 
-        Write-Info -Message ('Start downloading the {1} executable at {0}.' -f (Get-Date -Format 'yyyy-MM-dd hh:mm:ss'), $script:mockSourceMediaDisplayName) -Verbose
+        Write-Verbose -Message ('Start downloading the {1} executable at {0}.' -f (Get-Date -Format 'yyyy-MM-dd hh:mm:ss'), $script:mockSourceMediaDisplayName) -Verbose
 
         Invoke-WebRequest -Uri $script:mockSourceMediaUrl -OutFile $ConfigurationData.AllNodes.SourcePath
 
-        Write-Info -Message ('{1} executable file has SHA1 hash ''{0}''.' -f (Get-FileHash -Path $ConfigurationData.AllNodes.SourcePath -Algorithm 'SHA1').Hash, $script:mockSourceMediaDisplayName) -Verbose
+        Write-Verbose -Message ('{1} executable file has SHA1 hash ''{0}''.' -f (Get-FileHash -Path $ConfigurationData.AllNodes.SourcePath -Algorithm 'SHA1').Hash, $script:mockSourceMediaDisplayName) -Verbose
 
         $ProgressPreference = $previousProgressPreference
 
@@ -56,12 +56,12 @@ try
         }
         else
         {
-            Write-Info -Message ('Finished downloading the {1} executable at {0}.' -f (Get-Date -Format 'yyyy-MM-dd hh:mm:ss'), $script:mockSourceMediaDisplayName) -Verbose
+            Write-Verbose -Message ('Finished downloading the {1} executable at {0}.' -f (Get-Date -Format 'yyyy-MM-dd hh:mm:ss'), $script:mockSourceMediaDisplayName) -Verbose
         }
     }
     else
     {
-        Write-Info -Message ('{0} executable is already downloaded' -f $script:mockSourceMediaDisplayName) -Verbose
+        Write-Verbose -Message ('{0} executable is already downloaded' -f $script:mockSourceMediaDisplayName) -Verbose
     }
 
     Describe "$($script:dscResourceName)_Integration" {

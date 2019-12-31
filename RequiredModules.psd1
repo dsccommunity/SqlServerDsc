@@ -18,6 +18,7 @@
     'DscResource.Test'          = 'latest'
     'DscResource.AnalyzerRules' = 'latest'
     xDscResourceDesigner        = 'latest'
+    LoopbackAdapter             = 'latest'
 
     # Prerequisites modules needed for examples or integration tests
     PSDscResources = '2.12.0.0'
