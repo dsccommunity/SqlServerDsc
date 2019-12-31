@@ -83,13 +83,13 @@ function New-IntegrationLoopbackAdapter
         $AdapterName
     )
 
-    $LoopbackAdapterModuleName = 'LoopbackAdapter'
+    $loopbackAdapterModuleName = 'LoopbackAdapter'
 
     # Ensure the loopback adapter module is downloaded
-    if (-not (Get-Module -Name $LoopbackAdapterModuleName -ListAvailable))
-    (
-        throw ('Missing module ''{0}''' -f $LoopbackAdapterModuleName)
-    )
+    if (-not (Get-Module -Name $loopbackAdapterModuleName -ListAvailable))
+    {
+        throw ('Missing module ''{0}''' -f $loopbackAdapterModuleName)
+    }
 
     # Import the loopback adapter module
     Import-Module -Name $LoopbackAdapterModule -Force
