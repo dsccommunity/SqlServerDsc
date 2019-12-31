@@ -92,7 +92,7 @@ function New-IntegrationLoopbackAdapter
     }
 
     # Import the loopback adapter module
-    Import-Module -Name $LoopbackAdapterModule -Force
+    Import-Module -Name $loopbackAdapterModuleName -Force
 
     $loopbackAdapterParameters = @{
         Name = $AdapterName
