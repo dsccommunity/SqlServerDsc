@@ -272,11 +272,11 @@ function New-SQLSelfSignedCertificate
     Write-Verbose -Message ('Created self-signed certificate ''{0}'' with thumbprint ''{1}''.' -f $certificate.Subject, $certificate.Thumbprint)
 
     # Update a machine and session environment variable with the path to the private certificate.
-    Set-EnvironmentVariable -Name 'SqlPrivateCertificatePath' -Value $sqlPrivateCertificatePath -Machine
-    Write-Verbose -Message ('Environment variable $env:SqlPrivateCertificatePath set to ''{0}''' -f $env:SqlPrivateCertificatePath)
+    [Environment]::SetEnvironmentVariable('SqlPrivateCertificatePath', $sqlPrivateCertificatePath, 'Machine')
+    Write-Verbose -Message ('Machine environment variable $env:SqlPrivateCertificatePath set to ''{0}''' -f $env:SqlPrivateCertificatePath)
 
     # Update a machine and session environment variable with the thumbprint of the certificate.
-    Set-EnvironmentVariable -Name 'SqlCertificateThumbprint' -Value $certificate.Thumbprint -Machine
+    [Environment]::SetEnvironmentVariable('SqlCertificateThumbprint', $certificate.Thumbprint, 'Machine')
     Write-Verbose -Message ('Environment variable $env:SqlCertificateThumbprint set to ''{0}''' -f $env:SqlCertificateThumbprint)
 
     return $certificate
