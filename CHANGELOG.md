@@ -21,6 +21,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
   - Fix hashtables to align with style guideline ([issue #1437](https://github.com/PowerShell/SqlServerDsc/issues/1437)).
   - Updated most examples to remove the need for the variable `$ConfigurationData`,
     and fixed style issues.
+  - Ignore commit in `GitVersion.yml` to force the correct initial release.
 - SqlServerMaxDop
   - Fix line endings in code which did not use the correct format.
 - SqlAlwaysOnService
