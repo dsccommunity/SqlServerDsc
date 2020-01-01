@@ -66,7 +66,7 @@ about: If you have a problem, bug, or enhancement with a resource in this resour
     $PSVersionTable
 -->
 
-#### Version of the DSC module that was used ('dev' if using current dev branch)
+#### Version of the DSC module that was used
 <!--
     To help with this information, please run this command:
     Get-Module -Name 'SqlServerDsc' -ListAvailable | ft Name,Version,Path

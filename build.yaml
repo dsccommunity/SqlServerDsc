@@ -1,0 +1,88 @@
+---
+####################################################
+#          ModuleBuilder Configuration             #
+####################################################
+CopyDirectories:
+  - DSCResources
+  - en-US
+  - Modules
+Encoding: UTF8
+VersionedOutputDirectory: true
+
+####################################################
+#           Pipeline Configuration                 #
+####################################################
+BuildWorkflow:
+  '.':
+    - build
+    - test
+
+  build:
+    - Clean
+    - Build_Module_ModuleBuilder
+    - Build_NestedModules_ModuleBuilder
+    - Create_changelog_release_output
+
+  pack:
+    - build
+    - package_module_nupkg
+
+  hqrmtest:
+    - DscResource_Tests_Stop_On_Fail
+
+  test:
+    - Pester_Tests_Stop_On_Fail
+    - Pester_if_Code_Coverage_Under_Threshold
+
+  publish:
+    - Publish_release_to_GitHub
+    - publish_module_to_gallery
+
+
+####################################################
+#       PESTER  Configuration                      #
+####################################################
+
+Pester:
+  OutputFormat: NUnitXML
+  ExcludeFromCodeCoverage:
+  Script:
+    - tests/Unit
+  ExcludeTag:
+  Tag:
+  CodeCoverageThreshold: 85
+
+DscTest:
+  ExcludeTag:
+    - "Common Tests - New Error-Level Script Analyzer Rules"
+  Tag:
+  ExcludeSourceFile:
+    - output
+  ExcludeModuleFile:
+
+Resolve-Dependency:
+  Gallery: 'PSGallery'
+  AllowPrerelease: false
+  Verbose: false
+
+ModuleBuildTasks:
+  Sampler:
+    - '*.build.Sampler.ib.tasks'
+
+TaskHeader: |
+  param($Path)
+  ""
+  "=" * 79
+  Write-Build Cyan "`t`t`t$($Task.Name.replace("_"," ").ToUpper())"
+  Write-Build DarkGray  "$(Get-BuildSynopsis $Task)"
+  "-" * 79
+  Write-Build DarkGray "  $Path"
+  Write-Build DarkGray "  $($Task.InvocationInfo.ScriptName):$($Task.InvocationInfo.ScriptLineNumber)"
+  ""
+
+GitHubConfig:
+  GitHubFilesToAdd:
+    - 'CHANGELOG.md'
+  GitHubConfigUserName: dscbot
+  GitHubConfigUserEmail: dsccommunity@outlook.com
+  UpdateChangelogOnPrerelease: false

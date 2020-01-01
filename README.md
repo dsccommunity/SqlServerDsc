@@ -1,66 +1,30 @@
 # SqlServerDsc
 
-The **SqlServerDsc** module contains DSC resources
-for deployment and configuration of SQL Server.
+The **SqlServerDsc** module contains DSC resources for deployment and
+configuration of Microsoft SQL Server.
 
-This project has adopted [this code of conduct](CODE_OF_CONDUCT.md).
+[![Build Status](https://dev.azure.com/dsccommunity/SqlServerDsc/_apis/build/status/dsccommunity.SqlServerDsc?branchName=master)](https://dev.azure.com/dsccommunity/SqlServerDsc/_build/latest?definitionId=11&branchName=master)
+![Azure DevOps coverage (branch)](https://img.shields.io/azure-devops/coverage/dsccommunity/SqlServerDsc/11/master)
+[![Azure DevOps tests](https://img.shields.io/azure-devops/tests/dsccommunity/SqlServerDsc/11/master)](https://dsccommunity.visualstudio.com/SqlServerDsc/_test/analytics?definitionId=11&contextType=build)
+[![PowerShell Gallery (with prereleases)](https://img.shields.io/powershellgallery/vpre/SqlServerDsc?label=SqlServerDsc%20Preview)](https://www.powershellgallery.com/packages/SqlServerDsc/)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/SqlServerDsc?label=SqlServerDsc)](https://www.powershellgallery.com/packages/SqlServerDsc/)
 
-## Branches
+## Code of Conduct
 
-### master
+This project has adopted this [Code of Conduct](CODE_OF_CONDUCT.md).
 
-[![Build status](https://ci.appveyor.com/api/projects/status/b3g8f7kftx64n26l/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/SqlServerDsc/branch/master)
-[![codecov](https://codecov.io/gh/PowerShell/SqlServerDsc/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/SqlServerDsc/branch/master)
+## Releases
 
-This is the branch containing the latest release -
-no contributions should be made directly to this branch.
-
-### dev
-
-[![Build status](https://ci.appveyor.com/api/projects/status/b3g8f7kftx64n26l/branch/dev?svg=true)](https://ci.appveyor.com/project/PowerShell/SqlServerDsc/branch/dev)
-[![codecov](https://codecov.io/gh/PowerShell/SqlServerDsc/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/SqlServerDsc/branch/dev)
-
-This is the development branch
-to which contributions should be proposed by contributors as pull requests.
-This development branch will periodically be merged to the master branch,
-and be released to [PowerShell Gallery](https://www.powershellgallery.com/).
+For each merge to the branch `master` a preview release will be
+deployed to [PowerShell Gallery](https://www.powershellgallery.com/).
+Periodically a release version tag will be pushed which will deploy a
+full release to [PowerShell Gallery](https://www.powershellgallery.com/).
 
 ## Contributing
 
-Regardless of the way you want to contribute
-we are tremendously happy to have you here.
-
-There are several ways you can contribute.
-You can submit an issue to report a bug.
-You can submit an issue to request an improvement.
-You can take part in discussions for issues.
-You can review pull requests and comment on other contributors changes.
-You can also improve the resources and tests,
-or even create new resources,
-by sending in pull requests yourself.
-
-* If you want to submit an issue or take part in discussions,
-  please browse the list of [issues](https://github.com/PowerShell/SqlServerDsc/issues).
-  Please check out [Contributing to the DSC Resource Kit](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md)
-  on how to work with issues.
-* If you want to review pull requests,
-  please first check out the [Review Pull Request guidelines](https://github.com/PowerShell/DscResources/blob/master/CONTRIBUTING.md#reviewing-pull-requests),
-  and the browse the list of [pull requests](https://github.com/PowerShell/SqlServerDsc/pulls)
-  and look for those pull requests with label 'needs review'.
-* If you want to improve this resource module,
-  then please check out the following guidelines.
-  * The specific [Contributing to SqlServerDsc](https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md)
-    guidelines.
-  * The common [Style Guidelines & Best Practices](https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md).
-  * The common [Testing Guidelines](https://github.com/PowerShell/DscResources/blob/master/TestsGuidelines.md).
-  * If you are new to GitHub (and git),
-    then please check out [Getting Started with GitHub](https://github.com/PowerShell/DscResources/blob/master/GettingStartedWithGitHub.md).
-  * If you are new to Pester and writing test, then please check out
-    [Getting started with Pester](https://github.com/PowerShell/DscResources/blob/master/GettingStartedWithPester.md).
-
-If you need any help along the way,
-don't be afraid to ask.
-We are here for each other.
+Please check out common DSC Community [contributing guidelines](https://dsccommunity.org/guidelines/contributing)
+and the specific [Contributing to SqlServerDsc](https://github.com/dsccommunity/SqlServerDsc/blob/dev/CONTRIBUTING.md)
+guidelines.
 
 ## Installation
 
@@ -94,7 +58,7 @@ Windows Server 2008 R2 SP1, Windows Server 2012 and Windows Server 2012 R2.
 
 ## Examples
 
-You can review the [Examples](/Examples) directory in the SqlServerDsc module
+You can review the [Examples](/source/Examples) directory in the SqlServerDsc module
 for some general use scenarios for all of the resources that are in the module.
 
 ## Change log
@@ -244,13 +208,13 @@ It will also manage the Availability Group replica on the specified node.
 
 #### Examples
 
-* [Add a SQL Server Always On Availability Group](/Examples/Resources/SqlAG/1-CreateAvailabilityGroup.ps1)
-* [Add a SQL Server Always On Availability Group and explicitly defines its properties](/Examples/Resources/SqlAG/3-CreateAvailabilityGroupDetailed.ps1)
-* [Remove a SQL Server Always On Availability Group](/Examples/Resources/SqlAG/2-RemoveAvailabilityGroup.ps1)
+* [Add a SQL Server Always On Availability Group](/source/Examples/Resources/SqlAG/1-CreateAvailabilityGroup.ps1)
+* [Add a SQL Server Always On Availability Group and explicitly defines its properties](/source/Examples/Resources/SqlAG/3-CreateAvailabilityGroupDetailed.ps1)
+* [Remove a SQL Server Always On Availability Group](/source/Examples/Resources/SqlAG/2-RemoveAvailabilityGroup.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAG).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAG).
 
 ### SqlAGDatabase
 
@@ -315,13 +279,13 @@ group.
 
 #### Examples
 
-* [Add a database to an Availability Group](/Examples/Resources/SqlAGDatabase/1-AddDatabaseToAvailabilityGroup.ps1)
-* [Remove a database from an Availability Group](/Examples/Resources/SqlAGDatabase/2-RemoveDatabaseFromAvailabilityGroup.ps1)
-* [Enforce only specified databases as member in an Availability Group](/Examples/Resources/SqlAGDatabase/3-MatchDefinedDatabaseInAvailabilityGroup.ps1)
+* [Add a database to an Availability Group](/source/Examples/Resources/SqlAGDatabase/1-AddDatabaseToAvailabilityGroup.ps1)
+* [Remove a database from an Availability Group](/source/Examples/Resources/SqlAGDatabase/2-RemoveDatabaseFromAvailabilityGroup.ps1)
+* [Enforce only specified databases as member in an Availability Group](/source/Examples/Resources/SqlAGDatabase/3-MatchDefinedDatabaseInAvailabilityGroup.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAGDatabase).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAGDatabase).
 
 ### SqlAgentAlert
 
@@ -346,12 +310,12 @@ update the severity or message id.
 
 #### Examples
 
-* [Add a SQL Agent Alert](/Examples/Resources/SqlAgentAlert/1-AddAlert.ps1)
-* [Remove a SQL Agent Alert](/Examples/Resources/SqlAgentAlert/2-RemoveAlert.ps1)
+* [Add a SQL Agent Alert](/source/Examples/Resources/SqlAgentAlert/1-AddAlert.ps1)
+* [Remove a SQL Agent Alert](/source/Examples/Resources/SqlAgentAlert/2-RemoveAlert.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAgentAlert).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAgentAlert).
 
 ### SqlAgentFailsafe
 
@@ -376,12 +340,12 @@ update the Notification method.
 
 #### Examples
 
-* [Add SQL Agent Failsafe Operator](/Examples/Resources/SqlAgentFailsafe/1-AddFailsafe.ps1)
-* [Remove SQL Agent Failsafe Operator](/Examples/Resources/SqlAgentFailsafe/2-RemoveFailsafe.ps1)
+* [Add SQL Agent Failsafe Operator](/source/Examples/Resources/SqlAgentFailsafe/1-AddFailsafe.ps1)
+* [Remove SQL Agent Failsafe Operator](/source/Examples/Resources/SqlAgentFailsafe/2-RemoveFailsafe.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAgentFailsafe).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAgentFailsafe).
 
 ### SqlAgentOperator
 
@@ -406,12 +370,12 @@ the operators email address.
 
 #### Examples
 
-* [Add a SQL Agent Operator](/Examples/Resources/SqlAgentOperator/1-AddOperator.ps1)
-* [Remove a SQL Agent Operator](/Examples/Resources/SqlAgentOperator/2-RemoveOperator.ps1)
+* [Add a SQL Agent Operator](/source/Examples/Resources/SqlAgentOperator/1-AddOperator.ps1)
+* [Remove a SQL Agent Operator](/source/Examples/Resources/SqlAgentOperator/2-RemoveOperator.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAgentOperator).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAgentOperator).
 
 ### SqlAGListener
 
@@ -448,16 +412,16 @@ No description.
 
 #### Examples
 
-* [Adds an Availability Group listener with the same name as the Availability Group VCO](/Examples/Resources/SqlAGListener/1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1)
-* [Adds an Availability Group listener with a different name than the Availability Group VCO](/Examples/Resources/SqlAGListener/2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
-* [Removes an Availability Group listener with the same name as the Availability Group VCO](/Examples/Resources/SqlAGListener/3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1)
-* [Removes an Availability Group listener with a different name than the Availability Group VCO](/Examples/Resources/SqlAGListener/4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
-* [Adds an Availability Group listener using DHCP on the default server subnet](/Examples/Resources/SqlAGListener/5-AddAvailabilityGroupListenerUsingDHCPWithDefaultServerSubnet.ps1)
-* [Adds an Availability Group listener using DHCP with a specific subnet](/Examples/Resources/SqlAGListener/6-AddAvailabilityGroupListenerUsingDHCPWithSpecificSubnet.ps1)
+* [Adds an Availability Group listener with the same name as the Availability Group VCO](/source/Examples/Resources/SqlAGListener/1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1)
+* [Adds an Availability Group listener with a different name than the Availability Group VCO](/source/Examples/Resources/SqlAGListener/2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
+* [Removes an Availability Group listener with the same name as the Availability Group VCO](/source/Examples/Resources/SqlAGListener/3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1)
+* [Removes an Availability Group listener with a different name than the Availability Group VCO](/source/Examples/Resources/SqlAGListener/4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
+* [Adds an Availability Group listener using DHCP on the default server subnet](/source/Examples/Resources/SqlAGListener/5-AddAvailabilityGroupListenerUsingDHCPWithDefaultServerSubnet.ps1)
+* [Adds an Availability Group listener using DHCP with a specific subnet](/source/Examples/Resources/SqlAGListener/6-AddAvailabilityGroupListenerUsingDHCPWithSpecificSubnet.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAGListener).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAGListener).
 
 ### SqlAGReplica
 
@@ -527,12 +491,12 @@ Always On Availability Group Replica.
 
 #### Examples
 
-* [Add a SQL Server Always On Availability Group Replica](/Examples/Resources/SqlAGReplica/1-CreateAvailabilityGroupReplica.ps1)
-* [Remove a SQL Server Always On Availability Group Replica](/Examples/Resources/SqlAGReplica/2-RemoveAvailabilityGroupReplica.ps1)
+* [Add a SQL Server Always On Availability Group Replica](/source/Examples/Resources/SqlAGReplica/1-CreateAvailabilityGroupReplica.ps1)
+* [Remove a SQL Server Always On Availability Group Replica](/source/Examples/Resources/SqlAGReplica/2-RemoveAvailabilityGroupReplica.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAGReplica).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAGReplica).
 
 ### SqlAlias
 
@@ -564,12 +528,12 @@ No description.
 
 #### Examples
 
-* [Add an SQL Server alias](/Examples/Resources/SqlAlias/1-AddSqlAlias.ps1)
-* [Remove an SQL Server alias](/Examples/Resources/SqlAlias/2-RemoveSqlAlias.ps1)
+* [Add an SQL Server alias](/source/Examples/Resources/SqlAlias/1-AddSqlAlias.ps1)
+* [Remove an SQL Server alias](/source/Examples/Resources/SqlAlias/2-RemoveSqlAlias.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAlias).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAlias).
 
 ### SqlAlwaysOnService
 
@@ -598,12 +562,12 @@ Enables or disabled SQL Server Always On high availability and disaster recovery
 
 #### Examples
 
-* [Enable SQL Server Always On](/Examples/Resources/SqlAlwaysOnService/1-EnableAlwaysOn.ps1)
-* [Disable SQL Server Always On](/Examples/Resources/SqlAlwaysOnService/2-DisableAlwaysOn.ps1)
+* [Enable SQL Server Always On](/source/Examples/Resources/SqlAlwaysOnService/1-EnableAlwaysOn.ps1)
+* [Disable SQL Server Always On](/source/Examples/Resources/SqlAlwaysOnService/2-DisableAlwaysOn.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAlwaysOnService).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAlwaysOnService).
 
 ### SqlDatabase
 
@@ -628,12 +592,12 @@ and [Delete a Database](https://docs.microsoft.com/en-us/sql/relational-database
 
 #### Examples
 
-* [Create a Database](/Examples/Resources/SqlDatabase/1-CreateDatabase.ps1)
-* [Delete a database](/Examples/Resources/SqlDatabase/2-DeleteDatabase.ps1)
+* [Create a Database](/source/Examples/Resources/SqlDatabase/1-CreateDatabase.ps1)
+* [Delete a database](/source/Examples/Resources/SqlDatabase/2-DeleteDatabase.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabase).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabase).
 
 ### SqlDatabaseDefaultLocation
 
@@ -669,11 +633,11 @@ more information about database default locations, please read the article
 
 #### Examples
 
-* [Set database default locations](/Examples/Resources/SqlDatabaseDefaultLocation/1-SetDatabaseDefaultLocation.ps1)
+* [Set database default locations](/source/Examples/Resources/SqlDatabaseDefaultLocation/1-SetDatabaseDefaultLocation.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseDefaultLocation).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseDefaultLocation).
 
 ### SqlDatabaseOwner
 
@@ -696,11 +660,11 @@ For more information about database owner, please read the article
 
 #### Examples
 
-* [Set database owner](/Examples/Resources/SqlDatabaseOwner/1-SetDatabaseOwner.ps1)
+* [Set database owner](/source/Examples/Resources/SqlDatabaseOwner/1-SetDatabaseOwner.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseOwner).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseOwner).
 
 ### SqlDatabasePermission
 
@@ -736,13 +700,13 @@ will also get their permission revoked.
 
 #### Examples
 
-* [Grant Database Permission](/Examples/Resources/SqlDatabasePermission/1-GrantDatabasePermissions.ps1)
-* [Revoke Database Permission](/Examples/Resources/SqlDatabasePermission/2-RevokeDatabasePermissions.ps1)
-* [Deny Database Permission](/Examples/Resources/SqlDatabasePermission/3-DenyDatabasePermissions.ps1)
+* [Grant Database Permission](/source/Examples/Resources/SqlDatabasePermission/1-GrantDatabasePermissions.ps1)
+* [Revoke Database Permission](/source/Examples/Resources/SqlDatabasePermission/2-RevokeDatabasePermissions.ps1)
+* [Deny Database Permission](/source/Examples/Resources/SqlDatabasePermission/3-DenyDatabasePermissions.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabasePermission).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabasePermission).
 
 ### SqlDatabaseRecoveryModel
 
@@ -768,11 +732,11 @@ Read more about recovery model in this article
 
 #### Examples
 
-* [Set the RecoveryModel of a database](/Examples/Resources/SqlDatabaseRecoveryModel/1-SetDatabaseRecoveryModel.ps1)
+* [Set the RecoveryModel of a database](/source/Examples/Resources/SqlDatabaseRecoveryModel/1-SetDatabaseRecoveryModel.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseRecoveryModel).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseRecoveryModel).
 
 ### SqlDatabaseRole
 
@@ -814,16 +778,16 @@ manages members in both built-in and user created database roles.
 
 #### Examples
 
-* [Add Role to a database](/Examples/Resources/SqlDatabaseRole/1-AddDatabaseRole.ps1)
-* [Remove Role from a database](/Examples/Resources/SqlDatabaseRole/2-RemoveDatabaseRole.ps1)
-* [Enforce Role membership](/Examples/Resources/SqlDatabaseRole/3-EnforceDatabaseRoleMembers.ps1)
-* [Members to include in database role](/Examples/Resources/SqlDatabaseRole/4-MembersToIncludeInDatabaseRole.ps1)
-* [Members to exclude from database role](/Examples/Resources/SqlDatabaseRole/5-MembersToExcludeFromDatabaseRole.ps1)
-* [Members to include and exclude in a database role](/Examples/Resources/SqlDatabaseRole/6-MembersToIncludeAndExcludeInDatabaseRole.ps1)
+* [Add Role to a database](/source/Examples/Resources/SqlDatabaseRole/1-AddDatabaseRole.ps1)
+* [Remove Role from a database](/source/Examples/Resources/SqlDatabaseRole/2-RemoveDatabaseRole.ps1)
+* [Enforce Role membership](/source/Examples/Resources/SqlDatabaseRole/3-EnforceDatabaseRoleMembers.ps1)
+* [Members to include in database role](/source/Examples/Resources/SqlDatabaseRole/4-MembersToIncludeInDatabaseRole.ps1)
+* [Members to exclude from database role](/source/Examples/Resources/SqlDatabaseRole/5-MembersToExcludeFromDatabaseRole.ps1)
+* [Members to include and exclude in a database role](/source/Examples/Resources/SqlDatabaseRole/6-MembersToIncludeAndExcludeInDatabaseRole.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseRole).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseRole).
 
 ### SqlDatabaseUser
 
@@ -885,15 +849,15 @@ SQL login.
 
 #### Examples
 
-* [Add a database user to a database, with a SQL login](/Examples/Resources/SqlDatabaseUser/1-AddDatabaseUserWithLogin.ps1)
-* [Add a database user to a database, without a SQL login](/Examples/Resources/SqlDatabaseUser/2-AddDatabaseUserWithoutLogin.ps1)
-* [Add a database user to a database, mapped to an asymmetric key](/Examples/Resources/SqlDatabaseUser/3-AddDatabaseUserMappedToAsymmetricKey.ps1)
-* [Add a database user to a database, mapped to a certificate](/Examples/Resources/SqlDatabaseUser/4-AddDatabaseUserMappedToCertificate.ps1)
-* [Remove database user from a database](/Examples/Resources/SqlDatabaseUser/5-RemoveDatabaseUser.ps1)
+* [Add a database user to a database, with a SQL login](/source/Examples/Resources/SqlDatabaseUser/1-AddDatabaseUserWithLogin.ps1)
+* [Add a database user to a database, without a SQL login](/source/Examples/Resources/SqlDatabaseUser/2-AddDatabaseUserWithoutLogin.ps1)
+* [Add a database user to a database, mapped to an asymmetric key](/source/Examples/Resources/SqlDatabaseUser/3-AddDatabaseUserMappedToAsymmetricKey.ps1)
+* [Add a database user to a database, mapped to a certificate](/source/Examples/Resources/SqlDatabaseUser/4-AddDatabaseUserMappedToCertificate.ps1)
+* [Remove database user from a database](/source/Examples/Resources/SqlDatabaseUser/5-RemoveDatabaseUser.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseUser).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseUser).
 
 ### SqlRS
 
@@ -941,18 +905,18 @@ Initializes and configures SQL Reporting Services server.
 
 #### Examples
 
-* [Default configuration](Examples/Resources/SqlRS/1-DefaultConfiguration.ps1)
-* [Custom virtual directories and reserved URLs](Examples/Resources/SqlRS/2-CustomConfiguration.ps1)
-* [Custom virtual directory and using SSL](Examples/Resources/SqlRS/3-CustomConfigurationUsingSsl.ps1)
-* [Complete example with two instances in default configuration](/Examples/Resources/SqlRS/4-CompleteWithTwoInstances.ps1)
+* [Default configuration](/source/Examples/Resources/SqlRS/1-DefaultConfiguration.ps1)
+* [Custom virtual directories and reserved URLs](/source/Examples/Resources/SqlRS/2-CustomConfiguration.ps1)
+* [Custom virtual directory and using SSL](/source/Examples/Resources/SqlRS/3-CustomConfigurationUsingSsl.ps1)
+* [Complete example with two instances in default configuration](/source/Examples/Resources/SqlRS/4-CompleteWithTwoInstances.ps1)
 
 #### Known issues
 
 * This resource does not currently have full SSL support, please see
-  [issue #587](https://github.com/PowerShell/SqlServerDsc/issues/587) for more
+  [issue #587](https://github.com/dsccommunity/SqlServerDsc/issues/587) for more
   information.
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlRS).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlRS).
 
 #### Error messages
 
@@ -1062,14 +1026,14 @@ used, then the installation will run as SYSTEM.
 
 #### Examples
 
-* [Install Reporting Services](Examples/Resources/SqlRSSetup/1-InstallReportingServices.ps1)
-* [Uninstall Reporting Services](Examples/Resources/SqlRSSetup/2-UninstallReportingServices.ps1)
+* [Install Reporting Services](/source/Examples/Resources/SqlRSSetup/1-InstallReportingServices.ps1)
+* [Uninstall Reporting Services](/source/Examples/Resources/SqlRSSetup/2-UninstallReportingServices.ps1)
 
 #### Known issues
 
-* [SqlRSSetup: Will always make an edition upgrade](https://github.com/PowerShell/SqlServerDsc/issues/1311)
+* [SqlRSSetup: Will always make an edition upgrade](https://github.com/dsccommunity/SqlServerDsc/issues/1311)
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlRSSetup).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlRSSetup).
 
 ### SqlScript
 
@@ -1102,7 +1066,7 @@ The Set T-SQL script performs the actual change when Test T-SQL script fails.
   PowerShell module.
 
 _Note: There is a known problem running this resource using PowerShell 4.0.
-See [issue #273](https://github.com/PowerShell/SqlServerDsc/issues/273)
+See [issue #273](https://github.com/dsccommunity/SqlServerDsc/issues/273)
 for more information._
 
 #### Parameters
@@ -1141,13 +1105,13 @@ for more information._
 
 #### Examples
 
-* [Run a script using SQL Authentication](/Examples/Resources/SqlScript/1-RunScriptUsingSQLAuthentication.ps1)
-* [Run a script using Windows Authentication](/Examples/Resources/SqlScript/2-RunScriptUsingWindowsAuthentication.ps1)
-* [This example shows one way to create the SQL script files and how to run those files](/Examples/Resources/SqlScript/3-RunScriptCompleteExample.ps1)
+* [Run a script using SQL Authentication](/source/Examples/Resources/SqlScript/1-RunScriptUsingSQLAuthentication.ps1)
+* [Run a script using Windows Authentication](/source/Examples/Resources/SqlScript/2-RunScriptUsingWindowsAuthentication.ps1)
+* [This example shows one way to create the SQL script files and how to run those files](/source/Examples/Resources/SqlScript/3-RunScriptCompleteExample.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlScript).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlScript).
 
 ### SqlScriptQuery
 
@@ -1215,13 +1179,13 @@ The Set T-SQL script performs the actual change when Test T-SQL script fails.
 
 #### Examples
 
-* [Run a script using SQL Authentication](/Examples/Resources/SqlScriptQuery/1-RunScriptUsingSQLAuthentication.ps1)
-* [Run a script using Windows Authentication](/Examples/Resources/SqlScriptQuery/2-RunScriptUsingWindowsAuthentication.ps1)
-* [This example shows one way to create the SQL script files and how to run those files](/Examples/Resources/SqlScriptQuery/3-RunScriptCompleteExample.ps1)
+* [Run a script using SQL Authentication](/source/Examples/Resources/SqlScriptQuery/1-RunScriptUsingSQLAuthentication.ps1)
+* [Run a script using Windows Authentication](/source/Examples/Resources/SqlScriptQuery/2-RunScriptUsingWindowsAuthentication.ps1)
+* [This example shows one way to create the SQL script files and how to run those files](/source/Examples/Resources/SqlScriptQuery/3-RunScriptCompleteExample.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlScript).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlScript).
 
 ### SqlServerConfiguration
 
@@ -1249,12 +1213,12 @@ on a SQL Server instance.
 
 #### Examples
 
-* [Configure two instances on the same server to have CLR enabled](/Examples/Resources/SqlServerConfiguration/1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1)
-* [Configure a instance to have 'Priority Boost' enabled](/Examples/Resources/SqlServerConfiguration/2-ConfigureInstanceToEnablePriorityBoost.ps1)
+* [Configure two instances on the same server to have CLR enabled](/source/Examples/Resources/SqlServerConfiguration/1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1)
+* [Configure a instance to have 'Priority Boost' enabled](/source/Examples/Resources/SqlServerConfiguration/2-ConfigureInstanceToEnablePriorityBoost.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerConfiguration).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerConfiguration).
 
 ### SqlServerDatabaseMail
 
@@ -1299,12 +1263,12 @@ Resource to manage SQL Server Database Mail.
 
 #### Examples
 
-* [Enable Database Mail](/Examples/Resources/SqlServerDatabaseMail/1-EnableDatabaseMail.ps1)
-* [Disable Database Mail](/Examples/Resources/SqlServerDatabaseMail/2-DisableDatabaseMail.ps1)
+* [Enable Database Mail](/source/Examples/Resources/SqlServerDatabaseMail/1-EnableDatabaseMail.ps1)
+* [Disable Database Mail](/source/Examples/Resources/SqlServerDatabaseMail/2-DisableDatabaseMail.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerDatabaseMail).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerDatabaseMail).
 
 ### SqlServerEndpoint
 
@@ -1343,13 +1307,13 @@ the resource [**SqlServerEndpointPermission**](#sqlserverendpointpermission).
 
 #### Examples
 
-* [Create an endpoint with default values](/Examples/Resources/SqlServerEndpoint/1-CreateEndpointWithDefaultValues.ps1)
-* [Create an endpoint with specific port and IP address](/Examples/Resources/SqlServerEndpoint/2-CreateEndpointWithSpecificPortIPAddressOwner.ps1)
-* [Remove an endpoint](/Examples/Resources/SqlServerEndpoint/3-RemoveEndpoint.ps1)
+* [Create an endpoint with default values](/source/Examples/Resources/SqlServerEndpoint/1-CreateEndpointWithDefaultValues.ps1)
+* [Create an endpoint with specific port and IP address](/source/Examples/Resources/SqlServerEndpoint/2-CreateEndpointWithSpecificPortIPAddressOwner.ps1)
+* [Remove an endpoint](/source/Examples/Resources/SqlServerEndpoint/3-RemoveEndpoint.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpoint).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpoint).
 
 ### SqlServerEndpointPermission
 
@@ -1373,14 +1337,14 @@ This resource is used to give connect permission to an endpoint for a user (logi
 
 #### Examples
 
-* [Add connect permission to an Endpoint](/Examples/Resources/SqlServerEndpointPermission/1-AddConnectPermission.ps1)
-* [Remove the connect permission for an Endpoint](/Examples/Resources/SqlServerEndpointPermission/2-RemoveConnectPermission.ps1)
-* [Add connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/Examples/Resources/SqlServerEndpointPermission/3-AddConnectPermissionToTwoReplicasEachWithDifferentServiceAccount.ps1)
-* [Remove connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/Examples/Resources/SqlServerEndpointPermission/4-RemoveConnectPermissionForTwoReplicasEachWithDifferentServiceAccount.ps1)
+* [Add connect permission to an Endpoint](/source/Examples/Resources/SqlServerEndpointPermission/1-AddConnectPermission.ps1)
+* [Remove the connect permission for an Endpoint](/source/Examples/Resources/SqlServerEndpointPermission/2-RemoveConnectPermission.ps1)
+* [Add connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/source/Examples/Resources/SqlServerEndpointPermission/3-AddConnectPermissionToTwoReplicasEachWithDifferentServiceAccount.ps1)
+* [Remove connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/source/Examples/Resources/SqlServerEndpointPermission/4-RemoveConnectPermissionForTwoReplicasEachWithDifferentServiceAccount.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpointPermission).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpointPermission).
 
 ### SqlServerEndpointState
 
@@ -1407,12 +1371,12 @@ This resource is used to set the state of an endpoint.
 
 #### Examples
 
-* [Make sure that an endpoint is started](/Examples/Resources/SqlServerEndpointState/1-MakeSureEndpointIsStarted.ps1)
-* [Make sure that an endpoint is stopped](/Examples/Resources/SqlServerEndpointState/2-MakeSureEndpointIsStopped.ps1)
+* [Make sure that an endpoint is started](/source/Examples/Resources/SqlServerEndpointState/1-MakeSureEndpointIsStarted.ps1)
+* [Make sure that an endpoint is stopped](/source/Examples/Resources/SqlServerEndpointState/2-MakeSureEndpointIsStopped.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpointState).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpointState).
 
 ### SqlServerLogin
 
@@ -1453,12 +1417,12 @@ No description.
 
 #### Examples
 
-* [Add a login](/Examples/Resources/SqlServerLogin/1-AddLogin.ps1)
-* [Remove a login](/Examples/Resources/SqlServerLogin/2-RemoveLogin.ps1)
+* [Add a login](/source/Examples/Resources/SqlServerLogin/1-AddLogin.ps1)
+* [Remove a login](/source/Examples/Resources/SqlServerLogin/2-RemoveLogin.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerLogin).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerLogin).
 
 ### SqlServerMaxDop
 
@@ -1510,13 +1474,13 @@ Read more about max degree of parallelism in this article
 
 #### Examples
 
-* [Set SQLServerMaxDop to 1](/Examples/Resources/SqlServerMaxDop/1-SetMaxDopToOne.ps1)
-* [Set SQLServerMaxDop to Auto](/Examples/Resources/SqlServerMaxDop/2-SetMaxDopToAuto.ps1)
-* [Set SQLServerMaxDop to Default](/Examples/Resources/SqlServerMaxDop/3-SetMaxDopToDefault.ps1)
+* [Set SQLServerMaxDop to 1](/source/Examples/Resources/SqlServerMaxDop/1-SetMaxDopToOne.ps1)
+* [Set SQLServerMaxDop to Auto](/source/Examples/Resources/SqlServerMaxDop/2-SetMaxDopToAuto.ps1)
+* [Set SQLServerMaxDop to Default](/source/Examples/Resources/SqlServerMaxDop/3-SetMaxDopToDefault.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerMaxDop).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerMaxDop).
 
 ### SqlServerMemory
 
@@ -1589,14 +1553,14 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
 
 #### Examples
 
-* [Set SQLServerMaxMemory to 12GB](/Examples/Resources/SqlServerMemory/1-SetMaxMemoryTo12GB.ps1)
-* [Set SQLServerMaxMemory to Auto](/Examples/Resources/SqlServerMemory/2-SetMaxMemoryToAuto.ps1)
-* [Set SQLServerMinMemory to 2GB and SQLServerMaxMemory to Auto](/Examples/Resources/SqlServerMemory/3-SetMinMemoryToFixedValueAndMaxMemoryToAuto.ps1)
-* [Set SQLServerMaxMemory to Default](/Examples/Resources/SqlServerMemory/4-SetMaxMemoryToDefault.ps1)
+* [Set SQLServerMaxMemory to 12GB](/source/Examples/Resources/SqlServerMemory/1-SetMaxMemoryTo12GB.ps1)
+* [Set SQLServerMaxMemory to Auto](/source/Examples/Resources/SqlServerMemory/2-SetMaxMemoryToAuto.ps1)
+* [Set SQLServerMinMemory to 2GB and SQLServerMaxMemory to Auto](/source/Examples/Resources/SqlServerMemory/3-SetMinMemoryToFixedValueAndMaxMemoryToAuto.ps1)
+* [Set SQLServerMaxMemory to Default](/source/Examples/Resources/SqlServerMemory/4-SetMaxMemoryToDefault.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerMemory).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerMemory).
 
 ### SqlServerNetwork
 
@@ -1635,12 +1599,12 @@ Read more about the network settings in the article
 
 #### Examples
 
-* [Enable TCP/IP with static port and restart SQL Server](/Examples/Resources/SqlServerNetwork/1-EnableTcpIpWithStaticPort.ps1)
-* [Enable TCP/IP with dynamic port](/Examples/Resources/SqlServerNetwork/2-EnableTcpIpWithDynamicPort.ps1)
+* [Enable TCP/IP with static port and restart SQL Server](/source/Examples/Resources/SqlServerNetwork/1-EnableTcpIpWithStaticPort.ps1)
+* [Enable TCP/IP with dynamic port](/source/Examples/Resources/SqlServerNetwork/2-EnableTcpIpWithDynamicPort.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerNetwork).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerNetwork).
 
 ### SqlServerPermission
 
@@ -1670,12 +1634,12 @@ AlterAnyEndPoint and ViewServerState.
 
 #### Examples
 
-* [Add server permission for a login](/Examples/Resources/SqlServerPermission/1-AddServerPermissionForLogin.ps1)
-* [Remove server permission for a login](/Examples/Resources/SqlServerPermission/2-RemoveServerPermissionForLogin.ps1)
+* [Add server permission for a login](/source/Examples/Resources/SqlServerPermission/1-AddServerPermissionForLogin.ps1)
+* [Remove server permission for a login](/source/Examples/Resources/SqlServerPermission/2-RemoveServerPermissionForLogin.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerPermission).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerPermission).
 
 ### SqlServerReplication
 
@@ -1710,12 +1674,12 @@ This resource manage SQL Replication distribution and publishing.
 
 #### Examples
 
-* [Configure a instance as the distributor](/Examples/Resources/SqlServerReplication/1-ConfigureInstanceAsDistributor.ps1)
-* [Configure a instance as the publisher](/Examples/Resources/SqlServerReplication/2-ConfigureInstanceAsPublisher.ps1)
+* [Configure a instance as the distributor](/source/Examples/Resources/SqlServerReplication/1-ConfigureInstanceAsDistributor.ps1)
+* [Configure a instance as the publisher](/source/Examples/Resources/SqlServerReplication/2-ConfigureInstanceAsPublisher.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerReplication).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerReplication).
 
 ### SqlServerRole
 
@@ -1753,15 +1717,15 @@ server roles, please read the below articles.
 
 #### Examples
 
-* [Add server role](/Examples/Resources/SqlServerRole/1-AddServerRole.ps1)
-* [Remove server role](/Examples/Resources/SqlServerRole/2-RemoveServerRole.ps1)
-* [Add members to server role](/Examples/Resources/SqlServerRole/3-AddMembersToServerRole.ps1)
-* [Members to include in server role](/Examples/Resources/SqlServerRole/4-MembersToIncludeInServerRole.ps1)
-* [Members to exclude from server role](/Examples/Resources/SqlServerRole/5-MembersToExcludeInServerRole.ps1)
+* [Add server role](/source/Examples/Resources/SqlServerRole/1-AddServerRole.ps1)
+* [Remove server role](/source/Examples/Resources/SqlServerRole/2-RemoveServerRole.ps1)
+* [Add members to server role](/source/Examples/Resources/SqlServerRole/3-AddMembersToServerRole.ps1)
+* [Members to include in server role](/source/Examples/Resources/SqlServerRole/4-MembersToIncludeInServerRole.ps1)
+* [Members to exclude from server role](/source/Examples/Resources/SqlServerRole/5-MembersToExcludeInServerRole.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerRole).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerRole).
 
 ### SqlServerSecureConnection
 
@@ -1806,14 +1770,14 @@ In that case, the 'SYSTEM' service account can be used.
 
 #### Examples
 
-* [Force Secure Connection](Examples/Resources/SqlServerSecureConnection/1-ForceSecureConnection.ps1).
-* [Secure Connection but not required](Examples/Resources/SqlServerSecureConnection/2-SecureConnectionNotForced.ps1).
-* [Secure Connection disabled](Examples/Resources/SqlServerSecureConnection/3-SecureConnectionAbsent.ps1).
-* [Secure Connection Using "SYSTEM" Account](/Examples/Resources/SqlServerSecureConnection/4-SecureConnectionUsingSYSTEMAccount.ps1).
+* [Force Secure Connection](/source/Examples/Resources/SqlServerSecureConnection/1-ForceSecureConnection.ps1).
+* [Secure Connection but not required](/source/Examples/Resources/SqlServerSecureConnection/2-SecureConnectionNotForced.ps1).
+* [Secure Connection disabled](/source/Examples/Resources/SqlServerSecureConnection/3-SecureConnectionAbsent.ps1).
+* [Secure Connection Using "SYSTEM" Account](/source/Examples/Resources/SqlServerSecureConnection/4-SecureConnectionUsingSYSTEMAccount.ps1).
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerSecureConnection).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerSecureConnection).
 
 ### SqlServiceAccount
 
@@ -1850,12 +1814,12 @@ Manage the service account for SQL Server services.
 
 #### Examples
 
-* [Run service under a user account](/Examples/Resources/SqlServiceAccount/1-ConfigureServiceAccount-UserAccount.ps1)
-* [Run service with a virtual account](/Examples/Resources/SqlServiceAccount/2-ConfigureServiceAccount-VirtualAccount.ps1)
+* [Run service under a user account](/source/Examples/Resources/SqlServiceAccount/1-ConfigureServiceAccount-UserAccount.ps1)
+* [Run service with a virtual account](/source/Examples/Resources/SqlServiceAccount/2-ConfigureServiceAccount-VirtualAccount.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServiceAccount).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServiceAccount).
 
 ### SqlSetup
 
@@ -2071,17 +2035,17 @@ need a '*SVCPASSWORD' argument in the setup arguments.
 
 #### Examples
 
-* [Install a default instance on a single server](/Examples/Resources/SqlSetup/1-InstallDefaultInstanceSingleServer.ps1)
-* [Install a named instance on a single server](/Examples/Resources/SqlSetup/2-InstallNamedInstanceSingleServer.ps1)
-* [Install a named instance on a single server from an UNC path using SourceCredential](/Examples/Resources/SqlSetup/3-InstallNamedInstanceSingleServerFromUncPathUsingSourceCredential.ps1)
-* [Install a named instance as the first node in SQL Server Failover Cluster](/Examples/Resources/SqlSetup/4-InstallNamedInstanceInFailoverClusterFirstNode.ps1)
-* [Install a named instance as the second node in SQL Server Failover Cluster](/Examples/Resources/SqlSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1)
-* [Install a named instance with the Agent Service set to Disabled](/Examples/Resources/SqlSetup/6-InstallNamedInstanceSingleServerWithAgtSvcStartupTypeDisabled.ps1)
-* [Install a default instance on a single server (Sql Server 2016 or Later)](/Examples/Resources/SqlSetup/7-InstallDefaultInstanceSingleServer2016OrLater.ps1)
+* [Install a default instance on a single server](/source/Examples/Resources/SqlSetup/1-InstallDefaultInstanceSingleServer.ps1)
+* [Install a named instance on a single server](/source/Examples/Resources/SqlSetup/2-InstallNamedInstanceSingleServer.ps1)
+* [Install a named instance on a single server from an UNC path using SourceCredential](/source/Examples/Resources/SqlSetup/3-InstallNamedInstanceSingleServerFromUncPathUsingSourceCredential.ps1)
+* [Install a named instance as the first node in SQL Server Failover Cluster](/source/Examples/Resources/SqlSetup/4-InstallNamedInstanceInFailoverClusterFirstNode.ps1)
+* [Install a named instance as the second node in SQL Server Failover Cluster](/source/Examples/Resources/SqlSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1)
+* [Install a named instance with the Agent Service set to Disabled](/source/Examples/Resources/SqlSetup/6-InstallNamedInstanceSingleServerWithAgtSvcStartupTypeDisabled.ps1)
+* [Install a default instance on a single server (Sql Server 2016 or Later)](/source/Examples/Resources/SqlSetup/7-InstallDefaultInstanceSingleServer2016OrLater.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlSetup).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlSetup).
 
 ### SqlWaitForAG
 
@@ -2122,12 +2086,12 @@ or that it has finished creating the Availability Group.
 
 #### Examples
 
-* [Wait for a cluster role/group to be available](/Examples/Resources/SqlWaitForAG/1-WaitForASingleClusterGroup.ps1)
-* [Wait for multiple cluster roles/groups to be available](/Examples/Resources/SqlWaitForAG/2-WaitForMultipleClusterGroups.ps1)
+* [Wait for a cluster role/group to be available](/source/Examples/Resources/SqlWaitForAG/1-WaitForASingleClusterGroup.ps1)
+* [Wait for multiple cluster roles/groups to be available](/source/Examples/Resources/SqlWaitForAG/2-WaitForMultipleClusterGroups.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlWaitForAG).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlWaitForAG).
 
 ### SqlWindowsFirewall
 
@@ -2211,9 +2175,9 @@ Port: tcp/135 | SQL Server Integration Services Port
 
 #### Examples
 
-* [Create inbound firewall rules](/Examples/Resources/SqlWindowsFirewall/1-CreateInboundFirewallRules.ps1)
-* [Remove inbound firewall rules](/Examples/Resources/SqlWindowsFirewall/2-RemoveInboundFirewallRules.ps1)
+* [Create inbound firewall rules](/source/Examples/Resources/SqlWindowsFirewall/1-CreateInboundFirewallRules.ps1)
+* [Remove inbound firewall rules](/source/Examples/Resources/SqlWindowsFirewall/2-RemoveInboundFirewallRules.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/PowerShell/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlWindowsFirewall).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlWindowsFirewall).
