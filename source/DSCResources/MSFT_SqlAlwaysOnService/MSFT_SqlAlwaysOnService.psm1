@@ -129,7 +129,7 @@ function Set-TargetResource
                 $script:localizedData.DisableAlwaysOnAvailabilityGroup -f $ServerName, $InstanceName
             )
 
-            Disable-SqlAlwaysOn -ServerInstance $serverInstance -NoServiceRestart
+            Disable-SqlAlwaysOn -ServerInstance $serverInstance -NoServiceRestart -ErrorAction 'Stop'
         }
 
         'Present'
@@ -141,7 +141,7 @@ function Set-TargetResource
                 $script:localizedData.EnableAlwaysOnAvailabilityGroup -f $ServerName, $InstanceName
             )
 
-            Enable-SqlAlwaysOn -ServerInstance $serverInstance -NoServiceRestart
+            Enable-SqlAlwaysOn -ServerInstance $serverInstance -NoServiceRestart -ErrorAction 'Stop'
         }
     }
 

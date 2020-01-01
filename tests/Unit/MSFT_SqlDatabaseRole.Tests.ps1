@@ -10,7 +10,7 @@
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-if (Test-SkipContinuousIntegrationTask -Type 'Unit')
+if (-not (Test-BuildCategory -Type 'Unit'))
 {
     return
 }

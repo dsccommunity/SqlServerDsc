@@ -109,6 +109,9 @@ User | Password | Description
 
 ## SqlAlwaysOnService
 
+*This integration test has been temporarily disabled because when*
+*the cluster feature is installed it requires a reboot.*
+
 **Run order:** 2
 
 **Depends on:** SqlSetup

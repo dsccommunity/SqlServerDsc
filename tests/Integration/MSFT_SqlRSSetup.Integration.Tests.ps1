@@ -1,7 +1,7 @@
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
 # Run only for SQL 2017 integration testing.
-if (Test-SkipContinuousIntegrationTask -Type 'Integration' -Category @('Integration_SQL2017'))
+if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2017')))
 {
     return
 }

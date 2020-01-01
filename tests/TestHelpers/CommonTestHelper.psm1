@@ -309,7 +309,7 @@ function New-SQLSelfSignedCertificate
         $env:CONFIGURATION. If this are not set, the parameter Type
         is used as category.
 #>
-function Test-SkipContinuousIntegrationTask
+function Test-BuildCategory
 {
     [OutputType([System.Boolean])]
     [CmdletBinding()]
@@ -336,12 +336,12 @@ function Test-SkipContinuousIntegrationTask
         $Category = @($Type)
     }
 
-    $result = $false
+    $result = $true
 
     if ($Type -eq 'Integration' -and -not $env:CI -eq $true)
     {
         Write-Warning -Message ('{1} test for {0} will be skipped unless $env:CI is set to $true' -f $Name, $Type)
-        $result = $true
+        $result = $false
     }
 
     <#
@@ -351,7 +351,7 @@ function Test-SkipContinuousIntegrationTask
     if ($env:CI -eq $true -and -not (Test-ContinuousIntegrationTaskCategory -Category $Category))
     {
         Write-Verbose -Message ('{1} tests in {0} will be skipped unless $env:CONFIGURATION is set to ''{1}''.' -f $Name, ($Category -join ''', or ''')) -Verbose
-        $result = $true
+        $result = $false
     }
 
     return $result
