@@ -1,5 +1,4 @@
 @{
-    # Set up a mini virtual environment...
     PSDependOptions             = @{
         AddToPath  = $true
         Target     = 'output\RequiredModules'
@@ -18,6 +17,8 @@
     'DscResource.Test'          = 'latest'
     'DscResource.AnalyzerRules' = 'latest'
     xDscResourceDesigner        = 'latest'
+
+    # Dependency for integration tests
     LoopbackAdapter             = 'latest'
 
     # Prerequisites modules needed for examples or integration tests

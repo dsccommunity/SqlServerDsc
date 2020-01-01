@@ -10,7 +10,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 ### Added
 
 - SqlServerDsc
-  - Added automatic release with a new CI pipeline.
+  - Added continuous delivery with a new CI pipeline.
 
 ### Changed
 
@@ -19,5 +19,17 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
   - Updated .vscode/analyzersettings.psd1 file to correct use PSSA rules
     and custom rules in VS Code.
   - Fix hashtables to align with style guideline ([issue #1437](https://github.com/PowerShell/SqlServerDsc/issues/1437)).
+  - Updated most examples to remove the need for the variable `$ConfigurationData`,
+    and fixed style issues.
 - SqlServerMaxDop
   - Fix line endings in code which did not use the correct format.
+- SqlAlwaysOnService
+  - The integration test has been temporarily disabled because when
+    the cluster feature is installed it requires a reboot on the
+    Windows Server 2019 build worker.
+
+### Fixed
+
+- SqlAlwaysOnService
+  - When failing to enable AlwaysOn the resource should now fail with an
+    error ([issue #1190](https://github.com/dsccommunity/SqlServerDsc/issues/1190)).
