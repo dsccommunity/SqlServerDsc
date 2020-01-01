@@ -32,7 +32,7 @@ Import-Module -Name (Join-Path -Path $testRootFolderPath -ChildPath (Join-Path -
     certificate in the environment variable 'SqlPrivateCertificatePath', and its
     thumbprint to the environment variable 'SqlCertificateThumbprint'
 #>
-$null = New-SQLSelfSignedCertificate
+$null = New-SQLSelfSignedCertificate -Verbose
 $mockSqlPrivateKeyPassword = ConvertTo-SecureString -String '1234' -AsPlainText -Force
 Import-PfxCertificate -FilePath $env:SqlPrivateCertificatePath -Password $mockSqlPrivateKeyPassword -Exportable -CertStoreLocation 'Cert:\LocalMachine\Root'
 Import-PfxCertificate -FilePath $env:SqlPrivateCertificatePath -Password $mockSqlPrivateKeyPassword -Exportable -CertStoreLocation 'Cert:\LocalMachine\My'

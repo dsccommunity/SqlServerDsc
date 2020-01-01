@@ -239,6 +239,9 @@ function Get-NetIPAddressNetwork
 #>
 function New-SQLSelfSignedCertificate
 {
+    [CmdletBinding()]
+    param ()
+
     $sqlPublicCertificatePath = Join-Path -Path $env:temp -ChildPath 'SqlPublicKey.cer'
     $sqlPrivateCertificatePath = Join-Path -Path $env:temp -ChildPath 'SqlPrivateKey.cer'
     $sqlPrivateKeyPassword = ConvertTo-SecureString -String "1234" -Force -AsPlainText
@@ -273,11 +276,17 @@ function New-SQLSelfSignedCertificate
 
     # Update a machine and session environment variable with the path to the private certificate.
     [Environment]::SetEnvironmentVariable('SqlPrivateCertificatePath', $sqlPrivateCertificatePath, 'Machine')
-    Write-Verbose -Message ('Machine environment variable $env:SqlPrivateCertificatePath set to ''{0}''' -f $env:SqlPrivateCertificatePath)
+    Write-Verbose -Message ('Machine environment variable SqlPrivateCertificatePath set to ''{0}''' -f [System.Environment]::GetEnvironmentVariable('SqlPrivateCertificatePath','Machine'))
+
+    $env:SqlPrivateCertificatePath = $sqlPrivateCertificatePath
+    Write-Verbose -Message ('Session environment variable $env:SqlPrivateCertificatePath set to ''{0}''' -f $env:SqlPrivateCertificatePath)
 
     # Update a machine and session environment variable with the thumbprint of the certificate.
     [Environment]::SetEnvironmentVariable('SqlCertificateThumbprint', $certificate.Thumbprint, 'Machine')
-    Write-Verbose -Message ('Environment variable $env:SqlCertificateThumbprint set to ''{0}''' -f $env:SqlCertificateThumbprint)
+    Write-Verbose -Message ('Machine environment variable $env:SqlCertificateThumbprint set to ''{0}''' -f [System.Environment]::GetEnvironmentVariable('SqlCertificateThumbprint','Machine'))
+
+    $env:SqlCertificateThumbprint = $certificate.Thumbprint
+    Write-Verbose -Message ('Session environment variable $env:SqlCertificateThumbprint set to ''{0}''' -f $env:SqlCertificateThumbprint)
 
     return $certificate
 }
