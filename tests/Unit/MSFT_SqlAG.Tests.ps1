@@ -18,7 +18,6 @@ if (-not (Test-BuildCategory -Type 'Unit'))
 $script:dscModuleName = 'SqlServerDsc'
 $script:dscResourceName = 'MSFT_SqlAG'
 
-$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 function Invoke-TestSetup
 {
     try
@@ -48,10 +47,10 @@ function Invoke-TestCleanup
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
 
+Invoke-TestSetup
+
 try
 {
-    Invoke-TestSetup
-
     InModuleScope $script:dscResourceName {
         # This is relative to the path of the resource module script, not test test script.
         $script:moduleRoot = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent

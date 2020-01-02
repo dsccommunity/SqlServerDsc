@@ -41,10 +41,10 @@ function Invoke-TestCleanup
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
 
+Invoke-TestSetup
+
 try
 {
-    Invoke-TestSetup
-
     InModuleScope $script:dscResourceName {
         $mockInstanceName = 'TEST'
         $mockTcpProtocolName = 'Tcp'

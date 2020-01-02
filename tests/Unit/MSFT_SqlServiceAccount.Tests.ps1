@@ -39,6 +39,8 @@ function Invoke-TestSetup
     Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
 }
 
+Invoke-TestSetup
+
 function Invoke-TestCleanup
 {
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
@@ -46,8 +48,6 @@ function Invoke-TestCleanup
 
 try
 {
-    Invoke-TestSetup
-
     InModuleScope $script:dscResourceName {
 
         $mockSqlServer = 'TestServer'

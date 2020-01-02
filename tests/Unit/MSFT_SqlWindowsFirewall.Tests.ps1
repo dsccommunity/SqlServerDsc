@@ -41,10 +41,10 @@ function Invoke-TestCleanup
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
 
+Invoke-TestSetup
+
 try
 {
-    Invoke-TestSetup
-
     InModuleScope $script:dscResourceName {
         <#
             Testing two major versions to verify Integration Services differences (i.e service name).

@@ -43,10 +43,10 @@ function Invoke-TestCleanup
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
 
+Invoke-TestSetup
+
 try
 {
-    Invoke-TestSetup
-
     InModuleScope $script:dscResourceName {
         $mockName = 'DatabaseUser1'
         $mockServerName = 'localhost'
