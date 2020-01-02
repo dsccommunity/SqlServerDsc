@@ -471,7 +471,7 @@ function Test-TargetResource
     .PARAMETER SqlServerObject
         An object returned from Connect-SQL function.
 
-    .PARAMETER LoginName
+    .PARAMETER SecurityPrincipal
         String containing the login (user) which should be added as a member to the server role.
 
     .PARAMETER ServerRoleName
@@ -498,17 +498,10 @@ function Add-SqlDscServerRoleMember
         $ServerRoleName
     )
 
-    if ($false -eq ($SqlServerObject.Logins.Contains($SecurityPrincipal) -or
-        $SqlServerObject.Roles.Contains($SecurityPrincipal)))
-    {
-        $errorMessage = $script:localizedData.SecurityPrincipalNotFound `
-            -f $SecurityPrincipal, $ServerName, $InstanceName
-
-        New-ObjectNotFoundException -Message $errorMessage
-    }
-
     try
     {
+        Test-SqlSecurityPrincipal -SqlServerObject $SqlServerObject -SecurityPrincipal $SecurityPrincipal
+
         Write-Verbose -Message (
             $script:localizedData.AddMemberToRole `
                 -f $SecurityPrincipal, $ServerRoleName
@@ -532,7 +525,7 @@ function Add-SqlDscServerRoleMember
     .PARAMETER SqlServerObject
         An object returned from Connect-SQL function.
 
-    .PARAMETER LoginName
+    .PARAMETER SecurityPrincipal
         String containing the login (user) which should be removed as a member in the server role.
 
     .PARAMETER ServerRoleName
@@ -559,17 +552,11 @@ function Remove-SqlDscServerRoleMember
         $ServerRoleName
     )
 
-    if ($false -eq ($SqlServerObject.Logins.Contains($SecurityPrincipal) -or
-        $SqlServerObject.Roles.Contains($SecurityPrincipal)))
-    {
-        $errorMessage = $script:localizedData.SecurityPrincipalNotFound `
-            -f $SecurityPrincipal, $ServerName, $InstanceName
-
-        New-ObjectNotFoundException -Message $errorMessage
-    }
-
     try
     {
+        # Determine whether a valid principal has been supplied
+        Test-SqlSecurityPrincipal -SqlServerObject $SqlServerObject -SecurityPrincipal $SecurityPrincipal
+
         Write-Verbose -Message (
             $script:localizedData.RemoveMemberFromRole `
                 -f $SecurityPrincipal, $ServerRoleName
@@ -584,6 +571,50 @@ function Remove-SqlDscServerRoleMember
 
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
+}
+
+<#
+    .SYNOPSIS
+        Tests whether a security principal is valid on the specified SQL Server instance.
+
+    .PARAMETER SqlServerObject
+        The object returned from the Connect-SQL function.
+
+    .PARAMETER SecurityPrincipal
+        String containing the name of the principal to validate.
+#>
+function Test-SqlSecurityPrincipal
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Object]
+        $SqlServerObject,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $SecurityPrincipal
+    )
+
+    if ($SqlServerObject.Logins.Name -notcontains $SecurityPrincipal)
+    {
+        if ($SqlServerObject.Roles.Name -notcontains $SecurityPrincipal)
+        {
+            $errorMessage = $script:localizedData.SecurityPrincipalNotFound -f (
+                $SecurityPrincipal,
+                $($SqlServerObject.Name)
+            )
+
+            # Principal is neither a Login nor a Server role, raise exception
+            New-ObjectNotFoundException -Message $errorMessage
+
+            return $false
+        }
+    }
+
+    return $true
 }
 
 Export-ModuleMember -Function *-TargetResource
