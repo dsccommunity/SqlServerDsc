@@ -1233,9 +1233,31 @@ try
                         "$mockServerName\$mockInstanceName"
                     )
 
-                    Write-Verbose "Expected message -> '$testErrorMessage'"
-
                     { Test-SqlSecurityPrincipal @testParameters } | Should -Throw -ExpectedMessage $testErrorMessage
+                }
+
+                It 'Should return false when ErrorAction is set to SilentlyContinue' {
+                    $testSecurityPrincipal = 'Nabrond'
+
+                    $testParameters = @{
+                        SqlServerObject = $testSqlServerObject
+                        SecurityPrincipal = $testSecurityPrincipal
+                    }
+
+                    <#
+                        Pester will still see the error on the stack regardless of the value used for ErrorAction
+                        Wrap this call in a try/catch to swallow the exception and capture the return value.
+                    #>
+                    try
+                    {
+                        $result = Test-SqlSecurityPrincipal @testParameters -ErrorAction SilentlyContinue
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+
+                    $result | Should -Be $false
                 }
             }
 
