@@ -22,5 +22,6 @@ branches:
     source-branches: ['master']
 
 ignore:
-  sha: []
+  # Ignore this commit to force the correct initial release.
+  sha: [601107e9fc8a337b6dadb67b63d5100381f29700]
 merge-message-formats: {}
