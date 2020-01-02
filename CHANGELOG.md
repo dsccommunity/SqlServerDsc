@@ -11,6 +11,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 - SqlServerDsc
   - Added continuous delivery with a new CI pipeline.
+    - Update build.ps1 from latest template.
 
 ### Changed
 
@@ -28,6 +29,9 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
   - The integration test has been temporarily disabled because when
     the cluster feature is installed it requires a reboot on the
     Windows Server 2019 build worker.
+- SqlDatabaseRole
+  - Update unit test to have the correct description on the `Describe`-block
+    for the test of `Set-TargetResource`.
 
 ### Fixed
 

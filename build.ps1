@@ -35,21 +35,33 @@ param
     [Parameter()]
     $RequiredModulesDirectory = $(Join-Path 'output' 'RequiredModules'),
 
+    [Parameter()]
+    [string[]]
+    $PesterScript,
+
     # Filter which tags to run when invoking Pester tests
     # This is used in the Invoke-Pester.pester.build.ps1 tasks
     [Parameter()]
     [string[]]
     $PesterTag,
 
-    [Parameter()]
-    [string[]]
-    $PesterScript,
-
     # Filter which tags to exclude when invoking Pester tests
     # This is used in the Invoke-Pester.pester.build.ps1 tasks
     [Parameter()]
     [string[]]
     $PesterExcludeTag,
+
+    # Filter which tags to run when invoking DSC Resource tests
+    # This is used in the DscResource.Test.build.ps1 tasks
+    [Parameter()]
+    [string[]]
+    $DscTestTag,
+
+    # Filter which tags to exclude when invoking DSC Resource tests
+    # This is used in the DscResource.Test.build.ps1 tasks
+    [Parameter()]
+    [string[]]
+    $DscTestExcludeTag,
 
     [Parameter()]
     [Alias('bootstrap')]

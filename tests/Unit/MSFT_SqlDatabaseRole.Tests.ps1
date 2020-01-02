@@ -633,7 +633,7 @@ try
             Assert-VerifiableMock
         }
 
-        Describe "MSFT_SqlServerRole\Set-TargetResource" -Tag 'Set' {
+        Describe "MSFT_SqlDatabaseRole\Set-TargetResource" -Tag 'Set' {
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
                 Mock -CommandName New-Object -MockWith $mockNewObjectDatabaseRole -ParameterFilter {
