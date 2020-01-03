@@ -1,13 +1,29 @@
 # Change log for SqlServerDsc
 
-## Unreleased
+The format is based on and uses the types of changes according to [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-- Changes to SqlServerDsc
+For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md).
+
+## [Unreleased]
+
+### Added
+
+- SqlServerDsc
+  - Added continuous delivery with a new CI pipeline.
+    - Update build.ps1 from latest template.
+
+### Changed
+
+- SqlServerDsc
   - Add .gitattributes file to checkout file correctly with CRLF.
   - Updated .vscode/analyzersettings.psd1 file to correct use PSSA rules
     and custom rules in VS Code.
   - Fix hashtables to align with style guideline ([issue #1437](https://github.com/PowerShell/SqlServerDsc/issues/1437)).
-- Changes to SqlServerMaxDop
+  - Updated most examples to remove the need for the variable `$ConfigurationData`,
+    and fixed style issues.
+  - Ignore commit in `GitVersion.yml` to force the correct initial release.
+- SqlServerMaxDop
   - Fix line endings in code which did not use the correct format.
 - SqlAlwaysOnService
   - The integration test has been temporarily disabled because when
@@ -24,6 +40,9 @@
 
 ### Fixed
 
+- SqlServerDsc
+  - Fixed unit tests to call the function `Invoke-TestSetup` outside the
+    try-block. 
 - SqlAlwaysOnService
   - When failing to enable AlwaysOn the resource should now fail with an
     error ([issue #1190](https://github.com/dsccommunity/SqlServerDsc/issues/1190)).
