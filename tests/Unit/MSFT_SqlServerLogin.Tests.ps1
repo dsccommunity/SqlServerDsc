@@ -51,10 +51,10 @@ function Invoke-TestCleanup
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
 
+Invoke-TestSetup
+
 try
 {
-    Invoke-TestSetup
-
     InModuleScope $script:dscResourceName {
         # Create PSCredential object for SQL Logins
         $mockSqlLoginUser = 'dba'

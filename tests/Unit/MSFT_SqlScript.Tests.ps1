@@ -48,10 +48,10 @@ function Invoke-TestCleanup
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
 
+Invoke-TestSetup
+
 try
 {
-    Invoke-TestSetup
-
     InModuleScope $script:dscResourceName {
         Describe 'MSFT_SqlScript\Get-TargetResource' {
             BeforeAll {

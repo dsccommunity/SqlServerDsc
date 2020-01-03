@@ -35,6 +35,9 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ### Fixed
 
+- SqlServerDsc
+  - Fixed unit tests to call the function `Invoke-TestSetup` outside the
+    try-block. 
 - SqlAlwaysOnService
   - When failing to enable AlwaysOn the resource should now fail with an
     error ([issue #1190](https://github.com/dsccommunity/SqlServerDsc/issues/1190)).
