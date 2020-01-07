@@ -52,7 +52,7 @@ try
         $mockSqlServerChildRole = 'TestChildRole'
         $mockSqlServerLoginOne = 'CONTOSO\John'
         $mockSqlServerLoginTwo = 'CONTOSO\Kelly'
-        $mockSqlServerLoginTree = 'CONTOSO\Lucy'
+        $mockSqlServerLoginThree = 'CONTOSO\Lucy'
         $mockSqlServerLoginFour = 'CONTOSO\Steve'
         $mockEnumMemberNames = @(
             $mockSqlServerLoginOne,
@@ -61,7 +61,7 @@ try
         $mockSecurityPrincipals = @(
             $mockSqlServerLoginOne
             $mockSqlServerLoginTwo
-            $mockSqlServerLoginTree
+            $mockSqlServerLoginThree
             $mockSqlServerLoginFour
             $mockSqlServerChildRole
         )
@@ -183,7 +183,7 @@ try
             }
 
             # Add all mock logins
-            foreach ($mockLoginName in @($mockSqlServerLoginOne, $mockSqlServerLoginTwo, $mockSqlServerLoginTree, $mockSqlServerLoginFour))
+            foreach ($mockLoginName in @($mockSqlServerLoginOne, $mockSqlServerLoginTwo, $mockSqlServerLoginThree, $mockSqlServerLoginFour))
             {
                 $mockLoginObject = [PSCustomObject]@{
                     Name = $mockLoginName
@@ -401,7 +401,7 @@ try
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     ServerRoleName   = $mockSqlServerRole
-                    MembersToExclude = $mockSqlServerLoginTree
+                    MembersToExclude = $mockSqlServerLoginThree
                 }
 
                 It 'Should return the state as present when the members does not exist' {
@@ -428,7 +428,7 @@ try
                     $testParameters += @{
                         ServerRoleName   = $mockSqlServerRole
                         Members          = $mockEnumMemberNames
-                        MembersToInclude = $mockSqlServerLoginTree
+                        MembersToInclude = $mockSqlServerLoginThree
                     }
 
                     $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
@@ -448,7 +448,7 @@ try
                     $testParameters += @{
                         ServerRoleName   = $mockSqlServerRole
                         Members          = $mockEnumMemberNames
-                        MembersToExclude = $mockSqlServerLoginTree
+                        MembersToExclude = $mockSqlServerLoginThree
                     }
 
                     $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
@@ -495,7 +495,7 @@ try
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     ServerRoleName = $mockSqlServerRole
-                    Members        = @($mockSqlServerLoginOne, $mockSqlServerLoginTree)
+                    Members        = @($mockSqlServerLoginOne, $mockSqlServerLoginThree)
                 }
 
                 It 'Should return the state as absent when the members in the role are wrong' {
@@ -534,7 +534,7 @@ try
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     ServerRoleName   = $mockSqlServerRole
-                    MembersToInclude = $mockSqlServerLoginTree
+                    MembersToInclude = $mockSqlServerLoginThree
                 }
 
                 It 'Should return the state as absent when the members in the role are missing' {
@@ -686,7 +686,7 @@ try
                     $testParameters += @{
                         Ensure         = 'Present'
                         ServerRoleName = $mockSqlServerRole
-                        Members        = @($mockSqlServerLoginTree, $mockSqlServerLoginFour)
+                        Members        = @($mockSqlServerLoginThree, $mockSqlServerLoginFour)
                     }
 
                     $result = Test-TargetResource @testParameters
@@ -703,7 +703,7 @@ try
                         Ensure           = 'Present'
                         ServerRoleName   = $mockSqlServerRole
                         Members          = $mockEnumMemberNames
-                        MembersToInclude = $mockSqlServerLoginTree
+                        MembersToInclude = $mockSqlServerLoginThree
                     }
 
                     $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
@@ -736,7 +736,7 @@ try
                     $testParameters += @{
                         Ensure           = 'Present'
                         ServerRoleName   = $mockSqlServerRole
-                        MembersToInclude = $mockSqlServerLoginTree
+                        MembersToInclude = $mockSqlServerLoginThree
                     }
 
                     $result = Test-TargetResource @testParameters
@@ -770,7 +770,7 @@ try
                     $testParameters += @{
                         Ensure           = 'Present'
                         ServerRoleName   = $mockSqlServerRole
-                        MembersToExclude = $mockSqlServerLoginTree
+                        MembersToExclude = $mockSqlServerLoginThree
                     }
 
                     $result = Test-TargetResource @testParameters
@@ -899,7 +899,7 @@ try
                         Ensure           = 'Present'
                         ServerRoleName   = $mockSqlServerRole
                         Members          = $mockEnumMemberNames
-                        MembersToInclude = $mockSqlServerLoginTree
+                        MembersToInclude = $mockSqlServerLoginThree
                     }
 
                     $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
@@ -930,12 +930,12 @@ try
 
             Context 'When parameter MembersToInclude is assigned a value, parameter Members is not assigned a value, and ensure is set to Present' {
                 It 'Should not thrown when calling the AddMember method' {
-                    $mockExpectedMemberToAdd = $mockSqlServerLoginTree
+                    $mockExpectedMemberToAdd = $mockSqlServerLoginThree
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         Ensure           = 'Present'
                         ServerRoleName   = $mockSqlServerRole
-                        MembersToInclude = $mockSqlServerLoginTree
+                        MembersToInclude = $mockSqlServerLoginThree
                     }
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
@@ -947,16 +947,16 @@ try
             Context 'When parameter MembersToInclude is assigned a value, parameter Members is not assigned a value, and ensure is set to Present' {
                 It 'Should throw the correct error when calling the AddMember method' {
                     $mockInvalidOperationForAddMemberMethod = $true
-                    $mockExpectedMemberToAdd = $mockSqlServerLoginTree
+                    $mockExpectedMemberToAdd = $mockSqlServerLoginThree
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         Ensure           = 'Present'
                         ServerRoleName   = $mockSqlServerRole
-                        MembersToInclude = $mockSqlServerLoginTree
+                        MembersToInclude = $mockSqlServerLoginThree
                     }
 
                     $errorMessage = $script:localizedData.AddMemberServerRoleSetError `
-                        -f $mockServerName, $mockInstanceName, $mockSqlServerRole, $mockSqlServerLoginTree
+                        -f $mockServerName, $mockInstanceName, $mockSqlServerRole, $mockSqlServerLoginThree
 
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
@@ -966,7 +966,7 @@ try
 
             Context 'When parameter MembersToInclude is assigned a value, parameter Members is not assigned a value, and ensure is set to Present' {
                 It 'Should throw the correct error when login does not exist' {
-                    $mockExpectedMemberToAdd = $mockSqlServerLoginTree
+                    $mockExpectedMemberToAdd = $mockSqlServerLoginThree
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         Ensure           = 'Present'
@@ -1027,7 +1027,7 @@ try
             Context 'When parameter MembersToExclude is assigned a value, parameter Members is not assigned a value, and ensure is set to Present' {
                 It 'Should throw the correct error when login does not exist' {
                     $mockEnumMemberNames = @('KingJulian', $mockSqlServerLoginOne, $mockSqlServerLoginTwo)
-                    $mockExpectedMemberToAdd = $mockSqlServerLoginTree
+                    $mockExpectedMemberToAdd = $mockSqlServerLoginThree
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         Ensure           = 'Present'
@@ -1056,7 +1056,7 @@ try
                     $testParameters += @{
                         Ensure         = 'Present'
                         ServerRoleName = $mockSqlServerRole
-                        Members        = @('KingJulian', $mockSqlServerLoginOne, $mockSqlServerLoginTree)
+                        Members        = @('KingJulian', $mockSqlServerLoginOne, $mockSqlServerLoginThree)
                     }
 
                     $errorMessage = $script:localizedData.AddMemberServerRoleSetError -f (
@@ -1074,13 +1074,13 @@ try
 
             Context 'When Members parameter is set and ensure parameter is set to Present' {
                 It 'Should not throw when calling both the AddMember and DropMember methods' {
-                    $mockExpectedMemberToAdd = $mockSqlServerLoginTree
+                    $mockExpectedMemberToAdd = $mockSqlServerLoginThree
                     $mockExpectedMemberToDrop = $mockSqlServerLoginTwo
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         Ensure         = 'Present'
                         ServerRoleName = $mockSqlServerRole
-                        Members        = @($mockSqlServerLoginOne, $mockSqlServerLoginTree)
+                        Members        = @($mockSqlServerLoginOne, $mockSqlServerLoginThree)
                     }
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
@@ -1143,7 +1143,7 @@ try
             }
 
             Context 'When evaluating role membership, case sensitivity should not be used. (Issue #1153)' {
-                Context 'When speciifying explicit role members.' {
+                Context 'When specifying explicit role members.' {
                     It 'Should not attempt to remove an explicit member from the role.' {
                         $mockExpectedMemberToDrop = $mockSqlServerLoginTwo
 
