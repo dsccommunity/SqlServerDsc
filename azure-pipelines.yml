@@ -34,8 +34,8 @@ stages:
           - task: PublishBuildArtifacts@1
             displayName: 'Publish Build Artifact'
             inputs:
-              PathtoPublish: 'output/'
-              ArtifactName: 'output'
+              pathToPublish: 'output/'
+              artifactName: 'output'
               publishLocation: 'Container'
 
   - stage: Test
@@ -164,6 +164,7 @@ stages:
                   'tests/Integration/MSFT_SqlScriptQuery.Integration.Tests.ps1'
               )
             name: test
+            displayName: 'Run Integration Test'
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
             condition: succeededOrFailed()
@@ -226,6 +227,7 @@ stages:
                   'tests/Integration/MSFT_SqlScriptQuery.Integration.Tests.ps1'
               )
             name: test
+            displayName: 'Run Integration Test'
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
             condition: succeededOrFailed()
