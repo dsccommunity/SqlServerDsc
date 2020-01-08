@@ -24,6 +24,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
     and fixed style issues.
   - Ignore commit in `GitVersion.yml` to force the correct initial release.
   - Set a display name on all the jobs and tasks in the CI pipeline.
+  - Removing file 'Tests.depend.ps1' as it is no longer required.
 - SqlServerMaxDop
   - Fix line endings in code which did not use the correct format.
 - SqlAlwaysOnService
