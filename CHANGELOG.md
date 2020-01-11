@@ -23,6 +23,8 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
   - Updated most examples to remove the need for the variable `$ConfigurationData`,
     and fixed style issues.
   - Ignore commit in `GitVersion.yml` to force the correct initial release.
+  - Set a display name on all the jobs and tasks in the CI pipeline.
+  - Removing file 'Tests.depend.ps1' as it is no longer required.
 - SqlServerMaxDop
   - Fix line endings in code which did not use the correct format.
 - SqlAlwaysOnService
@@ -42,7 +44,8 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 - SqlServerDsc
   - Fixed unit tests to call the function `Invoke-TestSetup` outside the
-    try-block. 
+    try-block.
+  - Update GitVersion.yml with the correct regular expression.
 - SqlAlwaysOnService
   - When failing to enable AlwaysOn the resource should now fail with an
     error ([issue #1190](https://github.com/dsccommunity/SqlServerDsc/issues/1190)).
