@@ -27,6 +27,8 @@ else
                 Role1Name       = 'DscServerRole1'
                 Role2Name       = 'DscServerRole2'
                 Role3Name       = 'DscServerRole3'
+                Role4Name       = 'DscServerRole4'
+                Role5Name       = 'DscServerRole5'
 
                 User1Name       = '{0}\{1}' -f $env:COMPUTERNAME, 'DscUser1'
                 User2Name       = '{0}\{1}' -f $env:COMPUTERNAME, 'DscUser2'
@@ -225,6 +227,81 @@ Configuration MSFT_SqlServerRole_RemoveRole3_Config
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Adds a custom server role to an existing role
+#>
+Configuration MSFT_SqlServerRole_AddNestedRole_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    Node $AllNodes.NodeName
+    {
+        SqlServerRole $Node.Role4Name
+        {
+            Ensure = 'Present'
+            ServerRoleName = $Node.Role4Name
+            ServerName = $Node.ServerName
+            InstanceName = $Node.InstanceName
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @(
+                    $Node.Username,
+                    (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force)
+                )
+        }
+
+        SqlServerRole $Node.Role5Name
+        {
+            Ensure = 'Present'
+            ServerRoleName = $Node.Role5Name
+            ServerName = $Node.ServerName
+            InstanceName = $Node.InstanceName
+
+            MembersToInclude = $Node.Role4Name
+
+            DependsOn = "[SqlServerRole]$($Node.Role4Name)"
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @(
+                    $Node.Username,
+                    (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force)
+                )
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Removes a custom server role to an existing role
+#>
+Configuration MSFT_SqlServerRole_RemoveNestedRole_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    Node $AllNodes.NodeName
+    {
+        SqlServerRole $Node.Role5Name
+        {
+            Ensure = 'Present'
+            ServerRoleName = $Node.Role5Name
+            ServerName = $Node.ServerName
+            InstanceName = $Node.InstanceName
+
+            MembersToExclude = $Node.Role4Name
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @(
+                    $Node.Username,
+                    (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force)
+                )
         }
     }
 }
