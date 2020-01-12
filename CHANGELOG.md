@@ -34,6 +34,11 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 - SqlDatabaseRole
   - Update unit test to have the correct description on the `Describe`-block
     for the test of `Set-TargetResource`.
+- SqlServerRole
+  - Add support for nested role membership ([issue #1452](https://github.com/dsccommunity/SqlServerDsc/issues/1452))
+  - Removed use of case-sensitive Contains() function when evalutating role membership.
+    ([issue #1153](https://github.com/dsccommunity/SqlServerDsc/issues/1153))
+  - Refactored mocks and unit tests to increase performance. ([issue #979](https://github.com/dsccommunity/SqlServerDsc/issues/979))
 
 ### Fixed
 

@@ -110,7 +110,7 @@ function Get-TargetResource
                 {
                     foreach ($memberToInclude in $MembersToInclude)
                     {
-                        if ( -not ($membersInRole.Contains($memberToInclude)))
+                        if ($membersInRole -notcontains $memberToInclude)
                         {
                             Write-Verbose -Message (
                                 $script:localizedData.MemberNotPresent `
@@ -126,7 +126,7 @@ function Get-TargetResource
                 {
                     foreach ($memberToExclude in $MembersToExclude)
                     {
-                        if ($membersInRole.Contains($memberToExclude))
+                        if ($membersInRole -contains $memberToExclude)
                         {
                             Write-Verbose -Message (
                                 $script:localizedData.MemberPresent `
@@ -295,20 +295,20 @@ function Set-TargetResource
 
                     foreach ($memberName in $memberNamesInRoleObject)
                     {
-                        if ( -not ($Members.Contains($memberName)))
+                        if ($Members -notcontains $memberName)
                         {
                             Remove-SqlDscServerRoleMember -SqlServerObject $sqlServerObject `
-                                -LoginName $memberName `
+                                -SecurityPrincipal $memberName `
                                 -ServerRoleName $ServerRoleName
                         }
                     }
 
                     foreach ($memberToAdd in $Members)
                     {
-                        if ( -not ($memberNamesInRoleObject.Contains($memberToAdd)))
+                        if ($memberNamesInRoleObject -notcontains $memberToAdd)
                         {
                             Add-SqlDscServerRoleMember -SqlServerObject $sqlServerObject `
-                                -LoginName $memberToAdd `
+                                -SecurityPrincipal $memberToAdd `
                                 -ServerRoleName $ServerRoleName
                         }
                     }
@@ -321,10 +321,10 @@ function Set-TargetResource
 
                         foreach ($memberToInclude in $MembersToInclude)
                         {
-                            if ( -not ($memberNamesInRoleObject.Contains($memberToInclude)))
+                            if ($memberNamesInRoleObject -notcontains $memberToInclude)
                             {
                                 Add-SqlDscServerRoleMember -SqlServerObject $sqlServerObject `
-                                    -LoginName $memberToInclude `
+                                    -SecurityPrincipal $memberToInclude `
                                     -ServerRoleName $ServerRoleName
                             }
                         }
@@ -336,10 +336,10 @@ function Set-TargetResource
 
                         foreach ($memberToExclude in $MembersToExclude)
                         {
-                            if ($memberNamesInRoleObject.Contains($memberToExclude))
+                            if ($memberNamesInRoleObject -contains $memberToExclude)
                             {
                                 Remove-SqlDscServerRoleMember -SqlServerObject $sqlServerObject `
-                                    -LoginName $memberToExclude `
+                                    -SecurityPrincipal $memberToExclude `
                                     -ServerRoleName $ServerRoleName
                             }
                         }
@@ -471,7 +471,7 @@ function Test-TargetResource
     .PARAMETER SqlServerObject
         An object returned from Connect-SQL function.
 
-    .PARAMETER LoginName
+    .PARAMETER SecurityPrincipal
         String containing the login (user) which should be added as a member to the server role.
 
     .PARAMETER ServerRoleName
@@ -490,7 +490,7 @@ function Add-SqlDscServerRoleMember
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $LoginName,
+        $SecurityPrincipal,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -498,27 +498,21 @@ function Add-SqlDscServerRoleMember
         $ServerRoleName
     )
 
-    if ( -not ($SqlServerObject.Logins[$LoginName]) )
-    {
-        $errorMessage = $script:localizedData.LoginNotFound `
-            -f $LoginName, $ServerName, $InstanceName
-
-        New-ObjectNotFoundException -Message $errorMessage
-    }
-
     try
     {
+        Test-SqlSecurityPrincipal -SqlServerObject $SqlServerObject -SecurityPrincipal $SecurityPrincipal
+
         Write-Verbose -Message (
             $script:localizedData.AddMemberToRole `
-                -f $LoginName, $ServerRoleName
+                -f $SecurityPrincipal, $ServerRoleName
         )
 
-        $SqlServerObject.Roles[$ServerRoleName].AddMember($LoginName)
+        $SqlServerObject.Roles[$ServerRoleName].AddMember($SecurityPrincipal)
     }
     catch
     {
         $errorMessage = $script:localizedData.AddMemberServerRoleSetError `
-            -f $ServerName, $InstanceName, $ServerRoleName, $LoginName
+            -f $ServerName, $InstanceName, $ServerRoleName, $SecurityPrincipal
 
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
@@ -531,7 +525,7 @@ function Add-SqlDscServerRoleMember
     .PARAMETER SqlServerObject
         An object returned from Connect-SQL function.
 
-    .PARAMETER LoginName
+    .PARAMETER SecurityPrincipal
         String containing the login (user) which should be removed as a member in the server role.
 
     .PARAMETER ServerRoleName
@@ -550,7 +544,7 @@ function Remove-SqlDscServerRoleMember
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $LoginName,
+        $SecurityPrincipal,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -558,30 +552,69 @@ function Remove-SqlDscServerRoleMember
         $ServerRoleName
     )
 
-    if ( -not ($SqlServerObject.Logins[$LoginName]) )
-    {
-        $errorMessage = $script:localizedData.LoginNotFound `
-            -f $LoginName, $ServerName, $InstanceName
-
-        New-ObjectNotFoundException -Message $errorMessage
-    }
-
     try
     {
+        # Determine whether a valid principal has been supplied
+        Test-SqlSecurityPrincipal -SqlServerObject $SqlServerObject -SecurityPrincipal $SecurityPrincipal
+
         Write-Verbose -Message (
             $script:localizedData.RemoveMemberFromRole `
-                -f $LoginName, $ServerRoleName
+                -f $SecurityPrincipal, $ServerRoleName
         )
 
-        $SqlServerObject.Roles[$ServerRoleName].DropMember($LoginName)
+        $SqlServerObject.Roles[$ServerRoleName].DropMember($SecurityPrincipal)
     }
     catch
     {
         $errorMessage = $script:localizedData.DropMemberServerRoleSetError `
-            -f $ServerName, $InstanceName, $ServerRoleName, $LoginName
+            -f $ServerName, $InstanceName, $ServerRoleName, $SecurityPrincipal
 
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
+}
+
+<#
+    .SYNOPSIS
+        Tests whether a security principal is valid on the specified SQL Server instance.
+
+    .PARAMETER SqlServerObject
+        The object returned from the Connect-SQL function.
+
+    .PARAMETER SecurityPrincipal
+        String containing the name of the principal to validate.
+#>
+function Test-SqlSecurityPrincipal
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Object]
+        $SqlServerObject,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $SecurityPrincipal
+    )
+
+    if ($SqlServerObject.Logins.Name -notcontains $SecurityPrincipal)
+    {
+        if ($SqlServerObject.Roles.Name -notcontains $SecurityPrincipal)
+        {
+            $errorMessage = $script:localizedData.SecurityPrincipalNotFound -f (
+                $SecurityPrincipal,
+                $($SqlServerObject.Name)
+            )
+
+            # Principal is neither a Login nor a Server role, raise exception
+            New-ObjectNotFoundException -Message $errorMessage
+
+            return $false
+        }
+    }
+
+    return $true
 }
 
 Export-ModuleMember -Function *-TargetResource

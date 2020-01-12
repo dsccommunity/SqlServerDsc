@@ -407,6 +407,114 @@ try
                 Test-DscConfiguration -Verbose | Should -Be 'True'
             }
         }
+
+        $configurationName = "$($script:dscResourceName)_AddNestedRole_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing an exception' {
+                $configurationParameters = @{
+                    OutputPath = $TestDrive
+                    ConfigurationData = $ConfigurationData
+                }
+
+                { & $configurationName @configurationParameters } | Should -Not -Throw
+            }
+
+            It 'Should apply the configuration successfully' {
+                $startDscConfigurationParameters = @{
+                    Path = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait = $true
+                    Verbose = $true
+                    Force = $true
+                    ErrorAction = 'Stop'
+                }
+
+                { Start-DscConfiguration @startDscConfigurationParameters } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing an exception' {
+                { $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop } |
+                    Should -Not -Throw
+            }
+
+            It "Should have set the resource and all values should match for $($ConfigurationData.AllNodes.Role4Name)." {
+                $testRoleName = $ConfigurationData.AllNodes.Role4Name
+
+                # Extract just the roles we want from the Configuration
+                $currentState = $script:currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName -and
+                    $_.ServerRoleName -eq $testRoleName
+                }
+
+                $currentState.Ensure | Should -Be 'Present'
+                $currentState.Members | Should -BeNullOrEmpty
+                $currentState.MembersToInclude | Should -BeNullOrEmpty
+                $currentState.MembersToExclude | Should -BeNullOrEmpty
+            }
+
+            It "Should have set the resource and all values should match for $($ConfigurationData.AllNodes.Role5Name)." {
+                $testRoleName = $ConfigurationData.AllNodes.Role5Name
+                $testMemberName = $ConfigurationData.AllNodes.Role4Name
+
+                # Extract just the roles we want from the Configuration
+                $currentstate = $script:currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName -and
+                    $_.ServerRoleName -eq $testRoleName
+                }
+
+                $currentState.Ensure | Should -Be 'Present'
+                $currentState.Members | Should -Be @($testMemberName)
+                $currentState.MembersToInclude | Should -Be @($testMemberName)
+                $currentState.MembersToExclude | Should -BeNullOrEmpty
+            }
+        }
+
+        $configurationName = "$($script:dscResourceName)_RemoveNestedRole_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing an exception' {
+                $configurationParameters = @{
+                    OutputPath = $TestDrive
+                    ConfigurationData = $ConfigurationData
+                }
+
+                { & $configurationName @configurationParameters } | Should -Not -Throw
+            }
+
+            It 'Should apply the configuration successfully' {
+                $startDscConfigurationParameters = @{
+                    Path = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait = $true
+                    Verbose = $true
+                    Force = $true
+                    ErrorAction = 'Stop'
+                }
+
+                { Start-DscConfiguration @startDscConfigurationParameters } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing an exception' {
+                { $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop } |
+                    Should -Not -Throw
+            }
+
+            It "Should have set the resource and all values should match for $($ConfigurationData.AllNodes.Role5Name)." {
+                $testRoleName = $ConfigurationData.AllNodes.Role5Name
+                $testMemberName = $ConfigurationData.AllNodes.Role4Name
+
+                $currentState = $script:currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName -and
+                    $_.ServerRoleName -eq $testRoleName
+                }
+
+                $currentState.Ensure | Should -Be 'Present'
+                $currentstate.Members | Should -BeNullOrEmpty
+                $currentState.MembersToInclude | Should -BeNullOrEmpty
+                $currentState.MembersToExclude | Should -Be $testMemberName
+            }
+        }
     }
 }
 finally
