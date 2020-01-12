@@ -46,6 +46,8 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
   - Fixed unit tests to call the function `Invoke-TestSetup` outside the
     try-block.
   - Update GitVersion.yml with the correct regular expression.
+  - Fix import statement in all tests, making sure it throws if module
+    DscResource.Test cannot be imported.
 - SqlAlwaysOnService
   - When failing to enable AlwaysOn the resource should now fail with an
     error ([issue #1190](https://github.com/dsccommunity/SqlServerDsc/issues/1190)).

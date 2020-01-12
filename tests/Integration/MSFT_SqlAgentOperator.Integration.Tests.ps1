@@ -11,7 +11,7 @@ $script:dscResourceName = "MSFT_$($script:dscResourceFriendlyName)"
 
 try
 {
-    Import-Module -Name DscResource.Test -Force
+    Import-Module -Name DscResource.Test -Force -ErrorAction 'Stop'
 }
 catch [System.IO.FileNotFoundException]
 {
