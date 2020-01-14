@@ -51,5 +51,5 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 - SqlAlwaysOnService
   - When failing to enable AlwaysOn the resource should now fail with an
     error ([issue #1190](https://github.com/dsccommunity/SqlServerDsc/issues/1190)).
-- Changes to SqlAgListener
+- SqlAgListener
   - Fix IPv6 addresses failing Test-TargetResource after listener creation.
