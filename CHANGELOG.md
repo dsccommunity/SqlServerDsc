@@ -7,6 +7,16 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ## [Unreleased]
 
+### Changed
+
+- SqlServerDsc
+  - Azure Pipelines will no longer trigger on changes to just the CHANGELOG.md
+    (when merging to master).
+  - The deploy step is no longer run if the Azure DevOps organization URL
+    does not contain 'dsccommunity'.
+  - Changed the VS Code project settings to trim trailing whitespace for
+    markdown files too.
+
 ## [13.3.0] - 2020-01-17
 
 ### Added
