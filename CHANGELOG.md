@@ -75,6 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Support for debugging of integration tests in AppVeyor.
     - Only run for pull requests
   - Add new resource SqlServerAudit.
+  - Add new resource SqlServerAuditSpecification.
 - CommonTestHelper
   - `Import-SqlModuleStub`
     - Added the optional parameter **PasThru** that, if used, will return the
