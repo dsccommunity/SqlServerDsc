@@ -42,7 +42,7 @@ else
     .SYNOPSIS
         Creates a Server Audit with File destination.
 #>
-Configuration MSFT_SqlServerAuditSpecification_AddAudit1_Config
+Configuration DSC_SqlServerAuditSpecification_AddAudit1_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -106,7 +106,7 @@ Configuration MSFT_SqlServerAuditSpecification_AddAudit1_Config
     .SYNOPSIS
         Creates a audit to the securitylog, with a filer.
 #>
-Configuration MSFT_SqlServerAudit_AddSecLogAudit_Config
+Configuration DSC_SqlServerAudit_AddSecLogAudit_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -167,7 +167,7 @@ Configuration MSFT_SqlServerAudit_AddSecLogAudit_Config
     .SYNOPSIS
         Should remove the filter
 #>
-Configuration MSFT_SqlServerAudit_AddSecLogAuditNoFilter_Config
+Configuration DSC_SqlServerAudit_AddSecLogAuditNoFilter_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -227,7 +227,7 @@ Configuration MSFT_SqlServerAudit_AddSecLogAuditNoFilter_Config
     .SYNOPSIS
         Removes the file audit.
 #>
-Configuration MSFT_SqlServerAudit_RemoveAudit1_Config
+Configuration DSC_SqlServerAudit_RemoveAudit1_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
