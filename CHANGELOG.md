@@ -7,6 +7,11 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ## [Unreleased]
 
+### Changed 
+
+- SqlServerDsc
+  - Changed hosted agent to newer YAML VM Image Label
+
 ### Changed
 
 - SqlServerDsc
