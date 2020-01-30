@@ -40,6 +40,12 @@ stages:
               pathToPublish: 'output/'
               artifactName: 'output'
               publishLocation: 'Container'
+          - task: PowerShell@2
+            inputs:
+              targetType: 'inline'
+              script: |
+                Write-Output "Post-build disk space"
+                Get-PSDrive -PSProvider FileSystem
 
   - stage: Test
     dependsOn: Build
@@ -71,6 +77,12 @@ stages:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
               testRunTitle: 'HQRM'
+          - task: PowerShell@2
+            inputs:
+              targetType: 'inline'
+              script: |
+                Write-Output "Post-Test_HQRM disk space"
+                Get-PSDrive -PSProvider FileSystem
 
       - job: Test_Unit
         displayName: 'Unit'
@@ -112,6 +124,12 @@ stages:
               codeCoverageTool: 'JaCoCo'
               summaryFileLocation: 'output/testResults/CodeCov*.xml'
               pathToSources: '$(Build.SourcesDirectory)/output/$(dscBuildVariable.RepositoryName)'
+          - task: PowerShell@2
+            inputs:
+              targetType: 'inline'
+              script: |
+                Write-Output "Post-Test_Unit disk space"
+                Get-PSDrive -PSProvider FileSystem
 
       - job: Test_Integration_SQL2016
         displayName: 'Integration (SQL2016)'
@@ -142,33 +160,33 @@ stages:
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterScript @(
                   # Run the integration tests in a specific group order.
                   # Group 1
-                  write-output "pre sql install"
+                  write-output "Pre-MSFT_SqlSetup disk space"
                   get-psdrive -psprovider filesystem
                   'tests/Integration/MSFT_SqlSetup.Integration.Tests.ps1'
-                  write-output "post sql install"
+                  write-output "Post-MSFT_SqlSetup disk space"
                   get-psdrive -psprovider filesystem
                   # Group 2
-                  # 'tests/Integration/MSFT_SqlAgentAlert.Integration.Tests.ps1'
-                  # 'tests/Integration/MSFT_SqlServerNetwork.Integration.Tests.ps1'
-                  # 'tests/Integration/MSFT_SqlServerLogin.Integration.Tests.ps1'
-                  # 'tests/Integration/MSFT_SqlServerEndPoint.Integration.Tests.ps1'
-                  # 'tests/Integration/MSFT_SqlServerDatabaseMail.Integration.Tests.ps1'
-                  # 'tests/Integration/MSFT_SqlRSSetup.Integration.Tests.ps1'
-                  # 'tests/Integration/MSFT_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
-                  # 'tests/Integration/MSFT_SqlDatabase.Integration.Tests.ps1'
-                  # 'tests/Integration/MSFT_SqlAlwaysOnService.Integration.Tests.ps1'
-                  # 'tests/Integration/MSFT_SqlAgentOperator.Integration.Tests.ps1'
-                  # 'tests/Integration/MSFT_SqlServiceAccount.Integration.Tests.ps1'
-                  # 'tests/Integration/MSFT_SqlAgentFailsafe.Integration.Tests.ps1'
-                  # # Group 3
-                  # 'tests/Integration/MSFT_SqlServerRole.Integration.Tests.ps1'
-                  # 'tests/Integration/MSFT_SqlRS.Integration.Tests.ps1'
-                  # 'tests/Integration/MSFT_SqlDatabaseUser.Integration.Tests.ps1'
-                  # # Group 4
-                  # 'tests/Integration/MSFT_SqlScript.Integration.Tests.ps1'
-                  # # Group 5
-                  # 'tests/Integration/MSFT_SqlServerSecureConnection.Integration.Tests.ps1'
-                  # 'tests/Integration/MSFT_SqlScriptQuery.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlAgentAlert.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlServerNetwork.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlServerLogin.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlServerEndPoint.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlServerDatabaseMail.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlRSSetup.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlDatabase.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlAlwaysOnService.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlAgentOperator.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlServiceAccount.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlAgentFailsafe.Integration.Tests.ps1'
+                  # Group 3
+                  'tests/Integration/MSFT_SqlServerRole.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlRS.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlDatabaseUser.Integration.Tests.ps1'
+                  # Group 4
+                  'tests/Integration/MSFT_SqlScript.Integration.Tests.ps1'
+                  # Group 5
+                  'tests/Integration/MSFT_SqlServerSecureConnection.Integration.Tests.ps1'
+                  'tests/Integration/MSFT_SqlScriptQuery.Integration.Tests.ps1'
               )
             name: test
             displayName: 'Run Integration Test'
@@ -179,6 +197,12 @@ stages:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
               testRunTitle: 'Integration (SQL Server 2016 / Windows Server 2019)'
+          - task: PowerShell@2
+            inputs:
+              targetType: 'inline'
+              script: |
+                Write-Output "Post-Test_Integration_SQL2016 disk space"
+                Get-PSDrive -PSProvider FileSystem
 
       - job: Test_Integration_SQL2017
         displayName: 'Integration (SQL2017)'
@@ -242,6 +266,12 @@ stages:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
               testRunTitle: 'Integration (SQL Server 2017 / Windows Server 2019)'
+          - task: PowerShell@2
+            inputs:
+              targetType: 'inline'
+              script: |
+                Write-Output "Post-Test_Integration_SQL2017 disk space"
+                Get-PSDrive -PSProvider FileSystem
 
   - stage: Deploy
     dependsOn: Test
