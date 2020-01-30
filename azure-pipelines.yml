@@ -203,6 +203,7 @@ stages:
               script: |
                 Write-Output "Post-Test_Integration_SQL2016 disk space"
                 Get-PSDrive -PSProvider FileSystem
+            condition: always()
 
       - job: Test_Integration_SQL2017
         displayName: 'Integration (SQL2017)'
