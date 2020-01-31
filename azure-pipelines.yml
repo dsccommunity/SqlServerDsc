@@ -40,6 +40,12 @@ stages:
               pathToPublish: 'output/'
               artifactName: 'output'
               publishLocation: 'Container'
+          - task: PowerShell@2
+            inputs:
+              targetType: 'inline'
+              script: |
+                Write-Output "Post-build disk space"
+                Get-PSDrive -PSProvider FileSystem
 
   - stage: Test
     dependsOn: Build
@@ -71,6 +77,12 @@ stages:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
               testRunTitle: 'HQRM'
+          - task: PowerShell@2
+            inputs:
+              targetType: 'inline'
+              script: |
+                Write-Output "Post-Test_HQRM disk space"
+                Get-PSDrive -PSProvider FileSystem
 
       - job: Test_Unit
         displayName: 'Unit'
@@ -112,6 +124,12 @@ stages:
               codeCoverageTool: 'JaCoCo'
               summaryFileLocation: 'output/testResults/CodeCov*.xml'
               pathToSources: '$(Build.SourcesDirectory)/output/$(dscBuildVariable.RepositoryName)'
+          - task: PowerShell@2
+            inputs:
+              targetType: 'inline'
+              script: |
+                Write-Output "Post-Test_Unit disk space"
+                Get-PSDrive -PSProvider FileSystem
 
       - job: Test_Integration_SQL2016
         displayName: 'Integration (SQL2016)'
@@ -175,6 +193,16 @@ stages:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
               testRunTitle: 'Integration (SQL Server 2016 / Windows Server 2019)'
+          - task: PowerShell@2
+            inputs:
+              targetType: 'inline'
+              script: |
+                Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
+                Install-Module -Name Get-FolderSize -Force -Verbose -Scope CurrentUser
+                Write-Output "Post-Test_Integration_SQL2016 disk space"
+                Get-PSDrive -PSProvider FileSystem
+                Get-FolderSize -BasePath "C:\"
+            condition: always()
 
       - job: Test_Integration_SQL2017
         displayName: 'Integration (SQL2017)'
@@ -238,6 +266,12 @@ stages:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
               testRunTitle: 'Integration (SQL Server 2017 / Windows Server 2019)'
+          - task: PowerShell@2
+            inputs:
+              targetType: 'inline'
+              script: |
+                Write-Output "Post-Test_Integration_SQL2017 disk space"
+                Get-PSDrive -PSProvider FileSystem
 
   - stage: Deploy
     dependsOn: Test
