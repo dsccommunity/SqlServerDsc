@@ -160,11 +160,7 @@ stages:
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterScript @(
                   # Run the integration tests in a specific group order.
                   # Group 1
-                  write-output "Pre-MSFT_SqlSetup disk space"
-                  get-psdrive -psprovider filesystem
                   'tests/Integration/MSFT_SqlSetup.Integration.Tests.ps1'
-                  write-output "Post-MSFT_SqlSetup disk space"
-                  get-psdrive -psprovider filesystem
                   # Group 2
                   'tests/Integration/MSFT_SqlAgentAlert.Integration.Tests.ps1'
                   'tests/Integration/MSFT_SqlServerNetwork.Integration.Tests.ps1'
@@ -201,8 +197,11 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
+                Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
+                Install-Module -Name Get-FolderSize -Force -Verbose -Scope CurrentUser
                 Write-Output "Post-Test_Integration_SQL2016 disk space"
                 Get-PSDrive -PSProvider FileSystem
+                Get-FolderSize -BasePath "C:\"
             condition: always()
 
       - job: Test_Integration_SQL2017
