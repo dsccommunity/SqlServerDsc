@@ -6,6 +6,17 @@ Import-Module -Name (Join-Path -Path $script:resourceHelperModulePath -ChildPath
 
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlDatabase'
 
+$script:supportedCompatibilityLevels = @{
+    8 = @('Version80')
+    9 = @('Version80', 'Version90')
+    10 = @('Version80', 'Version90', 'Version100')
+    11 = @('Version90', 'Version100', 'Version110')
+    12 = @('Version100', 'Version110', 'Version120')
+    13 = @('Version100', 'Version110', 'Version120', 'Version130')
+    14 = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140')
+    15 = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150')
+}
+
 <#
     .SYNOPSIS
     This function gets the sql database.
@@ -26,6 +37,14 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlDatabase'
     .PARAMETER Collation
     The name of the SQL collation to use for the new database.
     Defaults to server collation.
+
+    .PARAMETER CompatibilityLevel
+    The version of the SQL compatibility level to use for the new database.
+    Defaults to server version.
+
+    .PARAMETER RecoveryModel
+    The recovery model to be used for the new database.
+    Defaults to Full.
 #>
 
 function Get-TargetResource
@@ -58,7 +77,17 @@ function Get-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $Collation
+        $Collation,
+
+        [Parameter()]
+        [ValidateSet('Version80', 'Version90', 'Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150')]
+        [System.String]
+        $CompatibilityLevel,
+
+        [Parameter()]
+        [ValidateSet('Simple', 'Full', 'BulkLogged')]
+        [System.String]
+        $RecoveryModel
     )
 
     Write-Verbose -Message (
@@ -75,9 +104,11 @@ function Get-TargetResource
         {
             $Ensure = 'Present'
             $sqlDatabaseCollation = $sqlDatabaseObject.Collation
+            $sqlDatabaseCompatibilityLevel = $sqlDatabaseObject.CompatibilityLevel
+            $sqlDatabaseRecoveryModel = $sqlDatabaseObject.RecoveryModel
 
             Write-Verbose -Message (
-                $script:localizedData.DatabasePresent -f $Name, $sqlDatabaseCollation
+                $script:localizedData.DatabasePresent -f $Name, $sqlDatabaseCollation, $sqlDatabaseCompatibilityLevel, $sqlDatabaseRecoveryModel
             )
         }
         else
@@ -91,11 +122,13 @@ function Get-TargetResource
     }
 
     $returnValue = @{
-        Name         = $Name
-        Ensure       = $Ensure
-        ServerName   = $ServerName
-        InstanceName = $InstanceName
-        Collation    = $sqlDatabaseCollation
+        Name               = $Name
+        Ensure             = $Ensure
+        ServerName         = $ServerName
+        InstanceName       = $InstanceName
+        Collation          = $sqlDatabaseCollation
+        CompatibilityLevel = $sqlDatabaseCompatibilityLevel
+        RecoveryModel      = $sqlDatabaseRecoveryModel
     }
 
     $returnValue
@@ -121,6 +154,14 @@ function Get-TargetResource
     .PARAMETER Collation
     The name of the SQL collation to use for the new database.
     Defaults to server collation.
+
+    .PARAMETER CompatibilityLevel
+    The version of the SQL compatibility level to use for the new database.
+    Defaults to server version.
+
+    .PARAMETER RecoveryModel
+    The recovery model to be used for the new database.
+    Defaults to Full.
 #>
 function Set-TargetResource
 {
@@ -151,7 +192,17 @@ function Set-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $Collation
+        $Collation,
+
+        [Parameter()]
+        [ValidateSet('Version80', 'Version90', 'Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150')]
+        [System.String]
+        $CompatibilityLevel,
+
+        [Parameter()]
+        [ValidateSet('Simple', 'Full', 'BulkLogged')]
+        [System.String]
+        $RecoveryModel
     )
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
@@ -169,6 +220,16 @@ function Set-TargetResource
                 New-ObjectNotFoundException -Message $errorMessage
             }
 
+            if (-not $PSBoundParameters.ContainsKey('CompatibilityLevel'))
+            {
+                $CompatibilityLevel = $supportedCompatibilityLevels.$($sqlServerObject.VersionMajor) | Select-Object -Last 1
+            }
+            elseif ($CompatibilityLevel -notin $supportedCompatibilityLevels.$($sqlServerObject.VersionMajor))
+            {
+                $errorMessage = $script:localizedData.InvalidCompatibilityLevel -f $CompatibilityLevel, $InstanceName
+                New-ObjectNotFoundException -Message $errorMessage
+            }
+
             $sqlDatabaseObject = $sqlServerObject.Databases[$Name]
             if ($sqlDatabaseObject)
             {
@@ -179,10 +240,20 @@ function Set-TargetResource
                 try
                 {
                     Write-Verbose -Message (
-                        $script:localizedData.UpdatingCollation -f $Collation
+                        $script:localizedData.UpdatingDatabase -f $Collation, $CompatibilityLevel
                     )
 
                     $sqlDatabaseObject.Collation = $Collation
+                    $sqlDatabaseObject.CompatibilityLevel = $CompatibilityLevel
+
+                    if ($PSBoundParameters.ContainsKey('RecoveryModel'))
+                    {
+                        Write-Verbose -Message (
+                            $script:localizedData.UpdatingRecoveryModel -f $RecoveryModel
+                        )
+                        $sqlDatabaseObject.RecoveryModel = $RecoveryModel
+                    }
+
                     $sqlDatabaseObject.Alter()
                 }
                 catch
@@ -202,7 +273,13 @@ function Set-TargetResource
                             $script:localizedData.CreateDatabase -f $Name
                         )
 
+                        if ($PSBoundParameters.ContainsKey('RecoveryModel'))
+                        {
+                            $sqlDatabaseObjectToCreate.RecoveryModel = $RecoveryModel
+                        }
+
                         $sqlDatabaseObjectToCreate.Collation = $Collation
+                        $sqlDatabaseObjectToCreate.CompatibilityLevel = $CompatibilityLevel
                         $sqlDatabaseObjectToCreate.Create()
                     }
                 }
@@ -256,6 +333,14 @@ function Set-TargetResource
     .PARAMETER Collation
     The name of the SQL collation to use for the new database.
     Defaults to server collation.
+
+    .PARAMETER CompatibilityLevel
+    The version of the SQL compatibility level to use for the new database.
+    Defaults to server version.
+
+    .PARAMETER RecoveryModel
+    The recovery model to be used for the new database.
+    Defaults to Full.
 #>
 function Test-TargetResource
 {
@@ -287,7 +372,17 @@ function Test-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $Collation
+        $Collation,
+
+        [Parameter()]
+        [ValidateSet('Version80', 'Version90', 'Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150')]
+        [System.String]
+        $CompatibilityLevel,
+
+        [Parameter()]
+        [ValidateSet('Simple', 'Full', 'BulkLogged')]
+        [System.String]
+        $RecoveryModel
     )
 
     Write-Verbose -Message (
@@ -321,13 +416,34 @@ function Test-TargetResource
 
                 $isDatabaseInDesiredState = $false
             }
-            elseif ($PSBoundParameters.ContainsKey('Collation') -and $getTargetResourceResult.Collation -ne $Collation)
+            else
             {
-                Write-Verbose -Message (
-                    $script:localizedData.CollationWrong -f $Name, $getTargetResourceResult.Collation, $Collation
-                )
+                if ($PSBoundParameters.ContainsKey('Collation') -and $getTargetResourceResult.Collation -ne $Collation)
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.CollationWrong -f $Name, $getTargetResourceResult.Collation, $Collation
+                    )
 
-                $isDatabaseInDesiredState = $false
+                    $isDatabaseInDesiredState = $false
+                }
+
+                if ($PSBoundParameters.ContainsKey('CompatibilityLevel') -and $getTargetResourceResult.CompatibilityLevel -ne $CompatibilityLevel)
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.CompatibilityLevelWrong -f $Name, $getTargetResourceResult.CompatibilityLevel, $CompatibilityLevel
+                    )
+
+                    $isDatabaseInDesiredState = $false
+                }
+
+                if ($PSBoundParameters.ContainsKey('RecoveryModel') -and $getTargetResourceResult.RecoveryModel -ne $RecoveryModel)
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.RecoveryModelWrong -f $Name, $getTargetResourceResult.RecoveryModel, $RecoveryModel
+                    )
+
+                    $isDatabaseInDesiredState = $false
+                }
             }
         }
     }
