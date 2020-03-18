@@ -7,6 +7,11 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ## [Unreleased]
 
+### Added
+
+- SqlDatabase
+  - Added ability to manage the Compatibility Level of the database
+
 ### Changed
 
 - SqlServerDsc

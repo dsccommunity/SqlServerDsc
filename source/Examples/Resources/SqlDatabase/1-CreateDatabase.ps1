@@ -5,6 +5,9 @@
 
         The second example shows how to create a database
         with a different collation.
+
+        The second example shows how to create a database
+        with a different compatibility level.
 #>
 Configuration Example
 {
@@ -36,6 +39,17 @@ Configuration Example
             InstanceName         = 'DSC'
             Name                 = 'AdventureWorks'
             Collation            = 'SQL_Latin1_General_Pref_CP850_CI_AS'
+
+            PsDscRunAsCredential = $SqlAdministratorCredential
+        }
+
+        SqlDatabase 'Create_Database_with_different_compatibility_level'
+        {
+            Ensure               = 'Present'
+            ServerName           = 'sqltest.company.local'
+            InstanceName         = 'DSC'
+            Name                 = 'AdventureWorks'
+            CompatibilityLevel   = 'Version130'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
