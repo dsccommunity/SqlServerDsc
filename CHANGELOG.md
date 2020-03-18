@@ -7,6 +7,8 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ## [Unreleased]
 
+## [13.4.0] - 2020-03-18
+
 ### Added
 
 - SqlDatabase
