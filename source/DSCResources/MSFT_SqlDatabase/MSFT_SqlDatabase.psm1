@@ -41,6 +41,10 @@ $script:supportedCompatibilityLevels = @{
     .PARAMETER CompatibilityLevel
     The version of the SQL compatibility level to use for the new database.
     Defaults to server version.
+
+    .PARAMETER RecoveryModel
+    The recovery model to be used for the new database.
+    Defaults to Full.
 #>
 
 function Get-TargetResource
@@ -78,7 +82,12 @@ function Get-TargetResource
         [Parameter()]
         [ValidateSet('Version80', 'Version90', 'Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150')]
         [System.String]
-        $CompatibilityLevel
+        $CompatibilityLevel,
+
+        [Parameter()]
+        [ValidateSet('Simple', 'Full', 'BulkLogged')]
+        [System.String]
+        $RecoveryModel
     )
 
     Write-Verbose -Message (
@@ -96,9 +105,10 @@ function Get-TargetResource
             $Ensure = 'Present'
             $sqlDatabaseCollation = $sqlDatabaseObject.Collation
             $sqlDatabaseCompatibilityLevel = $sqlDatabaseObject.CompatibilityLevel
+            $sqlDatabaseRecoveryModel = $sqlDatabaseObject.RecoveryModel
 
             Write-Verbose -Message (
-                $script:localizedData.DatabasePresent -f $Name, $sqlDatabaseCollation, $sqlDatabaseCompatibilityLevel
+                $script:localizedData.DatabasePresent -f $Name, $sqlDatabaseCollation, $sqlDatabaseCompatibilityLevel, $sqlDatabaseRecoveryModel
             )
         }
         else
@@ -118,6 +128,7 @@ function Get-TargetResource
         InstanceName       = $InstanceName
         Collation          = $sqlDatabaseCollation
         CompatibilityLevel = $sqlDatabaseCompatibilityLevel
+        RecoveryModel      = $sqlDatabaseRecoveryModel
     }
 
     $returnValue
@@ -147,6 +158,10 @@ function Get-TargetResource
     .PARAMETER CompatibilityLevel
     The version of the SQL compatibility level to use for the new database.
     Defaults to server version.
+
+    .PARAMETER RecoveryModel
+    The recovery model to be used for the new database.
+    Defaults to Full.
 #>
 function Set-TargetResource
 {
@@ -182,7 +197,12 @@ function Set-TargetResource
         [Parameter()]
         [ValidateSet('Version80', 'Version90', 'Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150')]
         [System.String]
-        $CompatibilityLevel
+        $CompatibilityLevel,
+
+        [Parameter()]
+        [ValidateSet('Simple', 'Full', 'BulkLogged')]
+        [System.String]
+        $RecoveryModel
     )
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
@@ -225,6 +245,15 @@ function Set-TargetResource
 
                     $sqlDatabaseObject.Collation = $Collation
                     $sqlDatabaseObject.CompatibilityLevel = $CompatibilityLevel
+
+                    if ($PSBoundParameters.ContainsKey('RecoveryModel'))
+                    {
+                        Write-Verbose -Message (
+                            $script:localizedData.UpdatingRecoveryModel -f $RecoveryModel
+                        )
+                        $sqlDatabaseObject.RecoveryModel = $RecoveryModel
+                    }
+
                     $sqlDatabaseObject.Alter()
                 }
                 catch
@@ -243,6 +272,11 @@ function Set-TargetResource
                         Write-Verbose -Message (
                             $script:localizedData.CreateDatabase -f $Name
                         )
+
+                        if ($PSBoundParameters.ContainsKey('RecoveryModel'))
+                        {
+                            $sqlDatabaseObjectToCreate.RecoveryModel = $RecoveryModel
+                        }
 
                         $sqlDatabaseObjectToCreate.Collation = $Collation
                         $sqlDatabaseObjectToCreate.CompatibilityLevel = $CompatibilityLevel
@@ -303,6 +337,10 @@ function Set-TargetResource
     .PARAMETER CompatibilityLevel
     The version of the SQL compatibility level to use for the new database.
     Defaults to server version.
+
+    .PARAMETER RecoveryModel
+    The recovery model to be used for the new database.
+    Defaults to Full.
 #>
 function Test-TargetResource
 {
@@ -339,7 +377,12 @@ function Test-TargetResource
         [Parameter()]
         [ValidateSet('Version80', 'Version90', 'Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150')]
         [System.String]
-        $CompatibilityLevel
+        $CompatibilityLevel,
+
+        [Parameter()]
+        [ValidateSet('Simple', 'Full', 'BulkLogged')]
+        [System.String]
+        $RecoveryModel
     )
 
     Write-Verbose -Message (
@@ -388,6 +431,15 @@ function Test-TargetResource
                 {
                     Write-Verbose -Message (
                         $script:localizedData.CompatibilityLevelWrong -f $Name, $getTargetResourceResult.CompatibilityLevel, $CompatibilityLevel
+                    )
+
+                    $isDatabaseInDesiredState = $false
+                }
+
+                if ($PSBoundParameters.ContainsKey('RecoveryModel') -and $getTargetResourceResult.RecoveryModel -ne $RecoveryModel)
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.RecoveryModelWrong -f $Name, $getTargetResourceResult.RecoveryModel, $RecoveryModel
                     )
 
                     $isDatabaseInDesiredState = $false

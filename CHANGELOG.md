@@ -10,7 +10,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 ### Added
 
 - SqlDatabase
-  - Added ability to manage the Compatibility Level of the database
+  - Added ability to manage the Compatibility Level and Recovery Model of a database
 
 ### Changed
 

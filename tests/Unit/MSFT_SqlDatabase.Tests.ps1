@@ -57,6 +57,7 @@ try
         $mockExpectedDatabaseNameToDrop = 'Sales'
         $mockSqlDatabaseCollation = 'SQL_Latin1_General_CP1_CI_AS'
         $mockSqlDatabaseCompatibilityLevel = 'Version130'
+        $mockSqlDatabaseRecoveryModel = 'Full'
 
         # Default parameters that are used for the It-blocks
         $mockDefaultParameters = @{
@@ -93,6 +94,7 @@ try
                                     Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
                                     Add-Member -MemberType NoteProperty -Name Collation -Value $mockSqlDatabaseCollation -PassThru |
                                     Add-Member -MemberType NoteProperty -Name CompatibilityLevel -Value $mockSqlDatabaseCompatibilityLevel -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name RecoveryModel -Value $mockSqlDatabaseRecoveryModel -PassThru |
                                     Add-Member -MemberType ScriptMethod -Name Drop -Value {
                                     if ($mockInvalidOperationForDropMethod)
                                     {
@@ -125,6 +127,7 @@ try
                         Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
                         Add-Member -MemberType NoteProperty -Name Collation -Value '' -PassThru |
                         Add-Member -MemberType NoteProperty -Name CompatibilityLevel -Value '' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name RecoveryModel -Value '' -PassThru |
                         Add-Member -MemberType ScriptMethod -Name Create -Value {
                         if ($mockInvalidOperationForCreateMethod)
                         {
@@ -167,6 +170,7 @@ try
                     $result.Name | Should -Be $testParameters.Name
                     $result.Collation | Should -BeNullOrEmpty
                     $result.CompatibilityLevel | Should -BeNullOrEmpty
+                    $result.RecoveryModel | Should -BeNullOrEmpty
                 }
 
 
@@ -181,6 +185,7 @@ try
                     Name               = 'AdventureWorks'
                     Collation          = 'SQL_Latin1_General_CP1_CI_AS'
                     CompatibilityLevel = 'Version130'
+                    RecoveryModel      = 'Full'
                 }
 
                 It 'Should return the state as present' {
@@ -195,6 +200,7 @@ try
                     $result.Name | Should -Be $testParameters.Name
                     $result.Collation | Should -Be $testParameters.Collation
                     $result.CompatibilityLevel | Should -Be $testParameters.CompatibilityLevel
+                    $result.RecoveryModel | Should -Be $testParameters.RecoveryModel
                 }
 
                 It 'Should call the mock function Connect-SQL' {
@@ -248,8 +254,20 @@ try
                     $result | Should -Be $false
                 }
 
+                It 'Should return the state as false when desired database exists but has the incorrect recovery model' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name               = 'AdventureWorks'
+                        Ensure             = 'Present'
+                        RecoveryModel      = 'Simple'
+                    }
+
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $false
+                }
+
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 3 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 4 -Scope Context
                 }
             }
 
@@ -308,8 +326,20 @@ try
                     $result | Should -Be $true
                 }
 
+                It 'Should return the state as true when desired database exists and has the correct recovery model' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name               = 'AdventureWorks'
+                        Ensure             = 'Present'
+                        RecoveryModel      = 'Full'
+                    }
+
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $true
+                }
+
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 3 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 4 -Scope Context
                 }
             }
 
@@ -377,8 +407,19 @@ try
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
 
+                It 'Should not throw when changing the database recovery model' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        Name               = 'Contoso'
+                        Ensure             = 'Present'
+                        RecoveryModel      = 'Simple'
+                    }
+
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                }
+
                 It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 3 -Scope Context
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 4 -Scope Context
                 }
 
                 It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.Database' {

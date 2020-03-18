@@ -8,6 +8,9 @@
 
         The third example shows how to create a database
         with a different compatibility level.
+
+        The fourth example shows how to create a database
+        with a different recovery model.
 #>
 Configuration Example
 {
@@ -50,6 +53,17 @@ Configuration Example
             InstanceName         = 'DSC'
             Name                 = 'Fabrikam'
             CompatibilityLevel   = 'Version130'
+
+            PsDscRunAsCredential = $SqlAdministratorCredential
+        }
+
+        SqlDatabase 'Create_Database_with_different_recovery_model'
+        {
+            Ensure               = 'Present'
+            ServerName           = 'sqltest.company.local'
+            InstanceName         = 'DSC'
+            Name                 = 'FabrikamData'
+            RecoveryModel        = 'Simple'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
         }

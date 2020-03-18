@@ -7,4 +7,5 @@ class MSFT_SqlDatabase : OMI_BaseResource
     [Key, Description("The name of the SQL instance to be configured.")] String InstanceName;
     [Write, Description("The name of the SQL collation to use for the new database. Defaults to server collation.")] String Collation;
     [Write, Description("The version of the SQL Database Compatibility Level to use for the specified database. Defaults to server version."), ValueMap{"Version80","Version90","Version100","Version110","Version120","Version130","Version140","Version150"}, Values{"Version80","Version90","Version100","Version110","Version120","Version130","Version140","Version150"}] String CompatibilityLevel;
+    [Write, Description("The recovery model for the specified database. Defaults to Full."), ValueMap{"Simple","Full","BulkLogged"}, Values{"Simple","Full","BulkLogged"}] String RecoveryModel;
 };
