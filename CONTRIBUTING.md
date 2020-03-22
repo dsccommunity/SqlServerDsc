@@ -6,7 +6,11 @@ to use, and we would love to have contributions from the community.
 
 ## Core contribution guidelines
 
-Please check out common DSC Community [guidelines](https://dsccommunity.org/guidelines).
+Please check out common DSC Community [contributing guidelines](https://dsccommunity.org/guidelines/contributing).
+
+## Running the Tests
+
+If want to know how to run this module's tests you can look at the [Testing Guidelines](https://dsccommunity.org/guidelines/testing-guidelines/#running-tests)
 
 ## Specific guidelines for SqlServerDsc
 

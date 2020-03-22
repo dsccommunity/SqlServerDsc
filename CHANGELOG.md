@@ -7,6 +7,13 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ## [Unreleased]
 
+### Changed
+
+- SqlServerDsc
+  - Update the CI pipeline files.
+  - Replaced Microsoft-hosted agent (build image) `win1803` with `windows-2019`
+    ([issue #1466](https://github.com/dsccommunity/SqlServerDsc/issues/1466)).
+
 ## [13.4.0] - 2020-03-18
 
 ### Added
@@ -38,7 +45,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
   - Add .gitattributes file to checkout file correctly with CRLF.
   - Updated .vscode/analyzersettings.psd1 file to correct use PSSA rules
     and custom rules in VS Code.
-  - Fix hashtables to align with style guideline ([issue #1437](https://github.com/PowerShell/SqlServerDsc/issues/1437)).
+  - Fix hashtables to align with style guideline ([issue #1437](https://github.com/dsccommunity/SqlServerDsc/issues/1437)).
   - Updated most examples to remove the need for the variable `$ConfigurationData`,
     and fixed style issues.
   - Ignore commit in `GitVersion.yml` to force the correct initial release.
