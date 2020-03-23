@@ -10,6 +10,11 @@ trigger:
     - "v*"
     exclude:
     - "*-*"
+variables:
+  buildFolderName: output
+  buildArtifactName: output
+  testResultFolderName: testResults
+  testArtifactName: testResults
 
 stages:
   - stage: Build
@@ -37,8 +42,8 @@ stages:
           - task: PublishBuildArtifacts@1
             displayName: 'Publish Build Artifact'
             inputs:
-              pathToPublish: 'output/'
-              artifactName: 'output'
+              pathToPublish: '$(buildFolderName)/'
+              artifactName: $(buildArtifactName)
               publishLocation: 'Container'
 
   - stage: Test
@@ -47,7 +52,7 @@ stages:
       - job: Test_HQRM
         displayName: 'HQRM'
         pool:
-          vmImage: 'win1803'
+          vmImage: 'windows-2019'
         timeoutInMinutes: 0
         steps:
           - task: DownloadBuildArtifacts@0
@@ -75,21 +80,15 @@ stages:
       - job: Test_Unit
         displayName: 'Unit'
         pool:
-          vmImage: 'win1803'
+          vmImage: 'windows-2019'
         timeoutInMinutes: 0
         steps:
-          - powershell: |
-              $repositoryOwner,$repositoryName = $env:BUILD_REPOSITORY_NAME -split '/'
-              echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
-              echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
-            name: dscBuildVariable
-            displayName: 'Set Environment Variables'
           - task: DownloadBuildArtifacts@0
             displayName: 'Download Build Artifact'
             inputs:
               buildType: 'current'
               downloadType: 'single'
-              artifactName: 'output'
+              artifactName: $(buildArtifactName)
               downloadPath: '$(Build.SourcesDirectory)'
           - task: PowerShell@2
             name: test
@@ -103,15 +102,14 @@ stages:
             condition: succeededOrFailed()
             inputs:
               testResultsFormat: 'NUnit'
-              testResultsFiles: 'output/testResults/NUnit*.xml'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Unit (Windows Server Core)'
-          - task: PublishCodeCoverageResults@1
-            displayName: 'Publish Code Coverage'
-            condition: succeededOrFailed()
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Test Artifact'
             inputs:
-              codeCoverageTool: 'JaCoCo'
-              summaryFileLocation: 'output/testResults/CodeCov*.xml'
-              pathToSources: '$(Build.SourcesDirectory)/output/$(dscBuildVariable.RepositoryName)'
+              pathToPublish: '$(buildFolderName)/$(testResultFolderName)/'
+              artifactName: $(testArtifactName)
+              publishLocation: 'Container'
 
       - job: Test_Integration_SQL2016
         displayName: 'Integration (SQL2016)'
@@ -129,7 +127,7 @@ stages:
             inputs:
               buildType: 'current'
               downloadType: 'single'
-              artifactName: 'output'
+              artifactName: $(buildArtifactName)
               downloadPath: '$(Build.SourcesDirectory)'
           - task: PowerShell@2
             name: configureWinRM
@@ -173,7 +171,7 @@ stages:
             condition: succeededOrFailed()
             inputs:
               testResultsFormat: 'NUnit'
-              testResultsFiles: 'output/testResults/NUnit*.xml'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration (SQL Server 2016 / Windows Server 2019)'
 
       - job: Test_Integration_SQL2017
@@ -192,7 +190,7 @@ stages:
             inputs:
               buildType: 'current'
               downloadType: 'single'
-              artifactName: 'output'
+              artifactName: $(buildArtifactName)
               downloadPath: '$(Build.SourcesDirectory)'
           - task: PowerShell@2
             name: configureWinRM
@@ -236,8 +234,47 @@ stages:
             condition: succeededOrFailed()
             inputs:
               testResultsFormat: 'NUnit'
-              testResultsFiles: 'output/testResults/NUnit*.xml'
-              testRunTitle: 'Integration (SQL Server 2017 / Windows Server 2019)'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Integration (Windows Server Core)'
+
+      - job: Code_Coverage
+        displayName: 'Publish Code Coverage'
+        dependsOn: Test_Unit
+        pool:
+          vmImage: 'ubuntu 16.04'
+        timeoutInMinutes: 0
+        steps:
+          - pwsh: |
+              $repositoryOwner,$repositoryName = $env:BUILD_REPOSITORY_NAME -split '/'
+              echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
+              echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
+            name: dscBuildVariable
+            displayName: 'Set Environment Variables'
+          - task: DownloadBuildArtifacts@0
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: $(buildArtifactName)
+              downloadPath: '$(Build.SourcesDirectory)'
+          - task: DownloadBuildArtifacts@0
+            displayName: 'Download Test Artifact'
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: $(testArtifactName)
+              downloadPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: PublishCodeCoverageResults@1
+            displayName: 'Publish Azure Code Coverage'
+            condition: succeededOrFailed()
+            inputs:
+              codeCoverageTool: 'JaCoCo'
+              summaryFileLocation: '$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml'
+              pathToSources: '$(Build.SourcesDirectory)/$(buildFolderName)/$(dscBuildVariable.RepositoryName)'
+          - script: |
+              bash <(curl -s https://codecov.io/bash) -f "./$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml"
+            displayName: 'Upload to Codecov.io'
+            condition: succeededOrFailed()
 
   - stage: Deploy
     dependsOn: Test
@@ -261,7 +298,7 @@ stages:
             inputs:
               buildType: 'current'
               downloadType: 'single'
-              artifactName: 'output'
+              artifactName: $(buildArtifactName)
               downloadPath: '$(Build.SourcesDirectory)'
           - task: PowerShell@2
             name: publishRelease

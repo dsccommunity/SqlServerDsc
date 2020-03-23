@@ -22,6 +22,8 @@ BuildWorkflow:
     - Build_Module_ModuleBuilder
     - Build_NestedModules_ModuleBuilder
     - Create_changelog_release_output
+    - Generate_Conceptual_Help
+    - Generate_Wiki_Content
 
   pack:
     - build
@@ -38,7 +40,6 @@ BuildWorkflow:
     - Publish_release_to_GitHub
     - publish_module_to_gallery
 
-
 ####################################################
 #       PESTER  Configuration                      #
 ####################################################
@@ -51,6 +52,8 @@ Pester:
   ExcludeTag:
   Tag:
   CodeCoverageThreshold: 85
+  CodeCoverageOutputFile: JaCoCo_coverage.xml
+  CodeCoverageOutputFileEncoding: ascii
 
 DscTest:
   ExcludeTag:
@@ -68,6 +71,8 @@ Resolve-Dependency:
 ModuleBuildTasks:
   Sampler:
     - '*.build.Sampler.ib.tasks'
+  DscResource.DocGenerator:
+    - 'Task.*'
 
 TaskHeader: |
   param($Path)

@@ -3,6 +3,7 @@
         AddToPath  = $true
         Target     = 'output\RequiredModules'
         Parameters = @{
+            Repository = ''
         }
     }
 
@@ -17,12 +18,14 @@
     'DscResource.Test'          = 'latest'
     'DscResource.AnalyzerRules' = 'latest'
     xDscResourceDesigner        = 'latest'
+    'DscResource.DocGenerator'  = 'latest'
 
     # Dependency for integration tests
     LoopbackAdapter             = 'latest'
 
     # Prerequisites modules needed for examples or integration tests
-    PSDscResources = '2.12.0.0'
-    StorageDsc     = '4.9.0.0'
-    NetworkingDsc  = '7.4.0.0'
+    PSDscResources              = '2.12.0.0'
+    StorageDsc                  = '4.9.0.0'
+    NetworkingDsc               = '7.4.0.0'
 }
+
