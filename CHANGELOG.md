@@ -7,6 +7,11 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ## [Unreleased]
 
+### Added
+
+- SqlServerLogin
+  - Added `DefaultDatabase` parameter ([issue #1474](https://github.com/dsccommunity/SqlServerDsc/issues/1474).)
+
 ### Changed
 
 - SqlServerDsc

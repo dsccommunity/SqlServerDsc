@@ -156,6 +156,7 @@ try
                 $resourceCurrentState.Ensure | Should -Be 'Present'
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser2Name
                 $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser2Type
+                $resourceCurrentState.DefaultDatabase | Should -Be $ConfigurationData.AllNodes.DefaultDbName
                 $resourceCurrentState.Disabled | Should -Be $false
             }
 

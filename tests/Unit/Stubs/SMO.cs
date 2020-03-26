@@ -351,6 +351,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public bool PasswordPolicyEnforced = false;
         public bool PasswordExpirationEnabled = false;
         public bool IsDisabled = false;
+        public string DefaultDatabase;
 
         public string MockName;
         public LoginType MockLoginType;
