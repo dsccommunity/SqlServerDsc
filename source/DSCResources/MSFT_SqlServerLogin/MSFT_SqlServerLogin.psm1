@@ -241,7 +241,7 @@ function Set-TargetResource
                     }
                 }
 
-                if ( $PSBoundParameers.ContainsKey('DefaultDatabase') -and ($login.DefaultDatabase -ne $DefaultDatabase) )
+                if ( $PSBoundParameters.ContainsKey('DefaultDatabase') -and ($login.DefaultDatabase -ne $DefaultDatabase) )
                 {
                     $login.DefaultDatabase = $DefaultDatabase
                     Update-SQLServerLogin -Login $login
@@ -311,7 +311,7 @@ function Set-TargetResource
                 }
 
                 # set the default database if specified
-                if ( $PSBoundParameers.ContainsKey('DefaultDatabase') )
+                if ( $PSBoundParameters.ContainsKey('DefaultDatabase') )
                 {
                     $login.DefaultDatabase = $DefaultDatabase
                     Update-SQLServerLogin -Login $login
