@@ -96,6 +96,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   to manage database recovery model.
 * [**SqlDatabaseRole**](#sqldatabaserole) resource to manage SQL database roles.
 * [**SqlDatabaseUser**](#sqldatabaseuser) resource to manage SQL database users.
+* [**SqlDatabaseUserRole**](#sqldatabaseuserrole) resource to manage the set of roles assigned to a SQL database user.
 * [**SqlRS**](#sqlrs) configures SQL Server Reporting.
   Services to use a database engine in another instance.
 * [**SqlRSSetup**](#sqlrssetup) Installs the standalone
@@ -858,6 +859,54 @@ SQL login.
 #### Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseUser).
+
+### SqlDatabaseUserRole
+
+This resource is used to manage the database roles assigned to a specific user or group.
+The resource supports Always On Availability Groups, which allows it to be included in the same configuration
+files as the SqlServerLogin resource, which can be used to keep Logins in sync between HA instances.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running SQL Server Database Engine 2008 or later.
+
+#### Parameters
+
+* **`[String]` ServerName** _(Key)_: The host name of the SQL Server to be configured.
+* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
+* **`[String]` DatabaseName** _(Key)_: The name of the database in which the user should
+  be configured.
+* **`[String]` UserName** _(Key)_: The name of the user or group to be configured.
+* **`[String[]]` RoleNamesToBeEnforced** _(Write)_: The roles the database user/group should have.
+  This parameter will replace all the current database roles for the user with the
+  specified roles.
+* **`[String[]]` RoleNamesToInclude** _(Write)_: The roles that should be added to the
+  database user/group if they don't already exist. This parameter will only add roles
+  to a database user. Can not be used at the same time as parameter RolesNamesToEnforce.
+* **`[String[]]` MembersToExclude** _(Write)_: The roles that should be removed from
+  the database user/group if they exist. This parameter will only remove roles from
+  a database user. Can not be used at the same time as parameter RoleNamesToEnforce.
+* **`[String]` OnAllReplicas** _(Write)_: If '$false' (the default value) then the
+  changes will only be made on the primary replica in an Always On (HA) environment.
+  If '$true' then the changes will be made on all replica types in an HA environment.
+  If the database to be changed is a secondary replica, the changes are accomplished
+  by connecting to the database via the Availability Group Listener.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[String]` RoleName** _(Read)_: The roles that the user is a member of.
+* **`[String]` IsPrimaryReplica** _(Read)_: Indicates whether the server is the primary
+  replica for the database. Null if not an HA database.
+
+#### Examples
+
+* [Enforce roles for database user](/source/Examples/Resources/SqlDatabaseRole/1-EnforceRolesForDatabaseUser.ps1)
+* [Include and exclude roles for database user](/source/Examples/Resources/SqlDatabaseRole/2-IncludeAndExcludeRolesForDatabaseUser.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseUserRole).
 
 ### SqlRS
 
