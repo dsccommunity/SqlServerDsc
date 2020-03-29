@@ -7,6 +7,9 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ## [Unreleased]
 
+- SqlDatabaseUserRole
+  - Created a new resource to manage the roles assigned to a user or group.
+
 ### Changed
 
 - SqlServerDsc
