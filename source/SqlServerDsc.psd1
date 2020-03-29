@@ -52,6 +52,7 @@
         'SqlDatabaseRecoveryModel'
         'SqlDatabaseRole'
         'SqlDatabaseUser'
+        'SqlDatabaseUserRole'
         'SqlRS'
         'SqlRSSetup'
         'SqlScript'
