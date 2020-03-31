@@ -94,6 +94,9 @@ function Get-TargetResource
 
     $InstanceName = $InstanceName.ToUpper()
 
+    # Force drive list update, to pick up any newly mounted volumes
+    $null = Get-PSDrive
+
     $SourcePath = [Environment]::ExpandEnvironmentVariables($SourcePath)
 
     if ($SourceCredential)
@@ -1032,6 +1035,9 @@ function Set-TargetResource
     {
         $FailoverClusterGroupName = 'SQL Server ({0})' -f $InstanceName
     }
+
+    # Force drive list update, to pick up any newly mounted volumes
+    $null = Get-PSDrive
 
     $getTargetResourceParameters = @{
         Action = $Action
