@@ -185,24 +185,28 @@ try
         $script:mockWasLoginClassMethodEnableCalled = $false
         $script:mockWasLoginClassMethodDisabledCalled = $false
 
-        $mockConnectSql = {
+        $mockConnectSQL = {
             $windowsUser = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Windows\User1')
             $windowsUser.LoginType = 'WindowsUser'
             $windowsUser = $windowsUser | Add-Member -Name 'Disable' -MemberType ScriptMethod -Value {
                 $script:mockWasLoginClassMethodDisabledCalled = $true
             } -PassThru -Force
+            $windowsUser.DefaultDatabase = "master"
 
             $windowsGroup = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList ('Server', 'Windows\Group1')
             $windowsGroup.LoginType = 'windowsGroup'
+            $windowsGroup.DefaultDatabase = "master"
 
             $sqlLogin = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'SqlLogin1')
             $sqlLogin.LoginType = 'SqlLogin'
             $sqlLogin.MustChangePassword = $false
+            $sqlLogin.DefaultDatabase = "master"
             $sqlLogin.PasswordPolicyEnforced = $true
             $sqlLogin.PasswordExpirationEnabled = $true
 
             $sqlLoginDisabled = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Windows\UserDisabled')
             $sqlLoginDisabled.LoginType = 'WindowsUser'
+            $sqlLoginDisabled.DefaultDatabase = "master"
             $sqlLoginDisabled.IsDisabled = $true
             $sqlLoginDisabled = $sqlLoginDisabled | Add-Member -Name 'Enable' -MemberType ScriptMethod -Value {
                 $script:mockWasLoginClassMethodEnableCalled = $true
@@ -228,12 +232,14 @@ try
                     'Windows\User1' = ( New-Object -TypeName Object |
                             Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Windows\User1' -PassThru |
                             Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'WindowsUser' -PassThru |
+                            Add-Member -MemberType NoteProperty -Name 'DefaultDatabase' -Value 'master' -PassThru |
                             Add-Member -MemberType ScriptMethod -Name Alter -Value {} -PassThru |
                             Add-Member -MemberType ScriptMethod -Name Drop -Value {} -PassThru -Force
                     )
                     'SqlLogin1' = ( New-Object -TypeName Object |
                             Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SqlLogin1' -PassThru |
                             Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'SqlLogin' -PassThru |
+                            Add-Member -MemberType NoteProperty -Name 'DefaultDatabase' -Value 'master' -PassThru |
                             Add-Member -MemberType NoteProperty -Name 'MustChangePassword' -Value $false -PassThru |
                             Add-Member -MemberType NoteProperty -Name 'PasswordExpirationEnabled' -Value $true -PassThru |
                             Add-Member -MemberType NoteProperty -Name 'PasswordPolicyEnforced' -Value $true -PassThru |
@@ -243,6 +249,7 @@ try
                     'Windows\Group1' = ( New-Object -TypeName Object |
                             Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Windows\Group1' -PassThru |
                             Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'WindowsGroup' -PassThru |
+                            Add-Member -MemberType NoteProperty -Name 'DefaultDatabase' -Value 'master' -PassThru |
                             Add-Member -MemberType ScriptMethod -Name Alter -Value {} -PassThru |
                             Add-Member -MemberType ScriptMethod -Name Drop -Value {} -PassThru -Force
                     )
@@ -284,6 +291,7 @@ try
 
                     $result.Ensure | Should -Be 'Present'
                     $result.LoginType | Should -Be 'SqlLogin'
+                    $result.DefaultDatabase | Should -Not -BeNullOrEmpty
                     $result.LoginMustChangePassword | Should -Not -BeNullOrEmpty
                     $result.LoginPasswordExpirationEnabled | Should -Not -BeNullOrEmpty
                     $result.LoginPasswordPolicyEnforced | Should -Not -BeNullOrEmpty
@@ -296,6 +304,7 @@ try
 
                     $result.Ensure | Should -Be 'Present'
                     $result.LoginType | Should -Be 'WindowsUser'
+                    $result.DefaultDatabase | Should -Not -BeNullOrEmpty
                     $result.LoginMustChangePassword | Should -BeNullOrEmpty
                     $result.LoginPasswordExpirationEnabled | Should -BeNullOrEmpty
                     $result.LoginPasswordPolicyEnforced | Should -BeNullOrEmpty
@@ -308,6 +317,7 @@ try
 
                     $result.Ensure | Should -Be 'Present'
                     $result.LoginType | Should -Be 'WindowsGroup'
+                    $result.DefaultDatabase | Should -Not -BeNullOrEmpty
                     $result.LoginMustChangePassword | Should -BeNullOrEmpty
                     $result.LoginPasswordExpirationEnabled | Should -BeNullOrEmpty
                     $result.LoginPasswordPolicyEnforced | Should -BeNullOrEmpty
@@ -322,6 +332,7 @@ try
 
                     $result.Ensure | Should -Be 'Present'
                     $result.LoginType | Should -Be 'WindowsUser'
+                    $result.DefaultDatabase | Should -Not -BeNullOrEmpty
                     $result.LoginMustChangePassword | Should -BeNullOrEmpty
                     $result.LoginPasswordExpirationEnabled | Should -BeNullOrEmpty
                     $result.LoginPasswordPolicyEnforced | Should -BeNullOrEmpty
@@ -426,12 +437,13 @@ try
 
                     # Override Get-TargetResource
                     Mock -CommandName Get-TargetResource {return New-Object PSObject -Property @{
-                        Ensure       = 'Present'
-                        Name         = $mockTestTargetResourceParameters.Name
-                        LoginType    = $mockTestTargetResourceParameters.LoginType
-                        ServerName   = 'Server1'
-                        InstanceName = 'MSSQLERVER'
-                        Disabled     = $true
+                        Ensure          = 'Present'
+                        Name            = $mockTestTargetResourceParameters.Name
+                        LoginType       = $mockTestTargetResourceParameters.LoginType
+                        ServerName      = 'Server1'
+                        InstanceName    = 'MSSQLERVER'
+                        Disabled        = $true
+                        DefaultDatabase = 'master'
                         LoginMustChangePassword = $false
                         LoginPasswordPolicyEnforced = $true
                         LoginPasswordExpirationEnabled = $true
@@ -460,12 +472,13 @@ try
 
                     # Override Get-TargetResource
                     Mock -CommandName Get-TargetResource {return New-Object PSObject -Property @{
-                        Ensure       = 'Present'
-                        Name         = $mockTestTargetResourceParameters.Name
-                        LoginType    = $mockTestTargetResourceParameters.LoginType
-                        ServerName   = 'Server1'
-                        InstanceName = 'MSSQLERVER'
-                        Disabled     = $true
+                        Ensure          = 'Present'
+                        Name            = $mockTestTargetResourceParameters.Name
+                        LoginType       = $mockTestTargetResourceParameters.LoginType
+                        ServerName      = 'Server1'
+                        InstanceName    = 'MSSQLERVER'
+                        Disabled        = $true
+                        DefaultDatabase = 'master'
                         LoginMustChangePassword = $false
                         LoginPasswordPolicyEnforced = $true
                         LoginPasswordExpirationEnabled = $true
@@ -494,12 +507,13 @@ try
 
                     # Override Get-TargetResource
                     Mock -CommandName Get-TargetResource {return New-Object PSObject -Property @{
-                        Ensure       = 'Present'
-                        Name         = $mockTestTargetResourceParameters.Name
-                        LoginType    = $mockTestTargetResourceParameters.LoginType
-                        ServerName   = 'Server1'
-                        InstanceName = 'MSSQLERVER'
-                        Disabled     = $true
+                        Ensure          = 'Present'
+                        Name            = $mockTestTargetResourceParameters.Name
+                        LoginType       = $mockTestTargetResourceParameters.LoginType
+                        ServerName      = 'Server1'
+                        InstanceName    = 'MSSQLERVER'
+                        Disabled        = $true
+                        DefaultDatabase = 'master'
                         LoginMustChangePassword = $false
                         LoginPasswordPolicyEnforced = $true
                         LoginPasswordExpirationEnabled = $true
@@ -599,6 +613,26 @@ try
                     $testTargetResource_SqlLoginPresentWithDefaultValues_EnsurePresent.Add( 'Ensure', 'Present' )
 
                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithDefaultValues_EnsurePresent ) | Should -Be $true
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                }
+
+                It 'Should return $true when the specified SQL Login is Present and DefaultDatabase is "master"' {
+                    $testTargetResource_SqlLoginPresentWithDefaultDatabaseMaster_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
+                    $testTargetResource_SqlLoginPresentWithDefaultDatabaseMaster_EnsurePresent.Add( 'Ensure', 'Present' )
+                    $testTargetResource_SqlLoginPresentWithDefaultDatabaseMaster_EnsurePresent.Add( 'DefaultDatabase', 'master' )
+
+                    ( Test-TargetResource @testTargetResource_SqlLoginPresentWithDefaultDatabaseMaster_EnsurePresent ) | Should -Be $true
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                }
+
+                It 'Should return $false when the specified SQL Login is Present and DefaultDatabase is not "master"' {
+                    $testTargetResource_SqlLoginPresentWithDefaultDatabaseNotMaster_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
+                    $testTargetResource_SqlLoginPresentWithDefaultDatabaseNotMaster_EnsurePresent.Add( 'Ensure', 'Present' )
+                    $testTargetResource_SqlLoginPresentWithDefaultDatabaseNotMaster_EnsurePresent.Add( 'DefaultDatabase', 'notmaster' )
+
+                    ( Test-TargetResource @testTargetResource_SqlLoginPresentWithDefaultDatabaseNotMaster_EnsurePresent ) | Should -Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                 }
@@ -1027,6 +1061,20 @@ try
                     Assert-MockCalled -CommandName New-SQLServerLogin  -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Remove-SQLServerLogin  -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Set-SQLServerLoginPassword  -Scope It -Times 1 -Exactly
+                }
+
+                It 'Should set DefaultDatabase on the specified SQL Login if it does not match the DefaultDatabase parameter' {
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+
+                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase = $setTargetResource_SqlLoginPresent.Clone()
+                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase.Add( 'Ensure', 'Present' )
+                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase.Add( 'LoginCredential', $mockSqlLoginCredential )
+                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase.Add( 'DefaultDatabase', 'notmaster' )
+
+                    Set-TargetResource @setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Update-SQLServerLogin  -Scope It -Times 1 -Exactly
                 }
 
                 It 'Should set PasswordExpirationEnabled on the specified SQL Login if it does not match the LoginPasswordExpirationEnabled parameter' {
