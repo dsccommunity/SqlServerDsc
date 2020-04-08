@@ -76,107 +76,107 @@ try
         }
 
         $getTargetResource_UnknownSqlLogin = $instanceParameters.Clone()
-        $getTargetResource_UnknownSqlLogin.Add( 'Name', 'UnknownSqlLogin' )
+        $getTargetResource_UnknownSqlLogin[ 'Name' ] = 'UnknownSqlLogin'
 
         $getTargetResource_UnknownWindows = $instanceParameters.Clone()
-        $getTargetResource_UnknownWindows.Add( 'Name', 'Windows\UserOrGroup' )
+        $getTargetResource_UnknownWindows[ 'Name' ] = 'Windows\UserOrGroup'
 
         $getTargetResource_KnownSqlLogin = $instanceParameters.Clone()
-        $getTargetResource_KnownSqlLogin.Add( 'Name', 'SqlLogin1' )
+        $getTargetResource_KnownSqlLogin[ 'Name' ] = 'SqlLogin1'
 
         $getTargetResource_KnownWindowsUser = $instanceParameters.Clone()
-        $getTargetResource_KnownWindowsUser.Add( 'Name', 'Windows\User1' )
+        $getTargetResource_KnownWindowsUser[ 'Name' ] = 'Windows\User1'
 
         $getTargetResource_KnownWindowsGroup = $instanceParameters.Clone()
-        $getTargetResource_KnownWindowsGroup.Add( 'Name', 'Windows\Group1' )
+        $getTargetResource_KnownWindowsGroup[ 'Name' ] = 'Windows\Group1'
 
         $testTargetResource_WindowsUserAbsent = $instanceParameters.Clone()
-        $testTargetResource_WindowsUserAbsent.Add( 'Name', 'Windows\UserAbsent' )
-        $testTargetResource_WindowsUserAbsent.Add( 'LoginType', 'WindowsUser' )
+        $testTargetResource_WindowsUserAbsent[ 'Name' ] = 'Windows\UserAbsent'
+        $testTargetResource_WindowsUserAbsent[ 'LoginType' ] = 'WindowsUser'
 
         $testTargetResource_WindowsGroupAbsent = $instanceParameters.Clone()
-        $testTargetResource_WindowsGroupAbsent.Add( 'Name', 'Windows\GroupAbsent' )
-        $testTargetResource_WindowsGroupAbsent.Add( 'LoginType', 'WindowsGroup' )
+        $testTargetResource_WindowsGroupAbsent[ 'Name' ] = 'Windows\GroupAbsent'
+        $testTargetResource_WindowsGroupAbsent[ 'LoginType' ] = 'WindowsGroup'
 
         $testTargetResource_SqlLoginAbsent = $instanceParameters.Clone()
-        $testTargetResource_SqlLoginAbsent.Add( 'Name', 'SqlLoginAbsent' )
-        $testTargetResource_SqlLoginAbsent.Add( 'LoginType', 'SqlLogin' )
+        $testTargetResource_SqlLoginAbsent[ 'Name' ] = 'SqlLoginAbsent'
+        $testTargetResource_SqlLoginAbsent[ 'LoginType' ] = 'SqlLogin'
 
         $testTargetResource_WindowsUserPresent = $instanceParameters.Clone()
-        $testTargetResource_WindowsUserPresent.Add( 'Name', 'Windows\User1' )
-        $testTargetResource_WindowsUserPresent.Add( 'LoginType', 'WindowsUser' )
+        $testTargetResource_WindowsUserPresent[ 'Name' ] = 'Windows\User1'
+        $testTargetResource_WindowsUserPresent[ 'LoginType' ] = 'WindowsUser'
 
         $testTargetResource_WindowsGroupPresent = $instanceParameters.Clone()
-        $testTargetResource_WindowsGroupPresent.Add( 'Name', 'Windows\Group1' )
-        $testTargetResource_WindowsGroupPresent.Add( 'LoginType', 'WindowsGroup' )
+        $testTargetResource_WindowsGroupPresent[ 'Name' ] = 'Windows\Group1'
+        $testTargetResource_WindowsGroupPresent[ 'LoginType' ] = 'WindowsGroup'
 
         $testTargetResource_SqlLoginPresentWithDefaultValues = $instanceParameters.Clone()
-        $testTargetResource_SqlLoginPresentWithDefaultValues.Add( 'Name', 'SqlLogin1' )
-        $testTargetResource_SqlLoginPresentWithDefaultValues.Add( 'LoginType', 'SqlLogin' )
+        $testTargetResource_SqlLoginPresentWithDefaultValues[ 'Name' ] = 'SqlLogin1'
+        $testTargetResource_SqlLoginPresentWithDefaultValues[ 'LoginType' ] = 'SqlLogin'
 
         $setTargetResource_CertificateAbsent = $instanceParameters.Clone()
-        $setTargetResource_CertificateAbsent.Add( 'Name', 'Certificate' )
-        $setTargetResource_CertificateAbsent.Add( 'LoginType', 'Certificate' )
+        $setTargetResource_CertificateAbsent[ 'Name' ] = 'Certificate'
+        $setTargetResource_CertificateAbsent[ 'LoginType' ] = 'Certificate'
 
         $setTargetResource_WindowsUserAbsent = $instanceParameters.Clone()
-        $setTargetResource_WindowsUserAbsent.Add( 'Name', 'Windows\UserAbsent' )
-        $setTargetResource_WindowsUserAbsent.Add( 'LoginType', 'WindowsUser' )
+        $setTargetResource_WindowsUserAbsent[ 'Name' ] = 'Windows\UserAbsent'
+        $setTargetResource_WindowsUserAbsent[ 'LoginType' ] = 'WindowsUser'
 
         $setTargetResource_WindowsGroupAbsent = $instanceParameters.Clone()
-        $setTargetResource_WindowsGroupAbsent.Add( 'Name', 'Windows\GroupAbsent' )
-        $setTargetResource_WindowsGroupAbsent.Add( 'LoginType', 'WindowsGroup' )
+        $setTargetResource_WindowsGroupAbsent[ 'Name' ] = 'Windows\GroupAbsent'
+        $setTargetResource_WindowsGroupAbsent[ 'LoginType' ] = 'WindowsGroup'
 
         $setTargetResource_SqlLoginAbsent = $instanceParameters.Clone()
-        $setTargetResource_SqlLoginAbsent.Add( 'Name', 'SqlLoginAbsent' )
-        $setTargetResource_SqlLoginAbsent.Add( 'LoginType', 'SqlLogin' )
+        $setTargetResource_SqlLoginAbsent[ 'Name' ] = 'SqlLoginAbsent'
+        $setTargetResource_SqlLoginAbsent[ 'LoginType' ] = 'SqlLogin'
 
         $setTargetResource_SqlLoginAbsentExisting = $instanceParameters.Clone()
-        $setTargetResource_SqlLoginAbsentExisting.Add( 'Name', 'Existing' )
-        $setTargetResource_SqlLoginAbsentExisting.Add( 'LoginType', 'SqlLogin' )
+        $setTargetResource_SqlLoginAbsentExisting[ 'Name' ] = 'Existing'
+        $setTargetResource_SqlLoginAbsentExisting[ 'LoginType' ] = 'SqlLogin'
 
         $setTargetResource_SqlLoginAbsentUnknown = $instanceParameters.Clone()
-        $setTargetResource_SqlLoginAbsentUnknown.Add( 'Name', 'Unknown' )
-        $setTargetResource_SqlLoginAbsentUnknown.Add( 'LoginType', 'SqlLogin' )
+        $setTargetResource_SqlLoginAbsentUnknown[ 'Name' ] = 'Unknown'
+        $setTargetResource_SqlLoginAbsentUnknown[ 'LoginType' ] = 'SqlLogin'
 
         $setTargetResource_WindowsUserPresent = $instanceParameters.Clone()
-        $setTargetResource_WindowsUserPresent.Add( 'Name', 'Windows\User1' )
-        $setTargetResource_WindowsUserPresent.Add( 'LoginType', 'WindowsUser' )
+        $setTargetResource_WindowsUserPresent[ 'Name' ] = 'Windows\User1'
+        $setTargetResource_WindowsUserPresent[ 'LoginType' ] = 'WindowsUser'
 
         $setTargetResource_CertificateAbsent = $instanceParameters.Clone()
-        $setTargetResource_CertificateAbsent.Add( 'Name', 'Certificate' )
-        $setTargetResource_CertificateAbsent.Add( 'LoginType', 'Certificate' )
+        $setTargetResource_CertificateAbsent[ 'Name' ] = 'Certificate'
+        $setTargetResource_CertificateAbsent[ 'LoginType' ] = 'Certificate'
 
         $setTargetResource_WindowsUserAbsent = $instanceParameters.Clone()
-        $setTargetResource_WindowsUserAbsent.Add( 'Name', 'Windows\UserAbsent' )
-        $setTargetResource_WindowsUserAbsent.Add( 'LoginType', 'WindowsUser' )
+        $setTargetResource_WindowsUserAbsent[ 'Name' ] = 'Windows\UserAbsent'
+        $setTargetResource_WindowsUserAbsent[ 'LoginType' ] = 'WindowsUser'
 
         $setTargetResource_WindowsGroupAbsent = $instanceParameters.Clone()
-        $setTargetResource_WindowsGroupAbsent.Add( 'Name', 'Windows\GroupAbsent' )
-        $setTargetResource_WindowsGroupAbsent.Add( 'LoginType', 'WindowsGroup' )
+        $setTargetResource_WindowsGroupAbsent[ 'Name' ] = 'Windows\GroupAbsent'
+        $setTargetResource_WindowsGroupAbsent[ 'LoginType' ] = 'WindowsGroup'
 
         $setTargetResource_SqlLoginAbsent = $instanceParameters.Clone()
-        $setTargetResource_SqlLoginAbsent.Add( 'Name', 'SqlLoginAbsent' )
-        $setTargetResource_SqlLoginAbsent.Add( 'LoginType', 'SqlLogin' )
+        $setTargetResource_SqlLoginAbsent[ 'Name' ] = 'SqlLoginAbsent'
+        $setTargetResource_SqlLoginAbsent[ 'LoginType' ] = 'SqlLogin'
 
         $setTargetResource_SqlLoginAbsentExisting = $instanceParameters.Clone()
-        $setTargetResource_SqlLoginAbsentExisting.Add( 'Name', 'Existing' )
-        $setTargetResource_SqlLoginAbsentExisting.Add( 'LoginType', 'SqlLogin' )
+        $setTargetResource_SqlLoginAbsentExisting[ 'Name' ] = 'Existing'
+        $setTargetResource_SqlLoginAbsentExisting[ 'LoginType' ] = 'SqlLogin'
 
         $setTargetResource_SqlLoginAbsentUnknown = $instanceParameters.Clone()
-        $setTargetResource_SqlLoginAbsentUnknown.Add( 'Name', 'Unknown' )
-        $setTargetResource_SqlLoginAbsentUnknown.Add( 'LoginType', 'SqlLogin' )
+        $setTargetResource_SqlLoginAbsentUnknown[ 'Name' ] = 'Unknown'
+        $setTargetResource_SqlLoginAbsentUnknown[ 'LoginType' ] = 'SqlLogin'
 
         $setTargetResource_WindowsUserPresent = $instanceParameters.Clone()
-        $setTargetResource_WindowsUserPresent.Add( 'Name', 'Windows\User1' )
-        $setTargetResource_WindowsUserPresent.Add( 'LoginType', 'WindowsUser' )
+        $setTargetResource_WindowsUserPresent[ 'Name' ] = 'Windows\User1'
+        $setTargetResource_WindowsUserPresent[ 'LoginType' ] = 'WindowsUser'
 
         $setTargetResource_WindowsGroupPresent = $instanceParameters.Clone()
-        $setTargetResource_WindowsGroupPresent.Add( 'Name', 'Windows\Group1' )
-        $setTargetResource_WindowsGroupPresent.Add( 'LoginType', 'WindowsGroup' )
+        $setTargetResource_WindowsGroupPresent[ 'Name' ] = 'Windows\Group1'
+        $setTargetResource_WindowsGroupPresent[ 'LoginType' ] = 'WindowsGroup'
 
         $setTargetResource_SqlLoginPresent = $instanceParameters.Clone()
-        $setTargetResource_SqlLoginPresent.Add( 'Name', 'SqlLogin1' )
-        $setTargetResource_SqlLoginPresent.Add( 'LoginType', 'SqlLogin' )
+        $setTargetResource_SqlLoginPresent[ 'Name' ] = 'SqlLogin1'
+        $setTargetResource_SqlLoginPresent[ 'LoginType' ] = 'SqlLogin'
 
         <#
             These are set when the mocked methods Enable() and Disabled() are called.
@@ -191,22 +191,22 @@ try
             $windowsUser = $windowsUser | Add-Member -Name 'Disable' -MemberType ScriptMethod -Value {
                 $script:mockWasLoginClassMethodDisabledCalled = $true
             } -PassThru -Force
-            $windowsUser.DefaultDatabase = "master"
+            $windowsUser.DefaultDatabase = 'master'
 
             $windowsGroup = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList ('Server', 'Windows\Group1')
             $windowsGroup.LoginType = 'windowsGroup'
-            $windowsGroup.DefaultDatabase = "master"
+            $windowsGroup.DefaultDatabase = 'master'
 
             $sqlLogin = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'SqlLogin1')
             $sqlLogin.LoginType = 'SqlLogin'
             $sqlLogin.MustChangePassword = $false
-            $sqlLogin.DefaultDatabase = "master"
+            $sqlLogin.DefaultDatabase = 'master'
             $sqlLogin.PasswordPolicyEnforced = $true
             $sqlLogin.PasswordExpirationEnabled = $true
 
             $sqlLoginDisabled = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Windows\UserDisabled')
             $sqlLoginDisabled.LoginType = 'WindowsUser'
-            $sqlLoginDisabled.DefaultDatabase = "master"
+            $sqlLoginDisabled.DefaultDatabase = 'master'
             $sqlLoginDisabled.IsDisabled = $true
             $sqlLoginDisabled = $sqlLoginDisabled | Add-Member -Name 'Enable' -MemberType ScriptMethod -Value {
                 $script:mockWasLoginClassMethodEnableCalled = $true
@@ -291,7 +291,7 @@ try
 
                     $result.Ensure | Should -Be 'Present'
                     $result.LoginType | Should -Be 'SqlLogin'
-                    $result.DefaultDatabase | Should -Not -BeNullOrEmpty
+                    $result.DefaultDatabase | Should -Be 'master'
                     $result.LoginMustChangePassword | Should -Not -BeNullOrEmpty
                     $result.LoginPasswordExpirationEnabled | Should -Not -BeNullOrEmpty
                     $result.LoginPasswordPolicyEnforced | Should -Not -BeNullOrEmpty
@@ -304,7 +304,7 @@ try
 
                     $result.Ensure | Should -Be 'Present'
                     $result.LoginType | Should -Be 'WindowsUser'
-                    $result.DefaultDatabase | Should -Not -BeNullOrEmpty
+                    $result.DefaultDatabase | Should -Be 'master'
                     $result.LoginMustChangePassword | Should -BeNullOrEmpty
                     $result.LoginPasswordExpirationEnabled | Should -BeNullOrEmpty
                     $result.LoginPasswordPolicyEnforced | Should -BeNullOrEmpty
@@ -317,7 +317,7 @@ try
 
                     $result.Ensure | Should -Be 'Present'
                     $result.LoginType | Should -Be 'WindowsGroup'
-                    $result.DefaultDatabase | Should -Not -BeNullOrEmpty
+                    $result.DefaultDatabase | Should -Be 'master'
                     $result.LoginMustChangePassword | Should -BeNullOrEmpty
                     $result.LoginPasswordExpirationEnabled | Should -BeNullOrEmpty
                     $result.LoginPasswordPolicyEnforced | Should -BeNullOrEmpty
@@ -327,12 +327,12 @@ try
 
                 It 'Should be return the correct values when a login is disabled' {
                     $mockGetTargetResourceParameters = $instanceParameters.Clone()
-                    $mockGetTargetResourceParameters.Add( 'Name', 'Windows\UserDisabled' )
+                    $mockGetTargetResourceParameters[ 'Name' ] = 'Windows\UserDisabled'
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
                     $result.Ensure | Should -Be 'Present'
                     $result.LoginType | Should -Be 'WindowsUser'
-                    $result.DefaultDatabase | Should -Not -BeNullOrEmpty
+                    $result.DefaultDatabase | Should -Be 'master'
                     $result.LoginMustChangePassword | Should -BeNullOrEmpty
                     $result.LoginPasswordExpirationEnabled | Should -BeNullOrEmpty
                     $result.LoginPasswordPolicyEnforced | Should -BeNullOrEmpty
@@ -349,7 +349,7 @@ try
             Context 'When the desired state is Absent' {
                 It 'Should return $true when the specified Windows user is Absent' {
                     $testTargetResource_WindowsUserAbsent_EnsureAbsent = $testTargetResource_WindowsUserAbsent.Clone()
-                    $testTargetResource_WindowsUserAbsent_EnsureAbsent.Add( 'Ensure', 'Absent' )
+                    $testTargetResource_WindowsUserAbsent_EnsureAbsent[ 'Ensure' ] = 'Absent'
 
                     ( Test-TargetResource @testTargetResource_WindowsUserAbsent_EnsureAbsent ) | Should -Be $true
 
@@ -358,7 +358,7 @@ try
 
                 It 'Should return $true when the specified Windows group is Absent' {
                     $testTargetResource_WindowsGroupAbsent_EnsureAbsent = $testTargetResource_WindowsGroupAbsent.Clone()
-                    $testTargetResource_WindowsGroupAbsent_EnsureAbsent.Add( 'Ensure', 'Absent' )
+                    $testTargetResource_WindowsGroupAbsent_EnsureAbsent[ 'Ensure' ] = 'Absent'
 
                     ( Test-TargetResource @testTargetResource_WindowsGroupAbsent_EnsureAbsent ) | Should -Be $true
 
@@ -367,7 +367,7 @@ try
 
                 It 'Should return $true when the specified SQL Login is Absent' {
                     $testTargetResource_SqlLoginAbsent_EnsureAbsent = $testTargetResource_SqlLoginAbsent.Clone()
-                    $testTargetResource_SqlLoginAbsent_EnsureAbsent.Add( 'Ensure', 'Absent' )
+                    $testTargetResource_SqlLoginAbsent_EnsureAbsent[ 'Ensure' ] = 'Absent'
 
                     ( Test-TargetResource @testTargetResource_SqlLoginAbsent_EnsureAbsent ) | Should -Be $true
 
@@ -376,7 +376,7 @@ try
 
                 It 'Should return $false when the specified Windows user is Present' {
                     $testTargetResource_WindowsUserPresent_EnsureAbsent = $testTargetResource_WindowsUserPresent.Clone()
-                    $testTargetResource_WindowsUserPresent_EnsureAbsent.Add( 'Ensure', 'Absent' )
+                    $testTargetResource_WindowsUserPresent_EnsureAbsent[ 'Ensure' ] = 'Absent'
 
                     ( Test-TargetResource @testTargetResource_WindowsUserPresent_EnsureAbsent ) | Should -Be $false
 
@@ -385,7 +385,7 @@ try
 
                 It 'Should return $false when the specified Windows group is Present' {
                     $testTargetResource_WindowsGroupPresent_EnsureAbsent = $testTargetResource_WindowsGroupPresent.Clone()
-                    $testTargetResource_WindowsGroupPresent_EnsureAbsent.Add( 'Ensure', 'Absent' )
+                    $testTargetResource_WindowsGroupPresent_EnsureAbsent[ 'Ensure' ] = 'Absent'
 
                     ( Test-TargetResource @testTargetResource_WindowsGroupPresent_EnsureAbsent ) | Should -Be $false
 
@@ -394,7 +394,7 @@ try
 
                 It 'Should return $false when the specified SQL Login is Present' {
                     $testTargetResource_SqlLoginPresentWithDefaultValues_EnsureAbsent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-                    $testTargetResource_SqlLoginPresentWithDefaultValues_EnsureAbsent.Add( 'Ensure', 'Absent' )
+                    $testTargetResource_SqlLoginPresentWithDefaultValues_EnsureAbsent[ 'Ensure' ] = 'Absent'
 
                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithDefaultValues_EnsureAbsent ) | Should -Be $false
 
@@ -403,9 +403,9 @@ try
 
                 It 'Should be return $false when a login should be disabled but are enabled' {
                     $mockTestTargetResourceParameters = $instanceParameters.Clone()
-                    $mockTestTargetResourceParameters.Add( 'Ensure', 'Present' )
-                    $mockTestTargetResourceParameters.Add( 'Name', 'Windows\User1' )
-                    $mockTestTargetResourceParameters.Add( 'Disabled', $true )
+                    $mockTestTargetResourceParameters[ 'Ensure' ] = 'Present'
+                    $mockTestTargetResourceParameters[ 'Name' ] = 'Windows\User1'
+                    $mockTestTargetResourceParameters[ 'Disabled' ] = $true
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
                     $result | Should -Be $false
@@ -415,9 +415,9 @@ try
 
                 It 'Should be return $false when a login should be enabled but are disabled' {
                     $mockTestTargetResourceParameters = $instanceParameters.Clone()
-                    $mockTestTargetResourceParameters.Add( 'Ensure', 'Present' )
-                    $mockTestTargetResourceParameters.Add( 'Name', 'Windows\UserDisabled' )
-                    $mockTestTargetResourceParameters.Add( 'Disabled', $false )
+                    $mockTestTargetResourceParameters[ 'Ensure' ] = 'Present'
+                    $mockTestTargetResourceParameters[ 'Name' ] = 'Windows\UserDisabled'
+                    $mockTestTargetResourceParameters[ 'Disabled' ] = $false
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
                     $result | Should -Be $false
@@ -427,10 +427,10 @@ try
 
                 It 'Should be return $true when a login should be present but disabled' {
                     $mockTestTargetResourceParameters = $getTargetResource_KnownSqlLogin.Clone()
-                    $mockTestTargetResourceParameters.Add('Ensure', 'Present')
-                    $mockTestTargetResourceParameters.Add('Disabled', $true)
-                    $mockTestTargetResourceParameters.Add('LoginType', 'SqlLogin')
-                    $mockTestTargetResourceParameters.Add('LoginCredential', (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockSqlLoginPassword)))
+                    $mockTestTargetResourceParameters[ 'Ensure' ] = 'Present'
+                    $mockTestTargetResourceParameters[ 'Disabled' ] = $true
+                    $mockTestTargetResourceParameters[ 'LoginType' ] = 'SqlLogin'
+                    $mockTestTargetResourceParameters[ 'LoginCredential' ] = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockSqlLoginPassword)
 
                     # Override mock declaration
                     Mock -CommandName Connect-SQL -MockWith {throw $mockAccountDisabledException}
@@ -462,10 +462,10 @@ try
 
                 It 'Should be return $false when a login should be present but disabled and password incorrect' {
                     $mockTestTargetResourceParameters = $getTargetResource_KnownSqlLogin.Clone()
-                    $mockTestTargetResourceParameters.Add('Ensure', 'Present')
-                    $mockTestTargetResourceParameters.Add('Disabled', $true)
-                    $mockTestTargetResourceParameters.Add('LoginType', 'SqlLogin')
-                    $mockTestTargetResourceParameters.Add('LoginCredential', (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockSqlLoginPassword)))
+                    $mockTestTargetResourceParameters[ 'Ensure' ] = 'Present'
+                    $mockTestTargetResourceParameters[ 'Disabled' ] = $true
+                    $mockTestTargetResourceParameters[ 'LoginType' ] = 'SqlLogin'
+                    $mockTestTargetResourceParameters[ 'LoginCredential' ] = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockSqlLoginPassword)
 
                     # Override mock declaration
                     Mock -CommandName Connect-SQL -MockWith {throw $mockLoginFailedException}
@@ -497,10 +497,10 @@ try
 
                 It 'Should throw exception when unknown error occurred and account is disabled' {
                     $mockTestTargetResourceParameters = $getTargetResource_KnownSqlLogin.Clone()
-                    $mockTestTargetResourceParameters.Add('Ensure', 'Present')
-                    $mockTestTargetResourceParameters.Add('Disabled', $true)
-                    $mockTestTargetResourceParameters.Add('LoginType', 'SqlLogin')
-                    $mockTestTargetResourceParameters.Add('LoginCredential', (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockSqlLoginPassword)))
+                    $mockTestTargetResourceParameters[ 'Ensure' ] = 'Present'
+                    $mockTestTargetResourceParameters[ 'Disabled' ] = $true
+                    $mockTestTargetResourceParameters[ 'LoginType' ] = 'SqlLogin'
+                    $mockTestTargetResourceParameters[ 'LoginCredential' ] = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockSqlLoginPassword)
 
                     # Override mock declaration
                     Mock -CommandName Connect-SQL -MockWith {throw $mockException}
@@ -532,7 +532,7 @@ try
             Context 'When the desired state is Present' {
                 It 'Should return $false when the specified Windows user is Absent' {
                     $testTargetResource_WindowsUserAbsent_EnsurePresent = $testTargetResource_WindowsUserAbsent.Clone()
-                    $testTargetResource_WindowsUserAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
+                    $testTargetResource_WindowsUserAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
 
                     ( Test-TargetResource @testTargetResource_WindowsUserAbsent_EnsurePresent ) | Should -Be $false
 
@@ -543,7 +543,7 @@ try
                     Mock -CommandName Write-Verbose -ParameterFilter {$message.contains('rather than WindowsUser')}
 
                     $testTargetResource_WindowsUserAbsent_EnsurePresent = $testTargetResource_WindowsUserAbsent.Clone()
-                    $testTargetResource_WindowsUserAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
+                    $testTargetResource_WindowsUserAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
 
                     ( Test-TargetResource @testTargetResource_WindowsUserAbsent_EnsurePresent ) | Should -Be $false
 
@@ -552,7 +552,7 @@ try
 
                 It 'Should return $false when the specified Windows group is Absent' {
                     $testTargetResource_WindowsGroupAbsent_EnsurePresent = $testTargetResource_WindowsGroupAbsent.Clone()
-                    $testTargetResource_WindowsGroupAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
+                    $testTargetResource_WindowsGroupAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
 
                     ( Test-TargetResource @testTargetResource_WindowsGroupAbsent_EnsurePresent ) | Should -Be $false
 
@@ -563,7 +563,7 @@ try
                     Mock -CommandName Write-Verbose -ParameterFilter {$message.contains('rather than WindowsGroup')}
 
                     $testTargetResource_WindowsGroupAbsent_EnsurePresent = $testTargetResource_WindowsGroupAbsent.Clone()
-                    $testTargetResource_WindowsGroupAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
+                    $testTargetResource_WindowsGroupAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
 
                     ( Test-TargetResource @testTargetResource_WindowsGroupAbsent_EnsurePresent ) | Should -Be $false
 
@@ -572,7 +572,7 @@ try
 
                 It 'Should return $false when the specified SQL Login is Absent' {
                     $testTargetResource_SqlLoginAbsent_EnsurePresent = $testTargetResource_SqlLoginAbsent.Clone()
-                    $testTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
+                    $testTargetResource_SqlLoginAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
 
                     ( Test-TargetResource @testTargetResource_SqlLoginAbsent_EnsurePresent ) | Should -Be $false
 
@@ -583,7 +583,7 @@ try
                     Mock -CommandName Write-Verbose -ParameterFilter {$message.contains('rather than SqlLogin')}
 
                     $testTargetResource_SqlLoginAbsent_EnsurePresent = $testTargetResource_SqlLoginAbsent.Clone()
-                    $testTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
+                    $testTargetResource_SqlLoginAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
 
                     ( Test-TargetResource @testTargetResource_SqlLoginAbsent_EnsurePresent ) | Should -Be $false
 
@@ -592,7 +592,7 @@ try
 
                 It 'Should return $true when the specified Windows user is Present' {
                     $testTargetResource_WindowsUserPresent_EnsurePresent = $testTargetResource_WindowsUserPresent.Clone()
-                    $testTargetResource_WindowsUserPresent_EnsurePresent.Add( 'Ensure', 'Present' )
+                    $testTargetResource_WindowsUserPresent_EnsurePresent[ 'Ensure' ] = 'Present'
 
                     ( Test-TargetResource @testTargetResource_WindowsUserPresent_EnsurePresent ) | Should -Be $true
 
@@ -601,7 +601,7 @@ try
 
                 It 'Should return $true when the specified Windows group is Present' {
                     $testTargetResource_WindowsGroupPresent_EnsurePresent = $testTargetResource_WindowsGroupPresent.Clone()
-                    $testTargetResource_WindowsGroupPresent_EnsurePresent.Add( 'Ensure', 'Present' )
+                    $testTargetResource_WindowsGroupPresent_EnsurePresent[ 'Ensure' ] = 'Present'
 
                     ( Test-TargetResource @testTargetResource_WindowsGroupPresent_EnsurePresent ) | Should -Be $true
 
@@ -610,7 +610,7 @@ try
 
                 It 'Should return $true when the specified SQL Login is Present using default parameter values' {
                     $testTargetResource_SqlLoginPresentWithDefaultValues_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-                    $testTargetResource_SqlLoginPresentWithDefaultValues_EnsurePresent.Add( 'Ensure', 'Present' )
+                    $testTargetResource_SqlLoginPresentWithDefaultValues_EnsurePresent[ 'Ensure' ] = 'Present'
 
                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithDefaultValues_EnsurePresent ) | Should -Be $true
 
@@ -619,8 +619,8 @@ try
 
                 It 'Should return $true when the specified SQL Login is Present and DefaultDatabase is "master"' {
                     $testTargetResource_SqlLoginPresentWithDefaultDatabaseMaster_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-                    $testTargetResource_SqlLoginPresentWithDefaultDatabaseMaster_EnsurePresent.Add( 'Ensure', 'Present' )
-                    $testTargetResource_SqlLoginPresentWithDefaultDatabaseMaster_EnsurePresent.Add( 'DefaultDatabase', 'master' )
+                    $testTargetResource_SqlLoginPresentWithDefaultDatabaseMaster_EnsurePresent[ 'Ensure' ] = 'Present'
+                    $testTargetResource_SqlLoginPresentWithDefaultDatabaseMaster_EnsurePresent[ 'DefaultDatabase' ] = 'master'
 
                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithDefaultDatabaseMaster_EnsurePresent ) | Should -Be $true
 
@@ -629,8 +629,8 @@ try
 
                 It 'Should return $false when the specified SQL Login is Present and DefaultDatabase is not "master"' {
                     $testTargetResource_SqlLoginPresentWithDefaultDatabaseNotMaster_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-                    $testTargetResource_SqlLoginPresentWithDefaultDatabaseNotMaster_EnsurePresent.Add( 'Ensure', 'Present' )
-                    $testTargetResource_SqlLoginPresentWithDefaultDatabaseNotMaster_EnsurePresent.Add( 'DefaultDatabase', 'notmaster' )
+                    $testTargetResource_SqlLoginPresentWithDefaultDatabaseNotMaster_EnsurePresent[ 'Ensure' ] = 'Present'
+                    $testTargetResource_SqlLoginPresentWithDefaultDatabaseNotMaster_EnsurePresent[ 'DefaultDatabase' ] = 'notmaster'
 
                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithDefaultDatabaseNotMaster_EnsurePresent ) | Should -Be $false
 
@@ -639,8 +639,8 @@ try
 
                 It 'Should return $true when the specified SQL Login is Present and PasswordExpirationEnabled is $true' {
                     $testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledTrue_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-                    $testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledTrue_EnsurePresent.Add( 'Ensure', 'Present' )
-                    $testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledTrue_EnsurePresent.Add( 'LoginPasswordExpirationEnabled', $true )
+                    $testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledTrue_EnsurePresent[ 'Ensure' ] = 'Present'
+                    $testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledTrue_EnsurePresent[ 'LoginPasswordExpirationEnabled' ] = $true
 
                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledTrue_EnsurePresent ) | Should -Be $true
 
@@ -649,8 +649,8 @@ try
 
                 It 'Should return $false when the specified SQL Login is Present and PasswordExpirationEnabled is $false' {
                     $testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledFalse_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-                    $testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledFalse_EnsurePresent.Add( 'Ensure', 'Present' )
-                    $testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledFalse_EnsurePresent.Add( 'LoginPasswordExpirationEnabled', $false )
+                    $testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledFalse_EnsurePresent[ 'Ensure' ] = 'Present'
+                    $testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledFalse_EnsurePresent[ 'LoginPasswordExpirationEnabled' ] = $false
 
                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledFalse_EnsurePresent ) | Should -Be $false
 
@@ -659,8 +659,8 @@ try
 
                 It 'Should return $true when the specified SQL Login is Present and PasswordPolicyEnforced is $true' {
                     $testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedTrue_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-                    $testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedTrue_EnsurePresent.Add( 'Ensure', 'Present' )
-                    $testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedTrue_EnsurePresent.Add( 'LoginPasswordPolicyEnforced', $true )
+                    $testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedTrue_EnsurePresent[ 'Ensure' ] = 'Present'
+                    $testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedTrue_EnsurePresent[ 'LoginPasswordPolicyEnforced' ] = $true
 
                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedTrue_EnsurePresent ) | Should -Be $true
 
@@ -669,8 +669,8 @@ try
 
                 It 'Should return $false when the specified SQL Login is Present and PasswordPolicyEnforced is $false' {
                     $testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedFalse_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-                    $testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedFalse_EnsurePresent.Add( 'Ensure', 'Present' )
-                    $testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedFalse_EnsurePresent.Add( 'LoginPasswordPolicyEnforced', $false )
+                    $testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedFalse_EnsurePresent[ 'Ensure' ] = 'Present'
+                    $testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedFalse_EnsurePresent[ 'LoginPasswordPolicyEnforced' ] = $false
 
                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedFalse_EnsurePresent ) | Should -Be $false
 
@@ -679,8 +679,8 @@ try
 
                 It 'Should return $true when the specified SQL Login is Present using default parameter values and the password is properly configured.' {
                     $testTargetResource_SqlLoginPresentWithDefaultValuesGoodPw_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-                    $testTargetResource_SqlLoginPresentWithDefaultValuesGoodPw_EnsurePresent.Add( 'Ensure', 'Present' )
-                    $testTargetResource_SqlLoginPresentWithDefaultValuesGoodPw_EnsurePresent.Add( 'LoginCredential', $mockSqlLoginCredential )
+                    $testTargetResource_SqlLoginPresentWithDefaultValuesGoodPw_EnsurePresent[ 'Ensure' ] = 'Present'
+                    $testTargetResource_SqlLoginPresentWithDefaultValuesGoodPw_EnsurePresent[ 'LoginCredential' ] = $mockSqlLoginCredential
 
                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithDefaultValuesGoodPw_EnsurePresent ) | Should -Be $true
 
@@ -691,8 +691,8 @@ try
                     Mock -CommandName Connect-SQL -MockWith { throw } -Verifiable -ParameterFilter { $SetupCredential }
 
                     $testTargetResource_SqlLoginPresentWithDefaultValuesBadPw_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-                    $testTargetResource_SqlLoginPresentWithDefaultValuesBadPw_EnsurePresent.Add( 'Ensure', 'Present' )
-                    $testTargetResource_SqlLoginPresentWithDefaultValuesBadPw_EnsurePresent.Add( 'LoginCredential', $mockSqlLoginCredentialBadPassword )
+                    $testTargetResource_SqlLoginPresentWithDefaultValuesBadPw_EnsurePresent[ 'Ensure' ] = 'Present'
+                    $testTargetResource_SqlLoginPresentWithDefaultValuesBadPw_EnsurePresent[ 'LoginCredential' ] = $mockSqlLoginCredentialBadPassword
 
                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithDefaultValuesBadPw_EnsurePresent ) | Should -Be $false
 
@@ -701,9 +701,9 @@ try
 
                 It 'Should be return $true when a login is enabled' {
                     $mockTestTargetResourceParameters = $instanceParameters.Clone()
-                    $mockTestTargetResourceParameters.Add( 'Ensure', 'Present' )
-                    $mockTestTargetResourceParameters.Add( 'Name', 'Windows\User1' )
-                    $mockTestTargetResourceParameters.Add( 'Disabled', $false )
+                    $mockTestTargetResourceParameters[ 'Ensure' ] = 'Present'
+                    $mockTestTargetResourceParameters[ 'Name' ] = 'Windows\User1'
+                    $mockTestTargetResourceParameters[ 'Disabled' ] = $false
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
                     $result | Should -Be $true
@@ -713,9 +713,9 @@ try
 
                 It 'Should be return $true when a login is disabled' {
                     $mockTestTargetResourceParameters = $instanceParameters.Clone()
-                    $mockTestTargetResourceParameters.Add( 'Ensure', 'Present' )
-                    $mockTestTargetResourceParameters.Add( 'Name', 'Windows\UserDisabled' )
-                    $mockTestTargetResourceParameters.Add( 'Disabled', $true )
+                    $mockTestTargetResourceParameters[ 'Ensure' ] = 'Present'
+                    $mockTestTargetResourceParameters[ 'Name' ] = 'Windows\UserDisabled'
+                    $mockTestTargetResourceParameters[ 'Disabled' ] = $true
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
                     $result | Should -Be $true
@@ -725,14 +725,14 @@ try
 
                 It 'Should be return $false when a login has the wrong login type' {
                     $mockTestTargetResourceParameters = $instanceParameters.Clone()
-                    $mockTestTargetResourceParameters.Add( 'Ensure', 'Present' )
+                    $mockTestTargetResourceParameters[ 'Ensure' ] = 'Present'
                     <#
                         Use WindowsLogin format here to be able to test the
                         specific property LoginType.
                     #>
-                    $mockTestTargetResourceParameters.Add( 'Name', 'Windows\UserDisabled' )
-                    $mockTestTargetResourceParameters.Add( 'LoginType', 'SqlLogin' )
-                    $mockTestTargetResourceParameters.Add( 'Disabled', $true )
+                    $mockTestTargetResourceParameters[ 'Name' ] = 'Windows\UserDisabled'
+                    $mockTestTargetResourceParameters[ 'LoginType' ] = 'SqlLogin'
+                    $mockTestTargetResourceParameters[ 'Disabled' ] = $true
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
                     $result | Should -Be $false
@@ -758,7 +758,7 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_WindowsUserPresent_EnsureAbsent = $setTargetResource_WindowsUserPresent.Clone()
-                    $setTargetResource_WindowsUserPresent_EnsureAbsent.Add( 'Ensure', 'Absent' )
+                    $setTargetResource_WindowsUserPresent_EnsureAbsent[ 'Ensure' ] = 'Absent'
 
                     Set-TargetResource @setTargetResource_WindowsUserPresent_EnsureAbsent
 
@@ -773,9 +773,9 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $mockSetTargetResourceParameters = $instanceParameters.Clone()
-                    $mockSetTargetResourceParameters.Add( 'Ensure', 'Present' )
-                    $mockSetTargetResourceParameters.Add( 'Name', 'Windows\UserDisabled' )
-                    $mockSetTargetResourceParameters.Add( 'Disabled', $false )
+                    $mockSetTargetResourceParameters[ 'Ensure' ] = 'Present'
+                    $mockSetTargetResourceParameters[ 'Name' ] = 'Windows\UserDisabled'
+                    $mockSetTargetResourceParameters[ 'Disabled' ] = $false
 
                     Set-TargetResource @mockSetTargetResourceParameters
                     $script:mockWasLoginClassMethodEnableCalled | Should -Be $true
@@ -792,9 +792,9 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $mockSetTargetResourceParameters = $instanceParameters.Clone()
-                    $mockSetTargetResourceParameters.Add( 'Ensure', 'Present' )
-                    $mockSetTargetResourceParameters.Add( 'Name', 'Windows\User1' )
-                    $mockSetTargetResourceParameters.Add( 'Disabled', $true )
+                    $mockSetTargetResourceParameters[ 'Ensure' ] = 'Present'
+                    $mockSetTargetResourceParameters[ 'Name' ] = 'Windows\User1'
+                    $mockSetTargetResourceParameters[ 'Disabled' ] = $true
 
                     Set-TargetResource @mockSetTargetResourceParameters
                     $script:mockWasLoginClassMethodEnableCalled | Should -Be $false
@@ -811,7 +811,7 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_WindowsGroupPresent_EnsureAbsent = $setTargetResource_WindowsGroupPresent.Clone()
-                    $setTargetResource_WindowsGroupPresent_EnsureAbsent.Add( 'Ensure', 'Absent' )
+                    $setTargetResource_WindowsGroupPresent_EnsureAbsent[ 'Ensure' ] = 'Absent'
 
                     Set-TargetResource @setTargetResource_WindowsGroupPresent_EnsureAbsent
 
@@ -826,7 +826,7 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_SqlLoginPresent_EnsureAbsent = $setTargetResource_SqlLoginPresent.Clone()
-                    $setTargetResource_SqlLoginPresent_EnsureAbsent.Add( 'Ensure', 'Absent' )
+                    $setTargetResource_SqlLoginPresent_EnsureAbsent[ 'Ensure' ] = 'Absent'
 
                     Set-TargetResource @setTargetResource_SqlLoginPresent_EnsureAbsent
 
@@ -841,7 +841,7 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_WindowsUserAbsent_EnsureAbsent = $setTargetResource_WindowsUserAbsent.Clone()
-                    $setTargetResource_WindowsUserAbsent_EnsureAbsent.Add( 'Ensure', 'Absent' )
+                    $setTargetResource_WindowsUserAbsent_EnsureAbsent[ 'Ensure' ] = 'Absent'
 
                     Set-TargetResource @setTargetResource_WindowsUserAbsent_EnsureAbsent
 
@@ -856,7 +856,7 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_WindowsGroupAbsent_EnsureAbsent = $setTargetResource_WindowsGroupAbsent.Clone()
-                    $setTargetResource_WindowsGroupAbsent_EnsureAbsent.Add( 'Ensure', 'Absent' )
+                    $setTargetResource_WindowsGroupAbsent_EnsureAbsent[ 'Ensure' ] = 'Absent'
 
                     Set-TargetResource @setTargetResource_WindowsGroupAbsent_EnsureAbsent
 
@@ -871,7 +871,7 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_SqlLoginAbsent_EnsureAbsent = $setTargetResource_SqlLoginAbsent.Clone()
-                    $setTargetResource_SqlLoginAbsent_EnsureAbsent.Add( 'Ensure', 'Absent' )
+                    $setTargetResource_SqlLoginAbsent_EnsureAbsent[ 'Ensure' ] = 'Absent'
 
                     Set-TargetResource @setTargetResource_SqlLoginAbsent_EnsureAbsent
 
@@ -893,7 +893,7 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_WindowsUserAbsent_EnsurePresent = $setTargetResource_WindowsUserAbsent.Clone()
-                    $setTargetResource_WindowsUserAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
+                    $setTargetResource_WindowsUserAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
 
                     Set-TargetResource @setTargetResource_WindowsUserAbsent_EnsurePresent
 
@@ -923,9 +923,9 @@ try
                     }-Verifiable
 
                     $mockSetTargetResourceParameters = $instanceParameters.Clone()
-                    $mockSetTargetResourceParameters.Add( 'Ensure', 'Present' )
-                    $mockSetTargetResourceParameters.Add( 'Name', 'Windows\UserAbsent' )
-                    $mockSetTargetResourceParameters.Add( 'Disabled', $true )
+                    $mockSetTargetResourceParameters[ 'Ensure' ] = 'Present'
+                    $mockSetTargetResourceParameters[ 'Name' ] = 'Windows\UserAbsent'
+                    $mockSetTargetResourceParameters[ 'Disabled' ] = $true
 
                     Set-TargetResource @mockSetTargetResourceParameters
                     $script:mockWasLoginClassMethodDisabledCalled | Should -Be $true
@@ -941,7 +941,7 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_WindowsGroupAbsent_EnsurePresent = $setTargetResource_WindowsGroupAbsent.Clone()
-                    $setTargetResource_WindowsGroupAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
+                    $setTargetResource_WindowsGroupAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
 
                     Set-TargetResource @setTargetResource_WindowsGroupAbsent_EnsurePresent
 
@@ -956,8 +956,8 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_SqlLoginAbsent_EnsurePresent = $setTargetResource_SqlLoginAbsent.Clone()
-                    $setTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
-                    $setTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'LoginCredential', $mockSqlLoginCredential )
+                    $setTargetResource_SqlLoginAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
+                    $setTargetResource_SqlLoginAbsent_EnsurePresent[ 'LoginCredential' ] = $mockSqlLoginCredential
 
                     Set-TargetResource @setTargetResource_SqlLoginAbsent_EnsurePresent
 
@@ -972,9 +972,9 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_SqlLoginAbsent_EnsurePresent = $setTargetResource_SqlLoginAbsent.Clone()
-                    $setTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
-                    $setTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'LoginCredential', $mockSqlLoginCredential )
-                    $setTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'LoginMustChangePassword', $false )
+                    $setTargetResource_SqlLoginAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
+                    $setTargetResource_SqlLoginAbsent_EnsurePresent[ 'LoginCredential' ] = $mockSqlLoginCredential
+                    $setTargetResource_SqlLoginAbsent_EnsurePresent[ 'LoginMustChangePassword' ] = $false
 
                     Set-TargetResource @setTargetResource_SqlLoginAbsent_EnsurePresent
 
@@ -989,7 +989,7 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_CertificateAbsent_EnsurePresent = $setTargetResource_CertificateAbsent.Clone()
-                    $setTargetResource_CertificateAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
+                    $setTargetResource_CertificateAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
 
                     $errorMessage = $script:localizedData.LoginTypeNotImplemented -f $setTargetResource_CertificateAbsent_EnsurePresent.LoginType
                     { Set-TargetResource @setTargetResource_CertificateAbsent_EnsurePresent } | Should -Throw $errorMessage
@@ -1005,7 +1005,7 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_SqlLoginAbsent_EnsurePresent_NoCred = $setTargetResource_SqlLoginAbsent.Clone()
-                    $setTargetResource_SqlLoginAbsent_EnsurePresent_NoCred.Add( 'Ensure', 'Present' )
+                    $setTargetResource_SqlLoginAbsent_EnsurePresent_NoCred[ 'Ensure' ] = 'Present'
 
                     $errorMessage = $script:localizedData.LoginCredentialNotFound -f $setTargetResource_SqlLoginAbsent_EnsurePresent_NoCred.Name
                     { Set-TargetResource @setTargetResource_SqlLoginAbsent_EnsurePresent_NoCred } | Should -Throw $errorMessage
@@ -1021,7 +1021,7 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_WindowsUserPresent_EnsurePresent = $setTargetResource_WindowsUserPresent.Clone()
-                    $setTargetResource_WindowsUserPresent_EnsurePresent.Add( 'Ensure', 'Present' )
+                    $setTargetResource_WindowsUserPresent_EnsurePresent[ 'Ensure' ] = 'Present'
 
                     Set-TargetResource @setTargetResource_WindowsUserPresent_EnsurePresent
 
@@ -1036,7 +1036,7 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_WindowsGroupPresent_EnsurePresent = $setTargetResource_WindowsGroupPresent.Clone()
-                    $setTargetResource_WindowsGroupPresent_EnsurePresent.Add( 'Ensure', 'Present' )
+                    $setTargetResource_WindowsGroupPresent_EnsurePresent[ 'Ensure' ] = 'Present'
 
                     Set-TargetResource @setTargetResource_WindowsGroupPresent_EnsurePresent
 
@@ -1051,8 +1051,8 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_SqlLoginPresent_EnsurePresent = $setTargetResource_SqlLoginPresent.Clone()
-                    $setTargetResource_SqlLoginPresent_EnsurePresent.Add( 'Ensure', 'Present' )
-                    $setTargetResource_SqlLoginPresent_EnsurePresent.Add( 'LoginCredential', $mockSqlLoginCredential )
+                    $setTargetResource_SqlLoginPresent_EnsurePresent[ 'Ensure' ] = 'Present'
+                    $setTargetResource_SqlLoginPresent_EnsurePresent[ 'LoginCredential' ] = $mockSqlLoginCredential
 
                     Set-TargetResource @setTargetResource_SqlLoginPresent_EnsurePresent
 
@@ -1067,9 +1067,9 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase = $setTargetResource_SqlLoginPresent.Clone()
-                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase.Add( 'Ensure', 'Present' )
-                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase.Add( 'LoginCredential', $mockSqlLoginCredential )
-                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase.Add( 'DefaultDatabase', 'notmaster' )
+                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase[ 'Ensure' ] = 'Present'
+                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase[ 'LoginCredential' ] = $mockSqlLoginCredential
+                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase[ 'DefaultDatabase' ] = 'notmaster'
 
                     Set-TargetResource @setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase
 
@@ -1081,9 +1081,9 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordExpirationEnabled = $setTargetResource_SqlLoginPresent.Clone()
-                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordExpirationEnabled.Add( 'Ensure', 'Present' )
-                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordExpirationEnabled.Add( 'LoginCredential', $mockSqlLoginCredential )
-                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordExpirationEnabled.Add( 'LoginPasswordExpirationEnabled', $false )
+                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordExpirationEnabled[ 'Ensure' ] = 'Present'
+                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordExpirationEnabled[ 'LoginCredential' ] = $mockSqlLoginCredential
+                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordExpirationEnabled[ 'LoginPasswordExpirationEnabled' ] = $false
 
                     Set-TargetResource @setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordExpirationEnabled
 
@@ -1098,9 +1098,9 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
                     $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordPolicyEnforced = $setTargetResource_SqlLoginPresent.Clone()
-                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordPolicyEnforced.Add( 'Ensure', 'Present' )
-                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordPolicyEnforced.Add( 'LoginCredential', $mockSqlLoginCredential )
-                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordPolicyEnforced.Add( 'LoginPasswordPolicyEnforced', $false )
+                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordPolicyEnforced[ 'Ensure' ] = 'Present'
+                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordPolicyEnforced[ 'LoginCredential' ] = $mockSqlLoginCredential
+                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordPolicyEnforced[ 'LoginPasswordPolicyEnforced' ] = $false
 
                     Set-TargetResource @setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordPolicyEnforced
 
@@ -1117,8 +1117,8 @@ try
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL_LoginMode -Verifiable
 
                     $setTargetResource_SqlLoginAbsent_EnsurePresent = $setTargetResource_SqlLoginAbsent.Clone()
-                    $setTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
-                    $setTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'LoginCredential', $mockSqlLoginCredential )
+                    $setTargetResource_SqlLoginAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
+                    $setTargetResource_SqlLoginAbsent_EnsurePresent[ 'LoginCredential' ] = $mockSqlLoginCredential
 
                     $errorMessage = $script:localizedData.IncorrectLoginMode -f
                         $setTargetResource_SqlLoginAbsent_EnsurePresent.ServerName,
@@ -1141,8 +1141,8 @@ try
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL_LoginMode -Verifiable
 
                 $setTargetResource_SqlLoginAbsent_EnsurePresent = $setTargetResource_SqlLoginAbsent.Clone()
-                $setTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
-                $setTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'LoginCredential', $mockSqlLoginCredential )
+                $setTargetResource_SqlLoginAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
+                $setTargetResource_SqlLoginAbsent_EnsurePresent[ 'LoginCredential' ] = $mockSqlLoginCredential
 
                 { Set-TargetResource @setTargetResource_SqlLoginAbsent_EnsurePresent } | Should -Not -Throw
 
@@ -1159,8 +1159,8 @@ try
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL_LoginMode -Verifiable
 
                 $setTargetResource_SqlLoginAbsent_EnsurePresent = $setTargetResource_SqlLoginAbsent.Clone()
-                $setTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'Ensure', 'Present' )
-                $setTargetResource_SqlLoginAbsent_EnsurePresent.Add( 'LoginCredential', $mockSqlLoginCredential )
+                $setTargetResource_SqlLoginAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
+                $setTargetResource_SqlLoginAbsent_EnsurePresent[ 'LoginCredential' ] = $mockSqlLoginCredential
 
                 { Set-TargetResource @setTargetResource_SqlLoginAbsent_EnsurePresent } | Should -Not -Throw
 
