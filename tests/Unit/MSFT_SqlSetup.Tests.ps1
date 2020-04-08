@@ -964,6 +964,7 @@ try
 
             BeforeAll {
                 # General mocks
+                Mock -CommandName Get-PSDrive -Verifiable
                 Mock -CommandName Get-SqlMajorVersion -MockWith $mockGetSqlMajorVersion -Verifiable
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
                 Mock -CommandName Get-ItemProperty -ParameterFilter {
@@ -1095,6 +1096,7 @@ try
 
                         Assert-MockCalled -CommandName Connect-UncPath -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Disconnect-UncPath -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -1246,6 +1248,7 @@ try
 
                                 Assert-MockCalled -CommandName Connect-UncPath -Exactly -Times 0 -Scope It
                                 Assert-MockCalled -CommandName Disconnect-UncPath -Exactly -Times 0 -Scope It
+                                Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                                 Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                                 Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
                                 Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -1436,6 +1439,7 @@ try
 
                         Assert-MockCalled -CommandName Connect-UncPath -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Disconnect-UncPath -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -1712,6 +1716,7 @@ try
 
                         Assert-MockCalled -CommandName Connect-UncPath -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Disconnect-UncPath -Exactly -Times 0 -Scope It
+                        Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -1958,6 +1963,7 @@ try
 
                         Assert-MockCalled -CommandName Connect-UncPath -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Disconnect-UncPath -Exactly -Times 1 -Scope It
+                        Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -2141,6 +2147,7 @@ try
                         $result = Get-TargetResource @testParameters
                         $result.InstanceName | Should -Be $testParameters.InstanceName
 
+                        Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -2304,6 +2311,7 @@ try
                         $result = Get-TargetResource @testParameters
                         $result.InstanceName | Should -Be $testParameters.InstanceName
 
+                        Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQLAnalysis -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
@@ -2442,6 +2450,7 @@ try
                     It 'Should not attempt to collect cluster information for a standalone instance' {
                         $currentState = Get-TargetResource @testParameters
 
+                        Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Get-CimAssociatedInstance -Exactly -Times 0 -Scope It
@@ -2496,6 +2505,7 @@ try
                     It 'Should collect information for a clustered instance' {
                         $currentState = Get-TargetResource @testParameters
 
+                        Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 1 -Scope It -ParameterFilter { $Filter -eq "Type = 'SQL Server'" }
                         Assert-MockCalled -CommandName Get-CimAssociatedInstance -Exactly -Times 1 -Scope It -ParameterFilter { $ResultClassName -eq 'MSCluster_ResourceGroup' }
@@ -2762,6 +2772,7 @@ try
 
             BeforeAll {
                 # General mocks
+                Mock -CommandName Get-PSDrive -Verifiable
                 Mock -CommandName Import-SQLPSModule
                 Mock -CommandName Get-SqlMajorVersion -MockWith $mockGetSqlMajorVersion -Verifiable
 
@@ -2925,6 +2936,7 @@ try
 
                         { Set-TargetResource @testParameters } | Should -Not -Throw
 
+                        Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Invoke-InstallationMediaCopy -Exactly -Times 0 -Scope It
                         Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
@@ -2980,6 +2992,7 @@ try
 
                             { Set-TargetResource @testParameters } | Should -Not -Throw
 
+                            Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
                         }
@@ -3003,6 +3016,7 @@ try
 
                             { Set-TargetResource @testParameters } | Should -Not -Throw
 
+                            Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
                         }
@@ -3045,6 +3059,7 @@ try
 
                         { Set-TargetResource @testParameters } | Should -Not -Throw
 
+                        Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Invoke-InstallationMediaCopy -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
@@ -3081,6 +3096,7 @@ try
 
                             { Set-TargetResource @testParameters } | Should -Not -Throw
 
+                            Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
                         }
@@ -3098,6 +3114,7 @@ try
 
                             { Set-TargetResource @testParameters } | Should -Not -Throw
 
+                            Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
                         }
@@ -3142,6 +3159,7 @@ try
 
                         { Set-TargetResource @testParameters } | Should -Not -Throw
 
+                        Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Invoke-InstallationMediaCopy -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
@@ -3179,6 +3197,7 @@ try
 
                             { Set-TargetResource @testParameters } | Should -Not -Throw
 
+                            Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
                         }
@@ -3196,6 +3215,7 @@ try
 
                             { Set-TargetResource @testParameters } | Should -Not -Throw
 
+                            Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
                         }
@@ -3246,6 +3266,7 @@ try
 
                         { Set-TargetResource @testParameters } | Should -Not -Throw
 
+                        Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
                     }
@@ -3281,6 +3302,7 @@ try
 
                             { Set-TargetResource @testParameters } | Should -Not -Throw
 
+                            Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
                         }
@@ -3298,6 +3320,7 @@ try
 
                             { Set-TargetResource @testParameters } | Should -Not -Throw
 
+                            Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                             Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
                         }
@@ -3716,6 +3739,7 @@ try
 
                         { Set-TargetResource @testParameters } | Should -Not -Throw
 
+                        Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
 

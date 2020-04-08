@@ -16,8 +16,16 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 - SqlServerDsc
   - Update the CI pipeline files.
+  - Only run CI pipeline on branch `master` when there are changes to files
+    inside the `source` folder.
   - Replaced Microsoft-hosted agent (build image) `win1803` with `windows-2019`
     ([issue #1466](https://github.com/dsccommunity/SqlServerDsc/issues/1466)).
+
+### Fixed
+
+- SqlSetup
+  - Refresh PowerShell drive list before attempting to resolve `setup.exe` path
+    ([issue #1482](https://github.com/dsccommunity/SqlServerDsc/issues/1482)).
 
 ## [13.4.0] - 2020-03-18
 
