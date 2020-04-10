@@ -280,3 +280,28 @@ Configuration MSFT_SqlServerLogin_RemoveLoginDscUser3_Config
         }
     }
 }
+
+<#
+    .SYNOPSIS
+        Clean up test resources so they are not interfering with
+        the other integration tests.
+#>
+Configuration MSFT_SqlServerLogin_CleanupDependencies_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlDatabase 'Remove_DefaultDb_Test'
+        {
+            Ensure       = 'Absent'
+            ServerName   = $Node.ServerName
+            InstanceName = $Node.InstanceName
+            Name         = $Node.DefaultDbName
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+        }
+    }
+}
