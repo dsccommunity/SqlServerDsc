@@ -33,13 +33,10 @@ ConvertFrom-StringData @'
     EvaluateIntegrationServicesFeature = Detecting Integration Services feature.
     IntegrationServicesFeatureFound = Integration Services feature detected.
     IntegrationServicesFeatureNotFound = Integration Services feature not detected.
-    EvaluateClientConnectivityToolsFeature = Detecting Client Connectivity Tools feature ({0}).
     ClientConnectivityToolsFeatureFound = Client Connectivity Tools feature detected.
     ClientConnectivityToolsFeatureNotFound = Client Connectivity Tools feature not detected.
-    EvaluateClientConnectivityBackwardsCompatibilityToolsFeature = Detecting Client Connectivity Backwards Compatibility Tools feature ({0}).
     ClientConnectivityBackwardsCompatibilityToolsFeatureFound = Client Connectivity Backwards Compatibility Tools feature detected.
     ClientConnectivityBackwardsCompatibilityToolsFeatureNotFound = Client Connectivity Backwards Compatibility Tools feature not detected.
-    EvaluateClientToolsSdkFeature = Detecting Client Tools SDK feature ({0}).
     ClientToolsSdkFeatureFound = Client Tools SDK feature detected.
     ClientToolsSdkFeatureNotFound = Client Tools SDK feature not detected.
     FeatureNotSupported = '{0}' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information.

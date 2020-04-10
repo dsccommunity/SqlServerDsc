@@ -189,7 +189,7 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.Action                     | Should -BeNullOrEmpty
+                $resourceCurrentState.Action                     | Should -Be 'Install'
                 $resourceCurrentState.AgtSvcAccount              | Should -BeNullOrEmpty
                 $resourceCurrentState.AgtSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlAgentServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.AgtSvcStartupType          | Should -Be 'Automatic'
@@ -236,16 +236,7 @@ try
                 $resourceCurrentState.SQLSvcAccount              | Should -BeNullOrEmpty
                 $resourceCurrentState.SQLSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.SqlSvcStartupType          | Should -Be 'Automatic'
-                $resourceCurrentState.SQLSysAdminAccounts        | Should -Be @(
-                    $ConfigurationData.AllNodes.SqlAdministratorAccountUserName,
-                    $ConfigurationData.AllNodes.SqlInstallAccountUserName,
-                    "NT SERVICE\MSSQL`$$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)",
-                    "NT SERVICE\SQLAgent`$$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)",
-                    'NT SERVICE\SQLWriter',
-                    'NT SERVICE\Winmgmt',
-                    'sa'
-                )
-                $resourceCurrentState.SQLTempDBDir               | Should -BeNullOrEmpty
+                $resourceCurrentState.SQLTempDBDir               | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSQLDataDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\MSSQL\Data")
                 $resourceCurrentState.SqlTempDbFileCount         | Should -Be $ConfigurationData.AllNodes.SqlTempDbFileCount
                 $resourceCurrentState.SqlTempDbFileSize          | Should -Be $ConfigurationData.AllNodes.SqlTempDbFileSize
                 $resourceCurrentState.SqlTempDbFileGrowth        | Should -Be $ConfigurationData.AllNodes.SqlTempDbFileGrowth
@@ -259,6 +250,15 @@ try
                 $resourceCurrentState.SuppressReboot             | Should -BeNullOrEmpty
                 $resourceCurrentState.UpdateEnabled              | Should -BeNullOrEmpty
                 $resourceCurrentState.UpdateSource               | Should -BeNullOrEmpty
+
+                # Verify all the accounts are returned in the property SQLSysAdminAccounts.
+                $ConfigurationData.AllNodes.SqlAdministratorAccountUserName | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
+                $ConfigurationData.AllNodes.SqlInstallAccountUserName | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
+                "NT SERVICE\MSSQL`$$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)" | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
+                "NT SERVICE\SQLAgent`$$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)" | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
+                'NT SERVICE\SQLWriter' | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
+                'NT SERVICE\Winmgmt' | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
+                'sa' | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -337,7 +337,7 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.Action                     | Should -BeNullOrEmpty
+                $resourceCurrentState.Action                     | Should -Be 'Install'
                 $resourceCurrentState.AgtSvcAccount              | Should -BeNullOrEmpty
                 $resourceCurrentState.AgtSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlAgentServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.ASServerMode               | Should -BeNullOrEmpty
@@ -379,16 +379,7 @@ try
                 $resourceCurrentState.SQLCollation               | Should -Be $ConfigurationData.AllNodes.Collation
                 $resourceCurrentState.SQLSvcAccount              | Should -BeNullOrEmpty
                 $resourceCurrentState.SQLSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
-                $resourceCurrentState.SQLSysAdminAccounts        | Should -Be @(
-                    $ConfigurationData.AllNodes.SqlAdministratorAccountUserName,
-                    $ConfigurationData.AllNodes.SqlInstallAccountUserName,
-                    "NT SERVICE\$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)",
-                    "NT SERVICE\SQLSERVERAGENT",
-                    'NT SERVICE\SQLWriter',
-                    'NT SERVICE\Winmgmt',
-                    'sa'
-                )
-                $resourceCurrentState.SQLTempDBDir               | Should -BeNullOrEmpty
+                $resourceCurrentState.SQLTempDBDir               | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\Data")
                 $resourceCurrentState.SQLTempDBLogDir            | Should -BeNullOrEmpty
                 $resourceCurrentState.SQMReporting               | Should -BeNullOrEmpty
                 $resourceCurrentState.SuppressReboot             | Should -BeNullOrEmpty
@@ -398,6 +389,15 @@ try
                 # Regression test for issue #1287
                 $resourceCurrentState.SQLUserDBDir               | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\DATA\")
                 $resourceCurrentState.SQLUserDBLogDir            | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\DATA\")
+
+                # Verify all the accounts are returned in the property SQLSysAdminAccounts.
+                $ConfigurationData.AllNodes.SqlAdministratorAccountUserName | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
+                $ConfigurationData.AllNodes.SqlInstallAccountUserName | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
+                "NT SERVICE\$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)" | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
+                "NT SERVICE\SQLSERVERAGENT" | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
+                'NT SERVICE\SQLWriter' | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
+                'NT SERVICE\Winmgmt' | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
+                'sa' | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -476,7 +476,7 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.Action                     | Should -BeNullOrEmpty
+                $resourceCurrentState.Action                     | Should -Be 'Install'
                 $resourceCurrentState.AgtSvcAccount              | Should -BeNullOrEmpty
                 $resourceCurrentState.AgtSvcAccountUsername      | Should -BeNullOrEmpty
                 $resourceCurrentState.ASServerMode               | Should -Be $ConfigurationData.AllNodes.AnalysisServicesTabularServerMode

@@ -33,13 +33,10 @@ ConvertFrom-StringData @'
     EvaluateIntegrationServicesFeature = Letar efter Integration Services funktionen.
     IntegrationServicesFeatureFound = Integration Services funktionen hittad.
     IntegrationServicesFeatureNotFound = Integration Services funktionen hittades inte.
-    EvaluateClientConnectivityToolsFeature = Letar efter Client Connectivity Tools funktionen ({0}).
     ClientConnectivityToolsFeatureFound = Client Connectivity Tools funktionen hittad.
     ClientConnectivityToolsFeatureNotFound = Client Connectivity Tools funktionen hittades inte.
-    EvaluateClientConnectivityBackwardsCompatibilityToolsFeature = Letar efter Client Connectivity Backwards Compatibility Tools funktionen ({0}).
     ClientConnectivityBackwardsCompatibilityToolsFeatureFound = Client Connectivity Backwards Compatibility Tools funktionen hittad.
     ClientConnectivityBackwardsCompatibilityToolsFeatureNotFound = Client Connectivity Backwards Compatibility Tools funktionen hittades inte.
-    EvaluateClientToolsSdkFeature = Letar efter Client Tools SDK funktionen ({0}).
     ClientToolsSdkFeatureFound = Client Tools SDK funktionen hittad.
     ClientToolsSdkFeatureNotFound = Client Tools SDK funktionen hittades inte.
     FeatureNotSupported = '{0}' är inte ett giltigt värde för egenskapen 'FEATURES'. Titta i hjälpdokumentationen för SQL Server för mer information.

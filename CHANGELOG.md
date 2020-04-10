@@ -7,6 +7,23 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ## [Unreleased]
 
+### Added
+
+- SqlSetup
+  - A read only property `IsClustered` was added that can be used to determine
+    if the instance is clustered.
+
+### Fixed
+
+- SqlSetup
+  - The property `SqlTempdbLogFileGrowth` and `SqlTempdbFileGrowth` now returns
+    the correct values. Previously the value of the growth was wrongly
+    divided by 1KB even if the value was in percent. Now the value for growth
+    is the sum of the average of MB and average of the percentage.
+  - The function `Get-TargetResource` was changed so that the property
+    `SQLTempDBDir` will now return the database `tempdb`'s property
+    `PrimaryFilePath`.
+
 ## [13.5.0] - 2020-04-12
 
 ### Added
@@ -25,7 +42,20 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ### Fixed
 
+- SqlServerDsc
+  - The regular expression for `minor-version-bump-message` in the file
+    `GitVersion.yml` was changed to only raise minor version when the
+    commit message contain the word `add`, `adds`, `minor`, `feature`,
+    or `features`.
 - SqlSetup
+  - BREAKING CHANGE: Logic that was under feature flag `DetectionSharedFeatures`
+    was made the default and old logic that was used to detect shared features
+    was removed ([issue #1290](https://github.com/dsccommunity/SqlServerDsc/issues/1290)).
+    This was implemented because the previous implementation did not work
+    fully with SQL Server 2017.
+  - Much of the code was refactored into units (functions) to be easier to test.
+    Due to the size of the code the unit tests ran for an abnormal long time,
+    after this refactoring the unit tests runs much quicker.
   - Refresh PowerShell drive list before attempting to resolve `setup.exe` path
     ([issue #1482](https://github.com/dsccommunity/SqlServerDsc/issues/1482)).
 - SqlAG

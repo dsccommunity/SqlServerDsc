@@ -496,14 +496,14 @@ function Test-DscParameterState
 
 <#
     .SYNOPSIS
-        Returns the value of the provided in the Name parameter, at the registry
+        Returns the value of the provided Name parameter at the registry
         location provided in the Path parameter.
 
     .PARAMETER Path
-        String containing the path in the registry to the property name.
+        Specifies the path in the registry to the property name.
 
     .PARAMETER PropertyName
-        String containing the name of the property for which the value is returned.
+        Specifies the the name of the property to return the value for.
 #>
 function Get-RegistryPropertyValue
 {
@@ -531,7 +531,7 @@ function Get-RegistryPropertyValue
     #>
     try
     {
-        $getItemPropertyResult = (Get-ItemProperty @getItemPropertyParameters -ErrorAction Stop).$Name
+        $getItemPropertyResult = (Get-ItemProperty @getItemPropertyParameters -ErrorAction 'Stop').$Name
     }
     catch
     {
