@@ -26,6 +26,8 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 - SqlSetup
   - Refresh PowerShell drive list before attempting to resolve `setup.exe` path
     ([issue #1482](https://github.com/dsccommunity/SqlServerDsc/issues/1482)).
+- SqlAG
+  - Fix hashtables to align with style guideline ([issue #1437](https://github.com/PowerShell/SqlServerDsc/issues/1437)).
 
 ## [13.4.0] - 2020-03-18
 
