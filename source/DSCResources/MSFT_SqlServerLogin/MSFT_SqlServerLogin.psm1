@@ -62,12 +62,13 @@ function Get-TargetResource
     )
 
     $returnValue = @{
-        Ensure       = $ensure
-        Name         = $Name
-        LoginType    = $login.LoginType
-        ServerName   = $ServerName
-        InstanceName = $InstanceName
-        Disabled     = $login.IsDisabled
+        Ensure          = $ensure
+        Name            = $Name
+        LoginType       = $login.LoginType
+        ServerName      = $ServerName
+        InstanceName    = $InstanceName
+        Disabled        = $login.IsDisabled
+        DefaultDatabase = $login.DefaultDatabase
     }
 
     if ($login.LoginType -eq 'SqlLogin')
@@ -113,6 +114,9 @@ function Get-TargetResource
 
     .PARAMETER Disabled
     Specifies if the login is disabled. Default is $false.
+
+    .PARAMETER DefaultDatabase
+    Specifies the default database for the login.
 #>
 function Set-TargetResource
 {
@@ -167,7 +171,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $Disabled
+        $Disabled,
+
+        [Parameter()]
+        [System.String]
+        $DefaultDatabase
     )
 
     $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
@@ -232,6 +240,12 @@ function Set-TargetResource
                         $login.Enable()
                     }
                 }
+
+                if ( $PSBoundParameters.ContainsKey('DefaultDatabase') -and ($login.DefaultDatabase -ne $DefaultDatabase) )
+                {
+                    $login.DefaultDatabase = $DefaultDatabase
+                    Update-SQLServerLogin -Login $login
+                }
             }
             else
             {
@@ -295,6 +309,13 @@ function Set-TargetResource
 
                     $login.Disable()
                 }
+
+                # set the default database if specified
+                if ( $PSBoundParameters.ContainsKey('DefaultDatabase') )
+                {
+                    $login.DefaultDatabase = $DefaultDatabase
+                    Update-SQLServerLogin -Login $login
+                }
             }
         }
 
@@ -345,6 +366,9 @@ function Set-TargetResource
 
     .PARAMETER Disabled
     Specifies if the login is disabled. Default is $false.
+
+    .PARAMETER DefaultDatabase
+    Specifies the default database for the login.
 #>
 function Test-TargetResource
 {
@@ -399,7 +423,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $Disabled
+        $Disabled,
+
+        [Parameter()]
+        [System.String]
+        $DefaultDatabase
     )
 
     Write-Verbose -Message (
@@ -451,6 +479,15 @@ function Test-TargetResource
                     $script:localizedData.ExpectedEnabled -f $Name
                 )
             }
+
+            $testPassed = $false
+        }
+
+        if ( $PSBoundParameters.ContainsKey('DefaultDatabase') -and ($loginInfo.DefaultDatabase -ne $DefaultDatabase) )
+        {
+            Write-Verbose -Message (
+                $script:localizedData.WrongDefaultDatabase -f $Name, $loginInfo.DefaultDatabase, $DefaultDatabase
+            )
 
             $testPassed = $false
         }

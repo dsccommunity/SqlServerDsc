@@ -42,6 +42,17 @@ Configuration Example
             Disabled             = $true
         }
 
+        SqlServerLogin 'Add_WindowsUser_Set_Default_Database'
+        {
+            Ensure               = 'Present'
+            Name                 = 'CONTOSO\WindowsUser3'
+            LoginType            = 'WindowsUser'
+            ServerName           = 'TestServer.company.local'
+            InstanceName         = 'DSC'
+            DefaultDatabase      = 'contoso'
+            PsDscRunAsCredential = $SqlAdministratorCredential
+        }
+
         SqlServerLogin 'Add_WindowsGroup'
         {
             Ensure               = 'Present'
