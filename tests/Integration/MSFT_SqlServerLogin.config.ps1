@@ -24,6 +24,8 @@ else
                 ServerName       = $env:COMPUTERNAME
                 InstanceName     = 'DSCSQLTEST'
 
+                DefaultDbName    = 'DefaultDb'
+
                 DscUser1Name     = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscUser1')
                 DscUser1Type     = 'WindowsUser'
 
@@ -52,6 +54,7 @@ else
 Configuration MSFT_SqlServerLogin_CreateDependencies_Config
 {
     Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
@@ -99,6 +102,18 @@ Configuration MSFT_SqlServerLogin_CreateDependencies_Config
                 '[User]CreateDscUser2'
             )
         }
+
+        SqlDatabase 'DefaultDb_Test'
+        {
+            Ensure       = 'Present'
+            ServerName   = $Node.ServerName
+            InstanceName = $Node.InstanceName
+            Name         = $Node.DefaultDbName
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+        }
     }
 }
 
@@ -143,6 +158,7 @@ Configuration MSFT_SqlServerLogin_AddLoginDscUser2_Config
             Ensure               = 'Present'
             Name                 = $Node.DscUser2Name
             LoginType            = $Node.DscUser2Type
+            DefaultDatabase      = $Node.DefaultDbName
 
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
@@ -257,6 +273,31 @@ Configuration MSFT_SqlServerLogin_RemoveLoginDscUser3_Config
 
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Clean up test resources so they are not interfering with
+        the other integration tests.
+#>
+Configuration MSFT_SqlServerLogin_CleanupDependencies_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlDatabase 'Remove_DefaultDb_Test'
+        {
+            Ensure       = 'Absent'
+            ServerName   = $Node.ServerName
+            InstanceName = $Node.InstanceName
+            Name         = $Node.DefaultDbName
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `

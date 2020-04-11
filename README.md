@@ -1414,6 +1414,8 @@ No description.
   policy. Only applies to SQL Logins. Default is $true.
 * **`[Boolean]` Disabled** _(Write)_: Specifies if the login is disabled. Default
   is $false.
+* **`[String]` DefaultDatabase** _(Write)_: Default database name. If not specified,
+  default database is not changed.
 
 #### Examples
 

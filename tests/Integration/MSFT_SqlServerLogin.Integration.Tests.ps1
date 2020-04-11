@@ -156,6 +156,7 @@ try
                 $resourceCurrentState.Ensure | Should -Be 'Present'
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser2Name
                 $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser2Type
+                $resourceCurrentState.DefaultDatabase | Should -Be $ConfigurationData.AllNodes.DefaultDbName
                 $resourceCurrentState.Disabled | Should -Be $false
             }
 
@@ -356,6 +357,33 @@ try
 
             It 'Should return $true when Test-DscConfiguration is run' {
                 Test-DscConfiguration -Verbose | Should -Be 'True'
+            }
+        }
+
+        $configurationName = "$($script:dscResourceName)_CleanupDependencies_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait = $true
+                        Verbose = $true
+                        Force = $true
+                        ErrorAction = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
             }
         }
     }
