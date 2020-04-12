@@ -7,6 +7,8 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ## [Unreleased]
 
+## [13.5.0] - 2020-04-12
+
 ### Added
 
 - SqlServerLogin
