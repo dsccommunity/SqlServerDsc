@@ -1,5 +1,5 @@
 [ClassVersion("1.0.0.0"), FriendlyName("SqlDatabaseDefaultLocation")]
-class MSFT_SqlDatabaseDefaultLocation : OMI_BaseResource
+class DSC_SqlDatabaseDefaultLocation : OMI_BaseResource
 {
     [Key, Description("The name of the SQL instance to be configured.")] String InstanceName;
     [Key, Description("The type of database default location to be configured. { Data | Log | Backup }"), ValueMap{"Data","Log","Backup"}, Values{"Data","Log","Backup"}] String Type;

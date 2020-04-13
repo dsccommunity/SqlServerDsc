@@ -1,5 +1,5 @@
 [ClassVersion("1.0.0.0"), FriendlyName("SqlDatabasePermission")]
-class MSFT_SqlDatabasePermission : OMI_BaseResource
+class DSC_SqlDatabasePermission : OMI_BaseResource
 {
     [Key, Description("The name of the database.")] String DatabaseName;
     [Key, Description("The name of the user that should be granted or denied the permission.")] String Name;
