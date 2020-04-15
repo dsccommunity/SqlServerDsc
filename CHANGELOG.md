@@ -20,7 +20,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
   - SqlDatabaseOwner
   - SqlDatabasePermission
   - SqlDatabaseRole
-  
+
 ### Fixed
 
 - SqlServerDsc
@@ -47,6 +47,12 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 - README.md
   - Changed to point to CONTRIBUTING.md on master branch to avoid "404 Page not found"
     ([issue #1508](https://github.com/dsccommunity/SqlServerDsc/issues/1508)).
+
+### Changed
+
+- SqlServiceAccount
+  - The parameter `ServerName` is now non-mandatory and defaults to `$env:COMPUTERNAME`
+    ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
 
 ## [13.5.0] - 2020-04-12
 
