@@ -47,6 +47,10 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 - README.md
   - Changed to point to CONTRIBUTING.md on master branch to avoid "404 Page not found"
     ([issue #1508](https://github.com/dsccommunity/SqlServerDsc/issues/1508)).
+### Fixed
+
+- SqlRs
+  - Fix typo in the schema parameter `SuppressRestart` description.
 
 ### Changed
 
