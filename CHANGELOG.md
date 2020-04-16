@@ -49,6 +49,11 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
     ([issue #1508](https://github.com/dsccommunity/SqlServerDsc/issues/1508)).
 ### Fixed
 
+- SqlAlias
+  - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory to
+    prevent ping-pong behavior ([issue #1502](https://github.com/dsccommunity/SqlServerDsc/issues/1502)).
+    The `ServerName` is not returned as an empty string when the protocol is
+    Named Pipes.
 - SqlRs
   - Fix typo in the schema parameter `SuppressRestart` description
     and in the parameter description in the `README.md`.
