@@ -142,7 +142,7 @@ try
                 It 'Should return the same values as passed as parameters' {
                     $result.ServerName | Should -Be $testParameters.ServerName
                     $result.InstanceName | Should -Be $testParameters.InstanceName
-                    $result.Database | Should -Be $testParameters.DatabaseName
+                    $result.DatabaseName | Should -Be $testParameters.DatabaseName
                 }
 
                 It 'Should call the mock function Connect-SQL' {

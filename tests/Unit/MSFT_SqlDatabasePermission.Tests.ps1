@@ -116,14 +116,14 @@ try
                                                 Add-Member -MemberType NoteProperty -Name PermissionState -Value $mockSqlPermissionState -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name Grantee -Value $mockExpectedSqlServerLogin -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                                                Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'Database' -PassThru |
+                                                Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name ObjectName -Value $mockSqlDatabaseName -PassThru
                                             $mockEnumDatabasePermissions += New-Object -TypeName Object |
                                                 Add-Member -MemberType NoteProperty -Name PermissionType -Value $mockSqlPermissionType02 -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name PermissionState -Value $mockSqlPermissionState -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name Grantee -Value $mockExpectedSqlServerLogin -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                                                Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'Database' -PassThru |
+                                                Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
                                                 Add-Member -MemberType NoteProperty -Name ObjectName -Value $mockSqlDatabaseName -PassThru
 
                                             $mockEnumDatabasePermissions
