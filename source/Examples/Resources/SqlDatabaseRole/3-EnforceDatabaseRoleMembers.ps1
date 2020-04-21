@@ -26,7 +26,7 @@ Configuration Example
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
             DatabaseName         = 'AdventureWorks'
-            Role                 = 'ReportViewer'
+            Name                 = 'ReportViewer'
             Members              = @('CONTOSO\Barbara', 'CONTOSO\Fred')
             Ensure               = 'Present'
 
