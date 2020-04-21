@@ -21,7 +21,7 @@ Configuration Example
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
             DatabaseName         = 'AdventureWorks'
-            UserName             = 'User1'
+            Name                 = 'User1'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
