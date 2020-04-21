@@ -28,7 +28,7 @@ Configuration Example
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
             DatabaseName         = 'AdventureWorks'
-            RoleName             = 'ReportViewer'
+            Role                 = 'ReportViewer'
             MembersToInclude     = @('CONTOSO\Barbara', 'CONTOSO\Fred')
             MembersToExclude     = @('CONTOSO\Intern1')
             Ensure               = 'Present'
