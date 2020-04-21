@@ -7,6 +7,18 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ## [Unreleased]
 
+### Changed
+
+- BREAKING CHANGE: Database changed to DatabaseName for consistency with other modules.
+  ([issue #1484](https://github.com/dsccommunity/SqlServerDsc/issues/1484)).
+  - SqlDatabaseOwner
+  - SqlDatabasePermission
+  - SqlDatabaseRole
+
+- README.md
+  ([issue #1508](https://github.com/dsccommunity/SqlServerDsc/issues/1508)).
+  - Changed to point to CONTRIBUTING.md on master branch to avoid "404 Page not found"
+
 ## [13.5.0] - 2020-04-12
 
 ### Added
