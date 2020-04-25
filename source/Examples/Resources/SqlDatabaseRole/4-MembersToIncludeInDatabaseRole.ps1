@@ -25,7 +25,7 @@ Configuration Example
         {
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            Database             = 'AdventureWorks'
+            DatabaseName         = 'AdventureWorks'
             Name                 = 'ReportViewer'
             MembersToInclude     = @('CONTOSO\Barbara', 'CONTOSO\Fred')
             Ensure               = 'Present'

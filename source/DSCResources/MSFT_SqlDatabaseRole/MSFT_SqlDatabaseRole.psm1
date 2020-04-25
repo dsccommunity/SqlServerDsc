@@ -16,7 +16,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlDatabaseRole'
     .PARAMETER InstanceName
         Specifies the name of the SQL instance to be configured.
 
-    .PARAMETER Database
+    .PARAMETER DatabaseName
         Specifies name of the database in which the role should be configured.
 
     .PARAMETER Name
@@ -51,7 +51,7 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $Database,
+        $DatabaseName,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -82,9 +82,9 @@ function Get-TargetResource
         $roleStatus = 'Absent'
 
         # Check if database exists.
-        if (-not ($sqlDatabaseObject = $sqlServerObject.Databases[$Database]))
+        if (-not ($sqlDatabaseObject = $sqlServerObject.Databases[$DatabaseName]))
         {
-            $errorMessage = $script:localizedData.DatabaseNotFound -f $Database
+            $errorMessage = $script:localizedData.DatabaseNotFound -f $DatabaseName
             New-ObjectNotFoundException -Message $errorMessage
         }
 
@@ -96,7 +96,7 @@ function Get-TargetResource
             }
             catch
             {
-                $errorMessage = $script:localizedData.EnumDatabaseRoleMemberNamesError -f $Name, $Database
+                $errorMessage = $script:localizedData.EnumDatabaseRoleMemberNamesError -f $Name, $DatabaseName
                 New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }
 
@@ -111,7 +111,7 @@ function Get-TargetResource
                 if ($null -ne (Compare-Object -ReferenceObject $roleMembers -DifferenceObject $Members))
                 {
                     Write-Verbose -Message (
-                        $script:localizedData.DesiredMembersNotPresent -f $Name, $Database
+                        $script:localizedData.DesiredMembersNotPresent -f $Name, $DatabaseName
                     )
                     $membersInDesiredState = $false
                 }
@@ -125,7 +125,7 @@ function Get-TargetResource
                         if (-not ($memberName -in $roleMembers))
                         {
                             Write-Verbose -Message (
-                                $script:localizedData.MemberNotPresent -f $memberName, $Name, $Database
+                                $script:localizedData.MemberNotPresent -f $memberName, $Name, $DatabaseName
                             )
                             $membersInDesiredState = $false
                         }
@@ -139,7 +139,7 @@ function Get-TargetResource
                         if ($memberName -in $roleMembers)
                         {
                             Write-Verbose -Message (
-                                $script:localizedData.MemberPresent -f $memberName, $Name, $Database
+                                $script:localizedData.MemberPresent -f $memberName, $Name, $DatabaseName
                             )
                             $membersInDesiredState = $false
                         }
@@ -154,7 +154,7 @@ function Get-TargetResource
     $returnValue = @{
         ServerName            = $ServerName
         InstanceName          = $InstanceName
-        Database              = $Database
+        DatabaseName          = $DatabaseName
         Name                  = $Name
         Members               = $roleMembers
         MembersToInclude      = $MembersToInclude
@@ -177,7 +177,7 @@ function Get-TargetResource
     .PARAMETER InstanceName
         Specifies the name of the SQL instance to be configured.
 
-    .PARAMETER Database
+    .PARAMETER DatabaseName
         Specifies name of the database in which the role should be configured.
 
     .PARAMETER Name
@@ -215,7 +215,7 @@ function Set-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $Database,
+        $DatabaseName,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -247,7 +247,7 @@ function Set-TargetResource
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
     if ($sqlServerObject)
     {
-        $sqlDatabaseObject = $sqlServerObject.Databases[$Database]
+        $sqlDatabaseObject = $sqlServerObject.Databases[$DatabaseName]
 
         switch ($Ensure)
         {
@@ -259,14 +259,14 @@ function Set-TargetResource
                     if ($sqlDatabaseRoleObjectToDrop)
                     {
                         Write-Verbose -Message (
-                            $script:localizedData.DropDatabaseRole -f $Name, $Database
+                            $script:localizedData.DropDatabaseRole -f $Name, $DatabaseName
                         )
                         $sqlDatabaseRoleObjectToDrop.Drop()
                     }
                 }
                 catch
                 {
-                    $errorMessage = $script:localizedData.DropDatabaseRoleError -f $Name, $Database
+                    $errorMessage = $script:localizedData.DropDatabaseRoleError -f $Name, $DatabaseName
                     New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                 }
             }
@@ -285,14 +285,14 @@ function Set-TargetResource
                         if ($sqlDatabaseRoleObject)
                         {
                             Write-Verbose -Message (
-                                $script:localizedData.CreateDatabaseRole -f $Name, $Database
+                                $script:localizedData.CreateDatabaseRole -f $Name, $DatabaseName
                             )
                             $sqlDatabaseRoleObject.Create()
                         }
                     }
                     catch
                     {
-                        $errorMessage = $script:localizedData.CreateDatabaseRoleError -f $Name, $Database
+                        $errorMessage = $script:localizedData.CreateDatabaseRoleError -f $Name, $DatabaseName
                         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                     }
                 }
@@ -313,7 +313,7 @@ function Set-TargetResource
                             $removeMemberParams = @{
                                 SqlDatabaseObject = $sqlDatabaseObject
                                 Name              = $Name
-                                Member            = $memberName
+                                MemberName        = $memberName
                             }
                             Remove-SqlDscDatabaseRoleMember @removeMemberParams
                         }
@@ -327,7 +327,7 @@ function Set-TargetResource
                             $addMemberParams = @{
                                 SqlDatabaseObject = $sqlDatabaseObject
                                 Name              = $Name
-                                Member            = $memberName
+                                MemberName        = $memberName
                             }
                             Add-SqlDscDatabaseRoleMember @addMemberParams
                         }
@@ -345,7 +345,7 @@ function Set-TargetResource
                                 $addMemberParams = @{
                                     SqlDatabaseObject = $sqlDatabaseObject
                                     Name              = $Name
-                                    Member            = $memberName
+                                    MemberName        = $memberName
                                 }
                                 Add-SqlDscDatabaseRoleMember @addMemberParams
                             }
@@ -362,7 +362,7 @@ function Set-TargetResource
                                 $removeMemberParams = @{
                                     SqlDatabaseObject = $sqlDatabaseObject
                                     Name              = $Name
-                                    Member            = $memberName
+                                    MemberName        = $memberName
                                 }
                                 Remove-SqlDscDatabaseRoleMember @removeMemberParams
                             }
@@ -384,7 +384,7 @@ function Set-TargetResource
     .PARAMETER InstanceName
         Specifies the name of the SQL instance to be configured.
 
-    .PARAMETER Database
+    .PARAMETER DatabaseName
         Specifies name of the database in which the role should be configured.
 
     .PARAMETER Name
@@ -422,7 +422,7 @@ function Test-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $Database,
+        $DatabaseName,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -454,7 +454,7 @@ function Test-TargetResource
     $getTargetResourceParameters = @{
         ServerName       = $PSBoundParameters.ServerName
         InstanceName     = $PSBoundParameters.InstanceName
-        Database         = $PSBoundParameters.Database
+        DatabaseName     = $PSBoundParameters.DatabaseName
         Name             = $PSBoundParameters.Name
         Members          = $PSBoundParameters.Members
         MembersToInclude = $PSBoundParameters.MembersToInclude
@@ -501,7 +501,7 @@ function Test-TargetResource
     .PARAMETER Name
         String containing the name of the database role to add the member to.
 
-    .PARAMETER Member
+    .PARAMETER MemberName
         String containing the name of the member which should be added to the database role.
 #>
 function Add-SqlDscDatabaseRoleMember
@@ -522,27 +522,27 @@ function Add-SqlDscDatabaseRoleMember
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $Member
+        $MemberName
     )
 
     $databaseName = $SqlDatabaseObject.Name
 
-    if (-not ($SqlDatabaseObject.Roles[$Member] -or $SqlDatabaseObject.Users[$Member]))
+    if (-not ($SqlDatabaseObject.Roles[$MemberName] -or $SqlDatabaseObject.Users[$MemberName]))
     {
-        $errorMessage = $script:localizedData.DatabaseRoleOrUserNotFound -f $Member, $databaseName
+        $errorMessage = $script:localizedData.DatabaseRoleOrUserNotFound -f $MemberName, $databaseName
         New-ObjectNotFoundException -Message $errorMessage
     }
 
     try
     {
         Write-Verbose -Message (
-            $script:localizedData.AddDatabaseRoleMember -f $Member, $Name, $databaseName
+            $script:localizedData.AddDatabaseRoleMember -f $MemberName, $Name, $databaseName
         )
-        $SqlDatabaseObject.Roles[$Name].AddMember($Member)
+        $SqlDatabaseObject.Roles[$Name].AddMember($MemberName)
     }
     catch
     {
-        $errorMessage = $script:localizedData.AddDatabaseRoleMemberError -f $Member, $Name, $databaseName
+        $errorMessage = $script:localizedData.AddDatabaseRoleMemberError -f $MemberName, $Name, $databaseName
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
 }
@@ -557,7 +557,7 @@ function Add-SqlDscDatabaseRoleMember
     .PARAMETER Name
         String containing the name of the database role to remove the member from.
 
-    .PARAMETER Member
+    .PARAMETER MemberName
         String containing the name of the member which should be removed from the database role.
 #>
 function Remove-SqlDscDatabaseRoleMember
@@ -578,7 +578,7 @@ function Remove-SqlDscDatabaseRoleMember
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $Member
+        $MemberName
     )
 
     $databaseName = $SqlDatabaseObject.Name
@@ -586,13 +586,13 @@ function Remove-SqlDscDatabaseRoleMember
     try
     {
         Write-Verbose -Message (
-            $script:localizedData.DropDatabaseRoleMember -f $Member, $Name, $databaseName
+            $script:localizedData.DropDatabaseRoleMember -f $MemberName, $Name, $databaseName
         )
-        $SqlDatabaseObject.Roles[$Name].DropMember($Member)
+        $SqlDatabaseObject.Roles[$Name].DropMember($MemberName)
     }
     catch
     {
-        $errorMessage = $script:localizedData.DropDatabaseRoleMemberError -f $Member, $Name, $databaseName
+        $errorMessage = $script:localizedData.DropDatabaseRoleMemberError -f $MemberName, $Name, $databaseName
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
 }

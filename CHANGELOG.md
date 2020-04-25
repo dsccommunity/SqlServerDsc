@@ -13,6 +13,14 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
   - A read only property `IsClustered` was added that can be used to determine
     if the instance is clustered.
 
+### Changed
+
+- BREAKING CHANGE: Database changed to DatabaseName for consistency with other modules.
+  ([issue #1484](https://github.com/dsccommunity/SqlServerDsc/issues/1484)).
+  - SqlDatabaseOwner
+  - SqlDatabasePermission
+  - SqlDatabaseRole
+  
 ### Fixed
 
 - SqlServerDsc
@@ -36,6 +44,9 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
   - Much of the code was refactored into units (functions) to be easier to test.
     Due to the size of the code the unit tests ran for an abnormal long time,
     after this refactoring the unit tests runs much quicker.
+- README.md
+  - Changed to point to CONTRIBUTING.md on master branch to avoid "404 Page not found"
+    ([issue #1508](https://github.com/dsccommunity/SqlServerDsc/issues/1508)).
 
 ## [13.5.0] - 2020-04-12
 
