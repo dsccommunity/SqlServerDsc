@@ -22,7 +22,7 @@ Configuration Example
         {
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            Database             = 'AdventureWorks'
+            DatabaseName         = 'AdventureWorks'
             Name                 = 'ReportEditor'
             Ensure               = 'Present'
 
@@ -33,7 +33,7 @@ Configuration Example
         {
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            Database             = 'AdventureWorks'
+            DatabaseName         = 'AdventureWorks'
             Name                 = 'ReportViewer'
             Ensure               = 'Present'
 

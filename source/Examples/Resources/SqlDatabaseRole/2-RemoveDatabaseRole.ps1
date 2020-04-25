@@ -22,7 +22,7 @@ Configuration Example
         {
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            Database             = 'AdventureWorks'
+            DatabaseName         = 'AdventureWorks'
             Name                 = 'ReportViewer'
             Ensure               = 'Absent'
 
