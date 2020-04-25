@@ -83,6 +83,62 @@ function Get-TargetResource
         Write-Verbose -Message ($script:localizedData.FeatureFlag -f ($FeatureFlag -join ''','''))
     }
 
+    $InstanceName = $InstanceName.ToUpper()
+
+    $getTargetResourceReturnValue = @{
+        Action = $Action
+        SourcePath = $SourcePath
+        SourceCredential = $SourceCredential
+        InstanceName = $InstanceName
+        RSInstallMode = $RSInstallMode
+        FeatureFlag = $FeatureFlag
+        FailoverClusterNetworkName = $null
+        Features = $null
+        InstanceID = $null
+        InstallSharedDir = $null
+        InstallSharedWOWDir = $null
+        InstanceDir = $null
+        SQLSvcAccountUsername = $null
+        SqlSvcStartupType = $null
+        AgtSvcAccountUsername = $null
+        AgtSvcStartupType = $null
+        SQLCollation = $null
+        SQLSysAdminAccounts = $null
+        SecurityMode = $null
+        InstallSQLDataDir = $null
+        SQLUserDBDir = $null
+        SQLUserDBLogDir = $null
+        SQLTempDBDir = $null
+        SQLTempDBLogDir = $null
+        SqlTempdbFileCount = $null
+        SqlTempdbFileSize = $null
+        SqlTempdbFileGrowth = $null
+        SqlTempdbLogFileSize = $null
+        SqlTempdbLogFileGrowth = $null
+        SQLBackupDir = $null
+        FTSvcAccountUsername = $null
+        RSSvcAccountUsername = $null
+        RsSvcStartupType = $null
+        ASSvcAccountUsername = $null
+        AsSvcStartupType = $null
+        ASCollation = $null
+        ASSysAdminAccounts = $null
+        ASDataDir = $null
+        ASLogDir = $null
+        ASBackupDir = $null
+        ASTempDir = $null
+        ASConfigDir = $null
+        ASServerMode = $null
+        ISSvcAccountUsername = $null
+        IsSvcStartupType = $null
+        FailoverClusterGroupName = $null
+        FailoverClusterIPAddress = $null
+    }
+
+    <#
+        $sqlHostName is later used by helper function to connect to the instance
+        for the Database Engine or the Analysis Services.
+    #>
     if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster','Addnode'))
     {
         $sqlHostName = $FailoverClusterNetworkName
@@ -91,8 +147,6 @@ function Get-TargetResource
     {
         $sqlHostName = $env:COMPUTERNAME
     }
-
-    $InstanceName = $InstanceName.ToUpper()
 
     # Force drive list update, to pick up any newly mounted volumes
     $null = Get-PSDrive
@@ -115,57 +169,52 @@ function Get-TargetResource
         Disconnect-UncPath -RemotePath $SourcePath
     }
 
-    if ($InstanceName -eq 'MSSQLSERVER')
-    {
-        $databaseServiceName = 'MSSQLSERVER'
-        $agentServiceName = 'SQLSERVERAGENT'
-        $fullTextServiceName = 'MSSQLFDLauncher'
-        $reportServiceName = 'ReportServer'
-        $analysisServiceName = 'MSSQLServerOLAPService'
-    }
-    else
-    {
-        $databaseServiceName = "MSSQL`$$InstanceName"
-        $agentServiceName = "SQLAgent`$$InstanceName"
-        $fullTextServiceName = "MSSQLFDLauncher`$$InstanceName"
-        $reportServiceName = "ReportServer`$$InstanceName"
-        $analysisServiceName = "MSOLAP`$$InstanceName"
-    }
-
-    $integrationServiceName = "MsDtsServer$($sqlVersion)0"
+    $serviceNames = Get-ServiceNamesForInstance -InstanceName $InstanceName -SqlServerMajorVersion $sqlVersion
 
     $features = ''
 
-    $services = Get-Service
+    # Get the name of the relevant services that are actually installed.
+    $currentServiceNames = (Get-Service -Name @(
+        $serviceNames.DatabaseService
+        $serviceNames.AgentService
+        $serviceNames.FullTextService
+        $serviceNames.ReportService
+        $serviceNames.AnalysisService
+        $serviceNames.IntegrationService
+    ) -ErrorAction 'SilentlyContinue').Name
 
     Write-Verbose -Message $script:localizedData.EvaluateDatabaseEngineFeature
 
-    if ($services | Where-Object {$_.Name -eq $databaseServiceName})
+    if ($serviceNames.DatabaseService -in $currentServiceNames)
     {
         Write-Verbose -Message $script:localizedData.DatabaseEngineFeatureFound
 
         $features += 'SQLENGINE,'
 
-        $sqlServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$databaseServiceName'")
-        $agentServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$agentServiceName'")
+        # Get current properties for the feature SQLENGINE.
+        $currentSqlEngineProperties = Get-SqlEngineProperties -ServerName $sqlHostName -InstanceName $InstanceName
 
-        $sqlServiceAccountUsername = $sqlServiceCimInstance.StartName
-        $agentServiceAccountUsername = $agentServiceCimInstance.StartName
-
-        $SqlSvcStartupType = ConvertTo-StartupType -StartMode $sqlServiceCimInstance.StartMode
-        $AgtSvcStartupType = ConvertTo-StartupType -StartMode $agentServiceCimInstance.StartMode
-
-        $fullInstanceId = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' -Name $InstanceName).$InstanceName
-
-        # Check if Replication sub component is configured for this instance
-        $replicationRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$fullInstanceId\ConfigurationState"
+        $getTargetResourceReturnValue.SQLSvcAccountUsername = $currentSqlEngineProperties.SQLSvcAccountUsername
+        $getTargetResourceReturnValue.AgtSvcAccountUsername = $currentSqlEngineProperties.AgtSvcAccountUsername
+        $getTargetResourceReturnValue.SqlSvcStartupType = $currentSqlEngineProperties.SqlSvcStartupType
+        $getTargetResourceReturnValue.AgtSvcStartupType = $currentSqlEngineProperties.AgtSvcStartupType
+        $getTargetResourceReturnValue.SQLCollation = $currentSqlEngineProperties.SQLCollation
+        $getTargetResourceReturnValue.InstallSQLDataDir = $currentSqlEngineProperties.InstallSQLDataDir
+        $getTargetResourceReturnValue.SQLUserDBDir = $currentSqlEngineProperties.SQLUserDBDir
+        $getTargetResourceReturnValue.SQLUserDBLogDir = $currentSqlEngineProperties.SQLUserDBLogDir
+        $getTargetResourceReturnValue.SQLBackupDir = $currentSqlEngineProperties.SQLBackupDir
+        $getTargetResourceReturnValue.IsClustered = $currentSqlEngineProperties.IsClustered
+        $getTargetResourceReturnValue.SecurityMode = $currentSqlEngineProperties.SecurityMode
 
         Write-Verbose -Message ($script:localizedData.EvaluateReplicationFeature -f $replicationRegistryPath)
 
-        $isReplicationInstalled = (Get-ItemProperty -Path $replicationRegistryPath).SQL_Replication_Core_Inst
-        if ($isReplicationInstalled -eq 1)
+        # Check if Replication sub component is configured for this instance
+        $isReplicationInstalled = Test-IsReplicationFeatureInstalled -InstanceName $InstanceName
+
+        if ($isReplicationInstalled)
         {
             Write-Verbose -Message $script:localizedData.ReplicationFeatureFound
+
             $features += 'REPLICATION,'
         }
         else
@@ -173,15 +222,15 @@ function Get-TargetResource
             Write-Verbose -Message $script:localizedData.ReplicationFeatureNotFound
         }
 
-        # Check if Data Quality Services sub component is configured
-        $dataQualityServicesRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\DQ\*"
-
         Write-Verbose -Message ($script:localizedData.EvaluateDataQualityServicesFeature -f $dataQualityServicesRegistryPath)
 
-        $isDQInstalled = (Get-ItemProperty -Path $dataQualityServicesRegistryPath -ErrorAction SilentlyContinue)
+        # Check if the Data Quality Services sub component is configured.
+        $isDQInstalled = Test-IsDQComponentInstalled -InstanceName $InstanceName -SqlServerMajorVersion $sqlVersion
+
         if ($isDQInstalled)
         {
             Write-Verbose -Message $script:localizedData.DataQualityServicesFeatureFound
+
             $features += 'DQ,'
         }
         else
@@ -189,104 +238,40 @@ function Get-TargetResource
             Write-Verbose -Message $script:localizedData.DataQualityServicesFeatureNotFound
         }
 
-        if (-not (Test-FeatureFlag -FeatureFlag $FeatureFlag -TestFlag 'DetectionSharedFeatures'))
-        {
-            # Check if Data Quality Client sub component is configured
-            $dataQualityClientRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
+        # Get the instance ID
+        $fullInstanceId = Get-FullInstanceId -InstanceName $InstanceName
+        $getTargetResourceReturnValue.InstanceID = $fullInstanceId.Split('.')[1]
 
-            Write-Verbose -Message ($script:localizedData.EvaluateDataQualityClientFeature -f $dataQualityClientRegistryPath)
+        # Get the instance program path.
+        $getTargetResourceReturnValue.InstanceDir = `
+            Get-InstanceProgramPath -InstanceName $InstanceName
 
-            $isDQCInstalled = (Get-ItemProperty -Path $dataQualityClientRegistryPath -ErrorAction SilentlyContinue).SQL_DQ_CLIENT_Full
-            if ($isDQCInstalled -eq 1)
-            {
-                Write-Verbose -Message $script:localizedData.DataQualityClientFeatureFound
-                $features += 'DQC,'
-            }
-            else
-            {
-                Write-Verbose -Message $script:localizedData.DataQualityClientFeatureNotFound
-            }
-        }
-
-        $instanceId = $fullInstanceId.Split('.')[1]
-        $instanceDirectory = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$fullInstanceId\Setup" -Name 'SqlProgramDir').SqlProgramDir.Trim("\")
-
-        $databaseServer = Connect-SQL -ServerName $sqlHostName -InstanceName $InstanceName
-
-        # Retrieve Tempdb database files information
         if ($sqlVersion -ge 13)
         {
-            # Tempdb data files count
-            $tempdbPrimaryFilegroup = ($databaseServer.Databases | Where-Object {$_.Name -eq 'tempdb'}).FileGroups | Where-Object {$_.Name -eq 'PRIMARY'}
-            $SqlTempdbFileCount = $tempdbPrimaryFilegroup.Files.Count
+            # Retrieve information about Tempdb database and its files.
+            $currentTempDbProperties = Get-TempDbProperties -ServerName $sqlHostName -InstanceName $InstanceName
 
-            # Tempdb data files size
-            $SqlTempdbFileSize = ($tempdbPrimaryFilegroup.Files.Size | Measure-Object -Average).Average / 1Kb
-
-            # Tempdb data files growth
-            $SqlTempdbFileGrowth = ($tempdbPrimaryFilegroup.Files.Growth | Measure-Object -Average).Average / 1Kb
-
-            # Tempdb log file size
-            $tempdbTempLog = ($databaseServer.Databases | Where-Object {$_.Name -eq 'tempdb'}).LogFiles | Where-Object {$_.Name -eq 'templog'}
-            $SqlTempdbLogFileSize = $tempdbTempLog.Size / 1Kb
-
-            # Tempdb log file growth
-            $SqlTempdbLogFileGrowth = $tempdbTempLog.Growth / 1Kb
+            $getTargetResourceReturnValue.SQLTempDBDir = $currentTempDbProperties.SQLTempDBDir
+            $getTargetResourceReturnValue.SqlTempdbFileCount = $currentTempDbProperties.SqlTempdbFileCount
+            $getTargetResourceReturnValue.SqlTempdbFileSize = $currentTempDbProperties.SqlTempdbFileSize
+            $getTargetResourceReturnValue.SqlTempdbFileGrowth = $currentTempDbProperties.SqlTempdbFileGrowth
+            $getTargetResourceReturnValue.SqlTempdbLogFileSize = $currentTempDbProperties.SqlTempdbLogFileSize
+            $getTargetResourceReturnValue.SqlTempdbLogFileGrowth = $currentTempDbProperties.SqlTempdbLogFileGrowth
         }
 
-        $sqlCollation = $databaseServer.Collation
+        # Get all members of the sysadmin role.
+        $sqlSystemAdminAccounts = Get-SqlRoleMembers -RoleName 'sysadmin' -ServerName $sqlHostName -InstanceName $InstanceName
+        $getTargetResourceReturnValue.SQLSysAdminAccounts = $sqlSystemAdminAccounts
 
-        $sqlSystemAdminAccounts = @()
-        foreach ($sqlUser in $databaseServer.Logins)
-        {
-            foreach ($sqlRole in $sqlUser.ListMembers())
-            {
-                if ($sqlRole -like 'sysadmin')
-                {
-                    $sqlSystemAdminAccounts += $sqlUser.Name
-                }
-            }
-        }
-
-        if ($databaseServer.LoginMode -eq 'Mixed')
-        {
-            $securityMode = 'SQL'
-        }
-        else
-        {
-            $securityMode = 'Windows'
-        }
-
-        $installSQLDataDirectory = $databaseServer.InstallDataDirectory
-        $sqlUserDatabaseDirectory = $databaseServer.DefaultFile
-        $sqlUserDatabaseLogDirectory = $databaseServer.DefaultLog
-        $sqlBackupDirectory = $databaseServer.BackupDirectory
-
-        if ($databaseServer.IsClustered)
+        if ($getTargetResourceReturnValue.IsClustered)
         {
             Write-Verbose -Message $script:localizedData.ClusterInstanceFound
 
-            $clusteredSqlInstance = Get-CimInstance -Namespace root/MSCluster -ClassName MSCluster_Resource -Filter "Type = 'SQL Server'" |
-                Where-Object { $_.PrivateProperties.InstanceName -eq $InstanceName }
+            $currentClusterProperties = Get-SqlClusterProperties -InstanceName $InstanceName
 
-            if (!$clusteredSqlInstance)
-            {
-                $errorMessage = $script:localizedData.FailoverClusterResourceNotFound -f $InstanceName
-                New-ObjectNotFoundException -Message $errorMessage
-            }
-
-            Write-Verbose -Message $script:localizedData.FailoverClusterResourceFound
-
-            $clusteredSqlGroup = $clusteredSqlInstance | Get-CimAssociatedInstance -ResultClassName MSCluster_ResourceGroup
-            $clusteredSqlNetworkName = $clusteredSqlGroup | Get-CimAssociatedInstance -ResultClassName MSCluster_Resource |
-                Where-Object { $_.Type -eq "Network Name" }
-
-            $clusteredSqlIPAddress = ($clusteredSqlNetworkName | Get-CimAssociatedInstance -ResultClassName MSCluster_Resource |
-                Where-Object { $_.Type -eq "IP Address" }).PrivateProperties.Address
-
-            # Extract the required values
-            $clusteredSqlGroupName = $clusteredSqlGroup.Name
-            $clusteredSqlHostname = $clusteredSqlNetworkName.PrivateProperties.DnsName
+            $getTargetResourceReturnValue.FailoverClusterNetworkName = $currentClusterProperties.FailoverClusterNetworkName
+            $getTargetResourceReturnValue.FailoverClusterGroupName = $currentClusterProperties.FailoverClusterGroupName
+            $getTargetResourceReturnValue.FailoverClusterIPAddress = $currentClusterProperties.FailoverClusterIPAddress
         }
         else
         {
@@ -300,12 +285,15 @@ function Get-TargetResource
 
     Write-Verbose -Message $script:localizedData.EvaluateFullTextFeature
 
-    if ($services | Where-Object {$_.Name -eq $fullTextServiceName})
+    if ($serviceNames.FullTextService -in $currentServiceNames)
     {
         Write-Verbose -Message $script:localizedData.FullTextFeatureFound
 
         $features += 'FULLTEXT,'
-        $fullTextServiceAccountUsername = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$fullTextServiceName'").StartName
+
+        $getTargetResourceReturnValue.FTSvcAccountUsername = (
+            Get-ServiceProperties -ServiceName $serviceNames.FullTextService
+        ).UserName
     }
     else
     {
@@ -314,14 +302,16 @@ function Get-TargetResource
 
     Write-Verbose -Message $script:localizedData.EvaluateReportingServicesFeature
 
-    if ($services | Where-Object {$_.Name -eq $reportServiceName})
+    if ($serviceNames.ReportService -in $currentServiceNames)
     {
         Write-Verbose -Message $script:localizedData.ReportingServicesFeatureFound
 
         $features += 'RS,'
-        $reportingServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$reportServiceName'")
-        $reportingServiceAccountUsername = $reportingServiceCimInstance.StartName
-        $RsSvcStartupType = ConvertTo-StartupType -StartMode $reportingServiceCimInstance.StartMode
+
+        $serviceReportingService = Get-ServiceProperties -ServiceName $serviceNames.ReportService
+
+        $getTargetResourceReturnValue.RSSvcAccountUsername = $serviceReportingService.UserName
+        $getTargetResourceReturnValue.RsSvcStartupType = $serviceReportingService.StartupType
     }
     else
     {
@@ -330,22 +320,24 @@ function Get-TargetResource
 
     Write-Verbose -Message $script:localizedData.EvaluateAnalysisServicesFeature
 
-    if ($services | Where-Object {$_.Name -eq $analysisServiceName})
+    if ($serviceNames.AnalysisService -in $currentServiceNames)
     {
         Write-Verbose -Message $script:localizedData.AnalysisServicesFeatureFound
 
         $features += 'AS,'
-        $analysisServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$analysisServiceName'")
-        $analysisServiceAccountUsername = $analysisServiceCimInstance.StartName
-        $AsSvcStartupType = ConvertTo-StartupType -StartMode $analysisServiceCimInstance.StartMode
+
+        $serviceAnalysisService = Get-ServiceProperties -ServiceName $serviceNames.AnalysisService
+
+        $getTargetResourceReturnValue.ASSvcAccountUsername = $serviceAnalysisService.UserName
+        $getTargetResourceReturnValue.AsSvcStartupType = $serviceAnalysisService.StartupType
 
         $analysisServer = Connect-SQLAnalysis -ServerName $sqlHostName -InstanceName $InstanceName
 
-        $analysisCollation = $analysisServer.ServerProperties['CollationName'].Value
-        $analysisDataDirectory = $analysisServer.ServerProperties['DataDir'].Value
-        $analysisTempDirectory = $analysisServer.ServerProperties['TempDir'].Value
-        $analysisLogDirectory = $analysisServer.ServerProperties['LogDir'].Value
-        $analysisBackupDirectory = $analysisServer.ServerProperties['BackupDir'].Value
+        $getTargetResourceReturnValue.ASCollation = $analysisServer.ServerProperties['CollationName'].Value
+        $getTargetResourceReturnValue.ASDataDir = $analysisServer.ServerProperties['DataDir'].Value
+        $getTargetResourceReturnValue.ASTempDir = $analysisServer.ServerProperties['TempDir'].Value
+        $getTargetResourceReturnValue.ASLogDir = $analysisServer.ServerProperties['LogDir'].Value
+        $getTargetResourceReturnValue.ASBackupDir = $analysisServer.ServerProperties['BackupDir'].Value
 
         <#
             The property $analysisServer.ServerMode.value__ contains the
@@ -356,11 +348,17 @@ function Get-TargetResource
             the property value__. See more information here
             https://msdn.microsoft.com/en-us/library/microsoft.analysisservices.core.server.servermode.aspx.
         #>
-        $analysisServerMode = $analysisServer.ServerMode.ToString().ToUpper()
+        $getTargetResourceReturnValue.ASServerMode = $analysisServer.ServerMode.ToString().ToUpper()
 
-        $analysisSystemAdminAccounts = [System.String[]] $analysisServer.Roles['Administrators'].Members.Name
+        $getTargetResourceReturnValue.ASSysAdminAccounts = [System.String[]] $analysisServer.Roles['Administrators'].Members.Name
 
-        $analysisConfigDirectory = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$analysisServiceName" -Name 'ImagePath').ImagePath.Replace(' -s ',',').Split(',')[1].Trim('"')
+        $serviceAnalysisServiceImagePath = Get-RegistryPropertyValue -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$($serviceNames.AnalysisService)" -Name 'ImagePath'
+        $foundAnalysisServiceConfigPath = $serviceAnalysisServiceImagePath -match '-s\s*"(.*)"'
+
+        if ($foundAnalysisServiceConfigPath)
+        {
+            $getTargetResourceReturnValue.ASConfigDir = $matches[1]
+        }
     }
     else
     {
@@ -369,217 +367,52 @@ function Get-TargetResource
 
     Write-Verbose -Message $script:localizedData.EvaluateIntegrationServicesFeature
 
-    if ($services | Where-Object {$_.Name -eq $integrationServiceName})
+    if ($serviceNames.IntegrationService -in $currentServiceNames)
     {
         Write-Verbose -Message $script:localizedData.IntegrationServicesFeatureFound
 
         $features += 'IS,'
-        $integrationServiceCimInstance = (Get-CimInstance -ClassName Win32_Service -Filter "Name = '$integrationServiceName'")
-        $integrationServiceAccountUsername = $integrationServiceCimInstance.StartName
-        $IsSvcStartupType = ConvertTo-StartupType -StartMode $integrationServiceCimInstance.StartMode
+
+        $serviceIntegrationService = Get-ServiceProperties -ServiceName $serviceNames.IntegrationService
+
+        $getTargetResourceReturnValue.ISSvcAccountUsername = $serviceIntegrationService.UserName
+        $getTargetResourceReturnValue.IsSvcStartupType = $serviceIntegrationService.StartupType
     }
     else
     {
         Write-Verbose -Message $script:localizedData.IntegrationServicesFeatureNotFound
     }
 
-    if (-not (Test-FeatureFlag -FeatureFlag $FeatureFlag -TestFlag 'DetectionSharedFeatures'))
-    {
-        # Check if Documentation Components "BOL" is configured
-        $documentationComponentsRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
+    $installedSharedFeatures = Get-InstalledSharedFeatures -SqlServerMajorVersion $sqlVersion
+    $features += '{0},' -f ($installedSharedFeatures -join ',')
 
-        Write-Verbose -Message ($script:localizedData.EvaluateDocumentationComponentsFeature -f $documentationComponentsRegistryPath)
-
-        $isBOLInstalled = (Get-ItemProperty -Path $documentationComponentsRegistryPath -ErrorAction SilentlyContinue).SQL_BOL_Components
-        if ($isBOLInstalled -eq 1)
-        {
-            Write-Verbose -Message $script:localizedData.DocumentationComponentsFeatureFound
-            $features += 'BOL,'
-        }
-        else
-        {
-            Write-Verbose -Message $script:localizedData.DocumentationComponentsFeatureNotFound
-        }
-
-        $clientComponentsFullRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\Tools\Setup\Client_Components_Full"
-        $registryClientComponentsFullFeatureList = (Get-ItemProperty -Path $clientComponentsFullRegistryPath -ErrorAction SilentlyContinue).FeatureList
-
-        Write-Verbose -Message ($script:localizedData.EvaluateClientConnectivityToolsFeature -f $clientComponentsFullRegistryPath)
-
-        if ($registryClientComponentsFullFeatureList -like '*Connectivity_FNS=3*')
-        {
-            Write-Verbose -Message $script:localizedData.ClientConnectivityToolsFeatureFound
-            $features += 'CONN,'
-        }
-        else
-        {
-            Write-Verbose -Message $script:localizedData.ClientConnectivityToolsFeatureNotFound
-        }
-
-        Write-Verbose -Message ($script:localizedData.EvaluateClientConnectivityBackwardsCompatibilityToolsFeature -f $clientComponentsFullRegistryPath)
-        if ($registryClientComponentsFullFeatureList -like '*Tools_Legacy_FNS=3*')
-        {
-            Write-Verbose -Message $script:localizedData.ClientConnectivityBackwardsCompatibilityToolsFeatureFound
-            $features += 'BC,'
-        }
-        else
-        {
-            Write-Verbose -Message $script:localizedData.ClientConnectivityBackwardsCompatibilityToolsFeatureNotFound
-        }
-
-        Write-Verbose -Message ($script:localizedData.EvaluateClientToolsSdkFeature -f $clientComponentsFullRegistryPath)
-        if (($registryClientComponentsFullFeatureList -like '*SDK_Full=3*') -and ($registryClientComponentsFullFeatureList -like '*SDK_FNS=3*'))
-        {
-            Write-Verbose -Message $script:localizedData.ClientToolsSdkFeatureFound
-            $features += 'SDK,'
-        }
-        else
-        {
-            Write-Verbose -Message $script:localizedData.ClientToolsSdkFeatureNotFound
-        }
-
-        # Check if MDS sub component is configured for this server
-        $masterDataServicesFullRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
-        Write-Verbose -Message ($script:localizedData.EvaluateMasterDataServicesFeature -f $masterDataServicesFullRegistryPath)
-        $isMDSInstalled = (Get-ItemProperty -Path $masterDataServicesFullRegistryPath -ErrorAction SilentlyContinue).MDSCoreFeature
-        if ($isMDSInstalled -eq 1)
-        {
-            Write-Verbose -Message $script:localizedData.MasterDataServicesFeatureFound
-            $features += 'MDS,'
-        }
-        else
-        {
-            Write-Verbose -Message $script:localizedData.MasterDataServicesFeatureNotFound
-        }
-    }
-
-    if ((Test-FeatureFlag -FeatureFlag $FeatureFlag -TestFlag 'DetectionSharedFeatures'))
-    {
-        $installedSharedFeatures = Get-InstalledSharedFeatures -SqlVersion $sqlVersion
-        $features += '{0},' -f ($installedSharedFeatures -join ',')
-    }
-
-    $registryUninstallPath = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall'
-
-    # Verify if SQL Server Management Studio 2008 or SQL Server Management Studio 2008 R2 (major version 10) is installed
-    $installedProductSqlServerManagementStudio2008R2 = Get-ItemProperty -Path (
-        Join-Path -Path $registryUninstallPath -ChildPath '{72AB7E6F-BC24-481E-8C45-1AB5B3DD795D}'
-    ) -ErrorAction SilentlyContinue
-
-    # Verify if SQL Server Management Studio 2012 (major version 11) is installed
-    $installedProductSqlServerManagementStudio2012 = Get-ItemProperty -Path (
-        Join-Path -Path $registryUninstallPath -ChildPath '{A7037EB2-F953-4B12-B843-195F4D988DA1}'
-    ) -ErrorAction SilentlyContinue
-
-    # Verify if SQL Server Management Studio 2014 (major version 12) is installed
-    $installedProductSqlServerManagementStudio2014 = Get-ItemProperty -Path (
-        Join-Path -Path $registryUninstallPath -ChildPath '{75A54138-3B98-4705-92E4-F619825B121F}'
-    ) -ErrorAction SilentlyContinue
-
-    if (
-        ($sqlVersion -eq 10 -and $installedProductSqlServerManagementStudio2008R2) -or
-        ($sqlVersion -eq 11 -and $installedProductSqlServerManagementStudio2012) -or
-        ($sqlVersion -eq 12 -and $installedProductSqlServerManagementStudio2014)
-        )
+    if ((Test-IsSsmsInstalled -SqlServerMajorVersion $sqlVersion))
     {
         $features += 'SSMS,'
     }
 
-    # Evaluating if SQL Server Management Studio Advanced 2008  or SQL Server Management Studio Advanced 2008 R2 (major version 10) is installed
-    $installedProductSqlServerManagementStudioAdvanced2008R2 = Get-ItemProperty -Path (
-        Join-Path -Path $registryUninstallPath -ChildPath '{B5FE23CC-0151-4595-84C3-F1DE6F44FE9B}'
-    ) -ErrorAction SilentlyContinue
-
-    # Evaluating if SQL Server Management Studio Advanced 2012 (major version 11) is installed
-    $installedProductSqlServerManagementStudioAdvanced2012 = Get-ItemProperty -Path (
-        Join-Path -Path $registryUninstallPath -ChildPath '{7842C220-6E9A-4D5A-AE70-0E138271F883}'
-    ) -ErrorAction SilentlyContinue
-
-    # Evaluating if SQL Server Management Studio Advanced 2014 (major version 12) is installed
-    $installedProductSqlServerManagementStudioAdvanced2014 = Get-ItemProperty -Path (
-        Join-Path -Path $registryUninstallPath -ChildPath '{B5ECFA5C-AC4F-45A4-A12E-A76ABDD9CCBA}'
-    ) -ErrorAction SilentlyContinue
-
-    if (
-        ($sqlVersion -eq 10 -and $installedProductSqlServerManagementStudioAdvanced2008R2) -or
-        ($sqlVersion -eq 11 -and $installedProductSqlServerManagementStudioAdvanced2012) -or
-        ($sqlVersion -eq 12 -and $installedProductSqlServerManagementStudioAdvanced2014)
-        )
+    if ((Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion $sqlVersion))
     {
         $features += 'ADV_SSMS,'
     }
 
     $features = $features.Trim(',')
+
     if ($features)
     {
-        $registryInstallerComponentsPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components'
+        $currentSqlSharedPaths = Get-SqlSharedPaths -SqlServerMajorVersion $sqlVersion
 
-        switch ($sqlVersion)
-        {
-            { $_ -in ('10','11','12','13','14') }
-            {
-                $registryKeySharedDir = 'FEE2E540D20152D4597229B6CFBC0A69'
-                $registryKeySharedWOWDir = 'A79497A344129F64CA7D69C56F5DD8B4'
-            }
-        }
-
-        if ($registryKeySharedDir)
-        {
-            $installSharedDir = Get-FirstItemPropertyValue -Path (Join-Path -Path $registryInstallerComponentsPath -ChildPath $registryKeySharedDir)
-        }
-
-        if ($registryKeySharedWOWDir)
-        {
-            $installSharedWOWDir = Get-FirstItemPropertyValue -Path (Join-Path -Path $registryInstallerComponentsPath -ChildPath $registryKeySharedWOWDir)
-        }
+        $getTargetResourceReturnValue.InstallSharedDir = $currentSqlSharedPaths.InstallSharedDir
+        $getTargetResourceReturnValue.InstallSharedWOWDir = $currentSqlSharedPaths.InstallSharedWOWDir
     }
 
-    return @{
-        SourcePath = $SourcePath
-        Features = $features
-        InstanceName = $InstanceName
-        InstanceID = $instanceID
-        InstallSharedDir = $installSharedDir
-        InstallSharedWOWDir = $installSharedWOWDir
-        InstanceDir = $instanceDirectory
-        SQLSvcAccountUsername = $sqlServiceAccountUsername
-        SqlSvcStartupType = $SqlSvcStartupType
-        AgtSvcAccountUsername = $agentServiceAccountUsername
-        AgtSvcStartupType = $AgtSvcStartupType
-        SQLCollation = $sqlCollation
-        SQLSysAdminAccounts = $sqlSystemAdminAccounts
-        SecurityMode = $securityMode
-        InstallSQLDataDir = $installSQLDataDirectory
-        SQLUserDBDir = $sqlUserDatabaseDirectory
-        SQLUserDBLogDir = $sqlUserDatabaseLogDirectory
-        SQLTempDBDir = $null
-        SQLTempDBLogDir = $null
-        SqlTempdbFileCount = $SqlTempdbFileCount
-        SqlTempdbFileSize = $SqlTempdbFileSize
-        SqlTempdbFileGrowth = $SqlTempdbFileGrowth
-        SqlTempdbLogFileSize = $SqlTempdbLogFileSize
-        SqlTempdbLogFileGrowth = $SqlTempdbLogFileGrowth
-        SQLBackupDir = $sqlBackupDirectory
-        FTSvcAccountUsername = $fullTextServiceAccountUsername
-        RSSvcAccountUsername = $reportingServiceAccountUsername
-        RsSvcStartupType = $RsSvcStartupType
-        RSInstallMode = $RSInstallMode
-        ASSvcAccountUsername = $analysisServiceAccountUsername
-        AsSvcStartupType = $AsSvcStartupType
-        ASCollation = $analysisCollation
-        ASSysAdminAccounts = $analysisSystemAdminAccounts
-        ASDataDir = $analysisDataDirectory
-        ASLogDir = $analysisLogDirectory
-        ASBackupDir = $analysisBackupDirectory
-        ASTempDir = $analysisTempDirectory
-        ASConfigDir = $analysisConfigDirectory
-        ASServerMode = $analysisServerMode
-        ISSvcAccountUsername = $integrationServiceAccountUsername
-        IsSvcStartupType = $IsSvcStartupType
-        FailoverClusterGroupName = $clusteredSqlGroupName
-        FailoverClusterNetworkName = $clusteredSqlHostname
-        FailoverClusterIPAddress = $clusteredSqlIPAddress
-    }
+    <#
+        If no features was found, this will be set to en empty string. The variable
+        $features is initially set to an empty string.
+    #>
+    $getTargetResourceReturnValue.Features = $features
+
+    return $getTargetResourceReturnValue
 }
 
 <#
@@ -588,19 +421,25 @@ function Get-TargetResource
 
     .PARAMETER Action
         The action to be performed. Default value is 'Install'.
-        Possible values are 'Install', 'Upgrade', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'.
+        Possible values are 'Install', 'Upgrade', 'InstallFailoverCluster', 'AddNode',
+        'PrepareFailoverCluster', and 'CompleteFailoverCluster'.
 
     .PARAMETER SourcePath
-        The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.
+        The path to the root of the source files for installation. I.e and UNC path
+        to a shared resource. Environment variables can be used in the path.
 
     .PARAMETER SourceCredential
-        Credentials used to access the path set in the parameter `SourcePath`. Using this parameter will trigger a copy
-        of the installation media to a temp folder on the target node. Setup will then be started from the temp folder on the target node.
-        For any subsequent calls to the resource, the parameter `SourceCredential` is used to evaluate what major version the file 'setup.exe'
-        has in the path set, again, by the parameter `SourcePath`.
-        If the path, that is assigned to parameter `SourcePath`, contains a leaf folder, for example '\\server\share\folder', then that leaf
-        folder will be used as the name of the temporary folder. If the path, that is assigned to parameter `SourcePath`, does not have a
-        leaf folder, for example '\\server\share', then a unique guid will be used as the name of the temporary folder.
+        Credentials used to access the path set in the parameter `SourcePath`.
+        Using this parameter will trigger a copy of the installation media to a temp
+        folder on the target node. Setup will then be started from the temp folder
+        on the target node. For any subsequent calls to the resource, the parameter
+        `SourceCredential` is used to evaluate what major version the file 'setup.exe'
+        has in the path set, again, by the parameter `SourcePath`. If the path, that
+        is assigned to parameter `SourcePath`, contains a leaf folder, for example
+        '\\server\share\folder', then that leaf folder will be used as the name of
+        the temporary folder. If the path, that is assigned to parameter `SourcePath`,
+        does not have a leaf folder, for example '\\server\share', then a unique guid
+        will be used as the name of the temporary folder.
 
     .PARAMETER SuppressReboot
         Suppressed reboot.
@@ -742,7 +581,8 @@ function Get-TargetResource
        Specifies the startup mode for SQL Server Browser service.
 
     .PARAMETER FailoverClusterGroupName
-        The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (InstanceName)'.
+        The name of the resource group to create for the clustered SQL Server instance.
+        Default is 'SQL Server (InstanceName)'.
 
     .PARAMETER FailoverClusterIPAddress
         Array of IP Addresses to be assigned to the clustered SQL Server instance.
@@ -766,7 +606,9 @@ function Get-TargetResource
         Specifies the file growth increment of each tempdb data file in MB.
 
     .PARAMETER SetupProcessTimeout
-        The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.
+        The timeout, in seconds, to wait for the setup process to finish. Default
+        value is 7200 seconds (2 hours). If the setup process does not finish before
+        this time, and error will be thrown.
 
     .PARAMETER FeatureFlag
         Feature flags are used to toggle functionality on or off. See the
@@ -1755,19 +1597,25 @@ function Set-TargetResource
 
     .PARAMETER Action
         The action to be performed. Default value is 'Install'.
-        Possible values are 'Install', 'Upgrade', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', and 'CompleteFailoverCluster'.
+        Possible values are 'Install', 'Upgrade', 'InstallFailoverCluster', 'AddNode',
+        'PrepareFailoverCluster', and 'CompleteFailoverCluster'.
 
     .PARAMETER SourcePath
-        The path to the root of the source files for installation. I.e and UNC path to a shared resource. Environment variables can be used in the path.
+        The path to the root of the source files for installation. I.e and UNC path
+        to a shared resource. Environment variables can be used in the path.
 
     .PARAMETER SourceCredential
-        Credentials used to access the path set in the parameter `SourcePath`. Using this parameter will trigger a copy
-        of the installation media to a temp folder on the target node. Setup will then be started from the temp folder on the target node.
-        For any subsequent calls to the resource, the parameter `SourceCredential` is used to evaluate what major version the file 'setup.exe'
-        has in the path set, again, by the parameter `SourcePath`.
-        If the path, that is assigned to parameter `SourcePath`, contains a leaf folder, for example '\\server\share\folder', then that leaf
-        folder will be used as the name of the temporary folder. If the path, that is assigned to parameter `SourcePath`, does not have a
-        leaf folder, for example '\\server\share', then a unique guid will be used as the name of the temporary folder.
+        Credentials used to access the path set in the parameter `SourcePath`.
+        Using this parameter will trigger a copy of the installation media to a temp
+        folder on the target node. Setup will then be started from the temp folder
+        on the target node. For any subsequent calls to the resource, the parameter
+        `SourceCredential` is used to evaluate what major version the file 'setup.exe'
+        has in the path set, again, by the parameter `SourcePath`. If the path, that
+        is assigned to parameter `SourcePath`, contains a leaf folder, for example
+        '\\server\share\folder', then that leaf folder will be used as the name of
+        the temporary folder. If the path, that is assigned to parameter `SourcePath`,
+        does not have a leaf folder, for example '\\server\share', then a unique guid
+        will be used as the name of the temporary folder.
 
     .PARAMETER SuppressReboot
         Suppresses reboot.
@@ -1909,7 +1757,8 @@ function Set-TargetResource
        Specifies the startup mode for SQL Server Browser service.
 
     .PARAMETER FailoverClusterGroupName
-        The name of the resource group to create for the clustered SQL Server instance. Default is 'SQL Server (InstanceName)'.
+        The name of the resource group to create for the clustered SQL Server instance.
+        Default is 'SQL Server (InstanceName)'.
 
     .PARAMETER FailoverClusterIPAddress
         Array of IP Addresses to be assigned to the clustered SQL Server instance.
@@ -1933,7 +1782,9 @@ function Set-TargetResource
         Specifies the file growth increment of each tempdb data file in MB.
 
     .PARAMETER SetupProcessTimeout
-        The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.
+        The timeout, in seconds, to wait for the setup process to finish. Default
+        value is 7200 seconds (2 hours). If the setup process does not finish before
+        this time, and error will be thrown.
 
     .PARAMETER FeatureFlag
         Feature flags are used to toggle functionality on or off. See the
@@ -2280,8 +2131,21 @@ function Get-SqlMajorVersion
 
     .PARAMETER Path
         String containing the path to the registry.
+
+    .NOTES
+        The property values that is returned from Get-Item can for example look like this:
+
+        Get-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\FEE2E540D20152D4597229B6CFBC0A69'
+
+        Name                           Property
+        ----                           --------
+        FEE2E540D20152D4597229B6CFBC0A DCB13571726C2A64F9E1C79C020E9EA4 : C:\Program Files\Microsoft SQL Server\
+        69                             52A7B04BB8030564B8245E7101DC4D9D : C:\Program Files\Microsoft SQL Server\
+                                       17195C960C1F3104DB7F109DB81562E3 : C:\Program Files\Microsoft SQL Server\
+                                       F07EA859E694B45439E22B819F70A40F : C:\Program Files\Microsoft SQL Server\
+                                       3F9A28055EEA9364B97A1C6916AB3713 : C:\Program Files\Microsoft SQL Server\
 #>
-function Get-FirstItemPropertyValue
+function Get-FirstPathValueFromRegistryPath
 {
     [CmdletBinding()]
     param
@@ -2291,10 +2155,12 @@ function Get-FirstItemPropertyValue
         $Path
     )
 
-    $registryProperty = Get-Item -Path $Path -ErrorAction SilentlyContinue
+    $registryProperty = Get-Item -Path $Path -ErrorAction 'SilentlyContinue'
+
     if ($registryProperty)
     {
         $registryProperty = $registryProperty | Select-Object -ExpandProperty Property | Select-Object -First 1
+
         if ($registryProperty)
         {
             $registryPropertyValue = (Get-ItemProperty -Path $Path -Name $registryProperty).$registryProperty.TrimEnd('\')
@@ -2446,8 +2312,9 @@ function ConvertTo-StartupType
     .SYNOPSIS
         Returns an array of installed shared features.
 
-    .PARAMETER SqlVersion
-        The major version of the SQL Server instance, i.e. 12, 13, or 14.
+    .PARAMETER SqlServerMajorVersion
+        Specifies the major version of SQL Server, e.g. 14 for SQL Server 2017.
+
 #>
 function Get-InstalledSharedFeatures
 {
@@ -2457,12 +2324,12 @@ function Get-InstalledSharedFeatures
     (
         [Parameter(Mandatory = $true)]
         [System.Int32]
-        $SqlVersion
+        $SqlServerMajorVersion
     )
 
     $sharedFeatures = @()
 
-    $configurationStateRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($SqlVersion)0\ConfigurationState"
+    $configurationStateRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($SqlServerMajorVersion)0\ConfigurationState"
 
     # Check if Data Quality Client sub component is configured
     Write-Verbose -Message ($script:localizedData.EvaluateDataQualityClientFeature -f $configurationStateRegistryPath)
@@ -2581,4 +2448,738 @@ function Test-FeatureFlag
     return $flagEnabled
 }
 
-Export-ModuleMember -Function *-TargetResource
+<#
+    .SYNOPSIS
+        Get current properties for the feature SQLENGINE.
+
+    .PARAMETER ServerName
+        Specifies the server name where the database engine instance is located.
+
+    .PARAMETER InstanceName
+        Specifies the instance name. Use 'MSSQLSERVER' for the default instance.
+
+    .PARAMETER DatabaseServiceName
+        Specifies the name of the SQL Server Database Engine service.
+
+    .PARAMETER AgentServiceName
+        Specifies the name of the  SQL Server Agent service.
+
+    .OUTPUTS
+        An hashtable with properties.
+#>
+function Get-SqlEngineProperties
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ServerName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName
+    )
+
+    $serviceNames = Get-ServiceNamesForInstance -InstanceName $InstanceName
+
+    #$sqlServiceCimInstance = Get-CimInstance -ClassName 'Win32_Service' -Filter ("Name = '{0}'" -f $serviceNames.DatabaseService)
+    $databaseEngineService = Get-ServiceProperties -ServiceName $serviceNames.DatabaseService
+    #$agentServiceCimInstance = Get-CimInstance -ClassName 'Win32_Service' -Filter ("Name = '{0}'" -f $serviceNames.AgentService)
+    $sqlAgentService = Get-ServiceProperties -ServiceName $serviceNames.AgentService
+
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+
+    $sqlCollation = $sqlServerObject.Collation
+    $isClustered = $sqlServerObject.IsClustered
+    $installSQLDataDirectory = $sqlServerObject.InstallDataDirectory
+    $sqlUserDatabaseDirectory = $sqlServerObject.DefaultFile
+    $sqlUserDatabaseLogDirectory = $sqlServerObject.DefaultLog
+    $sqlBackupDirectory = $sqlServerObject.BackupDirectory
+
+    if ($sqlServerObject.LoginMode -eq 'Mixed')
+    {
+        $securityMode = 'SQL'
+    }
+    else
+    {
+        $securityMode = 'Windows'
+    }
+
+    return @{
+        SQLSvcAccountUsername = $databaseEngineService.UserName
+        AgtSvcAccountUsername = $sqlAgentService.UserName
+        SqlSvcStartupType = $databaseEngineService.StartupType
+        AgtSvcStartupType = $sqlAgentService.StartupType
+        SQLCollation = $sqlCollation
+        IsClustered = $isClustered
+        InstallSQLDataDir = $installSQLDataDirectory
+        SQLUserDBDir = $sqlUserDatabaseDirectory
+        SQLUserDBLogDir = $sqlUserDatabaseLogDirectory
+        SQLBackupDir = $sqlBackupDirectory
+        SecurityMode = $securityMode
+    }
+}
+
+<#
+    .SYNOPSIS
+        Returns the SQL Server full instance ID.
+
+    .PARAMETER InstanceName
+        Specifies the instance name. Use 'MSSQLSERVER' for the default instance.
+
+    .OUTPUTS
+        A string containing the full instance ID, e.g. 'MSSQL12.INSTANCE'.
+#>
+function Get-FullInstanceId
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName
+    )
+
+    $getRegistryPropertyValueParameters = @{
+        Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL'
+        Name = $InstanceName
+    }
+
+    return (Get-RegistryPropertyValue @getRegistryPropertyValueParameters)
+}
+
+<#
+    .SYNOPSIS
+        Evaluates if the feature Replication is installed.
+
+    .PARAMETER InstanceName
+        Specifies the instance name. Use 'MSSQLSERVER' for the default instance.
+
+    .OUTPUTS
+        A boolean value. $true if it is installed, $false if is it not.
+#>
+function Test-IsReplicationFeatureInstalled
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName
+    )
+
+    $isReplicationInstalled = $false
+
+    $fullInstanceId = Get-FullInstanceId -InstanceName $InstanceName
+
+    # Check if Replication sub component is configured for this instance
+    $replicationRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$fullInstanceId\ConfigurationState"
+
+    $replicationInstallValue = Get-RegistryPropertyValue -Path $replicationRegistryPath -Name 'SQL_Replication_Core_Inst'
+
+    if ($replicationInstallValue -eq 1)
+    {
+        $isReplicationInstalled = $true
+    }
+
+    return $isReplicationInstalled
+}
+
+<#
+    .SYNOPSIS
+        Evaluates if the Data Quality Services sub component is installed.
+
+    .PARAMETER InstanceName
+        Specifies the instance name. Use 'MSSQLSERVER' for the default instance.
+
+    .PARAMETER SqlServerMajorVersion
+        Specifies the major version of SQL Server, e.g. 14 for SQL Server 2017.
+
+    .OUTPUTS
+        A boolean value. $true if it is installed, $false if is it not.
+#>
+function Test-IsDQComponentInstalled
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
+
+        [Parameter(Mandatory = $true)]
+        [System.Int32]
+        $SqlServerMajorVersion
+    )
+
+    $isDQInstalled = $false
+
+    $dataQualityServicesRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($SqlServerMajorVersion)0\DQ\*"
+
+    # If the path exist then we assume the feature is installed.
+    $dataQualityServiceRegistryValues = Get-ItemProperty -Path $dataQualityServicesRegistryPath -ErrorAction 'SilentlyContinue'
+
+    if ($dataQualityServiceRegistryValues)
+    {
+        $isDQInstalled = $true
+    }
+
+    return $isDQInstalled
+}
+
+<#
+    .SYNOPSIS
+        Returns the SQL Server instance program path.
+
+    .PARAMETER InstanceName
+        Specifies the instance name. Use 'MSSQLSERVER' for the default instance.
+
+    .OUTPUTS
+        A string containing the path to the instance program folder, e.g.
+        'C:\Program Files\Microsoft SQL Server'.
+#>
+function Get-InstanceProgramPath
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName
+    )
+
+    $fullInstanceId = Get-FullInstanceId -InstanceName $InstanceName
+
+    # Check if Replication sub component is configured for this instance
+    $registryPath = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\Setup' -f $fullInstanceId
+
+    $instanceDirectory = Get-RegistryPropertyValue -Path $registryPath -Name 'SqlProgramDir'
+
+    return $instanceDirectory.Trim('\')
+}
+
+<#
+    .SYNOPSIS
+       Get current properties for the TempDB in the database engine.
+
+    .PARAMETER ServerName
+        Specifies the server name where the database engine instance is located.
+
+    .PARAMETER InstanceName
+        Specifies the instance name. Use 'MSSQLSERVER' for the default instance.
+
+    .OUTPUTS
+        An hashtable with properties.
+#>
+function Get-TempDbProperties
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ServerName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName
+    )
+
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+
+    $databaseTempDb = $sqlServerObject.Databases['tempdb']
+
+    # Tempdb data primary path.
+    $sqlTempDBPrimaryFilePath = $databaseTempDb.PrimaryFilePath
+
+    $primaryFileGroup = $databaseTempDb.FileGroups['PRIMARY']
+
+    # Tempdb data files count.
+    $sqlTempdbFileCount = $primaryFileGroup.Files.Count
+
+    # Tempdb data files size.
+    $sqlTempdbFileSize = (
+        $primaryFileGroup.Files.Size |
+        Measure-Object -Average
+    ).Average / 1KB
+
+    # Tempdb data files average growth in KB.
+    $sqlTempdbAverageFileGrowthKB = (
+        $primaryFileGroup.Files |
+            Where-Object -FilterScript {
+                $_.GrowthType -eq 'KB'
+            } |
+            Select-Object -ExpandProperty 'Growth' |
+            Measure-Object -Average
+    ).Average
+
+    # Tempdb data files average growth in Percent.
+    $sqlTempdbFileGrowthPercent = (
+        $primaryFileGroup.Files |
+            Where-Object -FilterScript {
+                $_.GrowthType -eq 'Percent'
+            } |
+            Select-Object -ExpandProperty 'Growth' |
+            Measure-Object -Average
+    ).Average
+
+    $sqlTempdbFileGrowthMB = 0
+
+    # Convert the KB value into MB.
+    if ($sqlTempdbAverageFileGrowthKB)
+    {
+        $sqlTempdbFileGrowthMB = $sqlTempdbAverageFileGrowthKB / 1KB
+    }
+
+    $sqlTempdbFileGrowth = $sqlTempdbFileGrowthMB + $sqlTempdbFileGrowthPercent
+
+    $tempdbLogFiles = $databaseTempDb.LogFiles
+
+    # Tempdb log file size.
+    $sqlTempdbLogFileSize = ($tempdbLogFiles.Size | Measure-Object -Average).Average / 1KB
+
+    # Tempdb log file average growth in KB.
+    $sqlTempdbAverageLogFileGrowthKB = (
+        $tempdbLogFiles |
+            Where-Object -FilterScript {
+                $_.GrowthType -eq 'KB'
+            } |
+            Select-Object -ExpandProperty 'Growth' |
+            Measure-Object -Average
+    ).Average
+
+    # Tempdb log file average growth in Percent.
+    $sqlTempdbLogFileGrowthPercent = (
+        $tempdbLogFiles |
+            Where-Object -FilterScript {
+                $_.GrowthType -eq 'Percent'
+            } |
+            Select-Object -ExpandProperty 'Growth' |
+            Measure-Object -Average
+    ).Average
+
+    # Convert the KB value into MB.
+    if ($sqlTempdbAverageLogFileGrowthKB)
+    {
+        $sqlTempdbLogFileGrowthMB = $sqlTempdbAverageLogFileGrowthKB / 1KB
+    }
+    else
+    {
+        $sqlTempdbLogFileGrowthMB = 0
+    }
+
+    # The sum of the average growth in KB and average growth in Percent.
+    $sqlTempdbLogFileGrowth = $sqlTempdbLogFileGrowthMB + $sqlTempdbLogFileGrowthPercent
+
+    return @{
+        SQLTempDBDir = $sqlTempDBPrimaryFilePath
+        SqlTempdbFileCount = $sqlTempdbFileCount
+        SqlTempdbFileSize = $sqlTempdbFileSize
+        SqlTempdbFileGrowth = $sqlTempdbFileGrowth
+        SqlTempdbLogFileSize = $sqlTempdbLogFileSize
+        SqlTempdbLogFileGrowth = $sqlTempdbLogFileGrowth
+    }
+}
+
+<#
+    .SYNOPSIS
+       Get the correct service named based on the instance name.
+
+    .PARAMETER InstanceName
+        Specifies the instance name. Use 'MSSQLSERVER' for the default instance.
+
+    .PARAMETER SqlServerMajorVersion
+        Specifies the major version of SQL Server, e.g. 14 for SQL Server 2017.
+        If this is not passed the service name for Integration Services cannot
+        be determined and will return $null.
+
+    .OUTPUTS
+        An hashtable with the service names.
+#>
+function Get-ServiceNamesForInstance
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
+
+        [Parameter()]
+        [System.Int32]
+        $SqlServerMajorVersion
+    )
+
+    $serviceNames = @{}
+
+    if ($InstanceName -eq 'MSSQLSERVER')
+    {
+        $serviceNames.DatabaseService = 'MSSQLSERVER'
+        $serviceNames.AgentService = 'SQLSERVERAGENT'
+        $serviceNames.FullTextService = 'MSSQLFDLauncher'
+        $serviceNames.ReportService = 'ReportServer'
+        $serviceNames.AnalysisService = 'MSSQLServerOLAPService'
+    }
+    else
+    {
+        $serviceNames.DatabaseService = 'MSSQL${0}' -f $InstanceName
+        $serviceNames.AgentService = 'SQLAgent${0}' -f $InstanceName
+        $serviceNames.FullTextService = 'MSSQLFDLauncher${0}' -f $InstanceName
+        $serviceNames.ReportService = 'ReportServer${0}' -f $InstanceName
+        $serviceNames.AnalysisService = 'MSOLAP${0}' -f $InstanceName
+    }
+
+    if ($PSBoundParameters.ContainsKey('SqlServerMajorVersion'))
+    {
+        $serviceNames.IntegrationService = 'MsDtsServer{0}0' -f $SqlServerMajorVersion
+    }
+    else
+    {
+        $serviceNames.IntegrationService = $null
+    }
+
+    return $serviceNames
+}
+
+<#
+    .SYNOPSIS
+       Get members that are part of a SQL system role.
+
+    .PARAMETER ServerName
+        Specifies the server name where the database engine instance is located.
+
+    .PARAMETER InstanceName
+        Specifies the instance name. Use 'MSSQLSERVER' for the default instance.
+
+    .PARAMETER RoleName
+        Specifies the name of the role to get the members for.
+
+    .OUTPUTS
+        An hashtable with properties containing the current cluster values.
+#>
+function Get-SqlRoleMembers
+{
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ServerName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $RoleName
+    )
+
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+
+    $membersOfSysAdminRole = @($sqlServerObject.Roles[$RoleName].EnumMemberNames())
+
+    # Make sure to alway return an array of object even if there is only one value.
+    return , $membersOfSysAdminRole
+}
+
+<#
+    .SYNOPSIS
+       Get current SQL Server cluster properties.
+
+    .PARAMETER InstanceName
+        Specifies the instance name. Use 'MSSQLSERVER' for the default instance.
+
+    .OUTPUTS
+        An hashtable with properties.
+#>
+function Get-SqlClusterProperties
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName
+    )
+
+    $getCimInstanceParameters = @{
+        Namespace = 'root/MSCluster'
+        ClassName = 'MSCluster_Resource'
+        Filter = "Type = 'SQL Server'"
+    }
+
+    $clusteredSqlInstance = Get-CimInstance @getCimInstanceParameters |
+        Where-Object -FilterScript {
+            $_.PrivateProperties.InstanceName -eq $InstanceName
+        }
+
+    if (-not $clusteredSqlInstance)
+    {
+        $errorMessage = $script:localizedData.FailoverClusterResourceNotFound -f $InstanceName
+        New-ObjectNotFoundException -Message $errorMessage
+    }
+
+    Write-Verbose -Message $script:localizedData.FailoverClusterResourceFound
+
+    $clusteredSqlGroup = $clusteredSqlInstance |
+        Get-CimAssociatedInstance -ResultClassName 'MSCluster_ResourceGroup'
+
+    $clusteredSqlNetworkName = $clusteredSqlGroup |
+        Get-CimAssociatedInstance -ResultClassName 'MSCluster_Resource' |
+        Where-Object -FilterScript {
+            $_.Type -eq 'Network Name'
+        }
+
+    $clusteredSqlIPAddress = $clusteredSqlNetworkName |
+        Get-CimAssociatedInstance -ResultClassName 'MSCluster_Resource' |
+        Where-Object -FilterScript {
+            $_.Type -eq 'IP Address'
+        }
+
+    return @{
+        FailoverClusterNetworkName = $clusteredSqlNetworkName.PrivateProperties.DnsName
+        FailoverClusterGroupName   = $clusteredSqlGroup.Name
+        FailoverClusterIPAddress   = $clusteredSqlIPAddress.PrivateProperties.Address
+    }
+}
+
+<#
+    .SYNOPSIS
+        Get current properties for a service. Returns the user name that starts
+        the service, and the startup type.
+
+    .PARAMETER ServiceName
+        Specifies the service name.
+
+    .OUTPUTS
+        An hashtable with properties.
+#>
+function Get-ServiceProperties
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ServiceName
+    )
+
+    $cimInstance = Get-CimInstance -ClassName 'Win32_Service' -Filter ("Name = '{0}'" -f $ServiceName)
+
+    return @{
+        UserName    = $cimInstance.StartName
+        StartupType = ConvertTo-StartupType -StartMode $cimInstance.StartMode
+    }
+}
+
+<#
+    .SYNOPSIS
+        Evaluates if the SQL Server Management Studio for the specified SQL Server
+        major version is installed.
+
+    .PARAMETER SqlServerMajorVersion
+        Specifies the major version of SQL Server, e.g. 14 for SQL Server 2017.
+
+    .OUTPUTS
+        A boolean value. $true if it is installed, $false if is it not.
+#>
+function Test-IsSsmsInstalled
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Int32]
+        $SqlServerMajorVersion
+    )
+
+    $isInstalled = $false
+
+    switch ($SqlServerMajorVersion)
+    {
+        10
+        {
+            <#
+                Verify if SQL Server Management Studio 2008 or SQL Server Management
+                Studio 2008 R2 (major version 10) is installed.
+            #>
+            $productIdentifyingNumber = '{72AB7E6F-BC24-481E-8C45-1AB5B3DD795D}'
+        }
+
+        11
+        {
+            # Verify if SQL Server Management Studio 2012 (major version 11) is installed.
+            $productIdentifyingNumber = '{A7037EB2-F953-4B12-B843-195F4D988DA1}'
+        }
+
+        12
+        {
+            # Verify if SQL Server Management Studio 2012 (major version 11) is installed.
+            $productIdentifyingNumber = '{75A54138-3B98-4705-92E4-F619825B121F}'
+        }
+
+        default
+        {
+            # If an unsupported version was passed, make sure the function returns $false.
+            $productIdentifyingNumber = $null
+        }
+    }
+
+    if ($productIdentifyingNumber)
+    {
+        $registryUninstallPath = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall'
+
+        $registryObject = Get-ItemProperty -Path (
+            Join-Path -Path $registryUninstallPath -ChildPath $productIdentifyingNumber
+        ) -ErrorAction 'SilentlyContinue'
+
+        if ($registryObject)
+        {
+            $isInstalled = $true
+        }
+    }
+
+    return $isInstalled
+}
+
+<#
+    .SYNOPSIS
+        Evaluates if the SQL Server Management Studio Advanced for the specified
+        SQL Server major version is installed.
+
+    .PARAMETER SqlServerMajorVersion
+        Specifies the major version of SQL Server, e.g. 14 for SQL Server 2017.
+
+    .OUTPUTS
+        A boolean value. $true if it is installed, $false if is it not.
+#>
+function Test-IsSsmsAdvancedInstalled
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Int32]
+        $SqlServerMajorVersion
+    )
+
+    $isInstalled = $false
+
+    switch ($SqlServerMajorVersion)
+    {
+        10
+        {
+            <#
+                Evaluating if SQL Server Management Studio Advanced 2008 or
+                SQL Server Management Studio Advanced 2008 R2 (major version 10)
+                is installed.
+            #>
+            $productIdentifyingNumber = '{B5FE23CC-0151-4595-84C3-F1DE6F44FE9B}'
+        }
+
+        11
+        {
+            <#
+                Evaluating if SQL Server Management Studio Advanced 2012 (major
+                version 11) is installed.
+            #>
+            $productIdentifyingNumber = '{7842C220-6E9A-4D5A-AE70-0E138271F883}'
+        }
+
+        12
+        {
+            <#
+                Evaluating if SQL Server Management Studio Advanced 2014 (major
+                version 12) is installed.
+            #>
+            $productIdentifyingNumber = '{B5ECFA5C-AC4F-45A4-A12E-A76ABDD9CCBA}'
+        }
+
+        default
+        {
+            <#
+                If an unsupported version was passed, make sure the function
+                returns $false.
+            #>
+            $productIdentifyingNumber = $null
+        }
+    }
+
+    if ($productIdentifyingNumber)
+    {
+        $registryUninstallPath = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall'
+
+        $registryObject = Get-ItemProperty -Path (
+            Join-Path -Path $registryUninstallPath -ChildPath $productIdentifyingNumber
+        ) -ErrorAction 'SilentlyContinue'
+
+        if ($registryObject)
+        {
+            $isInstalled = $true
+        }
+    }
+
+    return $isInstalled
+}
+
+<#
+    .SYNOPSIS
+       Get current SQL Server shared paths for the instances.
+
+    .OUTPUTS
+        An hashtable with properties.
+#>
+function Get-SqlSharedPaths
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Int32]
+        $SqlServerMajorVersion
+    )
+
+    $installSharedDir = $null
+    $installSharedWOWDir = $null
+
+    $registryInstallerComponentsPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components'
+
+    switch ($SqlServerMajorVersion)
+    {
+        { $_ -in ('10','11','12','13','14') }
+        {
+            $registryKeySharedDir = 'FEE2E540D20152D4597229B6CFBC0A69'
+            $registryKeySharedWOWDir = 'A79497A344129F64CA7D69C56F5DD8B4'
+        }
+    }
+
+    if ($registryKeySharedDir)
+    {
+        $installSharedDir = Get-FirstPathValueFromRegistryPath -Path (Join-Path -Path $registryInstallerComponentsPath -ChildPath $registryKeySharedDir)
+    }
+
+    if ($registryKeySharedWOWDir)
+    {
+        $installSharedWOWDir = Get-FirstPathValueFromRegistryPath -Path (Join-Path -Path $registryInstallerComponentsPath -ChildPath $registryKeySharedWOWDir)
+    }
+
+    return @{
+        InstallSharedDir = $installSharedDir
+        InstallSharedWOWDir = $installSharedWOWDir
+    }
+}

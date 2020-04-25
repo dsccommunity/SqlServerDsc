@@ -1871,9 +1871,9 @@ with a feature flag, can be changed from one release to another, including
 having breaking changes.
 
 <!-- markdownlint-disable MD013 -->
-Feature flag | Description
+Flag | Description
 --- | ---
-DetectionSharedFeatures | A new way of detecting if the shared features is installed or not. This was implemented because the previous implementation did not work fully with SQL Server 2017.
+- | -
 <!-- markdownlint-enable MD013 -->
 
 #### Credentials for running the resource
@@ -1904,6 +1904,17 @@ If a service account username has a dollar sign at the end of the name it will
 be considered a Managed Service Account. Any password passed in
 the credential object will be ignored, meaning the account is not expected to
 need a '*SVCPASSWORD' argument in the setup arguments.
+
+#### Note about 'tempdb' properties
+
+The properties `SqlTempdbFileSize` and `SqlTempdbFileGrowth` that are
+returned from `Get-TargetResource` will return the sum of the average size
+and growth. If tempdb has data files with both percentage and megabytes the
+value returned is a sum of the average megabytes and the average percentage.
+For example is there is one data file using growth 100MB and another file
+having growth set to 10% then the returned value would be 110.
+This will be notable if there are multiple files in the filegroup `PRIMARY`
+with different sizes and growths.
 
 #### Parameters
 
@@ -2034,6 +2045,8 @@ need a '*SVCPASSWORD' argument in the setup arguments.
   Services service.
 * **`[String]` ISSvcAccountUsername** _(Read)_: Output user name for the Integration
   Services service.
+* **`[Boolean]` IsClustered** _(Read)_: Returns a boolean value of $true if the
+  instance is clustered, otherwise it returns $false.
 
 #### Examples
 

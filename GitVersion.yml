@@ -1,7 +1,7 @@
 mode: ContinuousDelivery
 next-version: 13.3.0
 major-version-bump-message: '\s?(breaking|major|breaking\schange)'
-minor-version-bump-message: '\s?(add|feature|minor)'
+minor-version-bump-message: '(adds?|features?|minor)\b'
 patch-version-bump-message: '\s?(fix|patch)'
 no-bump-message: '\+semver:\s?(none|skip)'
 assembly-informational-format: '{NuGetVersionV2}+Sha.{Sha}.Date.{CommitDate}'
@@ -22,6 +22,5 @@ branches:
     source-branches: ['master']
 
 ignore:
-  # Ignore this commit to force the correct initial release.
-  sha: [601107e9fc8a337b6dadb67b63d5100381f29700]
+  sha: []
 merge-message-formats: {}

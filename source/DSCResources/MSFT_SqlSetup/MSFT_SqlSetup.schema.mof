@@ -64,4 +64,5 @@ class MSFT_SqlSetup : OMI_BaseResource
     [Write, Description("Specifies the file growth increment of each tempdb data file in MB.")] UInt32 SqlTempdbLogFileGrowth;
     [Write, Description("The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.")] UInt32 SetupProcessTimeout;
     [Write, Description("Feature flags are used to toggle functionality on or off. See the documentation for what additional functionality exist through a feature flag.")] String FeatureFlag[];
+    [Read, Description("Returns a boolean value of $true if the instance is clustered, otherwise it returns $false.")] Boolean IsClustered;
 };
