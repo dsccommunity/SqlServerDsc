@@ -14,7 +14,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerEndpointP
         The name of the SQL instance to be configured.
 
     .PARAMETER ServerName
-        The host name of the SQL Server to be configured.
+        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
     .PARAMETER Name
         The name of the endpoint.
@@ -32,9 +32,10 @@ function Get-TargetResource
         [System.String]
         $InstanceName,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName,
+        $ServerName = $env:COMPUTERNAME,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -105,7 +106,7 @@ function Get-TargetResource
         The name of the SQL instance to be configured.
 
     .PARAMETER ServerName
-        The host name of the SQL Server to be configured.
+        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
     .PARAMETER Ensure
         If the permission should be present or absent. Default value is 'Present'.
@@ -128,9 +129,10 @@ function Set-TargetResource
         [System.String]
         $InstanceName,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName,
+        $ServerName = $env:COMPUTERNAME,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -213,7 +215,7 @@ function Set-TargetResource
         The name of the SQL instance to be configured.
 
     .PARAMETER ServerName
-        The host name of the SQL Server to be configured.
+        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
     .PARAMETER Ensure
         If the permission should be present or absent. Default value is 'Present'.
@@ -237,9 +239,10 @@ function Test-TargetResource
         [System.String]
         $InstanceName,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName,
+        $ServerName = $env:COMPUTERNAME,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]

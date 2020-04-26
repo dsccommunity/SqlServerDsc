@@ -15,12 +15,66 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ### Changed
 
-- BREAKING CHANGE: Database changed to DatabaseName for consistency with other modules.
-  ([issue #1484](https://github.com/dsccommunity/SqlServerDsc/issues/1484)).
-  - SqlDatabaseOwner
-  - SqlDatabasePermission
-  - SqlDatabaseRole
-  
+- SqlAlwaysOnService
+  - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
+    defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+  - Normalize parameter descriptive text for default values.
+- SqlDatabase
+  - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
+    defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+  - Normalize parameter descriptive text for default values.
+- SqlDatabaseDefaultLocation
+  - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
+    defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+  - Normalize parameter descriptive text for default values.
+- SqlDatabaseOwner
+  - BREAKING CHANGE: Database changed to DatabaseName for consistency with
+    other modules ([issue #1484](https://github.com/dsccommunity/SqlServerDsc/issues/1484)).
+- SqlDatabasePermission
+  - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
+    defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+  - Normalize parameter descriptive text for default values.
+  - BREAKING CHANGE: Database changed to DatabaseName for consistency with
+    other modules ([issue #1484](https://github.com/dsccommunity/SqlServerDsc/issues/1484)).
+- SqlDatabaseRecoveryModel
+  - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
+    defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+  - Normalize parameter descriptive text for default values.
+- SqlDatabaseRole
+  - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
+    defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+  - Normalize parameter descriptive text for default values.
+  - BREAKING CHANGE: Database changed to DatabaseName for consistency with
+    other modules ([issue #1484](https://github.com/dsccommunity/SqlServerDsc/issues/1484)).
+- SqlDatabaseUser
+  - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
+    defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+  - Normalize parameter descriptive text for default values.
+- SqlServerConfiguration
+  - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
+    defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+  - Normalize parameter descriptive text for default values.
+- SqlServerDatabaseMail
+  - Normalize parameter descriptive text for default values.
+- SqlServerEndpoint
+  - Normalize parameter descriptive text for default values.
+- SqlServerEndpointPermission
+  - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
+    defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+  - Normalize parameter descriptive text for default values.
+- SqlServerLogin
+  - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
+    defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+  - Normalize parameter descriptive text for default values.
+- SqlServerRole
+  - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
+    defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+  - Normalize parameter descriptive text for default values.
+- SqlServiceAccount
+  - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
+    defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+  - Normalize parameter descriptive text for default values.
+
 ### Fixed
 
 - SqlServerDsc
@@ -47,6 +101,38 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 - README.md
   - Changed to point to CONTRIBUTING.md on master branch to avoid "404 Page not found"
     ([issue #1508](https://github.com/dsccommunity/SqlServerDsc/issues/1508)).
+- SqlAlias
+  - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory to
+    prevent ping-pong behavior ([issue #1502](https://github.com/dsccommunity/SqlServerDsc/issues/1502)).
+    The `ServerName` is not returned as an empty string when the protocol is
+    Named Pipes.
+- SqlRs
+  - Fix typo in the schema parameter `SuppressRestart` description
+    and in the parameter description in the `README.md`.
+- SqlSetup
+  - Update integration tests to correctly detect sysadmins because of changes
+    to the build worker.
+- SqlAgentAlert
+  - The parameter `ServerName` now throws when passing an empty string or
+    null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+- SqlAgentFailsafe
+  - The parameter `ServerName` now throws when passing an empty string or
+    null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+- SqlAgentOperator
+  - The parameter `ServerName` now throws when passing an empty string or
+    null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+- SqlServerDatabaseMail
+  - The parameter `ServerName` now throws when passing an empty string or
+    null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+- SqlServerEndpoint
+  - The parameter `ServerName` now throws when passing an empty string or
+    null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+- SqlServerEndpointState
+  - The parameter `ServerName` now throws when passing an empty string or
+    null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+- SqlServerPermission
+  - The parameter `ServerName` now throws when passing an empty string or
+    null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
 
 ## [13.5.0] - 2020-04-12
 

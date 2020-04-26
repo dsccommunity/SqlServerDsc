@@ -23,7 +23,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlServerRole'
     The name of server role to be created or dropped.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured.
+    The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
     The name of the SQL instance to be configured.
@@ -51,10 +51,10 @@ function Get-TargetResource
         [System.String]
         $ServerRoleName,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName,
+        $ServerName = $env:COMPUTERNAME,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -178,7 +178,7 @@ function Get-TargetResource
     The name of server role to be created or dropped.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured.
+    The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
     The name of the SQL instance to be configured.
@@ -210,10 +210,10 @@ function Set-TargetResource
         [System.String]
         $ServerRoleName,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName,
+        $ServerName = $env:COMPUTERNAME,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -371,7 +371,7 @@ function Set-TargetResource
     The name of server role to be created or dropped.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured.
+    The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
     The name of the SQL instance to be configured.
@@ -404,10 +404,10 @@ function Test-TargetResource
         [System.String]
         $ServerRoleName,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName,
+        $ServerName = $env:COMPUTERNAME,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
