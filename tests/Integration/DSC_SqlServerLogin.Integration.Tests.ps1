@@ -66,6 +66,8 @@ try
             }
         }
 
+        Wait-ForIdleLcm
+
         $configurationName = "$($script:dscResourceName)_AddLoginDscUser1_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
@@ -114,6 +116,8 @@ try
                 Test-DscConfiguration -Verbose | Should -Be 'True'
             }
         }
+
+        Wait-ForIdleLcm
 
         $configurationName = "$($script:dscResourceName)_AddLoginDscUser2_Config"
 
@@ -165,6 +169,8 @@ try
             }
         }
 
+        Wait-ForIdleLcm
+
         $configurationName = "$($script:dscResourceName)_AddLoginDscUser3_Disabled_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
@@ -213,6 +219,8 @@ try
                 Test-DscConfiguration -Verbose | Should -Be 'True'
             }
         }
+
+        Wait-ForIdleLcm
 
         $configurationName = "$($script:dscResourceName)_AddLoginDscUser4_Config"
 
@@ -263,6 +271,8 @@ try
             }
         }
 
+        Wait-ForIdleLcm
+
         $configurationName = "$($script:dscResourceName)_AddLoginDscSqlUsers1_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
@@ -312,6 +322,8 @@ try
             }
         }
 
+        Wait-ForIdleLcm
+
         $configurationName = "$($script:dscResourceName)_RemoveLoginDscUser3_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
@@ -359,6 +371,8 @@ try
                 Test-DscConfiguration -Verbose | Should -Be 'True'
             }
         }
+
+        Wait-ForIdleLcm
 
         $configurationName = "$($script:dscResourceName)_CleanupDependencies_Config"
 
