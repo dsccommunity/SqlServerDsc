@@ -10,6 +10,17 @@ Encoding: UTF8
 VersionedOutputDirectory: true
 
 ####################################################
+#   ModuleBuilder Dependent Modules Configuration  #
+####################################################
+
+NestedModule:
+  DscResource.Common:
+    CopyOnly: true
+    Path: ./output/RequiredModules/DscResource.Common
+    AddToManifest: false
+    Exclude: PSGetModuleInfo.xml
+
+####################################################
 #           Pipeline Configuration                 #
 ####################################################
 BuildWorkflow:
@@ -47,6 +58,7 @@ BuildWorkflow:
 Pester:
   OutputFormat: NUnitXML
   ExcludeFromCodeCoverage:
+    - Modules/DscResource.Common
   Script:
     - tests/Unit
   ExcludeTag:
@@ -62,6 +74,7 @@ DscTest:
   ExcludeSourceFile:
     - output
   ExcludeModuleFile:
+    - Modules/DscResource.Common
 
 Resolve-Dependency:
   Gallery: 'PSGallery'
