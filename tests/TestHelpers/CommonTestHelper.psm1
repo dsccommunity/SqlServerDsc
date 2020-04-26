@@ -386,3 +386,24 @@ function Test-ContinuousIntegrationTaskCategory
 
     return $result
 }
+
+<#
+    .SYNOPSIS
+        Waits for LCM to become idle.
+
+    .NOTES
+        Used in integration test where integration tests run to quickly before
+        LCM have time to cool down.
+#>
+function Wait-ForIdleLcm
+{
+    [CmdletBinding()]
+    param ()
+
+    while ((Get-DscLocalConfigurationManager).LCMState -ne 'Idle')
+    {
+        Write-Verbose -Message 'Waiting for the LCM to become idle'
+
+        Start-Sleep -Seconds 2
+    }
+}
