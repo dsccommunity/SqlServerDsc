@@ -1,13 +1,6 @@
 # Localized resources for helper module SqlServerDsc.Common.
 
 ConvertFrom-StringData @'
-    PropertyTypeInvalidForDesiredValues = Property 'DesiredValues' must be either a [System.Collections.Hashtable], [CimInstance] or [PSBoundParametersDictionary]. The type detected was {0}. (SQLCOMMON0001)
-    PropertyTypeInvalidForValuesToCheck = If 'DesiredValues' is a CimInstance, then property 'ValuesToCheck' must contain a value. (SQLCOMMON0002)
-    PropertyValidationError = Expected to find an array value for property {0} in the current values, but it was either not present or was null. This has caused the test method to return false. (SQLCOMMON0003)
-    PropertiesDoesNotMatch = Found an array for property {0} in the current values, but this array does not match the desired state. Details of the changes are below. (SQLCOMMON0004)
-    PropertyThatDoesNotMatch = {0} - {1} (SQLCOMMON0005)
-    ValueOfTypeDoesNotMatch = {0} value for property {1} does not match. Current state is '{2}' and desired state is '{3}'. (SQLCOMMON0006)
-    UnableToCompareProperty = Unable to compare property {0} as the type {1} is not handled by the Test-DscParameterState cmdlet. (SQLCOMMON0007)
     RobocopyIsCopying = Robocopy is copying media from source '{0}' to destination '{1}'. (SQLCOMMON0008)
     RobocopyUsingUnbufferedIo = Robocopy is using unbuffered I/O. (SQLCOMMON0009)
     RobocopyNotUsingUnbufferedIo = Unbuffered I/O cannot be used due to incompatible version of Robocopy. (SQLCOMMON0010)

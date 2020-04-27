@@ -7,13 +7,6 @@
 #>
 
 ConvertFrom-StringData @'
-    PropertyTypeInvalidForDesiredValues = Egenskapen 'DesiredValues' måste vara endera en [System.Collections.Hashtable], [CimInstance] eller [PSBoundParametersDictionary]. Den typ som hittades var {0}. (SQLCOMMON0001)
-    PropertyTypeInvalidForValuesToCheck = Om 'DesiredValues' är av typ CimInstance, då måste egenskapen 'ValuesToCheck' sättas till ett värde. (SQLCOMMON0002)
-    PropertyValidationError = Förväntades hitta ett värde av typen matris för egenskapen {0} för nuvarande värden, men den var endera inte tillgänglig eller så var den satt till Null. Detta har medfört att test metoden har retunerat falskt. (SQLCOMMON0003)
-    PropertiesDoesNotMatch = Hittade en matris för egenskapen {0} för nuvarande värden, men denna matris matchar inte önskat läge. Detaljer för ändringarna finns nedan. (SQLCOMMON0004)
-    PropertyThatDoesNotMatch = {0} - {1} (SQLCOMMON0005)
-    ValueOfTypeDoesNotMatch = {0} värde för egenskapen {1} matchar inte. Nuvarande läge är '{2}' och önskat läge är '{3}'. (SQLCOMMON0006)
-    UnableToCompareProperty = Inte möjligt att jämföra egenskapen {0} som typen {1}. {1} hanteras inte av Test-DscParameterState cmdlet. (SQLCOMMON0007)
     RobocopyIsCopying = Robocopy kopierar media från källan '{0}' till destinationen '{1}'. (SQLCOMMON0008)
     RobocopyUsingUnbufferedIo = Robocopy använder sig av obuffrad I/O. (SQLCOMMON0009)
     RobocopyNotUsingUnbufferedIo = Obuffrad I/O kan inte användas på grund av versionen av Robocopy inte är kompatibel. (SQLCOMMON0010)
