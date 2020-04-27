@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated the CI pipeline to use latest version of the module ModuleBuilder.
   - Changed to use the property `NuGetVersionV2` from GitVersion in the
     CI pipeline.
+  - The unit tests now run on PowerShell 7 to optimize the total run time.
 - SqlAlwaysOnService
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
