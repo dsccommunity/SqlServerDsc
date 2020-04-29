@@ -8,8 +8,8 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
-        Returns the current state of the SQL Server protocol for the specified
-        SQL Server instance.
+        Returns the current state of the SQL Server TCP/IP protocol for the
+        specified SQL Server instance.
 
     .PARAMETER InstanceName
         Specifies the name of the SQL Server instance to enable the protocol for.
@@ -21,6 +21,14 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
     .PARAMETER ServerName
         Specifies the host name of the SQL Server to be configured. Default value is
         $env:COMPUTERNAME.
+
+    .PARAMETER SuppressRestart
+        If set to $true then the any attempt by the resource to restart the services
+        is suppressed. The default value is $false.
+
+    .PARAMETER RestartTimeout
+        Timeout value for restarting the SQL Server services. The default value
+        is 120 seconds.
 #>
 function Get-TargetResource
 {
@@ -33,9 +41,8 @@ function Get-TargetResource
         $InstanceName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('TcpIp', 'NamedPipes', 'SharedMemory')]
         [System.String]
-        $ProtocolName,
+        $IpAddressGroup,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -119,7 +126,7 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-        Sets the desired state of the SQL Server protocol for the specified
+        Sets the desired state of the SQL Server TCP/IP protocol for the specified
         SQL Server instance.
 
     .PARAMETER InstanceName
@@ -134,19 +141,26 @@ function Get-TargetResource
         $env:COMPUTERNAME.
 
     .PARAMETER Enabled
-        Specifies if the protocol should be enabled or disabled.
+        Specified if the IP address group should be enabled or disabled. Only used if
+        the IP address group is not set to 'IPAll'. If not specified, the existing
+        value will not be changed.
 
-    .PARAMETER ListenOnAllIpAddresses
-        Specifies to listen on all IP addresses. Only used for the TCP/IP protocol,
-        ignored for all other protocols.
+    .PARAMETER IPAddress
+        Specifies the IP address for the IP adress group. Only used if the IP address
+        group is not set to 'IPAll'. If not specified, the existing value will not be
+        changed.
 
-    .PARAMETER KeepAlive
-        Specifies the keep alive duration. Only used for the TCP/IP protocol,
-        ignored for all other protocols.
+    .PARAMETER TcpDynamicPort
+        Specifies whether the SQL Server instance should use a dynamic port. Value
+        will be ignored if TcpPort is set to a non-empty string. If not specified,
+        the existing value will not be changed.
 
-    .PARAMETER PipeName
-        Specifies the name of the named pipe. Only used for the Named Pipes protocol,
-        ignored for all other protocols.
+    .PARAMETER TcpPort
+        Specifies the TCP port(s) that SQL Server should be listening on. If the
+        IP address should listen on more than one port, list all ports as a string
+        value with the port numbers separated with a comma, e.g. '1433,1500,1501'.
+        This parameter is limited to 2047 characters. If not specified, the existing
+        value will not be changed.
 
     .PARAMETER SuppressRestart
         If set to $true then the any attempt by the resource to restart the services
@@ -155,13 +169,6 @@ function Get-TargetResource
     .PARAMETER RestartTimeout
         Timeout value for restarting the SQL Server services. The default value
         is 120 seconds.
-
-    .NOTES
-        If a protocol is disabled that prevents Restart-SqlService to contact the
-        instance to evaluate if it is a cluster then the parameter `SuppressRestart`
-        must be used to override the restart. Same if a protocol is enabled that
-        was previously disabled and no other protocol allows connecting to the
-        instance then the parameter `SuppressRestart` must also be used.
 #>
 function Set-TargetResource
 {
@@ -173,9 +180,8 @@ function Set-TargetResource
         $InstanceName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('TcpIp', 'NamedPipes', 'SharedMemory')]
         [System.String]
-        $ProtocolName,
+        $IpAddressGroup,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -187,16 +193,16 @@ function Set-TargetResource
         $Enabled,
 
         [Parameter()]
-        [System.Boolean]
-        $ListenOnAllIpAddresses,
+        [System.String]
+        $IPAddress,
 
         [Parameter()]
-        [System.UInt16]
-        $KeepAlive,
+        [System.Boolean]
+        $TcpDynamicPort,
 
         [Parameter()]
         [System.String]
-        $PipeName,
+        $TcpPort,
 
         [Parameter()]
         [System.Boolean]
@@ -339,8 +345,8 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-        Determines the desired state of the SQL Server protocol for the specified
-        SQL Server instance.
+        Determines the desired state of the SQL Server TCP/IP protocol for the
+        specified SQL Server instance.
 
     .PARAMETER InstanceName
         Specifies the name of the SQL Server instance to enable the protocol for.
@@ -354,19 +360,26 @@ function Set-TargetResource
         $env:COMPUTERNAME.
 
     .PARAMETER Enabled
-        Specifies if the protocol should be enabled or disabled.
+        Specified if the IP address group should be enabled or disabled. Only used if
+        the IP address group is not set to 'IPAll'. If not specified, the existing
+        value will not be changed.
 
-    .PARAMETER ListenOnAllIpAddresses
-        Specifies to listen on all IP addresses. Only used for the TCP/IP protocol,
-        ignored for all other protocols.
+    .PARAMETER IPAddress
+        Specifies the IP address for the IP adress group. Only used if the IP address
+        group is not set to 'IPAll'. If not specified, the existing value will not be
+        changed.
 
-    .PARAMETER KeepAlive
-        Specifies the keep alive duration. Only used for the TCP/IP protocol,
-        ignored for all other protocols.
+    .PARAMETER TcpDynamicPort
+        Specifies whether the SQL Server instance should use a dynamic port. Value
+        will be ignored if TcpPort is set to a non-empty string. If not specified,
+        the existing value will not be changed.
 
-    .PARAMETER PipeName
-        Specifies the name of the named pipe. Only used for the Named Pipes protocol,
-        ignored for all other protocols.
+    .PARAMETER TcpPort
+        Specifies the TCP port(s) that SQL Server should be listening on. If the
+        IP address should listen on more than one port, list all ports as a string
+        value with the port numbers separated with a comma, e.g. '1433,1500,1501'.
+        This parameter is limited to 2047 characters. If not specified, the existing
+        value will not be changed.
 
     .PARAMETER SuppressRestart
         If set to $true then the any attempt by the resource to restart the services
@@ -387,9 +400,8 @@ function Test-TargetResource
         $InstanceName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('TcpIp', 'NamedPipes', 'SharedMemory')]
         [System.String]
-        $ProtocolName,
+        $IpAddressGroup,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -401,16 +413,16 @@ function Test-TargetResource
         $Enabled,
 
         [Parameter()]
-        [System.Boolean]
-        $ListenOnAllIpAddresses,
+        [System.String]
+        $IPAddress,
 
         [Parameter()]
-        [System.UInt16]
-        $KeepAlive,
+        [System.Boolean]
+        $TcpDynamicPort,
 
         [Parameter()]
         [System.String]
-        $PipeName,
+        $TcpPort,
 
         [Parameter()]
         [System.Boolean]
@@ -467,19 +479,26 @@ function Test-TargetResource
         $env:COMPUTERNAME.
 
     .PARAMETER Enabled
-        Specifies if the protocol should be enabled or disabled.
+        Specified if the IP address group should be enabled or disabled. Only used if
+        the IP address group is not set to 'IPAll'. If not specified, the existing
+        value will not be changed.
 
-    .PARAMETER ListenOnAllIpAddresses
-        Specifies to listen on all IP addresses. Only used for the TCP/IP protocol,
-        ignored for all other protocols.
+    .PARAMETER IPAddress
+        Specifies the IP address for the IP adress group. Only used if the IP address
+        group is not set to 'IPAll'. If not specified, the existing value will not be
+        changed.
 
-    .PARAMETER KeepAlive
-        Specifies the keep alive duration. Only used for the TCP/IP protocol,
-        ignored for all other protocols.
+    .PARAMETER TcpDynamicPort
+        Specifies whether the SQL Server instance should use a dynamic port. Value
+        will be ignored if TcpPort is set to a non-empty string. If not specified,
+        the existing value will not be changed.
 
-    .PARAMETER PipeName
-        Specifies the name of the named pipe. Only used for the Named Pipes protocol,
-        ignored for all other protocols.
+    .PARAMETER TcpPort
+        Specifies the TCP port(s) that SQL Server should be listening on. If the
+        IP address should listen on more than one port, list all ports as a string
+        value with the port numbers separated with a comma, e.g. '1433,1500,1501'.
+        This parameter is limited to 2047 characters. If not specified, the existing
+        value will not be changed.
 
     .PARAMETER SuppressRestart
         If set to $true then the any attempt by the resource to restart the services
@@ -499,9 +518,8 @@ function Compare-TargetResourceState
         $InstanceName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('TcpIp', 'NamedPipes', 'SharedMemory')]
         [System.String]
-        $ProtocolName,
+        $IpAddressGroup,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -513,24 +531,24 @@ function Compare-TargetResourceState
         $Enabled,
 
         [Parameter()]
-        [System.Boolean]
-        $ListenOnAllIpAddresses,
+        [System.String]
+        $IPAddress,
 
         [Parameter()]
-        [System.UInt16]
-        $KeepAlive,
+        [System.Boolean]
+        $TcpDynamicPort,
 
         [Parameter()]
         [System.String]
-        $PipeName,
+        $TcpPort,
 
         [Parameter()]
         [System.Boolean]
-        $SuppressRestart,
+        $SuppressRestart = $false,
 
         [Parameter()]
         [System.UInt16]
-        $RestartTimeout
+        $RestartTimeout = 120
     )
 
     if ($ProtocolName -eq 'SharedMemory')
