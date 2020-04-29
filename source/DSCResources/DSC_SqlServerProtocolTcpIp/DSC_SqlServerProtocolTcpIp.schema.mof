@@ -1,0 +1,14 @@
+[ClassVersion("1.0.0.0"), FriendlyName("SqlServerProtocolTcpIp")]
+class DSC_SqlServerProtocolTcpIp : OMI_BaseResource
+{
+    [Key, Description("Specifies the name of the SQL Server instance to manage the IP address group for.")] String InstanceName;
+    [Key, Description("Specifies the name of the IP address group in the TCP/IP protocol, e.g. 'IP1', 'IP2' etc., or 'IPAll'.")] String IpAddressGroup;
+    [Write, Description("Specifies the host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.")] String ServerName;
+    [Write, Description("Specified if the IP address group should be enabled or disabled. Only used if the IP address group is not set to 'IPAll'. If not specified, the existing value will not be changed.")] Boolean Enabled;
+    [Write, Description("Specifies the IP address for the IP adress group. Only used if the IP address group is not set to 'IPAll'. If not specified, the existing value will not be changed.")] String IPAddress;
+    [Write, Description("Specifies whether the SQL Server instance should use a dynamic port. Value will be ignored if TcpPort is set to a non-empty string. If not specified, the existing value will not be changed.")] Boolean TcpDynamicPort;
+    [Write, Description("Specifies the TCP port(s) that SQL Server should be listening on. If the IP address should listen on more than one port, list all ports as a string value with the port numbers separated with a comma, e.g. '1433,1500,1501'. This parameter is limited to 2047 characters. If not specified, the existing value will not be changed.")] String TcpPort;
+    [Write, Description("If set to $true then the any attempt by the resource to restart the services is suppressed. The default value is $false.")] Boolean SuppressRestart;
+    [Write, Description("Timeout value for restarting the SQL Server services. The default value is 120 seconds.")] UInt16 RestartTimeout;
+    [Read, Description("Returns $true or $false whether the IP address group is active.")] Boolean IsActive;
+};
