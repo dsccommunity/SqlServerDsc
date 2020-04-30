@@ -123,6 +123,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   the SQL Server.
 * [**SqlServerProtocol**](#sqlserverprotocol) resource manage the SQL Server
   protocols for a SQL Server instance.
+* [**SqlServerProtocolTcpIp**](#sqlserverprotocoltcpip) resource manage the TCP/IP
+  protocol IP address groups for a SQL Server instance.
 * [**SqlServerReplication**](#sqlserverreplication) resource to manage SQL Replication
   distribution and publishing.
 * [**SqlServerRole**](#sqlserverrole) resource to manage SQL server roles.
@@ -1768,21 +1770,16 @@ address groups for a SQL Server instance.
 
 #### Read-Only Properties from Get-TargetResource
 
-* **`[Boolean]` HasMultiIPAddresses** _(Read)_: Returns $true or $false whether
-  the instance has multiple IP addresses or not.
+* **`[Boolean]` IsActive** _(Read)_: Returns $true or $false whether the
+  IP address group is active.
 
 #### Examples
 
-* [Enable the TCP/IP protocol](/source/Examples/Resources/SqlServerProtocol/1-EnableTcpIp.ps1)
-* [Enable the Named Pipes protocol](/source/Examples/Resources/SqlServerProtocol/2-EnableNamedPipes.ps1)
-* [Enable the Shared Memory protocol](/source/Examples/Resources/SqlServerProtocol/3-EnableSharedMemory.ps1)
-* [Disable the TCP/IP protocol](/source/Examples/Resources/SqlServerProtocol/4-DisableTcpIp.ps1)
-* [Disable the Named Pipes protocol](/source/Examples/Resources/SqlServerProtocol/5-DisableNamedPipes.ps1)
-* [Disable the Shared Memory protocol](/source/Examples/Resources/SqlServerProtocol/6-DisableSharedMemory.ps1)
+* [Configure a IP address group](/source/Examples/Resources/SqlServerProtocol/1-ConfigureIPAddressGroup.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerProtocol).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerProtocolTcpIp).
 
 ### SqlServerReplication
 
