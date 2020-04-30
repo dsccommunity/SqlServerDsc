@@ -23,12 +23,19 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         $env:COMPUTERNAME.
 
     .PARAMETER SuppressRestart
-        If set to $true then the any attempt by the resource to restart the services
+        If set to $true then the any attempt by the resource to restart the service
         is suppressed. The default value is $false.
 
     .PARAMETER RestartTimeout
         Timeout value for restarting the SQL Server services. The default value
         is 120 seconds.
+
+    .NOTES
+        The parameters SuppressRestart and RestartTimeout are part of the function
+        Get-TargetResource to be able to return the value that the configuration
+        have set, or the default values if not. If they weren't passed to the
+        function Get-TargetResource we would have to always return $null which
+        would indicate that they are not set at all.
 #>
 function Get-TargetResource
 {
@@ -163,7 +170,7 @@ function Get-TargetResource
         value will not be changed.
 
     .PARAMETER SuppressRestart
-        If set to $true then the any attempt by the resource to restart the services
+        If set to $true then the any attempt by the resource to restart the service
         is suppressed. The default value is $false.
 
     .PARAMETER RestartTimeout
@@ -382,7 +389,7 @@ function Set-TargetResource
         value will not be changed.
 
     .PARAMETER SuppressRestart
-        If set to $true then the any attempt by the resource to restart the services
+        If set to $true then the any attempt by the resource to restart the service
         is suppressed. The default value is $false.
 
     .PARAMETER RestartTimeout
@@ -501,7 +508,7 @@ function Test-TargetResource
         value will not be changed.
 
     .PARAMETER SuppressRestart
-        If set to $true then the any attempt by the resource to restart the services
+        If set to $true then the any attempt by the resource to restart the service
         is suppressed. The default value is $false.
 
     .PARAMETER RestartTimeout
