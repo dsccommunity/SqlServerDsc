@@ -144,8 +144,9 @@ function Get-TargetResource
         'IP1', 'IP2' etc., or 'IPAll'.
 
     .PARAMETER ServerName
-        Specifies the host name of the SQL Server to be configured. Default value is
-        $env:COMPUTERNAME.
+        Specifies the host name of the SQL Server to be configured. If the SQL
+        Server belongs to a cluster or availability group specify the host name
+        for the listener or cluster group. Default value is `$env:COMPUTERNAME`.
 
     .PARAMETER Enabled
         Specified if the IP address group should be enabled or disabled. Only used if
