@@ -1,5 +1,5 @@
 $script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceName = 'DSC_SqlServerProtocol'
+$script:dscResourceName = 'DSC_SqlServerProtocolTcpIp'
 
 function Invoke-TestSetup
 {
@@ -33,7 +33,7 @@ try
     InModuleScope $script:dscResourceName {
         Set-StrictMode -Version 1.0
 
-        Describe 'SqlServerProtocol\Get-TargetResource' -Tag 'Get' {
+        Describe 'SqlServerProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
             BeforeAll {
                 $mockInstanceName = 'DSCTEST'
 
@@ -48,8 +48,12 @@ try
                         }
 
                         $getTargetResourceParameters = @{
-                            InstanceName = $mockInstanceName
-                            ProtocolName = 'TcpIp'
+                            InstanceName   = $mockInstanceName
+                            <#
+                                Intentionally using lower-case to test so that
+                                the correct casing is returned.
+                            #>
+                            IpAddressGroup = 'ipall'
                         }
                     }
 
@@ -57,164 +61,259 @@ try
                         $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
                         $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
-                        $getTargetResourceResult.ProtocolName | Should -Be 'TcpIp'
+                        # IP address group should always be returned with the correct casing.
+                        $getTargetResourceResult.IpAddressGroup | Should -BeExactly 'IPAll'
                         $getTargetResourceResult.ServerName | Should -Be $env:COMPUTERNAME
                         $getTargetResourceResult.SuppressRestart | Should -BeFalse
                         $getTargetResourceResult.RestartTimeout | Should -Be 120
                         $getTargetResourceResult.Enabled | Should -BeFalse
-                        $getTargetResourceResult.ListenOnAllIpAddresses | Should -BeFalse
-                        $getTargetResourceResult.KeepAlive | Should -Be 0
-                        $getTargetResourceResult.PipeName | Should -BeNullOrEmpty
-                        $getTargetResourceResult.HasMultiIPAddresses | Should -BeFalse
+                        $getTargetResourceResult.IPAddress | Should -BeNullOrEmpty
+                        $getTargetResourceResult.UseTcpDynamicPort | Should -BeFalse
+                        $getTargetResourceResult.TcpPort | Should -BeNullOrEmpty
+                        $getTargetResourceResult.IsActive | Should -BeFalse
+                        $getTargetResourceResult.AddressFamily | Should -BeNullOrEmpty
+                        $getTargetResourceResult.TcpDynamicPort | Should -BeNullOrEmpty
+                    }
+                }
+
+                Context 'When the IP address group is missing' {
+                    BeforeAll {
+                        Mock -CommandName Write-Warning
+                        Mock -CommandName Get-ServerProtocolObject -MockWith {
+                            return @{
+                                IPAddresses = @(
+                                    [PSCustomObject] @{
+                                        Name = 'IPAll'
+                                    }
+                                    [PSCustomObject] @{
+                                        Name = 'IP1'
+                                    }
+                                )
+                            }
+                        }
+
+                        $getTargetResourceParameters = @{
+                            InstanceName   = $mockInstanceName
+                            IpAddressGroup = 'IP2'
+                        }
+                    }
+
+                    It 'Should return the correct values' {
+                        { Get-TargetResource @getTargetResourceParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Write-Warning
                     }
                 }
             }
 
             Context 'When the system is in the desired state' {
-                Context 'When the desired protocol is TCP/IP' {
-                    BeforeAll {
-                        Mock -CommandName Get-ServerProtocolObject -MockWith {
-                            return @{
-                                IsEnabled           = $true
-                                HasMultiIPAddresses = $true
-                                ProtocolProperties  = @{
-                                    ListenOnAllIPs = @{
-                                        Value = $true
-                                    }
-                                    KeepAlive      = @{
-                                        Value = 30000
-                                    }
-                                }
-                            }
-                        }
-
-                        $getTargetResourceParameters = @{
-                            InstanceName = $mockInstanceName
-                            ProtocolName = 'TcpIp'
-                        }
-                    }
-
-                    It 'Should return the correct values' {
-                        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-
-                        $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
-                        $getTargetResourceResult.ProtocolName | Should -Be 'TcpIp'
-                        $getTargetResourceResult.ServerName | Should -Be $env:COMPUTERNAME
-                        $getTargetResourceResult.SuppressRestart | Should -BeFalse
-                        $getTargetResourceResult.RestartTimeout | Should -Be 120
-                        $getTargetResourceResult.Enabled | Should -BeTrue
-                        $getTargetResourceResult.ListenOnAllIpAddresses | Should -BeTrue
-                        $getTargetResourceResult.KeepAlive | Should -Be 30000
-                        $getTargetResourceResult.PipeName | Should -BeNullOrEmpty
-                        $getTargetResourceResult.HasMultiIPAddresses | Should -BeTrue
-                    }
-                }
-
-                Context 'When the desired protocol is Named Pipes' {
-                    BeforeAll {
-                        $mockPipeName = '\\.\pipe\$$\TESTCLU01A\MSSQL$SQL2014\sql\query'
-
-                        Mock -CommandName Get-ServerProtocolObject -MockWith {
-                            return @{
-                                IsEnabled           = $true
-                                HasMultiIPAddresses = $false
-                                ProtocolProperties  = @{
-                                    PipeName = @{
-                                        Value = $mockPipeName
+                Context 'When the IP address group is IPAll' {
+                    Context 'When the IP address group is using dynamic port' {
+                        BeforeAll {
+                            Mock -CommandName Get-ServerProtocolObject -MockWith {
+                                return @{
+                                    IPAddresses = @{
+                                        Name  = 'IPAll'
+                                        IPAll = @{
+                                            IPAddressProperties = @{
+                                                TcpPort = @{
+                                                    Value = ''
+                                                }
+                                                TcpDynamicPorts = @{
+                                                    Value = '0'
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        $getTargetResourceParameters = @{
-                            InstanceName = $mockInstanceName
-                            ProtocolName = 'NamedPipes'
-                        }
-                    }
-
-                    It 'Should return the correct values' {
-                        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-
-                        $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
-                        $getTargetResourceResult.ProtocolName | Should -Be 'NamedPipes'
-                        $getTargetResourceResult.ServerName | Should -Be $env:COMPUTERNAME
-                        $getTargetResourceResult.SuppressRestart | Should -BeFalse
-                        $getTargetResourceResult.RestartTimeout | Should -Be 120
-                        $getTargetResourceResult.Enabled | Should -BeTrue
-                        $getTargetResourceResult.ListenOnAllIpAddresses | Should -BeFalse
-                        $getTargetResourceResult.KeepAlive | Should -Be 0
-                        $getTargetResourceResult.PipeName | Should -Be $mockPipeName
-                        $getTargetResourceResult.HasMultiIPAddresses | Should -BeFalse
-                    }
-                }
-
-                Context 'When the desired protocol is Shared Memory' {
-                    BeforeAll {
-                        Mock -CommandName Get-ServerProtocolObject -MockWith {
-                            return @{
-                                IsEnabled           = $true
-                                HasMultiIPAddresses = $false
-                                ProtocolProperties  = @{ }
+                            $getTargetResourceParameters = @{
+                                InstanceName   = $mockInstanceName
+                                IpAddressGroup = 'IPAll'
                             }
                         }
 
-                        $getTargetResourceParameters = @{
-                            InstanceName = $mockInstanceName
-                            ProtocolName = 'SharedMemory'
+                        It 'Should return the correct values' {
+                            $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
+                            $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
+                            $getTargetResourceResult.IpAddressGroup | Should -BeExactly 'IPAll'
+                            $getTargetResourceResult.ServerName | Should -Be $env:COMPUTERNAME
+                            $getTargetResourceResult.SuppressRestart | Should -BeFalse
+                            $getTargetResourceResult.RestartTimeout | Should -Be 120
+                            $getTargetResourceResult.Enabled | Should -BeFalse
+                            $getTargetResourceResult.IPAddress | Should -BeNullOrEmpty
+                            $getTargetResourceResult.UseTcpDynamicPort | Should -BeTrue
+                            $getTargetResourceResult.TcpPort | Should -BeNullOrEmpty
+                            $getTargetResourceResult.IsActive | Should -BeFalse
+                            $getTargetResourceResult.AddressFamily | Should -BeNullOrEmpty
+                            $getTargetResourceResult.TcpDynamicPort | Should -BeExactly '0'
                         }
                     }
 
-                    It 'Should return the correct values' {
-                        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+                    Context 'When the IP address group is using static TCP ports' {
+                        BeforeAll {
+                            Mock -CommandName Get-ServerProtocolObject -MockWith {
+                                return @{
+                                    IPAddresses = @{
+                                        Name  = 'IPAll'
+                                        IPAll = @{
+                                            IPAddressProperties = @{
+                                                TcpPort = @{
+                                                    Value = '1433,1500,1501'
+                                                }
+                                                TcpDynamicPorts = @{
+                                                    Value = ''
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
 
-                        $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
-                        $getTargetResourceResult.ProtocolName | Should -Be 'SharedMemory'
-                        $getTargetResourceResult.ServerName | Should -Be $env:COMPUTERNAME
-                        $getTargetResourceResult.SuppressRestart | Should -BeFalse
-                        $getTargetResourceResult.RestartTimeout | Should -Be 120
-                        $getTargetResourceResult.Enabled | Should -BeTrue
-                        $getTargetResourceResult.ListenOnAllIpAddresses | Should -BeFalse
-                        $getTargetResourceResult.KeepAlive | Should -Be 0
-                        $getTargetResourceResult.PipeName | Should -BeNullOrEmpty
-                        $getTargetResourceResult.HasMultiIPAddresses | Should -BeFalse
-                    }
-                }
-
-                Context 'When the restart service is requested' {
-                    BeforeAll {
-                        Mock -CommandName Get-ServerProtocolObject -MockWith {
-                            return @{
-                                IsEnabled           = $true
-                                HasMultiIPAddresses = $false
-                                ProtocolProperties  = @{ }
+                            $getTargetResourceParameters = @{
+                                InstanceName   = $mockInstanceName
+                                IpAddressGroup = 'IPAll'
                             }
                         }
 
-                        $getTargetResourceParameters = @{
-                            InstanceName    = $mockInstanceName
-                            ProtocolName    = 'SharedMemory'
-                            SuppressRestart = $true
-                            RestartTimeout  = 300
+                        It 'Should return the correct values' {
+                            $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
+                            $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
+                            $getTargetResourceResult.IpAddressGroup | Should -BeExactly 'IPAll'
+                            $getTargetResourceResult.ServerName | Should -Be $env:COMPUTERNAME
+                            $getTargetResourceResult.SuppressRestart | Should -BeFalse
+                            $getTargetResourceResult.RestartTimeout | Should -Be 120
+                            $getTargetResourceResult.Enabled | Should -BeFalse
+                            $getTargetResourceResult.IPAddress | Should -BeNullOrEmpty
+                            $getTargetResourceResult.UseTcpDynamicPort | Should -BeFalse
+                            $getTargetResourceResult.TcpPort | Should -BeExactly '1433,1500,1501'
+                            $getTargetResourceResult.IsActive | Should -BeFalse
+                            $getTargetResourceResult.AddressFamily | Should -BeNullOrEmpty
+                            $getTargetResourceResult.TcpDynamicPort | Should -BeNullOrEmpty
+                        }
+                    }
+                }
+
+                Context 'When the IP address group is IPx (where x is an available group number)' {
+                    Context 'When the IP address group is using dynamic port' {
+                        BeforeAll {
+                            Mock -CommandName Get-ServerProtocolObject -MockWith {
+                                return @{
+                                    IPAddresses = @{
+                                        Name  = 'IP1'
+                                        IP1 = @{
+                                            IPAddress = @{
+                                                AddressFamily = 'InterNetworkV6'
+                                                IPAddressToString = 'fe80::7894:a6b6:59dd:c8ff%9'
+                                            }
+                                            IPAddressProperties = @{
+                                                TcpPort = @{
+                                                    Value = ''
+                                                }
+                                                TcpDynamicPorts = @{
+                                                    Value = '0'
+                                                }
+                                                Enabled = @{
+                                                    Value = $true
+                                                }
+                                                Active = @{
+                                                    Value = $true
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            $getTargetResourceParameters = @{
+                                InstanceName   = $mockInstanceName
+                                IpAddressGroup = 'IP1'
+                            }
+                        }
+
+                        It 'Should return the correct values' {
+                            $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
+                            $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
+                            $getTargetResourceResult.IpAddressGroup | Should -BeExactly 'IP1'
+                            $getTargetResourceResult.ServerName | Should -Be $env:COMPUTERNAME
+                            $getTargetResourceResult.SuppressRestart | Should -BeFalse
+                            $getTargetResourceResult.RestartTimeout | Should -Be 120
+                            $getTargetResourceResult.Enabled | Should -BeTrue
+                            $getTargetResourceResult.IPAddress | Should -Be 'fe80::7894:a6b6:59dd:c8ff%9'
+                            $getTargetResourceResult.UseTcpDynamicPort | Should -BeTrue
+                            $getTargetResourceResult.TcpPort | Should -BeNullOrEmpty
+                            $getTargetResourceResult.IsActive | Should -BeTrue
+                            $getTargetResourceResult.AddressFamily | Should -Be 'InterNetworkV6'
+                            $getTargetResourceResult.TcpDynamicPort | Should -BeExactly '0'
                         }
                     }
 
-                    It 'Should return the correct values' {
-                        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+                    Context 'When the IP address group is using static TCP ports' {
+                        BeforeAll {
+                            Mock -CommandName Get-ServerProtocolObject -MockWith {
+                                return @{
+                                    IPAddresses = @{
+                                        Name  = 'IP1'
+                                        IP1 = @{
+                                            IPAddress = @{
+                                                AddressFamily = 'InterNetworkV6'
+                                                IPAddressToString = 'fe80::7894:a6b6:59dd:c8ff%9'
+                                            }
+                                            IPAddressProperties = @{
+                                                TcpPort = @{
+                                                    Value = '1433,1500,1501'
+                                                }
+                                                TcpDynamicPorts = @{
+                                                    Value = ''
+                                                }
+                                                Enabled = @{
+                                                    Value = $true
+                                                }
+                                                Active = @{
+                                                    Value = $true
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
 
-                        $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
-                        $getTargetResourceResult.ProtocolName | Should -Be 'SharedMemory'
-                        $getTargetResourceResult.SuppressRestart | Should -BeTrue
-                        $getTargetResourceResult.RestartTimeout | Should -Be 300
+                            $getTargetResourceParameters = @{
+                                InstanceName   = $mockInstanceName
+                                IpAddressGroup = 'IP1'
+                            }
+                        }
+
+                        It 'Should return the correct values' {
+                            $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
+                            $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
+                            $getTargetResourceResult.IpAddressGroup | Should -BeExactly 'IP1'
+                            $getTargetResourceResult.ServerName | Should -Be $env:COMPUTERNAME
+                            $getTargetResourceResult.SuppressRestart | Should -BeFalse
+                            $getTargetResourceResult.RestartTimeout | Should -Be 120
+                            $getTargetResourceResult.Enabled | Should -BeTrue
+                            $getTargetResourceResult.IPAddress | Should -Be 'fe80::7894:a6b6:59dd:c8ff%9'
+                            $getTargetResourceResult.UseTcpDynamicPort | Should -BeFalse
+                            $getTargetResourceResult.TcpPort | Should -BeExactly '1433,1500,1501'
+                            $getTargetResourceResult.IsActive | Should -BeTrue
+                            $getTargetResourceResult.AddressFamily | Should -Be 'InterNetworkV6'
+                            $getTargetResourceResult.TcpDynamicPort | Should -BeNullOrEmpty
+                        }
                     }
                 }
             }
         }
 
-        Describe 'SqlServerProtocol\Test-TargetResource' -Tag 'Test' {
+        Describe 'SqlServerProtocolTcpIp\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 $testTargetResourceParameters = @{
-                    InstanceName = 'DSCTEST'
-                    ProtocolName = 'SharedMemory'
+                    InstanceName   = 'DSCTEST'
+                    IpAddressGroup = 'IPAll'
                 }
             }
 
@@ -259,66 +358,18 @@ try
             }
         }
 
-        Describe 'SqlServerProtocol\Compare-TargetResourceState' -Tag 'Compare' {
+        Describe 'SqlServerProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
             BeforeAll {
                 $mockInstanceName = 'DSCTEST'
             }
 
-            Context 'When passing wrong set of parameters for either TCP/IP or Named Pipes' {
-                It 'Should throw the an exception when passing both ListenOnAllIpAddresses and PipeName' {
+            Context 'When passing wrong set of parameters' {
+                It 'Should throw the an exception when passing both UseTcpDynamicPort and TcpPort' {
                     $testTargetResourceParameters = @{
-                        InstanceName           = $mockInstanceName
-                        ProtocolName           = 'TcpIp'
-                        Enabled                = $true
-                        ListenOnAllIpAddresses = $false
-                        PipeName               = 'any pipe name'
-                    }
-
-                    { Compare-ResourcePropertyState @testTargetResourceParameters } | Should -Throw
-                }
-
-                It 'Should throw the an exception when passing both KeepAlive and PipeName' {
-                    $testTargetResourceParameters = @{
-                        InstanceName = $mockInstanceName
-                        ProtocolName = 'TcpIp'
-                        Enabled      = $true
-                        KeepAlive    = 30000
-                        PipeName     = 'any pipe name'
-                    }
-
-                    { Compare-ResourcePropertyState @testTargetResourceParameters } | Should -Throw
-                }
-            }
-
-            Context 'When passing wrong set of parameters for Shared Memory' {
-                It 'Should throw the an exception when passing PipeName' {
-                    $testTargetResourceParameters = @{
-                        InstanceName = $mockInstanceName
-                        ProtocolName = 'SharedMemory'
-                        Enabled      = $true
-                        PipeName     = 'any pipe name'
-                    }
-
-                    { Compare-ResourcePropertyState @testTargetResourceParameters } | Should -Throw
-                }
-
-                It 'Should throw the an exception when passing KeepAlive' {
-                    $testTargetResourceParameters = @{
-                        InstanceName = $mockInstanceName
-                        ProtocolName = 'SharedMemory'
-                        Enabled      = $true
-                        KeepAlive    = 30000
-                    }
-
-                    { Compare-ResourcePropertyState @testTargetResourceParameters } | Should -Throw
-                }
-
-                It 'Should throw the an exception when passing ListenOnAllIpAddresses' {
-                    $testTargetResourceParameters = @{
-                        InstanceName           = $mockInstanceName
-                        ProtocolName           = 'SharedMemory'
-                        Enabled                = $true
-                        ListenOnAllIpAddresses = $true
+                        InstanceName   = $mockInstanceName
+                        IpAddressGroup = 'IPAll'
+                        UseTcpDynamicPort = $true
+                        TcpPort        = '1433'
                     }
 
                     { Compare-ResourcePropertyState @testTargetResourceParameters } | Should -Throw
@@ -326,250 +377,439 @@ try
             }
 
             Context 'When the system is in the desired state' {
-                Context 'When the desired protocol is TCP/IP' {
-                    BeforeAll {
-                        Mock -CommandName Get-TargetResource -MockWith {
-                            return @{
-                                InstanceName           = $mockInstanceName
-                                ProtocolName           = 'TcpIp'
-                                Enabled                = $true
-                                KeepAlive              = 30000
-                                ListenOnAllIpAddresses = $true
+                Context 'When the IP address group is IPAll' {
+                    Context 'When the IP address group is using dynamic port' {
+                        BeforeAll {
+                            Mock -CommandName Get-TargetResource -MockWith {
+                                return @{
+                                    InstanceName       = $mockInstanceName
+                                    IpAddressGroup     = 'IPAll'
+                                    Enabled            = $false
+                                    IPAddress          = $null
+                                    UseTcpDynamicPort  = $true
+                                    TcpPort            = $null
+                                }
+                            }
+
+                            $compareTargetResourceParameters = @{
+                                InstanceName      = $mockInstanceName
+                                IpAddressGroup    = 'IPAll'
+                                UseTcpDynamicPort = $true
                             }
                         }
 
-                        $compareTargetResourceParameters = @{
-                            InstanceName           = $mockInstanceName
-                            ProtocolName           = 'TcpIp'
-                            Enabled                = $true
-                            KeepAlive              = 30000
-                            ListenOnAllIpAddresses = $true
+                        It 'Should return the correct metadata for each protocol property' {
+                            $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
+                            $compareTargetResourceStateResult | Should -HaveCount 1
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'UseTcpDynamicPort' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -BeTrue
+                            $comparedReturnValue.Actual | Should -BeTrue
+                            $comparedReturnValue.InDesiredState | Should -BeTrue
+
+                            Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
                         }
                     }
 
-                    It 'Should return the correct metadata for each protocol property' {
-                        $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                        $compareTargetResourceStateResult | Should -HaveCount 3
+                    Context 'When the IP address group is using static TCP ports' {
+                        BeforeAll {
+                            Mock -CommandName Get-TargetResource -MockWith {
+                                return @{
+                                    InstanceName       = $mockInstanceName
+                                    IpAddressGroup     = 'IPAll'
+                                    Enabled            = $false
+                                    IPAddress          = $null
+                                    UseTcpDynamicPort  = $false
+                                    TcpPort            = '1433'
+                                }
+                            }
 
-                        $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeTrue
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                            $compareTargetResourceParameters = @{
+                                InstanceName   = $mockInstanceName
+                                IpAddressGroup = 'IPAll'
+                                TcpPort        = '1433'
+                            }
+                        }
 
-                        $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'ListenOnAllIpAddresses' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeTrue
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                        It 'Should return the correct metadata for each protocol property' {
+                            $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
+                            $compareTargetResourceStateResult | Should -HaveCount 1
 
-                        $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'KeepAlive' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -Be 30000
-                        $comparedReturnValue.Actual | Should -Be 30000
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'TcpPort' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -Be '1433'
+                            $comparedReturnValue.Actual | Should -Be '1433'
+                            $comparedReturnValue.InDesiredState | Should -BeTrue
 
-                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                        }
                     }
                 }
 
-                Context 'When the desired protocol is Named Pipes' {
-                    BeforeAll {
-                        $mockPipeName = '\\.\pipe\$$\TESTCLU01A\MSSQL$SQL2014\sql\query'
+                Context 'When the IP address group is IPx (where x is an available group number)' {
+                    Context 'When the IP address group is using dynamic port' {
+                        BeforeAll {
+                            $mockIpAddress = 'fe80::7894:a6b6:59dd:c8ff%9'
 
-                        Mock -CommandName Get-TargetResource -MockWith {
-                            return @{
-                                InstanceName = $mockInstanceName
-                                ProtocolName = 'NamedPipes'
-                                Enabled      = $true
-                                PipeName     = $mockPipeName
+                            Mock -CommandName Get-TargetResource -MockWith {
+                                return @{
+                                    InstanceName       = $mockInstanceName
+                                    IpAddressGroup     = 'IP1'
+                                    Enabled            = $true
+                                    IPAddress          = $mockIpAddress
+                                    UseTcpDynamicPort  = $true
+                                    TcpPort            = $null
+                                }
+                            }
+
+                            $compareTargetResourceParameters = @{
+                                InstanceName      = $mockInstanceName
+                                IpAddressGroup    = 'IP1'
+                                UseTcpDynamicPort = $true
+                                Enabled           = $true
+                                IPAddress         = $mockIpAddress
                             }
                         }
 
-                        $compareTargetResourceParameters = @{
-                            InstanceName = $mockInstanceName
-                            ProtocolName = 'NamedPipes'
-                            Enabled      = $true
-                            PipeName     = $mockPipeName
+                        It 'Should return the correct metadata for each protocol property' {
+                            $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
+                            $compareTargetResourceStateResult | Should -HaveCount 3
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'UseTcpDynamicPort' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -BeTrue
+                            $comparedReturnValue.Actual | Should -BeTrue
+                            $comparedReturnValue.InDesiredState | Should -BeTrue
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -BeTrue
+                            $comparedReturnValue.Actual | Should -BeTrue
+                            $comparedReturnValue.InDesiredState | Should -BeTrue
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'IPAddress' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -Be $mockIpAddress
+                            $comparedReturnValue.Actual | Should -Be $mockIpAddress
+                            $comparedReturnValue.InDesiredState | Should -BeTrue
+
+                            Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
                         }
                     }
 
-                    It 'Should return the correct metadata for each protocol property' {
-                        $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                        $compareTargetResourceStateResult | Should -HaveCount 2
+                    Context 'When the IP address group is using static TCP ports' {
+                        BeforeAll {
+                            $mockIpAddress = 'fe80::7894:a6b6:59dd:c8ff%9'
 
-                        $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeTrue
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                            Mock -CommandName Get-TargetResource -MockWith {
+                                return @{
+                                    InstanceName       = $mockInstanceName
+                                    IpAddressGroup     = 'IP1'
+                                    Enabled            = $true
+                                    IPAddress          = $mockIpAddress
+                                    UseTcpDynamicPort  = $false
+                                    TcpPort            = '1433'
+                                }
+                            }
 
-                        $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'PipeName' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -Be $mockPipeName
-                        $comparedReturnValue.Actual | Should -Be $mockPipeName
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
-
-                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    }
-                }
-
-                Context 'When the desired protocol is Shared Memory' {
-                    BeforeAll {
-                        Mock -CommandName Get-TargetResource -MockWith {
-                            return @{
-                                InstanceName = $mockInstanceName
-                                ProtocolName = 'SharedMemory'
-                                Enabled      = $true
+                            $compareTargetResourceParameters = @{
+                                InstanceName   = $mockInstanceName
+                                IpAddressGroup = 'IP1'
+                                TcpPort        = '1433'
+                                Enabled        = $true
+                                IPAddress      = $mockIpAddress
                             }
                         }
 
-                        $compareTargetResourceParameters = @{
-                            InstanceName = $mockInstanceName
-                            ProtocolName = 'SharedMemory'
-                            Enabled      = $true
+                        It 'Should return the correct metadata for each protocol property' {
+                            $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
+                            $compareTargetResourceStateResult | Should -HaveCount 3
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'TcpPort' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -Be '1433'
+                            $comparedReturnValue.Actual | Should -Be '1433'
+                            $comparedReturnValue.InDesiredState | Should -BeTrue
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -BeTrue
+                            $comparedReturnValue.Actual | Should -BeTrue
+                            $comparedReturnValue.InDesiredState | Should -BeTrue
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'IPAddress' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -Be $mockIpAddress
+                            $comparedReturnValue.Actual | Should -Be $mockIpAddress
+                            $comparedReturnValue.InDesiredState | Should -BeTrue
+
+                            Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
                         }
-                    }
-
-                    It 'Should return the correct metadata for each protocol property' {
-                        $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                        $compareTargetResourceStateResult | Should -HaveCount 1
-
-                        $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeTrue
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
-
-                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
                     }
                 }
             }
 
             Context 'When the system is not in the desired state' {
-                Context 'When the desired protocol is TCP/IP' {
-                    BeforeAll {
-                        Mock -CommandName Get-TargetResource -MockWith {
-                            return @{
-                                InstanceName           = $mockInstanceName
-                                ProtocolName           = 'TcpIp'
-                                Enabled                = $false
-                                KeepAlive              = 30000
-                                ListenOnAllIpAddresses = $false
+                Context 'When the IP address group is IPAll' {
+                    Context 'When the IP address group should be using dynamic port' {
+                        BeforeAll {
+                            Mock -CommandName Get-TargetResource -MockWith {
+                                return @{
+                                    InstanceName       = $mockInstanceName
+                                    IpAddressGroup     = 'IPAll'
+                                    Enabled            = $false
+                                    IPAddress          = $null
+                                    UseTcpDynamicPort  = $false
+                                    TcpPort            = '1433'
+                                }
+                            }
+
+                            $compareTargetResourceParameters = @{
+                                InstanceName      = $mockInstanceName
+                                IpAddressGroup    = 'IPAll'
+                                UseTcpDynamicPort = $true
                             }
                         }
 
-                        $compareTargetResourceParameters = @{
-                            InstanceName           = $mockInstanceName
-                            ProtocolName           = 'TcpIp'
-                            Enabled                = $true
-                            KeepAlive              = 50000
-                            ListenOnAllIpAddresses = $true
+                        It 'Should return the correct metadata for each protocol property' {
+                            $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
+                            $compareTargetResourceStateResult | Should -HaveCount 1
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'UseTcpDynamicPort' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -BeTrue
+                            $comparedReturnValue.Actual | Should -BeFalse
+                            $comparedReturnValue.InDesiredState | Should -BeFalse
+
+                            Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
                         }
                     }
 
-                    It 'Should return the correct metadata for each protocol property' {
-                        $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                        $compareTargetResourceStateResult | Should -HaveCount 3
+                    Context 'When the IP address group should be using static TCP ports' {
+                        BeforeAll {
+                            Mock -CommandName Get-TargetResource -MockWith {
+                                return @{
+                                    InstanceName       = $mockInstanceName
+                                    IpAddressGroup     = 'IPAll'
+                                    Enabled            = $false
+                                    IPAddress          = $null
+                                    UseTcpDynamicPort  = $true
+                                    TcpPort            = $null
+                                }
+                            }
 
-                        $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeFalse
-                        $comparedReturnValue.InDesiredState | Should -BeFalse
+                            $compareTargetResourceParameters = @{
+                                InstanceName   = $mockInstanceName
+                                IpAddressGroup = 'IPAll'
+                                TcpPort        = '1433'
+                            }
+                        }
 
-                        $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'ListenOnAllIpAddresses' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeFalse
-                        $comparedReturnValue.InDesiredState | Should -BeFalse
+                        It 'Should return the correct metadata for each protocol property' {
+                            $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
+                            $compareTargetResourceStateResult | Should -HaveCount 1
 
-                        $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'KeepAlive' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -Be 50000
-                        $comparedReturnValue.Actual | Should -Be 30000
-                        $comparedReturnValue.InDesiredState | Should -BeFalse
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'TcpPort' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -Be '1433'
+                            $comparedReturnValue.Actual | Should -BeNullOrEmpty
+                            $comparedReturnValue.InDesiredState | Should -BeFalse
 
-                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                        }
                     }
                 }
 
-                Context 'When the desired protocol is Named Pipes' {
-                    BeforeAll {
-                        $mockPipeName = '\\.\pipe\$$\TESTCLU01A\MSSQL$SQL2014\sql\query'
-                        $mockExpectedPipeName = '\\.\pipe\$$\CLU01A\MSSQL$SQL2014\sql\query'
+                Context 'When the IP address group is IPx (where x is an available group number)' {
+                    Context 'When the IP address group should be using dynamic port' {
+                        BeforeAll {
+                            $mockIpAddress = 'fe80::7894:a6b6:59dd:c8ff%9'
 
-                        Mock -CommandName Get-TargetResource -MockWith {
-                            return @{
-                                InstanceName = $mockInstanceName
-                                ProtocolName = 'NamedPipes'
-                                Enabled      = $false
-                                PipeName     = $mockPipeName
+                            Mock -CommandName Get-TargetResource -MockWith {
+                                return @{
+                                    InstanceName       = $mockInstanceName
+                                    IpAddressGroup     = 'IP1'
+                                    Enabled            = $true
+                                    IPAddress          = $mockIpAddress
+                                    UseTcpDynamicPort  = $false
+                                    TcpPort            = '1433'
+                                }
+                            }
+
+                            $compareTargetResourceParameters = @{
+                                InstanceName      = $mockInstanceName
+                                IpAddressGroup    = 'IP1'
+                                UseTcpDynamicPort = $true
+                                Enabled           = $true
+                                IPAddress         = $mockIpAddress
                             }
                         }
 
-                        $compareTargetResourceParameters = @{
-                            InstanceName = $mockInstanceName
-                            ProtocolName = 'NamedPipes'
-                            Enabled      = $true
-                            PipeName     = $mockExpectedPipeName
+                        It 'Should return the correct metadata for each protocol property' {
+                            $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
+                            $compareTargetResourceStateResult | Should -HaveCount 3
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'UseTcpDynamicPort' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -BeTrue
+                            $comparedReturnValue.Actual | Should -BeFalse
+                            $comparedReturnValue.InDesiredState | Should -BeFalse
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -BeTrue
+                            $comparedReturnValue.Actual | Should -BeTrue
+                            $comparedReturnValue.InDesiredState | Should -BeTrue
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'IPAddress' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -Be $mockIpAddress
+                            $comparedReturnValue.Actual | Should -Be $mockIpAddress
+                            $comparedReturnValue.InDesiredState | Should -BeTrue
+
+                            Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
                         }
                     }
 
-                    It 'Should return the correct metadata for each protocol property' {
-                        $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                        $compareTargetResourceStateResult | Should -HaveCount 2
+                    Context 'When the IP address group should be using static TCP ports' {
+                        BeforeAll {
+                            $mockIpAddress = 'fe80::7894:a6b6:59dd:c8ff%9'
 
-                        $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeFalse
-                        $comparedReturnValue.InDesiredState | Should -BeFalse
+                            Mock -CommandName Get-TargetResource -MockWith {
+                                return @{
+                                    InstanceName       = $mockInstanceName
+                                    IpAddressGroup     = 'IP1'
+                                    Enabled            = $true
+                                    IPAddress          = $mockIpAddress
+                                    UseTcpDynamicPort  = $true
+                                    TcpPort            = $null
+                                }
+                            }
 
-                        $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'PipeName' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -Be $mockExpectedPipeName
-                        $comparedReturnValue.Actual | Should -Be $mockPipeName
-                        $comparedReturnValue.InDesiredState | Should -BeFalse
-
-                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    }
-                }
-
-                Context 'When the desired protocol is Shared Memory' {
-                    BeforeAll {
-                        Mock -CommandName Get-TargetResource -MockWith {
-                            return @{
-                                InstanceName = $mockInstanceName
-                                ProtocolName = 'SharedMemory'
-                                Enabled      = $false
+                            $compareTargetResourceParameters = @{
+                                InstanceName   = $mockInstanceName
+                                IpAddressGroup = 'IP1'
+                                TcpPort        = '1433'
+                                Enabled        = $true
+                                IPAddress      = $mockIpAddress
                             }
                         }
 
-                        $compareTargetResourceParameters = @{
-                            InstanceName = $mockInstanceName
-                            ProtocolName = 'SharedMemory'
-                            Enabled      = $true
+                        It 'Should return the correct metadata for each protocol property' {
+                            $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
+                            $compareTargetResourceStateResult | Should -HaveCount 3
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'TcpPort' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -Be '1433'
+                            $comparedReturnValue.Actual | Should -BeNullOrEmpty
+                            $comparedReturnValue.InDesiredState | Should -BeFalse
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -BeTrue
+                            $comparedReturnValue.Actual | Should -BeTrue
+                            $comparedReturnValue.InDesiredState | Should -BeTrue
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'IPAddress' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -Be $mockIpAddress
+                            $comparedReturnValue.Actual | Should -Be $mockIpAddress
+                            $comparedReturnValue.InDesiredState | Should -BeTrue
+
+                            Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
                         }
                     }
 
-                    It 'Should return the correct metadata for each protocol property' {
-                        $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                        $compareTargetResourceStateResult | Should -HaveCount 1
+                    Context 'When the IP address group has the wrong IP adress' {
+                        BeforeAll {
+                            Mock -CommandName Get-TargetResource -MockWith {
+                                return @{
+                                    InstanceName       = $mockInstanceName
+                                    IpAddressGroup     = 'IP1'
+                                    Enabled            = $true
+                                    IPAddress          = '10.0.0.1'
+                                    UseTcpDynamicPort  = $false
+                                    TcpPort            = '1433'
+                                }
+                            }
 
-                        $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeFalse
-                        $comparedReturnValue.InDesiredState | Should -BeFalse
+                            $compareTargetResourceParameters = @{
+                                InstanceName   = $mockInstanceName
+                                IpAddressGroup = 'IP1'
+                                TcpPort        = '1433'
+                                Enabled        = $true
+                                IPAddress      = 'fe80::7894:a6b6:59dd:c8ff%9'
+                            }
+                        }
 
-                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                        It 'Should return the correct metadata for each protocol property' {
+                            $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
+                            $compareTargetResourceStateResult | Should -HaveCount 3
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'TcpPort' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -Be '1433'
+                            $comparedReturnValue.Actual | Should -Be '1433'
+                            $comparedReturnValue.InDesiredState | Should -BeTrue
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -BeTrue
+                            $comparedReturnValue.Actual | Should -BeTrue
+                            $comparedReturnValue.InDesiredState | Should -BeTrue
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'IPAddress' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -Be 'fe80::7894:a6b6:59dd:c8ff%9'
+                            $comparedReturnValue.Actual | Should -Be '10.0.0.1'
+                            $comparedReturnValue.InDesiredState | Should -BeFalse
+
+                            Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                        }
+                    }
+
+                    Context 'When the IP address group has the wrong state for Enabled' {
+                        BeforeAll {
+                            $mockIpAddress = '10.0.0.1'
+
+                            Mock -CommandName Get-TargetResource -MockWith {
+                                return @{
+                                    InstanceName       = $mockInstanceName
+                                    IpAddressGroup     = 'IP1'
+                                    Enabled            = $false
+                                    IPAddress          = $mockIpAddress
+                                    UseTcpDynamicPort  = $false
+                                    TcpPort            = '1433'
+                                }
+                            }
+
+                            $compareTargetResourceParameters = @{
+                                InstanceName   = $mockInstanceName
+                                IpAddressGroup = 'IP1'
+                                Enabled        = $true
+                            }
+                        }
+
+                        It 'Should return the correct metadata for each protocol property' {
+                            $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
+                            $compareTargetResourceStateResult | Should -HaveCount 1
+
+                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
+                            $comparedReturnValue | Should -Not -BeNullOrEmpty
+                            $comparedReturnValue.Expected | Should -BeTrue
+                            $comparedReturnValue.Actual | Should -BeFalse
+                            $comparedReturnValue.InDesiredState | Should -BeFalse
+
+                            Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                        }
                     }
                 }
             }
         }
 
-        Describe 'SqlServerProtocol\Set-TargetResource' -Tag 'Set' {
+        Describe 'SqlServerProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
             BeforeAll {
                 $mockInstanceName = 'DSCTEST'
             }

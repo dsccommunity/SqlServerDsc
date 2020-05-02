@@ -1695,7 +1695,7 @@ for a SQL Server instance.
 * **`[UInt16]` KeepAlive** _(Write)_: Specifies the keep alive duration
   in milliseconds. Only used for the TCP/IP protocol, ignored for all other
   protocols.
-* **`[String` PipeName** _(Write)_: Specifies the name of the named pipe.
+* **`[String]` PipeName** _(Write)_: Specifies the name of the named pipe.
   Only used for the Named Pipes protocol, ignored for all other protocols.
 * **`[Boolean]` SuppressRestart** _(Write)_: If set to $true then the any
   attempt by the resource to restart the service is suppressed. The default
@@ -1750,18 +1750,19 @@ address groups for a SQL Server instance.
 * **`[Boolean]` Enabled** _(Write)_: Specified if the IP address group  should
   be enabled or disabled. Only used if the IP address group is not set to
   'IPAll'. If not specified, the existing value will not be changed.
-* **`[Boolean]` IPAddress** _(Write)_: Specifies the IP address for the IP
+* **`[String]` IPAddress** _(Write)_: Specifies the IP address for the IP
   adress group. Only used if the IP address group is not set to 'IPAll'. If
   not specified, the existing value will not be changed.
-* **`[UInt16]` TcpDynamicPort** _(Write)_: Specifies whether the SQL Server
-  instance should use a dynamic port. Value will be ignored if TcpPort is set
-  to a non-empty string. If not specified, the existing value will not be
-  changed.
-* **`[String` TcpPort** _(Write)_: Specifies the TCP port(s) that SQL Server
+* **`[Boolean]` UseTcpDynamicPort** _(Write)_: Specifies whether the SQL Server
+  instance should use a dynamic port. If not specified, the existing value
+  will not be changed. This parameter is not allowed to be used at the same
+  time as the parameter TcpPort.
+* **`[String]` TcpPort** _(Write)_: Specifies the TCP port(s) that SQL Server
   should be listening on. If the IP address should listen on more than one port,
   list all ports as a string value with the port numbers separated with a comma,
   e.g. '1433,1500,1501'. This parameter is limited to 2047 characters. If not
-  specified, the existing value will not be changed.
+  specified, the existing value will not be changed. This parameter is not
+  allowed to be used at the same time as the parameter UseTcpDynamicPort.
 * **`[Boolean]` SuppressRestart** _(Write)_: If set to $true then the any
   attempt by the resource to restart the service is suppressed. The default
   value is $false.
@@ -1771,7 +1772,11 @@ address groups for a SQL Server instance.
 #### Read-Only Properties from Get-TargetResource
 
 * **`[Boolean]` IsActive** _(Read)_: Returns $true or $false whether the
-  IP address group is active.
+  IP address group is active. Not applicable for IP address group 'IPAll'.
+* **`[String]` AddressFamily** _(Read)_: Returns the IP address's adress
+  family. Not applicable for IP address group 'IPAll'.
+* **`[String]` TcpDynamicPort** _(Read)_: Returns the TCP/IP dynamic port.
+  Only applicable for the IP address group 'IPAll'.
 
 #### Examples
 

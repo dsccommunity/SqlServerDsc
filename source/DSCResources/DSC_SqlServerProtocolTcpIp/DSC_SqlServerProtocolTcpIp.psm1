@@ -8,8 +8,8 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
-        Returns the current state of the SQL Server TCP/IP protocol for the
-        specified SQL Server instance.
+        Returns the current state of the SQL Server TCP/IP protocol IP address
+        group for the specified SQL Server instance.
 
     .PARAMETER InstanceName
         Specifies the name of the SQL Server instance to enable the protocol for.
@@ -19,8 +19,9 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         'IP1', 'IP2' etc., or 'IPAll'.
 
     .PARAMETER ServerName
-        Specifies the host name of the SQL Server to be configured. Default value is
-        $env:COMPUTERNAME.
+        Specifies the host name of the SQL Server to be configured. If the
+        SQL Server belongs to a cluster or availability group specify the host
+        name for the listener or cluster group. Default value is $env:COMPUTERNAME.
 
     .PARAMETER SuppressRestart
         If set to $true then the any attempt by the resource to restart the service
@@ -36,6 +37,12 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         have set, or the default values if not. If they weren't passed to the
         function Get-TargetResource we would have to always return $null which
         would indicate that they are not set at all.
+
+        Thought this function should throw an exception if the address group is
+        missing, but voted against it since run Test-DscConfiguration before
+        running a configuration (that would configure NICs) would then fail.
+        Instead choose to output a warning message indicating that the current
+        state cannot be evaluated.
 #>
 function Get-TargetResource
 {
@@ -65,23 +72,25 @@ function Get-TargetResource
         $RestartTimeout = 120
     )
 
+    $IpAddressGroup = Convert-IpAdressGroupCasing -IpAddressGroup $IpAddressGroup
+
     $returnValue = @{
-        InstanceName           = $InstanceName
-        ProtocolName           = $ProtocolName
-        ServerName             = $ServerName
-        SuppressRestart        = $SuppressRestart
-        RestartTimeout         = $RestartTimeout
-        Enabled                = $false
-        ListenOnAllIpAddresses = $false
-        KeepAlive              = 0
-        PipeName               = $null
-        HasMultiIPAddresses    = $false
+        InstanceName       = $InstanceName
+        IpAddressGroup     = $IpAddressGroup
+        ServerName         = $ServerName
+        SuppressRestart    = $SuppressRestart
+        RestartTimeout     = $RestartTimeout
+        Enabled            = $false
+        IPAddress          = $null
+        UseTcpDynamicPort  = $false
+        TcpPort            = $null
+        IsActive           = $false
+        AddressFamily      = $null
+        TcpDynamicPort     = $null
     }
 
-    $protocolNameProperties = Get-ProtocolNameProperties -ProtocolName $ProtocolName
-
     Write-Verbose -Message (
-        $script:localizedData.GetCurrentState -f $protocolNameProperties.DisplayName, $InstanceName, $ServerName
+        $script:localizedData.GetCurrentState -f $IpAddressGroup, $InstanceName, $ServerName
     )
 
     Import-SQLPSModule
@@ -93,38 +102,72 @@ function Get-TargetResource
     $getServerProtocolObjectParameters = @{
         ServerName   = $env:COMPUTERNAME
         Instance     = $InstanceName
-        ProtocolName = $ProtocolName
+        ProtocolName = 'TcpIp'
     }
 
     $serverProtocolProperties = Get-ServerProtocolObject @getServerProtocolObjectParameters
 
     if ($serverProtocolProperties)
     {
-        # Properties that exist on all protocols.
-        $returnValue.Enabled = $serverProtocolProperties.IsEnabled
-        $returnValue.HasMultiIPAddresses = $serverProtocolProperties.HasMultiIPAddresses
-
-        # Get individual protocol properties.
-        switch ($ProtocolName)
+        if ($IpAddressGroup -in $serverProtocolProperties.IPAddresses.Name)
         {
-            'TcpIp'
+            $ipAddressGroupObject = $serverProtocolProperties.IPAddresses[$IpAddressGroup]
+
+            # Values for all IP adress groups.
+            $currentTcpPort = $ipAddressGroupObject.IPAddressProperties['TcpPort'].Value
+            $currentTcpDynamicPort = $ipAddressGroupObject.IPAddressProperties['TcpDynamicPorts'].Value
+
+            # Get the current state of TcpDynamicPort.
+            if (-not (
+                [System.String]::IsNullOrEmpty($currentTcpDynamicPort) `
+                    -or [System.String]::IsNullOrWhiteSpace($currentTcpDynamicPort)
+                )
+            )
             {
-                $returnValue.ListenOnAllIpAddresses = $serverProtocolProperties.ProtocolProperties['ListenOnAllIPs'].Value
-                $returnValue.KeepAlive = $serverProtocolProperties.ProtocolProperties['KeepAlive'].Value
+                $returnValue.UseTcpDynamicPort = $true
+                $returnValue.TcpDynamicPort = $currentTcpDynamicPort
             }
 
-            'NamedPipes'
+            # Get the current state of TcpPort.
+            if (-not (
+                    [System.String]::IsNullOrEmpty($currentTcpPort) `
+                        -or [System.String]::IsNullOrWhiteSpace($currentTcpPort)
+                )
+            )
             {
-                $returnValue.PipeName = $serverProtocolProperties.ProtocolProperties['PipeName'].Value
+                $returnValue.TcpPort = $currentTcpPort
             }
 
-            'SharedMemory'
+            # Values for all individual IP adress groups.
+            switch ($IpAddressGroup)
             {
-                <#
-                    Left blank intentionally. There are no individual protocol
-                    properties for the protocol Shared Memory.
-                #>
+                'IPAll'
+                {
+                    <#
+                        Left blank intentionally. There are no individual IP address
+                        properties for the IP address group 'IPAll'.
+                    #>
+                }
+
+                Default
+                {
+                    $returnValue.AddressFamily = $ipAddressGroupObject.IPAddress.AddressFamily
+                    $returnValue.IPAddress = $ipAddressGroupObject.IPAddress.IPAddressToString
+                    $returnValue.Enabled = $ipAddressGroupObject.IPAddressProperties['Enabled'].Value
+                    $returnValue.IsActive = $ipAddressGroupObject.IPAddressProperties['Active'].Value
+                }
             }
+        }
+        else
+        {
+            <#
+                The IP address groups are created automatically so if this happens
+                there is something wrong with the network interfaces on the node
+                that this resource can not solve.
+            #>
+            Write-Warning -Message (
+                $script:localizedData.MissingIpAddressGroup -f $IpAddressGroup
+            )
         }
     }
 
@@ -133,8 +176,8 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-        Sets the desired state of the SQL Server TCP/IP protocol for the specified
-        SQL Server instance.
+        Sets the desired state of the SQL Server TCP/IP protocol IP address
+        group for the specified SQL Server instance.
 
     .PARAMETER InstanceName
         Specifies the name of the SQL Server instance to enable the protocol for.
@@ -158,17 +201,18 @@ function Get-TargetResource
         group is not set to 'IPAll'. If not specified, the existing value will not be
         changed.
 
-    .PARAMETER TcpDynamicPort
-        Specifies whether the SQL Server instance should use a dynamic port. Value
-        will be ignored if TcpPort is set to a non-empty string. If not specified,
-        the existing value will not be changed.
+    .PARAMETER UseTcpDynamicPort
+        Specifies whether the SQL Server instance should use a dynamic port. If
+        not specified the existing value will not be changed. This parameter is
+        not allowed to be used at the same time as the parameter TcpPort.
 
     .PARAMETER TcpPort
         Specifies the TCP port(s) that SQL Server should be listening on. If the
         IP address should listen on more than one port, list all ports as a string
         value with the port numbers separated with a comma, e.g. '1433,1500,1501'.
         This parameter is limited to 2047 characters. If not specified, the existing
-        value will not be changed.
+        value will not be changed.This parameter is not allowed to be used at the
+        same time as the parameter UseTcpDynamicPort.
 
     .PARAMETER SuppressRestart
         If set to $true then the any attempt by the resource to restart the service
@@ -206,7 +250,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $TcpDynamicPort,
+        $UseTcpDynamicPort,
 
         [Parameter()]
         [System.String]
@@ -220,6 +264,8 @@ function Set-TargetResource
         [System.UInt16]
         $RestartTimeout = 120
     )
+
+    $IpAddressGroup = Convert-IpAdressGroupCasing -IpAddressGroup $IpAddressGroup
 
     $protocolNameProperties = Get-ProtocolNameProperties -ProtocolName $ProtocolName
 
@@ -353,8 +399,8 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-        Determines the desired state of the SQL Server TCP/IP protocol for the
-        specified SQL Server instance.
+        Determines the desired state of the SQL Server TCP/IP protocol IP address
+        group for the specified SQL Server instance.
 
     .PARAMETER InstanceName
         Specifies the name of the SQL Server instance to enable the protocol for.
@@ -364,8 +410,9 @@ function Set-TargetResource
         'IP1', 'IP2' etc., or 'IPAll'.
 
     .PARAMETER ServerName
-        Specifies the host name of the SQL Server to be configured. Default value is
-        $env:COMPUTERNAME.
+        Specifies the host name of the SQL Server to be configured. If the
+        SQL Server belongs to a cluster or availability group specify the host
+        name for the listener or cluster group. Default value is $env:COMPUTERNAME.
 
     .PARAMETER Enabled
         Specified if the IP address group should be enabled or disabled. Only used if
@@ -377,17 +424,18 @@ function Set-TargetResource
         group is not set to 'IPAll'. If not specified, the existing value will not be
         changed.
 
-    .PARAMETER TcpDynamicPort
-        Specifies whether the SQL Server instance should use a dynamic port. Value
-        will be ignored if TcpPort is set to a non-empty string. If not specified,
-        the existing value will not be changed.
+    .PARAMETER UseTcpDynamicPort
+        Specifies whether the SQL Server instance should use a dynamic port. If
+        not specified the existing value will not be changed. This parameter is
+        not allowed to be used at the same time as the parameter TcpPort.
 
     .PARAMETER TcpPort
         Specifies the TCP port(s) that SQL Server should be listening on. If the
         IP address should listen on more than one port, list all ports as a string
         value with the port numbers separated with a comma, e.g. '1433,1500,1501'.
         This parameter is limited to 2047 characters. If not specified, the existing
-        value will not be changed.
+        value will not be changed.This parameter is not allowed to be used at the
+        same time as the parameter UseTcpDynamicPort.
 
     .PARAMETER SuppressRestart
         If set to $true then the any attempt by the resource to restart the service
@@ -426,7 +474,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $TcpDynamicPort,
+        $UseTcpDynamicPort,
 
         [Parameter()]
         [System.String]
@@ -441,10 +489,8 @@ function Test-TargetResource
         $RestartTimeout = 120
     )
 
-    $protocolNameProperties = Get-ProtocolNameProperties -ProtocolName $ProtocolName
-
     Write-Verbose -Message (
-        $script:localizedData.TestDesiredState -f $protocolNameProperties.DisplayName, $InstanceName, $ServerName
+        $script:localizedData.TestDesiredState -f $IpAddressGroup, $InstanceName, $ServerName
     )
 
     $propertyState = Compare-TargetResourceState @PSBoundParameters
@@ -455,7 +501,7 @@ function Test-TargetResource
         $testTargetResourceReturnValue = $false
 
         Write-Verbose -Message (
-            $script:localizedData.NotInDesiredState -f $protocolNameProperties.DisplayName, $InstanceName
+            $script:localizedData.NotInDesiredState -f $IpAddressGroup, $InstanceName
         )
     }
     else
@@ -463,7 +509,7 @@ function Test-TargetResource
         $testTargetResourceReturnValue = $true
 
         Write-Verbose -Message (
-            $script:localizedData.InDesiredState -f $protocolNameProperties.DisplayName, $InstanceName
+            $script:localizedData.InDesiredState -f $IpAddressGroup, $InstanceName
         )
     }
 
@@ -483,8 +529,9 @@ function Test-TargetResource
         'IP1', 'IP2' etc., or 'IPAll'.
 
     .PARAMETER ServerName
-        Specifies the host name of the SQL Server to be configured. Default value is
-        $env:COMPUTERNAME.
+        Specifies the host name of the SQL Server to be configured. If the
+        SQL Server belongs to a cluster or availability group specify the host
+        name for the listener or cluster group. Default value is $env:COMPUTERNAME.
 
     .PARAMETER Enabled
         Specified if the IP address group should be enabled or disabled. Only used if
@@ -496,17 +543,18 @@ function Test-TargetResource
         group is not set to 'IPAll'. If not specified, the existing value will not be
         changed.
 
-    .PARAMETER TcpDynamicPort
-        Specifies whether the SQL Server instance should use a dynamic port. Value
-        will be ignored if TcpPort is set to a non-empty string. If not specified,
-        the existing value will not be changed.
+    .PARAMETER UseTcpDynamicPort
+        Specifies whether the SQL Server instance should use a dynamic port. If
+        not specified the existing value will not be changed. This parameter is
+        not allowed to be used at the same time as the parameter TcpPort.
 
     .PARAMETER TcpPort
         Specifies the TCP port(s) that SQL Server should be listening on. If the
         IP address should listen on more than one port, list all ports as a string
         value with the port numbers separated with a comma, e.g. '1433,1500,1501'.
         This parameter is limited to 2047 characters. If not specified, the existing
-        value will not be changed.
+        value will not be changed.This parameter is not allowed to be used at the
+        same time as the parameter UseTcpDynamicPort.
 
     .PARAMETER SuppressRestart
         If set to $true then the any attempt by the resource to restart the service
@@ -544,7 +592,7 @@ function Compare-TargetResourceState
 
         [Parameter()]
         [System.Boolean]
-        $TcpDynamicPort,
+        $UseTcpDynamicPort,
 
         [Parameter()]
         [System.String]
@@ -559,54 +607,21 @@ function Compare-TargetResourceState
         $RestartTimeout = 120
     )
 
-    if ($ProtocolName -eq 'SharedMemory')
-    {
-        <#
-            If the protocol is Shared Memory, assert that no other individual
-            protocol properties are passed.
-        #>
-        $assertBoundParameterParameters = @{
-            BoundParameterList     = $PSBoundParameters
-            <#
-                Since SharedMemory does not have any individual properties this
-                mandatory property is being used to compare against.
-            #>
-            MutuallyExclusiveList1 = @(
-                'ProtocolName'
-            )
-            # These must not be passed for Shared Memory.
-            MutuallyExclusiveList2 = @(
-                'KeepAlive'
-                'ListenOnAllIpAddresses'
-                'PipeName'
-            )
-        }
-    }
-    else
-    {
-        <#
-            If the protocol is set to TCP/IP or Named Pipes, assert that one or
-            more of their individual protocol properties are not passed together.
-        #>
-        $assertBoundParameterParameters = @{
-            BoundParameterList     = $PSBoundParameters
-            # Individual properties for TCP/IP.
-            MutuallyExclusiveList1 = @(
-                'KeepAlive'
-                'ListenOnAllIpAddresses'
-            )
-            # Individual properties for Named Pipes.
-            MutuallyExclusiveList2 = @(
-                'PipeName'
-            )
-        }
+    $assertBoundParameterParameters = @{
+        BoundParameterList     = $PSBoundParameters
+        MutuallyExclusiveList1 = @(
+            'UseTcpDynamicPort'
+        )
+        MutuallyExclusiveList2 = @(
+            'TcpPort'
+        )
     }
 
     Assert-BoundParameter @assertBoundParameterParameters
 
     $getTargetResourceParameters = @{
         InstanceName    = $InstanceName
-        ProtocolName    = $ProtocolName
+        IpAddressGroup  = $IpAddressGroup
         ServerName      = $ServerName
         SuppressRestart = $SuppressRestart
         RestartTimeout  = $RestartTimeout
@@ -627,30 +642,25 @@ function Compare-TargetResourceState
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-    $propertiesToEvaluate = @(
-        'Enabled'
-    )
-
-    # Get individual protocol properties to evaluate.
-    switch ($ProtocolName)
+    # Get individual IP address group properties to evaluate.
+    switch ($IpAddressGroup)
     {
-        'TcpIp'
+        'IPAll'
         {
-            $propertiesToEvaluate += 'ListenOnAllIpAddresses'
-            $propertiesToEvaluate += 'KeepAlive'
+            $propertiesToEvaluate = @(
+                'UseTcpDynamicPort'
+                'TcpPort'
+            )
         }
 
-        'NamedPipes'
+        Default
         {
-            $propertiesToEvaluate += 'PipeName'
-        }
-
-        'SharedMemory'
-        {
-            <#
-                Left blank intentionally. There are no individual protocol
-                properties for the protocol Shared Memory.
-            #>
+            $propertiesToEvaluate = @(
+                'Enabled'
+                'IPAddress'
+                'UseTcpDynamicPort'
+                'TcpPort'
+            )
         }
     }
 
@@ -665,113 +675,25 @@ function Compare-TargetResourceState
 
 <#
     .SYNOPSIS
-        Get static name properties of he specified protocol.
+        Converts a IP address group name to the correct casing.
 
-    .PARAMETER ProtocolName
-        Specifies the name of network protocol to return name properties for.
-        Possible values are 'TcpIp', 'NamedPipes', or 'ShareMemory'.
-
-    .NOTES
-        The static values returned matches the values returned by the class
-        ServerProtocol. The property DisplayName could potentially be localized
-        while the property Name must be exactly like it is returned by the
-        class ServerProtocol, with the correct casing.
-
-#>
-function Get-ProtocolNameProperties
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('TcpIp', 'NamedPipes', 'SharedMemory')]
-        [System.String]
-        $ProtocolName
-    )
-
-    $protocolNameProperties = @{ }
-
-    switch ($ProtocolName)
-    {
-        'TcpIp'
-        {
-            $protocolNameProperties.DisplayName = 'TCP/IP'
-            $protocolNameProperties.Name = 'Tcp'
-        }
-
-        'NamedPipes'
-        {
-            $protocolNameProperties.DisplayName = 'Named Pipes'
-            $protocolNameProperties.Name = 'Np'
-        }
-
-        'SharedMemory'
-        {
-            $protocolNameProperties.DisplayName = 'Shared Memory'
-            $protocolNameProperties.Name = 'Sm'
-        }
-    }
-
-    return $protocolNameProperties
-}
-
-<#
-    .SYNOPSIS
-        Returns the ServerProtocol object for the specified SQL Server instance
-        and protocol name.
-
-    .PARAMETER InstanceName
-        Specifies the name of the SQL Server instance to connect to.
-
-    .PARAMETER ProtocolName
-        Specifies the name of network protocol to be configured. Possible values
-        are 'TcpIp', 'NamedPipes', or 'ShareMemory'.
-
-    .PARAMETER ServerName
-        Specifies the host name of the SQL Server to connect to.
+    .PARAMETER IpAddressGroup
+        Specifies the name of the IP address group in the TCP/IP protocol, e.g.
+        'IP1', 'IP2' etc., or 'IPAll'.
 
     .NOTES
-        The class Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol is
-        returned by this function.
+        SMO is case-sensitive with the address group names.
 #>
-function Get-ServerProtocolObject
+function Convert-IpAdressGroupCasing
 {
     [CmdletBinding()]
+    [OutputType([System.String])]
     param
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $InstanceName,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('TcpIp', 'NamedPipes', 'SharedMemory')]
-        [System.String]
-        $ProtocolName,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $ServerName
+        $IpAddressGroup
     )
 
-    $serverProtocolProperties = $null
-
-    $newObjectParameters = @{
-        TypeName     = 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer'
-        ArgumentList = @($ServerName)
-    }
-
-    $managedComputerObject = New-Object @newObjectParameters
-
-    $serverInstance = $managedComputerObject.ServerInstances[$InstanceName]
-
-    if ($serverInstance)
-    {
-        $protocolNameProperties = Get-ProtocolNameProperties -ProtocolName $ProtocolName
-
-        $serverProtocolProperties = $serverInstance.ServerProtocols[$protocolNameProperties.Name]
-    }
-
-    return $serverProtocolProperties
+    return ($IpAddressGroup.ToUpper() -replace 'IPALL', 'IPAll')
 }
