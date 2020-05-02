@@ -34,6 +34,8 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
     marked as stale if the PR is not merged for 30 days (for example it is
     dependent on something else) ([issue #1504](https://github.com/dsccommunity/SqlServerDsc/issues/1504)).
   - Updated the CI pipeline to use latest version of the module ModuleBuilder.
+  - Changed to use the property `NuGetVersionV2` from GitVersion in the
+    CI pipeline.
 - SqlAlwaysOnService
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
