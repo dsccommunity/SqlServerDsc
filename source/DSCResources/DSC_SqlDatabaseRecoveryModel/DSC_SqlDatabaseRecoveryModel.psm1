@@ -204,7 +204,8 @@ function Test-TargetResource
 
     return Test-DscParameterState -CurrentValues $currentValues `
         -DesiredValues $PSBoundParameters `
-        -ValuesToCheck @('Name', 'RecoveryModel')
+        -ValuesToCheck @('Name', 'RecoveryModel') `
+        -TurnOffTypeChecking
 }
 
 Export-ModuleMember -Function *-TargetResource

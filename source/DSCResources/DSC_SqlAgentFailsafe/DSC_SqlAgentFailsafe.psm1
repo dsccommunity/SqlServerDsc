@@ -275,9 +275,10 @@ function Test-TargetResource
             -CurrentValues $getTargetResourceResult `
             -DesiredValues $PSBoundParameters `
             -ValuesToCheck @(
-            'FailsafeOperator'
-            'NotificationMethod'
-        )
+                'FailsafeOperator'
+                'NotificationMethod'
+            ) `
+            -TurnOffTypeChecking
     }
     else
     {

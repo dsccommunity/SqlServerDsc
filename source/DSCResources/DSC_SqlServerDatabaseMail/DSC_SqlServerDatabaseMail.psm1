@@ -708,17 +708,18 @@ function Test-TargetResource
             -CurrentValues $getTargetResourceResult `
             -DesiredValues $PSBoundParameters `
             -ValuesToCheck @(
-            'AccountName'
-            'EmailAddress'
-            'MailServerName'
-            'ProfileName'
-            'Ensure'
-            'ReplyToAddress'
-            'TcpPort'
-            'DisplayName'
-            'Description'
-            'LoggingLevel'
-        )
+                'AccountName'
+                'EmailAddress'
+                'MailServerName'
+                'ProfileName'
+                'Ensure'
+                'ReplyToAddress'
+                'TcpPort'
+                'DisplayName'
+                'Description'
+                'LoggingLevel'
+            ) `
+            -TurnOffTypeChecking
     }
     else
     {

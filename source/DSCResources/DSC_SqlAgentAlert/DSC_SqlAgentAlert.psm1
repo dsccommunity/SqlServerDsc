@@ -348,10 +348,11 @@ function Test-TargetResource
             -CurrentValues $getTargetResourceResult `
             -DesiredValues $PSBoundParameters `
             -ValuesToCheck @(
-            'Name'
-            'Severity'
-            'MessageId'
-        )
+                'Name'
+                'Severity'
+                'MessageId'
+            ) `
+            -TurnOffTypeChecking
     }
     else
     {

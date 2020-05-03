@@ -530,11 +530,12 @@ function Test-TargetResource
             $testTargetResourceReturnValue = Test-DscParameterState -CurrentValues $getTargetResourceResult `
                 -DesiredValues $desiredValues `
                 -ValuesToCheck @(
-                'LoginName'
-                'AsymmetricKeyName'
-                'CertificateName'
-                'UserType'
-            )
+                    'LoginName'
+                    'AsymmetricKeyName'
+                    'CertificateName'
+                    'UserType'
+                ) `
+                -TurnOffTypeChecking
         }
         else
         {
