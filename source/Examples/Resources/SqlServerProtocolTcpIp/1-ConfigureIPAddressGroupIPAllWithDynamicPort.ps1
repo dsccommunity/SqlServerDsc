@@ -1,7 +1,6 @@
 <#
     .DESCRIPTION
-        This example will enable the TCP/IP protocol, set the protocol to listen
-        on all IP addresses, and set the keep alive duration.
+        This example will set the TCP/IP address group IPAll to use dynamic port.
 
         The resource will be run as the account provided in $SystemAdministratorAccount.
 #>
@@ -18,13 +17,11 @@ Configuration Example
 
     node localhost
     {
-        SqlServerProtocol 'ChangeTcpIpOnDefaultInstance'
+        SqlServerProtocolTcpIP 'ChangeIPAll'
         {
             InstanceName           = 'MSSQLSERVER'
-            ProtocolName           = 'TcpIp'
-            Enabled                = $true
-            ListenOnAllIpAddresses = $false
-            KeepAlive              = 20000
+            IpAddressGroup         = 'IPAll'
+            UseTcpDynamicPort      = $true
 
             PsDscRunAsCredential   = $SystemAdministratorAccount
         }
