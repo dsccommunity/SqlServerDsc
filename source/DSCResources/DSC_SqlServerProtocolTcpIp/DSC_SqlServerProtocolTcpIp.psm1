@@ -401,6 +401,7 @@ function Set-TargetResource
         else
         {
             $errorMessage = $script:localizedData.FailedToGetSqlServerProtocol
+
             New-InvalidOperationException -Message $errorMessage
         }
 
