@@ -814,6 +814,69 @@ try
                 $mockInstanceName = 'DSCTEST'
             }
 
+            Context 'When the SQL Server instance does not exist' {
+                Mock -CommandName Compare-TargetResourceState -MockWith {
+                    return @(
+                        @{
+                            InDesiredState = $false
+                        }
+                    )
+                }
+
+                BeforeAll {
+                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                        return $null
+                    }
+
+                    $setTargetResourceParameters = @{
+                        InstanceName   = $mockInstanceName
+                        IpAddressGroup = 'IPAll'
+                    }
+                }
+
+                It 'Should throw the correct error' {
+                    $expectedErrorMessage = $script:localizedData.FailedToGetSqlServerProtocol
+
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw $expectedErrorMessage
+                }
+            }
+
+            Context 'When the IP address group is missing' {
+                BeforeAll {
+                    Mock -CommandName Compare-TargetResourceState -MockWith {
+                        return @(
+                            @{
+                                InDesiredState = $false
+                            }
+                        )
+                    }
+
+                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                        return @{
+                            IPAddresses = @(
+                                [PSCustomObject] @{
+                                    Name = 'IPAll'
+                                }
+                                [PSCustomObject] @{
+                                    Name = 'IP1'
+                                }
+                            )
+                        }
+                    }
+
+                    $setTargetResourceParameters = @{
+                        InstanceName   = $mockInstanceName
+                        IpAddressGroup = 'IP2'
+                    }
+                }
+
+                It 'Should throw the correct error' {
+                    $expectedErrorMessage = $script:localizedData.SetMissingIpAddressGroup -f 'IP2'
+
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw $expectedErrorMessage
+                }
+            }
+
             Context 'When the system is in the desired state' {
                 BeforeAll {
                     Mock -CommandName Compare-TargetResourceState -MockWith {
@@ -825,9 +888,8 @@ try
                     }
 
                     $setTargetResourceParameters = @{
-                        InstanceName = $mockInstanceName
-                        ProtocolName = 'SharedMemory'
-                        Enabled      = $true
+                        InstanceName      = $mockInstanceName
+                        IpAddressGroup    = 'IPAll'
                     }
                 }
 
@@ -839,8 +901,138 @@ try
             }
 
             Context 'When the system is not in the desired state' {
-                Context 'When the desired protocol is TCP/IP' {
-                    Context 'When enabling and setting all the protocol properties' {
+                Context 'When the IP address group should be using dynamic port' {
+                    BeforeAll {
+                        Mock -CommandName Restart-SqlService
+                        Mock -CommandName Compare-TargetResourceState -MockWith {
+                            return @(
+                                @{
+                                    ParameterName = 'UseTcpDynamicPort'
+                                    Actual = $false
+                                    Expected = $true
+                                    InDesiredState = $false
+                                }
+                            )
+                        }
+
+                        Mock -CommandName Get-ServerProtocolObject -MockWith {
+                            return New-Object -TypeName PSObject |
+                                    Add-Member -MemberType NoteProperty -Name 'IPAddresses' -Value @{
+                                            Name  = 'IPAll'
+                                            IPAll = New-Object -TypeName PSObject |
+                                                        Add-Member -MemberType NoteProperty -Name 'IPAddressProperties' -Value @{
+                                                            TcpPort = New-Object -TypeName PSObject |
+                                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value '1433' -PassThru -Force
+                                                            TcpDynamicPorts = New-Object -TypeName PSObject |
+                                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value '' -PassThru -Force
+                                                        } -PassThru -Force
+                                    } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
+                                        <#
+                                            Verifies that the correct value was set by the test,
+                                            and to verify that the method Alter() is actually called.
+                                        #>
+                                        $ipAddressProperties = $this.IPAddresses['IPAll'].IPAddressProperties
+
+                                        if ($ipAddressProperties['TcpDynamicPorts'].Value -eq '0' `
+                                            -and $ipAddressProperties['TcpPort'].Value -eq '')
+                                        {
+                                            $script:wasMethodAlterCalled = $true
+                                        }
+                                    } -PassThru -Force
+                        }
+
+                        $setTargetResourceParameters = @{
+                            InstanceName      = $mockInstanceName
+                            IpAddressGroup    = 'IPAll'
+                            UseTcpDynamicPort = $true
+                        }
+                    }
+
+                    BeforeEach {
+                        $script:wasMethodAlterCalled = $false
+                    }
+
+                    It 'Should set the desired values and restart the SQL Server service' {
+                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+
+                        <#
+                            Addition evaluation is done in the mock to test if the
+                            object is set correctly.
+                        #>
+                        $script:wasMethodAlterCalled | Should -BeTrue
+
+                        Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                Context 'When the IP address group should be using static port' {
+                    BeforeAll {
+                        Mock -CommandName Restart-SqlService
+                        Mock -CommandName Compare-TargetResourceState -MockWith {
+                            return @(
+                                @{
+                                    ParameterName = 'TcpPort'
+                                    Actual = ''
+                                    Expected = '1433,1500,1501'
+                                    InDesiredState = $false
+                                }
+                            )
+                        }
+
+                        Mock -CommandName Get-ServerProtocolObject -MockWith {
+                            return New-Object -TypeName PSObject |
+                                    Add-Member -MemberType NoteProperty -Name 'IPAddresses' -Value @{
+                                            Name  = 'IPAll'
+                                            IPAll = New-Object -TypeName PSObject |
+                                                        Add-Member -MemberType NoteProperty -Name 'IPAddressProperties' -Value @{
+                                                            TcpPort = New-Object -TypeName PSObject |
+                                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value '' -PassThru -Force
+                                                            TcpDynamicPorts = New-Object -TypeName PSObject |
+                                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value '50000' -PassThru -Force
+                                                        } -PassThru -Force
+                                    } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
+                                        <#
+                                            Verifies that the correct value was set by the test,
+                                            and to verify that the method Alter() is actually called.
+                                        #>
+                                        $ipAddressProperties = $this.IPAddresses['IPAll'].IPAddressProperties
+
+                                        if ($ipAddressProperties['TcpDynamicPorts'].Value -eq '' `
+                                            -and $ipAddressProperties['TcpPort'].Value -eq '1433,1500,1501')
+                                        {
+                                            $script:wasMethodAlterCalled = $true
+                                        }
+                                    } -PassThru -Force
+                        }
+
+                        $setTargetResourceParameters = @{
+                            InstanceName   = $mockInstanceName
+                            IpAddressGroup = 'IPAll'
+                            TcpPort        = '1433,1500,1501'
+                        }
+                    }
+
+                    BeforeEach {
+                        $script:wasMethodAlterCalled = $false
+                    }
+
+                    It 'Should set the desired values and restart the SQL Server service' {
+                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+
+                        <#
+                            Addition evaluation is done in the mock to test if the
+                            object is set correctly.
+                        #>
+                        $script:wasMethodAlterCalled | Should -BeTrue
+
+                        Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                Context 'When the IP address group is IPx (where x is an available group number)' {
+                    Context 'When the IP address group should be enabled' {
                         BeforeAll {
                             Mock -CommandName Restart-SqlService
                             Mock -CommandName Compare-TargetResourceState -MockWith {
@@ -851,44 +1043,37 @@ try
                                         Expected = $true
                                         InDesiredState = $false
                                     }
-                                    @{
-                                        ParameterName = 'ListenOnAllIpAddresses'
-                                        Actual = $false
-                                        Expected = $true
-                                        InDesiredState = $false
-                                    }
-                                    @{
-                                        ParameterName = 'KeepAlive'
-                                        Actual = 30000
-                                        Expected = 50000
-                                        InDesiredState = $false
-                                    }
                                 )
                             }
 
                             Mock -CommandName Get-ServerProtocolObject -MockWith {
                                 return New-Object -TypeName PSObject |
-                                    Add-Member -MemberType NoteProperty -Name 'IsEnabled' -Value $false -PassThru |
-                                    Add-Member -MemberType ScriptProperty -Name 'ProtocolProperties' -Value {
-                                        return @{
-                                            ListenOnAllIPs = New-Object -TypeName PSObject |
-                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value $false -PassThru -Force
-                                            KeepAlive = New-Object -TypeName PSObject |
-                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value 30000 -PassThru -Force
-                                        }
-                                    } -PassThru |
-                                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                                        # This is used to verify so that method Alter() is actually called or not.
-                                        $script:wasMethodAlterCalled = $true
-                                    } -PassThru -Force
+                                        Add-Member -MemberType NoteProperty -Name 'IPAddresses' -Value @{
+                                                Name  = 'IP1'
+                                                IP1 = New-Object -TypeName PSObject |
+                                                        Add-Member -MemberType NoteProperty -Name 'IPAddressProperties' -Value @{
+                                                            Enabled = New-Object -TypeName PSObject |
+                                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value $false -PassThru -Force
+                                                        } -PassThru -Force
+                                        } -PassThru |
+                                        Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
+                                            <#
+                                                Verifies that the correct value was set by the test,
+                                                and to verify that the method Alter() is actually called.
+                                            #>
+                                            $ipAddressProperties = $this.IPAddresses['IP1'].IPAddressProperties
+
+                                            if ($ipAddressProperties['Enabled'].Value -eq $true)
+                                            {
+                                                $script:wasMethodAlterCalled = $true
+                                            }
+                                        } -PassThru -Force
                             }
 
                             $setTargetResourceParameters = @{
-                                InstanceName           = $mockInstanceName
-                                ProtocolName           = 'TcpIp'
-                                ListenOnAllIpAddresses = $true
-                                KeepAlive              = 50000
-                                Enabled                = $true
+                                InstanceName   = $mockInstanceName
+                                IpAddressGroup = 'IP1'
+                                Enabled        = $true
                             }
                         }
 
@@ -899,64 +1084,17 @@ try
                         It 'Should set the desired values and restart the SQL Server service' {
                             { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
 
+                            <#
+                                Addition evaluation is done in the mock to test if the
+                                object is set correctly.
+                            #>
                             $script:wasMethodAlterCalled | Should -BeTrue
 
                             Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
                         }
                     }
 
-                    Context 'When enabling the protocol and leaving the rest of the properties to their default value' {
-                        BeforeAll {
-                            Mock -CommandName Restart-SqlService
-                            Mock -CommandName Compare-TargetResourceState -MockWith {
-                                return @(
-                                    @{
-                                        ParameterName = 'Enabled'
-                                        Actual = $false
-                                        Expected = $true
-                                        InDesiredState = $false
-                                    }
-                                )
-                            }
-
-                            Mock -CommandName Get-ServerProtocolObject -MockWith {
-                                return New-Object -TypeName PSObject |
-                                    Add-Member -MemberType NoteProperty -Name 'IsEnabled' -Value $false -PassThru |
-                                    Add-Member -MemberType ScriptProperty -Name 'ProtocolProperties' -Value {
-                                        return @{
-                                            ListenOnAllIPs = New-Object -TypeName PSObject |
-                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value $false -PassThru -Force
-                                            KeepAlive = New-Object -TypeName PSObject |
-                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value 30000 -PassThru -Force
-                                        }
-                                    } -PassThru |
-                                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                                        # This is used to verify so that method Alter() is actually called or not.
-                                        $script:wasMethodAlterCalled = $true
-                                    } -PassThru -Force
-                            }
-
-                            $setTargetResourceParameters = @{
-                                InstanceName = $mockInstanceName
-                                ProtocolName = 'TcpIp'
-                                Enabled      = $true
-                            }
-                        }
-
-                        BeforeEach {
-                            $script:wasMethodAlterCalled = $false
-                        }
-
-                        It 'Should set the desired values and restart the SQL Server service' {
-                            { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
-
-                            $script:wasMethodAlterCalled | Should -BeTrue
-
-                            Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
-                        }
-                    }
-
-                    Context 'When disabling the protocol and leaving the rest of the properties to their default value' {
+                    Context 'When the IP address group should be disabled' {
                         BeforeAll {
                             Mock -CommandName Restart-SqlService
                             Mock -CommandName Compare-TargetResourceState -MockWith {
@@ -972,25 +1110,32 @@ try
 
                             Mock -CommandName Get-ServerProtocolObject -MockWith {
                                 return New-Object -TypeName PSObject |
-                                    Add-Member -MemberType NoteProperty -Name 'IsEnabled' -Value $true -PassThru |
-                                    Add-Member -MemberType ScriptProperty -Name 'ProtocolProperties' -Value {
-                                        return @{
-                                            ListenOnAllIPs = New-Object -TypeName PSObject |
-                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value $false -PassThru -Force
-                                            KeepAlive = New-Object -TypeName PSObject |
-                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value 30000 -PassThru -Force
-                                        }
-                                    } -PassThru |
-                                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                                        # This is used to verify so that method Alter() is actually called or not.
-                                        $script:wasMethodAlterCalled = $true
-                                    } -PassThru -Force
+                                        Add-Member -MemberType NoteProperty -Name 'IPAddresses' -Value @{
+                                                Name  = 'IP1'
+                                                IP1 = New-Object -TypeName PSObject |
+                                                        Add-Member -MemberType NoteProperty -Name 'IPAddressProperties' -Value @{
+                                                            Enabled = New-Object -TypeName PSObject |
+                                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value $true -PassThru -Force
+                                                        } -PassThru -Force
+                                        } -PassThru |
+                                        Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
+                                            <#
+                                                Verifies that the correct value was set by the test,
+                                                and to verify that the method Alter() is actually called.
+                                            #>
+                                            $ipAddressProperties = $this.IPAddresses['IP1'].IPAddressProperties
+
+                                            if ($ipAddressProperties['Enabled'].Value -eq $false)
+                                            {
+                                                $script:wasMethodAlterCalled = $true
+                                            }
+                                        } -PassThru -Force
                             }
 
                             $setTargetResourceParameters = @{
-                                InstanceName = $mockInstanceName
-                                ProtocolName = 'TcpIp'
-                                Enabled      = $false
+                                InstanceName   = $mockInstanceName
+                                IpAddressGroup = 'IP1'
+                                Enabled        = $false
                             }
                         }
 
@@ -1001,27 +1146,26 @@ try
                         It 'Should set the desired values and restart the SQL Server service' {
                             { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
 
+                            <#
+                                Addition evaluation is done in the mock to test if the
+                                object is set correctly.
+                            #>
                             $script:wasMethodAlterCalled | Should -BeTrue
 
                             Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
                         }
                     }
 
-                    Context 'When setting the individual protocol properties regardless if the protocol is enabled or disabled' {
+                    Context 'When the IP address group have the wrong IP adress' {
                         BeforeAll {
+                            $mockExpectedIpAddress = 'fe80::7894:a6b6:59dd:c8ff%9'
                             Mock -CommandName Restart-SqlService
                             Mock -CommandName Compare-TargetResourceState -MockWith {
                                 return @(
                                     @{
-                                        ParameterName = 'ListenOnAllIpAddresses'
-                                        Actual = $false
-                                        Expected = $true
-                                        InDesiredState = $false
-                                    }
-                                    @{
-                                        ParameterName = 'KeepAlive'
-                                        Actual = 30000
-                                        Expected = 50000
+                                        ParameterName = 'IpAddress'
+                                        Actual = '10.0.0.1'
+                                        Expected = $mockExpectedIpAddress
                                         InDesiredState = $false
                                     }
                                 )
@@ -1029,26 +1173,32 @@ try
 
                             Mock -CommandName Get-ServerProtocolObject -MockWith {
                                 return New-Object -TypeName PSObject |
-                                    Add-Member -MemberType NoteProperty -Name 'IsEnabled' -Value $false -PassThru |
-                                    Add-Member -MemberType ScriptProperty -Name 'ProtocolProperties' -Value {
-                                        return @{
-                                            ListenOnAllIPs = New-Object -TypeName PSObject |
-                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value $false -PassThru -Force
-                                            KeepAlive = New-Object -TypeName PSObject |
-                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value 30000 -PassThru -Force
-                                        }
-                                    } -PassThru |
-                                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                                        # This is used to verify so that method Alter() is actually called or not.
-                                        $script:wasMethodAlterCalled = $true
-                                    } -PassThru -Force
+                                        Add-Member -MemberType NoteProperty -Name 'IPAddresses' -Value @{
+                                                Name  = 'IP1'
+                                                IP1 = New-Object -TypeName PSObject |
+                                                        Add-Member -MemberType NoteProperty -Name 'IPAddressProperties' -Value @{
+                                                            IpAddress = New-Object -TypeName PSObject |
+                                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value '10.0.0.1' -PassThru -Force
+                                                        } -PassThru -Force
+                                        } -PassThru |
+                                        Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
+                                            <#
+                                                Verifies that the correct value was set by the test,
+                                                and to verify that the method Alter() is actually called.
+                                            #>
+                                            $ipAddressProperties = $this.IPAddresses['IP1'].IPAddressProperties
+
+                                            if ($ipAddressProperties['IpAddress'].Value -eq $mockExpectedIpAddress)
+                                            {
+                                                $script:wasMethodAlterCalled = $true
+                                            }
+                                        } -PassThru -Force
                             }
 
                             $setTargetResourceParameters = @{
-                                InstanceName           = $mockInstanceName
-                                ProtocolName           = 'TcpIp'
-                                ListenOnAllIpAddresses = $true
-                                KeepAlive              = 50000
+                                InstanceName   = $mockInstanceName
+                                IpAddressGroup = 'IP1'
+                                IpAddress      = $mockExpectedIpAddress
                             }
                         }
 
@@ -1056,25 +1206,29 @@ try
                             $script:wasMethodAlterCalled = $false
                         }
 
-                        It 'Should set the desired values and _not_ restart the SQL Server service' {
+                        It 'Should set the desired values and restart the SQL Server service' {
                             { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
 
+                            <#
+                                Addition evaluation is done in the mock to test if the
+                                object is set correctly.
+                            #>
                             $script:wasMethodAlterCalled | Should -BeTrue
 
-                            Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
                         }
                     }
 
-                    Context 'When suppressing the restart' {
+                    Context 'When the restart should be suppressed' {
                         BeforeAll {
-                            Mock -CommandName Restart-SqlService
                             Mock -CommandName Write-Warning
+                            Mock -CommandName Restart-SqlService
                             Mock -CommandName Compare-TargetResourceState -MockWith {
                                 return @(
                                     @{
                                         ParameterName = 'Enabled'
-                                        Actual = $false
-                                        Expected = $true
+                                        Actual = $true
+                                        Expected = $false
                                         InDesiredState = $false
                                     }
                                 )
@@ -1082,196 +1236,30 @@ try
 
                             Mock -CommandName Get-ServerProtocolObject -MockWith {
                                 return New-Object -TypeName PSObject |
-                                    Add-Member -MemberType NoteProperty -Name 'IsEnabled' -Value $false -PassThru |
-                                    Add-Member -MemberType ScriptProperty -Name 'ProtocolProperties' -Value {
-                                        return @{
-                                            ListenOnAllIPs = New-Object -TypeName PSObject |
-                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value $false -PassThru -Force
-                                            KeepAlive = New-Object -TypeName PSObject |
-                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value 30000 -PassThru -Force
-                                        }
-                                    } -PassThru |
-                                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                                        # This is used to verify so that method Alter() is actually called or not.
-                                        $script:wasMethodAlterCalled = $true
-                                    } -PassThru -Force
+                                        Add-Member -MemberType NoteProperty -Name 'IPAddresses' -Value @{
+                                                Name  = 'IP1'
+                                                IP1 = New-Object -TypeName PSObject |
+                                                        Add-Member -MemberType NoteProperty -Name 'IPAddressProperties' -Value @{
+                                                            Enabled = New-Object -TypeName PSObject |
+                                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value $true -PassThru -Force
+                                                        } -PassThru -Force
+                                        } -PassThru |
+                                        Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {} -PassThru -Force
                             }
 
                             $setTargetResourceParameters = @{
                                 InstanceName    = $mockInstanceName
-                                ProtocolName    = 'TcpIp'
-                                Enabled         = $true
+                                IpAddressGroup  = 'IP1'
+                                Enabled         = $false
                                 SuppressRestart = $true
                             }
                         }
 
-                        BeforeEach {
-                            $script:wasMethodAlterCalled = $false
-                        }
-
-                        It 'Should not restart the SQL Server service but instead write a warning message' {
+                        It 'Should set the desired values and restart the SQL Server service' {
                             { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
-
-                            $script:wasMethodAlterCalled | Should -BeTrue
 
                             Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
                             Assert-MockCalled -CommandName Write-Warning -Exactly -Times 1 -Scope It
-                        }
-                    }
-                }
-
-                Context 'When the desired protocol is Named Pipes' {
-                    Context 'When enabling and setting all the protocol properties' {
-                        BeforeAll {
-                            Mock -CommandName Restart-SqlService
-                            Mock -CommandName Compare-TargetResourceState -MockWith {
-                                return @(
-                                    @{
-                                        ParameterName = 'Enabled'
-                                        Actual = $false
-                                        Expected = $true
-                                        InDesiredState = $false
-                                    }
-                                    @{
-                                        ParameterName = 'PipeName'
-                                        Actual = '\\.\pipe\$$\TESTCLU01A\MSSQL$SQL2014\sql\query'
-                                        Expected = '\\.\pipe\$$\CLU01A\MSSQL$SQL2014\sql\query'
-                                        InDesiredState = $false
-                                    }
-                                )
-                            }
-
-                            Mock -CommandName Get-ServerProtocolObject -MockWith {
-                                return New-Object -TypeName PSObject |
-                                    Add-Member -MemberType NoteProperty -Name 'IsEnabled' -Value $false -PassThru |
-                                    Add-Member -MemberType ScriptProperty -Name 'ProtocolProperties' -Value {
-                                        return @{
-                                            PipeName = New-Object -TypeName PSObject |
-                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value '\\.\pipe\$$\TESTCLU01A\MSSQL$SQL2014\sql\query' -PassThru -Force
-                                        }
-                                    } -PassThru |
-                                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                                        # This is used to verify so that method Alter() is actually called or not.
-                                        $script:wasMethodAlterCalled = $true
-                                    } -PassThru -Force
-                            }
-
-                            $setTargetResourceParameters = @{
-                                InstanceName = $mockInstanceName
-                                ProtocolName = 'NamedPipes'
-                                PipeName     = '\\.\pipe\$$\CLU01A\MSSQL$SQL2014\sql\query'
-                                Enabled      = $true
-                            }
-                        }
-
-                        BeforeEach {
-                            $script:wasMethodAlterCalled = $false
-                        }
-
-                        It 'Should set the desired values and restart the SQL Server service' {
-                            { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
-
-                            $script:wasMethodAlterCalled | Should -BeTrue
-
-                            Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
-                        }
-                    }
-
-                    Context 'When enabling the protocol and leaving the rest of the properties to their default value' {
-                        BeforeAll {
-                            Mock -CommandName Restart-SqlService
-                            Mock -CommandName Compare-TargetResourceState -MockWith {
-                                return @(
-                                    @{
-                                        ParameterName = 'Enabled'
-                                        Actual = $false
-                                        Expected = $true
-                                        InDesiredState = $false
-                                    }
-                                )
-                            }
-
-                            Mock -CommandName Get-ServerProtocolObject -MockWith {
-                                return New-Object -TypeName PSObject |
-                                    Add-Member -MemberType NoteProperty -Name 'IsEnabled' -Value $false -PassThru |
-                                    Add-Member -MemberType ScriptProperty -Name 'ProtocolProperties' -Value {
-                                        return @{
-                                            PipeName = New-Object -TypeName PSObject |
-                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value '\\.\pipe\$$\TESTCLU01A\MSSQL$SQL2014\sql\query' -PassThru -Force
-                                        }
-                                    } -PassThru |
-                                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                                        # This is used to verify so that method Alter() is actually called or not.
-                                        $script:wasMethodAlterCalled = $true
-                                    } -PassThru -Force
-                            }
-
-                            $setTargetResourceParameters = @{
-                                InstanceName = $mockInstanceName
-                                ProtocolName = 'NamedPipes'
-                                Enabled      = $true
-                            }
-                        }
-
-                        BeforeEach {
-                            $script:wasMethodAlterCalled = $false
-                        }
-
-                        It 'Should set the desired values and restart the SQL Server service' {
-                            { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
-
-                            $script:wasMethodAlterCalled | Should -BeTrue
-
-                            Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
-                        }
-                    }
-
-                    Context 'When setting the individual protocol properties regardless if the protocol is enabled or disabled' {
-                        BeforeAll {
-                            Mock -CommandName Restart-SqlService
-                            Mock -CommandName Compare-TargetResourceState -MockWith {
-                                return @(
-                                    @{
-                                        ParameterName = 'PipeName'
-                                        Actual = '\\.\pipe\$$\TESTCLU01A\MSSQL$SQL2014\sql\query'
-                                        Expected = '\\.\pipe\$$\CLU01A\MSSQL$SQL2014\sql\query'
-                                        InDesiredState = $false
-                                    }
-                                )
-                            }
-
-                            Mock -CommandName Get-ServerProtocolObject -MockWith {
-                                return New-Object -TypeName PSObject |
-                                    Add-Member -MemberType NoteProperty -Name 'IsEnabled' -Value $false -PassThru |
-                                    Add-Member -MemberType ScriptProperty -Name 'ProtocolProperties' -Value {
-                                        return @{
-                                            PipeName = New-Object -TypeName PSObject |
-                                                Add-Member -MemberType NoteProperty -Name 'Value' -Value '\\.\pipe\$$\TESTCLU01A\MSSQL$SQL2014\sql\query' -PassThru -Force
-                                        }
-                                    } -PassThru |
-                                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                                        # This is used to verify so that method Alter() is actually called or not.
-                                        $script:wasMethodAlterCalled = $true
-                                    } -PassThru -Force
-                            }
-
-                            $setTargetResourceParameters = @{
-                                InstanceName = $mockInstanceName
-                                ProtocolName = 'NamedPipes'
-                                PipeName     = '\\.\pipe\$$\CLU01A\MSSQL$SQL2014\sql\query'
-                            }
-                        }
-
-                        BeforeEach {
-                            $script:wasMethodAlterCalled = $false
-                        }
-
-                        It 'Should set the desired values and _not_ restart the SQL Server service' {
-                            { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
-
-                            $script:wasMethodAlterCalled | Should -BeTrue
-
-                            Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
                         }
                     }
                 }

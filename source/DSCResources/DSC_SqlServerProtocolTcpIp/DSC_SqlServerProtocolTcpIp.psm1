@@ -81,7 +81,7 @@ function Get-TargetResource
         SuppressRestart    = $SuppressRestart
         RestartTimeout     = $RestartTimeout
         Enabled            = $false
-        IPAddress          = $null
+        IpAddress          = $null
         UseTcpDynamicPort  = $false
         TcpPort            = $null
         IsActive           = $false
@@ -152,7 +152,7 @@ function Get-TargetResource
                 Default
                 {
                     $returnValue.AddressFamily = $ipAddressGroupObject.IPAddress.AddressFamily
-                    $returnValue.IPAddress = $ipAddressGroupObject.IPAddress.IPAddressToString
+                    $returnValue.IpAddress = $ipAddressGroupObject.IPAddress.IPAddressToString
                     $returnValue.Enabled = $ipAddressGroupObject.IPAddressProperties['Enabled'].Value
                     $returnValue.IsActive = $ipAddressGroupObject.IPAddressProperties['Active'].Value
                 }
@@ -166,7 +166,7 @@ function Get-TargetResource
                 that this resource can not solve.
             #>
             Write-Warning -Message (
-                $script:localizedData.MissingIpAddressGroup -f $IpAddressGroup
+                $script:localizedData.GetMissingIpAddressGroup -f $IpAddressGroup
             )
         }
     }
@@ -196,7 +196,7 @@ function Get-TargetResource
         the IP address group is not set to 'IPAll'. If not specified, the existing
         value will not be changed.
 
-    .PARAMETER IPAddress
+    .PARAMETER IpAddress
         Specifies the IP address for the IP adress group. Only used if the IP address
         group is not set to 'IPAll'. If not specified, the existing value will not be
         changed.
@@ -246,7 +246,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $IPAddress,
+        $IpAddress,
 
         [Parameter()]
         [System.Boolean]
@@ -267,8 +267,6 @@ function Set-TargetResource
 
     $IpAddressGroup = Convert-IpAdressGroupCasing -IpAddressGroup $IpAddressGroup
 
-    $protocolNameProperties = Get-ProtocolNameProperties -ProtocolName $ProtocolName
-
     <#
         Compare the current state against the desired state. Calling this will
         also import the necessary module to later call Get-ServerProtocolObject
@@ -282,7 +280,7 @@ function Set-TargetResource
     if ($propertiesNotInDesiredState.Count -gt 0)
     {
         Write-Verbose -Message (
-            $script:localizedData.SetDesiredState -f $protocolNameProperties.DisplayName, $InstanceName
+            $script:localizedData.SetDesiredState -f $IpAddressGroup, $InstanceName
         )
 
         <#
@@ -292,85 +290,118 @@ function Set-TargetResource
         $getServerProtocolObjectParameters = @{
             ServerName   = $env:COMPUTERNAME
             Instance     = $InstanceName
-            ProtocolName = $ProtocolName
+            ProtocolName = 'TcpIp'
         }
 
         $serverProtocolProperties = Get-ServerProtocolObject @getServerProtocolObjectParameters
 
         if ($serverProtocolProperties)
         {
-            $isRestartNeeded = $false
-
-            # Check if Enable property need updating.
-            if ($propertiesNotInDesiredState.Where( { $_.ParameterName -eq 'Enabled' }))
+            if ($IpAddressGroup -in $serverProtocolProperties.IPAddresses.Name)
             {
-                $serverProtocolProperties.IsEnabled = $Enabled
+                $ipAddressGroupObject = $serverProtocolProperties.IPAddresses[$IpAddressGroup]
 
-                if ($Enabled)
+                $isRestartNeeded = $false
+
+                # Check if TcpPort property need updating.
+                if ($propertiesNotInDesiredState.Where( { $_.ParameterName -eq 'TcpPort' }))
                 {
+                    $ipAddressGroupObject.IPAddressProperties['TcpPort'].Value = $TcpPort
+
+                    # Should be using TcpPort, make sure dynamic ports are disabled.
+                    $ipAddressGroupObject.IPAddressProperties['TcpDynamicPorts'].Value = ''
+
                     Write-Verbose -Message (
-                        $script:localizedData.ProtocolHasBeenEnabled -f $protocolNameProperties.DisplayName, $InstanceName
+                        $script:localizedData.TcpPortHasBeenSet -f $TcpPort, $IpAddressGroup
                     )
-                }
-                else
-                {
-                    Write-Verbose -Message (
-                        $script:localizedData.ProtocolHasBeenDisabled -f $protocolNameProperties.DisplayName, $InstanceName
-                    )
+
+                    $isRestartNeeded = $true
                 }
 
-                $isRestartNeeded = $true
-            }
-
-            # Set individual protocol properties.
-            switch ($ProtocolName)
-            {
-                'TcpIp'
-                {
-                    # Check if ListenOnAllIpAddresses property need updating.
-                    if ($propertiesNotInDesiredState.Where( { $_.ParameterName -eq 'ListenOnAllIpAddresses' }))
-                    {
-                        Write-Verbose -Message (
-                            $script:localizedData.ParameterHasBeenSetToNewValue -f 'ListenOnAllIpAddresses', $protocolNameProperties.DisplayName, $ListenOnAllIpAddresses
-                        )
-
-                        $serverProtocolProperties.ProtocolProperties['ListenOnAllIPs'].Value = $ListenOnAllIpAddresses
-                    }
-
-                    # Check if KeepAlive property need updating.
-                    if ($propertiesNotInDesiredState.Where( { $_.ParameterName -eq 'KeepAlive' }))
-                    {
-                        Write-Verbose -Message (
-                            $script:localizedData.ParameterHasBeenSetToNewValue -f 'KeepAlive', $protocolNameProperties.DisplayName, $KeepAlive
-                        )
-
-                        $serverProtocolProperties.ProtocolProperties['KeepAlive'].Value = $KeepAlive
-                    }
-                }
-
-                'NamedPipes'
-                {
-                    # Check if PipeName property need updating.
-                    if ($propertiesNotInDesiredState.Where( { $_.ParameterName -eq 'PipeName' }))
-                    {
-                        Write-Verbose -Message (
-                            $script:localizedData.ParameterHasBeenSetToNewValue -f 'PipeName', $protocolNameProperties.DisplayName, $PipeName
-                        )
-
-                        $serverProtocolProperties.ProtocolProperties['PipeName'].Value = $PipeName
-                    }
-                }
-
-                'SharedMemory'
+                # Check if TcpDynamicPort property need updating.
+                if ($propertiesNotInDesiredState.Where( { $_.ParameterName -eq 'UseTcpDynamicPort' }))
                 {
                     <#
-                        Left blank intentionally. There are no individual protocol
-                        properties for the protocol Shared Memory.
+                        Enable TCP dynamic ports using a '0'. When the SQL Server
+                        Database Engine is restarted it will get a dynamic port.
                     #>
-                }
-            }
+                    $ipAddressGroupObject.IPAddressProperties['TcpDynamicPorts'].Value = '0'
 
-            $serverProtocolProperties.Alter()
+                    <#
+                        Should be using dynamic TCP port, make sure static TCP port
+                        are disabled.
+                    #>
+                    $ipAddressGroupObject.IPAddressProperties['TcpPort'].Value = ''
+
+                    Write-Verbose -Message (
+                        $script:localizedData.TcpDynamicPortHasBeenSet -f $IpAddressGroup
+                    )
+
+                    $isRestartNeeded = $true
+                }
+
+                # Set individual protocol properties.
+                switch ($IpAddressGroup)
+                {
+                    'IPAll'
+                    {
+                        <#
+                            Left blank intentionally. There are no individual protocol
+                            properties for the IP address group IPAll.
+                        #>
+                    }
+
+                    Default
+                    {
+                        # Check if Enable property need updating.
+                        if ($propertiesNotInDesiredState.Where( { $_.ParameterName -eq 'Enabled' }))
+                        {
+                            $ipAddressGroupObject.IPAddressProperties['Enabled'].Value = $Enabled
+
+                            if ($Enabled)
+                            {
+                                Write-Verbose -Message (
+                                    $script:localizedData.GroupHasBeenEnabled -f $IpAddressGroup, $InstanceName
+                                )
+                            }
+                            else
+                            {
+                                Write-Verbose -Message (
+                                    $script:localizedData.GroupHasBeenDisabled -f $IpAddressGroup, $InstanceName
+                                )
+                            }
+
+                            $isRestartNeeded = $true
+                        }
+
+                        # Check if Enabled property need updating.
+                        if ($propertiesNotInDesiredState.Where( { $_.ParameterName -eq 'IpAddress' }))
+                        {
+                            # Casing of the property IpAddress is important!
+                            $ipAddressGroupObject.IPAddressProperties['IpAddress'].Value = $IpAddress
+
+                            Write-Verbose -Message (
+                                $script:localizedData.IpAddressHasBeenSet -f $IpAddressGroup, $IpAddress
+                            )
+
+                            $isRestartNeeded = $true
+                        }
+                    }
+                }
+
+                $serverProtocolProperties.Alter()
+            }
+            else
+            {
+                $errorMessage = $script:localizedData.SetMissingIpAddressGroup -f $IpAddressGroup
+
+                New-ObjectNotFoundException -Message $errorMessage
+            }
+        }
+        else
+        {
+            $errorMessage = $script:localizedData.FailedToGetSqlServerProtocol
+            New-InvalidOperationException -Message $errorMessage
         }
 
         if (-not $SuppressRestart -and $isRestartNeeded)
@@ -392,7 +423,7 @@ function Set-TargetResource
     else
     {
         Write-Verbose -Message (
-            $script:localizedData.ProtocolIsInDesiredState -f $protocolNameProperties.DisplayName, $InstanceName
+            $script:localizedData.GroupIsInDesiredState -f $IpAddressGroup, $InstanceName
         )
     }
 }
@@ -419,7 +450,7 @@ function Set-TargetResource
         the IP address group is not set to 'IPAll'. If not specified, the existing
         value will not be changed.
 
-    .PARAMETER IPAddress
+    .PARAMETER IpAddress
         Specifies the IP address for the IP adress group. Only used if the IP address
         group is not set to 'IPAll'. If not specified, the existing value will not be
         changed.
@@ -470,7 +501,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $IPAddress,
+        $IpAddress,
 
         [Parameter()]
         [System.Boolean]
@@ -538,7 +569,7 @@ function Test-TargetResource
         the IP address group is not set to 'IPAll'. If not specified, the existing
         value will not be changed.
 
-    .PARAMETER IPAddress
+    .PARAMETER IpAddress
         Specifies the IP address for the IP adress group. Only used if the IP address
         group is not set to 'IPAll'. If not specified, the existing value will not be
         changed.
@@ -588,7 +619,7 @@ function Compare-TargetResourceState
 
         [Parameter()]
         [System.String]
-        $IPAddress,
+        $IpAddress,
 
         [Parameter()]
         [System.Boolean]
@@ -657,7 +688,7 @@ function Compare-TargetResourceState
         {
             $propertiesToEvaluate = @(
                 'Enabled'
-                'IPAddress'
+                'IpAddress'
                 'UseTcpDynamicPort'
                 'TcpPort'
             )

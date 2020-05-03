@@ -1750,7 +1750,7 @@ address groups for a SQL Server instance.
 * **`[Boolean]` Enabled** _(Write)_: Specified if the IP address group  should
   be enabled or disabled. Only used if the IP address group is not set to
   'IPAll'. If not specified, the existing value will not be changed.
-* **`[String]` IPAddress** _(Write)_: Specifies the IP address for the IP
+* **`[String]` IpAddress** _(Write)_: Specifies the IP address for the IP
   adress group. Only used if the IP address group is not set to 'IPAll'. If
   not specified, the existing value will not be changed.
 * **`[Boolean]` UseTcpDynamicPort** _(Write)_: Specifies whether the SQL Server
