@@ -217,7 +217,8 @@ function Test-TargetResource
     $currentValues = Get-TargetResource @PSBoundParameters
     return Test-DscParameterState -CurrentValues $CurrentValues `
         -DesiredValues $PSBoundParameters `
-        -ValuesToCheck @('Name', 'DatabaseName')
+        -ValuesToCheck @('Name', 'DatabaseName') `
+        -TurnOffTypeChecking
 }
 
 Export-ModuleMember -Function *-TargetResource

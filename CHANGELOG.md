@@ -86,6 +86,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
     commit message contain the word `add`, `adds`, `minor`, `feature`,
     or `features`.
   - Now code coverage is reported to Codecov.
+  - Updated to support DscResource.Common v0.7.1.
 - SqlSetup
   - The property `SqlTempdbLogFileGrowth` and `SqlTempdbFileGrowth` now returns
     the correct values. Previously the value of the growth was wrongly

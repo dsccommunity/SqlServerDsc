@@ -407,7 +407,8 @@ function Test-TargetResource
     #>
     return Test-DscParameterState -CurrentValues $getTargetResourceResult `
         -DesiredValues $PSBoundParameters `
-        -ValuesToCheck @('Name', 'Ensure', 'PermissionState')
+        -ValuesToCheck @('Name', 'Ensure', 'PermissionState') `
+        -TurnOffTypeChecking
 }
 
 Export-ModuleMember -Function *-TargetResource
