@@ -17,7 +17,6 @@ Configuration Example
 
     node localhost
     {
-
         SqlServerProtocol 'DisableListenAllIPAddresses'
         {
             InstanceName           = 'MSSQLSERVER'

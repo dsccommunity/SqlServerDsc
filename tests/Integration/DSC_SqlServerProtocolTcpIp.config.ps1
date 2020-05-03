@@ -13,6 +13,10 @@ if (Test-Path -Path $configFile)
 }
 else
 {
+    $currentIp4Address = Get-NetIPAddress -AddressFamily 'IPv4' |
+        Where-Object -Property 'PrefixOrigin' -EQ 'Dhcp' |
+            Select-Object -FIrst 1 -ExpandProperty 'IPAddress'
+
     $ConfigurationData = @{
         AllNodes = @(
             @{
@@ -20,6 +24,8 @@ else
 
                 UserName        = "$env:COMPUTERNAME\SqlInstall"
                 Password        = 'P@ssw0rd1'
+
+                IpAddress       = $currentIp4Address
 
                 InstanceName    = 'DSCSQLTEST'
 
@@ -31,19 +37,36 @@ else
 
 <#
     .SYNOPSIS
-        Disables Named Pipes.
+        Disables listen on all IP addresses and then configures IP address group
+        'IP1' with the first IP address assigned to the node (first IP address
+        which has DHCP as the prefix origin).
 #>
-Configuration MSFT_SqlServerProtocol_DisableNamedPipes_Config
+Configuration MSFT_SqlServerProtocolTcpIp_ListenOnSpecificIpAddress_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerProtocol 'Integration_Test'
+        SqlServerProtocol 'DisableListenAllIPAddresses'
         {
-            InstanceName         = $Node.InstanceName
-            ProtocolName         = 'NamedPipes'
-            Enabled              = $false
+            InstanceName           = $Node.InstanceName
+            ProtocolName           = 'TcpIp'
+            Enabled                = $true
+            ListenOnAllIpAddresses = $false
+            SuppressRestart        = $true
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+
+        SqlServerProtocolTcpIP 'Integration_Test'
+        {
+            InstanceName           = $Node.InstanceName
+            IpAddressGroup         = 'IP1'
+            Enabled                 = $true
+            IpAddress              = $Node.IpAddress
+            SuppressRestart        = $true
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -51,27 +74,3 @@ Configuration MSFT_SqlServerProtocol_DisableNamedPipes_Config
         }
     }
 }
-
-<#
-    .SYNOPSIS
-        Enabled Named Pipes.
-#>
-Configuration MSFT_SqlServerProtocol_EnableNamedPipes_Config
-{
-    Import-DscResource -ModuleName 'SqlServerDsc'
-
-    node $AllNodes.NodeName
-    {
-        SqlServerProtocol 'Integration_Test'
-        {
-            InstanceName         = $Node.InstanceName
-            ProtocolName         = 'NamedPipes'
-            Enabled              = $true
-
-            PsDscRunAsCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
-        }
-    }
-}
-

@@ -6,7 +6,7 @@ if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL201
 }
 
 $script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceFriendlyName = 'SqlServerProtocol'
+$script:dscResourceFriendlyName = 'SqlServerProtocolTcpIp'
 $script:dscResourceName = "MSFT_$($script:dscResourceFriendlyName)"
 
 try
@@ -34,7 +34,7 @@ try
             $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
         }
 
-        $configurationName = "$($script:dscResourceName)_DisableNamedPipes_Config"
+        $configurationName = "$($script:dscResourceName)_ListenOnSpecificIpAddress_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -72,57 +72,9 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.ProtocolName | Should -Be 'NamedPipes'
-                $resourceCurrentState.Enabled | Should -BeFalse
-                $resourceCurrentState.PipeName | Should -Be 'XXX'
-            }
-
-            It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be 'True'
-            }
-        }
-
-        $configurationName = "$($script:dscResourceName)_EnableNamedPipes_Config"
-
-        Context ('When using configuration {0}' -f $configurationName) {
-            It 'Should compile and apply the MOF without throwing' {
-                {
-                    $configurationParameters = @{
-                        OutputPath           = $TestDrive
-                        # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData    = $ConfigurationData
-                    }
-
-                    & $configurationName @configurationParameters
-
-                    $startDscConfigurationParameters = @{
-                        Path         = $TestDrive
-                        ComputerName = 'localhost'
-                        Wait         = $true
-                        Verbose      = $true
-                        Force        = $true
-                        ErrorAction  = 'Stop'
-                    }
-
-                    Start-DscConfiguration @startDscConfigurationParameters
-                } | Should -Not -Throw
-            }
-
-            It 'Should be able to call Get-DscConfiguration without throwing' {
-                {
-                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-                } | Should -Not -Throw
-            }
-
-            It 'Should have set the resource and all the parameters should match' {
-                $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq $configurationName `
-                    -and $_.ResourceId -eq $resourceId
-                }
-
-                $resourceCurrentState.ProtocolName | Should -Be 'NamedPipes'
+                $resourceCurrentState.IpAddressGroup | Should -Be 'IP1'
                 $resourceCurrentState.Enabled | Should -BeTrue
-                $resourceCurrentState.PipeName | Should -Be 'XXX'
+                $resourceCurrentState.IpAddress | Should -Be $ConfigurationData.AllNodes.IpAddress
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
