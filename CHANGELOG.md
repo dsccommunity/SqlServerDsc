@@ -85,7 +85,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
     `GitVersion.yml` was changed to only raise minor version when the
     commit message contain the word `add`, `adds`, `minor`, `feature`,
     or `features`.
-  - Now code coverage is reported to Codecov.
+  - Now code coverage is reported to Codecov, and a codecov.yml was added.
   - Updated to support DscResource.Common v0.7.1.
 - SqlSetup
   - The property `SqlTempdbLogFileGrowth` and `SqlTempdbFileGrowth` now returns
