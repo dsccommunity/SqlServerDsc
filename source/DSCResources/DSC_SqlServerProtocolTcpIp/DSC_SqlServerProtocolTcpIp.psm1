@@ -651,6 +651,11 @@ function Compare-TargetResourceState
 
     Assert-BoundParameter @assertBoundParameterParameters
 
+    if ($PSBoundParameters.ContainsKey('IpAddress'))
+    {
+        Assert-IpAddress -Address $IpAddress
+    }
+
     $getTargetResourceParameters = @{
         InstanceName    = $InstanceName
         IpAddressGroup  = $IpAddressGroup
