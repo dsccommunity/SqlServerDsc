@@ -574,6 +574,33 @@ try
                 $mockInstanceName = 'DSCTEST'
             }
 
+            Context 'When the SQL Server instance does not exist' {
+                Mock -CommandName Compare-TargetResourceState -MockWith {
+                    return @(
+                        @{
+                            InDesiredState = $false
+                        }
+                    )
+                }
+
+                BeforeAll {
+                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                        return $null
+                    }
+
+                    $setTargetResourceParameters = @{
+                        InstanceName = $mockInstanceName
+                        ProtocolName = 'SharedMemory'
+                    }
+                }
+
+                It 'Should throw the correct error' {
+                    $expectedErrorMessage = $script:localizedData.FailedToGetSqlServerProtocol
+
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw $expectedErrorMessage
+                }
+            }
+
             Context 'When the system is in the desired state' {
                 BeforeAll {
                     Mock -CommandName Compare-TargetResourceState -MockWith {

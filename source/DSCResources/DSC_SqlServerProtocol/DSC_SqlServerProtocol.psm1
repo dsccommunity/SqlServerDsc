@@ -329,6 +329,12 @@ function Set-TargetResource
 
             $serverProtocolProperties.Alter()
         }
+        else
+        {
+            $errorMessage = $script:localizedData.FailedToGetSqlServerProtocol
+
+            New-InvalidOperationException -Message $errorMessage
+        }
 
         if (-not $SuppressRestart -and $isRestartNeeded)
         {

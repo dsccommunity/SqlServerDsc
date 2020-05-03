@@ -9,4 +9,5 @@ ConvertFrom-StringData @'
     TestDesiredState = Determining the current state of the protocol '{0}' for the instance '{1}' on the server '{2}'. (SSP0001)
     NotInDesiredState = The protocol '{0}' for the instance '{1}' is not in desired state. (SSP0007)
     InDesiredState = The protocol '{0}' for the instance '{1}' is in desired state. (SSP0008)
+    FailedToGetSqlServerProtocol = Failed to get the settings for the SQL Server Database Engine server protocol TCP/IP. (SSP0009)
 '@
