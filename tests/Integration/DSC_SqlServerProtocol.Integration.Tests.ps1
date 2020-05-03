@@ -122,7 +122,7 @@ try
 
                 $resourceCurrentState.ProtocolName | Should -Be 'NamedPipes'
                 $resourceCurrentState.Enabled | Should -BeTrue
-                $resourceCurrentState.PipeName | Should -Be 'XXX'
+                $resourceCurrentState.PipeName | Should -Be '\\.\pipe\MSSQL$DSCSQLTEST\sql\query'
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
