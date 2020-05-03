@@ -226,6 +226,7 @@ stages:
                   # Group 5
                   'tests/Integration/DSC_SqlServerSecureConnection.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
+                  'DSC_SqlServerProtocol.Integration.Tests.ps1'
               )
             name: test
             displayName: 'Run Integration Test'
