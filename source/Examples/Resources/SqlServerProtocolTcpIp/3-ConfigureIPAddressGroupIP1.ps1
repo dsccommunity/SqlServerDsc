@@ -29,13 +29,13 @@ Configuration Example
 
         SqlServerProtocolTcpIP 'ChangeIP1'
         {
-            InstanceName           = 'MSSQLSERVER'
-            IpAddressGroup         = 'IP1'
-            Enable                 = $true
-            IpAddress              = 'fe80::7894:a6b6:59dd:c8fe%9'
-            TcpPort                = '1433,1500,1501'
+            InstanceName         = 'MSSQLSERVER'
+            IpAddressGroup       = 'IP1'
+            Enabled              = $true
+            IpAddress            = 'fe80::7894:a6b6:59dd:c8fe%9'
+            TcpPort              = '1433,1500,1501'
 
-            PsDscRunAsCredential   = $SystemAdministratorAccount
+            PsDscRunAsCredential = $SystemAdministratorAccount
         }
     }
 }

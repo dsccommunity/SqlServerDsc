@@ -1782,7 +1782,7 @@ address groups for a SQL Server instance.
 
 * [Configure the IP address group IPAll with dynamic port](/source/Examples/Resources/SqlServerProtocolTcpIp/1-ConfigureIPAddressGroupIPAllWithDynamicPort.ps1)
 * [Configure the IP address group IPAll with static port(s)](/source/Examples/Resources/SqlServerProtocolTcpIp/2-ConfigureIPAddressGroupIPAllWithStaticPort.ps1)
-* [Configure the IP address group IP1 with IP address and static port(s)](/source/Examples/Resources/SqlServerProtocolTcpIp/3-ConfigureIPAddressGroupIP1)
+* [Configure the IP address group IP1 with IP address and static port(s)](/source/Examples/Resources/SqlServerProtocolTcpIp/3-ConfigureIPAddressGroupIP1.ps1)
 
 #### Known issues
 
