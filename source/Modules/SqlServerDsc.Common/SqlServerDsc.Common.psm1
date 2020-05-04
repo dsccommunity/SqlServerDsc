@@ -45,7 +45,7 @@ function Get-RegistryPropertyValue
     }
     catch
     {
-         $getItemPropertyResult = $null
+        $getItemPropertyResult = $null
     }
 
     return $getItemPropertyResult
@@ -147,15 +147,17 @@ function Copy-ItemWithRobocopy
         Write-Verbose -Message $script:localizedData.RobocopyNotUsingUnbufferedIo -Verbose
     }
 
-    $robocopyArgumentList = '{0} {1} {2} {3} {4} {5}' -f $quotedPath,
-                                                         $quotedDestinationPath,
-                                                         $robocopyArgumentCopySubDirectoriesIncludingEmpty,
-                                                         $robocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource,
-                                                         $robocopyArgumentUseUnbufferedIO,
-                                                         $robocopyArgumentSilent
+    $robocopyArgumentList = '{0} {1} {2} {3} {4} {5}' -f @(
+        $quotedPath,
+        $quotedDestinationPath,
+        $robocopyArgumentCopySubDirectoriesIncludingEmpty,
+        $robocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource,
+        $robocopyArgumentUseUnbufferedIO,
+        $robocopyArgumentSilent
+    )
 
     $robocopyStartProcessParameters = @{
-        FilePath = $robocopyExecutable.Name
+        FilePath     = $robocopyExecutable.Name
         ArgumentList = $robocopyArgumentList
     }
 
@@ -164,13 +166,13 @@ function Copy-ItemWithRobocopy
 
     switch ($($robocopyProcess.ExitCode))
     {
-        {$_ -in 8, 16}
+        { $_ -in 8, 16 }
         {
             $errorMessage = $script:localizedData.RobocopyErrorCopying -f $_
             New-InvalidOperationException -Message $errorMessage
         }
 
-        {$_ -gt 7 }
+        { $_ -gt 7 }
         {
             $errorMessage = $script:localizedData.RobocopyFailuresCopying -f $_
             New-InvalidResultException -Message $errorMessage
@@ -193,7 +195,7 @@ function Copy-ItemWithRobocopy
             ) -Verbose
         }
 
-        {$_ -eq 0 -or $null -eq $_ }
+        { $_ -eq 0 -or $null -eq $_ }
         {
             Write-Verbose -Message $script:localizedData.RobocopyAllFilesPresent -Verbose
         }
@@ -398,7 +400,7 @@ function Start-SqlSetupProcess
     )
 
     $startProcessParameters = @{
-        FilePath = $FilePath
+        FilePath     = $FilePath
         ArgumentList = $ArgumentList
     }
 
@@ -457,28 +459,28 @@ function Start-SqlSetupProcess
 #>
 function Connect-SQL
 {
-    [CmdletBinding(DefaultParameterSetName='SqlServer')]
+    [CmdletBinding(DefaultParameterSetName = 'SqlServer')]
     param
     (
-        [Parameter(ParameterSetName='SqlServer')]
-        [Parameter(ParameterSetName='SqlServerWithCredential')]
+        [Parameter(ParameterSetName = 'SqlServer')]
+        [Parameter(ParameterSetName = 'SqlServerWithCredential')]
         [ValidateNotNull()]
         [System.String]
         $ServerName = $env:COMPUTERNAME,
 
-        [Parameter(ParameterSetName='SqlServer')]
-        [Parameter(ParameterSetName='SqlServerWithCredential')]
+        [Parameter(ParameterSetName = 'SqlServer')]
+        [Parameter(ParameterSetName = 'SqlServerWithCredential')]
         [ValidateNotNull()]
         [System.String]
         $InstanceName = 'MSSQLSERVER',
 
-        [Parameter(ParameterSetName='SqlServerWithCredential', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'SqlServerWithCredential', Mandatory = $true)]
         [ValidateNotNull()]
         [Alias('DatabaseCredential')]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
-        [Parameter(ParameterSetName='SqlServerWithCredential')]
+        [Parameter(ParameterSetName = 'SqlServerWithCredential')]
         [ValidateSet('WindowsUser', 'SqlLogin')]
         [System.String]
         $LoginType = 'WindowsUser',
@@ -500,7 +502,7 @@ function Connect-SQL
         $databaseEngineInstance = '{0}\{1}' -f $ServerName, $InstanceName
     }
 
-    $sqlServerObject  = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+    $sqlServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
     $sqlConnectionContext = $sqlServerObject.ConnectionContext
     $sqlConnectionContext.ServerInstance = $databaseEngineInstance
     $sqlConnectionContext.StatementTimeout = $StatementTimeout
@@ -719,7 +721,7 @@ function Import-SQLPSModule
     if ($Force.IsPresent)
     {
         Write-Verbose -Message $script:localizedData.ModuleForceRemoval -Verbose
-        Remove-Module -Name @('SqlServer','SQLPS','SQLASCmdlets') -Force -ErrorAction SilentlyContinue
+        Remove-Module -Name @('SqlServer', 'SQLPS', 'SQLASCmdlets') -Force -ErrorAction SilentlyContinue
     }
 
     <#
@@ -740,7 +742,7 @@ function Import-SQLPSModule
     # Get the newest SqlServer module if more than one exist
     $availableModule = Get-Module -FullyQualifiedName 'SqlServer' -ListAvailable |
         Sort-Object -Property 'Version' -Descending |
-        Select-Object -First 1 -Property Name, Path, Version
+            Select-Object -First 1 -Property Name, Path, Version
 
     if ($availableModule)
     {
@@ -764,14 +766,14 @@ function Import-SQLPSModule
         #>
         $availableModule = Get-Module -FullyQualifiedName 'SQLPS' -ListAvailable |
             Select-Object -Property Name, Path, @{
-                Name = 'Version'
+                Name       = 'Version'
                 Expression = {
                     # Parse the build version number '120', '130' from the Path.
                     (Select-String -InputObject $_.Path -Pattern '\\([0-9]{3})\\' -List).Matches.Groups[1].Value
                 }
             } |
-            Sort-Object -Property 'Version' -Descending |
-            Select-Object -First 1
+                Sort-Object -Property 'Version' -Descending |
+                    Select-Object -First 1
 
         if ($availableModule)
         {
@@ -850,6 +852,16 @@ function Import-SQLPSModule
         This need to be used for some resource, for example for the SqlServerNetwork
         resource when it's used to disable protocol.
 
+    .PARAMETER OwnerNode
+        Specifies a list of owner nodes names of a cluster groups. If the SQL Server
+        instance is a Failover Cluster instance then the cluster group will only
+        be taken offline and back online when the owner of the cluster group is
+        one of the nodes specified in this list. These node names specified in this
+        parameter must match the Owner property of the cluster resource, for example
+        @('sqltest10', 'SQLTEST11'). The names are case-insensitive.
+        If this parameter is not specified the cluster group will be taken offline
+        and back online regardless of owner.
+
     .EXAMPLE
         Restart-SqlService -ServerName localhost
 
@@ -861,6 +873,9 @@ function Import-SQLPSModule
 
     .EXAMPLE
         Restart-SqlService -ServerName CLU01 -Timeout 300
+
+    .EXAMPLE
+        Restart-SqlService -ServerName CLU01 -Timeout 300 -OwnerNode 'testclu10'
 #>
 function Restart-SqlService
 {
@@ -885,9 +900,16 @@ function Restart-SqlService
 
         [Parameter()]
         [Switch]
-        $SkipWaitForOnline
+        $SkipWaitForOnline,
+
+        [Parameter()]
+        [System.String[]]
+        $OwnerNode
     )
 
+    $restartWindowsService = $true
+
+    # Check if a cluster, otherwise assume that a Windows service should be restarted.
     if (-not $SkipClusterCheck.IsPresent)
     {
         ## Connect to the instance
@@ -895,49 +917,25 @@ function Restart-SqlService
 
         if ($serverObject.IsClustered)
         {
-            # Get the cluster resources
-            Write-Verbose -Message ($script:localizedData.GetSqlServerClusterResources) -Verbose
-            $sqlService = Get-CimInstance -Namespace root/MSCluster -ClassName MSCluster_Resource -Filter "Type = 'SQL Server'" |
-                Where-Object -FilterScript { $_.PrivateProperties.InstanceName -eq $serverObject.ServiceName }
+            # Make sure Windows service is not restarted outside of the cluster.
+            $restartWindowsService = $false
 
-            Write-Verbose -Message ($script:localizedData.GetSqlAgentClusterResource) -Verbose
-            $agentService = $sqlService | Get-CimAssociatedInstance -ResultClassName MSCluster_Resource |
-                Where-Object -FilterScript { ($_.Type -eq 'SQL Server Agent') -and ($_.State -eq 2) }
-
-            # Build a listing of resources being acted upon
-            $resourceNames = @($sqlService.Name, ($agentService | Select-Object -ExpandProperty Name)) -join ","
-
-            # Stop the SQL Server and dependent resources
-            Write-Verbose -Message ($script:localizedData.BringClusterResourcesOffline -f $resourceNames) -Verbose
-            $sqlService | Invoke-CimMethod -MethodName TakeOffline -Arguments @{
-                Timeout = $Timeout
+            $restartSqlClusterServiceParameters = @{
+                InstanceName = $serverObject.ServiceName
             }
 
-            # Start the SQL server resource
-            Write-Verbose -Message ($script:localizedData.BringSqlServerClusterResourcesOnline) -Verbose
-            $sqlService | Invoke-CimMethod -MethodName BringOnline -Arguments @{
-                Timeout = $Timeout
-            }
-
-            # Start the SQL Agent resource
-            if ($agentService)
+            if ($PSBoundParameters.ContainsKey('Timeout'))
             {
-                Write-Verbose -Message ($script:localizedData.BringSqlServerAgentClusterResourcesOnline) -Verbose
-                $agentService | Invoke-CimMethod -MethodName BringOnline -Arguments @{
-                    Timeout = $Timeout
-                }
+                $restartSqlClusterServiceParameters['Timeout'] = $Timeout
             }
+
+            if ($PSBoundParameters.ContainsKey('OwnerNode'))
+            {
+                $restartSqlClusterServiceParameters['OwnerNode'] = $OwnerNode
+            }
+
+            Restart-SqlClusterService @restartSqlClusterServiceParameters
         }
-        else
-        {
-            # Not a cluster, restart the Windows service.
-            $restartWindowsService = $true
-        }
-    }
-    else
-    {
-        # Should not check if a cluster, assume that a Windows service should be restarted.
-        $restartWindowsService = $true
     }
 
     if ($restartWindowsService)
@@ -952,23 +950,27 @@ function Restart-SqlService
         }
 
         Write-Verbose -Message ($script:localizedData.GetServiceInformation -f 'SQL Server') -Verbose
+
         $sqlService = Get-Service -Name $serviceName
 
         <#
             Get all dependent services that are running.
             There are scenarios where an automatic service is stopped and should not be restarted automatically.
         #>
-        $agentService = $sqlService.DependentServices | Where-Object -FilterScript { $_.Status -eq 'Running' }
+        $agentService = $sqlService.DependentServices |
+            Where-Object -FilterScript { $_.Status -eq 'Running' }
 
         # Restart the SQL Server service
         Write-Verbose -Message ($script:localizedData.RestartService -f 'SQL Server') -Verbose
-        $sqlService | Restart-Service -Force
+        $sqlService |
+            Restart-Service -Force
 
         # Start dependent services
-        $agentService | ForEach-Object {
-            Write-Verbose -Message ($script:localizedData.StartingDependentService -f $_.DisplayName) -Verbose
-            $_ | Start-Service
-        }
+        $agentService |
+            ForEach-Object {
+                Write-Verbose -Message ($script:localizedData.StartingDependentService -f $_.DisplayName) -Verbose
+                $_ | Start-Service
+            }
     }
 
     Write-Verbose -Message ($script:localizedData.WaitingInstanceTimeout -f $ServerName, $InstanceName, $Timeout) -Verbose
@@ -980,7 +982,7 @@ function Restart-SqlService
         do
         {
             # This call, if it fails, will take between ~9-10 seconds to return.
-            $testConnectionServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction SilentlyContinue
+            $testConnectionServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'SilentlyContinue'
 
             # Make sure we have an SMO object to test Status
             if ($testConnectionServerObject)
@@ -1003,6 +1005,131 @@ function Restart-SqlService
             $errorMessage = $script:localizedData.FailedToConnectToInstanceTimeout -f $ServerName, $InstanceName, $Timeout
             New-InvalidOperationException -Message $errorMessage
         }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Restarts a SQL Server cluster instance and associated services
+
+    .PARAMETER InstanceName
+        Specifies the instance name that matches a SQL Server MSCluster_Resource
+        property <clustergroup>.PrivateProperties.InstanceName.
+
+    .PARAMETER Timeout
+        Timeout value for restarting the SQL services. The default value is 120 seconds.
+
+    .PARAMETER OwnerNode
+        Specifies a list of owner nodes names of a cluster groups. If the SQL Server
+        instance is a Failover Cluster instance then the cluster group will only
+        be taken offline and back online when the owner of the cluster group is
+        one of the nodes specified in this list. These node names specified in this
+        parameter must match the Owner property of the cluster resource, for example
+        @('sqltest10', 'SQLTEST11'). The names are case-insensitive.
+        If this parameter is not specified the cluster group will be taken offline
+        and back online regardless of owner.
+#>
+function Restart-SqlClusterService
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
+
+        [Parameter()]
+        [System.UInt32]
+        $Timeout = 120,
+
+        [Parameter()]
+        [System.String[]]
+        $OwnerNode
+    )
+
+    # Get the cluster resources
+    Write-Verbose -Message ($script:localizedData.GetSqlServerClusterResources) -Verbose
+
+    $sqlService = Get-CimInstance -Namespace 'root/MSCluster' -ClassName 'MSCluster_Resource' -Filter "Type = 'SQL Server'" |
+        Where-Object -FilterScript {
+            $_.PrivateProperties.InstanceName -eq $InstanceName -and $_.State -eq 2
+        }
+
+    # If the cluster resource is found and online then continue.
+    if ($sqlService)
+    {
+        $isOwnerOfClusterResource = $true
+
+        if ($PSBoundParameters.ContainsKey('OwnerNode') -and $sqlService.OwnerNode -notin $OwnerNode)
+        {
+            $isOwnerOfClusterResource = $false
+        }
+
+        if ($isOwnerOfClusterResource)
+        {
+            Write-Verbose -Message ($script:localizedData.GetSqlAgentClusterResource) -Verbose
+
+            $agentService = $sqlService |
+                Get-CimAssociatedInstance -ResultClassName MSCluster_Resource |
+                    Where-Object -FilterScript {
+                        $_.Type -eq 'SQL Server Agent' -and $_.State -eq 2
+                    }
+
+            # Build a listing of resources being acted upon
+            $resourceNames = @($sqlService.Name, ($agentService |
+                        Select-Object -ExpandProperty Name)) -join "', '"
+
+            # Stop the SQL Server and dependent resources
+            Write-Verbose -Message ($script:localizedData.BringClusterResourcesOffline -f $resourceNames) -Verbose
+
+            $sqlService |
+                Invoke-CimMethod -MethodName TakeOffline -Arguments @{
+                    Timeout = $Timeout
+                }
+
+            # Start the SQL server resource
+            Write-Verbose -Message ($script:localizedData.BringSqlServerClusterResourcesOnline) -Verbose
+
+            $sqlService |
+                Invoke-CimMethod -MethodName BringOnline -Arguments @{
+                    Timeout = $Timeout
+                }
+
+            # Start the SQL Agent resource
+            if ($agentService)
+            {
+                if ($PSBoundParameters.ContainsKey('OwnerNode') -and $agentService.OwnerNode -notin $OwnerNode)
+                {
+                    $isOwnerOfClusterResource = $false
+                }
+
+                if ($isOwnerOfClusterResource)
+                {
+                    Write-Verbose -Message ($script:localizedData.BringSqlServerAgentClusterResourcesOnline) -Verbose
+
+                    $agentService |
+                        Invoke-CimMethod -MethodName BringOnline -Arguments @{
+                            Timeout = $Timeout
+                        }
+                }
+                else
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.NotOwnerOfClusterResource -f $env:COMPUTERNAME, $agentService.Name, $agentService.OwnerNode
+                    ) -Verbose
+                }
+            }
+        }
+        else
+        {
+            Write-Verbose -Message (
+                $script:localizedData.NotOwnerOfClusterResource -f $env:COMPUTERNAME, $sqlService.Name, $sqlService.OwnerNode
+            ) -Verbose
+        }
+    }
+    else
+    {
+        Write-Warning -Message ($script:localizedData.ClusterResourceNotFoundOrOffline -f $InstanceName)
     }
 }
 
@@ -1150,15 +1277,15 @@ function Restart-ReportingServicesService
 #>
 function Invoke-Query
 {
-    [CmdletBinding(DefaultParameterSetName='SqlServer')]
+    [CmdletBinding(DefaultParameterSetName = 'SqlServer')]
     param
     (
-        [Parameter(ParameterSetName='SqlServer')]
+        [Parameter(ParameterSetName = 'SqlServer')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $ServerName = $env:COMPUTERNAME,
 
-        [Parameter(ParameterSetName='SqlServer')]
+        [Parameter(ParameterSetName = 'SqlServer')]
         [System.String]
         $InstanceName = 'MSSQLSERVER',
 
@@ -1180,7 +1307,7 @@ function Invoke-Query
         [System.String]
         $LoginType = 'Integrated',
 
-        [Parameter(ValueFromPipeline, ParameterSetName='SqlObject', Mandatory = $true)]
+        [Parameter(ValueFromPipeline, ParameterSetName = 'SqlObject', Mandatory = $true)]
         [ValidateNotNull()]
         [Microsoft.SqlServer.Management.Smo.Server]
         $SqlServerObject,
@@ -1234,7 +1361,7 @@ function Invoke-Query
         #>
         $escapedRedactedString = [System.Text.RegularExpressions.Regex]::Escape($redactString)
 
-        $redactedQuery = $redactedQuery -ireplace $escapedRedactedString,'*******'
+        $redactedQuery = $redactedQuery -ireplace $escapedRedactedString, '*******'
     }
 
     if ($WithResults)
@@ -1413,7 +1540,7 @@ function Test-LoginEffectivePermissions
     {
         $loginMissingPermissions = Compare-Object -ReferenceObject $Permissions -DifferenceObject $loginEffectivePermissions |
             Where-Object -FilterScript { $_.SideIndicator -ne '=>' } |
-            Select-Object -ExpandProperty InputObject
+                Select-Object -ExpandProperty InputObject
 
         if ( $loginMissingPermissions.Count -eq 0 )
         {
@@ -1904,9 +2031,9 @@ function Get-ServiceAccount
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $ServiceAccount
-     )
+    )
 
-    $accountParameters = @{}
+    $accountParameters = @{ }
 
     switch -Regex ($ServiceAccount.UserName.ToUpper())
     {
@@ -1947,7 +2074,7 @@ function Get-ServiceAccount
 
 <#
     .SYNOPSIS
-    Recursevly searches Exception stack for specific error number.
+    Recursively searches Exception stack for specific error number.
 
     .PARAMETER ExceptionToSearch
     The Exception object to test
@@ -1991,4 +2118,230 @@ function Find-ExceptionByNumber
 
     # Return
     return $errorFound
+}
+
+<#
+    .SYNOPSIS
+        This function is used to compare current and desired values for any DSC
+        resource, and return a hashtable with the result from the comparison.
+
+    .PARAMETER CurrentValues
+        The current values that should be compared to to desired values. Normally
+        the values returned from Get-TargetResource.
+
+    .PARAMETER DesiredValues
+        The values set in the configuration and is provided in the call to the
+        functions *-TargetResource, and that will be compared against current
+        values. Normally set to $PSBoundParameters.
+
+    .PARAMETER Properties
+        An array of property names, from the keys provided in DesiredValues, that
+        will be compared. If this parameter is left out, all the keys in the
+        DesiredValues will be compared.
+#>
+function Compare-ResourcePropertyState
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable[]])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $CurrentValues,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $DesiredValues,
+
+        [Parameter()]
+        [System.String[]]
+        $Properties,
+
+        [Parameter()]
+        [System.String[]]
+        $IgnoreProperties
+    )
+
+    if ($PSBoundParameters.ContainsKey('Properties'))
+    {
+        # Filter out the parameters (keys) not specified in Properties
+        $desiredValuesToRemove = $DesiredValues.Keys |
+            Where-Object -FilterScript {
+                $_ -notin $Properties
+            }
+
+        $desiredValuesToRemove |
+            ForEach-Object -Process {
+                $DesiredValues.Remove($_)
+            }
+    }
+    else
+    {
+        <#
+            Remove any common parameters that might be part of DesiredValues,
+            if it $PSBoundParameters was used to pass the desired values.
+        #>
+        $commonParametersToRemove = $DesiredValues.Keys |
+            Where-Object -FilterScript {
+                $_ -in [System.Management.Automation.PSCmdlet]::CommonParameters `
+                    -or $_ -in [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
+            }
+
+        $commonParametersToRemove |
+            ForEach-Object -Process {
+                $DesiredValues.Remove($_)
+            }
+    }
+
+    # Remove any properties that should be ignored.
+    if ($PSBoundParameters.ContainsKey('IgnoreProperties'))
+    {
+        $IgnoreProperties |
+            ForEach-Object -Process {
+                if ($DesiredValues.ContainsKey($_))
+                {
+                    $DesiredValues.Remove($_)
+                }
+            }
+    }
+
+    $compareTargetResourceStateReturnValue = @()
+
+    foreach ($parameterName in $DesiredValues.Keys)
+    {
+        Write-Verbose -Message ($script:localizedData.EvaluatePropertyState -f $parameterName) -Verbose
+
+        $parameterState = @{
+            ParameterName = $parameterName
+            Expected      = $DesiredValues.$parameterName
+            Actual        = $CurrentValues.$parameterName
+        }
+
+        # Check if the parameter is in compliance.
+        $isPropertyInDesiredState = Test-DscPropertyState -Values @{
+            CurrentValue = $CurrentValues.$parameterName
+            DesiredValue = $DesiredValues.$parameterName
+        }
+
+        if ($isPropertyInDesiredState)
+        {
+            Write-Verbose -Message ($script:localizedData.PropertyInDesiredState -f $parameterName) -Verbose
+
+            $parameterState['InDesiredState'] = $true
+        }
+        else
+        {
+            Write-Verbose -Message ($script:localizedData.PropertyNotInDesiredState -f $parameterName) -Verbose
+
+            $parameterState['InDesiredState'] = $false
+        }
+
+        $compareTargetResourceStateReturnValue += $parameterState
+    }
+
+    return $compareTargetResourceStateReturnValue
+}
+
+<#
+    .SYNOPSIS
+        This function is used to compare the current and the desired value of a
+        property.
+
+    .PARAMETER Values
+        This is set to a hash table with the current value (the CurrentValue key)
+        and desired value (the DesiredValue key).
+
+    .EXAMPLE
+        Test-DscPropertyState -Values @{
+            CurrentValue = 'John'
+            DesiredValue = 'Alice'
+        }
+
+    .EXAMPLE
+        Test-DscPropertyState -Values @{
+            CurrentValue = 1
+            DesiredValue = 2
+        }
+#>
+function Test-DscPropertyState
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $Values
+    )
+
+    if ($null -eq $Values.CurrentValue -and $null -eq $Values.DesiredValue)
+    {
+        # Both values are $null so return $true
+        $returnValue = $true
+    }
+    elseif ($null -eq $Values.CurrentValue -or $null -eq $Values.DesiredValue)
+    {
+        # Either CurrentValue or DesiredValue are $null so return $false
+        $returnValue = $false
+    }
+    elseif ($Values.DesiredValue.GetType().IsArray -or $Values.CurrentValue.GetType().IsArray)
+    {
+        $compareObjectParameters = @{
+            ReferenceObject  = $Values.CurrentValue
+            DifferenceObject = $Values.DesiredValue
+        }
+
+        $arrayCompare = Compare-Object @compareObjectParameters
+
+        if ($null -ne $arrayCompare)
+        {
+            Write-Verbose -Message $script:localizedData.ArrayDoesNotMatch -Verbose
+
+            $arrayCompare |
+                ForEach-Object -Process {
+                    Write-Verbose -Message ($script:localizedData.ArrayValueThatDoesNotMatch -f `
+                            $_.InputObject, $_.SideIndicator) -Verbose
+                }
+
+            $returnValue = $false
+        }
+        else
+        {
+            $returnValue = $true
+        }
+    }
+    elseif ($Values.CurrentValue -ne $Values.DesiredValue)
+    {
+        $desiredType = $Values.DesiredValue.GetType()
+
+        $returnValue = $false
+
+        $supportedTypes = @(
+            'String'
+            'Int32'
+            'UInt32'
+            'Int16'
+            'UInt16'
+            'Single'
+            'Boolean'
+        )
+
+        if ($desiredType.Name -notin $supportedTypes)
+        {
+            Write-Warning -Message ($script:localizedData.UnableToCompareType -f $desiredType.Name)
+        }
+        else
+        {
+            Write-Verbose -Message (
+                $script:localizedData.PropertyValueOfTypeDoesNotMatch `
+                    -f $desiredType.Name, $Values.CurrentValue, $Values.DesiredValue
+            ) -Verbose
+        }
+    }
+    else
+    {
+        $returnValue = $true
+    }
+
+    return $returnValue
 }

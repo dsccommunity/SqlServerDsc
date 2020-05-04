@@ -9,15 +9,30 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ### Added
 
+- SqlServerDsc
+  - Added new resource SqlServerProtocol ([issue #1377](https://github.com/dsccommunity/SqlServerDsc/issues/1377)).
 - SqlSetup
   - A read only property `IsClustered` was added that can be used to determine
     if the instance is clustered.
+- SqlServerDsc.Common
+  - The helper function `Restart-SqlService` was improved to handle Failover
+    Clusters better. Now the SQL Server service will only be taken offline
+    and back online again if the service is online to begin with.
+  - The helper function `Restart-SqlServer` learned the new parameter
+    `OwnerNode`. The parameter `OwnerNode` takes an array of Cluster node
+    names. Using this parameter the cluster group will only be taken
+    offline and back online if the cluster group owner is one specified
+    in this parameter.
 
 ### Changed
 
 - SqlServerDsc
   - Changed all resource prefixes from `MSFT_` to `DSC_` ([issue #1496](https://github.com/dsccommunity/SqlServerDsc/issues/1496)).
   - All resources are now using the common module DscResource.Common.
+  - When a PR is labelled with 'ready for merge' it is no longer being
+    marked as stale if the PR is not merged for 30 days (for example it is
+    dependent on something else) ([issue #1504](https://github.com/dsccommunity/SqlServerDsc/issues/1504)).
+  - Updated the CI pipeline to use latest version of the module ModuleBuilder.
 - SqlAlwaysOnService
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).

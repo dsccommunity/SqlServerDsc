@@ -121,6 +121,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   Protocols.
 * [**SqlServerPermission**](#sqlserverpermission) Grant or revoke permission on
   the SQL Server.
+* [**SqlServerProtocol**](#sqlserverprotocol) resource manage the SQL Server
+  protocols for a SQL Server instance.
 * [**SqlServerReplication**](#sqlserverreplication) resource to manage SQL Replication
   distribution and publishing.
 * [**SqlServerRole**](#sqlserverrole) resource to manage SQL server roles.
@@ -1650,6 +1652,72 @@ AlterAnyEndPoint and ViewServerState.
 #### Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerPermission).
+
+### SqlServerProtocol
+
+The `SqlServerProtocol` DSC resource manage the SQL Server protocols
+for a SQL Server instance.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
+* Target machine must have access to the SQLPS PowerShell module or the SqlServer
+  PowerShell module.
+* If a protocol is disabled that prevents the cmdlet `Restart-SqlService` to
+  contact the instance to evaluate if it is a cluster then the parameter
+  `SuppressRestart` must be used to override the restart. Same if a protocol
+  is enabled that was previously disabled and no other protocol allows
+  connecting to the instance then the parameter `SuppressRestart` must also
+  be used.
+* When connecting to a Failover Cluster where the account `SYSTEM` does
+  not have access then the correct credential must be provided in
+  the built-in parameter `PSDscRunAsCredential`. If not the following error
+  can appear; `An internal error occurred`.
+
+#### Parameters
+
+* **`[String]` InstanceName** _(Key)_: Specifies the name of the SQL Server
+  instance to enable the protocol for.
+* **`[String]` ProtocolName** _(Key)_: Specifies the name of network protocol
+  to be configured. { 'TcpIp' | 'NamedPipes' | 'ShareMemory' }
+* **`[String]` ServerName** _(Write)_: Specifies the host name of the SQL
+  Server to be configured. If the SQL Server belongs to a cluster or
+  availability group specify the host name for the listener or cluster group.
+  Default value is `$env:COMPUTERNAME`.
+* **`[Boolean]` Enabled** _(Write)_: Specifies if the protocol should be
+  enabled or disabled.
+* **`[Boolean]` ListenOnAllIpAddresses** _(Write)_: Specifies to listen
+  on all IP addresses. Only used for the TCP/IP protocol, ignored for all
+  other protocols.
+* **`[UInt16]` KeepAlive** _(Write)_: Specifies the keep alive duration
+  in milliseconds. Only used for the TCP/IP protocol, ignored for all other
+  protocols.
+* **`[String` PipeName** _(Write)_: Specifies the name of the named pipe.
+  Only used for the Named Pipes protocol, ignored for all other protocols.
+* **`[Boolean]` SuppressRestart** _(Write)_: If set to $true then the any
+  attempt by the resource to restart the service is suppressed. The default
+  value is $false.
+* **`[UInt16]` RestartTimeout** _(Write)_: Timeout value for restarting
+  the SQL Server services. The default value is 120 seconds.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[Boolean]` HasMultiIPAddresses** _(Read)_: Returns $true or $false whether
+  the instance has multiple IP addresses or not.
+
+#### Examples
+
+* [Enable the TCP/IP protocol](/source/Examples/Resources/SqlServerProtocol/1-EnableTcpIp.ps1)
+* [Enable the Named Pipes protocol](/source/Examples/Resources/SqlServerProtocol/2-EnableNamedPipes.ps1)
+* [Enable the Shared Memory protocol](/source/Examples/Resources/SqlServerProtocol/3-EnableSharedMemory.ps1)
+* [Disable the TCP/IP protocol](/source/Examples/Resources/SqlServerProtocol/4-DisableTcpIp.ps1)
+* [Disable the Named Pipes protocol](/source/Examples/Resources/SqlServerProtocol/5-DisableNamedPipes.ps1)
+* [Disable the Shared Memory protocol](/source/Examples/Resources/SqlServerProtocol/6-DisableSharedMemory.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerProtocol).
 
 ### SqlServerReplication
 

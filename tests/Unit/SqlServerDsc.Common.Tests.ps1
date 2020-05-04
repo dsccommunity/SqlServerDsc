@@ -641,203 +641,251 @@ InModuleScope $script:subModuleName {
 
     Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
         Context 'Restart-SqlService standalone instance' {
-            BeforeEach {
-                Mock -CommandName Connect-SQL -MockWith {
-                    return @{
-                        Name = 'MSSQLSERVER'
-                        InstanceName = ''
-                        ServiceName = 'MSSQLSERVER'
-                        Status = $mockDynamicStatus
-                        IsClustered = $false
+            Context 'When the Windows services should be restarted' {
+                BeforeAll {
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return @{
+                            Name = 'MSSQLSERVER'
+                            ServiceName = 'MSSQLSERVER'
+                            Status = 'Online'
+                            IsClustered = $false
+                        }
                     }
-                } -Verifiable -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
 
-                Mock -CommandName Connect-SQL -MockWith {
-                    return @{
-                        Name = 'NOCLUSTERCHECK'
-                        InstanceName = 'NOCLUSTERCHECK'
-                        ServiceName = 'NOCLUSTERCHECK'
-                        Status = $mockDynamicStatus
-                        IsClustered = $true
+                    Mock -CommandName Get-Service -MockWith {
+                        return @{
+                            Name = 'MSSQLSERVER'
+                            DisplayName = 'Microsoft SQL Server (MSSQLSERVER)'
+                            DependentServices = @(
+                                @{
+                                    Name = 'SQLSERVERAGENT'
+                                    DisplayName = 'SQL Server Agent (MSSQLSERVER)'
+                                    Status = 'Running'
+                                    DependentServices = @()
+                                }
+                            )
+                        }
                     }
-                } -Verifiable -ParameterFilter { $InstanceName -eq 'NOCLUSTERCHECK' }
 
-                Mock -CommandName Connect-SQL -MockWith {
-                    return @{
-                        Name = 'NOCONNECT'
-                        InstanceName = 'NOCONNECT'
-                        ServiceName = 'NOCONNECT'
-                        Status = $mockDynamicStatus
-                        IsClustered = $true
-                    }
-                } -Verifiable -ParameterFilter { $InstanceName -eq 'NOCONNECT' }
+                    Mock -CommandName Restart-Service
+                    Mock -CommandName Start-Service
+                    Mock -CommandName Restart-SqlClusterService
+                }
 
-                Mock -CommandName Connect-SQL -MockWith {
-                    return @{
-                        Name = 'NOAGENT'
-                        InstanceName = 'NOAGENT'
-                        ServiceName = 'NOAGENT'
-                        Status = $mockDynamicStatus
-                    }
-                } -Verifiable -ParameterFilter { $InstanceName -eq 'NOAGENT' }
+                It 'Should restart SQL Service and running SQL Agent service' {
+                    { Restart-SqlService -ServerName $env:COMPUTERNAME -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
 
-                Mock -CommandName Connect-SQL -MockWith {
-                    return @{
-                        Name = 'STOPPEDAGENT'
-                        InstanceName = 'STOPPEDAGENT'
-                        ServiceName = 'STOPPEDAGENT'
-                        Status = $mockDynamicStatus
+                    Assert-MockCalled -CommandName Connect-SQL -ParameterFilter {
+                        # Make sure we assert just the first call to Connect-SQL
+                        $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
+                    } -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Restart-SqlClusterService -Scope It -Exactly -Times 0
+                    Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
+                    Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
+                    Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
+
+                }
+
+                Context 'When skipping the cluster check' {
+                    It 'Should restart SQL Service and running SQL Agent service' {
+                        { Restart-SqlService -ServerName $env:COMPUTERNAME -InstanceName 'MSSQLSERVER' -SkipClusterCheck } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Connect-SQL -ParameterFilter {
+                            # Make sure we assert just the first call to Connect-SQL
+                            $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
+                        } -Scope It -Exactly -Times 0
+
+                        Assert-MockCalled -CommandName Restart-SqlClusterService -Scope It -Exactly -Times 0
+                        Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
+                        Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
+                        Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
                     }
-                } -Verifiable -ParameterFilter { $InstanceName -eq 'STOPPEDAGENT' }
+                }
+
+                Context 'When skipping the online check' {
+                    It 'Should restart SQL Service and running SQL Agent service and not wait for the SQL Server instance to come back online' {
+                        { Restart-SqlService -ServerName $env:COMPUTERNAME -InstanceName 'MSSQLSERVER' -SkipWaitForOnline } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Connect-SQL -ParameterFilter {
+                            # Make sure we assert just the first call to Connect-SQL
+                            $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
+                        } -Scope It -Exactly -Times 1
+
+                        Assert-MockCalled -CommandName Connect-SQL -ParameterFilter {
+                            # Make sure we assert just the first call to Connect-SQL
+                            $PSBoundParameters.ContainsKey('ErrorAction') -eq $true
+                        } -Scope It -Exactly -Times 0
+
+                        Assert-MockCalled -CommandName Restart-SqlClusterService -Scope It -Exactly -Times 0
+                        Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
+                        Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
+                        Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
+                    }
+                }
             }
 
-            BeforeAll {
-                ## SQL instance with running SQL Agent Service
-                Mock -CommandName Get-Service -MockWith {
-                    return @{
-                        Name = 'MSSQLSERVER'
-                        DisplayName = 'Microsoft SQL Server (MSSQLSERVER)'
-                        DependentServices = @(
-                            @{
-                                Name = 'SQLSERVERAGENT'
-                                DisplayName = 'SQL Server Agent (MSSQLSERVER)'
-                                Status = 'Running'
-                                DependentServices = @()
-                            }
-                        )
+            Context 'When the SQL Server instance is a Failover Cluster instance' {
+                BeforeAll {
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return @{
+                            Name = 'MSSQLSERVER'
+                            ServiceName = 'MSSQLSERVER'
+                            Status = 'Online'
+                            IsClustered = $true
+                        }
                     }
-                } -Verifiable -ParameterFilter { $Name -eq 'MSSQLSERVER' }
 
-                ## SQL instance with no installed SQL Agent Service
-                Mock -CommandName Get-Service -MockWith {
-                    return @{
-                        Name = 'MSSQL$NOAGENT'
-                        DisplayName = 'Microsoft SQL Server (NOAGENT)'
-                        DependentServices = @()
+                    Mock -CommandName Get-Service
+                    Mock -CommandName Restart-Service
+                    Mock -CommandName Start-Service
+                    Mock -CommandName Restart-SqlClusterService
+                }
+
+                It 'Should just call Restart-SqlClusterService to restart the SQL Server cluster instance' {
+                    { Restart-SqlService -ServerName $env:COMPUTERNAME -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
+
+                    Assert-MockCalled -CommandName Connect-SQL -ParameterFilter {
+                        # Make sure we assert just the first call to Connect-SQL
+                        $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
+                    } -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Restart-SqlClusterService -Scope It -Exactly -Times 1
+                    Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 0
+                    Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 0
+                    Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 0
+                }
+
+                Context 'When passing the Timeout value' {
+                    It 'Should just call Restart-SqlClusterService with the correct parameter' {
+                        { Restart-SqlService -ServerName $env:COMPUTERNAME -InstanceName 'MSSQLSERVER' -Timeout 120 } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Restart-SqlClusterService -ParameterFilter {
+                            $PSBoundParameters.ContainsKey('Timeout') -eq $true
+                        } -Scope It -Exactly -Times 1
                     }
-                } -Verifiable -ParameterFilter { $Name -eq 'MSSQL$NOAGENT' }
+                }
 
-                ## SQL instance with no installed SQL Agent Service
-                Mock -CommandName Get-Service -MockWith {
-                    return @{
-                        Name = 'MSSQL$NOCLUSTERCHECK'
-                        DisplayName = 'Microsoft SQL Server (NOCLUSTERCHECK)'
-                        DependentServices = @()
+                Context 'When passing the OwnerNode value' {
+                    It 'Should just call Restart-SqlClusterService with the correct parameter' {
+                        { Restart-SqlService -ServerName $env:COMPUTERNAME -InstanceName 'MSSQLSERVER' -OwnerNode @('TestNode') } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Restart-SqlClusterService -ParameterFilter {
+                            $PSBoundParameters.ContainsKey('OwnerNode') -eq $true
+                        } -Scope It -Exactly -Times 1
                     }
-                } -Verifiable -ParameterFilter { $Name -eq 'MSSQL$NOCLUSTERCHECK' }
-
-                ## SQL instance with no installed SQL Agent Service
-                Mock -CommandName Get-Service -MockWith {
-                    return @{
-                        Name = 'MSSQL$NOCONNECT'
-                        DisplayName = 'Microsoft SQL Server (NOCONNECT)'
-                        DependentServices = @()
-                    }
-                } -Verifiable -ParameterFilter { $Name -eq 'MSSQL$NOCONNECT' }
-
-                ## SQL instance with stopped SQL Agent Service
-                Mock -CommandName Get-Service -MockWith {
-                    return @{
-                        Name = 'MSSQL$STOPPEDAGENT'
-                        DisplayName = 'Microsoft SQL Server (STOPPEDAGENT)'
-                        DependentServices = @(
-                            @{
-                                Name = 'SQLAGENT$STOPPEDAGENT'
-                                DisplayName = 'SQL Server Agent (STOPPEDAGENT)'
-                                Status = 'Stopped'
-                                DependentServices = @()
-                            }
-                        )
-                    }
-                } -Verifiable -ParameterFilter { $Name -eq 'MSSQL$STOPPEDAGENT' }
-
-                Mock -CommandName Restart-Service -Verifiable
-                Mock -CommandName Start-Service -Verifiable
+                }
             }
 
-            $mockDynamicStatus = 'Online'
+            Context 'When the Windows services should be restarted but there is not SQL Agent service' {
+                BeforeAll {
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return @{
+                            Name = 'NOAGENT'
+                            InstanceName = 'NOAGENT'
+                            ServiceName = 'NOAGENT'
+                            Status = 'Online'
+                        }
+                    }
 
-            It 'Should restart SQL Service and running SQL Agent service' {
-                { Restart-SqlService -ServerName $env:ComputerName -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
+                    Mock -CommandName Get-Service -MockWith {
+                        return @{
+                            Name = 'MSSQL$NOAGENT'
+                            DisplayName = 'Microsoft SQL Server (NOAGENT)'
+                            DependentServices = @()
+                        }
+                    }
 
-                Assert-MockCalled -CommandName Connect-SQL -ParameterFilter {
-                    $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
-                } -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
+                    Mock -CommandName Restart-Service
+                    Mock -CommandName Start-Service
+                    Mock -CommandName Restart-SqlClusterService
+                }
+
+                It 'Should restart SQL Service and not try to restart missing SQL Agent service' {
+                    { Restart-SqlService -ServerName $env:COMPUTERNAME -InstanceName 'NOAGENT' -SkipClusterCheck } | Should -Not -Throw
+
+                    Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
+                    Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
+                    Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 0
+                }
             }
 
-            It 'Should restart SQL Service, and not do cluster cluster check' {
-                Mock -CommandName Get-CimInstance
+            Context 'When the Windows services should be restarted but the SQL Agent service is stopped' {
+                BeforeAll {
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return @{
+                            Name = 'STOPPEDAGENT'
+                            InstanceName = 'STOPPEDAGENT'
+                            ServiceName = 'STOPPEDAGENT'
+                            Status = 'Online'
+                        }
+                    }
 
-                { Restart-SqlService -ServerName $env:ComputerName -InstanceName 'NOCLUSTERCHECK' -SkipClusterCheck } | Should -Not -Throw
+                    Mock -CommandName Get-Service -MockWith {
+                        return @{
+                            Name = 'MSSQL$STOPPEDAGENT'
+                            DisplayName = 'Microsoft SQL Server (STOPPEDAGENT)'
+                            DependentServices = @(
+                                @{
+                                    Name = 'SQLAGENT$STOPPEDAGENT'
+                                    DisplayName = 'SQL Server Agent (STOPPEDAGENT)'
+                                    Status = 'Stopped'
+                                    DependentServices = @()
+                                }
+                            )
+                        }
+                    }
 
-                Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 0
-                Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 0
-            }
+                    Mock -CommandName Restart-Service
+                    Mock -CommandName Start-Service
+                    Mock -CommandName Restart-SqlClusterService
+                }
 
-            It 'Should restart SQL Service, and not do cluster cluster check nor check online status' {
-                Mock -CommandName Get-CimInstance
+                It 'Should restart SQL Service and not try to restart stopped SQL Agent service' {
+                    { Restart-SqlService -ServerName $env:COMPUTERNAME -InstanceName 'STOPPEDAGENT' -SkipClusterCheck } | Should -Not -Throw
 
-                { Restart-SqlService -ServerName $env:ComputerName -InstanceName 'NOCONNECT' -SkipClusterCheck -SkipWaitForOnline } | Should -Not -Throw
-
-                Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 0
-                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 0
-                Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 0
-            }
-
-            It 'Should restart SQL Service and not try to restart missing SQL Agent service' {
-                { Restart-SqlService -ServerName $env:ComputerName -InstanceName 'NOAGENT' } | Should -Not -Throw
-
-                Assert-MockCalled -CommandName Connect-SQL {
-                    $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
-                } -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 0
-            }
-
-            It 'Should restart SQL Service and not try to restart stopped SQL Agent service' {
-                { Restart-SqlService -ServerName $env:ComputerName -InstanceName 'STOPPEDAGENT' } | Should -Not -Throw
-
-                Assert-MockCalled -CommandName Connect-SQL {
-                    $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
-                } -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 0
+                    Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
+                    Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
+                    Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 0
+                }
             }
 
             Context 'When it fails to connect to the instance within the timeout period' {
-                BeforeEach {
+                BeforeAll {
                     Mock -CommandName Connect-SQL -MockWith {
                         return @{
                             Name = 'MSSQLSERVER'
                             InstanceName = ''
                             ServiceName = 'MSSQLSERVER'
-                            Status = $mockDynamicStatus
+                            Status = 'Offline'
                         }
-                    } -Verifiable -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
-                }
+                    }
 
-                $mockDynamicStatus = 'Offline'
+                    Mock -CommandName Get-Service -MockWith {
+                        return @{
+                            Name = 'MSSQLSERVER'
+                            DisplayName = 'Microsoft SQL Server (MSSQLSERVER)'
+                            DependentServices = @(
+                                @{
+                                    Name = 'SQLSERVERAGENT'
+                                    DisplayName = 'SQL Server Agent (MSSQLSERVER)'
+                                    Status = 'Running'
+                                    DependentServices = @()
+                                }
+                            )
+                        }
+                    }
+
+                    Mock -CommandName Restart-Service
+                    Mock -CommandName Start-Service
+                }
 
                 It 'Should wait for timeout before throwing error message' {
                     $errorMessage = $localizedData.FailedToConnectToInstanceTimeout -f $env:ComputerName, 'MSSQLSERVER', 4
 
                     {
-                        Restart-SqlService -ServerName $env:ComputerName -InstanceName 'MSSQLSERVER' -Timeout 4
+                        Restart-SqlService -ServerName $env:ComputerName -InstanceName 'MSSQLSERVER' -Timeout 4 -SkipClusterCheck
                     } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -ParameterFilter {
-                        $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
-                    } -Scope It -Exactly -Times 1
 
                     Assert-MockCalled -CommandName Connect-SQL -ParameterFilter {
                         $PSBoundParameters.ContainsKey('ErrorAction') -eq $true
@@ -845,110 +893,399 @@ InModuleScope $script:subModuleName {
                 }
             }
         }
+    }
 
-        Context 'Restart-SqlService clustered instance' {
-            BeforeEach {
-                Mock -CommandName Connect-SQL -MockWith {
-                    return @{
-                        Name = 'MSSQLSERVER'
-                        InstanceName = ''
-                        ServiceName = 'MSSQLSERVER'
-                        IsClustered = $true
-                        Status = $mockDynamicStatus
-                    }
-                } -Verifiable -ParameterFilter { ($ServerName -eq 'CLU01') -and ($InstanceName -eq 'MSSQLSERVER') }
-
-                Mock -CommandName Connect-SQL -MockWith {
-                    return @{
-                        Name = 'NAMEDINSTANCE'
-                        InstanceName = 'NAMEDINSTANCE'
-                        ServiceName = 'NAMEDINSTANCE'
-                        IsClustered = $true
-                        Status = $mockDynamicStatus
-                    }
-                } -Verifiable -ParameterFilter { ($ServerName -eq 'CLU01') -and ($InstanceName -eq 'NAMEDINSTANCE') }
-
-                Mock -CommandName Connect-SQL -MockWith {
-                    return @{
-                        Name = 'STOPPEDAGENT'
-                        InstanceName = 'STOPPEDAGENT'
-                        ServiceName = 'STOPPEDAGENT'
-                        IsClustered = $true
-                        Status = $mockDynamicStatus
-                    }
-                } -Verifiable -ParameterFilter { ($ServerName -eq 'CLU01') -and ($InstanceName -eq 'STOPPEDAGENT') }
+    Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlClusterService' {
+        Context 'When not clustered instance is found' {
+            BeforeAll {
+                Mock -CommandName Get-CimInstance
+                Mock -CommandName Get-CimAssociatedInstance
+                Mock -CommandName Invoke-CimMethod
             }
 
+            It 'Should not restart any cluster resources' {
+                { Restart-SqlClusterService -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 1
+            }
+        }
+
+        Context 'When clustered instance is offline' {
             BeforeAll {
                 Mock -CommandName Get-CimInstance -MockWith {
-                    @('MSSQLSERVER','NAMEDINSTANCE','STOPPEDAGENT') | ForEach-Object {
+                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+
+                    $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SQL Server (MSSQLSERVER)' -TypeName 'String'
+                    $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String'
+                    $mock | Add-Member -MemberType NoteProperty -Name 'PrivateProperties' -Value @{
+                        InstanceName = 'MSSQLSERVER'
+                    }
+                    # Mock the resource to be online.
+                    $mock | Add-Member -MemberType NoteProperty -Name 'State' -Value 3 -TypeName 'Int32'
+
+                    return $mock
+                }
+
+                Mock -CommandName Get-CimAssociatedInstance
+                Mock -CommandName Invoke-CimMethod
+            }
+
+            It 'Should not restart any cluster resources' {
+                { Restart-SqlClusterService -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 0
+
+                Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                    $MethodName -eq 'TakeOffline'
+                } -Scope It -Exactly -Times 0
+
+                Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                    $MethodName -eq 'BringOnline'
+                } -Scope It -Exactly -Times 0
+            }
+        }
+
+        Context 'When restarting a Sql Server clustered instance' {
+            Context 'When it is the default instance'{
+                BeforeAll {
+                    Mock -CommandName Get-CimInstance -MockWith {
                         $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
 
-                        $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server ($($_))" -TypeName 'String'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SQL Server (MSSQLSERVER)' -TypeName 'String'
                         $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String'
                         $mock | Add-Member -MemberType NoteProperty -Name 'PrivateProperties' -Value @{
-                            InstanceName = $_
+                            InstanceName = 'MSSQLSERVER'
                         }
+                        # Mock the resource to be online.
+                        $mock | Add-Member -MemberType NoteProperty -Name 'State' -Value 2 -TypeName 'Int32'
 
                         return $mock
                     }
-                } -Verifiable -ParameterFilter { ($ClassName -eq 'MSCluster_Resource') -and ($Filter -eq "Type = 'SQL Server'") }
+
+                    Mock -CommandName Get-CimAssociatedInstance -MockWith {
+                        $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server Agent ($($InputObject.PrivateProperties.InstanceName))" -TypeName 'String'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server Agent' -TypeName 'String'
+                        # Mock the resource to be online.
+                        $mock | Add-Member -MemberType NoteProperty -Name 'State' -Value 2 -TypeName 'Int32'
+
+                        return $mock
+                    }
+
+                    Mock -CommandName Invoke-CimMethod
+                }
+
+                It 'Should restart SQL Server cluster resource and the SQL Agent cluster resource' {
+                    { Restart-SqlClusterService -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
+
+                    Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 1
+                    Assert-MockCalled -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                        $MethodName -eq 'TakeOffline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
+                    } -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                        $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
+                    } -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                        $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server Agent (MSSQLSERVER)'
+                    } -Scope It -Exactly -Times 1
+                }
+            }
+
+            Context 'When it is a named instance'{
+                BeforeAll {
+                    Mock -CommandName Get-CimInstance -MockWith {
+                        $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SQL Server (DSCTEST)' -TypeName 'String'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'PrivateProperties' -Value @{
+                            InstanceName = 'DSCTEST'
+                        }
+                        # Mock the resource to be online.
+                        $mock | Add-Member -MemberType NoteProperty -Name 'State' -Value 2 -TypeName 'Int32'
+
+                        return $mock
+                    }
+
+                    Mock -CommandName Get-CimAssociatedInstance -MockWith {
+                        $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server Agent ($($InputObject.PrivateProperties.InstanceName))" -TypeName 'String'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server Agent' -TypeName 'String'
+                        # Mock the resource to be online.
+                        $mock | Add-Member -MemberType NoteProperty -Name 'State' -Value 2 -TypeName 'Int32'
+
+                        return $mock
+                    }
+
+                    Mock -CommandName Invoke-CimMethod
+                }
+
+                It 'Should restart SQL Server cluster resource and the SQL Agent cluster resource' {
+                    { Restart-SqlClusterService -InstanceName 'DSCTEST' } | Should -Not -Throw
+
+                    Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 1
+                    Assert-MockCalled -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                        $MethodName -eq 'TakeOffline' -and $InputObject.Name -eq 'SQL Server (DSCTEST)'
+                    } -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                        $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server (DSCTEST)'
+                    } -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                        $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server Agent (DSCTEST)'
+                    } -Scope It -Exactly -Times 1
+                }
+            }
+        }
+
+        Context 'When restarting a Sql Server clustered instance and the SQL Agent is offline' {
+            BeforeAll {
+                Mock -CommandName Get-CimInstance -MockWith {
+                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+
+                    $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SQL Server (MSSQLSERVER)' -TypeName 'String'
+                    $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String'
+                    $mock | Add-Member -MemberType NoteProperty -Name 'PrivateProperties' -Value @{
+                        InstanceName = 'MSSQLSERVER'
+                    }
+                    # Mock the resource to be online.
+                    $mock | Add-Member -MemberType NoteProperty -Name 'State' -Value 2 -TypeName 'Int32'
+
+                    return $mock
+                }
 
                 Mock -CommandName Get-CimAssociatedInstance -MockWith {
                     $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
 
                     $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server Agent ($($InputObject.PrivateProperties.InstanceName))" -TypeName 'String'
                     $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server Agent' -TypeName 'String'
-                    $mock | Add-Member -MemberType NoteProperty -Name 'State' -Value (
-                        @{
-                            $true = 3
-                            $false = 2
-                        }[($InputObject.PrivateProperties.InstanceName -eq 'STOPPEDAGENT')]
-                    ) -TypeName 'Int32'
+                    # Mock the resource to be offline.
+                    $mock | Add-Member -MemberType NoteProperty -Name 'State' -Value 3 -TypeName 'Int32'
 
                     return $mock
-                } -Verifiable -ParameterFilter { $ResultClassName -eq 'MSCluster_Resource' }
+                }
 
-                Mock -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'TakeOffline' } -Verifiable
-                Mock -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'BringOnline' } -Verifiable
+                Mock -CommandName Invoke-CimMethod
             }
 
-            $mockDynamicStatus = 'Online'
+            It 'Should restart the SQL Server cluster resource and ignore the SQL Agent cluster resource online ' {
+                { Restart-SqlClusterService -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
 
-            It 'Should restart SQL Server and SQL Agent resources for a clustered default instance' {
-                { Restart-SqlService -ServerName 'CLU01' } | Should -Not -Throw
-
-                Assert-MockCalled -CommandName Connect-SQL {
-                    $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
-                } -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'TakeOffline' } -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'BringOnline' } -Scope It -Exactly -Times 2
+
+                Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                    $MethodName -eq 'TakeOffline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
+                } -Scope It -Exactly -Times 1
+
+                Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                    $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
+                } -Scope It -Exactly -Times 1
+            }
+        }
+
+        Context 'When passing the parameter OwnerNode' {
+            Context 'When both the SQL Server and SQL Agent cluster resources is owned by the current node' {
+                BeforeAll {
+                    Mock -CommandName Get-CimInstance -MockWith {
+                        $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SQL Server (MSSQLSERVER)' -TypeName 'String'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'PrivateProperties' -Value @{
+                            InstanceName = 'MSSQLSERVER'
+                        }
+                        # Mock the resource to be online.
+                        $mock | Add-Member -MemberType NoteProperty -Name 'State' -Value 2 -TypeName 'Int32'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'OwnerNode' -Value 'NODE1' -TypeName 'String'
+
+                        return $mock
+                    }
+
+                    Mock -CommandName Get-CimAssociatedInstance -MockWith {
+                        $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server Agent ($($InputObject.PrivateProperties.InstanceName))" -TypeName 'String'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server Agent' -TypeName 'String'
+                        # Mock the resource to be offline.
+                        $mock | Add-Member -MemberType NoteProperty -Name 'State' -Value 2 -TypeName 'Int32'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'OwnerNode' -Value 'NODE1' -TypeName 'String'
+
+                        return $mock
+                    }
+
+                    Mock -CommandName Invoke-CimMethod
+                }
+
+                It 'Should restart the SQL Server cluster resource and the SQL Agent cluster resource' {
+                    { Restart-SqlClusterService -InstanceName 'MSSQLSERVER' -OwnerNode @('NODE1') } | Should -Not -Throw
+
+                    Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 1
+                    Assert-MockCalled -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                        $MethodName -eq 'TakeOffline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
+                    } -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                        $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
+                    } -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                        $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server Agent (MSSQLSERVER)'
+                    } -Scope It -Exactly -Times 1
+                }
             }
 
-            It 'Should restart SQL Server and SQL Agent resources for a clustered named instance' {
-                { Restart-SqlService -ServerName 'CLU01' -InstanceName 'NAMEDINSTANCE' } | Should -Not -Throw
+            Context 'When both the SQL Server and SQL Agent cluster resources is owned by the current node but the SQL Agent cluster resource is offline' {
+                BeforeAll {
+                    Mock -CommandName Get-CimInstance -MockWith {
+                        $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
 
-                Assert-MockCalled -CommandName Connect-SQL {
-                    $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
-                } -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'TakeOffline' } -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'BringOnline' } -Scope It -Exactly -Times 2
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SQL Server (MSSQLSERVER)' -TypeName 'String'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'PrivateProperties' -Value @{
+                            InstanceName = 'MSSQLSERVER'
+                        }
+                        # Mock the resource to be online.
+                        $mock | Add-Member -MemberType NoteProperty -Name 'State' -Value 2 -TypeName 'Int32'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'OwnerNode' -Value 'NODE1' -TypeName 'String'
+
+                        return $mock
+                    }
+
+                    Mock -CommandName Get-CimAssociatedInstance -MockWith {
+                        $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server Agent ($($InputObject.PrivateProperties.InstanceName))" -TypeName 'String'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server Agent' -TypeName 'String'
+                        # Mock the resource to be offline.
+                        $mock | Add-Member -MemberType NoteProperty -Name 'State' -Value 3 -TypeName 'Int32'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'OwnerNode' -Value 'NODE1' -TypeName 'String'
+
+                        return $mock
+                    }
+
+                    Mock -CommandName Invoke-CimMethod
+                }
+
+                It 'Should only restart the SQL Server cluster resource' {
+                    { Restart-SqlClusterService -InstanceName 'MSSQLSERVER' -OwnerNode @('NODE1') } | Should -Not -Throw
+
+                    Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 1
+                    Assert-MockCalled -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                        $MethodName -eq 'TakeOffline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
+                    } -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                        $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
+                    } -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                        $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server Agent (MSSQLSERVER)'
+                    } -Scope It -Exactly -Times 0
+                }
             }
 
-            It 'Should not try to restart a SQL Agent resource that is not online' {
-                { Restart-SqlService -ServerName 'CLU01' -InstanceName 'STOPPEDAGENT' } | Should -Not -Throw
+            Context 'When only the SQL Server cluster resources is owned by the current node' {
+                BeforeAll {
+                    Mock -CommandName Get-CimInstance -MockWith {
+                        $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
 
-                Assert-MockCalled -CommandName Connect-SQL {
-                    $PSBoundParameters.ContainsKey('ErrorAction') -eq $false
-                } -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'TakeOffline' } -Scope It -Exactly -Times 1
-                Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter { $MethodName -eq 'BringOnline' } -Scope It -Exactly -Times 1
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SQL Server (MSSQLSERVER)' -TypeName 'String'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'PrivateProperties' -Value @{
+                            InstanceName = 'MSSQLSERVER'
+                        }
+                        # Mock the resource to be online.
+                        $mock | Add-Member -MemberType NoteProperty -Name 'State' -Value 2 -TypeName 'Int32'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'OwnerNode' -Value 'NODE1' -TypeName 'String'
+
+                        return $mock
+                    }
+
+                    Mock -CommandName Get-CimAssociatedInstance -MockWith {
+                        $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server Agent ($($InputObject.PrivateProperties.InstanceName))" -TypeName 'String'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server Agent' -TypeName 'String'
+                        # Mock the resource to be offline.
+                        $mock | Add-Member -MemberType NoteProperty -Name 'State' -Value 2 -TypeName 'Int32'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'OwnerNode' -Value 'NODE2' -TypeName 'String'
+
+                        return $mock
+                    }
+
+                    Mock -CommandName Invoke-CimMethod
+                }
+
+                It 'Should only restart the SQL Server cluster resource' {
+                    { Restart-SqlClusterService -InstanceName 'MSSQLSERVER' -OwnerNode @('NODE1') } | Should -Not -Throw
+
+                    Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 1
+                    Assert-MockCalled -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                        $MethodName -eq 'TakeOffline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
+                    } -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                        $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
+                    } -Scope It -Exactly -Times 1
+
+                    Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                        $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server Agent (MSSQLSERVER)'
+                    } -Scope It -Exactly -Times 0
+                }
+            }
+
+            Context 'When the SQL Server cluster resources is not owned by the current node' {
+                BeforeAll {
+                    Mock -CommandName Get-CimInstance -MockWith {
+                        $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SQL Server (MSSQLSERVER)' -TypeName 'String'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'PrivateProperties' -Value @{
+                            InstanceName = 'MSSQLSERVER'
+                        }
+                        # Mock the resource to be online.
+                        $mock | Add-Member -MemberType NoteProperty -Name 'State' -Value 2 -TypeName 'Int32'
+                        $mock | Add-Member -MemberType NoteProperty -Name 'OwnerNode' -Value 'NODE2' -TypeName 'String'
+
+                        return $mock
+                    }
+
+                    Mock -CommandName Get-CimAssociatedInstance
+                    Mock -CommandName Invoke-CimMethod
+                }
+
+                It 'Should not restart any cluster resources' {
+                    { Restart-SqlClusterService -InstanceName 'MSSQLSERVER' -OwnerNode @('NODE1') } | Should -Not -Throw
+
+                    Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 1
+                    Assert-MockCalled -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 0
+
+                    Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                        $MethodName -eq 'TakeOffline'
+                    } -Scope It -Exactly -Times 0
+
+                    Assert-MockCalled -CommandName Invoke-CimMethod -ParameterFilter {
+                        $MethodName -eq 'BringOnline'
+                    } -Scope It -Exactly -Times 0
+                }
             }
         }
     }
@@ -2749,5 +3086,500 @@ InModuleScope $script:subModuleName {
             }
         }
     }
-}
 
+    Describe 'DscResource.Common\Test-DscPropertyState' -Tag 'TestDscPropertyState' {
+        Context 'When comparing tables' {
+            It 'Should return true for two identical tables' {
+                $mockValues = @{
+                    CurrentValue = 'Test'
+                    DesiredValue = 'Test'
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeTrue
+            }
+        }
+
+        Context 'When comparing strings' {
+            It 'Should return false when a value is different for [System.String]' {
+                $mockValues = @{
+                    CurrentValue = [System.String] 'something'
+                    DesiredValue = [System.String] 'test'
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeFalse
+            }
+
+            It 'Should return false when a String value is missing' {
+                $mockValues = @{
+                    CurrentValue = $null
+                    DesiredValue = [System.String] 'Something'
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeFalse
+            }
+
+            It 'Should return true when two strings are equal' {
+                $mockValues = @{
+                    CurrentValue = [System.String] 'Something'
+                    DesiredValue = [System.String] 'Something'
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -Be $true
+            }
+        }
+
+        Context 'When comparing integers' {
+            It 'Should return false when a value is different for [System.Int32]' {
+                $mockValues = @{
+                    CurrentValue = [System.Int32] 1
+                    DesiredValue = [System.Int32] 2
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeFalse
+            }
+
+            It 'Should return true when the values are the same for [System.Int32]' {
+                $mockValues = @{
+                    CurrentValue = [System.Int32] 2
+                    DesiredValue = [System.Int32] 2
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -Be $true
+            }
+
+            It 'Should return false when a value is different for [System.UInt32]' {
+                $mockValues = @{
+                    CurrentValue = [System.UInt32] 1
+                    DesiredValue = [System.UInt32] 2
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -Be $false
+            }
+
+            It 'Should return true when the values are the same for [System.UInt32]' {
+                $mockValues = @{
+                    CurrentValue = [System.UInt32] 2
+                    DesiredValue = [System.UInt32] 2
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -Be $true
+            }
+
+            It 'Should return false when a value is different for [System.Int16]' {
+                $mockValues = @{
+                    CurrentValue = [System.Int16] 1
+                    DesiredValue = [System.Int16] 2
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeFalse
+            }
+
+            It 'Should return true when the values are the same for [System.Int16]' {
+                $mockValues = @{
+                    CurrentValue = [System.Int16] 2
+                    DesiredValue = [System.Int16] 2
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -Be $true
+            }
+
+            It 'Should return false when a value is different for [System.UInt16]' {
+                $mockValues = @{
+                    CurrentValue = [System.UInt16] 1
+                    DesiredValue = [System.UInt16] 2
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeFalse
+            }
+
+            It 'Should return true when the values are the same for [System.UInt16]' {
+                $mockValues = @{
+                    CurrentValue = [System.UInt16] 2
+                    DesiredValue = [System.UInt16] 2
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -Be $true
+            }
+
+            It 'Should return false when a Integer value is missing' {
+                $mockValues = @{
+                    CurrentValue = $null
+                    DesiredValue = [System.Int32] 1
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeFalse
+            }
+        }
+
+        Context 'When comparing booleans' {
+            It 'Should return false when a value is different for [System.Boolean]' {
+                $mockValues = @{
+                    CurrentValue = [System.Boolean] $true
+                    DesiredValue = [System.Boolean] $false
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeFalse
+            }
+
+            It 'Should return false when a Boolean value is missing' {
+                $mockValues = @{
+                    CurrentValue = $null
+                    DesiredValue = [System.Boolean] $true
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeFalse
+            }
+        }
+
+        Context 'When comparing arrays' {
+            It 'Should return true when evaluating an array' {
+                $mockValues = @{
+                    CurrentValue = @('1', '2')
+                    DesiredValue = @('1', '2')
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeTrue
+            }
+
+            It 'Should return false when evaluating an array with wrong values' {
+                $mockValues = @{
+                    CurrentValue = @('CurrentValueA', 'CurrentValueB')
+                    DesiredValue = @('DesiredValue1', 'DesiredValue2')
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeFalse
+            }
+
+            It 'Should return false when evaluating an array, but the current value is $null' {
+                $mockValues = @{
+                    CurrentValue = $null
+                    DesiredValue = @('1', '2')
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeFalse
+            }
+
+            It 'Should return false when evaluating an array, but the desired value is $null' {
+                $mockValues = @{
+                    CurrentValue = @('1', '2')
+                    DesiredValue = $null
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeFalse
+            }
+
+            It 'Should return false when evaluating an array, but the current value is an empty array' {
+                $mockValues = @{
+                    CurrentValue = @()
+                    DesiredValue = @('1', '2')
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeFalse
+            }
+
+            It 'Should return false when evaluating an array, but the desired value is an empty array' {
+                $mockValues = @{
+                    CurrentValue = @('1', '2')
+                    DesiredValue = @()
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeFalse
+            }
+
+            It 'Should return true when evaluating an array, when both values are $null' {
+                $mockValues = @{
+                    CurrentValue = $null
+                    DesiredValue = $null
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeTrue
+            }
+
+            It 'Should return true when evaluating an array, when both values are an empty array' {
+                $mockValues = @{
+                    CurrentValue = @()
+                    DesiredValue = @()
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeTrue
+            }
+        }
+
+        Context -Name 'When passing invalid types for DesiredValue' {
+            It 'Should write a warning when DesiredValue contain an unsupported type' {
+                Mock -CommandName Write-Warning -Verifiable
+
+                # This is a dummy type to test with a type that could never be a correct one.
+                class MockUnknownType
+                {
+                    [ValidateNotNullOrEmpty()]
+                    [System.String]
+                    $Property1
+
+                    [ValidateNotNullOrEmpty()]
+                    [System.String]
+                    $Property2
+
+                    MockUnknownType()
+                    {
+                    }
+                }
+
+                $mockValues = @{
+                    CurrentValue = New-Object -TypeName 'MockUnknownType'
+                    DesiredValue = New-Object -TypeName 'MockUnknownType'
+                }
+
+                Test-DscPropertyState -Values $mockValues | Should -BeFalse
+
+                Assert-MockCalled -CommandName Write-Warning -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Assert-VerifiableMock
+    }
+
+    Describe 'ActiveDirectoryDsc.Common\Compare-ResourcePropertyState' {
+        Context 'When one property is in desired state' {
+            BeforeAll {
+                $mockCurrentValues = @{
+                    ComputerName = 'DC01'
+                }
+
+                $mockDesiredValues = @{
+                    ComputerName = 'DC01'
+                }
+            }
+
+            It 'Should return the correct values' {
+                $compareTargetResourceStateParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                }
+
+                $compareTargetResourceStateResult = Compare-ResourcePropertyState @compareTargetResourceStateParameters
+                $compareTargetResourceStateResult | Should -HaveCount 1
+                $compareTargetResourceStateResult.ParameterName | Should -Be 'ComputerName'
+                $compareTargetResourceStateResult.Expected | Should -Be 'DC01'
+                $compareTargetResourceStateResult.Actual | Should -Be 'DC01'
+                $compareTargetResourceStateResult.InDesiredState | Should -BeTrue
+            }
+        }
+
+        Context 'When two properties are in desired state' {
+            BeforeAll {
+                $mockCurrentValues = @{
+                    ComputerName = 'DC01'
+                    Location     = 'Sweden'
+                }
+
+                $mockDesiredValues = @{
+                    ComputerName = 'DC01'
+                    Location     = 'Sweden'
+                }
+            }
+
+            It 'Should return the correct values' {
+                $compareTargetResourceStateParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                }
+
+                $compareTargetResourceStateResult = Compare-ResourcePropertyState @compareTargetResourceStateParameters
+                $compareTargetResourceStateResult | Should -HaveCount 2
+                $compareTargetResourceStateResult[0].ParameterName | Should -Be 'ComputerName'
+                $compareTargetResourceStateResult[0].Expected | Should -Be 'DC01'
+                $compareTargetResourceStateResult[0].Actual | Should -Be 'DC01'
+                $compareTargetResourceStateResult[0].InDesiredState | Should -BeTrue
+                $compareTargetResourceStateResult[1].ParameterName | Should -Be 'Location'
+                $compareTargetResourceStateResult[1].Expected | Should -Be 'Sweden'
+                $compareTargetResourceStateResult[1].Actual | Should -Be 'Sweden'
+                $compareTargetResourceStateResult[1].InDesiredState | Should -BeTrue
+            }
+        }
+
+        Context 'When passing just one property and that property is not in desired state' {
+            BeforeAll {
+                $mockCurrentValues = @{
+                    ComputerName = 'DC01'
+                }
+
+                $mockDesiredValues = @{
+                    ComputerName = 'APP01'
+                }
+            }
+
+            It 'Should return the correct values' {
+                $compareTargetResourceStateParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                }
+
+                $compareTargetResourceStateResult = Compare-ResourcePropertyState @compareTargetResourceStateParameters
+                $compareTargetResourceStateResult | Should -HaveCount 1
+                $compareTargetResourceStateResult.ParameterName | Should -Be 'ComputerName'
+                $compareTargetResourceStateResult.Expected | Should -Be 'APP01'
+                $compareTargetResourceStateResult.Actual | Should -Be 'DC01'
+                $compareTargetResourceStateResult.InDesiredState | Should -BeFalse
+            }
+        }
+
+        Context 'When passing two properties and one property is not in desired state' {
+            BeforeAll {
+                $mockCurrentValues = @{
+                    ComputerName = 'DC01'
+                    Location     = 'Sweden'
+                }
+
+                $mockDesiredValues = @{
+                    ComputerName = 'DC01'
+                    Location     = 'Europe'
+                }
+            }
+
+            It 'Should return the correct values' {
+                $compareTargetResourceStateParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                }
+
+                $compareTargetResourceStateResult = Compare-ResourcePropertyState @compareTargetResourceStateParameters
+                $compareTargetResourceStateResult | Should -HaveCount 2
+                $compareTargetResourceStateResult[0].ParameterName | Should -Be 'ComputerName'
+                $compareTargetResourceStateResult[0].Expected | Should -Be 'DC01'
+                $compareTargetResourceStateResult[0].Actual | Should -Be 'DC01'
+                $compareTargetResourceStateResult[0].InDesiredState | Should -BeTrue
+                $compareTargetResourceStateResult[1].ParameterName | Should -Be 'Location'
+                $compareTargetResourceStateResult[1].Expected | Should -Be 'Europe'
+                $compareTargetResourceStateResult[1].Actual | Should -Be 'Sweden'
+                $compareTargetResourceStateResult[1].InDesiredState | Should -BeFalse
+            }
+        }
+
+        Context 'When passing a common parameter set to desired value' {
+            BeforeAll {
+                $mockCurrentValues = @{
+                    ComputerName = 'DC01'
+                }
+
+                $mockDesiredValues = @{
+                    ComputerName = 'DC01'
+                }
+            }
+
+            It 'Should return the correct values' {
+                $compareTargetResourceStateParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                }
+
+                $compareTargetResourceStateResult = Compare-ResourcePropertyState @compareTargetResourceStateParameters
+                $compareTargetResourceStateResult | Should -HaveCount 1
+                $compareTargetResourceStateResult.ParameterName | Should -Be 'ComputerName'
+                $compareTargetResourceStateResult.Expected | Should -Be 'DC01'
+                $compareTargetResourceStateResult.Actual | Should -Be 'DC01'
+                $compareTargetResourceStateResult.InDesiredState | Should -BeTrue
+            }
+        }
+
+        Context 'When using parameter Properties to compare desired values' {
+            BeforeAll {
+                $mockCurrentValues = @{
+                    ComputerName = 'DC01'
+                    Location     = 'Sweden'
+                }
+
+                $mockDesiredValues = @{
+                    ComputerName = 'DC01'
+                    Location     = 'Europe'
+                }
+            }
+
+            It 'Should return the correct values' {
+                $compareTargetResourceStateParameters = @{
+                    CurrentValues = $mockCurrentValues
+                    DesiredValues = $mockDesiredValues
+                    Properties    = @(
+                        'ComputerName'
+                    )
+                }
+
+                $compareTargetResourceStateResult = Compare-ResourcePropertyState @compareTargetResourceStateParameters
+                $compareTargetResourceStateResult | Should -HaveCount 1
+                $compareTargetResourceStateResult.ParameterName | Should -Be 'ComputerName'
+                $compareTargetResourceStateResult.Expected | Should -Be 'DC01'
+                $compareTargetResourceStateResult.Actual | Should -Be 'DC01'
+                $compareTargetResourceStateResult.InDesiredState | Should -BeTrue
+            }
+        }
+
+        Context 'When using parameter Properties and IgnoreProperties to compare desired values' {
+            BeforeAll {
+                $mockCurrentValues = @{
+                    ComputerName = 'DC01'
+                    Location     = 'Sweden'
+                    Ensure       = 'Present'
+                }
+
+                $mockDesiredValues = @{
+                    ComputerName = 'DC01'
+                    Location     = 'Europe'
+                    Ensure       = 'Absent'
+                }
+            }
+
+            It 'Should return the correct values' {
+                $compareTargetResourceStateParameters = @{
+                    CurrentValues    = $mockCurrentValues
+                    DesiredValues    = $mockDesiredValues
+                    IgnoreProperties = @(
+                        'Ensure'
+                    )
+                }
+
+                $compareTargetResourceStateResult = Compare-ResourcePropertyState @compareTargetResourceStateParameters
+                $compareTargetResourceStateResult | Should -HaveCount 2
+                $compareTargetResourceStateResult[0].ParameterName | Should -Be 'ComputerName'
+                $compareTargetResourceStateResult[0].Expected | Should -Be 'DC01'
+                $compareTargetResourceStateResult[0].Actual | Should -Be 'DC01'
+                $compareTargetResourceStateResult[0].InDesiredState | Should -BeTrue
+                $compareTargetResourceStateResult[1].ParameterName | Should -Be 'Location'
+                $compareTargetResourceStateResult[1].Expected | Should -Be 'Europe'
+                $compareTargetResourceStateResult[1].Actual | Should -Be 'Sweden'
+                $compareTargetResourceStateResult[1].InDesiredState | Should -BeFalse
+            }
+        }
+
+        Context 'When using parameter Properties and IgnoreProperties to compare desired values' {
+            BeforeAll {
+                $mockCurrentValues = @{
+                    ComputerName = 'DC01'
+                    Location     = 'Sweden'
+                    Ensure       = 'Present'
+                }
+
+                $mockDesiredValues = @{
+                    ComputerName = 'DC01'
+                    Location     = 'Europe'
+                    Ensure       = 'Absent'
+                }
+            }
+
+            It 'Should return and empty array' {
+                $compareTargetResourceStateParameters = @{
+                    CurrentValues    = $mockCurrentValues
+                    DesiredValues    = $mockDesiredValues
+                    Properties       = @(
+                        'ComputerName'
+                    )
+                    IgnoreProperties = @(
+                        'ComputerName'
+                    )
+                }
+
+                $compareTargetResourceStateResult = Compare-ResourcePropertyState @compareTargetResourceStateParameters
+                $compareTargetResourceStateResult | Should -BeNullOrEmpty
+            }
+        }
+    }
+}
