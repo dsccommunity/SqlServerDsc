@@ -41,7 +41,7 @@ else
         'IP1' with the first IP address assigned to the node (first IP address
         which has DHCP as the prefix origin).
 #>
-Configuration MSFT_SqlServerProtocolTcpIp_ListenOnSpecificIpAddress_Config
+Configuration DSC_SqlServerProtocolTcpIp_ListenOnSpecificIpAddress_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
