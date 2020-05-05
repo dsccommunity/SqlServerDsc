@@ -123,7 +123,7 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.Ensure | Should -Be 'Present'
+                $resourceCurrentState.Ensure | Should -Be 'Absent'
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.DistributorMode | Should -Be 'Local'
                 $resourceCurrentState.DistributionDBName | Should -BeNullOrEmpty
@@ -225,7 +225,7 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.Ensure | Should -Be 'Present'
+                $resourceCurrentState.Ensure | Should -Be 'Absent'
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.DistributorMode | Should -Be 'Remote'
                 $resourceCurrentState.DistributionDBName | Should -BeNullOrEmpty

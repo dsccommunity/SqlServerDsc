@@ -16,16 +16,41 @@ else
     $ConfigurationData = @{
         AllNodes = @(
             @{
-                NodeName        = 'localhost'
+                NodeName            = 'localhost'
 
-                UserName        = "$env:COMPUTERNAME\SqlInstall"
-                Password        = 'P@ssw0rd1'
+                UserName            = "$env:COMPUTERNAME\SqlInstall"
+                Password            = 'P@ssw0rd1'
 
-                InstanceName    = 'DSCSQLTEST'
+                DefaultInstanceName = 'MSSQLSERVER'
+                InstanceName        = 'DSCSQLTEST'
 
-                CertificateFile = $env:DscPublicCertificatePath
+                CertificateFile     = $env:DscPublicCertificatePath
             }
         )
+    }
+}
+
+<#
+    .SYNOPSIS
+        Starting the default instance because it is a prerequisites.
+#>
+Configuration DSC_SqlServerReplication_StartSqlServerDefaultInstance_Config
+{
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+
+    node $AllNodes.NodeName
+    {
+        Service ('StopSqlServerInstance{0}' -f $Node.DefaultInstanceName)
+        {
+            Name  = $Node.DefaultInstanceName
+            State = 'Running'
+        }
+
+        Service ('StopSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
+        {
+            Name  = 'SQLSERVERAGENT'
+            State = 'Running'
+        }
     }
 }
 
@@ -101,7 +126,7 @@ Configuration DSC_SqlServerReplication_AddPublisher_Config
             Ensure               = 'Present'
             InstanceName         = $Node.InstanceName
             DistributorMode      = 'Remote'
-            RemoteDistributor    = 'distsqlsrv.company.local'
+            RemoteDistributor    = ('{0}\{1}' -f $env:COMPUTERNAME, $Node.DefaultInstanceName)
             WorkingDirectory     = 'C:\Temp'
 
             AdminLinkCredentials = New-Object `
@@ -139,6 +164,30 @@ Configuration DSC_SqlServerReplication_RemovePublisher_Config
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Stopping the default instance to save memory on the build worker.
+#>
+Configuration DSC_SqlServerReplication_StopSqlServerDefaultInstance_Config
+{
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+
+    node $AllNodes.NodeName
+    {
+        Service ('StopSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
+        {
+            Name  = 'SQLSERVERAGENT'
+            State = 'Stopped'
+        }
+
+        Service ('StopSqlServerInstance{0}' -f $Node.DefaultInstanceName)
+        {
+            Name  = $Node.DefaultInstanceName
+            State = 'Stopped'
         }
     }
 }
