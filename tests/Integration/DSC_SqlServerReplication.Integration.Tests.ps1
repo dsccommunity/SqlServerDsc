@@ -34,7 +34,7 @@ try
             $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
         }
 
-        $configurationName = "$($script:dscResourceName)_StartSqlServerDefaultInstance_Config"
+        $configurationName = "$($script:dscResourceName)_Prerequisites_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -265,7 +265,7 @@ try
             }
         }
 
-        $configurationName = "$($script:dscResourceName)_StopSqlServerDefaultInstance_Config"
+        $configurationName = "$($script:dscResourceName)_Cleanup_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {

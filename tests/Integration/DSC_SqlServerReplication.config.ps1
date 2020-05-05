@@ -34,7 +34,7 @@ else
     .SYNOPSIS
         Starting the default instance because it is a prerequisites.
 #>
-Configuration DSC_SqlServerReplication_StartSqlServerDefaultInstance_Config
+Configuration DSC_SqlServerReplication_Prerequisites_Config
 {
     Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
 
@@ -50,6 +50,17 @@ Configuration DSC_SqlServerReplication_StartSqlServerDefaultInstance_Config
         {
             Name  = 'SQLSERVERAGENT'
             State = 'Running'
+        }
+
+        File 'CreateTempFolder'
+        {
+            DestinationPath = 'C:\Temp'
+            Type = 'Directory'
+            Ensure = 'Present'
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }
@@ -172,7 +183,7 @@ Configuration DSC_SqlServerReplication_RemovePublisher_Config
     .SYNOPSIS
         Stopping the default instance to save memory on the build worker.
 #>
-Configuration DSC_SqlServerReplication_StopSqlServerDefaultInstance_Config
+Configuration DSC_SqlServerReplication_Cleanup_Config
 {
     Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
 
@@ -188,6 +199,18 @@ Configuration DSC_SqlServerReplication_StopSqlServerDefaultInstance_Config
         {
             Name  = $Node.DefaultInstanceName
             State = 'Stopped'
+        }
+
+        File 'CreateTempFolder'
+        {
+            DestinationPath = 'C:\Temp'
+            Type = 'Directory'
+            Ensure = 'Absent'
+            Force = $true
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
     }
 }

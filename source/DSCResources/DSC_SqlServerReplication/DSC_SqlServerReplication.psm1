@@ -415,7 +415,16 @@ function Install-RemoteDistributor
         $script:localizedData.InstallRemoteDistributor -f $RemoteDistributor
     )
 
-    $ReplicationServer.InstallDistributor($RemoteDistributor, $AdminLinkCredentials.Password)
+    try
+    {
+        $ReplicationServer.InstallDistributor($RemoteDistributor, $AdminLinkCredentials.Password)
+    }
+    catch
+    {
+        $errorMessage = 'Install-RemoteDistributor failed'
+
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+    }
 }
 
 function Install-LocalDistributor
@@ -440,7 +449,16 @@ function Install-LocalDistributor
         $script:localizedData.InstallLocalDistributor
     )
 
-    $ReplicationServer.InstallDistributor($AdminLinkCredentials.Password, $DistributionDB)
+    try
+    {
+        $ReplicationServer.InstallDistributor($AdminLinkCredentials.Password, $DistributionDB)
+    }
+    catch
+    {
+        $errorMessage = 'Install-LocalDistributor failed'
+
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+    }
 }
 
 function Uninstall-Distributor
