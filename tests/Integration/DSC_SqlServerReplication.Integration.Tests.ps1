@@ -34,6 +34,33 @@ try
             $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
         }
 
+        $configurationName = "$($script:dscResourceName)_StartSqlServerDefaultInstance_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath           = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData    = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+        }
+
         $configurationName = "$($script:dscResourceName)_AddDistributor_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
@@ -125,7 +152,7 @@ try
 
                 $resourceCurrentState.Ensure | Should -Be 'Absent'
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                $resourceCurrentState.DistributorMode | Should -Be 'Local'
+                $resourceCurrentState.DistributorMode | Should -BeNullOrEmpty
                 $resourceCurrentState.DistributionDBName | Should -BeNullOrEmpty
                 $resourceCurrentState.RemoteDistributor | Should -BeNullOrEmpty
                 $resourceCurrentState.WorkingDirectory | Should -BeNullOrEmpty
@@ -227,7 +254,7 @@ try
 
                 $resourceCurrentState.Ensure | Should -Be 'Absent'
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                $resourceCurrentState.DistributorMode | Should -Be 'Remote'
+                $resourceCurrentState.DistributorMode | Should -BeNullOrEmpty
                 $resourceCurrentState.DistributionDBName | Should -BeNullOrEmpty
                 $resourceCurrentState.RemoteDistributor | Should -BeNullOrEmpty
                 $resourceCurrentState.WorkingDirectory | Should -BeNullOrEmpty
@@ -235,6 +262,33 @@ try
 
             It 'Should return $true when Test-DscConfiguration is run' {
                 Test-DscConfiguration -Verbose | Should -Be 'True'
+            }
+        }
+
+        $configurationName = "$($script:dscResourceName)_StopSqlServerDefaultInstance_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath           = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData    = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
             }
         }
     }

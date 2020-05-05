@@ -164,6 +164,7 @@ stages:
                   'tests/Integration/DSC_SqlServerSecureConnection.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlServerProtocol.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlServerReplication.Integration.Tests.ps1'
                   # Group 6 (tests makes changes that could make SQL Server to loose connectivity)
                   'tests/Integration/DSC_SqlServerProtocolTcpIp.Integration.Tests.ps1'
               )
