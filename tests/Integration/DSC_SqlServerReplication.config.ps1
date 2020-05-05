@@ -126,7 +126,7 @@ Configuration DSC_SqlServerReplication_AddPublisher_Config
             Ensure               = 'Present'
             InstanceName         = $Node.InstanceName
             DistributorMode      = 'Remote'
-            RemoteDistributor    = ('{0}\{1}' -f $env:COMPUTERNAME, $Node.DefaultInstanceName)
+            RemoteDistributor    = ('{0}' -f $env:COMPUTERNAME)
             WorkingDirectory     = 'C:\Temp'
 
             AdminLinkCredentials = New-Object `
