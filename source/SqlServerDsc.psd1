@@ -67,6 +67,7 @@
         'SqlServerNetwork'
         'SqlServerPermission'
         'SqlServerProtocol'
+        'SqlServerProtocolTcpIp'
         'SqlServerReplication'
         'SqlServerRole'
         'SqlServerSecureConnection'

@@ -3,6 +3,12 @@
 The `SqlServerProtocol` DSC resource manage the SQL Server protocols
 for a SQL Server instance.
 
+For more information about protocol properties look at the following articles:
+
+* [TCP/IP Properties (Protocols Tab)](https://docs.microsoft.com/en-us/sql/tools/configuration-manager/tcp-ip-properties-protocols-tab).
+* [Shared Memory Properties](https://docs.microsoft.com/en-us/sql/tools/configuration-manager/shared-memory-properties).
+* [Named Pipes Properties](https://docs.microsoft.com/en-us/sql/tools/configuration-manager/named-pipes-properties).
+
 ## Requirements
 
 * Target machine must be running Windows Server 2012 or later.
