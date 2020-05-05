@@ -73,6 +73,7 @@ Configuration DSC_SqlServerReplication_RemoveDistributor_Config
             Ensure               = 'Absent'
             InstanceName         = $Node.InstanceName
             DistributorMode      = 'Local'
+            WorkingDirectory     = 'C:\Temp'
 
             AdminLinkCredentials = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -129,6 +130,11 @@ Configuration DSC_SqlServerReplication_RemovePublisher_Config
             Ensure               = 'Absent'
             InstanceName         = $Node.InstanceName
             DistributorMode      = 'Remote'
+            WorkingDirectory     = 'C:\Temp'
+
+            AdminLinkCredentials = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
