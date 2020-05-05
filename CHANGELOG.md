@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - A read only property `IsClustered` was added that can be used to determine
     if the instance is clustered.
   - Added the properties `NpEnabled` and `TcpEnabled` ([issue #1161](https://github.com/dsccommunity/SqlServerDsc/issues/1161)).
+- SqlServerReplication
+  - Add integration tests ([issue #755](https://github.com/dsccommunity/SqlServerDsc/issues/755)
 - SqlServerDsc.Common
   - The helper function `Restart-SqlService` was improved to handle Failover
     Clusters better. Now the SQL Server service will only be taken offline

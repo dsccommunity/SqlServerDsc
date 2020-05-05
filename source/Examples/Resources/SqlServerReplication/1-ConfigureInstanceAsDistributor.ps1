@@ -21,6 +21,7 @@ Configuration Example
             InstanceName         = 'MSSQLSERVER'
             AdminLinkCredentials = $SqlAdministratorCredential
             DistributorMode      = 'Local'
+            DistributionDBName   = 'Database1'
             WorkingDirectory     = 'C:\Temp'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
