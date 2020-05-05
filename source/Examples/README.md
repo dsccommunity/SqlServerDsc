@@ -34,7 +34,6 @@ These are the links to the examples for each individual resource.
 - [SqlServerLogin](Resources/SqlServerLogin)
 - [SqlServerMaxDop](Resources/SqlServerMaxDop)
 - [SqlServerMemory](Resources/SqlServerMemory)
-- [SqlServerNetwork](Resources/SqlServerNetwork)
 - [SqlServerPermission](Resources/SqlServerPermission)
 - [SqlServerReplication](Resources/SqlServerReplication)
 - [SqlServerRole](Resources/SqlServerRole)

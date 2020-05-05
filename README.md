@@ -117,8 +117,6 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * [**SqlServerMaxDop**](#sqlservermaxdop) resource to manage MaxDegree of Parallelism
   for SQL Server.
 * [**SqlServerMemory**](#sqlservermemory) resource to manage Memory for SQL Server.
-* [**SqlServerNetwork**](#sqlservernetwork) resource to manage SQL Server Network
-  Protocols.
 * [**SqlServerPermission**](#sqlserverpermission) Grant or revoke permission on
   the SQL Server.
 * [**SqlServerProtocol**](#sqlserverprotocol) resource manage the SQL Server
@@ -1575,50 +1573,6 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
 #### Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerMemory).
-
-### SqlServerNetwork
-
-This resource is used to change the network settings for the instance.
-
-Read more about the network settings in the article
-[TCP/IP Properties (IP Addresses Tab)](https://docs.microsoft.com/en-us/sql/tools/configuration-manager/tcp-ip-properties-ip-addresses-tab).
-
->Note: Currently only TCP is supported.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **`[String]` ProtocolName** _(Required)_: The name of network protocol to be configured.
-  Only tcp is currently supported. { tcp }.
-* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
-  Default value is $env:COMPUTERNAME.
-* **`[Boolean]` IsEnabled** _(Write)_: Enables or disables the network protocol.
-* **`[Boolean]` TcpDynamicPort** _(Write)_: Specifies whether the SQL Server
-  instance should use a dynamic port. Value cannot be set to $true if TcpPort
-  is set to a non-empty string.
-* **`[String]` TcpPort** _(Write)_: The TCP port(s) that SQL Server should be listening
-  on. If the IP address should listen on more than one port, list all ports separated
-  with a comma ('1433,1500,1501'). To use this parameter set TcpDynamicPort to
-  $false.
-* **`[Boolean]` RestartService** _(Write)_: If set to $true then SQL Server and
-  dependent services will be restarted if a change to the configuration is made.
-  The default value is $false.
-* **`[Uint16]` RestartTimeout** _(Write)_: Timeout value for restarting the SQL Server
-  services. The default value is 120 seconds.
-
-#### Examples
-
-* [Enable TCP/IP with static port and restart SQL Server](/source/Examples/Resources/SqlServerNetwork/1-EnableTcpIpWithStaticPort.ps1)
-* [Enable TCP/IP with dynamic port](/source/Examples/Resources/SqlServerNetwork/2-EnableTcpIpWithDynamicPort.ps1)
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerNetwork).
 
 ### SqlServerPermission
 

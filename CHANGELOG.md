@@ -7,6 +7,12 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ## [Unreleased]
 
+### Removed
+
+- SqlServerDsc
+  - BREAKING CHANGE: Removed resource _SqlServerNetwork_. The functionality
+    is now covered by the resources _SqlServerProtocol_ and _SqlServerProtocolTcpIp_.
+
 ### Added
 
 - SqlServerDsc
