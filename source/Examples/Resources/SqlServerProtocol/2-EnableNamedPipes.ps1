@@ -1,7 +1,7 @@
 <#
     .DESCRIPTION
-        This example will enable TCP/IP protocol and set the custom static port to 4509.
-        When RestartService is set to $true the resource will also restart the SQL service.
+        This example will enable the Named Pipes protocol and set the name of the pipe.
+
         The resource will be run as the account provided in $SystemAdministratorAccount.
 #>
 Configuration Example
@@ -17,13 +17,12 @@ Configuration Example
 
     node localhost
     {
-        SqlServerNetwork 'ChangeTcpIpOnDefaultInstance'
+        SqlServerProtocol 'ChangeTcpIpOnDefaultInstance'
         {
             InstanceName         = 'MSSQLSERVER'
-            ProtocolName         = 'Tcp'
-            IsEnabled            = $true
-            TCPDynamicPort       = $true
-            RestartService       = $true
+            ProtocolName         = 'NamedPipes'
+            Enabled              = $true
+            PipeName             = '\\.\pipe\$$\TESTCLU01A\MSSQL$SQL2014\sql\query'
 
             PsDscRunAsCredential = $SystemAdministratorAccount
         }

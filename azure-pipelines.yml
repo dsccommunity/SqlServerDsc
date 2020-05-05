@@ -38,7 +38,7 @@ stages:
               arguments: '-ResolveDependency -tasks pack'
               pwsh: true
             env:
-              ModuleVersion: $(gitVersion.InformationalVersion)
+              ModuleVersion: $(gitVersion.NuGetVersionV2)
           - task: PublishBuildArtifacts@1
             displayName: 'Publish Build Artifact'
             inputs:
@@ -163,6 +163,9 @@ stages:
                   # Group 5
                   'tests/Integration/DSC_SqlServerSecureConnection.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlServerProtocol.Integration.Tests.ps1'
+                  # Group 6 (tests makes changes that could make SQL Server to loose connectivity)
+                  'tests/Integration/DSC_SqlServerProtocolTcpIp.Integration.Tests.ps1'
               )
             name: test
             displayName: 'Run Integration Test'
@@ -206,7 +209,6 @@ stages:
                   'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
                   # Group 2
                   'tests/Integration/DSC_SqlAgentAlert.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServerNetwork.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlServerLogin.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlServerEndPoint.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlServerDatabaseMail.Integration.Tests.ps1'
@@ -226,6 +228,9 @@ stages:
                   # Group 5
                   'tests/Integration/DSC_SqlServerSecureConnection.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlServerProtocol.Integration.Tests.ps1'
+                  # Group 6 (tests makes changes that could make SQL Server to loose connectivity)
+                  'tests/Integration/DSC_SqlServerProtocolTcpIp.Integration.Tests.ps1'
               )
             name: test
             displayName: 'Run Integration Test'

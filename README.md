@@ -117,10 +117,12 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * [**SqlServerMaxDop**](#sqlservermaxdop) resource to manage MaxDegree of Parallelism
   for SQL Server.
 * [**SqlServerMemory**](#sqlservermemory) resource to manage Memory for SQL Server.
-* [**SqlServerNetwork**](#sqlservernetwork) resource to manage SQL Server Network
-  Protocols.
 * [**SqlServerPermission**](#sqlserverpermission) Grant or revoke permission on
   the SQL Server.
+* [**SqlServerProtocol**](#sqlserverprotocol) resource manage the SQL Server
+  protocols for a SQL Server instance.
+* [**SqlServerProtocolTcpIp**](#sqlserverprotocoltcpip) resource manage the TCP/IP
+  protocol IP address groups for a SQL Server instance.
 * [**SqlServerReplication**](#sqlserverreplication) resource to manage SQL Replication
   distribution and publishing.
 * [**SqlServerRole**](#sqlserverrole) resource to manage SQL server roles.
@@ -1572,50 +1574,6 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerMemory).
 
-### SqlServerNetwork
-
-This resource is used to change the network settings for the instance.
-
-Read more about the network settings in the article
-[TCP/IP Properties (IP Addresses Tab)](https://docs.microsoft.com/en-us/sql/tools/configuration-manager/tcp-ip-properties-ip-addresses-tab).
-
->Note: Currently only TCP is supported.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **`[String]` ProtocolName** _(Required)_: The name of network protocol to be configured.
-  Only tcp is currently supported. { tcp }.
-* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
-  Default value is $env:COMPUTERNAME.
-* **`[Boolean]` IsEnabled** _(Write)_: Enables or disables the network protocol.
-* **`[Boolean]` TcpDynamicPort** _(Write)_: Specifies whether the SQL Server
-  instance should use a dynamic port. Value cannot be set to $true if TcpPort
-  is set to a non-empty string.
-* **`[String]` TcpPort** _(Write)_: The TCP port(s) that SQL Server should be listening
-  on. If the IP address should listen on more than one port, list all ports separated
-  with a comma ('1433,1500,1501'). To use this parameter set TcpDynamicPort to
-  $false.
-* **`[Boolean]` RestartService** _(Write)_: If set to $true then SQL Server and
-  dependent services will be restarted if a change to the configuration is made.
-  The default value is $false.
-* **`[Uint16]` RestartTimeout** _(Write)_: Timeout value for restarting the SQL Server
-  services. The default value is 120 seconds.
-
-#### Examples
-
-* [Enable TCP/IP with static port and restart SQL Server](/source/Examples/Resources/SqlServerNetwork/1-EnableTcpIpWithStaticPort.ps1)
-* [Enable TCP/IP with dynamic port](/source/Examples/Resources/SqlServerNetwork/2-EnableTcpIpWithDynamicPort.ps1)
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerNetwork).
-
 ### SqlServerPermission
 
 This resource sets server permissions to a user (login).
@@ -1650,6 +1608,139 @@ AlterAnyEndPoint and ViewServerState.
 #### Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerPermission).
+
+### SqlServerProtocol
+
+The `SqlServerProtocol` DSC resource manage the SQL Server protocols
+for a SQL Server instance.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
+* Target machine must have access to the SQLPS PowerShell module or the SqlServer
+  PowerShell module.
+* If a protocol is disabled that prevents the cmdlet `Restart-SqlService` to
+  contact the instance to evaluate if it is a cluster then the parameter
+  `SuppressRestart` must be used to override the restart. Same if a protocol
+  is enabled that was previously disabled and no other protocol allows
+  connecting to the instance then the parameter `SuppressRestart` must also
+  be used.
+* When connecting to a Failover Cluster where the account `SYSTEM` does
+  not have access then the correct credential must be provided in
+  the built-in parameter `PSDscRunAsCredential`. If not the following error
+  can appear; `An internal error occurred`.
+
+#### Parameters
+
+* **`[String]` InstanceName** _(Key)_: Specifies the name of the SQL Server
+  instance to enable the protocol for.
+* **`[String]` ProtocolName** _(Key)_: Specifies the name of network protocol
+  to be configured. { 'TcpIp' | 'NamedPipes' | 'ShareMemory' }
+* **`[String]` ServerName** _(Write)_: Specifies the host name of the SQL
+  Server to be configured. If the SQL Server belongs to a cluster or
+  availability group specify the host name for the listener or cluster group.
+  Default value is `$env:COMPUTERNAME`.
+* **`[Boolean]` Enabled** _(Write)_: Specifies if the protocol should be
+  enabled or disabled.
+* **`[Boolean]` ListenOnAllIpAddresses** _(Write)_: Specifies to listen
+  on all IP addresses. Only used for the TCP/IP protocol, ignored for all
+  other protocols.
+* **`[UInt16]` KeepAlive** _(Write)_: Specifies the keep alive duration
+  in milliseconds. Only used for the TCP/IP protocol, ignored for all other
+  protocols.
+* **`[String]` PipeName** _(Write)_: Specifies the name of the named pipe.
+  Only used for the Named Pipes protocol, ignored for all other protocols.
+* **`[Boolean]` SuppressRestart** _(Write)_: If set to $true then the any
+  attempt by the resource to restart the service is suppressed. The default
+  value is $false.
+* **`[UInt16]` RestartTimeout** _(Write)_: Timeout value for restarting
+  the SQL Server services. The default value is 120 seconds.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[Boolean]` HasMultiIPAddresses** _(Read)_: Returns $true or $false whether
+  the instance has multiple IP addresses or not.
+
+#### Examples
+
+* [Enable the TCP/IP protocol](/source/Examples/Resources/SqlServerProtocol/1-EnableTcpIp.ps1)
+* [Enable the Named Pipes protocol](/source/Examples/Resources/SqlServerProtocol/2-EnableNamedPipes.ps1)
+* [Enable the Shared Memory protocol](/source/Examples/Resources/SqlServerProtocol/3-EnableSharedMemory.ps1)
+* [Disable the TCP/IP protocol](/source/Examples/Resources/SqlServerProtocol/4-DisableTcpIp.ps1)
+* [Disable the Named Pipes protocol](/source/Examples/Resources/SqlServerProtocol/5-DisableNamedPipes.ps1)
+* [Disable the Shared Memory protocol](/source/Examples/Resources/SqlServerProtocol/6-DisableSharedMemory.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerProtocol).
+
+### SqlServerProtocolTcpIp
+
+The `SqlServerProtocolTcpIp` DSC resource manage the TCP/IP protocol IP
+address groups for a SQL Server instance.
+
+#### Requirements
+
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
+* Target machine must have access to the SQLPS PowerShell module or the SqlServer
+  PowerShell module.
+* To configure a single IP address to listen on multiple ports, the
+  TcpIp protocol must also set the **Listen All** property to **No**.
+  This can be done with the resource `SqlServerProtocol` using the
+  parameter `ListenOnAllIpAddresses`.
+
+#### Parameters
+
+* **`[String]` InstanceName** _(Key)_: Specifies the name of the SQL Server
+  instance to enable the protocol for.
+* **`[String]` IpAddressGroup** _(Key)_: Specifies the name of the IP address
+  group in the TCP/IP protocol, e.g. 'IP1', 'IP2' etc., or 'IPAll'.
+* **`[String]` ServerName** _(Write)_: Specifies the host name of the SQL
+  Server to be configured. If the SQL Server belongs to a cluster or
+  availability group specify the host name for the listener or cluster group.
+  Default value is `$env:COMPUTERNAME`.
+* **`[Boolean]` Enabled** _(Write)_: Specified if the IP address group  should
+  be enabled or disabled. Only used if the IP address group is not set to
+  'IPAll'. If not specified, the existing value will not be changed.
+* **`[String]` IpAddress** _(Write)_: Specifies the IP address for the IP
+  adress group. Only used if the IP address group is not set to 'IPAll'. If
+  not specified, the existing value will not be changed.
+* **`[Boolean]` UseTcpDynamicPort** _(Write)_: Specifies whether the SQL Server
+  instance should use a dynamic port. If not specified, the existing value
+  will not be changed. This parameter is not allowed to be used at the same
+  time as the parameter TcpPort.
+* **`[String]` TcpPort** _(Write)_: Specifies the TCP port(s) that SQL Server
+  should be listening on. If the IP address should listen on more than one port,
+  list all ports as a string value with the port numbers separated with a comma,
+  e.g. '1433,1500,1501'. This parameter is limited to 2047 characters. If not
+  specified, the existing value will not be changed. This parameter is not
+  allowed to be used at the same time as the parameter UseTcpDynamicPort.
+* **`[Boolean]` SuppressRestart** _(Write)_: If set to $true then the any
+  attempt by the resource to restart the service is suppressed. The default
+  value is $false.
+* **`[UInt16]` RestartTimeout** _(Write)_: Timeout value for restarting
+  the SQL Server services. The default value is 120 seconds.
+
+#### Read-Only Properties from Get-TargetResource
+
+* **`[Boolean]` IsActive** _(Read)_: Returns $true or $false whether the
+  IP address group is active. Not applicable for IP address group 'IPAll'.
+* **`[String]` AddressFamily** _(Read)_: Returns the IP address's adress
+  family. Not applicable for IP address group 'IPAll'.
+* **`[String]` TcpDynamicPort** _(Read)_: Returns the TCP/IP dynamic port.
+  Only applicable for the IP address group 'IPAll'.
+
+#### Examples
+
+* [Configure the IP address group IPAll with dynamic port](/source/Examples/Resources/SqlServerProtocolTcpIp/1-ConfigureIPAddressGroupIPAllWithDynamicPort.ps1)
+* [Configure the IP address group IPAll with static port(s)](/source/Examples/Resources/SqlServerProtocolTcpIp/2-ConfigureIPAddressGroupIPAllWithStaticPort.ps1)
+* [Configure the IP address group IP1 with IP address and static port(s)](/source/Examples/Resources/SqlServerProtocolTcpIp/3-ConfigureIPAddressGroupIP1.ps1)
+
+#### Known issues
+
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerProtocolTcpIp).
 
 ### SqlServerReplication
 

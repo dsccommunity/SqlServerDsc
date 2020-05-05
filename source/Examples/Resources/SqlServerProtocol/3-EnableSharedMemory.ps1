@@ -1,7 +1,7 @@
 <#
     .DESCRIPTION
-        This example will enable TCP/IP protocol and set the custom static port to 4509.
-        When RestartService is set to $true the resource will also restart the SQL service.
+        This example will enable the Shared Memory protocol.
+
         The resource will be run as the account provided in $SystemAdministratorAccount.
 #>
 Configuration Example
@@ -17,14 +17,11 @@ Configuration Example
 
     node localhost
     {
-        SqlServerNetwork 'ChangeTcpIpOnDefaultInstance'
+        SqlServerProtocol 'ChangeTcpIpOnDefaultInstance'
         {
             InstanceName         = 'MSSQLSERVER'
-            ProtocolName         = 'Tcp'
-            IsEnabled            = $true
-            TCPDynamicPort       = $false
-            TCPPort              = 4509
-            RestartService       = $true
+            ProtocolName         = 'SharedMemory'
+            Enabled              = $true
 
             PsDscRunAsCredential = $SystemAdministratorAccount
         }

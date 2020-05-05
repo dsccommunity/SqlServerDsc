@@ -13,6 +13,10 @@ if (Test-Path -Path $configFile)
 }
 else
 {
+    $currentIp4Address = Get-NetIPAddress -AddressFamily 'IPv4' |
+        Where-Object -Property 'PrefixOrigin' -EQ 'Dhcp' |
+            Select-Object -FIrst 1 -ExpandProperty 'IPAddress'
+
     $ConfigurationData = @{
         AllNodes = @(
             @{
@@ -21,14 +25,9 @@ else
                 UserName        = "$env:COMPUTERNAME\SqlInstall"
                 Password        = 'P@ssw0rd1'
 
-                ServerName      = $env:COMPUTERNAME
-                InstanceName    = 'DSCSQLTEST'
+                IpAddress       = $currentIp4Address
 
-                ProtocolName    = 'Tcp'
-                Enabled         = $true
-                Disabled        = $false
-                TcpDynamicPort  = $true
-                RestartService  = $true
+                InstanceName    = 'DSCSQLTEST'
 
                 CertificateFile = $env:DscPublicCertificatePath
             }
@@ -38,21 +37,36 @@ else
 
 <#
     .SYNOPSIS
-        Disable network protocol.
+        Disables listen on all IP addresses and then configures IP address group
+        'IP1' with the first IP address assigned to the node (first IP address
+        which has DHCP as the prefix origin).
 #>
-Configuration DSC_SqlServerNetwork_SetDisabled_Config
+Configuration DSC_SqlServerProtocolTcpIp_ListenOnSpecificIpAddress_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerNetwork 'Integration_Test'
+        SqlServerProtocol 'DisableListenAllIPAddresses'
         {
-            ServerName           = $Node.ServerName
-            InstanceName         = $Node.InstanceName
-            ProtocolName         = $Node.ProtocolName
-            IsEnabled            = $Node.Disabled
-            TcpDynamicPort       = $Node.TcpDynamicPort
+            InstanceName           = $Node.InstanceName
+            ProtocolName           = 'TcpIp'
+            Enabled                = $true
+            ListenOnAllIpAddresses = $false
+            SuppressRestart        = $true
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+
+        SqlServerProtocolTcpIP 'Integration_Test'
+        {
+            InstanceName           = $Node.InstanceName
+            IpAddressGroup         = 'IP1'
+            Enabled                 = $true
+            IpAddress              = $Node.IpAddress
+            SuppressRestart        = $true
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -60,29 +74,3 @@ Configuration DSC_SqlServerNetwork_SetDisabled_Config
         }
     }
 }
-
-<#
-    .SYNOPSIS
-        Enable network protocol.
-#>
-Configuration DSC_SqlServerNetwork_SetEnabled_Config
-{
-    Import-DscResource -ModuleName 'SqlServerDsc'
-
-    node $AllNodes.NodeName
-    {
-        SqlServerNetwork 'Integration_Test'
-        {
-            ServerName           = $Node.ServerName
-            InstanceName         = $Node.InstanceName
-            ProtocolName         = $Node.ProtocolName
-            IsEnabled            = $Node.Enabled
-            TcpDynamicPort       = $Node.TcpDynamicPort
-
-            PsDscRunAsCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
-        }
-    }
-}
-

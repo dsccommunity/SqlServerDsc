@@ -6,7 +6,7 @@ if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL201
 }
 
 $script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceFriendlyName = 'SqlServerNetwork'
+$script:dscResourceFriendlyName = 'SqlServerProtocol'
 $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 
 try
@@ -24,10 +24,6 @@ $script:testEnvironment = Initialize-TestEnvironment `
     -ResourceType 'Mof' `
     -TestType 'Integration'
 
-$mockSqlInstallAccountPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-$mockSqlInstallAccountUserName = "$env:COMPUTERNAME\SqlInstall"
-$mockSqlInstallCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlInstallAccountUserName, $mockSqlInstallAccountPassword
-
 try
 {
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
@@ -38,7 +34,7 @@ try
             $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
         }
 
-        $configurationName = "$($script:dscResourceName)_SetDisabled_Config"
+        $configurationName = "$($script:dscResourceName)_DisableNamedPipes_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -76,10 +72,9 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-
-                $resourceCurrentState.IsEnabled | Should -Be $ConfigurationData.AllNodes.Disabled
-                $resourceCurrentState.ProtocolName | Should -Be $ConfigurationData.AllNodes.ProtocolName
-                $resourceCurrentState.TcpDynamicPort | Should -Be $ConfigurationData.AllNodes.TcpDynamicPort
+                $resourceCurrentState.ProtocolName | Should -Be 'NamedPipes'
+                $resourceCurrentState.Enabled | Should -BeFalse
+                $resourceCurrentState.PipeName | Should -Be '\\.\pipe\MSSQL$DSCSQLTEST\sql\query'
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -87,7 +82,7 @@ try
             }
         }
 
-        $configurationName = "$($script:dscResourceName)_SetEnabled_Config"
+        $configurationName = "$($script:dscResourceName)_EnableNamedPipes_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -125,10 +120,9 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-
-                $resourceCurrentState.IsEnabled | Should -Be $ConfigurationData.AllNodes.Enabled
-                $resourceCurrentState.ProtocolName | Should -Be $ConfigurationData.AllNodes.ProtocolName
-                $resourceCurrentState.TcpDynamicPort | Should -Be $ConfigurationData.AllNodes.TcpDynamicPort
+                $resourceCurrentState.ProtocolName | Should -Be 'NamedPipes'
+                $resourceCurrentState.Enabled | Should -BeTrue
+                $resourceCurrentState.PipeName | Should -Be '\\.\pipe\MSSQL$DSCSQLTEST\sql\query'
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
