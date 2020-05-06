@@ -79,8 +79,14 @@ Configuration DSC_SqlServerReplication_AddDistributor_Config
         {
             Ensure               = 'Present'
             DistributorMode      = 'Local'
-            DistributionDBName   = 'Database1'
             WorkingDirectory     = 'C:\Temp'
+
+            <#
+                Must be the same database name as the publisher configuration
+                in the next test. The default for this parameter is the database
+                name 'distribution'.
+            #>
+            DistributionDBName   = 'MyDistribution'
 
             # Next test will connect to this instance as a publisher.
             InstanceName         = $Node.InstanceName
@@ -111,6 +117,13 @@ Configuration DSC_SqlServerReplication_AddPublisher_Config
             Ensure               = 'Present'
             DistributorMode      = 'Remote'
             WorkingDirectory     = 'C:\Temp'
+
+            <#
+                Must be the same database name as in the distributor configuration
+                in the previous test. The default for this parameter is the database
+                name 'distribution'.
+            #>
+            DistributionDBName   = 'MyDistribution'
 
             # This is set to the default instance.
             InstanceName         = $Node.DefaultInstanceName

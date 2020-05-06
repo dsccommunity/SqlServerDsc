@@ -336,11 +336,10 @@ AsymmetricKey1 | RSA_2048 | P@ssw0rd1
 
 **Run order:** 3
 
-**Depends on:** SqlDatabase, SqlSetup
+**Depends on:** SqlSetup
 
 This integration tests depends on that the default instance (`MSSQLSERVER`)
 and the named instance `DSCSQLTEST` have the feature `REPLICATION` installed.
-It is also dependent on that the database `Database1` exist.
 
 The integration test will not leave anything on any instance.
 

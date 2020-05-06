@@ -158,13 +158,13 @@ stages:
                   'tests/Integration/DSC_SqlServerRole.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlServerReplication.Integration.Tests.ps1'
                   # Group 4
                   'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
                   # Group 5
                   'tests/Integration/DSC_SqlServerSecureConnection.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlServerProtocol.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServerReplication.Integration.Tests.ps1'
                   # Group 6 (tests makes changes that could make SQL Server to loose connectivity)
                   'tests/Integration/DSC_SqlServerProtocolTcpIp.Integration.Tests.ps1'
               )
@@ -224,13 +224,13 @@ stages:
                   'tests/Integration/DSC_SqlServerRole.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlServerReplication.Integration.Tests.ps1'
                   # Group 4
                   'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
                   # Group 5
                   'tests/Integration/DSC_SqlServerSecureConnection.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlServerProtocol.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServerReplication.Integration.Tests.ps1'
                   # Group 6 (tests makes changes that could make SQL Server to loose connectivity)
                   'tests/Integration/DSC_SqlServerProtocolTcpIp.Integration.Tests.ps1'
               )
