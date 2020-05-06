@@ -74,7 +74,7 @@ else
                     evaluate the result in the test.
                 #>
                 DatabaseEngineDefaultInstanceName       = 'MSSQLSERVER'
-                DatabaseEngineDefaultInstanceFeatures   = 'SQLENGINE,CONN,BC,SDK'
+                DatabaseEngineDefaultInstanceFeatures   = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
 
                 # General SqlSetup properties
                 Collation                               = 'Finnish_Swedish_CI_AS'
