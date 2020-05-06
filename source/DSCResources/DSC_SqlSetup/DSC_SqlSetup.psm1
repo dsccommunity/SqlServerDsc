@@ -1475,7 +1475,12 @@ function Set-TargetResource
     $arguments = ''
     foreach ($currentSetupArgument in $setupArguments.GetEnumerator())
     {
-        if ($currentSetupArgument.Value -ne '')
+        <#
+            Using [System.String]::IsNullOrEmpty() instead if comparing against
+            an empty string ('') because the numeric value zero (0) equals to an
+            empty string. This evaluated to $true: 0 -eq ''
+        #>
+        if (-not [System.String]::IsNullOrEmpty($currentSetupArgument.Value))
         {
             # Arrays are handled specially
             if ($currentSetupArgument.Value -is [System.Array])
