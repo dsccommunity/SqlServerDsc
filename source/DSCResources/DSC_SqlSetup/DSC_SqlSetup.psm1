@@ -1478,7 +1478,7 @@ function Set-TargetResource
         <#
             Using [System.String]::IsNullOrEmpty() instead if comparing against
             an empty string ('') because the numeric value zero (0) equals to an
-            empty string. This evaluated to $true: 0 -eq ''
+            empty string. This is evaluated to $true: 0 -eq ''
         #>
         if (-not [System.String]::IsNullOrEmpty($currentSetupArgument.Value))
         {
