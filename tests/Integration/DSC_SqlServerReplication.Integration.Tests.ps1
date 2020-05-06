@@ -103,7 +103,7 @@ try
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.DistributorMode | Should -Be 'Local'
                 $resourceCurrentState.DistributionDBName | Should -Be 'MyDistribution'
-                $resourceCurrentState.RemoteDistributor | Should -Be 'FV-AZ674\DSCSQLTEST'
+                $resourceCurrentState.RemoteDistributor | Should -Be ('{0}\DSCSQLTEST' -f $env:COMPUTERNAME)
                 $resourceCurrentState.WorkingDirectory | Should -Be 'C:\Temp'
             }
 
