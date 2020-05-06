@@ -52,7 +52,7 @@ else
 
                 # Database Engine properties.
                 DatabaseEngineNamedInstanceName         = 'DSCSQLTEST'
-                DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,AS,CONN,BC,SDK,REPLICATION'
+                DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,REPLICATION,AS,CONN,BC,SDK'
                 AnalysisServicesMultiServerMode         = 'MULTIDIMENSIONAL'
 
                 <#

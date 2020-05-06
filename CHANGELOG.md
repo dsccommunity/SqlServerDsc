@@ -164,6 +164,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerPermission
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+- SqlServerReplication
+  - Enhanced the exception handling so it shows the inner exception error
+    message that have the actual error that occurred.
 
 ## [13.5.0] - 2020-04-12
 

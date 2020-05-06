@@ -388,7 +388,17 @@ function New-DistributionPublisher
     )
 
     $rmo = Get-RmoAssembly -SqlMajorVersion $SqlMajorVersion
-    $distributorPublisher = New-object $rmo.GetType('Microsoft.SqlServer.Replication.DistributionPublisher') $PublisherName, $ServerConnection
+
+    try
+    {
+        $distributorPublisher = New-object $rmo.GetType('Microsoft.SqlServer.Replication.DistributionPublisher') $PublisherName, $ServerConnection
+    }
+    catch
+    {
+        $errorMessage = 'New-DistributionPublisher failed'
+
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+    }
 
     return $distributorPublisher
 }
@@ -479,7 +489,16 @@ function Uninstall-Distributor
         $script:localizedData.UninstallDistributor
     )
 
-    $ReplicationServer.UninstallDistributor($UninstallWithForce)
+    try
+    {
+        $ReplicationServer.UninstallDistributor($UninstallWithForce)
+    }
+    catch
+    {
+        $errorMessage = 'Uninstall-Distributor failed'
+
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+    }
 }
 
 function Register-DistributorPublisher
@@ -524,7 +543,17 @@ function Register-DistributorPublisher
     $distributorPublisher.DistributionDatabase = $DistributionDBName
     $distributorPublisher.WorkingDirectory = $WorkingDirectory
     $distributorPublisher.PublisherSecurity.WindowsAuthentication = $UseTrustedConnection
-    $distributorPublisher.Create()
+
+    try
+    {
+        $distributorPublisher.Create()
+    }
+    catch
+    {
+        $errorMessage = 'Register-DistributorPublisher failed'
+
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+    }
 }
 
 function Get-ConnectionInfoAssembly
@@ -538,11 +567,20 @@ function Get-ConnectionInfoAssembly
         $SqlMajorVersion
     )
 
-    $connInfo = $dom.Load("Microsoft.SqlServer.ConnectionInfo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+    try
+    {
+        $connInfo = $dom.Load("Microsoft.SqlServer.ConnectionInfo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
 
-    Write-Verbose -Message (
-        $script:localizedData.LoadAssembly -f $connInfo.FullName
-    )
+        Write-Verbose -Message (
+            $script:localizedData.LoadAssembly -f $connInfo.FullName
+        )
+    }
+    catch
+    {
+        $errorMessage = 'Get-ConnectionInfoAssembly failed'
+
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+    }
 
     return $connInfo
 }
@@ -558,11 +596,20 @@ function Get-RmoAssembly
         $SqlMajorVersion
     )
 
-    $rmo = $dom.Load("Microsoft.SqlServer.Rmo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+    try
+    {
+        $rmo = $dom.Load("Microsoft.SqlServer.Rmo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
 
-    Write-Verbose -Message (
-        $script:localizedData.LoadAssembly -f $rmo.FullName
-    )
+        Write-Verbose -Message (
+            $script:localizedData.LoadAssembly -f $rmo.FullName
+        )
+    }
+    catch
+    {
+        $errorMessage = 'Get-RmoAssembly failed'
+
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+    }
 
     return $rmo
 }
