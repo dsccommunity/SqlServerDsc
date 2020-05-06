@@ -1728,7 +1728,7 @@ try
             Assert-VerifiableMock
         }
 
-        Describe "SqlSetup\Set-TargetResource" -Tag 'Set' {
+        Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
             BeforeAll {
                 #region Setting up TestDrive:\
 
@@ -1843,10 +1843,10 @@ try
                                 $_.Name -eq $argumentKey
                             } | Select-Object -ExpandProperty 'Name'
 
-                        $argumentKeyName | Should -Be $argumentKey
+                        $argumentKeyName | Should -Be $argumentKey -Because 'the argument should have been included when setup.exe was called'
 
                         $argumentValue = $actualValues.$argumentKey
-                        $argumentValue | Should -Be $ExpectedArgument.$argumentKey
+                        $argumentValue | Should -Be $ExpectedArgument.$argumentKey -Because 'the argument should have been set to the correct value when calling setup.exe'
                     }
                 }
 
@@ -2151,6 +2151,244 @@ try
                 }
             }
 
+            Context 'When the system is not in the desired state for a default instance' {
+                Context 'When installing a default instance' {
+                    Context 'When installing all features' {
+                        BeforeAll {
+                            Mock -CommandName Get-TargetResource -MockWith {
+                                return @{
+                                    Features = ''
+                                }
+                            }
+                        }
+
+                        It 'Should set the system in the desired state when feature is SQLENGINE' {
+                            $testParameters = $mockDefaultParameters.Clone()
+                            # This is also used to regression test issue #1254, SqlSetup fails when root directory is specified.
+                            $testParameters += @{
+                                SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
+                                ASSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
+                                InstanceName = $mockDefaultInstance_InstanceName
+                                SourceCredential = $null
+                                SourcePath = $mockSourcePath
+                                ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                                InstanceDir = 'D:'
+                                InstallSQLDataDir = 'E:'
+                                InstallSharedDir = 'C:\Program Files\Microsoft SQL Server'
+                                InstallSharedWOWDir = 'C:\Program Files (x86)\Microsoft SQL Server'
+                                UpdateEnabled = 'True'
+                                UpdateSource = 'C:\Updates\' # Regression test for issue #720
+                                ASServerMode = 'TABULAR'
+                                RSInstallMode = 'DefaultNativeMode'
+                                SqlSvcStartupType = $mockServiceStartupType
+                                AgtSvcStartupType = $mockServiceStartupType
+                                AsSvcStartupType = $mockServiceStartupType
+                                IsSvcStartupType = $mockServiceStartupType
+                                RsSvcStartupType = $mockServiceStartupType
+                                SqlTempDbFileCount = 2
+                                SqlTempDbFileSize = 128
+                                SqlTempDbFileGrowth = 128
+                                SqlTempDbLogFileSize = 128
+                                SqlTempDbLogFileGrowth = 128
+                            }
+
+                            if ( $mockSqlMajorVersion -in (13,14) )
+                            {
+                                $testParameters.Features = $testParameters.Features -replace ',SSMS,ADV_SSMS',''
+                            }
+
+                            $mockStartSqlSetupProcessExpectedArgument = @{
+                                Quiet = 'True'
+                                IAcceptSQLServerLicenseTerms = 'True'
+                                Action = 'Install'
+                                InstanceName = 'MSSQLSERVER'
+                                Features = $testParameters.Features
+                                SQLSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                                ASSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                                PID = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                                InstanceDir = 'D:\'
+                                InstallSQLDataDir = 'E:\'
+                                InstallSharedDir = 'C:\Program Files\Microsoft SQL Server'
+                                InstallSharedWOWDir = 'C:\Program Files (x86)\Microsoft SQL Server'
+                                UpdateEnabled = 'True'
+                                UpdateSource = 'C:\Updates' # Regression test for issue #720
+                                ASServerMode = 'TABULAR'
+                                RSInstallMode = 'DefaultNativeMode'
+                                SqlSvcStartupType = $mockServiceStartupType
+                                AgtSvcStartupType = $mockServiceStartupType
+                                AsSvcStartupType = $mockServiceStartupType
+                                IsSvcStartupType = $mockServiceStartupType
+                                RsSvcStartupType = $mockServiceStartupType
+                                SqlTempDbFileCount = 2
+                                SqlTempDbFileSize = 128
+                                SqlTempDbFileGrowth = 128
+                                SqlTempDbLogFileSize = 128
+                                SqlTempDbLogFileGrowth = 128
+                            }
+
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
+
+                            Assert-MockCalled -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+                        }
+                    }
+
+                    Context "When installing the database engine and enabling the Named Pipes protocol" {
+                        BeforeAll {
+                            Mock -CommandName Get-TargetResource -MockWith {
+                                return @{
+                                    Features = ''
+                                }
+                            }
+                        }
+
+                        It 'Should set the system in the desired state when feature is SQLENGINE' {
+                            $testParameters = @{
+                                Features = 'SQLENGINE'
+                                SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
+                                InstanceName = $mockDefaultInstance_InstanceName
+                                SourceCredential = $null
+                                SourcePath = $mockSourcePath
+                                ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                                NpEnabled = $true
+                            }
+
+                            $mockStartSqlSetupProcessExpectedArgument = @{
+                                Quiet = 'True'
+                                IAcceptSQLServerLicenseTerms = 'True'
+                                Action = 'Install'
+                                InstanceName = $testParameters.InstanceName
+                                Features = $testParameters.Features
+                                SQLSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                                PID = $testParameters.ProductKey
+                                AgtSvcStartupType = 'Automatic'
+                                NpEnabled = 1
+                            }
+
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
+
+                            Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                        }
+                    }
+
+                    Context "When installing the database engine and enabling the TCP protocol" {
+                        BeforeAll {
+                            Mock -CommandName Get-TargetResource -MockWith {
+                                return @{
+                                    Features = ''
+                                }
+                            }
+                        }
+
+                        It 'Should set the system in the desired state when feature is SQLENGINE' {
+                            $testParameters = @{
+                                Features = 'SQLENGINE'
+                                SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
+                                InstanceName = $mockDefaultInstance_InstanceName
+                                SourceCredential = $null
+                                SourcePath = $mockSourcePath
+                                ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                                TcpEnabled = $true
+                            }
+
+                            $mockStartSqlSetupProcessExpectedArgument = @{
+                                Quiet = 'True'
+                                IAcceptSQLServerLicenseTerms = 'True'
+                                Action = 'Install'
+                                InstanceName = $testParameters.InstanceName
+                                Features = $testParameters.Features
+                                SQLSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                                PID = $testParameters.ProductKey
+                                AgtSvcStartupType = 'Automatic'
+                                TcpEnabled = 1
+                            }
+
+                            { Set-TargetResource @testParameters } | Should -Not -Throw
+
+                            Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                        }
+                    }
+                }
+
+                Context "When installing the database engine and disabling the Named Pipes protocol" {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = ''
+                            }
+                        }
+                    }
+
+                    It 'Should set the system in the desired state when feature is SQLENGINE' {
+                        $testParameters = @{
+                            Features = 'SQLENGINE'
+                            SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
+                            InstanceName = $mockDefaultInstance_InstanceName
+                            SourceCredential = $null
+                            SourcePath = $mockSourcePath
+                            ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                            NpEnabled = $false
+                        }
+
+                        $mockStartSqlSetupProcessExpectedArgument = @{
+                            Quiet = 'True'
+                            IAcceptSQLServerLicenseTerms = 'True'
+                            Action = 'Install'
+                            InstanceName = $testParameters.InstanceName
+                            Features = $testParameters.Features
+                            SQLSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                            PID = $testParameters.ProductKey
+                            AgtSvcStartupType = 'Automatic'
+                            NpEnabled = 0
+                        }
+
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                Context "When installing the database engine and disabling the TCP protocol" {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = ''
+                            }
+                        }
+                    }
+
+                    It 'Should set the system in the desired state when feature is SQLENGINE' {
+                        $testParameters = @{
+                            Features = 'SQLENGINE'
+                            SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
+                            InstanceName = $mockDefaultInstance_InstanceName
+                            SourceCredential = $null
+                            SourcePath = $mockSourcePath
+                            ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                            TcpEnabled = $false
+                        }
+
+                        $mockStartSqlSetupProcessExpectedArgument = @{
+                            Quiet = 'True'
+                            IAcceptSQLServerLicenseTerms = 'True'
+                            Action = 'Install'
+                            InstanceName = $testParameters.InstanceName
+                            Features = $testParameters.Features
+                            SQLSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                            PID = $testParameters.ProductKey
+                            AgtSvcStartupType = 'Automatic'
+                            TcpEnabled = 0
+                        }
+
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                    }
+                }
+            }
+
             foreach ($mockSqlMajorVersion in $testProductVersion)
             {
                 Context "When setup process fails with exit code " {
@@ -2282,7 +2520,7 @@ try
                         Assert-MockCalled -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
                     }
 
-                    if( $mockSqlMajorVersion -in (13,14) )
+                    if ($mockSqlMajorVersion -in (13,14))
                     {
                         It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016 and 2017' {
                             $testParameters += @{
