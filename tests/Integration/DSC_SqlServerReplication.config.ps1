@@ -212,6 +212,7 @@ Configuration DSC_SqlServerReplication_RemoveDistributor_Config
 #>
 Configuration DSC_SqlServerReplication_Cleanup_Config
 {
+    Import-DscResource -ModuleName 'SqlServerDsc'
     Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
 
     node $AllNodes.NodeName
