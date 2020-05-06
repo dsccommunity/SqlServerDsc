@@ -102,7 +102,7 @@ try
                 $resourceCurrentState.Ensure | Should -Be 'Present'
                 $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.DistributorMode | Should -Be 'Local'
-                $resourceCurrentState.DistributionDBName | Should -Be 'Database1'
+                $resourceCurrentState.DistributionDBName | Should -Be 'MyDistribution'
                 $resourceCurrentState.RemoteDistributor | Should -Be 'FV-AZ674\DSCSQLTEST'
                 $resourceCurrentState.WorkingDirectory | Should -Be 'C:\Temp'
             }
@@ -152,10 +152,10 @@ try
                 }
 
                 $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+                $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.DefaultInstanceName
                 $resourceCurrentState.DistributorMode | Should -Be 'Remote'
-                $resourceCurrentState.DistributionDBName | Should -BeNullOrEmpty
-                $resourceCurrentState.RemoteDistributor | Should -Be 'distsqlsrv.company.local'
+                $resourceCurrentState.DistributionDBName | Should -Be 'MyDistribution'
+                $resourceCurrentState.RemoteDistributor | Should -Be ('{0}\{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName)
                 $resourceCurrentState.WorkingDirectory | Should -Be 'C:\Temp'
             }
 

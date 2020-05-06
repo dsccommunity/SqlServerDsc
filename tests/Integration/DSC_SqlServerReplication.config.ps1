@@ -159,7 +159,12 @@ Configuration DSC_SqlServerReplication_RemovePublisher_Config
         {
             Ensure               = 'Absent'
             InstanceName         = $Node.InstanceName
-            DistributorMode      = 'Remote'
+            <#
+                Remove using the value 'Local' to avoid needing to specify
+                the parameter DistributionDBName. This is a bug in the resource
+                and will be resolved by issue #1527.
+            #>
+            DistributorMode      = 'Local'
             WorkingDirectory     = 'C:\Temp'
 
             AdminLinkCredentials = New-Object `
@@ -211,6 +216,30 @@ Configuration DSC_SqlServerReplication_Cleanup_Config
 
     node $AllNodes.NodeName
     {
+        SqlDatabase 'RemoveDatabaseMyDistributionFromDefaultInstance'
+        {
+            Ensure       = 'Absent'
+            ServerName   = $env:COMPUTERNAME
+            InstanceName = $Node.DefaultInstanceName
+            Name         = 'MyDistribution'
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+
+        SqlDatabase 'RemoveDatabaseMyDistributionFromNamedInstance'
+        {
+            Ensure       = 'Absent'
+            ServerName   = $env:COMPUTERNAME
+            InstanceName = $Node.InstanceName
+            Name         = 'MyDistribution'
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+
         Service ('StopSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
         {
             Name  = 'SQLSERVERAGENT'
