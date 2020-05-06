@@ -78,9 +78,75 @@ Configuration DSC_SqlServerReplication_AddDistributor_Config
         SqlServerReplication 'Integration_Test'
         {
             Ensure               = 'Present'
-            InstanceName         = $Node.InstanceName
             DistributorMode      = 'Local'
             DistributionDBName   = 'Database1'
+            WorkingDirectory     = 'C:\Temp'
+
+            # Next test will connect to this instance as a publisher.
+            InstanceName         = $Node.InstanceName
+
+            AdminLinkCredentials = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Adds the instance as a publisher.
+#>
+Configuration DSC_SqlServerReplication_AddPublisher_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlServerReplication 'Integration_Test'
+        {
+            Ensure               = 'Present'
+            DistributorMode      = 'Remote'
+            WorkingDirectory     = 'C:\Temp'
+
+            # This is set to the default instance.
+            InstanceName         = $Node.DefaultInstanceName
+
+            <#
+                This is set to the instance that was configured as a distributor
+                in the previous test.
+            #>
+            RemoteDistributor    = ('{0}\{1}' -f $env:COMPUTERNAME, $Node.InstanceName)
+
+            AdminLinkCredentials = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Removes the instance as a publisher.
+#>
+Configuration DSC_SqlServerReplication_RemovePublisher_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlServerReplication 'Integration_Test'
+        {
+            Ensure               = 'Absent'
+            InstanceName         = $Node.InstanceName
+            DistributorMode      = 'Remote'
             WorkingDirectory     = 'C:\Temp'
 
             AdminLinkCredentials = New-Object `
@@ -109,63 +175,6 @@ Configuration DSC_SqlServerReplication_RemoveDistributor_Config
             Ensure               = 'Absent'
             InstanceName         = $Node.InstanceName
             DistributorMode      = 'Local'
-            WorkingDirectory     = 'C:\Temp'
-
-            AdminLinkCredentials = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
-
-            PsDscRunAsCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
-        }
-    }
-}
-
-<#
-    .SYNOPSIS
-        Adds the instance as a publisher.
-#>
-Configuration DSC_SqlServerReplication_AddPublisher_Config
-{
-    Import-DscResource -ModuleName 'SqlServerDsc'
-
-    node $AllNodes.NodeName
-    {
-        SqlServerReplication 'Integration_Test'
-        {
-            Ensure               = 'Present'
-            InstanceName         = $Node.InstanceName
-            DistributorMode      = 'Remote'
-            RemoteDistributor    = ('{0}' -f $env:COMPUTERNAME)
-            WorkingDirectory     = 'C:\Temp'
-
-            AdminLinkCredentials = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
-
-            PsDscRunAsCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
-        }
-    }
-}
-
-<#
-    .SYNOPSIS
-        Removes the instance as a publisher.
-#>
-Configuration DSC_SqlServerReplication_RemovePublisher_Config
-{
-    Import-DscResource -ModuleName 'SqlServerDsc'
-
-    node $AllNodes.NodeName
-    {
-        SqlServerReplication 'Integration_Test'
-        {
-            Ensure               = 'Absent'
-            InstanceName         = $Node.InstanceName
-            DistributorMode      = 'Remote'
             WorkingDirectory     = 'C:\Temp'
 
             AdminLinkCredentials = New-Object `
