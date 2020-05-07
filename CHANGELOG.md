@@ -44,6 +44,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed to use the property `NuGetVersionV2` from GitVersion in the
     CI pipeline.
   - The unit tests now run on PowerShell 7 to optimize the total run time.
+- SqlServerDsc.Common
+  - The helper function `Invoke-InstallationMediaCopy` was changed to
+    handle a breaking change in PowerShell 7 ([issue #1530](https://github.com/dsccommunity/SqlServerDsc/issues/1530)).
 - SqlAlwaysOnService
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).

@@ -404,7 +404,7 @@ InModuleScope $script:subModuleName {
     Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstallationMediaCopy' {
         BeforeAll {
             $mockSourcePathGuid = 'cc719562-0f46-4a16-8605-9f8a47c70402'
-            $mockDestinationPath = 'C:\media'
+            $mockDestinationPath = 'C:\Users\user\AppData\Local\Temp'
 
             $mockShareCredentialUserName = 'COMPANY\SqlAdmin'
             $mockShareCredentialPassword = 'dummyPassW0rd'
