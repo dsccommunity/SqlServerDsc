@@ -167,6 +167,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerReplication
   - Enhanced the exception handling so it shows the inner exception error
     message that have the actual error that occurred.
+  - Corrected the examples.
 
 ## [13.5.0] - 2020-04-12
 
