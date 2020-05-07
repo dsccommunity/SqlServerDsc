@@ -392,7 +392,7 @@ function New-DistributionPublisher
     }
     catch
     {
-        $errorMessage = 'New-DistributionPublisher failed'
+        $errorMessage = $script:localizedData.FailedInFunction -f 'New-DistributionPublisher'
 
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
@@ -428,7 +428,7 @@ function Install-RemoteDistributor
     }
     catch
     {
-        $errorMessage = 'Install-RemoteDistributor failed'
+        $errorMessage = $script:localizedData.FailedInFunction -f 'Install-RemoteDistributor'
 
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
@@ -462,7 +462,7 @@ function Install-LocalDistributor
     }
     catch
     {
-        $errorMessage = 'Install-LocalDistributor failed'
+        $errorMessage = $script:localizedData.FailedInFunction -f 'Install-LocalDistributor'
 
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
@@ -492,7 +492,7 @@ function Uninstall-Distributor
     }
     catch
     {
-        $errorMessage = 'Uninstall-Distributor failed'
+        $errorMessage = $script:localizedData.FailedInFunction -f 'Uninstall-Distributor'
 
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
@@ -547,7 +547,7 @@ function Register-DistributorPublisher
     }
     catch
     {
-        $errorMessage = 'Register-DistributorPublisher failed'
+        $errorMessage = $script:localizedData.FailedInFunction -f 'Register-DistributorPublisher'
 
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
@@ -603,7 +603,7 @@ function Get-ConnectionInfoAssembly
     }
     catch
     {
-        $errorMessage = 'Get-ConnectionInfoAssembly failed'
+        $errorMessage = $script:localizedData.FailedInFunction -f 'Get-ConnectionInfoAssembly'
 
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
@@ -661,7 +661,7 @@ function Get-RmoAssembly
     }
     catch
     {
-        $errorMessage = 'Get-RmoAssembly failed'
+        $errorMessage = $script:localizedData.FailedInFunction -f 'Get-RmoAssembly'
 
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
@@ -687,6 +687,7 @@ function Get-SqlServerMajorVersion
     if (-not $sqlMajorVersion)
     {
         $errorMessage = $script:localizedData.FailedToDetectSqlVersion -f $InstanceName
+
         New-InvalidResultException -Message $errorMessage
     }
 
