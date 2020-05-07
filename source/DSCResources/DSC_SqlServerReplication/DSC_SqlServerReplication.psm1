@@ -6,8 +6,6 @@ Import-Module -Name $script:resourceHelperModulePath
 
 $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
-$dom = [AppDomain]::CreateDomain('SqlServerReplication')
-
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -295,7 +293,6 @@ function Test-TargetResource
     return $result
 }
 
-#region helper functions
 function New-ServerConnection
 {
     [CmdletBinding()]
@@ -556,6 +553,35 @@ function Register-DistributorPublisher
     }
 }
 
+<#
+    .SYNOPSIS
+        Returns a reference to the ConnectionInfo assembly.
+
+    .DESCRIPTION
+        Returns a reference to the ConnectionInfo assembly.
+
+    .PARAMETER SqlMajorVersion
+        Specifies the major version of the SQL Server instance, e.g. '14'.
+
+    .OUTPUTS
+        [System.Reflection.Assembly]
+
+        Returns a reference to the ConnectionInfo assembly.
+
+    .EXAMPLE
+        Get-ConnectionInfoAssembly -SqlMajorVersion '14'
+
+    .NOTES
+        This should normally work using Import-Module and New-Object instead of
+        using the method [System.Reflection.Assembly]::Load(). But due to a
+        missing assembly in the module SqlServer ('Microsoft.SqlServer.Rmo') we
+        cannot use this:
+
+        Import-Module SqlServer
+        $connectionInfo = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList @('testclu01a\SQL2014')
+        # Missing assembly 'Microsoft.SqlServer.Rmo' in module SqlServer prevents this call from working.
+        $replication = New-Object -TypeName 'Microsoft.SqlServer.Replication.ReplicationServer' -ArgumentList @($connectionInfo)
+#>
 function Get-ConnectionInfoAssembly
 {
     [CmdletBinding()]
@@ -569,10 +595,10 @@ function Get-ConnectionInfoAssembly
 
     try
     {
-        $connInfo = $dom.Load("Microsoft.SqlServer.ConnectionInfo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+        $connectionInfo = [System.Reflection.Assembly]::Load("Microsoft.SqlServer.ConnectionInfo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
 
         Write-Verbose -Message (
-            $script:localizedData.LoadAssembly -f $connInfo.FullName
+            $script:localizedData.LoadAssembly -f $connectionInfo.FullName
         )
     }
     catch
@@ -582,9 +608,38 @@ function Get-ConnectionInfoAssembly
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
 
-    return $connInfo
+    return $connectionInfo
 }
 
+<#
+    .SYNOPSIS
+        Returns a reference to the RMO assembly.
+
+    .DESCRIPTION
+        Returns a reference to the RMO assembly.
+
+    .PARAMETER SqlMajorVersion
+        Specifies the major version of the SQL Server instance, e.g. '14'.
+
+    .OUTPUTS
+        [System.Reflection.Assembly]
+
+        Returns a reference to the RMO assembly.
+
+    .EXAMPLE
+        Get-RmoAssembly -SqlMajorVersion '14'
+
+    .NOTES
+        This should normally work using Import-Module and New-Object instead of
+        using the method [System.Reflection.Assembly]::Load(). But due to a
+        missing assembly in the module SqlServer ('Microsoft.SqlServer.Rmo') we
+        cannot use this:
+
+        Import-Module SqlServer
+        $connectionInfo = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList @('testclu01a\SQL2014')
+        # Missing assembly 'Microsoft.SqlServer.Rmo' in module SqlServer prevents this call from working.
+        $replication = New-Object -TypeName 'Microsoft.SqlServer.Replication.ReplicationServer' -ArgumentList @($connectionInfo)
+#>
 function Get-RmoAssembly
 {
     [CmdletBinding()]
@@ -598,7 +653,7 @@ function Get-RmoAssembly
 
     try
     {
-        $rmo = $dom.Load("Microsoft.SqlServer.Rmo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+        $rmo = [System.Reflection.Assembly]::Load("Microsoft.SqlServer.Rmo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
 
         Write-Verbose -Message (
             $script:localizedData.LoadAssembly -f $rmo.FullName
@@ -658,6 +713,5 @@ function Get-SqlLocalServerName
         return "$($env:COMPUTERNAME)\$InstanceName"
     }
 }
-#endregion
 
 Export-ModuleMember -Function *-TargetResource
