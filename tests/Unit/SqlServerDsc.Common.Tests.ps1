@@ -495,7 +495,7 @@ InModuleScope $script:subModuleName {
 
                 $invokeInstallationMediaCopyResult = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters
 
-                $invokeInstallationMediaCopyResult | Should -Be ('{0}\leaf\secondleaf' -f $mockDestinationPath)
+                $invokeInstallationMediaCopyResult | Should -Be ('{0}\secondleaf' -f $mockDestinationPath)
             }
         }
 
