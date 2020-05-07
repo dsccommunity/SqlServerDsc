@@ -3380,7 +3380,7 @@ InModuleScope $script:subModuleName {
         Assert-VerifiableMock
     }
 
-    Describe 'ActiveDirectoryDsc.Common\Compare-ResourcePropertyState' {
+    Describe 'ActiveDirectoryDsc.Common\Compare-ResourcePropertyState' -Tag 'CompareResourcePropertyState' {
         Context 'When one property is in desired state' {
             BeforeAll {
                 $mockCurrentValues = @{
@@ -3400,10 +3400,12 @@ InModuleScope $script:subModuleName {
 
                 $compareTargetResourceStateResult = Compare-ResourcePropertyState @compareTargetResourceStateParameters
                 $compareTargetResourceStateResult | Should -HaveCount 1
-                $compareTargetResourceStateResult.ParameterName | Should -Be 'ComputerName'
-                $compareTargetResourceStateResult.Expected | Should -Be 'DC01'
-                $compareTargetResourceStateResult.Actual | Should -Be 'DC01'
-                $compareTargetResourceStateResult.InDesiredState | Should -BeTrue
+
+                $property = $compareTargetResourceStateResult.Where({$_.ParameterName -eq 'ComputerName'})
+                $property | Should -Not -BeNulLorEmpty
+                $property.Expected | Should -Be 'DC01'
+                $property.Actual | Should -Be 'DC01'
+                $property.InDesiredState | Should -BeTrue
             }
         }
 
@@ -3428,14 +3430,18 @@ InModuleScope $script:subModuleName {
 
                 $compareTargetResourceStateResult = Compare-ResourcePropertyState @compareTargetResourceStateParameters
                 $compareTargetResourceStateResult | Should -HaveCount 2
-                $compareTargetResourceStateResult[0].ParameterName | Should -Be 'ComputerName'
-                $compareTargetResourceStateResult[0].Expected | Should -Be 'DC01'
-                $compareTargetResourceStateResult[0].Actual | Should -Be 'DC01'
-                $compareTargetResourceStateResult[0].InDesiredState | Should -BeTrue
-                $compareTargetResourceStateResult[1].ParameterName | Should -Be 'Location'
-                $compareTargetResourceStateResult[1].Expected | Should -Be 'Sweden'
-                $compareTargetResourceStateResult[1].Actual | Should -Be 'Sweden'
-                $compareTargetResourceStateResult[1].InDesiredState | Should -BeTrue
+
+                $property = $compareTargetResourceStateResult.Where({$_.ParameterName -eq 'ComputerName'})
+                $property | Should -Not -BeNulLorEmpty
+                $property.Expected | Should -Be 'DC01'
+                $property.Actual | Should -Be 'DC01'
+                $property.InDesiredState | Should -BeTrue
+
+                $property = $compareTargetResourceStateResult.Where({$_.ParameterName -eq 'Location'})
+                $property | Should -Not -BeNulLorEmpty
+                $property.Expected | Should -Be 'Sweden'
+                $property.Actual | Should -Be 'Sweden'
+                $property.InDesiredState | Should -BeTrue
             }
         }
 
@@ -3458,10 +3464,12 @@ InModuleScope $script:subModuleName {
 
                 $compareTargetResourceStateResult = Compare-ResourcePropertyState @compareTargetResourceStateParameters
                 $compareTargetResourceStateResult | Should -HaveCount 1
-                $compareTargetResourceStateResult.ParameterName | Should -Be 'ComputerName'
-                $compareTargetResourceStateResult.Expected | Should -Be 'APP01'
-                $compareTargetResourceStateResult.Actual | Should -Be 'DC01'
-                $compareTargetResourceStateResult.InDesiredState | Should -BeFalse
+
+                $property = $compareTargetResourceStateResult.Where({$_.ParameterName -eq 'ComputerName'})
+                $property | Should -Not -BeNulLorEmpty
+                $property.Expected | Should -Be 'APP01'
+                $property.Actual | Should -Be 'DC01'
+                $property.InDesiredState | Should -BeFalse
             }
         }
 
@@ -3486,14 +3494,18 @@ InModuleScope $script:subModuleName {
 
                 $compareTargetResourceStateResult = Compare-ResourcePropertyState @compareTargetResourceStateParameters
                 $compareTargetResourceStateResult | Should -HaveCount 2
-                $compareTargetResourceStateResult[0].ParameterName | Should -Be 'ComputerName'
-                $compareTargetResourceStateResult[0].Expected | Should -Be 'DC01'
-                $compareTargetResourceStateResult[0].Actual | Should -Be 'DC01'
-                $compareTargetResourceStateResult[0].InDesiredState | Should -BeTrue
-                $compareTargetResourceStateResult[1].ParameterName | Should -Be 'Location'
-                $compareTargetResourceStateResult[1].Expected | Should -Be 'Europe'
-                $compareTargetResourceStateResult[1].Actual | Should -Be 'Sweden'
-                $compareTargetResourceStateResult[1].InDesiredState | Should -BeFalse
+
+                $property = $compareTargetResourceStateResult.Where({$_.ParameterName -eq 'ComputerName'})
+                $property | Should -Not -BeNulLorEmpty
+                $property.Expected | Should -Be 'DC01'
+                $property.Actual | Should -Be 'DC01'
+                $property.InDesiredState | Should -BeTrue
+
+                $property = $compareTargetResourceStateResult.Where({$_.ParameterName -eq 'Location'})
+                $property | Should -Not -BeNulLorEmpty
+                $property.Expected | Should -Be 'Europe'
+                $property.Actual | Should -Be 'Sweden'
+                $property.InDesiredState | Should -BeFalse
             }
         }
 
@@ -3516,10 +3528,12 @@ InModuleScope $script:subModuleName {
 
                 $compareTargetResourceStateResult = Compare-ResourcePropertyState @compareTargetResourceStateParameters
                 $compareTargetResourceStateResult | Should -HaveCount 1
-                $compareTargetResourceStateResult.ParameterName | Should -Be 'ComputerName'
-                $compareTargetResourceStateResult.Expected | Should -Be 'DC01'
-                $compareTargetResourceStateResult.Actual | Should -Be 'DC01'
-                $compareTargetResourceStateResult.InDesiredState | Should -BeTrue
+
+                $property = $compareTargetResourceStateResult.Where({$_.ParameterName -eq 'ComputerName'})
+                $property | Should -Not -BeNulLorEmpty
+                $property.Expected | Should -Be 'DC01'
+                $property.Actual | Should -Be 'DC01'
+                $property.InDesiredState | Should -BeTrue
             }
         }
 
@@ -3547,10 +3561,12 @@ InModuleScope $script:subModuleName {
 
                 $compareTargetResourceStateResult = Compare-ResourcePropertyState @compareTargetResourceStateParameters
                 $compareTargetResourceStateResult | Should -HaveCount 1
-                $compareTargetResourceStateResult.ParameterName | Should -Be 'ComputerName'
-                $compareTargetResourceStateResult.Expected | Should -Be 'DC01'
-                $compareTargetResourceStateResult.Actual | Should -Be 'DC01'
-                $compareTargetResourceStateResult.InDesiredState | Should -BeTrue
+
+                $property = $compareTargetResourceStateResult.Where({$_.ParameterName -eq 'ComputerName'})
+                $property | Should -Not -BeNulLorEmpty
+                $property.Expected | Should -Be 'DC01'
+                $property.Actual | Should -Be 'DC01'
+                $property.InDesiredState | Should -BeTrue
             }
         }
 
@@ -3580,14 +3596,18 @@ InModuleScope $script:subModuleName {
 
                 $compareTargetResourceStateResult = Compare-ResourcePropertyState @compareTargetResourceStateParameters
                 $compareTargetResourceStateResult | Should -HaveCount 2
-                $compareTargetResourceStateResult[0].ParameterName | Should -Be 'ComputerName'
-                $compareTargetResourceStateResult[0].Expected | Should -Be 'DC01'
-                $compareTargetResourceStateResult[0].Actual | Should -Be 'DC01'
-                $compareTargetResourceStateResult[0].InDesiredState | Should -BeTrue
-                $compareTargetResourceStateResult[1].ParameterName | Should -Be 'Location'
-                $compareTargetResourceStateResult[1].Expected | Should -Be 'Europe'
-                $compareTargetResourceStateResult[1].Actual | Should -Be 'Sweden'
-                $compareTargetResourceStateResult[1].InDesiredState | Should -BeFalse
+
+                $property = $compareTargetResourceStateResult.Where({$_.ParameterName -eq 'ComputerName'})
+                $property | Should -Not -BeNulLorEmpty
+                $property.Expected | Should -Be 'DC01'
+                $property.Actual | Should -Be 'DC01'
+                $property.InDesiredState | Should -BeTrue
+
+                $property = $compareTargetResourceStateResult.Where({$_.ParameterName -eq 'Location'})
+                $property | Should -Not -BeNulLorEmpty
+                $property.Expected | Should -Be 'Europe'
+                $property.Actual | Should -Be 'Sweden'
+                $property.InDesiredState | Should -BeFalse
             }
         }
 
