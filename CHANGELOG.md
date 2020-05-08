@@ -38,6 +38,14 @@ in a future release.
   - Added new resource SqlServerProtocolTcpIp ([issue #1378](https://github.com/dsccommunity/SqlServerDsc/issues/1378)).
   - Fixing a problem with the latest ModuleBuild 1.7.0 that breaks the CI
     pipeline.
+- SqlServerEndpoint
+  - BREAKING CHANGE: A new required property `EndpointType` was added to
+    support different types of endpoints in the future. For now the only
+    endpoint type that is supported is the database mirror endpoint type
+    (`DatabaseMirroring`).
+  - Added the property `State` to be able to specify if the endpoint should
+    be running, stopped, or disabled. _This property was moved from the now_
+    _removed DSC resource `SqlServerEndpointState`_.
 - SqlSetup
   - A read only property `IsClustered` was added that can be used to determine
     if the instance is clustered.
@@ -118,6 +126,8 @@ in a future release.
 - SqlServerDatabaseMail
   - Normalize parameter descriptive text for default values.
 - SqlServerEndpoint
+  - BREAKING CHANGE: Now the properties are only enforced if they are
+    specified in the configuration.
   - Normalize parameter descriptive text for default values.
 - SqlServerEndpointPermission
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
