@@ -125,17 +125,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated to support DscResource.Common v0.7.1.
   - Changed to point to CONTRIBUTING.md on master branch to avoid "404 Page not found"
     ([issue #1508](https://github.com/dsccommunity/SqlServerDsc/issues/1508)).
-- SqlAlias
-  - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory to
-    prevent ping-pong behavior ([issue #1502](https://github.com/dsccommunity/SqlServerDsc/issues/1502)).
-    The `ServerName` is not returned as an empty string when the protocol is
-    Named Pipes.
-- SqlRs
-  - Fix typo in the schema parameter `SuppressRestart` description
-    and in the parameter description in the `README.md`.
-- SqlSetup
-  - Update integration tests to correctly detect sysadmins because of changes
-    to the build worker.
+- SqlAGDatabase
+  - Fixed unit tests that failed intermittently when running unit tests
+    in PowerShell 7 ([issue #1532](https://github.com/dsccommunity/SqlServerDsc/issues/1532)).
+  - Minor code style issue changes.
 - SqlAgentAlert
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
@@ -145,6 +138,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlAgentOperator
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+- SqlAlias
+  - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory to
+    prevent ping-pong behavior ([issue #1502](https://github.com/dsccommunity/SqlServerDsc/issues/1502)).
+    The `ServerName` is not returned as an empty string when the protocol is
+    Named Pipes.
+- SqlRs
+  - Fix typo in the schema parameter `SuppressRestart` description
+    and in the parameter description in the `README.md`.
 - SqlServerDatabaseMail
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
@@ -162,6 +163,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     message that have the actual error that occurred.
   - Corrected the examples.
 - SqlSetup
+  - Update integration tests to correctly detect sysadmins because of changes
+    to the build worker.
   - The property `SqlTempdbLogFileGrowth` and `SqlTempdbFileGrowth` now returns
     the correct values. Previously the value of the growth was wrongly
     divided by 1KB even if the value was in percent. Now the value for growth

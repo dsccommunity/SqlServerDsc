@@ -218,6 +218,7 @@ function Set-TargetResource
         ServerObject      = $primaryServerObject
         AvailabilityGroup = $availabilityGroup
     }
+
     $databasesToAddToAvailabilityGroup = Get-DatabasesToAddToAvailabilityGroup @getDatabasesToAddToAvailabilityGroupParameters
 
     $getDatabasesToRemoveFromAvailabilityGroupParameters = @{
@@ -227,6 +228,7 @@ function Set-TargetResource
         ServerObject      = $primaryServerObject
         AvailabilityGroup = $availabilityGroup
     }
+
     $databasesToRemoveFromAvailabilityGroup = Get-DatabasesToRemoveFromAvailabilityGroup @getDatabasesToRemoveFromAvailabilityGroupParameters
 
     # Create a hash table to store the databases that failed to be added to the Availability Group
@@ -573,21 +575,21 @@ function Set-TargetResource
         }
     }
 
-    if ( $databasesToRemoveFromAvailabilityGroup.Count -gt 0 )
+    if ($databasesToRemoveFromAvailabilityGroup.Count -gt 0)
     {
         Write-Verbose -Message ($script:localizedData.RemovingDatabasesToAvailabilityGroup -f $AvailabilityGroupName, ( $databasesToRemoveFromAvailabilityGroup -join ', ' ))
 
-        foreach ( $databaseToAddToAvailabilityGroup in $databasesToRemoveFromAvailabilityGroup )
+        foreach ($databaseNameToRemove in $databasesToRemoveFromAvailabilityGroup)
         {
-            $availabilityDatabase = $primaryServerObject.AvailabilityGroups[$AvailabilityGroupName].AvailabilityDatabases[$databaseToAddToAvailabilityGroup]
+            $availabilityDatabase = $primaryServerObject.AvailabilityGroups[$AvailabilityGroupName].AvailabilityDatabases[$databaseNameToRemove]
 
             try
             {
-                Remove-SqlAvailabilityDatabase -InputObject $availabilityDatabase -ErrorAction Stop
+                Remove-SqlAvailabilityDatabase -InputObject $availabilityDatabase -ErrorAction 'Stop'
             }
             catch
             {
-                $databasesToRemoveFailures.Add($databaseToAddToAvailabilityGroup, 'Failed to remove the database from the availability group.')
+                $databasesToRemoveFailures.Add($databaseNameToRemove, 'Failed to remove the database from the availability group.')
             }
         }
     }
@@ -598,7 +600,7 @@ function Set-TargetResource
         $formatArgs = @()
         foreach ( $failure in ( $databasesToAddFailures.GetEnumerator() + $databasesToRemoveFailures.GetEnumerator() ) )
         {
-            $formatArgs += "The operation on the database '$( $failure.Key )' failed with the following errors: $( $failure.Value -join "`r`n" )"
+            $formatArgs += "The operation on the database '$($failure.Key)' failed with the following errors: $($failure.Value -join "`r`n")"
         }
 
         throw ($script:localizedData.AlterAvailabilityGroupDatabaseMembershipFailure -f $formatArgs )
