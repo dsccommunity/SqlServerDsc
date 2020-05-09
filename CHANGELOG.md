@@ -143,6 +143,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     prevent ping-pong behavior ([issue #1502](https://github.com/dsccommunity/SqlServerDsc/issues/1502)).
     The `ServerName` is not returned as an empty string when the protocol is
     Named Pipes.
+- SqlDatabase
+  - Fixed missing parameter `CompatibilityLevel` in the README.md (and
+    updated the description in the schema.mof).
 - SqlRs
   - Fix typo in the schema parameter `SuppressRestart` description
     and in the parameter description in the `README.md`.
