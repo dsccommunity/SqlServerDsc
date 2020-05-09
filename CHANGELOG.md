@@ -116,7 +116,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - BREAKING CHANGE: Now, unless the parameter `SuppressReboot` is set to
     `$true` the node will be restarted if the setup ends with the
     [error code 3010](https://docs.microsoft.com/en-us/previous-versions/tn-archive/bb418811(v=technet.10)#server-setup-fails-with-code-3010).
-    Previously just a warning message was written.
+    Previously just a warning message was written ([issue #565](https://github.com/dsccommunity/SqlServerDsc/issues/565)).
 
 ### Fixed
 
