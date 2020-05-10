@@ -59,6 +59,8 @@ Pester:
   OutputFormat: NUnitXML
   ExcludeFromCodeCoverage:
     - Modules/DscResource.Common
+    # Deprecated resources
+    - source/DSCResources/DSC_SqlServerNetwork
   Script:
     - tests/Unit
   ExcludeTag:
@@ -73,6 +75,8 @@ DscTest:
   Tag:
   ExcludeSourceFile:
     - output
+    # Deprecated resources
+    - source/DSCResources/DSC_SqlServerNetwork
   ExcludeModuleFile:
     - Modules/DscResource.Common
 
