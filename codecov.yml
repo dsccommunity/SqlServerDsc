@@ -26,3 +26,7 @@ coverage:
 
 fixes:
   - '\d+\.\d+\.\d+\/::source/'  # move path "X.Y.Z/" => "source/"
+
+# Deprecated resources
+ignore:
+  - 'source/DSCResources/DSC_SqlServerNetwork/**/*'
