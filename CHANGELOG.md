@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - Added new resource SqlServerProtocol ([issue #1377](https://github.com/dsccommunity/SqlServerDsc/issues/1377)).
   - Added new resource SqlServerProtocolTcpIp ([issue #1378](https://github.com/dsccommunity/SqlServerDsc/issues/1378)).
+  - Fixing a problem with the latest ModuleBuild 1.7.0 that breaks the CI
+    pipeline.
 - SqlSetup
   - A read only property `IsClustered` was added that can be used to determine
     if the instance is clustered.

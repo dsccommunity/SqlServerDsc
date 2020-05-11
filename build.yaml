@@ -2,7 +2,7 @@
 ####################################################
 #          ModuleBuilder Configuration             #
 ####################################################
-CopyDirectories:
+CopyPaths:
   - DSCResources
   - en-US
   - Modules
