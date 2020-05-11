@@ -60,7 +60,7 @@ Pester:
   ExcludeFromCodeCoverage:
     - Modules/DscResource.Common
     # Deprecated resources
-    - source/DSCResources/DSC_SqlServerNetwork
+    - source/DSCResources/MSFT_SqlServerNetwork
   Script:
     - tests/Unit
   ExcludeTag:
@@ -76,11 +76,11 @@ DscTest:
   ExcludeSourceFile:
     - output
     # Deprecated resources
-    - source/DSCResources/DSC_SqlServerNetwork
+    - source/DSCResources/MSFT_SqlServerNetwork
   ExcludeModuleFile:
     - Modules/DscResource.Common
     # Deprecated resources
-    - DSCResources/DSC_SqlServerNetwork
+    - DSCResources/MSFT_SqlServerNetwork
 
 Resolve-Dependency:
   Gallery: 'PSGallery'
