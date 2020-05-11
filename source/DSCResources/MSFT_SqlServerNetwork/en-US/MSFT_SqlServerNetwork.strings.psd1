@@ -1,7 +1,7 @@
 # Localized resources for SqlServerNetwork
 
 ConvertFrom-StringData @'
-    GetNetworkProtocol = Getting network protocol [{0}] for SQL instance [{1}].
+    GetNetworkProtocol = THIS RESOURCE IS DEPRECATED! Getting network protocol [{0}] for SQL instance [{1}].
     ReadingNetworkProperties = Reading current network properties.
     CheckingProperty = Checking [{0}] property.
     UpdatingProperty = Updating property [{0}] from [{1}] to [{2}].
