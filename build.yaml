@@ -79,6 +79,8 @@ DscTest:
     - source/DSCResources/DSC_SqlServerNetwork
   ExcludeModuleFile:
     - Modules/DscResource.Common
+    # Deprecated resources
+    - DSCResources/DSC_SqlServerNetwork
 
 Resolve-Dependency:
   Gallery: 'PSGallery'
