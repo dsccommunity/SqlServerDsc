@@ -65,6 +65,14 @@ for some general use scenarios for all of the resources that are in the module.
 
 A full list of changes in each version can be found in the [change log](CHANGELOG.md).
 
+### Deprecated resources
+
+The documentation, examples, unit test, and integration tests have been removed
+for these deprecated resources.
+
+* SqlServerNetwork _(replaced by [**SqlServerProtocol**](#sqlserverprotocol) and_
+  _[**SqlServerProtocolTcpIp**](#sqlserverprotocoltcpip))_.
+
 ## Resources
 
 * [**SqlAG**](#sqlag)
