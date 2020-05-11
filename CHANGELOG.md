@@ -41,6 +41,7 @@ removed for these deprecated resources.
 
 - SqlServerDsc
   - Changed all resource prefixes from `MSFT_` to `DSC_` ([issue #1496](https://github.com/dsccommunity/SqlServerDsc/issues/1496)).
+    _Deprecated resource has not changed prefix._
   - All resources are now using the common module DscResource.Common.
   - When a PR is labelled with 'ready for merge' it is no longer being
     marked as stale if the PR is not merged for 30 days (for example it is
