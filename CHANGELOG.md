@@ -87,6 +87,10 @@ in a future release.
   - Normalize parameter descriptive text for default values.
   - BREAKING CHANGE: Database changed to DatabaseName for consistency with
     other modules ([issue #1484](https://github.com/dsccommunity/SqlServerDsc/issues/1484)).
+- SqlDatabaseRecoveryModel
+  - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
+    defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+  - Normalize parameter descriptive text for default values.
 - SqlDatabaseRole
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
