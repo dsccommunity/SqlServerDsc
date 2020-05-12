@@ -59,6 +59,8 @@ Pester:
   OutputFormat: NUnitXML
   ExcludeFromCodeCoverage:
     - Modules/DscResource.Common
+    # Deprecated resources
+    - source/DSCResources/MSFT_SqlServerNetwork
   Script:
     - tests/Unit
   ExcludeTag:
@@ -73,8 +75,12 @@ DscTest:
   Tag:
   ExcludeSourceFile:
     - output
+    # Deprecated resources
+    - source/DSCResources/MSFT_SqlServerNetwork
   ExcludeModuleFile:
     - Modules/DscResource.Common
+    # Deprecated resources
+    - DSCResources/MSFT_SqlServerNetwork
 
 Resolve-Dependency:
   Gallery: 'PSGallery'
