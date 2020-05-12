@@ -71,9 +71,9 @@ The documentation, examples, unit test, and integration tests have been removed
 for these deprecated resources. These resources will be removed
 in a future release.
 
-* SqlDatabaseOwner _(replaced by a property in [**SqlDatabase**](#sqldatabase)_.
-* SqlDatabaseRecoveryModel _(replaced by a property in [**SqlDatabase**](#sqldatabase)_.
-* SqlServerEndpointState _(replaced by [**SqlServerEndpoint**](#sqlserverendpoint)_.
+* SqlDatabaseOwner _(replaced by a property in [**SqlDatabase**](#sqldatabase))_.
+* SqlDatabaseRecoveryModel _(replaced by a property in [**SqlDatabase**](#sqldatabase))_.
+* SqlServerEndpointState _(replaced by [**SqlServerEndpoint**](#sqlserverendpoint))_.
 * SqlServerNetwork _(replaced by [**SqlServerProtocol**](#sqlserverprotocol) and_
   _[**SqlServerProtocolTcpIp**](#sqlserverprotocoltcpip))_.
 
