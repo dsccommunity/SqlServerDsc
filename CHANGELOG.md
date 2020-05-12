@@ -16,7 +16,10 @@ in a future release.
     the resources _SqlServerProtocol_ and _SqlServerProtocolTcpIp_.
 - SqlDatabaseOwner
   - This resource is now deprecated. The functionality is now covered by
-    the resources _SqlDatabase_ ([issue #966](https://github.com/dsccommunity/SqlServerDsc/issues/966)).
+    a property in the resource _SqlDatabase_ ([issue #966](https://github.com/dsccommunity/SqlServerDsc/issues/966)).
+- SqlDatabaseRecoveryModel
+  - This resource is now deprecated. The functionality is now covered by
+    a property in the resource _SqlDatabase_ ([issue #967](https://github.com/dsccommunity/SqlServerDsc/issues/967)).
 
 ### Added
 
@@ -75,6 +78,9 @@ in a future release.
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
   - Normalize parameter descriptive text for default values.
+- SqlDatabaseOwner
+  - BREAKING CHANGE: Database changed to DatabaseName for consistency with
+    other modules ([issue #1484](https://github.com/dsccommunity/SqlServerDsc/issues/1484)).
 - SqlDatabasePermission
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
