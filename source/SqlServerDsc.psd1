@@ -47,6 +47,7 @@
         'SqlAlwaysOnService'
         'SqlDatabase'
         'SqlDatabaseDefaultLocation'
+        'SqlDatabaseOwner'
         'SqlDatabasePermission'
         'SqlDatabaseRecoveryModel'
         'SqlDatabaseRole'
