@@ -200,6 +200,9 @@ in a future release.
 - SqlServerEndpoint
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+- SqlServerEndpointState
+  - The parameter `ServerName` now throws when passing an empty string or
+    null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
 - SqlServerPermission
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
