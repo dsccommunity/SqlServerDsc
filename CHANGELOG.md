@@ -48,7 +48,7 @@ in a future release.
     (`DatabaseMirroring`).
   - Added the property `State` to be able to specify if the endpoint should
     be running, stopped, or disabled. _This property was moved from the now_
-    _removed DSC resource `SqlServerEndpointState`_.
+    _deprecated DSC resource `SqlServerEndpointState`_.
 - SqlSetup
   - A read only property `IsClustered` was added that can be used to determine
     if the instance is clustered.
