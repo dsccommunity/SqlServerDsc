@@ -1,3 +1,12 @@
+<#
+    DEPRECATION NOTICE:
+
+    THIS RESOURCE IS DEPRECATED!
+
+    Changes to this resource will no longer be merged. Instead please use the
+    resource SqlDatabase.
+#>
+
 $script:sqlServerDscHelperModulePath = Join-Path -Path $PSScriptRoot -ChildPath '..\..\Modules\SqlServerDsc.Common'
 $script:resourceHelperModulePath = Join-Path -Path $PSScriptRoot -ChildPath '..\..\Modules\DscResource.Common'
 

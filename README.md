@@ -72,6 +72,7 @@ for these deprecated resources. These resources will be removed
 in a future release.
 
 * SqlDatabaseOwner _(replaced by a property in [**SqlDatabase**](#sqldatabase)_.
+* SqlDatabaseRecoveryModel _(replaced by a property in [**SqlDatabase**](#sqldatabase)_.
 * SqlServerNetwork _(replaced by [**SqlServerProtocol**](#sqlserverprotocol) and_
   _[**SqlServerProtocolTcpIp**](#sqlserverprotocoltcpip))_.
 
