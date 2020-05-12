@@ -119,7 +119,6 @@ in a future release.
   is present or absent.
 * [**SqlServerEndpointPermission**](#sqlserverendpointpermission) Grant or revoke
   permission on the endpoint.
-* [**SqlServerEndpointState**](#sqlserverendpointstate) Change state of the endpoint.
 * [**SqlServerLogin**](#sqlserverlogin) resource to manage SQL logins.
 * [**SqlServerMaxDop**](#sqlservermaxdop) resource to manage MaxDegree of Parallelism
   for SQL Server.
@@ -1248,10 +1247,10 @@ All issues are not listed here, see [here for all open issues](https://github.co
 This resource is used to create an endpoint. Currently it only supports creating
 a database mirror endpoint which can be used by, for example, AlwaysOn.
 
->Note: The endpoint will be started after creation, but will not be enforced. Please
-use [**SqlServerEndpointState**](#sqlserverendpointstate) to make sure the endpoint
-remains in started state. To set connect permission to the endpoint, please use
-the resource [**SqlServerEndpointPermission**](#sqlserverendpointpermission).
+>Note: The endpoint will be started after creation, but will not be enforced
+>unless the the parameter `State` is specified.
+>To set connect permission to the endpoint, please use
+>the resource [**SqlServerEndpointPermission**](#sqlserverendpointpermission).
 
 #### Requirements
 
@@ -1328,37 +1327,6 @@ This resource is used to give connect permission to an endpoint for a user (logi
 #### Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpointPermission).
-
-### SqlServerEndpointState
-
-This resource is used to set the state of an endpoint.
-
->Note: Currently this resource can only be used with Database Mirror endpoints.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2012 or later.
-* Target machine must be running SQL Server Database Engine 2012 or later.
-* Target machine must have access to the SQLPS PowerShell module or the SqlServer
-  PowerShell module.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
-  Default value is $env:COMPUTERNAME.
-* **`[String]` Name** _(Key)_: The name of the endpoint.
-* **`[String]` State** _(Write)_: The state of the endpoint. Valid states are Started,
-  Stopped or Disabled. { Started | Stopped | Disabled }.
-
-#### Examples
-
-* [Make sure that an endpoint is started](/source/Examples/Resources/SqlServerEndpointState/1-MakeSureEndpointIsStarted.ps1)
-* [Make sure that an endpoint is stopped](/source/Examples/Resources/SqlServerEndpointState/2-MakeSureEndpointIsStopped.ps1)
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpointState).
 
 ### SqlServerLogin
 

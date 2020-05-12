@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the resource on Windows Server 2008 R2 or with SQL Server 2008 R2
     ([issue #1514](https://github.com/dsccommunity/SqlServerDsc/issues/1514)).
 
+### Removed
+
+- SqlServerDsc
+  - BREAKING CHANGE: Removed resource _SqlServerEndpointState_. The functionality
+    is now part of the DSC resource _SqlServerEndpoint_ ([issue #968](https://github.com/dsccommunity/SqlServerDsc/issues/968)).
+
 ### Deprecated
 
 The documentation, examples, unit test, and integration tests have been
@@ -80,6 +86,9 @@ in a future release.
 - SqlServerDsc.Common
   - The helper function `Invoke-InstallationMediaCopy` was changed to
     handle a breaking change in PowerShell 7 ([issue #1530](https://github.com/dsccommunity/SqlServerDsc/issues/1530)).
+- CommonTestHelper
+  - The test helper function `New-SQLSelfSignedCertificate` was changed
+    to install the dependent module `PSPKI` through `RequiredModules.psd1`.
 - SqlAlwaysOnService
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
@@ -192,9 +201,6 @@ in a future release.
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
 - SqlServerEndpoint
-  - The parameter `ServerName` now throws when passing an empty string or
-    null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
-- SqlServerEndpointState
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
 - SqlServerPermission
