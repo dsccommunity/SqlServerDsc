@@ -21,18 +21,18 @@ The documentation, examples, unit test, and integration tests have been
 removed for these deprecated resources. These resources will be removed
 in a future release.
 
-- SqlServerEndpointState
-  - This resource is now deprecated. The functionality is covered by a
-    property in the resource _SqlServerEndpoint_ ([issue #968](https://github.com/dsccommunity/SqlServerDsc/issues/968)).
-- SqlServerNetwork
-  - This resource is now deprecated. The functionality is now covered by
-    the resources _SqlServerProtocol_ and _SqlServerProtocolTcpIp_.
 - SqlDatabaseOwner
   - This resource is now deprecated. The functionality is now covered by
     a property in the resource _SqlDatabase_ ([issue #966](https://github.com/dsccommunity/SqlServerDsc/issues/966)).
 - SqlDatabaseRecoveryModel
   - This resource is now deprecated. The functionality is now covered by
     a property in the resource _SqlDatabase_ ([issue #967](https://github.com/dsccommunity/SqlServerDsc/issues/967)).
+- SqlServerEndpointState
+  - This resource is now deprecated. The functionality is covered by a
+    property in the resource _SqlServerEndpoint_ ([issue #968](https://github.com/dsccommunity/SqlServerDsc/issues/968)).
+- SqlServerNetwork
+  - This resource is now deprecated. The functionality is now covered by
+    the resources _SqlServerProtocol_ and _SqlServerProtocolTcpIp_.
 
 ### Added
 
