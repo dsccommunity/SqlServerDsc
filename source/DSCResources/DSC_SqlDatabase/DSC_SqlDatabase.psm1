@@ -19,32 +19,24 @@ $script:supportedCompatibilityLevels = @{
 
 <#
     .SYNOPSIS
-    This function gets the sql database.
+        This function gets the sql database.
 
     .PARAMETER Ensure
-    When set to 'Present', the database will be created.
-    When set to 'Absent', the database will be dropped.
+        When set to 'Present', the database will be created.
+        When set to 'Absent', the database will be dropped.
 
     .PARAMETER Name
-    The name of database to be created or dropped.
+      The name of database to be created or dropped.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+       The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+       The name of the SQL instance to be configured.
 
     .PARAMETER Collation
-    The name of the SQL collation to use for the new database.
-    Default value is server collation.
-
-    .PARAMETER CompatibilityLevel
-    The version of the SQL compatibility level to use for the new database.
-    Default value is server version.
-
-    .PARAMETER RecoveryModel
-    The recovery model to be used for the new database.
-    Default value is Full.
+        The name of the SQL collation to use for the new database.
+        Default value is server collation.
 #>
 
 function Get-TargetResource
@@ -53,12 +45,6 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $Ensure = 'Present',
-
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
@@ -72,29 +58,26 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $InstanceName,
-
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $Collation,
-
-        [Parameter()]
-        [ValidateSet('Version80', 'Version90', 'Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150')]
-        [System.String]
-        $CompatibilityLevel,
-
-        [Parameter()]
-        [ValidateSet('Simple', 'Full', 'BulkLogged')]
-        [System.String]
-        $RecoveryModel
+        $InstanceName
     )
 
     Write-Verbose -Message (
         $script:localizedData.GetDatabase -f $Name, $InstanceName
     )
 
+    $returnValue = @{
+        Name               = $Name
+        Ensure             = 'Absent'
+        ServerName         = $ServerName
+        InstanceName       = $InstanceName
+        Collation          = $null
+        CompatibilityLevel = $null
+        RecoveryModel      = $null
+        OwnerName          = $null
+    }
+
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+
     if ($sqlServerObject)
     {
         # Check database exists
@@ -102,66 +85,58 @@ function Get-TargetResource
 
         if ($sqlDatabaseObject)
         {
-            $Ensure = 'Present'
-            $sqlDatabaseCollation = $sqlDatabaseObject.Collation
-            $sqlDatabaseCompatibilityLevel = $sqlDatabaseObject.CompatibilityLevel
-            $sqlDatabaseRecoveryModel = $sqlDatabaseObject.RecoveryModel
+            $returnValue['Ensure'] = 'Present'
+            $returnValue['Collation'] = $sqlDatabaseObject.Collation
+            $returnValue['CompatibilityLevel'] = $sqlDatabaseObject.CompatibilityLevel
+            $returnValue['RecoveryModel'] = $sqlDatabaseObject.RecoveryModel
+            $returnValue['OwnerName'] = $sqlDatabaseObject.Owner
 
             Write-Verbose -Message (
-                $script:localizedData.DatabasePresent -f $Name, $sqlDatabaseCollation, $sqlDatabaseCompatibilityLevel, $sqlDatabaseRecoveryModel
+                $script:localizedData.DatabasePresent -f $Name
             )
         }
         else
         {
-            $Ensure = 'Absent'
-
             Write-Verbose -Message (
                 $script:localizedData.DatabaseAbsent -f $Name
             )
         }
     }
 
-    $returnValue = @{
-        Name               = $Name
-        Ensure             = $Ensure
-        ServerName         = $ServerName
-        InstanceName       = $InstanceName
-        Collation          = $sqlDatabaseCollation
-        CompatibilityLevel = $sqlDatabaseCompatibilityLevel
-        RecoveryModel      = $sqlDatabaseRecoveryModel
-    }
-
-    $returnValue
+    return $returnValue
 }
 
 <#
     .SYNOPSIS
-    This function create or delete a database in the SQL Server instance provided.
+        This function create or delete a database in the SQL Server instance provided.
 
     .PARAMETER Ensure
-    When set to 'Present', the database will be created.
-    When set to 'Absent', the database will be dropped.
+        When set to 'Present', the database will be created.
+        When set to 'Absent', the database will be dropped.
 
     .PARAMETER Name
-    The name of database to be created or dropped.
+        The name of database to be created or dropped.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+       The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+       The name of the SQL instance to be configured.
 
     .PARAMETER Collation
-    The name of the SQL collation to use for the new database.
-    Default value is server collation.
+        The name of the SQL collation to use for the new database.
+        Default value is server collation.
 
     .PARAMETER CompatibilityLevel
     The version of the SQL compatibility level to use for the new database.
     Default value is server version.
 
     .PARAMETER RecoveryModel
-    The recovery model to be used for the new database.
-    Default value is Full.
+        The recovery model to be used for the new database.
+        Default value is Full.
+
+    .PARAMETER OwnerName
+        Specifies the name of the login that should be the owner of the database.
 #>
 function Set-TargetResource
 {
@@ -202,63 +177,115 @@ function Set-TargetResource
         [Parameter()]
         [ValidateSet('Simple', 'Full', 'BulkLogged')]
         [System.String]
-        $RecoveryModel
+        $RecoveryModel,
+
+        [Parameter()]
+        [System.String]
+        $OwnerName
     )
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+
     if ($sqlServerObject)
     {
-        if ($Ensure -eq 'Present')
+        if ($PSBoundParameters.ContainsKey('CompatibilityLevel'))
         {
-            if (-not $PSBoundParameters.ContainsKey('Collation'))
-            {
-                $Collation = $sqlServerObject.Collation
-            }
-            elseif ($Collation -notin $sqlServerObject.EnumCollations().Name)
-            {
-                $errorMessage = $script:localizedData.InvalidCollation -f $Collation, $InstanceName
-                New-ObjectNotFoundException -Message $errorMessage
-            }
-
-            if (-not $PSBoundParameters.ContainsKey('CompatibilityLevel'))
-            {
-                $CompatibilityLevel = $supportedCompatibilityLevels.$($sqlServerObject.VersionMajor) | Select-Object -Last 1
-            }
-            elseif ($CompatibilityLevel -notin $supportedCompatibilityLevels.$($sqlServerObject.VersionMajor))
+            # Verify that a correct compatibility level is specified.
+            if ($CompatibilityLevel -notin $supportedCompatibilityLevels.$($sqlServerObject.VersionMajor))
             {
                 $errorMessage = $script:localizedData.InvalidCompatibilityLevel -f $CompatibilityLevel, $InstanceName
+
                 New-ObjectNotFoundException -Message $errorMessage
             }
+        }
 
+        if ($PSBoundParameters.ContainsKey('Collation'))
+        {
+            # Verify that the correct collation is used.
+            if ($Collation -notin $sqlServerObject.EnumCollations().Name)
+            {
+                $errorMessage = $script:localizedData.InvalidCollation -f $Collation, $InstanceName
+
+                New-ObjectNotFoundException -Message $errorMessage
+            }
+        }
+
+        if ($Ensure -eq 'Present')
+        {
             $sqlDatabaseObject = $sqlServerObject.Databases[$Name]
+
             if ($sqlDatabaseObject)
             {
                 Write-Verbose -Message (
                     $script:localizedData.SetDatabase -f $Name, $InstanceName
                 )
 
-                try
+                $wasUpdate = $false
+
+                if ($PSBoundParameters.ContainsKey('Collation'))
                 {
                     Write-Verbose -Message (
-                        $script:localizedData.UpdatingDatabase -f $Collation, $CompatibilityLevel
+                        $script:localizedData.UpdatingCollation -f $Collation
                     )
 
                     $sqlDatabaseObject.Collation = $Collation
+
+                    $wasUpdate = $true
+                }
+
+                if ($PSBoundParameters.ContainsKey('CompatibilityLevel'))
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.UpdatingCompatibilityLevel -f $CompatibilityLevel
+                    )
+
                     $sqlDatabaseObject.CompatibilityLevel = $CompatibilityLevel
 
-                    if ($PSBoundParameters.ContainsKey('RecoveryModel'))
+                    $wasUpdate = $true
+                }
+
+                if ($PSBoundParameters.ContainsKey('RecoveryModel'))
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.UpdatingRecoveryModel -f $RecoveryModel
+                    )
+
+                    $sqlDatabaseObject.RecoveryModel = $RecoveryModel
+
+                    $wasUpdate = $true
+                }
+
+                if ($PSBoundParameters.ContainsKey('OwnerName'))
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.UpdatingOwner-f $OwnerName
+                    )
+
+                    try
                     {
-                        Write-Verbose -Message (
-                            $script:localizedData.UpdatingRecoveryModel -f $RecoveryModel
-                        )
-                        $sqlDatabaseObject.RecoveryModel = $RecoveryModel
+                        $sqlDatabaseObject.SetOwner($OwnerName)
+                    }
+                    catch
+                    {
+                        $errorMessage = $script:localizedData.FailedToUpdateOwner -f $OwnerName, $Name
+
+                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                     }
 
-                    $sqlDatabaseObject.Alter()
+                    $wasUpdate = $true
+                }
+
+                try
+                {
+                    if ($wasUpdate)
+                    {
+                        $sqlDatabaseObject.Alter()
+                    }
                 }
                 catch
                 {
                     $errorMessage = $script:localizedData.FailedToUpdateDatabase -f $Name
+
                     New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                 }
             }
@@ -267,6 +294,7 @@ function Set-TargetResource
                 try
                 {
                     $sqlDatabaseObjectToCreate = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database' -ArgumentList $sqlServerObject, $Name
+
                     if ($sqlDatabaseObjectToCreate)
                     {
                         Write-Verbose -Message (
@@ -278,14 +306,33 @@ function Set-TargetResource
                             $sqlDatabaseObjectToCreate.RecoveryModel = $RecoveryModel
                         }
 
-                        $sqlDatabaseObjectToCreate.Collation = $Collation
-                        $sqlDatabaseObjectToCreate.CompatibilityLevel = $CompatibilityLevel
+                        if ($PSBoundParameters.ContainsKey('Collation'))
+                        {
+                            $sqlDatabaseObjectToCreate.Collation = $Collation
+                        }
+
+                        if ($PSBoundParameters.ContainsKey('CompatibilityLevel'))
+                        {
+                            $sqlDatabaseObjectToCreate.CompatibilityLevel = $CompatibilityLevel
+                        }
+
                         $sqlDatabaseObjectToCreate.Create()
+
+                        <#
+                            This must be run after the object is created because
+                            the owner property is read-only and the method cannot
+                            be call until the object has been created.
+                        #>
+                        if ($PSBoundParameters.ContainsKey('OwnerName'))
+                        {
+                            $sqlDatabaseObjectToCreate.SetOwner($OwnerName)
+                        }
                     }
                 }
                 catch
                 {
                     $errorMessage = $script:localizedData.FailedToCreateDatabase -f $Name
+
                     New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                 }
             }
@@ -295,6 +342,7 @@ function Set-TargetResource
             try
             {
                 $sqlDatabaseObjectToDrop = $sqlServerObject.Databases[$Name]
+
                 if ($sqlDatabaseObjectToDrop)
                 {
                     Write-Verbose -Message (
@@ -307,6 +355,7 @@ function Set-TargetResource
             catch
             {
                 $errorMessage = $script:localizedData.FailedToDropDatabase -f $Name
+
                 New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }
         }
@@ -315,32 +364,35 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-    This function tests if the sql database is already created or dropped.
+      This function tests if the sql database is already created or dropped.
 
     .PARAMETER Ensure
-    When set to 'Present', the database will be created.
-    When set to 'Absent', the database will be dropped.
+        When set to 'Present', the database will be created.
+        When set to 'Absent', the database will be dropped.
 
     .PARAMETER Name
-    The name of database to be created or dropped.
+       The name of database to be created or dropped.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+       The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+     The name of the SQL instance to be configured.
 
     .PARAMETER Collation
-    The name of the SQL collation to use for the new database.
-    Default value is server collation.
+        The name of the SQL collation to use for the new database.
+        Default value is server collation.
 
     .PARAMETER CompatibilityLevel
-    The version of the SQL compatibility level to use for the new database.
-    Default value is server version.
+        The version of the SQL compatibility level to use for the new database.
+        Default value is server version.
 
     .PARAMETER RecoveryModel
-    The recovery model to be used for the new database.
-    Default value is Full.
+        The recovery model to be used for the new database.
+        Default value is Full.
+
+    .PARAMETER OwnerName
+        Specifies the name of the login that should be the owner of the database.
 #>
 function Test-TargetResource
 {
@@ -382,14 +434,25 @@ function Test-TargetResource
         [Parameter()]
         [ValidateSet('Simple', 'Full', 'BulkLogged')]
         [System.String]
-        $RecoveryModel
+        $RecoveryModel,
+
+        [Parameter()]
+        [System.String]
+        $OwnerName
     )
 
     Write-Verbose -Message (
         $script:localizedData.TestingConfiguration -f $Name, $InstanceName
     )
 
-    $getTargetResourceResult = Get-TargetResource @PSBoundParameters
+    $getTargetResourceParameters = @{
+        Name = $Name
+        ServerName = $ServerName
+        InstanceName = $InstanceName
+    }
+
+    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
     $isDatabaseInDesiredState = $true
 
     switch ($Ensure)
@@ -440,6 +503,15 @@ function Test-TargetResource
                 {
                     Write-Verbose -Message (
                         $script:localizedData.RecoveryModelWrong -f $Name, $getTargetResourceResult.RecoveryModel, $RecoveryModel
+                    )
+
+                    $isDatabaseInDesiredState = $false
+                }
+
+                if ($PSBoundParameters.ContainsKey('OwnerName') -and $getTargetResourceResult.OwnerName -ne $OwnerName)
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.OwnerNameWrong -f $Name, $getTargetResourceResult.OwnerName, $OwnerName
                     )
 
                     $isDatabaseInDesiredState = $false

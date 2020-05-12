@@ -8,11 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 
 The documentation, examples, unit test, and integration tests have been
-removed for these deprecated resources.
+removed for these deprecated resources. These resources will be removed
+in a future release.
 
 - SqlServerNetwork
   - This resource is now deprecated. The functionality is now covered by
     the resources _SqlServerProtocol_ and _SqlServerProtocolTcpIp_.
+- SqlDatabaseOwner
+  - This resource is now deprecated. The functionality is now covered by
+    the resources _SqlDatabase_ ([issue #966](https://github.com/dsccommunity/SqlServerDsc/issues/966)).
 
 ### Added
 
@@ -27,6 +31,8 @@ removed for these deprecated resources.
   - Added the properties `NpEnabled` and `TcpEnabled` ([issue #1161](https://github.com/dsccommunity/SqlServerDsc/issues/1161)).
 - SqlServerReplication
   - Add integration tests ([issue #755](https://github.com/dsccommunity/SqlServerDsc/issues/755)
+- SqlDatabase
+  - The property `OwnerName` was added.
 - SqlServerDsc.Common
   - The helper function `Restart-SqlService` was improved to handle Failover
     Clusters better. Now the SQL Server service will only be taken offline
@@ -60,14 +66,15 @@ removed for these deprecated resources.
 - SqlDatabase
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+  - BREAKING CHANGE: The non-mandatory parameters was removed from the
+    function `Get-TargetResource` since they were not needed.
+  - BREAKING CHANGE: The properties `CompatibilityLevel` and `Collation`
+    are now only enforced if the are specified in the configuration.
   - Normalize parameter descriptive text for default values.
 - SqlDatabaseDefaultLocation
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
   - Normalize parameter descriptive text for default values.
-- SqlDatabaseOwner
-  - BREAKING CHANGE: Database changed to DatabaseName for consistency with
-    other modules ([issue #1484](https://github.com/dsccommunity/SqlServerDsc/issues/1484)).
 - SqlDatabasePermission
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
