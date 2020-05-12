@@ -15,18 +15,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the resource on Windows Server 2008 R2 or with SQL Server 2008 R2
     ([issue #1514](https://github.com/dsccommunity/SqlServerDsc/issues/1514)).
 
-### Removed
-
-- SqlServerDsc
-  - BREAKING CHANGE: Removed resource _SqlServerEndpointState_. The functionality
-    is now part of the DSC resource _SqlServerEndpoint_ ([issue #968](https://github.com/dsccommunity/SqlServerDsc/issues/968)).
-
 ### Deprecated
 
 The documentation, examples, unit test, and integration tests have been
 removed for these deprecated resources. These resources will be removed
 in a future release.
 
+- SqlServerEndpointState
+  - This resource is now deprecated. The functionality is covered by a
+    property in the resource _SqlServerEndpoint_ ([issue #968](https://github.com/dsccommunity/SqlServerDsc/issues/968)).
 - SqlServerNetwork
   - This resource is now deprecated. The functionality is now covered by
     the resources _SqlServerProtocol_ and _SqlServerProtocolTcpIp_.
