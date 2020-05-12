@@ -30,3 +30,4 @@ fixes:
 # Deprecated resources
 ignore:
   - 'source/DSCResources/MSFT_SqlServerNetwork'
+  - 'source/DSCResources/MSFT_SqlDatabaseOwner'

@@ -68,8 +68,10 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 ### Deprecated resources
 
 The documentation, examples, unit test, and integration tests have been removed
-for these deprecated resources.
+for these deprecated resources. These resources will be removed
+in a future release.
 
+* SqlDatabaseOwner _(replaced by a property in [**SqlDatabase**](#sqldatabase)_.
 * SqlServerNetwork _(replaced by [**SqlServerProtocol**](#sqlserverprotocol) and_
   _[**SqlServerProtocolTcpIp**](#sqlserverprotocoltcpip))_.
 

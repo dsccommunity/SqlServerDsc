@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 
 The documentation, examples, unit test, and integration tests have been
-removed for these deprecated resources. These resource will be removed
+removed for these deprecated resources. These resources will be removed
 in a future release.
 
 - SqlServerNetwork
