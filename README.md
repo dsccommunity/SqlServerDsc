@@ -96,8 +96,6 @@ for these deprecated resources.
   is present or absent.
 * [**SqlDatabaseDefaultLocation**](#sqldatabasedefaultlocation) resource
   to manage default locations for Data, Logs, and Backups for SQL Server
-* [**SqlDatabaseOwner**](#sqldatabaseowner) resource to manage SQL
-  database owners.
 * [**SqlDatabasePermission**](#sqldatabasepermission) resource to
   manage SQL database permissions.
 * [**SqlDatabaseRecoveryModel**](#sqldatabaserecoverymodel) resource
@@ -605,6 +603,10 @@ and [Delete a Database](https://docs.microsoft.com/en-us/sql/relational-database
   Database Compatibility Level to use for the specified database.
   { Version80 | Version90 | Version100 | Version110 | Version120 | Version130 |
   Version140 | Version150 }
+* **`[String]` RecoveryModel** _(Write)_: The recovery model for the specified
+  database. { Simple | Full | BulkLogged }
+* **`[String]` OwnerName** _(Write)_: Specifies the name of the login that
+  should be the owner of the database.
 * **`[String]` Ensure** _(Write)_: When set to 'Present', the database will be created.
   When set to 'Absent', the database will be dropped. { *Present* | Absent }.
 
@@ -657,33 +659,6 @@ more information about database default locations, please read the article
 #### Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseDefaultLocation).
-
-### SqlDatabaseOwner
-
-This resource is used to configure the owner of a database.
-For more information about database owner, please read the article
-[Changing the Database Owner](https://technet.microsoft.com/en-us/library/ms190909.aspx).
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
-
-#### Parameters
-
-* **`[String]` DatabaseName** _(Key)_: The name of database to be configured.
-* **`[String]` Name** _(Required)_: The name of the login that will become a owner
-  of the desired sql database.
-* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
-* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-
-#### Examples
-
-* [Set database owner](/source/Examples/Resources/SqlDatabaseOwner/1-SetDatabaseOwner.ps1)
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseOwner).
 
 ### SqlDatabasePermission
 
