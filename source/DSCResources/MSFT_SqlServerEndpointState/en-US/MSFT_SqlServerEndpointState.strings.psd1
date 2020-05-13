@@ -1,5 +1,5 @@
 ConvertFrom-StringData @'
-    GetEndpointState = Getting state of the endpoint with the name '{0}' for the instance '{1}'.
+    GetEndpointState = THIS RESOURCE IS DEPRECATED! Getting state of the endpoint with the name '{0}' for the instance '{1}'.
     EndpointNotFound = The endpoint with the name '{0}' does not exist.
     EndpointErrorVerifyExist = Unexpected result when trying to verify existence of the endpoint with the name '{0}'.
     UnexpectedErrorFromGet = Got unexpected result from Get-TargetResource. No change is made.

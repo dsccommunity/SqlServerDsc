@@ -46,9 +46,11 @@ Configuration DSC_SqlServerEndpoint_Add_Config
             Ensure               = 'Present'
 
             EndpointName         = $Node.EndpointName
+            EndpointType         = 'DatabaseMirroring'
             Port                 = $Node.Port
             IpAddress            = $Node.IpAddress
             Owner                = $Node.Owner
+            State                = 'Started'
 
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
@@ -71,6 +73,7 @@ Configuration DSC_SqlServerEndpoint_Remove_Config
             Ensure               = 'Absent'
 
             EndpointName         = $Node.EndpointName
+            EndpointType         = 'DatabaseMirroring'
 
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
