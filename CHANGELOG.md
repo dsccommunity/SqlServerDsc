@@ -5,11 +5,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Removed
+### Remove
 
 - SqlServerDsc
-  - BREAKING CHANGE: Removed resource _SqlServerNetwork_. The functionality
-    is now covered by the resources _SqlServerProtocol_ and _SqlServerProtocolTcpIp_.
+  - BREAKING CHANGE: Since the operating system Windows Server 2008 R2 and
+    the product SQL Server 2008 R2 has gone end-of-life the DSC resources
+    will no longer try to maintain compatibility with them. Moving forward,
+    and including this release, there may be code changes that will break
+    the resource on Windows Server 2008 R2 or with SQL Server 2008 R2
+    ([issue #1514](https://github.com/dsccommunity/SqlServerDsc/issues/1514)).
+
+### Deprecated
+
+The documentation, examples, unit test, and integration tests have been
+removed for these deprecated resources. These resources will be removed
+in a future release.
+
+- SqlServerNetwork
+  - This resource is now deprecated. The functionality is now covered by
+    the resources _SqlServerProtocol_ and _SqlServerProtocolTcpIp_.
+- SqlDatabaseOwner
+  - This resource is now deprecated. The functionality is now covered by
+    a property in the resource _SqlDatabase_ ([issue #966](https://github.com/dsccommunity/SqlServerDsc/issues/966)).
+- SqlDatabaseRecoveryModel
+  - This resource is now deprecated. The functionality is now covered by
+    a property in the resource _SqlDatabase_ ([issue #967](https://github.com/dsccommunity/SqlServerDsc/issues/967)).
 
 ### Added
 
@@ -24,6 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added the properties `NpEnabled` and `TcpEnabled` ([issue #1161](https://github.com/dsccommunity/SqlServerDsc/issues/1161)).
 - SqlServerReplication
   - Add integration tests ([issue #755](https://github.com/dsccommunity/SqlServerDsc/issues/755)
+- SqlDatabase
+  - The property `OwnerName` was added.
 - SqlServerDsc.Common
   - The helper function `Restart-SqlService` was improved to handle Failover
     Clusters better. Now the SQL Server service will only be taken offline
@@ -38,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Changed all resource prefixes from `MSFT_` to `DSC_` ([issue #1496](https://github.com/dsccommunity/SqlServerDsc/issues/1496)).
+    _Deprecated resource has not changed prefix._
   - All resources are now using the common module DscResource.Common.
   - When a PR is labelled with 'ready for merge' it is no longer being
     marked as stale if the PR is not merged for 30 days (for example it is
@@ -56,6 +79,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlDatabase
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
+  - BREAKING CHANGE: The non-mandatory parameters was removed from the
+    function `Get-TargetResource` since they were not needed.
+  - BREAKING CHANGE: The properties `CompatibilityLevel` and `Collation`
+    are now only enforced if the are specified in the configuration.
   - Normalize parameter descriptive text for default values.
 - SqlDatabaseDefaultLocation
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and

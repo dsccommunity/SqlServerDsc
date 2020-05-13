@@ -53,8 +53,8 @@ Get-DscResource -Module SqlServerDsc
 
 The minimum Windows Management Framework (PowerShell) version required is 5.0
 or higher, which ships with Windows 10 or Windows Server 2016,
-but can also be installed on Windows 7 SP1, Windows 8.1,
-Windows Server 2008 R2 SP1, Windows Server 2012 and Windows Server 2012 R2.
+but can also be installed on Windows 7 SP1, Windows 8.1, Windows Server 2012,
+and Windows Server 2012 R2.
 
 ## Examples
 
@@ -64,6 +64,17 @@ for some general use scenarios for all of the resources that are in the module.
 ## Change log
 
 A full list of changes in each version can be found in the [change log](CHANGELOG.md).
+
+### Deprecated resources
+
+The documentation, examples, unit test, and integration tests have been removed
+for these deprecated resources. These resources will be removed
+in a future release.
+
+* SqlDatabaseOwner _(replaced by a property in [**SqlDatabase**](#sqldatabase)_.
+* SqlDatabaseRecoveryModel _(replaced by a property in [**SqlDatabase**](#sqldatabase)_.
+* SqlServerNetwork _(replaced by [**SqlServerProtocol**](#sqlserverprotocol) and_
+  _[**SqlServerProtocolTcpIp**](#sqlserverprotocoltcpip))_.
 
 ## Resources
 
@@ -88,12 +99,8 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   is present or absent.
 * [**SqlDatabaseDefaultLocation**](#sqldatabasedefaultlocation) resource
   to manage default locations for Data, Logs, and Backups for SQL Server
-* [**SqlDatabaseOwner**](#sqldatabaseowner) resource to manage SQL
-  database owners.
 * [**SqlDatabasePermission**](#sqldatabasepermission) resource to
   manage SQL database permissions.
-* [**SqlDatabaseRecoveryModel**](#sqldatabaserecoverymodel) resource
-  to manage database recovery model.
 * [**SqlDatabaseRole**](#sqldatabaserole) resource to manage SQL database roles.
 * [**SqlDatabaseUser**](#sqldatabaseuser) resource to manage SQL database users.
 * [**SqlRS**](#sqlrs) configures SQL Server Reporting.
@@ -143,7 +150,7 @@ It will also manage the Availability Group replica on the specified node.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running Windows Server 2012 or later.
 * Target machine must be running SQL Server Database Engine 2012 or later.
 * 'NT SERVICE\ClusSvc' or 'NT AUTHORITY\SYSTEM' must have the 'Connect SQL',
   'Alter Any Availability Group', and 'View Server State' permissions.
@@ -225,7 +232,7 @@ group.
 
 ### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running Windows Server 2012 or later.
 * Target machine must be running SQL Server Database Engine 2012 or later.
 * Target machine must be running Windows Management Framework (WMF) 5 or later.
 
@@ -296,8 +303,8 @@ update the severity or message id.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
 
@@ -326,8 +333,8 @@ update the Notification method.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
 
@@ -356,8 +363,8 @@ the operators email address.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
 
@@ -385,7 +392,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running Windows Server 2012 or later.
 * Target machine must be running SQL Server Database Engine 2012 or later.
 * Target machine must have access to the SQLPS PowerShell module or the SqlServer
   PowerShell module.
@@ -432,7 +439,7 @@ Always On Availability Group Replica.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running Windows Server 2012 or later.
 * Target machine must be running SQL Server Database Engine 2012 or later.
 * 'NT SERVICE\ClusSvc' or 'NT AUTHORITY\SYSTEM' must have the 'Connect SQL',
   'Alter Any Availability Group', and 'View Server State' permissions.
@@ -506,7 +513,7 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running Windows Server 2012 or later.
 
 #### Parameters
 
@@ -544,7 +551,7 @@ Enables or disabled SQL Server Always On high availability and disaster recovery
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running Windows Server 2012 or later.
 * Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
@@ -578,10 +585,16 @@ This resource is used to create or delete a database. For more information about
 SQL Server databases, please read the following articles [Create a Database](https://docs.microsoft.com/en-us/sql/relational-databases/databases/create-a-database)
 and [Delete a Database](https://docs.microsoft.com/en-us/sql/relational-databases/databases/delete-a-database).
 
+This resource set the recovery model for a database. The recovery model controls
+how transactions are logged, whether the transaction log requires (and allows)
+backing up, and what kinds of restore operations are available. Three recovery
+models exist: full, simple, and bulk-logged. Read more about recovery model in
+the article [View or Change the Recovery Model of a Database](https://msdn.microsoft.com/en-us/library/ms189272.aspx).
+
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 * Valid values per SQL Server version for the parameter `CompatibilityLevel`
   can be found in the article [ALTER DATABASE (Transact-SQL) Compatibility Level](https://docs.microsoft.com/en-us/sql/t-sql/statements/alter-database-transact-sql-compatibility-level).
 
@@ -597,6 +610,10 @@ and [Delete a Database](https://docs.microsoft.com/en-us/sql/relational-database
   Database Compatibility Level to use for the specified database.
   { Version80 | Version90 | Version100 | Version110 | Version120 | Version130 |
   Version140 | Version150 }
+* **`[String]` RecoveryModel** _(Write)_: The recovery model for the specified
+  database. { Simple | Full | BulkLogged }
+* **`[String]` OwnerName** _(Write)_: Specifies the name of the login that
+  should be the owner of the database.
 * **`[String]` Ensure** _(Write)_: When set to 'Present', the database will be created.
   When set to 'Absent', the database will be dropped. { *Present* | Absent }.
 
@@ -618,8 +635,8 @@ more information about database default locations, please read the article
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
 
@@ -650,33 +667,6 @@ more information about database default locations, please read the article
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseDefaultLocation).
 
-### SqlDatabaseOwner
-
-This resource is used to configure the owner of a database.
-For more information about database owner, please read the article
-[Changing the Database Owner](https://technet.microsoft.com/en-us/library/ms190909.aspx).
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
-
-#### Parameters
-
-* **`[String]` DatabaseName** _(Key)_: The name of database to be configured.
-* **`[String]` Name** _(Required)_: The name of the login that will become a owner
-  of the desired sql database.
-* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
-* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-
-#### Examples
-
-* [Set database owner](/source/Examples/Resources/SqlDatabaseOwner/1-SetDatabaseOwner.ps1)
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseOwner).
-
 ### SqlDatabasePermission
 
 This resource is used to grant, deny or revoke permissions for a user in a database.
@@ -689,8 +679,8 @@ will also get their permission revoked.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
 
@@ -719,37 +709,6 @@ will also get their permission revoked.
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabasePermission).
 
-### SqlDatabaseRecoveryModel
-
-This resource set the recovery model for a database. The recovery model controls
-how transactions are logged, whether the transaction log requires (and allows)
-backing up, and what kinds of restore operations are available.
-Three recovery models exist: full, simple, and bulk-logged.
-Read more about recovery model in this article
-[View or Change the Recovery Model of a Database](https://msdn.microsoft.com/en-us/library/ms189272.aspx)
-
-#### Requirements
-
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
-
-#### Parameters
-
-* **`[String]` Name** _(Key)_: The SQL database name.
-* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **`[String]` RecoveryModel** _(Required)_: The recovery model to use for the database.
-  { Full | Simple | BulkLogged }.
-* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
-  Default value is `$env:COMPUTERNAME`.
-
-#### Examples
-
-* [Set the RecoveryModel of a database](/source/Examples/Resources/SqlDatabaseRecoveryModel/1-SetDatabaseRecoveryModel.ps1)
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseRecoveryModel).
-
 ### SqlDatabaseRole
 
 This resource is used to create a database role when Ensure is set to 'Present'
@@ -758,8 +717,8 @@ manages members in both built-in and user created database roles.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
 
@@ -813,8 +772,8 @@ SQL login.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
 
@@ -878,10 +837,10 @@ Initializes and configures SQL Reporting Services server.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Reporting Services 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Reporting Services 20012 or later.
 * To use parameter `UseSSL` target machine must be running SQL Server Reporting
-  Services 2008 R2 or later.
+  Services 2012 or later.
 * If `PsDscRunAsCredential` common parameter is used to run the resource, the
   specified credential must have permissions to connect to the SQL Server instance
   specified in `DatabaseServerName` and `DatabaseInstanceName`, and have permission
@@ -1073,8 +1032,8 @@ The Set T-SQL script performs the actual change when Test T-SQL script fails.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server 2012 or later.
 * Target machine must have access to the SQLPS PowerShell module or the SqlServer
   PowerShell module.
 
@@ -1151,8 +1110,8 @@ The Set T-SQL script performs the actual change when Test T-SQL script fails.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server 2012 or later.
 * Target machine must have access to the SQLPS PowerShell module or the SqlServer
   PowerShell module.
 
@@ -1207,8 +1166,8 @@ on a SQL Server instance.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
 
@@ -1242,8 +1201,8 @@ Resource to manage SQL Server Database Mail.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 * Target machine must be running SQL Server Agent.
 * Target machine must have enabled Database Mail XPs.
 
@@ -1296,8 +1255,8 @@ the resource [**SqlServerEndpointPermission**](#sqlserverendpointpermission).
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Security Requirements
 
@@ -1335,8 +1294,8 @@ This resource is used to give connect permission to an endpoint for a user (logi
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
 
@@ -1369,8 +1328,8 @@ This resource is used to set the state of an endpoint.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 * Target machine must have access to the SQLPS PowerShell module or the SqlServer
   PowerShell module.
 
@@ -1399,8 +1358,8 @@ No description.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 * When the `LoginType` `'SqlLogin'` is used, then the login authentication
   mode must have been set to `Mixed` or `Normal`. If set to `Integrated`
   and error will be thrown.
@@ -1463,8 +1422,8 @@ Read more about max degree of parallelism in this article
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
 
@@ -1541,8 +1500,8 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
 
@@ -1589,8 +1548,8 @@ AlterAnyEndPoint and ViewServerState.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 * Target machine must have access to the SQLPS PowerShell module or the SqlServer
   PowerShell module.
 
@@ -1754,8 +1713,8 @@ This resource manage SQL Replication distribution and publishing.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server 2012 or later.
 
 #### Parameters
 
@@ -1800,8 +1759,8 @@ server roles, please read the below articles.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
-* Target machine must be running SQL Server Database Engine 2008 or later.
+* Target machine must be running Windows Server 2012 or later.
+* Target machine must be running SQL Server Database Engine 2012 or later.
 
 #### Parameters
 
@@ -1846,7 +1805,7 @@ In that case, the 'SYSTEM' service account can be used.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running Windows Server 2012 or later.
 * You must have a Certificate that is trusted and issued for
    `ServerAuthentication`.
 * The name of the Certificate must be the fully qualified domain name (FQDN)
@@ -1936,7 +1895,7 @@ Installs SQL Server on the target node.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running Windows Server 2012 or later.
 * For configurations that utilize the 'InstallFailoverCluster' action, the following
   parameters are required (beyond those required for the standalone installation).
   See the article [Install SQL Server from the Command Prompt](https://msdn.microsoft.com/en-us/library/ms144259.aspx)
@@ -2187,7 +2146,7 @@ or that it has finished creating the Availability Group.
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running Windows Server 2012 or later.
 * Target machine must be running SQL Server Database Engine 2012 or later.
 * Target machine must have access to the Failover Cluster PowerShell module.
 
@@ -2273,7 +2232,7 @@ Port: tcp/135 | SQL Server Integration Services Port
 
 #### Requirements
 
-* Target machine must be running Windows Server 2008 R2 or later.
+* Target machine must be running Windows Server 2012 or later.
 
 #### Parameters
 
