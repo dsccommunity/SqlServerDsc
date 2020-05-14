@@ -2383,6 +2383,43 @@ try
                         Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                     }
                 }
+
+                Context "When installing the database engine forcing to use english language in media" {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = ''
+                            }
+                        }
+                    }
+
+                    It 'Should set the system in the desired state when feature is SQLENGINE' {
+                        $testParameters = @{
+                            Features = 'SQLENGINE'
+                            SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
+                            InstanceName = $mockDefaultInstance_InstanceName
+                            SourceCredential = $null
+                            SourcePath = $mockSourcePath
+                            ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                            UseEnglish = $false
+                        }
+
+                        $mockStartSqlSetupProcessExpectedArgument = @{
+                            Quiet = 'True'
+                            IAcceptSQLServerLicenseTerms = 'True'
+                            Action = 'Install'
+                            InstanceName = $testParameters.InstanceName
+                            Features = $testParameters.Features
+                            SQLSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                            PID = $testParameters.ProductKey
+                            UseEnglish = $true
+                        }
+
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                    }
+                }
             }
 
             foreach ($mockSqlMajorVersion in $testProductVersion)
