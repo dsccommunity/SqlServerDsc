@@ -238,8 +238,8 @@ Configuration DSC_SqlScript_RunSqlScriptAsSqlUser_Config
     {
         SqlScript 'Integration_Test'
         {
-            ServerName           = $Node.ServerName
-            InstanceName         = $Node.InstanceName
+            ServerName     = $Node.ServerName
+            InstanceName   = $Node.InstanceName
 
             GetFilePath    = $Node.GetSqlScriptPath
             TestFilePath   = $Node.TestSqlScriptPath

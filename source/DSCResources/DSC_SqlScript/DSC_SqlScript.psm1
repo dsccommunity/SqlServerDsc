@@ -8,7 +8,7 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
-        Returns the current state of the SQL Server features.
+        Returns the current state of what the Get-script returns.
 
     .PARAMETER InstanceName
         Specifies the name of the SQL Server Database Engine instance. For the
@@ -125,7 +125,7 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-        Returns the current state of the SQL Server features.
+        Executes the Set-script.
 
     .PARAMETER InstanceName
         Specifies the name of the SQL Server Database Engine instance. For the
@@ -138,10 +138,14 @@ function Get-TargetResource
         Path to the T-SQL file that will perform Get action.
         Any values returned by the T-SQL queries will also be returned by the cmdlet Get-DscConfiguration through the `GetResult` property.
 
+        Not used in Set-TargetResource.
+
     .PARAMETER TestFilePath
         Path to the T-SQL file that will perform Test action.
         Any script that does not throw an error or returns null is evaluated to true.
         The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text, and will not cause the test to return false.
+
+        Not used in Set-TargetResource.
 
     .PARAMETER ServerName
         Specifies the host name of the SQL Server to be configured. Default value
@@ -222,7 +226,7 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-        Returns the current state of the SQL Server features.
+        Evaluates the value returned from the Test-script.
 
     .PARAMETER InstanceName
         Specifies the name of the SQL Server Database Engine instance. For the
@@ -231,9 +235,13 @@ function Set-TargetResource
     .PARAMETER SetFilePath
         Path to the T-SQL file that will perform Set action.
 
+        Not used in Test-TargetResource.
+
     .PARAMETER GetFilePath
         Path to the T-SQL file that will perform Get action.
         Any values returned by the T-SQL queries will also be returned by the cmdlet Get-DscConfiguration through the `GetResult` property.
+
+        Not used in Test-TargetResource.
 
     .PARAMETER TestFilePath
         Path to the T-SQL file that will perform Test action.
@@ -306,10 +314,6 @@ function Test-TargetResource
 
     $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
 
-    Write-Verbose -Message (
-        $script:localizedData.ExecutingTestScript -f $TestFilePath, $InstanceName, $ServerName
-    )
-
     $invokeParameters = @{
         ServerInstance = $serverInstance
         InputFile      = $TestFilePath
@@ -324,6 +328,10 @@ function Test-TargetResource
 
     try
     {
+        Write-Verbose -Message (
+            $script:localizedData.ExecutingTestScript -f $TestFilePath, $InstanceName, $ServerName
+        )
+
         $result = Invoke-SqlScript @invokeParameters
     }
     catch [Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException]

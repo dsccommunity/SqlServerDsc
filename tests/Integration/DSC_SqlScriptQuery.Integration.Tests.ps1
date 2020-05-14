@@ -110,6 +110,9 @@ try
                 }
 
                 $resultObject.Name | Should -Be $ConfigurationData.AllNodes.Database1Name
+
+                $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+                $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.GetQuery -replace '\r\n', "`n" | Should -Be ($ConfigurationData.AllNodes.GetQuery -replace '\r\n', "`n")
                 $resourceCurrentState.TestQuery -replace '\r\n', "`n" | Should -Be ($ConfigurationData.AllNodes.TestQuery -replace '\r\n', "`n")
                 $resourceCurrentState.SetQuery -replace '\r\n', "`n" | Should -Be ($ConfigurationData.AllNodes.SetQuery -replace '\r\n', "`n")
@@ -158,6 +161,8 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
+                $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+                $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.GetResult | Should -Match $ConfigurationData.AllNodes.Database2Name
                 $resourceCurrentState.GetQuery -replace '\r\n', "`n" | Should -Be ($ConfigurationData.AllNodes.GetQuery -replace '\r\n', "`n")
                 $resourceCurrentState.TestQuery -replace '\r\n', "`n" | Should -Be ($ConfigurationData.AllNodes.TestQuery -replace '\r\n', "`n")

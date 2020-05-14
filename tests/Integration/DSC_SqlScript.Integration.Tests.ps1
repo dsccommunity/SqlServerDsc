@@ -142,6 +142,9 @@ try
                 }
 
                 $resultObject.Name | Should -Be $ConfigurationData.AllNodes.Database1Name
+
+                $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+                $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.GetFilePath | Should -Be $ConfigurationData.AllNodes.GetSqlScriptPath
                 $resourceCurrentState.TestFilePath | Should -Be $ConfigurationData.AllNodes.TestSqlScriptPath
                 $resourceCurrentState.SetFilePath | Should -Be $ConfigurationData.AllNodes.SetSqlScriptPath
@@ -190,6 +193,8 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
+                $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+                $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.GetResult | Should -Match $ConfigurationData.AllNodes.Database2Name
                 $resourceCurrentState.GetFilePath | Should -Be $ConfigurationData.AllNodes.GetSqlScriptPath
                 $resourceCurrentState.TestFilePath | Should -Be $ConfigurationData.AllNodes.TestSqlScriptPath
