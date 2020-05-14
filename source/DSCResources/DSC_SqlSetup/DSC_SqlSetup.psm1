@@ -1533,7 +1533,10 @@ function Set-TargetResource
         {
             $setupExitMessageRebootRequired = ('{0} {1}' -f $setupExitMessage, ($script:localizedData.SetupSuccessfulRebootRequired))
 
-            Write-Warning -Message $setupExitMessageRebootRequired
+            Write-Verbose -Message $setupExitMessageRebootRequired
+
+            # Setup ended with error code 3010 which means reboot is required.
+            $global:DSCMachineStatus = 1
         }
         elseif ($processExitCode -ne 0)
         {

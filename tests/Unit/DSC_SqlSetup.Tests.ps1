@@ -2409,12 +2409,10 @@ try
                     Context 'When exit code is 3010' {
                         $mockDynamicSetupProcessExitCode = 3010
 
-                        Mock -CommandName Write-Warning
-
                         It 'Should warn that target node need to restart' {
                             { Set-TargetResource @testParameters } | Should -Not -Throw
 
-                            Assert-MockCalled -CommandName Write-Warning -Exactly -Times 1 -Scope It
+                            $global:DSCMachineStatus | Should -Be 1
                         }
                     }
 
