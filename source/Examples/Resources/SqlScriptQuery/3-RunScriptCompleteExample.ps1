@@ -20,7 +20,8 @@ Configuration Example
     {
         SqlScriptQuery 'CreateDatabase_ScriptDatabase1'
         {
-            ServerInstance       = "$($env:COMPUTERNAME)\DSCTEST"
+            ServerName           = $env:COMPUTERNAME
+            InstanceName         = 'DSCTEST'
 
             GetQuery             = @'
 SELECT Name FROM sys.databases WHERE Name = '$(DatabaseName)' FOR JSON AUTO

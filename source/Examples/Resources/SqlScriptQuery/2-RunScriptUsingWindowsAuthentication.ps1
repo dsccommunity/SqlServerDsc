@@ -20,35 +20,38 @@ Configuration Example
     {
         SqlScriptQuery 'RunAsSYSTEM'
         {
-            ServerInstance = 'localhost\SQL2016'
+            ServerName   = 'localhost'
+            InstanceName = 'SQL2016'
 
-            SetQuery       = 'Set Query as System'
-            TestQuery      = 'Test query as System'
-            GetQuery       = 'Get query as System'
-            Variable       = @('FilePath=C:\temp\log\AuditFiles')
+            SetQuery     = 'Set Query as System'
+            TestQuery    = 'Test query as System'
+            GetQuery     = 'Get query as System'
+            Variable     = @('FilePath=C:\temp\log\AuditFiles')
         }
 
         SqlScriptQuery 'RunAsUser'
         {
-            ServerInstance = 'localhost\SQL2016'
+            ServerName           = 'localhost'
+            InstanceName         = 'SQL2016'
 
-            SetQuery       = 'Set query as User'
-            TestQuery      = 'Test query as User'
-            GetQuery       = 'Get query as User'
-            Variable       = @('FilePath=C:\temp\log\AuditFiles')
+            SetQuery             = 'Set query as User'
+            TestQuery            = 'Test query as User'
+            GetQuery             = 'Get query as User'
+            Variable             = @('FilePath=C:\temp\log\AuditFiles')
 
             PsDscRunAsCredential = $WindowsCredential
         }
 
         SqlScriptQuery 'RunAsUser-With30SecondTimeout'
         {
-            ServerInstance = 'localhost\SQL2016'
+            ServerName           = 'localhost'
+            InstanceName         = 'SQL2016'
 
-            SetQuery       = 'Set query with query timeout'
-            TestQuery      = 'Test query with query timeout'
-            GetQuery       = 'Get query with query timeout'
-            QueryTimeout   = 30
-            Variable       = @('FilePath=C:\temp\log\AuditFiles')
+            SetQuery             = 'Set query with query timeout'
+            TestQuery            = 'Test query with query timeout'
+            GetQuery             = 'Get query with query timeout'
+            QueryTimeout         = 30
+            Variable             = @('FilePath=C:\temp\log\AuditFiles')
 
             PsDscRunAsCredential = $WindowsCredential
         }
