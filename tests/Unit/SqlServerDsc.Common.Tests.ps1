@@ -3854,4 +3854,20 @@ InModuleScope $script:subModuleName {
             $result.ProtocolProperties.KeepAlive | Should -Be 30000
         }
     }
+
+    Describe 'SqlServerDsc.Common\ConvertTo-ServerInstanceName' {
+        It 'Should return correct service instance for a default instance' {
+
+            $result = ConvertTo-ServerInstanceName -InstanceName 'MSSQLSERVER' -ServerName $env:COMPUTERNAME
+
+            $result | Should -BeExactly $env:COMPUTERNAME
+        }
+
+        It 'Should return correct service instance for a name instance' {
+
+            $result = ConvertTo-ServerInstanceName -InstanceName 'MyInstance' -ServerName $env:COMPUTERNAME
+
+            $result | Should -BeExactly ('{0}\{1}' -f $env:COMPUTERNAME, 'MyInstance')
+        }
+    }
 }

@@ -1043,9 +1043,8 @@ for more information._
 
 #### Parameters
 
-* **`[String]` ServerInstance** _(Key)_: The name of an instance of the Database
-  Engine. For a default instance, only specify the computer name. For a named
-  instances, use the format ComputerName\\InstanceName.
+* **`[String]` InstanceName** _(Key)_: Specifies the name of the SQL Server
+  Database Engine instance. For the default instance specify 'MSSQLSERVER'.
 * **`[String]` SetFilePath** _(Key)_: Path to the T-SQL file that will perform Set
   action.
 * **`[String]` GetFilePath** _(Key)_: Path to the T-SQL file that will perform Get
@@ -1055,6 +1054,8 @@ for more information._
   action. Any script that does not throw an error or returns null is evaluated to
   true. The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text,
   and will not cause the test to return false.
+* **`[String]` ServerName** _(Write)_: Specifies the host name of the SQL Server
+  to be configured. Default value is $env:COMPUTERNAME.
 * **`[PSCredential]` Credential** _(Write)_: The credentials to authenticate with,
   using SQL Authentication. To authenticate using Windows Authentication, assign
   the credentials to the built-in parameter `PsDscRunAsCredential`. If both parameters
