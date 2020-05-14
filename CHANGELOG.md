@@ -135,6 +135,16 @@ in a future release.
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
   - Normalize parameter descriptive text for default values.
+- SqlScript
+  - BREAKING CHANGE: The parameter `ServerInstance` is replaced by the two
+    parameters `ServerName` and `InstanceName`. The parameter `InstanceName`
+    is the only one mandatory which fixes the issue that it was possible to
+    run the same script using different host names ([issue #925](https://github.com/dsccommunity/SqlServerDsc/issues/925)).
+- SqlScriptQuery
+  - BREAKING CHANGE: The parameter `ServerInstance` is replaced by the two
+    parameters `ServerName` and `InstanceName`. The parameter `InstanceName`
+    is the only one mandatory which fixes the issue that it was possible to
+    run the same query using different host names ([issue #925](https://github.com/dsccommunity/SqlServerDsc/issues/925)).
 - SqlServerConfiguration
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
