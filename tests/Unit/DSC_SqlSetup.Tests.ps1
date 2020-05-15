@@ -1804,16 +1804,20 @@ try
 
                     # Break the argument string into a hash table
                     ($Argument -split ' ?/') | ForEach-Object {
-                        if ($_ -imatch '(\w+)="?([^/]+)"?')
+                        <#
+                            This regex must support different types of values, and no values:
+                            /ENU /ACTION="Install" /FEATURES=SQLENGINE /SQLSYSADMINACCOUNTS="COMPANY\sqladmin" "COMPANY\SQLAdmins"
+                        #>
+                        if ($_ -imatch '(\w+)(="?([^\/]+)"?)?')
                         {
                             $key = $Matches[1]
                             if ($key -in ('FailoverClusterDisks','FailoverClusterIPAddresses'))
                             {
-                                $value = ($Matches[2] -replace '" "','; ') -replace '"',''
+                                $value = ($Matches[3] -replace '" "','; ') -replace '"',''
                             }
                             else
                             {
-                                $value = ($Matches[2] -replace '" "',' ') -replace '"',''
+                                $value = ($Matches[3] -replace '" "',' ') -replace '"',''
                             }
 
                             $argumentHashTable.Add($key, $value)
@@ -2401,7 +2405,7 @@ try
                             SourceCredential = $null
                             SourcePath = $mockSourcePath
                             ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-                            UseEnglish = $false
+                            UseEnglish = $true
                         }
 
                         $mockStartSqlSetupProcessExpectedArgument = @{
@@ -2412,7 +2416,7 @@ try
                             Features = $testParameters.Features
                             SQLSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
                             PID = $testParameters.ProductKey
-                            UseEnglish = $true
+                            Enu = '' # The argument does not have a value
                         }
 
                         { Set-TargetResource @testParameters } | Should -Not -Throw
