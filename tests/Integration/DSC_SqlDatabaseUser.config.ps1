@@ -228,7 +228,8 @@ Configuration DSC_SqlDatabaseUser_AddDatabaseUser5_Config
     {
         SqlScriptQuery 'CreateDatabaseCertificate'
         {
-            ServerInstance = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
+            ServerName   = $Node.ServerName
+            InstanceName = $Node.InstanceName
 
             GetQuery     = @'
 SELECT Name FROM [$(DatabaseName)].sys.certificates WHERE Name = '$(CertificateName)' FOR JSON AUTO
@@ -292,7 +293,8 @@ Configuration DSC_SqlDatabaseUser_AddDatabaseUser6_Config
     {
         SqlScriptQuery 'CreateDatabaseAsymmetricKey'
         {
-            ServerInstance = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
+            ServerName   = $Node.ServerName
+            InstanceName = $Node.InstanceName
 
             GetQuery     = @'
 SELECT Name FROM [$(DatabaseName)].sys.asymmetric_keys WHERE Name = '$(AsymmetricKeyName)' FOR JSON AUTO
