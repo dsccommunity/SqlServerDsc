@@ -798,7 +798,7 @@ function Import-SQLPSModule
     param
     (
         [Parameter()]
-        [Switch]
+        [System.Management.Automation.SwitchParameter]
         $Force
     )
 
@@ -843,7 +843,7 @@ function Import-SQLPSModule
             This reloads PowerShell session environment variable PSModulePath to make sure it contains
             all paths.
         #>
-        $env:PSModulePath = [System.Environment]::GetEnvironmentVariable('PSModulePath', 'Machine')
+        Set-PSModulePath -Path ([System.Environment]::GetEnvironmentVariable('PSModulePath', 'Machine'))
 
         <#
             Get the newest SQLPS module if more than one exist.
@@ -2540,4 +2540,29 @@ function Get-ServerProtocolObject
     }
 
     return $serverProtocolProperties
+}
+
+function Set-PSModulePath
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $Path,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Machine
+    )
+
+    if ($Machine.IsPresent)
+    {
+        [System.Environment]::SetEnvironmentVariable('PSModulePath', $Path, [System.EnvironmentVariableTarget]::Machine)
+    }
+    else
+    {
+        $env:PSModulePath = $Path
+    }
 }
