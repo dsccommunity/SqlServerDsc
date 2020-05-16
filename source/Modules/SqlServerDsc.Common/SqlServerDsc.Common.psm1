@@ -745,7 +745,7 @@ function Import-Assembly
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
 
-    return $connectionInfo
+    return $assemblyInformation
 }
 
 
