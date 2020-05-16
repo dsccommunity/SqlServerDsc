@@ -722,12 +722,14 @@ function Import-Assembly
 
     try
     {
-        if ($LoadWithPartial.IsPresent)
+        if ($LoadWithPartialName.IsPresent)
         {
+            Write-Verbose -Message 'DEBUG1' -Verbose
             $assemblyInformation = [System.Reflection.Assembly]::LoadWithPartialName($Name)
         }
         else
         {
+            Write-Verbose -Message 'DEBUG2' -Verbose
             $assemblyInformation = [System.Reflection.Assembly]::Load($Name)
         }
 
@@ -737,6 +739,7 @@ function Import-Assembly
     }
     catch
     {
+        Write-Verbose ($_ | Out-String) -Verbose
         $errorMessage = $script:localizedData.FailedToLoadAssembly -f $Name
 
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
