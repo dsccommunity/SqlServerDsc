@@ -42,7 +42,8 @@ in a future release.
   - Fixing a problem with the latest ModuleBuild 1.7.0 that breaks the CI
     pipeline.
 - SqlServerDsc.Common
-  - Added function `Import-Assembly`.
+  - Added function `Import-Assembly` that can help import an assembly
+    into the PowerShell session.
   - Prepared unit tests to support Pester 5 so a minimal conversation
     is only needed later.
   - Updated `Import-SQLPSModule` to better support unit tests.
