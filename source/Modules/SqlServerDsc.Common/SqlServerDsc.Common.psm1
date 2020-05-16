@@ -620,7 +620,7 @@ function Connect-SQLAnalysis
         $SetupCredential
     )
 
-    Import-Assembly -Name 'Microsoft.AnalysisServices' -LoadWithPartialName
+    $null = Import-Assembly -Name 'Microsoft.AnalysisServices' -LoadWithPartialName
 
     if ($InstanceName -eq 'MSSQLSERVER')
     {
