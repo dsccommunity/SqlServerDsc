@@ -66,4 +66,6 @@ ConvertFrom-StringData @'
     ArrayDoesNotMatch = One or more values in an array does not match the desired state. Details of the changes are below. (SQLCOMMON0065)
     ClusterResourceNotFoundOrOffline = The SQL Server cluster resource '{0}' was not found or the resource has been taken offline. (SQLCOMMON0066)
     NotOwnerOfClusterResource = The node '{0}' is not the owner of the cluster resource '{1}'. The owner is '{2}' so no restart is needed. (SQLCOMMON0067)
+    LoadedAssembly = Loaded the assembly '{0}'. (SQLCOMMON0068)
+    FailedToLoadAssembly = Failed to load the assembly '{0}'. (SQLCOMMON0069)
 '@

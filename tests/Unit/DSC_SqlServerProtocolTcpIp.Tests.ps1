@@ -1,3 +1,8 @@
+<#
+    .SYNOPSIS
+        Automated unit test for DSC_SqlServerProtocolTcpIp DSC resource.
+#>
+
 $script:dscModuleName = 'SqlServerDsc'
 $script:dscResourceName = 'DSC_SqlServerProtocolTcpIp'
 

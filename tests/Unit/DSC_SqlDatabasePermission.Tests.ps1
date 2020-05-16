@@ -2,10 +2,6 @@
     .SYNOPSIS
         Automated unit test for DSC_SqlDatabasePermission DSC resource.
 
-    .NOTES
-        To run this script locally, please make sure to first run the bootstrap
-        script. Read more at
-        https://github.com/PowerShell/SqlServerDsc/blob/dev/CONTRIBUTING.md#bootstrap-script-assert-testenvironment
 #>
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')

@@ -12,7 +12,6 @@ ConvertFrom-StringData @'
     InstallLocalDistributor = Installing the local distributor.
     UninstallDistributor = Uninstalling the distributor.
     CreateDistributorPublisher = Creating the distributor publisher '{0}' on the instance '{1}'.
-    LoadAssembly = Loaded assembly: {0}
     FailedToDetectSqlVersion = Unable to detect version for the SQL Server instance '{0}'.
     FailedInFunction = The call to '{0}' failed.
 '@
