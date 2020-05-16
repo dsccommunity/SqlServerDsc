@@ -2391,7 +2391,7 @@ InModuleScope $script:subModuleName {
                 )
 
                 # Type the mock as a server object
-                #$mock.PSObject.TypeNames.Insert(0,'Microsoft.SqlServer.Management.Smo.Server')
+                $mock.PSObject.TypeNames.Insert(0,'Microsoft.SqlServer.Management.Smo.Server')
 
                 return $mock
             }
