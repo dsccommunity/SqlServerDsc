@@ -672,10 +672,11 @@ function Connect-SQLAnalysis
 
 <#
     .SYNOPSIS
-        Returns a reference to the ConnectionInfo assembly.
+        Imports the assembly into the session.
 
     .DESCRIPTION
-        Returns a reference to the ConnectionInfo assembly.
+        Imports the assembly into the session and returns a reference to the
+        assembly.
 
     .PARAMETER Name
         Specifies the name of the assembly to load.
@@ -724,12 +725,10 @@ function Import-Assembly
     {
         if ($LoadWithPartialName.IsPresent)
         {
-            Write-Verbose -Message 'DEBUG1' -Verbose
             $assemblyInformation = [System.Reflection.Assembly]::LoadWithPartialName($Name)
         }
         else
         {
-            Write-Verbose -Message 'DEBUG2' -Verbose
             $assemblyInformation = [System.Reflection.Assembly]::Load($Name)
         }
 
@@ -739,7 +738,6 @@ function Import-Assembly
     }
     catch
     {
-        Write-Verbose ($_ | Out-String) -Verbose
         $errorMessage = $script:localizedData.FailedToLoadAssembly -f $Name
 
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
