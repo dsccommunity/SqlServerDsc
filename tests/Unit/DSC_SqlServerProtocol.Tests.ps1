@@ -1,3 +1,8 @@
+<#
+    .SYNOPSIS
+        Automated unit test for DSC_SqlServerProtocol DSC resource.
+#>
+
 $script:dscModuleName = 'SqlServerDsc'
 $script:dscResourceName = 'DSC_SqlServerProtocol'
 

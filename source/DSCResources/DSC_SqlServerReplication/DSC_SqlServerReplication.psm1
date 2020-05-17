@@ -593,20 +593,7 @@ function Get-ConnectionInfoAssembly
         $SqlMajorVersion
     )
 
-    try
-    {
-        $connectionInfo = [System.Reflection.Assembly]::Load("Microsoft.SqlServer.ConnectionInfo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
-
-        Write-Verbose -Message (
-            $script:localizedData.LoadAssembly -f $connectionInfo.FullName
-        )
-    }
-    catch
-    {
-        $errorMessage = $script:localizedData.FailedInFunction -f 'Get-ConnectionInfoAssembly'
-
-        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-    }
+    $connectionInfo = Import-Assembly -Name "Microsoft.SqlServer.ConnectionInfo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"
 
     return $connectionInfo
 }
@@ -651,20 +638,7 @@ function Get-RmoAssembly
         $SqlMajorVersion
     )
 
-    try
-    {
-        $rmo = [System.Reflection.Assembly]::Load("Microsoft.SqlServer.Rmo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
-
-        Write-Verbose -Message (
-            $script:localizedData.LoadAssembly -f $rmo.FullName
-        )
-    }
-    catch
-    {
-        $errorMessage = $script:localizedData.FailedInFunction -f 'Get-RmoAssembly'
-
-        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-    }
+    $rmo = Import-Assembly -Name "Microsoft.SqlServer.Rmo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"
 
     return $rmo
 }
