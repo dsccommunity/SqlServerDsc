@@ -1800,16 +1800,20 @@ try
 
                     # Break the argument string into a hash table
                     ($Argument -split ' ?/') | ForEach-Object {
-                        if ($_ -imatch '(\w+)="?([^/]+)"?')
+                        <#
+                            This regex must support different types of values, and no values:
+                            /ENU /ACTION="Install" /FEATURES=SQLENGINE /SQLSYSADMINACCOUNTS="COMPANY\sqladmin" "COMPANY\SQLAdmins"
+                        #>
+                        if ($_ -imatch '(\w+)(="?([^\/]+)"?)?')
                         {
                             $key = $Matches[1]
                             if ($key -in ('FailoverClusterDisks','FailoverClusterIPAddresses'))
                             {
-                                $value = ($Matches[2] -replace '" "','; ') -replace '"',''
+                                $value = ($Matches[3] -replace '" "','; ') -replace '"',''
                             }
                             else
                             {
-                                $value = ($Matches[2] -replace '" "',' ') -replace '"',''
+                                $value = ($Matches[3] -replace '" "',' ') -replace '"',''
                             }
 
                             $argumentHashTable.Add($key, $value)
@@ -2372,6 +2376,43 @@ try
                             SQLSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
                             PID = $testParameters.ProductKey
                             TcpEnabled = 0
+                        }
+
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                Context "When installing the database engine forcing to use english language in media" {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = ''
+                            }
+                        }
+                    }
+
+                    It 'Should set the system in the desired state when feature is SQLENGINE' {
+                        $testParameters = @{
+                            Features = 'SQLENGINE'
+                            SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
+                            InstanceName = $mockDefaultInstance_InstanceName
+                            SourceCredential = $null
+                            SourcePath = $mockSourcePath
+                            ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                            UseEnglish = $true
+                        }
+
+                        $mockStartSqlSetupProcessExpectedArgument = @{
+                            Quiet = 'True'
+                            IAcceptSQLServerLicenseTerms = 'True'
+                            Action = 'Install'
+                            InstanceName = $testParameters.InstanceName
+                            Features = $testParameters.Features
+                            SQLSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                            PID = $testParameters.ProductKey
+                            Enu = '' # The argument does not have a value
                         }
 
                         { Set-TargetResource @testParameters } | Should -Not -Throw

@@ -40,6 +40,11 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         Feature flags are used to toggle functionality on or off. See the
         documentation for what additional functionality exist through a feature
         flag.
+
+    .PARAMETER UseEnglish
+        Specifies to install the English version of SQL Server on a localized operating
+        system when the installation media includes language packs for both English and
+        the language corresponding to the operating system.
 #>
 function Get-TargetResource
 {
@@ -48,7 +53,7 @@ function Get-TargetResource
     param
     (
         [Parameter()]
-        [ValidateSet('Install','Upgrade','InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
+        [ValidateSet('Install', 'Upgrade', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', 'CompleteFailoverCluster')]
         [System.String]
         $Action = 'Install',
 
@@ -75,7 +80,11 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String[]]
-        $FeatureFlag
+        $FeatureFlag,
+
+        [Parameter()]
+        [System.Boolean]
+        $UseEnglish
     )
 
     if ($FeatureFlag)
@@ -86,60 +95,61 @@ function Get-TargetResource
     $InstanceName = $InstanceName.ToUpper()
 
     $getTargetResourceReturnValue = @{
-        Action = $Action
-        SourcePath = $SourcePath
-        SourceCredential = $SourceCredential
-        InstanceName = $InstanceName
-        RSInstallMode = $RSInstallMode
-        FeatureFlag = $FeatureFlag
+        Action                     = $Action
+        SourcePath                 = $SourcePath
+        SourceCredential           = $SourceCredential
+        InstanceName               = $InstanceName
+        RSInstallMode              = $RSInstallMode
+        FeatureFlag                = $FeatureFlag
         FailoverClusterNetworkName = $null
-        Features = $null
-        InstanceID = $null
-        InstallSharedDir = $null
-        InstallSharedWOWDir = $null
-        InstanceDir = $null
-        SQLSvcAccountUsername = $null
-        SqlSvcStartupType = $null
-        AgtSvcAccountUsername = $null
-        AgtSvcStartupType = $null
-        SQLCollation = $null
-        SQLSysAdminAccounts = $null
-        SecurityMode = $null
-        InstallSQLDataDir = $null
-        SQLUserDBDir = $null
-        SQLUserDBLogDir = $null
-        SQLTempDBDir = $null
-        SQLTempDBLogDir = $null
-        SqlTempdbFileCount = $null
-        SqlTempdbFileSize = $null
-        SqlTempdbFileGrowth = $null
-        SqlTempdbLogFileSize = $null
-        SqlTempdbLogFileGrowth = $null
-        SQLBackupDir = $null
-        FTSvcAccountUsername = $null
-        RSSvcAccountUsername = $null
-        RsSvcStartupType = $null
-        ASSvcAccountUsername = $null
-        AsSvcStartupType = $null
-        ASCollation = $null
-        ASSysAdminAccounts = $null
-        ASDataDir = $null
-        ASLogDir = $null
-        ASBackupDir = $null
-        ASTempDir = $null
-        ASConfigDir = $null
-        ASServerMode = $null
-        ISSvcAccountUsername = $null
-        IsSvcStartupType = $null
-        FailoverClusterGroupName = $null
-        FailoverClusterIPAddress = $null
+        Features                   = $null
+        InstanceID                 = $null
+        InstallSharedDir           = $null
+        InstallSharedWOWDir        = $null
+        InstanceDir                = $null
+        SQLSvcAccountUsername      = $null
+        SqlSvcStartupType          = $null
+        AgtSvcAccountUsername      = $null
+        AgtSvcStartupType          = $null
+        SQLCollation               = $null
+        SQLSysAdminAccounts        = $null
+        SecurityMode               = $null
+        InstallSQLDataDir          = $null
+        SQLUserDBDir               = $null
+        SQLUserDBLogDir            = $null
+        SQLTempDBDir               = $null
+        SQLTempDBLogDir            = $null
+        SqlTempdbFileCount         = $null
+        SqlTempdbFileSize          = $null
+        SqlTempdbFileGrowth        = $null
+        SqlTempdbLogFileSize       = $null
+        SqlTempdbLogFileGrowth     = $null
+        SQLBackupDir               = $null
+        FTSvcAccountUsername       = $null
+        RSSvcAccountUsername       = $null
+        RsSvcStartupType           = $null
+        ASSvcAccountUsername       = $null
+        AsSvcStartupType           = $null
+        ASCollation                = $null
+        ASSysAdminAccounts         = $null
+        ASDataDir                  = $null
+        ASLogDir                   = $null
+        ASBackupDir                = $null
+        ASTempDir                  = $null
+        ASConfigDir                = $null
+        ASServerMode               = $null
+        ISSvcAccountUsername       = $null
+        IsSvcStartupType           = $null
+        FailoverClusterGroupName   = $null
+        FailoverClusterIPAddress   = $null
+        UseEnglish                 = $UseEnglish
     }
 
     <#
         $sqlHostName is later used by helper function to connect to the instance
         for the Database Engine or the Analysis Services.
     #>
-    if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster','Addnode'))
+    if ($Action -in @('CompleteFailoverCluster', 'InstallFailoverCluster', 'Addnode'))
     {
         $sqlHostName = $FailoverClusterNetworkName
     }
@@ -175,13 +185,13 @@ function Get-TargetResource
 
     # Get the name of the relevant services that are actually installed.
     $currentServiceNames = (Get-Service -Name @(
-        $serviceNames.DatabaseService
-        $serviceNames.AgentService
-        $serviceNames.FullTextService
-        $serviceNames.ReportService
-        $serviceNames.AnalysisService
-        $serviceNames.IntegrationService
-    ) -ErrorAction 'SilentlyContinue').Name
+            $serviceNames.DatabaseService
+            $serviceNames.AgentService
+            $serviceNames.FullTextService
+            $serviceNames.ReportService
+            $serviceNames.AnalysisService
+            $serviceNames.IntegrationService
+        ) -ErrorAction 'SilentlyContinue').Name
 
     Write-Verbose -Message $script:localizedData.EvaluateDatabaseEngineFeature
 
@@ -623,6 +633,11 @@ function Get-TargetResource
         Feature flags are used to toggle functionality on or off. See the
         documentation for what additional functionality exist through a feature
         flag.
+
+    .PARAMETER UseEnglish
+        Specifies to install the English version of SQL Server on a localized operating
+        system when the installation media includes language packs for both English and
+        the language corresponding to the operating system.
 #>
 function Set-TargetResource
 {
@@ -635,12 +650,12 @@ function Set-TargetResource
         Suppressing this rule because $global:DSCMachineStatus is only set,
         never used (by design of Desired State Configuration).
     #>
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [CmdletBinding()]
     param
     (
         [Parameter()]
-        [ValidateSet('Install','Upgrade','InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
+        [ValidateSet('Install', 'Upgrade', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', 'CompleteFailoverCluster')]
         [System.String]
         $Action = 'Install',
 
@@ -799,7 +814,7 @@ function Set-TargetResource
         $ASConfigDir,
 
         [Parameter()]
-        [ValidateSet('MULTIDIMENSIONAL','TABULAR','POWERPIVOT', IgnoreCase = $false)]
+        [ValidateSet('MULTIDIMENSIONAL', 'TABULAR', 'POWERPIVOT', IgnoreCase = $false)]
         [System.String]
         $ASServerMode,
 
@@ -883,7 +898,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String[]]
-        $FeatureFlag
+        $FeatureFlag,
+
+        [Parameter()]
+        [System.Boolean]
+        $UseEnglish
     )
 
     <#
@@ -899,12 +918,12 @@ function Set-TargetResource
     $null = Get-PSDrive
 
     $getTargetResourceParameters = @{
-        Action = $Action
-        SourcePath = $SourcePath
-        SourceCredential = $SourceCredential
-        InstanceName = $InstanceName
+        Action                     = $Action
+        SourcePath                 = $SourcePath
+        SourceCredential           = $SourceCredential
+        InstanceName               = $InstanceName
         FailoverClusterNetworkName = $FailoverClusterNetworkName
-        FeatureFlag = $FeatureFlag
+        FeatureFlag                = $FeatureFlag
     }
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
@@ -945,9 +964,9 @@ function Set-TargetResource
     if ($SourceCredential)
     {
         $invokeInstallationMediaCopyParameters = @{
-            SourcePath = $SourcePath
+            SourcePath       = $SourcePath
             SourceCredential = $SourceCredential
-            PassThru = $true
+            PassThru         = $true
         }
 
         $SourcePath = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters
@@ -966,7 +985,7 @@ function Set-TargetResource
 
     foreach ($feature in $featuresArray)
     {
-        if (($sqlVersion -in ('13','14')) -and ($feature -in ('ADV_SSMS','SSMS')))
+        if (($sqlVersion -in ('13', '14')) -and ($feature -in ('ADV_SSMS', 'SSMS')))
         {
             $errorMessage = $script:localizedData.FeatureNotSupported -f $feature
             New-InvalidOperationException -Message $errorMessage
@@ -990,7 +1009,7 @@ function Set-TargetResource
     # If SQL shared components already installed, clear InstallShared*Dir variables
     switch ($sqlVersion)
     {
-        { $_ -in ('10','11','12','13','14') }
+        { $_ -in ('10', '11', '12', '13', '14') }
         {
             if ((Get-Variable -Name 'InstallSharedDir' -ErrorAction SilentlyContinue) -and (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\FEE2E540D20152D4597229B6CFBC0A69' -ErrorAction SilentlyContinue))
             {
@@ -1006,7 +1025,7 @@ function Set-TargetResource
 
     $setupArguments = @{}
 
-    if ($Action -in @('PrepareFailoverCluster','CompleteFailoverCluster','InstallFailoverCluster','Addnode'))
+    if ($Action -in @('PrepareFailoverCluster', 'CompleteFailoverCluster', 'InstallFailoverCluster', 'Addnode'))
     {
         # This was brought over from the old module. Should be removed (breaking change).
         $setupArguments['SkipRules'] = 'Cluster_VerifyForErrors'
@@ -1016,14 +1035,14 @@ function Set-TargetResource
         Set the failover cluster group name and failover cluster network name for this clustered instance
         if the action is either installing (InstallFailoverCluster) or completing (CompleteFailoverCluster) a cluster.
     #>
-    if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
+    if ($Action -in @('CompleteFailoverCluster', 'InstallFailoverCluster'))
     {
         $setupArguments['FailoverClusterNetworkName'] = $FailoverClusterNetworkName
         $setupArguments['FailoverClusterGroup'] = $FailoverClusterGroupName
     }
 
     # Perform disk mapping for specific cluster installation types
-    if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
+    if ($Action -in @('CompleteFailoverCluster', 'InstallFailoverCluster'))
     {
         $requiredDrive = @()
 
@@ -1061,8 +1080,8 @@ function Set-TargetResource
 
         # Get the disk resources that are available (not assigned to a cluster role)
         $availableStorage = Get-CimInstance -Namespace 'root/MSCluster' -ClassName 'MSCluster_ResourceGroup' -Filter "Name = 'Available Storage'" |
-                                Get-CimAssociatedInstance -Association MSCluster_ResourceGroupToResource -ResultClassName MSCluster_Resource | `
-                                    Add-Member -MemberType NoteProperty -Name 'IsPossibleOwner' -Value $false -PassThru
+            Get-CimAssociatedInstance -Association MSCluster_ResourceGroupToResource -ResultClassName MSCluster_Resource | `
+                Add-Member -MemberType NoteProperty -Name 'IsPossibleOwner' -Value $false -PassThru
 
         # First map regular cluster volumes
         foreach ($diskResource in $availableStorage)
@@ -1080,12 +1099,12 @@ function Set-TargetResource
 
         foreach ($currentRequiredDrive in $requiredDrive)
         {
-            foreach ($diskResource in ($availableStorage | Where-Object {$_.IsPossibleOwner -eq $true}))
+            foreach ($diskResource in ($availableStorage | Where-Object { $_.IsPossibleOwner -eq $true }))
             {
                 $partitions = $diskResource | Get-CimAssociatedInstance -ResultClassName 'MSCluster_DiskPartition' | Select-Object -ExpandProperty Path
                 foreach ($partition in $partitions)
                 {
-                    if ($currentRequiredDrive -imatch $partition.Replace('\','\\'))
+                    if ($currentRequiredDrive -imatch $partition.Replace('\', '\\'))
                     {
                         $currentRequiredDrive.IsMapped = $true
                         $failoverClusterDisks += $diskResource.Name
@@ -1110,14 +1129,14 @@ function Set-TargetResource
 
         foreach ($clusterSharedVolume in $clusterSharedVolumes)
         {
-            foreach ($currentRequiredDrive in ($requiredDrive | Where-Object {$_.IsMapped -eq $false}))
+            foreach ($currentRequiredDrive in ($requiredDrive | Where-Object { $_.IsMapped -eq $false }))
             {
-                if ($currentRequiredDrive -imatch $clusterSharedVolume.Name.Replace('\','\\'))
+                if ($currentRequiredDrive -imatch $clusterSharedVolume.Name.Replace('\', '\\'))
                 {
                     $diskName = Get-CimInstance -ClassName 'MSCluster_ClusterSharedVolumeToResource' -Namespace 'root/MSCluster' | `
-                        Where-Object {$_.GroupComponent.Name -eq $clusterSharedVolume.Name} | `
-                        Select-Object -ExpandProperty PartComponent | `
-                        Select-Object -ExpandProperty Name
+                            Where-Object { $_.GroupComponent.Name -eq $clusterSharedVolume.Name } | `
+                            Select-Object -ExpandProperty PartComponent | `
+                            Select-Object -ExpandProperty Name
                     $failoverClusterDisks += $diskName
                     $currentRequiredDrive.IsMapped = $true
                 }
@@ -1128,7 +1147,7 @@ function Set-TargetResource
         $failoverClusterDisks = $failoverClusterDisks | Sort-Object -Unique
 
         # Ensure we mapped all required drives
-        $unMappedRequiredDrives = $requiredDrive | Where-Object {$_.IsMapped -eq $false} | Measure-Object
+        $unMappedRequiredDrives = $requiredDrive | Where-Object { $_.IsMapped -eq $false } | Measure-Object
         if ($unMappedRequiredDrives.Count -gt 0)
         {
             $errorMessage = $script:localizedData.FailoverClusterDiskMappingError -f ($failoverClusterDisks -join '; ')
@@ -1140,7 +1159,7 @@ function Set-TargetResource
     }
 
     # Determine network mapping for specific cluster installation types
-    if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster'))
+    if ($Action -in @('CompleteFailoverCluster', 'InstallFailoverCluster'))
     {
         $clusterIPAddresses = @()
 
@@ -1186,9 +1205,9 @@ function Set-TargetResource
 
     # Add standard install arguments
     $setupArguments += @{
-        Quiet = $true
+        Quiet                        = $true
         IAcceptSQLServerLicenseTerms = $true
-        Action = $Action
+        Action                       = $Action
     }
 
     $argumentVars = @(
@@ -1201,7 +1220,7 @@ function Set-TargetResource
         'ErrorReporting'
     )
 
-    if ($Action -in @('Install','Upgrade','InstallFailoverCluster','PrepareFailoverCluster','CompleteFailoverCluster'))
+    if ($Action -in @('Install', 'Upgrade', 'InstallFailoverCluster', 'PrepareFailoverCluster', 'CompleteFailoverCluster'))
     {
         $argumentVars += @(
             'Features',
@@ -1234,7 +1253,7 @@ function Set-TargetResource
         }
 
         # Should not be passed when PrepareFailoverCluster is specified
-        if ($Action -in @('Install','Upgrade','InstallFailoverCluster','CompleteFailoverCluster'))
+        if ($Action -in @('Install', 'Upgrade', 'InstallFailoverCluster', 'CompleteFailoverCluster'))
         {
             if ($null -ne $PsDscContext.RunAsUser)
             {
@@ -1318,7 +1337,7 @@ function Set-TargetResource
             $setupArguments['SqlTempdbLogFileGrowth'] = $SqlTempdbLogFileGrowth
         }
 
-        if ($Action -in @('Install','Upgrade'))
+        if ($Action -in @('Install', 'Upgrade'))
         {
             if ($PSBoundParameters.ContainsKey('AgtSvcStartupType'))
             {
@@ -1380,7 +1399,7 @@ function Set-TargetResource
             $setupArguments += (Get-ServiceAccountParameters -ServiceAccount $ASSvcAccount -ServiceType 'AS')
         }
 
-        if ($Action -in ('Install','Upgrade','InstallFailoverCluster','CompleteFailoverCluster'))
+        if ($Action -in ('Install', 'Upgrade', 'InstallFailoverCluster', 'CompleteFailoverCluster'))
         {
             if ($null -ne $PsDscContext.RunAsUser)
             {
@@ -1455,7 +1474,7 @@ function Set-TargetResource
             elseif ($currentSetupArgument.Value -is [System.Boolean])
             {
                 $setupArgumentValue = @{
-                    $true = 'True'
+                    $true  = 'True'
                     $false = 'False'
                 }[$currentSetupArgument.Value]
 
@@ -1487,24 +1506,29 @@ function Set-TargetResource
         }
     }
 
+    if ($PSBoundParameters.ContainsKey('UseEnglish') -and $UseEnglish)
+    {
+        $arguments += '/ENU'
+    }
+
     # Replace sensitive values for verbose output
     $log = $arguments
     if ($SecurityMode -eq 'SQL')
     {
-        $log = $log.Replace($SAPwd.GetNetworkCredential().Password,"********")
+        $log = $log.Replace($SAPwd.GetNetworkCredential().Password, "********")
     }
 
     if ($ProductKey -ne "")
     {
-        $log = $log.Replace($ProductKey,"*****-*****-*****-*****-*****")
+        $log = $log.Replace($ProductKey, "*****-*****-*****-*****-*****")
     }
 
-    $logVars = @('AgtSvcAccount', 'SQLSvcAccount', 'FTSvcAccount', 'RSSvcAccount', 'ASSvcAccount','ISSvcAccount')
+    $logVars = @('AgtSvcAccount', 'SQLSvcAccount', 'FTSvcAccount', 'RSSvcAccount', 'ASSvcAccount', 'ISSvcAccount')
     foreach ($logVar in $logVars)
     {
         if ($PSBoundParameters.ContainsKey($logVar))
         {
-            $log = $log.Replace((Get-Variable -Name $logVar).Value.GetNetworkCredential().Password,"********")
+            $log = $log.Replace((Get-Variable -Name $logVar).Value.GetNetworkCredential().Password, "********")
         }
     }
 
@@ -1520,9 +1544,9 @@ function Set-TargetResource
         #>
 
         $startProcessParameters = @{
-            FilePath = $pathToSetupExecutable
+            FilePath     = $pathToSetupExecutable
             ArgumentList = $arguments
-            Timeout = $SetupProcessTimeout
+            Timeout      = $SetupProcessTimeout
         }
 
         $processExitCode = Start-SqlSetupProcess @startProcessParameters
@@ -1812,6 +1836,13 @@ function Set-TargetResource
         Feature flags are used to toggle functionality on or off. See the
         documentation for what additional functionality exist through a feature
         flag.
+
+    .PARAMETER UseEnglish
+        Specifies to install the English version of SQL Server on a localized operating
+        system when the installation media includes language packs for both English and
+        the language corresponding to the operating system.
+
+        Not used in Test-TargetResource.
 #>
 function Test-TargetResource
 {
@@ -1820,7 +1851,7 @@ function Test-TargetResource
     param
     (
         [Parameter()]
-        [ValidateSet('Install', 'Upgrade', 'InstallFailoverCluster','AddNode','PrepareFailoverCluster','CompleteFailoverCluster')]
+        [ValidateSet('Install', 'Upgrade', 'InstallFailoverCluster', 'AddNode', 'PrepareFailoverCluster', 'CompleteFailoverCluster')]
         [System.String]
         $Action = 'Install',
 
@@ -1979,7 +2010,7 @@ function Test-TargetResource
         $ASConfigDir,
 
         [Parameter()]
-        [ValidateSet('MULTIDIMENSIONAL','TABULAR','POWERPIVOT', IgnoreCase = $false)]
+        [ValidateSet('MULTIDIMENSIONAL', 'TABULAR', 'POWERPIVOT', IgnoreCase = $false)]
         [System.String]
         $ASServerMode,
 
@@ -2063,7 +2094,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String[]]
-        $FeatureFlag
+        $FeatureFlag,
+
+        [Parameter()]
+        [System.Boolean]
+        $UseEnglish
     )
 
     <#
@@ -2076,12 +2111,12 @@ function Test-TargetResource
     }
 
     $getTargetResourceParameters = @{
-        Action = $Action
-        SourcePath = $SourcePath
-        SourceCredential = $SourceCredential
-        InstanceName = $InstanceName
+        Action                     = $Action
+        SourcePath                 = $SourcePath
+        SourceCredential           = $SourceCredential
+        InstanceName               = $InstanceName
         FailoverClusterNetworkName = $FailoverClusterNetworkName
-        FeatureFlag = $FeatureFlag
+        FeatureFlag                = $FeatureFlag
     }
 
     $boundParameters = $PSBoundParameters
@@ -2121,7 +2156,7 @@ function Test-TargetResource
     {
         Write-Verbose -Message $script:localizedData.EvaluatingClusterParameters
 
-        $boundParameters.Keys | Where-Object {$_ -imatch "^FailoverCluster"} | ForEach-Object {
+        $boundParameters.Keys | Where-Object { $_ -imatch "^FailoverCluster" } | ForEach-Object {
             $variableName = $_
 
             if ($getTargetResourceResult.$variableName -ne $boundParameters[$variableName])
@@ -2221,7 +2256,7 @@ function ConvertTo-Decimal
     $i = 3
     $decimalIpAddress = 0
     $IPAddress.GetAddressBytes() | ForEach-Object {
-        $decimalIpAddress += $_ * [Math]::Pow(256,$i)
+        $decimalIpAddress += $_ * [Math]::Pow(256, $i)
         $i--
     }
 
@@ -2289,7 +2324,7 @@ function Get-ServiceAccountParameters
         $ServiceAccount,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('SQL','AGT','IS','RS','AS','FT')]
+        [ValidateSet('SQL', 'AGT', 'IS', 'RS', 'AS', 'FT')]
         [System.String]
         $ServiceType
     )
@@ -2540,15 +2575,15 @@ function Get-SqlEngineProperties
     return @{
         SQLSvcAccountUsername = $databaseEngineService.UserName
         AgtSvcAccountUsername = $sqlAgentService.UserName
-        SqlSvcStartupType = $databaseEngineService.StartupType
-        AgtSvcStartupType = $sqlAgentService.StartupType
-        SQLCollation = $sqlCollation
-        IsClustered = $isClustered
-        InstallSQLDataDir = $installSQLDataDirectory
-        SQLUserDBDir = $sqlUserDatabaseDirectory
-        SQLUserDBLogDir = $sqlUserDatabaseLogDirectory
-        SQLBackupDir = $sqlBackupDirectory
-        SecurityMode = $securityMode
+        SqlSvcStartupType     = $databaseEngineService.StartupType
+        AgtSvcStartupType     = $sqlAgentService.StartupType
+        SQLCollation          = $sqlCollation
+        IsClustered           = $isClustered
+        InstallSQLDataDir     = $installSQLDataDirectory
+        SQLUserDBDir          = $sqlUserDatabaseDirectory
+        SQLUserDBLogDir       = $sqlUserDatabaseLogDirectory
+        SQLBackupDir          = $sqlBackupDirectory
+        SecurityMode          = $securityMode
     }
 }
 
@@ -2737,7 +2772,7 @@ function Get-TempDbProperties
     # Tempdb data files size.
     $sqlTempdbFileSize = (
         $primaryFileGroup.Files.Size |
-        Measure-Object -Average
+            Measure-Object -Average
     ).Average / 1KB
 
     # Tempdb data files average growth in KB.
@@ -2809,11 +2844,11 @@ function Get-TempDbProperties
     $sqlTempdbLogFileGrowth = $sqlTempdbLogFileGrowthMB + $sqlTempdbLogFileGrowthPercent
 
     return @{
-        SQLTempDBDir = $sqlTempDBPrimaryFilePath
-        SqlTempdbFileCount = $sqlTempdbFileCount
-        SqlTempdbFileSize = $sqlTempdbFileSize
-        SqlTempdbFileGrowth = $sqlTempdbFileGrowth
-        SqlTempdbLogFileSize = $sqlTempdbLogFileSize
+        SQLTempDBDir           = $sqlTempDBPrimaryFilePath
+        SqlTempdbFileCount     = $sqlTempdbFileCount
+        SqlTempdbFileSize      = $sqlTempdbFileSize
+        SqlTempdbFileGrowth    = $sqlTempdbFileGrowth
+        SqlTempdbLogFileSize   = $sqlTempdbLogFileSize
         SqlTempdbLogFileGrowth = $sqlTempdbLogFileGrowth
     }
 }
@@ -2946,7 +2981,7 @@ function Get-SqlClusterProperties
     $getCimInstanceParameters = @{
         Namespace = 'root/MSCluster'
         ClassName = 'MSCluster_Resource'
-        Filter = "Type = 'SQL Server'"
+        Filter    = "Type = 'SQL Server'"
     }
 
     $clusteredSqlInstance = Get-CimInstance @getCimInstanceParameters |
@@ -3191,7 +3226,7 @@ function Get-SqlSharedPaths
 
     switch ($SqlServerMajorVersion)
     {
-        { $_ -in ('10','11','12','13','14') }
+        { $_ -in ('10', '11', '12', '13', '14') }
         {
             $registryKeySharedDir = 'FEE2E540D20152D4597229B6CFBC0A69'
             $registryKeySharedWOWDir = 'A79497A344129F64CA7D69C56F5DD8B4'
@@ -3209,7 +3244,7 @@ function Get-SqlSharedPaths
     }
 
     return @{
-        InstallSharedDir = $installSharedDir
+        InstallSharedDir    = $installSharedDir
         InstallSharedWOWDir = $installSharedWOWDir
     }
 }

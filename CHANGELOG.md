@@ -62,6 +62,7 @@ in a future release.
   - A read only property `IsClustered` was added that can be used to determine
     if the instance is clustered.
   - Added the properties `NpEnabled` and `TcpEnabled` ([issue #1161](https://github.com/dsccommunity/SqlServerDsc/issues/1161)).
+  - Added the property `UseEnglish` ([issue #1473](https://github.com/dsccommunity/SqlServerDsc/issues/1473)).
 - SqlServerReplication
   - Add integration tests ([issue #755](https://github.com/dsccommunity/SqlServerDsc/issues/755)
 - SqlDatabase

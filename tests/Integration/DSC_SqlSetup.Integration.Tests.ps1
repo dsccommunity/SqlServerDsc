@@ -250,6 +250,7 @@ try
                 $resourceCurrentState.SuppressReboot             | Should -BeNullOrEmpty
                 $resourceCurrentState.UpdateEnabled              | Should -BeNullOrEmpty
                 $resourceCurrentState.UpdateSource               | Should -BeNullOrEmpty
+                $resourceCurrentState.UseEnglish                 | Should -BeTrue
 
                 # Verify all the accounts are returned in the property SQLSysAdminAccounts.
                 $ConfigurationData.AllNodes.SqlAdministratorAccountUserName | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
@@ -385,6 +386,7 @@ try
                 $resourceCurrentState.SuppressReboot             | Should -BeNullOrEmpty
                 $resourceCurrentState.UpdateEnabled              | Should -BeNullOrEmpty
                 $resourceCurrentState.UpdateSource               | Should -BeNullOrEmpty
+                $resourceCurrentState.UseEnglish                 | Should -BeFalse
 
                 # Regression test for issue #1287
                 $resourceCurrentState.SQLUserDBDir               | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\DATA\")

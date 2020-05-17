@@ -285,6 +285,7 @@ Configuration DSC_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
             SqlTempDbLogFileGrowth = $Node.SqlTempDbLogFileGrowth
             NpEnabled              = $true
             TcpEnabled             = $true
+            UseEnglish             = $true
 
             # This must be set if using SYSTEM account to install.
             SQLSysAdminAccounts   = @(
