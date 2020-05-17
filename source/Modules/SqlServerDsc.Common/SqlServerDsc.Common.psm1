@@ -2566,6 +2566,8 @@ function Set-PSModulePath
     {
         $env:PSModulePath = $Path
     }
+}
+
 <#
     .SYNOPSIS
         Converts the combination of server name and instance name to
