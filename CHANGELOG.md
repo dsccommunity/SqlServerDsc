@@ -93,6 +93,8 @@ in a future release.
 - SqlServerDsc.Common
   - The helper function `Invoke-InstallationMediaCopy` was changed to
     handle a breaking change in PowerShell 7 ([issue #1530](https://github.com/dsccommunity/SqlServerDsc/issues/1530)).
+  - Removed the local helper function `Set-PSModulePath` as it was
+    implemented in the module DscResource.Common.
 - CommonTestHelper
   - The test helper function `New-SQLSelfSignedCertificate` was changed
     to install the dependent module `PSPKI` through `RequiredModules.psd1`.
