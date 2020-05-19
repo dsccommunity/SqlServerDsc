@@ -2542,28 +2542,3 @@ function Get-ServerProtocolObject
 
     return $serverProtocolProperties
 }
-
-function Set-PSModulePath
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $Path,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Machine
-    )
-
-    if ($Machine.IsPresent)
-    {
-        [System.Environment]::SetEnvironmentVariable('PSModulePath', $Path, [System.EnvironmentVariableTarget]::Machine)
-    }
-    else
-    {
-        $env:PSModulePath = $Path
-    }
-}
