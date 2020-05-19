@@ -65,7 +65,9 @@ Configuration DSC_SqlScriptQuery_RunSqlScriptQueryAsWindowsUser_Config
     {
         SqlScriptQuery 'Integration_Test'
         {
-            ServerInstance       = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+
             GetQuery             = $Node.GetQuery
             TestQuery            = $Node.TestQuery
             SetQuery             = $Node.SetQuery
@@ -93,7 +95,9 @@ Configuration DSC_SqlScriptQuery_RunSqlScriptQueryAsSqlUser_Config
     {
         SqlScriptQuery 'Integration_Test'
         {
-            ServerInstance = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
+            ServerName     = $Node.ServerName
+            InstanceName   = $Node.InstanceName
+
             GetQuery       = $Node.GetQuery
             TestQuery      = $Node.TestQuery
             SetQuery       = $Node.SetQuery
@@ -101,6 +105,7 @@ Configuration DSC_SqlScriptQuery_RunSqlScriptQueryAsSqlUser_Config
             Variable       = @(
                 ('DatabaseName={0}' -f $Node.Database2Name)
             )
+
             Credential     = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.SqlLogin_Username, (ConvertTo-SecureString -String $Node.SqlLogin_Password -AsPlainText -Force))

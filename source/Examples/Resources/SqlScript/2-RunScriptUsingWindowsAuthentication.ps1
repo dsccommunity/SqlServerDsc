@@ -20,17 +20,19 @@ Configuration Example
     {
         SqlScript 'RunAsSYSTEM'
         {
-            ServerInstance = 'localhost\SQL2016'
+            ServerName   = 'localhost'
+            InstanceName = 'SQL2016'
 
-            SetFilePath    = 'C:\DSCTemp\SQLScripts\Set-RunSQLScript-AsSYSTEM.sql'
-            TestFilePath   = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript-AsSYSTEM.sql'
-            GetFilePath    = 'C:\DSCTemp\SQLScripts\Get-RunSQLScript-AsSYSTEM.sql'
-            Variable       = @('FilePath=C:\temp\log\AuditFiles')
+            SetFilePath  = 'C:\DSCTemp\SQLScripts\Set-RunSQLScript-AsSYSTEM.sql'
+            TestFilePath = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript-AsSYSTEM.sql'
+            GetFilePath  = 'C:\DSCTemp\SQLScripts\Get-RunSQLScript-AsSYSTEM.sql'
+            Variable     = @('FilePath=C:\temp\log\AuditFiles')
         }
 
         SqlScript 'RunAsUser'
         {
-            ServerInstance       = 'localhost\SQL2016'
+            ServerName           = 'localhost'
+            InstanceName         = 'SQL2016'
 
             SetFilePath          = 'C:\DSCTemp\SQLScripts\Set-RunSQLScript-AsUSER.sql'
             TestFilePath         = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript-AsUSER.sql'
@@ -42,7 +44,8 @@ Configuration Example
 
         SqlScript 'RunAsUser-With30SecondTimeout'
         {
-            ServerInstance       = 'localhost\SQL2016'
+            ServerName           = 'localhost'
+            InstanceName         = 'SQL2016'
 
             SetFilePath          = 'C:\DSCTemp\SQLScripts\Set-RunSQLScript-WithQueryTimeout.sql'
             TestFilePath         = 'C:\DSCTemp\SQLScripts\Test-RunSQLScript-WithQueryTimeout.sql'

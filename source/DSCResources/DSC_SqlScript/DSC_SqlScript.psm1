@@ -8,11 +8,11 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
-        Returns the current state of the SQL Server features.
+        Returns the current state of what the Get-script returns.
 
-    .PARAMETER ServerInstance
-        The name of an instance of the Database Engine. For a default instance, only specify the computer name. For a named instances,
-        use the format ComputerName\InstanceName.
+    .PARAMETER InstanceName
+        Specifies the name of the SQL Server Database Engine instance. For the
+        default instance specify 'MSSQLSERVER'.
 
     .PARAMETER SetFilePath
         Path to the T-SQL file that will perform Set action.
@@ -25,6 +25,10 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         Path to the T-SQL file that will perform Test action.
         Any script that does not throw an error or returns null is evaluated to true.
         The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text, and will not cause the test to return false.
+
+    .PARAMETER ServerName
+        Specifies the host name of the SQL Server to be configured. Default value
+        is $env:COMPUTERNAME.
 
     .PARAMETER Credential
         The credentials to authenticate with, using SQL Authentication. To authenticate using Windows Authentication, assign the credentials
@@ -51,7 +55,7 @@ function Get-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ServerInstance,
+        $InstanceName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -64,6 +68,11 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [System.String]
         $TestFilePath,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $ServerName = $env:COMPUTERNAME,
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -79,8 +88,10 @@ function Get-TargetResource
         $Variable
     )
 
+    $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
+
     $invokeParameters = @{
-        ServerInstance = $ServerInstance
+        ServerInstance = $serverInstance
         InputFile      = $GetFilePath
         Credential     = $Credential
         Variable       = $Variable
@@ -90,7 +101,7 @@ function Get-TargetResource
     }
 
     Write-Verbose -Message (
-        $script:localizedData.ExecutingGetScript -f $GetFilePath, $ServerInstance
+        $script:localizedData.ExecutingGetScript -f $GetFilePath, $InstanceName, $ServerName
     )
 
     $result = Invoke-SqlScript @invokeParameters
@@ -98,26 +109,27 @@ function Get-TargetResource
     $getResult = Out-String -InputObject $result
 
     $returnValue = @{
-        ServerInstance = [System.String] $ServerInstance
-        SetFilePath    = [System.String] $SetFilePath
-        GetFilePath    = [System.String] $GetFilePath
-        TestFilePath   = [System.String] $TestFilePath
-        Credential     = [System.Object] $Credential
-        QueryTimeout   = [System.UInt32] $QueryTimeout
-        Variable       = [System.String[]] $Variable
-        GetResult      = [System.String[]] $getResult
+        ServerName   = [System.String] $ServerName
+        InstanceName = [System.String] $InstanceName
+        SetFilePath  = [System.String] $SetFilePath
+        GetFilePath  = [System.String] $GetFilePath
+        TestFilePath = [System.String] $TestFilePath
+        Credential   = [System.Object] $Credential
+        QueryTimeout = [System.UInt32] $QueryTimeout
+        Variable     = [System.String[]] $Variable
+        GetResult    = [System.String[]] $getResult
     }
 
-    $returnValue
+    return $returnValue
 }
 
 <#
     .SYNOPSIS
-        Returns the current state of the SQL Server features.
+        Executes the Set-script.
 
-    .PARAMETER ServerInstance
-        The name of an instance of the Database Engine. For a default instance, only specify the computer name. For a named instances,
-        use the format ComputerName\InstanceName.
+    .PARAMETER InstanceName
+        Specifies the name of the SQL Server Database Engine instance. For the
+        default instance specify 'MSSQLSERVER'.
 
     .PARAMETER SetFilePath
         Path to the T-SQL file that will perform Set action.
@@ -126,10 +138,18 @@ function Get-TargetResource
         Path to the T-SQL file that will perform Get action.
         Any values returned by the T-SQL queries will also be returned by the cmdlet Get-DscConfiguration through the `GetResult` property.
 
+        Not used in Set-TargetResource.
+
     .PARAMETER TestFilePath
         Path to the T-SQL file that will perform Test action.
         Any script that does not throw an error or returns null is evaluated to true.
         The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text, and will not cause the test to return false.
+
+        Not used in Set-TargetResource.
+
+    .PARAMETER ServerName
+        Specifies the host name of the SQL Server to be configured. Default value
+        is $env:COMPUTERNAME.
 
     .PARAMETER Credential
         The credentials to authenticate with, using SQL Authentication. To authenticate using Windows Authentication, assign the credentials
@@ -152,7 +172,7 @@ function Set-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ServerInstance,
+        $InstanceName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -165,6 +185,11 @@ function Set-TargetResource
         [Parameter(Mandatory = $true)]
         [System.String]
         $TestFilePath,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $ServerName = $env:COMPUTERNAME,
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -180,12 +205,14 @@ function Set-TargetResource
         $Variable
     )
 
+    $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
+
     Write-Verbose -Message (
-        $script:localizedData.ExecutingSetScript -f $SetFilePath, $ServerInstance
+        $script:localizedData.ExecutingSetScript -f $SetFilePath, $InstanceName, $ServerName
     )
 
     $invokeParameters = @{
-        ServerInstance = $ServerInstance
+        ServerInstance = $serverInstance
         InputFile      = $SetFilePath
         Credential     = $Credential
         Variable       = $Variable
@@ -199,23 +226,31 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-        Returns the current state of the SQL Server features.
+        Evaluates the value returned from the Test-script.
 
-    .PARAMETER ServerInstance
-        The name of an instance of the Database Engine. For a default instance, only specify the computer name. For a named instances,
-        use the format ComputerName\InstanceName.
+    .PARAMETER InstanceName
+        Specifies the name of the SQL Server Database Engine instance. For the
+        default instance specify 'MSSQLSERVER'.
 
     .PARAMETER SetFilePath
         Path to the T-SQL file that will perform Set action.
+
+        Not used in Test-TargetResource.
 
     .PARAMETER GetFilePath
         Path to the T-SQL file that will perform Get action.
         Any values returned by the T-SQL queries will also be returned by the cmdlet Get-DscConfiguration through the `GetResult` property.
 
+        Not used in Test-TargetResource.
+
     .PARAMETER TestFilePath
         Path to the T-SQL file that will perform Test action.
         Any script that does not throw an error or returns null is evaluated to true.
         The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text, and will not cause the test to return false.
+
+    .PARAMETER ServerName
+        Specifies the host name of the SQL Server to be configured. Default value
+        is $env:COMPUTERNAME.
 
     .PARAMETER Credential
         The credentials to authenticate with, using SQL Authentication. To authenticate using Windows Authentication, assign the credentials
@@ -240,7 +275,7 @@ function Test-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ServerInstance,
+        $InstanceName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -253,6 +288,11 @@ function Test-TargetResource
         [Parameter(Mandatory = $true)]
         [System.String]
         $TestFilePath,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $ServerName = $env:COMPUTERNAME,
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -272,44 +312,48 @@ function Test-TargetResource
         $script:localizedData.TestingConfiguration
     )
 
+    $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
+
+    $invokeParameters = @{
+        ServerInstance = $serverInstance
+        InputFile      = $TestFilePath
+        Credential     = $Credential
+        Variable       = $Variable
+        QueryTimeout   = $QueryTimeout
+        Verbose        = $VerbosePreference
+        ErrorAction    = 'Stop'
+    }
+
+    $result = $null
+
     try
     {
         Write-Verbose -Message (
-            $script:localizedData.ExecutingTestScript -f $TestFilePath, $ServerInstance
+            $script:localizedData.ExecutingTestScript -f $TestFilePath, $InstanceName, $ServerName
         )
 
-        $invokeParameters = @{
-            ServerInstance = $ServerInstance
-            InputFile      = $TestFilePath
-            Credential     = $Credential
-            Variable       = $Variable
-            QueryTimeout   = $QueryTimeout
-            Verbose        = $VerbosePreference
-            ErrorAction    = 'Stop'
-        }
-
         $result = Invoke-SqlScript @invokeParameters
-
-        if ($null -eq $result)
-        {
-            Write-Verbose -Message (
-                $script:localizedData.InDesiredState
-            )
-
-            return $true
-        }
-        else
-        {
-            Write-Verbose -Message (
-                $script:localizedData.NotInDesiredState
-            )
-
-            return $false
-        }
     }
     catch [Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException]
     {
         Write-Verbose $_
+        return $false
+    }
+
+    if ($null -eq $result)
+    {
+        Write-Verbose -Message (
+            $script:localizedData.InDesiredState
+        )
+
+        return $true
+    }
+    else
+    {
+        Write-Verbose -Message (
+            $script:localizedData.NotInDesiredState
+        )
+
         return $false
     }
 }

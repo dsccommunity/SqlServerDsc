@@ -208,7 +208,8 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUser_Config
     {
         SqlScript 'Integration_Test'
         {
-            ServerInstance       = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
 
             GetFilePath          = $Node.GetSqlScriptPath
             TestFilePath         = $Node.TestSqlScriptPath
@@ -237,7 +238,8 @@ Configuration DSC_SqlScript_RunSqlScriptAsSqlUser_Config
     {
         SqlScript 'Integration_Test'
         {
-            ServerInstance = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
+            ServerName     = $Node.ServerName
+            InstanceName   = $Node.InstanceName
 
             GetFilePath    = $Node.GetSqlScriptPath
             TestFilePath   = $Node.TestSqlScriptPath

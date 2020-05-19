@@ -18,13 +18,15 @@ Configuration Example
     {
         SqlScriptQuery 'RunAsSqlCredential'
         {
-            ServerInstance = 'localhost\SQL2016'
-            Credential     = $SqlCredential
+            ServerName   = 'localhost'
+            InstanceName = 'SQL2016'
 
-            SetQuery       = 'Set query'
-            TestQuery      = 'Test query'
-            GetQuery       = 'Get query'
-            Variable       = @('FilePath=C:\temp\log\AuditFiles')
+            Credential   = $SqlCredential
+
+            SetQuery     = 'Set query'
+            TestQuery    = 'Test query'
+            GetQuery     = 'Get query'
+            Variable     = @('FilePath=C:\temp\log\AuditFiles')
         }
     }
 }

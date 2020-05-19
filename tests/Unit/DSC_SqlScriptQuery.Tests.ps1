@@ -52,23 +52,25 @@ Invoke-TestSetup
 try
 {
     InModuleScope $script:dscResourceName {
-         Describe 'DSC_SqlScriptQuery\Get-TargetResource' {
-             BeforeAll {
+        Describe 'DSC_SqlScriptQuery\Get-TargetResource' {
+            BeforeAll {
                 $testParameters = @{
-                    ServerInstance = $env:COMPUTERNAME
-                    GetQuery       = "GetQuery;"
-                    TestQuery      = "TestQuery;"
-                    SetQuery       = "SetQuery;"
+                    ServerName   = $env:COMPUTERNAME
+                    InstanceName = 'MSSQLSERVER'
+                    GetQuery     = "GetQuery;"
+                    TestQuery    = "TestQuery;"
+                    SetQuery     = "SetQuery;"
                 }
 
                 $testParametersTimeout = @{
-                    ServerInstance = $env:COMPUTERNAME
-                    GetQuery       = "GetQuery;"
-                    TestQuery      = "TestQuery;"
-                    SetQuery       = "SetQuery;"
-                    QueryTimeout   = 30
+                    ServerName   = $env:COMPUTERNAME
+                    InstanceName = 'MSSQLSERVER'
+                    GetQuery     = "GetQuery;"
+                    TestQuery    = "TestQuery;"
+                    SetQuery     = "SetQuery;"
+                    QueryTimeout = 30
                 }
-             }
+            }
 
             Context 'Get-TargetResource returns script results successfully' {
                 Mock -CommandName Invoke-SqlScript -MockWith {

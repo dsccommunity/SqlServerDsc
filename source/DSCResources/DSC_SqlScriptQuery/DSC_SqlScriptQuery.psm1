@@ -8,11 +8,11 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
-        Returns the current state of the SQL Server features.
+        Returns the current state of what the Get-query returns.
 
-    .PARAMETER ServerInstance
-        The name of an instance of the Database Engine. For a default instance, only specify the computer name. For a named instances,
-        use the format ComputerName\InstanceName.
+    .PARAMETER InstanceName
+        Specifies the name of the SQL Server Database Engine instance. For the
+        default instance specify 'MSSQLSERVER'.
 
     .PARAMETER GetQuery
         The full query that will perform the Get Action
@@ -25,6 +25,10 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
     .PARAMETER SetQuery
         The full query that will perform the Set Action
+
+    .PARAMETER ServerName
+        Specifies the host name of the SQL Server to be configured. Default value
+        is $env:COMPUTERNAME.
 
     .PARAMETER Credential
         The credentials to authenticate with, using SQL Authentication. To authenticate using Windows Authentication, assign the credentials
@@ -51,7 +55,7 @@ function Get-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ServerInstance,
+        $InstanceName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -64,6 +68,11 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [System.String]
         $SetQuery,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $ServerName = $env:COMPUTERNAME,
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -80,12 +89,14 @@ function Get-TargetResource
     )
 
     Write-Verbose -Message (
-        $script:localizedData.ExecutingGetQuery -f $ServerInstance
+        $script:localizedData.ExecutingGetQuery -f $InstanceName, $ServerName
     )
+
+    $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
 
     $invokeParameters = @{
         Query          = $GetQuery
-        ServerInstance = $ServerInstance
+        ServerInstance = $serverInstance
         Credential     = $Credential
         Variable       = $Variable
         QueryTimeout   = $QueryTimeout
@@ -98,38 +109,47 @@ function Get-TargetResource
     $getResult = Out-String -InputObject $result
 
     $returnValue = @{
-        ServerInstance = [System.String] $ServerInstance
-        GetQuery       = [System.String] $GetQuery
-        TestQuery      = [System.String] $TestQuery
-        SetQuery       = [System.String] $SetQuery
-        Credential     = [System.Object] $Credential
-        QueryTimeout   = [System.UInt32] $QueryTimeout
-        Variable       = [System.String[]] $Variable
-        GetResult      = [System.String[]] $getResult
+        ServerName   = [System.String] $ServerName
+        InstanceName = [System.String] $InstanceName
+        GetQuery     = [System.String] $GetQuery
+        TestQuery    = [System.String] $TestQuery
+        SetQuery     = [System.String] $SetQuery
+        Credential   = [System.Object] $Credential
+        QueryTimeout = [System.UInt32] $QueryTimeout
+        Variable     = [System.String[]] $Variable
+        GetResult    = [System.String[]] $getResult
     }
 
-    $returnValue
+    return $returnValue
 }
 
 <#
     .SYNOPSIS
-        Returns the current state of the SQL Server features.
+        Executes the Set-query.
 
-    .PARAMETER ServerInstance
-        The name of an instance of the Database Engine. For a default instance, only specify the computer name. For a named instances,
-        use the format ComputerName\InstanceName.
+    .PARAMETER InstanceName
+        Specifies the name of the SQL Server Database Engine instance. For the
+        default instance specify 'MSSQLSERVER'.
 
     .PARAMETER GetQuery
         The full query that will perform the Get Action
         Any values returned by the T-SQL queries will also be returned by the cmdlet Get-DscConfiguration through the `GetResult` property.
+
+        Not used in Set-TargetResource.
 
     .PARAMETER TestQuery
         The full query that will perform the Test Action
         Any script that does not throw an error or returns null is evaluated to true.
         The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text, and will not cause the test to return false.
 
+        Not used in Set-TargetResource.
+
     .PARAMETER SetQuery
         The full query that will perform the Set Action
+
+    .PARAMETER ServerName
+        Specifies the host name of the SQL Server to be configured. Default value
+        is $env:COMPUTERNAME.
 
     .PARAMETER Credential
         The credentials to authenticate with, using SQL Authentication. To authenticate using Windows Authentication, assign the credentials
@@ -152,7 +172,7 @@ function Set-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ServerInstance,
+        $InstanceName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -165,6 +185,11 @@ function Set-TargetResource
         [Parameter(Mandatory = $true)]
         [System.String]
         $SetQuery,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $ServerName = $env:COMPUTERNAME,
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -181,12 +206,14 @@ function Set-TargetResource
     )
 
     Write-Verbose -Message (
-        $script:localizedData.ExecutingSetQuery -f $ServerInstance
+        $script:localizedData.ExecutingSetQuery -f $InstanceName, $ServerName
     )
+
+    $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
 
     $invokeParameters = @{
         Query          = $SetQuery
-        ServerInstance = $ServerInstance
+        ServerInstance = $serverInstance
         Credential     = $Credential
         Variable       = $Variable
         QueryTimeout   = $QueryTimeout
@@ -199,15 +226,17 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-        Returns the current state of the SQL Server features.
+        Evaluates the value returned from the Test-query.
 
-    .PARAMETER ServerInstance
-        The name of an instance of the Database Engine. For a default instance, only specify the computer name. For a named instances,
-        use the format ComputerName\InstanceName.
+    .PARAMETER InstanceName
+        Specifies the name of the SQL Server Database Engine instance. For the
+        default instance specify 'MSSQLSERVER'.
 
     .PARAMETER GetQuery
         The full query that will perform the Get Action
         Any values returned by the T-SQL queries will also be returned by the cmdlet Get-DscConfiguration through the `GetResult` property.
+
+        Not used in Test-TargetResource.
 
     .PARAMETER TestQuery
         The full query that will perform the Test Action
@@ -216,6 +245,12 @@ function Set-TargetResource
 
     .PARAMETER SetQuery
         The full query that will perform the Set Action
+
+        Not used in Test-TargetResource.
+
+    .PARAMETER ServerName
+        Specifies the host name of the SQL Server to be configured. Default value
+        is $env:COMPUTERNAME.
 
     .PARAMETER Credential
         The credentials to authenticate with, using SQL Authentication. To authenticate using Windows Authentication, assign the credentials
@@ -240,7 +275,7 @@ function Test-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ServerInstance,
+        $InstanceName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -253,6 +288,11 @@ function Test-TargetResource
         [Parameter(Mandatory = $true)]
         [System.String]
         $SetQuery,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $ServerName = $env:COMPUTERNAME,
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -272,44 +312,48 @@ function Test-TargetResource
         $script:localizedData.TestingConfiguration
     )
 
+    $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
+
+    $invokeParameters = @{
+        Query          = $TestQuery
+        ServerInstance = $serverInstance
+        Credential     = $Credential
+        Variable       = $Variable
+        QueryTimeout   = $QueryTimeout
+        Verbose        = $VerbosePreference
+        ErrorAction    = 'Stop'
+    }
+
+    $result = $null
+
     try
     {
         Write-Verbose -Message (
-            $script:localizedData.ExecutingTestQuery -f $ServerInstance
+            $script:localizedData.ExecutingTestQuery -f $InstanceName, $ServerName
         )
 
-        $invokeParameters = @{
-            Query          = $TestQuery
-            ServerInstance = $ServerInstance
-            Credential     = $Credential
-            Variable       = $Variable
-            QueryTimeout   = $QueryTimeout
-            Verbose        = $VerbosePreference
-            ErrorAction    = 'Stop'
-        }
-
         $result = Invoke-SqlScript @invokeParameters
-
-        if ($null -eq $result)
-        {
-            Write-Verbose -Message (
-                $script:localizedData.InDesiredState
-            )
-
-            return $true
-        }
-        else
-        {
-            Write-Verbose -Message (
-                $script:localizedData.NotInDesiredState
-            )
-
-            return $false
-        }
     }
     catch [Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException]
     {
         Write-Verbose $_
+        return $false
+    }
+
+    if ($null -eq $result)
+    {
+        Write-Verbose -Message (
+            $script:localizedData.InDesiredState
+        )
+
+        return $true
+    }
+    else
+    {
+        Write-Verbose -Message (
+            $script:localizedData.NotInDesiredState
+        )
+
         return $false
     }
 }

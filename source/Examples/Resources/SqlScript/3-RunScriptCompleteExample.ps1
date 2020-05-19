@@ -142,7 +142,8 @@ Configuration Example
 
         SqlScript 'Integration_Test'
         {
-            ServerInstance       = Join-Path -Path $Node.ServerName -ChildPath $Node.InstanceName
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
 
             GetFilePath          = $Node.GetSqlScriptPath
             TestFilePath         = $Node.TestSqlScriptPath

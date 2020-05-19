@@ -52,18 +52,20 @@ try
         Describe 'DSC_SqlScript\Get-TargetResource' {
             BeforeAll {
                 $testParameters = @{
-                    ServerInstance = $env:COMPUTERNAME
-                    SetFilePath    = "set.sql"
-                    GetFilePath    = "get.sql"
-                    TestFilePath   = "test.sql"
+                    ServerName   = $env:COMPUTERNAME
+                    InstanceName = 'MSSQLSERVER'
+                    SetFilePath  = "set.sql"
+                    GetFilePath  = "get.sql"
+                    TestFilePath = "test.sql"
                 }
 
                 $testParametersTimeout = @{
-                    ServerInstance = $env:COMPUTERNAME
-                    SetFilePath    = "set-timeout.sql"
-                    GetFilePath    = "get-timeout.sql"
-                    TestFilePath   = "test-timeout.sql"
-                    QueryTimeout   = 30
+                    ServerName   = $env:COMPUTERNAME
+                    InstanceName = 'MSSQLSERVER'
+                    SetFilePath  = "set-timeout.sql"
+                    GetFilePath  = "get-timeout.sql"
+                    TestFilePath = "test-timeout.sql"
+                    QueryTimeout = 30
                 }
             }
 
