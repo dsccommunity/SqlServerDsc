@@ -92,6 +92,7 @@ in a future release.
   - Changed to use the property `NuGetVersionV2` from GitVersion in the
     CI pipeline.
   - The unit tests now run on PowerShell 7 to optimize the total run time.
+  - Fixed correct casing for `ModuleVersion` property in the module manifest.
 - SqlServerDsc.Common
   - The helper function `Invoke-InstallationMediaCopy` was changed to
     handle a breaking change in PowerShell 7 ([issue #1530](https://github.com/dsccommunity/SqlServerDsc/issues/1530)).
