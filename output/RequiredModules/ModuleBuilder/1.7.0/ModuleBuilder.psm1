@@ -160,10 +160,19 @@ function GetBuildInfo {
         Get-Location -PSProvider FileSystem
     }
 
+    Write-Verbose ('BuildInfo.SourcePath: {0}' -f ($BuildInfo.SourcePath| out-string)) -Verbose
+    Write-Verbose ('ParameterValues["SourcePath"]: {0}' -f ($ParameterValues["SourcePath"] | out-string)) -Verbose
+
     if ((-not $BuildInfo.SourcePath) -and $ParameterValues["SourcePath"] -notmatch '\.psd1') {
         # Find a module manifest (or maybe several)
+        Write-Verbose ('BuildManifestParent: {0}' -f ($BuildManifestParent| out-string)) -Verbose
+
         $ModuleInfo = Get-ChildItem $BuildManifestParent -Recurse -Filter *.psd1 -ErrorAction SilentlyContinue |
             ImportModuleManifest -ErrorAction SilentlyContinue
+
+        Write-Verbose ('@(ModuleInfo).Count: {0}' -f (@($ModuleInfo).Count | out-string)) -Verbose
+        Write-Verbose ('@(ModuleInfo).Name: {0}' -f (@($ModuleInfo).Name | out-string)) -Verbose
+
         # If we found more than one module info, the only way we have of picking just one is if it matches a folder name
         if (@($ModuleInfo).Count -gt 1) {
             # Resolve Build Manifest's parent folder to find the Absolute path
@@ -174,10 +183,18 @@ function GetBuildInfo {
             }
             $ModuleInfo = @($ModuleInfo).Where{ $_.Name -eq $ModuleName }
         }
+
+        Write-Verbose ('@(ModuleInfo).Count: {0}' -f (@($ModuleInfo).Count | out-string)) -Verbose
+        Write-Verbose ('@(ModuleInfo).Name: {0}' -f (@($ModuleInfo).Name | out-string)) -Verbose
+        Write-Verbose ('@(ModuleInfo).Path: {0}' -f (@($ModuleInfo).Path | out-string)) -Verbose
+
         if (@($ModuleInfo).Count -eq 1) {
             Write-Debug "Updating BuildInfo SourcePath to $($ModuleInfo.Path)"
             $ParameterValues["SourcePath"] = $ModuleInfo.Path
         }
+
+        Write-Verbose ('ParameterValues["SourcePath"]: {0}' -f ($ParameterValues["SourcePath"] | out-string)) -Verbose
+
         if (-Not $ModuleInfo) {
             throw "Can't find a module manifest in $BuildManifestParent"
         }
