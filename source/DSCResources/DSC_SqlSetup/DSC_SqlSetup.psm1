@@ -638,6 +638,9 @@ function Get-TargetResource
         Specifies to install the English version of SQL Server on a localized operating
         system when the installation media includes language packs for both English and
         the language corresponding to the operating system.
+
+    .PARAMETER SkipRule
+        Specifies optional skip rules during setup.
 #>
 function Set-TargetResource
 {
@@ -902,7 +905,12 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $UseEnglish
+        $UseEnglish,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String[]]
+        $SkipRule
     )
 
     <#
@@ -1025,10 +1033,9 @@ function Set-TargetResource
 
     $setupArguments = @{}
 
-    if ($Action -in @('PrepareFailoverCluster', 'CompleteFailoverCluster', 'InstallFailoverCluster', 'Addnode'))
+    if ($PSBoundParameters.ContainsKey('SkipRule') )
     {
-        # This was brought over from the old module. Should be removed (breaking change).
-        $setupArguments['SkipRules'] = 'Cluster_VerifyForErrors'
+        $setupArguments['SkipRules'] = @($SkipRule)
     }
 
     <#
@@ -1469,7 +1476,13 @@ function Set-TargetResource
             if ($currentSetupArgument.Value -is [System.Array])
             {
                 # Sort and format the array
-                $setupArgumentValue = ($currentSetupArgument.Value | Sort-Object | ForEach-Object { '"{0}"' -f $_ }) -join ' '
+                $setupArgumentValue = (
+                    $currentSetupArgument.Value |
+                        Sort-Object |
+                        ForEach-Object {
+                            '"{0}"' -f $_
+                        }
+                ) -join ' '
             }
             elseif ($currentSetupArgument.Value -is [System.Boolean])
             {
@@ -1843,6 +1856,11 @@ function Set-TargetResource
         the language corresponding to the operating system.
 
         Not used in Test-TargetResource.
+
+    .PARAMETER SkipRule
+        Specifies optional skip rules during setup.
+
+        Not used in Test-TargetResource.
 #>
 function Test-TargetResource
 {
@@ -2098,7 +2116,12 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $UseEnglish
+        $UseEnglish,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String[]]
+        $SkipRule
     )
 
     <#

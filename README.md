@@ -1921,6 +1921,14 @@ Flag | Description
 - | -
 <!-- markdownlint-enable MD013 -->
 
+#### Skip rules
+
+The parameter `SkipRule` accept one or more skip rules with will be passed
+to `setup.exe`. Using the parameter `SkipRule` is _not recommended_ in a
+production environment unless there is a valid reason for it.
+
+For more information about skip rules see the article [SQL 2012 Setup Rules – The 'Missing Reference'](https://deep.data.blog/2014/04/02/sql-2012-setup-rules-the-missing-reference/).
+
 #### Credentials for running the resource
 
 ##### PsDscRunAsCredential
@@ -2083,6 +2091,8 @@ with different sizes and growths.
   of SQL Server on a localized operating system when the installation media
   includes language packs for both English and the language corresponding to the
   operating system.
+* **`[String[]]` SkipRule** _(Write)_: Specifies optional skip rules during
+  setup.
 * **`[String[]]` FeatureFlag** _(Write)_: Feature flags are used to toggle
   functionality on or off. See the documentation for what additional
   functionality exist through a feature flag.
