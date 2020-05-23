@@ -79,7 +79,7 @@ try
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
                 $resourceCurrentState.PermissionState | Should -Be 'Grant'
                 'Select' | Should -BeIn $resourceCurrentState.Permissions
-                'Create Table' | Should -BeIn $resourceCurrentState.Permissions
+                'CreateTable' | Should -BeIn $resourceCurrentState.Permissions
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -132,7 +132,7 @@ try
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
                 $resourceCurrentState.PermissionState | Should -Be 'Grant'
                 'Select' | Should -Not -BeIn $resourceCurrentState.Permissions
-                'Create Table' | Should -Not -BeIn $resourceCurrentState.Permissions
+                'CreateTable' | Should -Not -BeIn $resourceCurrentState.Permissions
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -185,7 +185,7 @@ try
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
                 $resourceCurrentState.PermissionState | Should -Be 'Deny'
                 'Select' | Should -BeIn $resourceCurrentState.Permissions
-                'Create Table' | Should -BeIn $resourceCurrentState.Permissions
+                'CreateTable' | Should -BeIn $resourceCurrentState.Permissions
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -238,7 +238,7 @@ try
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
                 $resourceCurrentState.PermissionState | Should -Be 'Deny'
                 'Select' | Should -Not -BeIn $resourceCurrentState.Permissions
-                'Create Table' | Should -Not -BeIn $resourceCurrentState.Permissions
+                'CreateTable' | Should -Not -BeIn $resourceCurrentState.Permissions
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
