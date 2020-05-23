@@ -23,7 +23,7 @@ Configuration Example
             Name                 = 'CONTOSO\SQLAdmin'
             DatabaseName         = 'AdventureWorks'
             PermissionState      = 'Grant'
-            Permissions          = 'Connect', 'Update'
+            Permissions          = @('Connect', 'Update')
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
 
@@ -36,7 +36,7 @@ Configuration Example
             Name                 = 'CONTOSO\SQLAdmin'
             DatabaseName         = 'AdventureWorks'
             PermissionState      = 'Deny'
-            Permissions          = 'Select', 'CreateTable'
+            Permissions          = @('Select', 'CreateTable')
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
 

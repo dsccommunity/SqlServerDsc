@@ -35,12 +35,10 @@ function Get-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $DatabaseName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
 
@@ -50,7 +48,6 @@ function Get-TargetResource
         $PermissionState,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String[]]
         $Permissions,
 
@@ -61,7 +58,6 @@ function Get-TargetResource
 
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $InstanceName
     )
@@ -179,12 +175,10 @@ function Set-TargetResource
         $Ensure,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $DatabaseName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
 
@@ -194,7 +188,6 @@ function Set-TargetResource
         $PermissionState,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String[]]
         $Permissions,
 
@@ -204,7 +197,6 @@ function Set-TargetResource
         $ServerName = $env:COMPUTERNAME,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $InstanceName = 'MSSQLSERVER'
     )
@@ -331,12 +323,10 @@ function Test-TargetResource
         $Ensure,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $DatabaseName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
 
@@ -346,7 +336,6 @@ function Test-TargetResource
         $PermissionState,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String[]]
         $Permissions,
 
@@ -356,7 +345,6 @@ function Test-TargetResource
         $ServerName = $env:COMPUTERNAME,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $InstanceName = 'MSSQLSERVER'
     )
