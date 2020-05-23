@@ -671,11 +671,11 @@ All issues are not listed here, see [here for all open issues](https://github.co
 
 This resource is used to grant, deny or revoke permissions for a user in a database.
 For more information about permissions, please read the article
-[Permissions (Database Engine)](https://msdn.microsoft.com/en-us/library/ms191291.aspx).
+[Permissions (Database Engine)](https://docs.microsoft.com/en-us/sql/relational-databases/security/permissions-database-engine).
 
->Note! When revoking permission with PermissionState 'GrantWithGrant', both the
-grantee and _all the other users the grantee has granted the same permission to_,
-will also get their permission revoked.
+>**Note:** When revoking permission with PermissionState 'GrantWithGrant', both the
+>grantee and _all the other users the grantee has granted the same permission to_,
+>will also get their permission revoked.
 
 #### Requirements
 
@@ -692,8 +692,8 @@ will also get their permission revoked.
 * **`[String]` PermissionState** _(Key)_: The state of the permission.
   { Grant | Deny | GrantWithGrant }.
 * **`[String[]]` Permissions** _(Required)_: The permissions to be granted or denied
-  for the user in the database. Valid permissions can be found in the article
-  [SQL Server Permissions](https://msdn.microsoft.com/en-us/library/ms191291.aspx#Anchor_3).
+  for the user in the database. Valid permission names can be found in the article
+  [DatabasePermissionSet Class properties](https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.databasepermissionset#properties).
 * **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
   Default values is `$env:COMPUTERNAME`.
 * **`[String]` Ensure** _(Write)_: If the permission should be granted (Present)

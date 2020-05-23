@@ -36,7 +36,7 @@ Configuration Example
             Name                 = 'CONTOSO\SQLAdmin'
             DatabaseName         = 'AdventureWorks'
             PermissionState      = 'Deny'
-            Permissions          = 'Select', 'Create Table'
+            Permissions          = 'Select', 'CreateTable'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
 

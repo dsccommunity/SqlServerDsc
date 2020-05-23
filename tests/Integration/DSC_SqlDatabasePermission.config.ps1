@@ -53,7 +53,7 @@ Configuration DSC_SqlDatabasePermission_Grant_Config
             PermissionState      = 'Grant'
             Permissions          = @(
                 'Select'
-                'Create Table'
+                'CreateTable'
             )
 
             ServerName           = $Node.ServerName
@@ -84,7 +84,7 @@ Configuration DSC_SqlDatabasePermission_RemoveGrant_Config
             PermissionState      = 'Grant'
             Permissions          = @(
                 'Select'
-                'Create Table'
+                'CreateTable'
             )
 
             ServerName           = $Node.ServerName
@@ -115,7 +115,7 @@ Configuration DSC_SqlDatabasePermission_Deny_Config
             PermissionState      = 'Deny'
             Permissions          = @(
                 'Select'
-                'Create Table'
+                'CreateTable'
             )
 
             ServerName           = $Node.ServerName
@@ -146,7 +146,7 @@ Configuration DSC_SqlDatabasePermission_RemoveDeny_Config
             PermissionState      = 'Deny'
             Permissions          = @(
                 'Select'
-                'Create Table'
+                'CreateTable'
             )
 
             ServerName           = $Node.ServerName
