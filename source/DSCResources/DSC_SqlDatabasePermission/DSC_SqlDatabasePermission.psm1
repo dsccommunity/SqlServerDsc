@@ -217,95 +217,72 @@ function Set-TargetResource
 
         if ($sqlDatabaseObject = $sqlServerObject.Databases[$DatabaseName])
         {
-            if ($sqlServerObject.Logins[$Name])
+            if ($sqlDatabaseObject.Users[$Name])
             {
-                if ( -not ($sqlDatabaseObject.Users[$Name]))
+                try
                 {
-                    try
-                    {
-                        Write-Verbose -Message (
-                            '{0} {1}' -f
-                                ($script:localizedData.LoginIsNotUser -f $Name, $DatabaseName),
-                                $script:localizedData.AddingLoginAsUser
-                        )
+                    $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
 
-                        $sqlDatabaseUser = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.User' -ArgumentList ($sqlDatabaseObject, $Name)
-                        $sqlDatabaseUser.Login = $Name
-                        $sqlDatabaseUser.Create()
-                    }
-                    catch
+                    foreach ($permission in $permissions)
                     {
-                        $errorMessage = $script:localizedData.FailedToAddUser -f $Name, $DatabaseName
-                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                        $permissionSet."$permission" = $true
+                    }
+
+                    switch ($Ensure)
+                    {
+                        'Present'
+                        {
+                            Write-Verbose -Message (
+                                $script:localizedData.AddPermission -f $PermissionState, ($Permissions -join ','), $DatabaseName
+                            )
+
+                            switch ($PermissionState)
+                            {
+                                'GrantWithGrant'
+                                {
+                                    $sqlDatabaseObject.Grant($permissionSet, $Name, $true)
+                                }
+
+                                'Grant'
+                                {
+                                    $sqlDatabaseObject.Grant($permissionSet, $Name)
+                                }
+
+                                'Deny'
+                                {
+                                    $sqlDatabaseObject.Deny($permissionSet, $Name)
+                                }
+                            }
+                        }
+
+                        'Absent'
+                        {
+                            Write-Verbose -Message (
+                                $script:localizedData.DropPermission -f $PermissionState, ($Permissions -join ','), $DatabaseName
+                            )
+
+                            if ($PermissionState -eq 'GrantWithGrant')
+                            {
+                                $sqlDatabaseObject.Revoke($permissionSet, $Name, $false, $true)
+                            }
+                            else
+                            {
+                                $sqlDatabaseObject.Revoke($permissionSet, $Name)
+                            }
+                        }
                     }
                 }
-
-                if ($sqlDatabaseObject.Users[$Name])
+                catch
                 {
-                    try
-                    {
-                        $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
-
-                        foreach ($permission in $permissions)
-                        {
-                            $permissionSet."$permission" = $true
-                        }
-
-                        switch ($Ensure)
-                        {
-                            'Present'
-                            {
-                                Write-Verbose -Message (
-                                    $script:localizedData.AddPermission -f $PermissionState, ($Permissions -join ','), $DatabaseName
-                                )
-
-                                switch ($PermissionState)
-                                {
-                                    'GrantWithGrant'
-                                    {
-                                        $sqlDatabaseObject.Grant($permissionSet, $Name, $true)
-                                    }
-
-                                    'Grant'
-                                    {
-                                        $sqlDatabaseObject.Grant($permissionSet, $Name)
-                                    }
-
-                                    'Deny'
-                                    {
-                                        $sqlDatabaseObject.Deny($permissionSet, $Name)
-                                    }
-                                }
-                            }
-
-                            'Absent'
-                            {
-                                Write-Verbose -Message (
-                                    $script:localizedData.DropPermission -f $PermissionState, ($Permissions -join ','), $DatabaseName
-                                )
-
-                                if ($PermissionState -eq 'GrantWithGrant')
-                                {
-                                    $sqlDatabaseObject.Revoke($permissionSet, $Name, $false, $true)
-                                }
-                                else
-                                {
-                                    $sqlDatabaseObject.Revoke($permissionSet, $Name)
-                                }
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        $errorMessage = $script:localizedData.FailedToSetPermissionDatabase -f $Name, $DatabaseName
-                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-                    }
+                    $errorMessage = $script:localizedData.FailedToSetPermissionDatabase -f $Name, $DatabaseName
+                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                 }
             }
             else
             {
-                $errorMessage = $script:localizedData.LoginNotFound -f $Name
-                New-ObjectNotFoundException -Message $errorMessage
+                $errorMessage = $script:localizedData.LoginIsNotUser -f $Name, $DatabaseName
+
+                New-InvalidOperationException -Message $errorMessage
             }
         }
         else

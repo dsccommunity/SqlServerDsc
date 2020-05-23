@@ -17,28 +17,6 @@ Configuration Example
 
     node localhost
     {
-        SqlServerLogin 'Add_SqlServerLogin_SQLAdmin'
-        {
-            Ensure               = 'Present'
-            Name                 = 'CONTOSO\SQLAdmin'
-            LoginType            = 'WindowsUser'
-            ServerName           = 'sqltest.company.local'
-            InstanceName         = 'DSC'
-
-            PsDscRunAsCredential = $SqlAdministratorCredential
-        }
-
-        SqlServerLogin 'Add_SqlServerLogin_SQLUser'
-        {
-            Ensure               = 'Present'
-            Name                 = 'CONTOSO\SQLUser'
-            LoginType            = 'WindowsUser'
-            ServerName           = 'sqltest.company.local'
-            InstanceName         = 'DSC'
-
-            PsDscRunAsCredential = $SqlAdministratorCredential
-        }
-
         SqlDatabasePermission 'Grant_SqlDatabasePermissions_SQLAdmin_Db01'
         {
             Ensure               = 'Present'

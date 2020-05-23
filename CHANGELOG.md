@@ -123,6 +123,12 @@ in a future release.
   - Normalize parameter descriptive text for default values.
   - BREAKING CHANGE: Database changed to DatabaseName for consistency with
     other modules ([issue #1484](https://github.com/dsccommunity/SqlServerDsc/issues/1484)).
+  - BREAKING CHANGE: The resource no longer create the database user if
+    it does not exist. Use the resource _SqlDatabaseUser_ to enforce that
+    the database user exist in the database prior to setting permissions
+    using this resource ([issue #848](https://github.com/dsccommunity/SqlServerDsc/issues/848)).
+  - Updated examples.
+  - Added integration tests ([issue #741](https://github.com/dsccommunity/SqlServerDsc/issues/741)).
 - SqlDatabaseRecoveryModel
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
