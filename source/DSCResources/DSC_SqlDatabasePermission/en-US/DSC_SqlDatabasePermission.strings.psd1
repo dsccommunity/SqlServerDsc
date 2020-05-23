@@ -1,7 +1,6 @@
 ConvertFrom-StringData @'
     GetDatabasePermission = Get permissions for the user '{0}' in the database '{1}' on the instance '{2}'.
     DatabaseNotFound = The database '{0}' does not exist.
-    FailedToEnumDatabasePermissions = Failed to get the permission for the user '{0}' in the database '{1}'.
     ChangePermissionForUser = Changing the permission for the user '{0}' in the database '{1}' on the instance '{2}'.
     LoginIsNotUser = The login '{0}' is not a user in the database '{1}'.
     AddPermission = {0} the permissions '{1}' to the database '{2}'.

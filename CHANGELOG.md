@@ -129,6 +129,8 @@ in a future release.
     using this resource ([issue #848](https://github.com/dsccommunity/SqlServerDsc/issues/848)).
   - Updated examples.
   - Added integration tests ([issue #741](https://github.com/dsccommunity/SqlServerDsc/issues/741)).
+  - Get-TargetResource will no longer throw an exception if the database
+    does not exist.
 - SqlDatabaseRecoveryModel
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).

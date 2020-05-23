@@ -70,25 +70,36 @@ function Get-TargetResource
         $script:localizedData.GetDatabasePermission -f $Name, $DatabaseName, $InstanceName
     )
 
+    $returnValue = @{
+        Ensure          = 'Absent'
+        ServerName      = $ServerName
+        InstanceName    = $InstanceName
+        DatabaseName    = $DatabaseName
+        Name            = $Name
+        PermissionState = $PermissionState
+        Permissions     = @()
+    }
+
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+
     if ($sqlServerObject)
     {
-        $currentEnsure = 'Absent'
-
         if ($sqlDatabaseObject = $sqlServerObject.Databases[$DatabaseName])
         {
-            # Initialize variable permission
-            [System.String[]] $getSqlDatabasePermissionResult = @()
-
-            try
-            {
-                $databasePermissionInfo = $sqlDatabaseObject.EnumDatabasePermissions($Name) | Where-Object -FilterScript {
+            $databasePermissionInfo = $sqlDatabaseObject.EnumDatabasePermissions($Name) |
+                Where-Object -FilterScript {
                     $_.PermissionState -eq $PermissionState
                 }
 
+            if ($databasePermissionInfo)
+            {
+                # Initialize variable permission
+                [System.String[]] $getSqlDatabasePermissionResult = @()
+
                 foreach ($currentDatabasePermissionInfo in $databasePermissionInfo)
                 {
-                    $permissionProperty = ($currentDatabasePermissionInfo.PermissionType | Get-Member -MemberType Property).Name
+                    $permissionProperty = ($currentDatabasePermissionInfo.PermissionType |
+                        Get-Member -MemberType Property).Name
 
                     foreach ($currentPermissionProperty in $permissionProperty)
                     {
@@ -97,40 +108,39 @@ function Get-TargetResource
                             $getSqlDatabasePermissionResult += $currentPermissionProperty
                         }
                     }
+
+                    # Remove any duplicate permissions.
+                    $getSqlDatabasePermissionResult = @(
+                        $getSqlDatabasePermissionResult |
+                            Sort-Object -Unique
+                    )
+                }
+
+                if ($getSqlDatabasePermissionResult)
+                {
+                    $returnValue['Permissions'] = $getSqlDatabasePermissionResult
+
+                    $compareObjectParameters = @{
+                        ReferenceObject = $Permissions
+                        DifferenceObject = $getSqlDatabasePermissionResult
+                    }
+
+                    $resultOfPermissionCompare = Compare-Object @compareObjectParameters |
+                        Where-Object -FilterScript {
+                            $_.SideIndicator -eq '<='
+                        }
+
+                    # If there are no missing permission then return 'Ensure' state as 'Present'.
+                    if ($null -eq $resultOfPermissionCompare)
+                    {
+                        $returnValue['Ensure'] = 'Present'
+                    }
                 }
             }
-            catch
-            {
-                $errorMessage = $script:localizedData.FailedToEnumDatabasePermissions -f $Name, $DatabaseName
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-            }
-        }
-        else
-        {
-            $errorMessage = $script:localizedData.DatabaseNotFound -f $DatabaseName
-            New-ObjectNotFoundException -Message $errorMessage
-        }
-
-        if ($getSqlDatabasePermissionResult)
-        {
-            $resultOfPermissionCompare = Compare-Object -ReferenceObject $Permissions `
-                -DifferenceObject $getSqlDatabasePermissionResult
-            if ($null -eq $resultOfPermissionCompare)
-            {
-                $currentEnsure = 'Present'
-            }
         }
     }
 
-    return @{
-        Ensure          = $currentEnsure
-        DatabaseName    = $DatabaseName
-        Name            = $Name
-        PermissionState = $PermissionState
-        Permissions     = $getSqlDatabasePermissionResult
-        ServerName      = $ServerName
-        InstanceName    = $InstanceName
-    }
+    return $returnValue
 }
 
 <#

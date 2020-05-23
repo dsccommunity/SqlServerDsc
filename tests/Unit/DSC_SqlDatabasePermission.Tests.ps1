@@ -224,28 +224,8 @@ try
                         Permissions     = @( 'Connect', 'Update' )
                     }
 
-                    $errorMessage = $script:localizedData.DatabaseNotFound -f $testParameters.DatabaseName
-
-                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When passing values to parameters and database name and login name do exist' {
-                It 'Should throw the correct error with EnumDatabasePermissions method' {
-                    $mockInvalidOperationEnumDatabasePermissions = $true
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName    = $mockSqlDatabaseName
-                        Name            = $mockSqlServerLogin
-                        PermissionState = 'Grant'
-                        Permissions     = @( 'Connect', 'Update' )
-                    }
-
-                    $errorMessage = $script:localizedData.FailedToEnumDatabasePermissions -f $testParameters.Name, $testParameters.DatabaseName
-
-                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
+                    $result = Get-TargetResource @testParameters
+                    $result.Ensure | Should -Be 'Absent'
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -260,7 +240,7 @@ try
                     Permissions     = @( 'Connect', 'Update', 'Select' )
                 }
 
-                It 'Should return the state as absent when the desired permission does not exist' {
+                It 'Should return the state as present when the key properties exist' {
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should -Be 'Absent'
 
@@ -361,25 +341,6 @@ try
         Describe "DSC_SqlDatabasePermission\Test-TargetResource" -Tag 'Test' {
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
-            }
-
-            Context 'When passing values to parameters and database name does not exist' {
-                It 'Should throw the correct error' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName    = 'unknownDatabaseName'
-                        Name            = $mockSqlServerLogin
-                        PermissionState = 'Grant'
-                        Permissions     = @( 'Connect', 'Update' )
-                        Ensure          = 'Present'
-                    }
-
-                    $errorMessage = $script:localizedData.DatabaseNotFound -f $testParameters.DatabaseName
-
-                    { Test-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
             }
 
             Context 'When passing values to parameters and database name and login name do exist' {
