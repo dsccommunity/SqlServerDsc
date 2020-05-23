@@ -77,41 +77,32 @@ function Get-TargetResource
 
         if ($sqlDatabaseObject = $sqlServerObject.Databases[$DatabaseName])
         {
-            if ($sqlServerObject.Logins[$Name])
+            # Initialize variable permission
+            [System.String[]] $getSqlDatabasePermissionResult = @()
+
+            try
             {
-                # Initialize variable permission
-                [System.String[]] $getSqlDatabasePermissionResult = @()
+                $databasePermissionInfo = $sqlDatabaseObject.EnumDatabasePermissions($Name) | Where-Object -FilterScript {
+                    $_.PermissionState -eq $PermissionState
+                }
 
-                try
+                foreach ($currentDatabasePermissionInfo in $databasePermissionInfo)
                 {
-                    $databasePermissionInfo = $sqlDatabaseObject.EnumDatabasePermissions($Name) | Where-Object -FilterScript {
-                        $_.PermissionState -eq $PermissionState
-                    }
+                    $permissionProperty = ($currentDatabasePermissionInfo.PermissionType | Get-Member -MemberType Property).Name
 
-                    foreach ($currentDatabasePermissionInfo in $databasePermissionInfo)
+                    foreach ($currentPermissionProperty in $permissionProperty)
                     {
-                        $permissionProperty = ($currentDatabasePermissionInfo.PermissionType | Get-Member -MemberType Property).Name
-
-                        foreach ($currentPermissionProperty in $permissionProperty)
+                        if ($currentDatabasePermissionInfo.PermissionType."$currentPermissionProperty")
                         {
-                            if ($currentDatabasePermissionInfo.PermissionType."$currentPermissionProperty")
-                            {
-                                $getSqlDatabasePermissionResult += $currentPermissionProperty
-                            }
+                            $getSqlDatabasePermissionResult += $currentPermissionProperty
                         }
                     }
                 }
-                catch
-                {
-                    $errorMessage = $script:localizedData.FailedToEnumDatabasePermissions -f $Name, $DatabaseName
-                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-                }
-
             }
-            else
+            catch
             {
-                $errorMessage = $script:localizedData.LoginNotFound -f $Name
-                New-ObjectNotFoundException -Message $errorMessage
+                $errorMessage = $script:localizedData.FailedToEnumDatabasePermissions -f $Name, $DatabaseName
+                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }
         }
         else

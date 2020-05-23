@@ -232,24 +232,6 @@ try
                 }
             }
 
-            Context 'When passing values to parameters and login name does not exist' {
-                It 'Should throw the correct error' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName    = $mockSqlDatabaseName
-                        Name            = 'unknownLoginName'
-                        PermissionState = 'Grant'
-                        Permissions     = @( 'Connect', 'Update' )
-                    }
-
-                    $errorMessage = $script:localizedData.LoginNotFound -f $testParameters.Name
-
-                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
             Context 'When passing values to parameters and database name and login name do exist' {
                 It 'Should throw the correct error with EnumDatabasePermissions method' {
                     $mockInvalidOperationEnumDatabasePermissions = $true
@@ -393,25 +375,6 @@ try
                     }
 
                     $errorMessage = $script:localizedData.DatabaseNotFound -f $testParameters.DatabaseName
-
-                    { Test-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When passing values to parameters and login name does not exist' {
-                It 'Should throw the correct error' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName    = $mockSqlDatabaseName
-                        Name            = 'unknownLoginName'
-                        PermissionState = 'Grant'
-                        Permissions     = @( 'Connect', 'Update' )
-                        Ensure          = 'Present'
-                    }
-
-                    $errorMessage = $script:localizedData.LoginNotFound -f $testParameters.Name
 
                     { Test-TargetResource @testParameters } | Should -Throw $errorMessage
 
