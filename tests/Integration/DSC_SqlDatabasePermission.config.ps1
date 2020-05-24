@@ -158,3 +158,69 @@ Configuration DSC_SqlDatabasePermission_RemoveDeny_Config
         }
     }
 }
+
+<#
+    .SYNOPSIS
+        Grant rights in a database for the guest user.
+
+    .NOTES
+        Regression test for issue #1134.
+#>
+Configuration DSC_SqlDatabasePermission_GrantGuest_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlDatabasePermission 'Integration_Test'
+        {
+            Ensure               = 'Present'
+            Name                 = 'guest'
+            DatabaseName         = $Node.DatabaseName
+            PermissionState      = 'Grant'
+            Permissions          = @(
+                'Select'
+            )
+
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Remove the granted rights in a database for the guest user.
+
+    .NOTES
+        Regression test for issue #1134.
+#>
+Configuration DSC_SqlDatabasePermission_RemoveGrantGuest_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlDatabasePermission 'Integration_Test'
+        {
+            Ensure               = 'Absent'
+            Name                 = 'guest'
+            DatabaseName         = $Node.DatabaseName
+            PermissionState      = 'Grant'
+            Permissions          = @(
+                'Select'
+            )
+
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}

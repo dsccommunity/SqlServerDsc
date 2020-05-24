@@ -127,6 +127,9 @@ in a future release.
     it does not exist. Use the resource _SqlDatabaseUser_ to enforce that
     the database user exist in the database prior to setting permissions
     using this resource ([issue #848](https://github.com/dsccommunity/SqlServerDsc/issues/848)).
+  - BREAKING CHANGE: The resource no longer checks if a login exist so that
+    it is possible to set permissions for database users that does not
+    have a login, e.g. the database user 'guest' ([issue #1134](https://github.com/dsccommunity/SqlServerDsc/issues/1134)).
   - Updated examples.
   - Added integration tests ([issue #741](https://github.com/dsccommunity/SqlServerDsc/issues/741)).
   - Get-TargetResource will no longer throw an exception if the database
