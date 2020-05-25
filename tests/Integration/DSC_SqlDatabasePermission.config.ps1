@@ -224,3 +224,69 @@ Configuration DSC_SqlDatabasePermission_RemoveGrantGuest_Config
         }
     }
 }
+
+<#
+    .SYNOPSIS
+        Grant rights in a database for the user-defined role 'public'.
+
+    .NOTES
+        Regression test for issue #1498.
+#>
+Configuration DSC_SqlDatabasePermission_GrantPublic_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlDatabasePermission 'Integration_Test'
+        {
+            Ensure               = 'Present'
+            Name                 = 'public'
+            DatabaseName         = $Node.DatabaseName
+            PermissionState      = 'Grant'
+            Permissions          = @(
+                'Select'
+            )
+
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Remove the granted rights in a database for the user-defined role 'public'.
+
+    .NOTES
+        Regression test for issue #1498.
+#>
+Configuration DSC_SqlDatabasePermission_RemoveGrantPublic_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlDatabasePermission 'Integration_Test'
+        {
+            Ensure               = 'Absent'
+            Name                 = 'public'
+            DatabaseName         = $Node.DatabaseName
+            PermissionState      = 'Grant'
+            Permissions          = @(
+                'Select'
+            )
+
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}
