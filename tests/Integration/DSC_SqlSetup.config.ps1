@@ -286,6 +286,7 @@ Configuration DSC_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
             NpEnabled              = $true
             TcpEnabled             = $true
             UseEnglish             = $true
+            SkipRule               = 'ServerCoreBlockUnsupportedSxSCheck'
 
             # This must be set if using SYSTEM account to install.
             SQLSysAdminAccounts   = @(

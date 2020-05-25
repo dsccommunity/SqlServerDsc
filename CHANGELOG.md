@@ -191,6 +191,10 @@ in a future release.
     `AGTSVCSTARTUPTYPE`. If the parameter `AgtSvcStartupType` is not specified
     in the configuration there will be no setup argument added at all
     ([issue #464](https://github.com/dsccommunity/SqlServerDsc/issues/464)).
+  - BREAKING CHANGE: When installing a failover cluster the cluster
+    validation is no longer skipped by default. To skip cluster validation
+    the configuration must opt-in by specifying the following
+    `SkipRule = 'Cluster_VerifyForErrors'` ([issue #335](https://github.com/dsccommunity/SqlServerDsc/issues/335)).
   - BREAKING CHANGE: Now, unless the parameter `SuppressReboot` is set to
     `$true`, the node will be restarted if the setup ends with the
     [error code 3010](https://docs.microsoft.com/en-us/previous-versions/tn-archive/bb418811(v=technet.10)#server-setup-fails-with-code-3010).
