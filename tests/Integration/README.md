@@ -323,6 +323,14 @@ Name | Algorithm | Password
 --- | --- | ---
 AsymmetricKey1 | RSA_2048 | P@ssw0rd1
 
+## SqlDatabasePermission
+
+**Run order:** 4
+
+**Depends on:** SqlDatabaseUser
+
+The integration test will not leave anything on any instance.
+
 ## SqlServerReplication
 
 **Run order:** 3
