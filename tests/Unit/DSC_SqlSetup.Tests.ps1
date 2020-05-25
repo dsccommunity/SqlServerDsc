@@ -1771,86 +1771,6 @@ try
                 #endregion Setting up TestDrive:\
 
                 <#
-                    .SYNOPSIS
-                        Used to test arguments passed to Start-SqlSetupProcess while inside and It-block.
-
-                        This function must be called inside a Mock, since it depends being run inside an It-block.
-
-                    .PARAMETER Argument
-                        A string containing all the arguments separated with space and each argument should start with '/'.
-                        Only the first string in the array is evaluated.
-
-                    .PARAMETER ExpectedArgument
-                        A hash table containing all the expected arguments.
-                #>
-                function Test-SetupArgument
-                {
-                    param
-                    (
-                        [Parameter(Mandatory = $true)]
-                        [System.String]
-                        $Argument,
-
-                        [Parameter(Mandatory = $true)]
-                        [System.Collections.Hashtable]
-                        $ExpectedArgument
-                    )
-
-                    $argumentHashTable = @{}
-
-                    # Break the argument string into a hash table
-                    ($Argument -split ' ?/') | ForEach-Object {
-                        <#
-                            This regex must support different types of values, and no values:
-                            /ENU /ACTION="Install" /FEATURES=SQLENGINE /SQLSYSADMINACCOUNTS="COMPANY\sqladmin" "COMPANY\SQLAdmins"
-                        #>
-                        if ($_ -imatch '(\w+)(="?([^\/]+)"?)?')
-                        {
-                            $key = $Matches[1]
-                            if ($key -in ('FailoverClusterDisks','FailoverClusterIPAddresses'))
-                            {
-                                $value = ($Matches[3] -replace '" "','; ') -replace '"',''
-                            }
-                            else
-                            {
-                                $value = ($Matches[3] -replace '" "',' ') -replace '"',''
-                            }
-
-                            $argumentHashTable.Add($key, $value)
-                        }
-                    }
-
-                    $actualValues = $argumentHashTable.Clone()
-
-                    # Limit the output in the console when everything is fine.
-                    if ($actualValues.Count -ne $ExpectedArgument.Count)
-                    {
-                        Write-Warning -Message 'Verified the setup argument count (expected vs actual)'
-                        Write-Warning -Message ('Expected: {0}' -f ($ExpectedArgument.Keys -join ','))
-                        Write-Warning -Message ('Actual: {0}' -f ($actualValues.Keys -join ','))
-                    }
-
-                    # Start by checking whether we have the same number of parameters
-                    $actualValues.Count | Should -Be $ExpectedArgument.Count `
-                        -Because ('the expected arguments was: {0}' -f ($ExpectedArgument.Keys -join ','))
-
-                    Write-Verbose -Message 'Verified actual setup argument values against expected setup argument values' -Verbose
-
-                    foreach ($argumentKey in $ExpectedArgument.Keys)
-                    {
-                        $argumentKeyName = $actualValues.GetEnumerator() |
-                            Where-Object -FilterScript {
-                                $_.Name -eq $argumentKey
-                            } | Select-Object -ExpandProperty 'Name'
-
-                        $argumentKeyName | Should -Be $argumentKey -Because 'the argument should have been included when setup.exe was called'
-
-                        $argumentValue = $actualValues.$argumentKey
-                        $argumentValue | Should -Be $ExpectedArgument.$argumentKey -Because 'the argument should have been set to the correct value when calling setup.exe'
-                    }
-                }
-
-                <#
                     These are written with both lower-case and upper-case to make sure we support that.
                     The feature list must be written in the order it is returned by the function Get-TargetResource.
                 #>
@@ -2235,7 +2155,7 @@ try
                         }
                     }
 
-                    Context "When installing the database engine and enabling the Named Pipes protocol" {
+                    Context 'When installing the database engine and enabling the Named Pipes protocol' {
                         BeforeAll {
                             Mock -CommandName Get-TargetResource -MockWith {
                                 return @{
@@ -2272,7 +2192,7 @@ try
                         }
                     }
 
-                    Context "When installing the database engine and enabling the TCP protocol" {
+                    Context 'When installing the database engine and enabling the TCP protocol' {
                         BeforeAll {
                             Mock -CommandName Get-TargetResource -MockWith {
                                 return @{
@@ -2310,7 +2230,7 @@ try
                     }
                 }
 
-                Context "When installing the database engine and disabling the Named Pipes protocol" {
+                Context 'When installing the database engine and disabling the Named Pipes protocol' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
@@ -2347,7 +2267,7 @@ try
                     }
                 }
 
-                Context "When installing the database engine and disabling the TCP protocol" {
+                Context 'When installing the database engine and disabling the TCP protocol' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
@@ -2384,7 +2304,7 @@ try
                     }
                 }
 
-                Context "When installing the database engine forcing to use english language in media" {
+                Context 'When installing the database engine forcing to use english language in media' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
@@ -2413,6 +2333,84 @@ try
                             SQLSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
                             PID = $testParameters.ProductKey
                             Enu = '' # The argument does not have a value
+                        }
+
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                Context 'When installing using a skip rule' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = ''
+                            }
+                        }
+                    }
+
+                    It 'Should call setup.exe with the correct skip rules as arguments' {
+                        $testParameters = @{
+                            Features = 'SQLENGINE'
+                            SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
+                            InstanceName = $mockDefaultInstance_InstanceName
+                            SourceCredential = $null
+                            SourcePath = $mockSourcePath
+                            ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                            SkipRule = 'Cluster_VerifyForErrors'
+                        }
+
+                        $mockStartSqlSetupProcessExpectedArgument = @{
+                            Quiet = 'True'
+                            IAcceptSQLServerLicenseTerms = 'True'
+                            Action = 'Install'
+                            InstanceName = $testParameters.InstanceName
+                            Features = $testParameters.Features
+                            SQLSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                            PID = $testParameters.ProductKey
+                            SkipRules = '"Cluster_VerifyForErrors"'
+                        }
+
+                        { Set-TargetResource @testParameters } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                Context 'When installing using multiple skip rules' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = ''
+                            }
+                        }
+                    }
+
+                    It 'Should call setup.exe with the correct skip rules as arguments' {
+                        $testParameters = @{
+                            Features = 'SQLENGINE'
+                            SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
+                            InstanceName = $mockDefaultInstance_InstanceName
+                            SourceCredential = $null
+                            SourcePath = $mockSourcePath
+                            ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                            SkipRule = @(
+                                'Cluster_VerifyForErrors'
+                                'ServerCoreBlockUnsupportedSxSCheck'
+                                'Cluster_IsWMIServiceOperational'
+                            )
+                        }
+
+                        $mockStartSqlSetupProcessExpectedArgument = @{
+                            Quiet = 'True'
+                            IAcceptSQLServerLicenseTerms = 'True'
+                            Action = 'Install'
+                            InstanceName = $testParameters.InstanceName
+                            Features = $testParameters.Features
+                            SQLSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                            PID = $testParameters.ProductKey
+                            SkipRules = '"Cluster_IsWMIServiceOperational" "Cluster_VerifyForErrors" "ServerCoreBlockUnsupportedSxSCheck"'
                         }
 
                         { Set-TargetResource @testParameters } | Should -Not -Throw
@@ -2974,7 +2972,6 @@ try
                             SqlSvcPassword = $mockSQLServiceCredential.GetNetworkCredential().Password
                             AsSvcAccount = $mockAnalysisServiceAccount
                             AsSvcPassword = $mockAnalysisServiceCredential.GetNetworkCredential().Password
-                            SkipRules = 'Cluster_VerifyForErrors'
                         }
 
                         { Set-TargetResource @testParameters } | Should -Not -Throw
@@ -3053,7 +3050,6 @@ try
                             FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
                             FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
                             FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
-                            SkipRules = 'Cluster_VerifyForErrors'
                             InstallSQLDataDir = $mockDynamicSqlDataDirectoryPath
                             SQLUserDBDir = $mockDynamicSqlUserDatabasePath
                             SQLUserDBLogDir = $mockDynamicSqlUserDatabaseLogPath
@@ -3072,7 +3068,6 @@ try
                             FailoverClusterDisks = 'SysData'
                             FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
                             FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
-                            SkipRules = 'Cluster_VerifyForErrors'
                             InstallSQLDataDir = $mockDynamicSqlDataDirectoryPath
                         }
 
@@ -3093,7 +3088,6 @@ try
                             FailoverClusterDisks = 'SysData'
                             FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
                             FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
-                            SkipRules = 'Cluster_VerifyForErrors'
                             InstallSQLDataDir = 'E:\SQLData'
                             SQLUserDBDir = 'E:\SQLData\UserDb'
                             SQLUserDBLogDir = 'E:\SQLData\UserDbLogs'
@@ -3131,7 +3125,6 @@ try
                             SQLTempDBDir = $mockDynamicSqlTempDatabasePath
                             SQLTempDBLogDir = $mockDynamicSqlTempDatabaseLogPath
                             SQLBackupDir = $mockDynamicSqlBackupPath
-                            SkipRules = 'Cluster_VerifyForErrors'
                             FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
                             FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
                         }
@@ -3155,7 +3148,6 @@ try
                             SQLTempDBLogDir = $mockDynamicSqlTempDatabaseLogPath
                             SQLBackupDir = $mockDynamicSqlBackupPath
                             FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
-                            SkipRules = 'Cluster_VerifyForErrors'
                         }
 
                         { Set-TargetResource @missingNetworkParameters } | Should -Not -Throw
@@ -3195,7 +3187,6 @@ try
                             SQLTempDBLogDir = $mockDynamicSqlTempDatabaseLogPath
                             SQLBackupDir = $mockDynamicSqlBackupPath
                             FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
-                            SkipRules = 'Cluster_VerifyForErrors'
                             Action = 'InstallFailoverCluster'
                         }
 
@@ -3220,7 +3211,6 @@ try
                             SQLTempDBLogDir = $mockDynamicSqlTempDatabaseLogPath
                             SQLBackupDir = $mockDynamicSqlBackupPath
                             FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
-                            SkipRules = 'Cluster_VerifyForErrors'
                             Action = 'InstallFailoverCluster'
                         }
 
@@ -3239,7 +3229,6 @@ try
 
                         $mockStartSqlSetupProcessExpectedArgument = @{
                             IAcceptSQLServerLicenseTerms = 'True'
-                            SkipRules = 'Cluster_VerifyForErrors'
                             Quiet = 'True'
                             SQLSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
                             Action = 'InstallFailoverCluster'
@@ -3272,7 +3261,6 @@ try
 
                         $mockStartSqlSetupProcessExpectedArgument = @{
                             IAcceptSQLServerLicenseTerms = 'True'
-                            SkipRules = 'Cluster_VerifyForErrors'
                             Quiet = 'True'
                             SQLSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
                             Action = 'InstallFailoverCluster'
@@ -3342,7 +3330,6 @@ try
                         $mockStartSqlSetupProcessExpectedArgument = $mockStartSqlSetupProcessExpectedArgumentClusterDefault.Clone()
                         $mockStartSqlSetupProcessExpectedArgument += @{
                             Action = 'PrepareFailoverCluster'
-                            SkipRules = 'Cluster_VerifyForErrors'
                         }
                         $mockStartSqlSetupProcessExpectedArgument.Remove('FailoverClusterGroup')
                         $mockStartSqlSetupProcessExpectedArgument.Remove('SQLSysAdminAccounts')
@@ -3459,7 +3446,6 @@ try
                             SQLTempDBDir = $mockDynamicSqlTempDatabasePath
                             SQLTempDBLogDir = $mockDynamicSqlTempDatabaseLogPath
                             SQLBackupDir = $mockDynamicSqlBackupPath
-                            SkipRules = 'Cluster_VerifyForErrors'
                             FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
                             FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
                         }
@@ -3483,7 +3469,6 @@ try
                             SQLTempDBLogDir = $mockDynamicSqlTempDatabaseLogPath
                             SQLBackupDir = $mockDynamicSqlBackupPath
                             FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
-                            SkipRules = 'Cluster_VerifyForErrors'
                         }
 
                         { Set-TargetResource @missingNetworkParameters } | Should -Not -Throw
@@ -3523,7 +3508,6 @@ try
                             SQLTempDBLogDir = $mockDynamicSqlTempDatabaseLogPath
                             SQLBackupDir = $mockDynamicSqlBackupPath
                             FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
-                            SkipRules = 'Cluster_VerifyForErrors'
                             Action = 'CompleteFailoverCluster'
                         }
 
@@ -3548,7 +3532,6 @@ try
                             SQLTempDBLogDir = $mockDynamicSqlTempDatabaseLogPath
                             SQLBackupDir = $mockDynamicSqlBackupPath
                             FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
-                            SkipRules = 'Cluster_VerifyForErrors'
                             Action = 'CompleteFailoverCluster'
                         }
 
@@ -3558,7 +3541,6 @@ try
                     It 'Should pass proper parameters to setup' {
                         $mockStartSqlSetupProcessExpectedArgument = @{
                             IAcceptSQLServerLicenseTerms = 'True'
-                            SkipRules = 'Cluster_VerifyForErrors'
                             Quiet = 'True'
                             SQLSysAdminAccounts = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
 
