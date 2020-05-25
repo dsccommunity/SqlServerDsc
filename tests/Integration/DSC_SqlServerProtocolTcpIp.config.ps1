@@ -14,7 +14,7 @@ if (Test-Path -Path $configFile)
 else
 {
     $currentIp4Address = Get-NetIPAddress -AddressFamily 'IPv4' |
-        Where-Object -Property 'PrefixOrigin' -EQ 'Dhcp' |
+        Where-Object -Property 'InterfaceAlias' -EQ 'Ethernet' |
             Select-Object -FIrst 1 -ExpandProperty 'IPAddress'
 
     $ConfigurationData = @{

@@ -207,30 +207,6 @@ try
                 )
             )
         }
-
-        $mockNewObjectUser = {
-            return @(
-                (
-                    New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlServerLoginUnknown -PassThru |
-                        Add-Member -MemberType NoteProperty -Name Login -Value $mockSqlServerLoginUnknown -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name Create -Value {
-                        $script:mockMethodCreateLoginRan = $true
-
-                        if ($mockInvalidOperationForCreateMethod)
-                        {
-                            throw 'Mock Create Method was called with invalid operation.'
-                        }
-                        if ( $this.Name -ne $mockExpectedSqlServerLogin )
-                        {
-                            throw "Called mocked Create() method without adding the right user. Expected '{0}'. But was '{1}'." `
-                                -f $mockExpectedSqlServerLogin, $this.Name
-                        }
-                    } -PassThru -Force
-                )
-            )
-        }
-
         #endregion
 
         Describe "DSC_SqlDatabasePermission\Get-TargetResource" -Tag 'Get' {
@@ -238,7 +214,7 @@ try
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
 
-            Context 'When passing values to parameters and database name does not exist' {
+            Context 'When passing values to parameters and database does not exist' {
                 It 'Should throw the correct error' {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
@@ -248,46 +224,8 @@ try
                         Permissions     = @( 'Connect', 'Update' )
                     }
 
-                    $errorMessage = $script:localizedData.DatabaseNotFound -f $testParameters.DatabaseName
-
-                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When passing values to parameters and login name does not exist' {
-                It 'Should throw the correct error' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName    = $mockSqlDatabaseName
-                        Name            = 'unknownLoginName'
-                        PermissionState = 'Grant'
-                        Permissions     = @( 'Connect', 'Update' )
-                    }
-
-                    $errorMessage = $script:localizedData.LoginNotFound -f $testParameters.Name
-
-                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When passing values to parameters and database name and login name do exist' {
-                It 'Should throw the correct error with EnumDatabasePermissions method' {
-                    $mockInvalidOperationEnumDatabasePermissions = $true
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName    = $mockSqlDatabaseName
-                        Name            = $mockSqlServerLogin
-                        PermissionState = 'Grant'
-                        Permissions     = @( 'Connect', 'Update' )
-                    }
-
-                    $errorMessage = $script:localizedData.FailedToEnumDatabasePermissions -f $testParameters.Name, $testParameters.DatabaseName
-
-                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
+                    $result = Get-TargetResource @testParameters
+                    $result.Ensure | Should -Be 'Absent'
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -302,7 +240,7 @@ try
                     Permissions     = @( 'Connect', 'Update', 'Select' )
                 }
 
-                It 'Should return the state as absent when the desired permission does not exist' {
+                It 'Should return the state as present when the key properties exist' {
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should -Be 'Absent'
 
@@ -405,44 +343,6 @@ try
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
 
-            Context 'When passing values to parameters and database name does not exist' {
-                It 'Should throw the correct error' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName    = 'unknownDatabaseName'
-                        Name            = $mockSqlServerLogin
-                        PermissionState = 'Grant'
-                        Permissions     = @( 'Connect', 'Update' )
-                        Ensure          = 'Present'
-                    }
-
-                    $errorMessage = $script:localizedData.DatabaseNotFound -f $testParameters.DatabaseName
-
-                    { Test-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When passing values to parameters and login name does not exist' {
-                It 'Should throw the correct error' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName    = $mockSqlDatabaseName
-                        Name            = 'unknownLoginName'
-                        PermissionState = 'Grant'
-                        Permissions     = @( 'Connect', 'Update' )
-                        Ensure          = 'Present'
-                    }
-
-                    $errorMessage = $script:localizedData.LoginNotFound -f $testParameters.Name
-
-                    { Test-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
             Context 'When passing values to parameters and database name and login name do exist' {
                 It 'Should throw the correct error with EnumDatabasePermissions method' {
                     $mockInvalidOperationEnumDatabasePermissions = $true
@@ -537,9 +437,6 @@ try
         Describe "DSC_SqlDatabasePermission\Set-TargetResource" -Tag 'Set' {
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
-                Mock -CommandName New-Object -MockWith $mockNewObjectUser -ParameterFilter {
-                    $TypeName -eq 'Microsoft.SqlServer.Management.Smo.User'
-                } -Verifiable
 
                 $script:mockMethodGrantRan = $false
                 $script:mockMethodDenyRan = $false
@@ -566,7 +463,7 @@ try
                 }
             }
 
-            Context 'When passing values to parameters and login name does not exist' {
+            Context 'When passing values to parameters and database user does not exist' {
                 It 'Should throw the correct error' {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
@@ -578,31 +475,9 @@ try
                     }
 
 
-                    $errorMessage = $script:localizedData.LoginNotFound -f $testParameters.Name
+                    $errorMessage = $script:localizedData.LoginIsNotUser -f $testParameters.Name, $mockSqlDatabaseName
 
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When the login cannot be created' {
-                It 'Should throw the correct error' {
-                    $mockInvalidOperationForCreateMethod = $true
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName    = $mockSqlDatabaseName
-                        Name            = $mockSqlServerLoginUnknown
-                        PermissionState = 'Grant'
-                        Permissions     = @( 'Connect', 'Update' )
-                        Ensure          = 'Present'
-                    }
-
-                    $errorMessage = $script:localizedData.FailedToAddUser -f $testParameters.Name, $testParameters.DatabaseName
-
-                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    $script:mockMethodCreateLoginRan | Should -Be $true
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -704,27 +579,6 @@ try
                 }
 
                 Context 'When Ensure is set to Present' {
-                    Context 'When the login does not exist' {
-                        It 'Should create the login without throwing an error' {
-                            $mockInvalidOperationForCreateMethod = $false
-                            $mockExpectedSqlServerLogin = $mockSqlServerLoginUnknown
-                            $testParameters = $mockDefaultParameters
-                            $testParameters += @{
-                                DatabaseName    = $mockSqlDatabaseName
-                                Name            = $mockSqlServerLoginUnknown
-                                PermissionState = 'Grant'
-                                Permissions     = @( 'Connect', 'Update' )
-                                Ensure          = 'Present'
-                            }
-
-                            { Set-TargetResource @testParameters } | Should -Not -Throw
-
-                            $script:mockMethodCreateLoginRan | Should -Be $true
-
-                            Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                        }
-                    }
-
                     It 'Should call the method Grant() without throwing' {
                         $mockExpectedSqlServerLogin = $mockSqlServerLogin
                         $testParameters = $mockDefaultParameters
@@ -856,4 +710,4 @@ try
 finally
 {
     Invoke-TestCleanup
-}#endregion
+}

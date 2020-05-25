@@ -161,6 +161,7 @@ stages:
                   'tests/Integration/DSC_SqlServerReplication.Integration.Tests.ps1'
                   # Group 4
                   'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'
                   # Group 5
                   'tests/Integration/DSC_SqlServerSecureConnection.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
@@ -227,6 +228,7 @@ stages:
                   'tests/Integration/DSC_SqlServerReplication.Integration.Tests.ps1'
                   # Group 4
                   'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'
                   # Group 5
                   'tests/Integration/DSC_SqlServerSecureConnection.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'

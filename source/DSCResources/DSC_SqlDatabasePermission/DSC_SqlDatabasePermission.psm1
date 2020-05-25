@@ -35,12 +35,10 @@ function Get-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $DatabaseName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
 
@@ -50,7 +48,6 @@ function Get-TargetResource
         $PermissionState,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String[]]
         $Permissions,
 
@@ -61,7 +58,6 @@ function Get-TargetResource
 
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $InstanceName
     )
@@ -70,76 +66,77 @@ function Get-TargetResource
         $script:localizedData.GetDatabasePermission -f $Name, $DatabaseName, $InstanceName
     )
 
+    $returnValue = @{
+        Ensure          = 'Absent'
+        ServerName      = $ServerName
+        InstanceName    = $InstanceName
+        DatabaseName    = $DatabaseName
+        Name            = $Name
+        PermissionState = $PermissionState
+        Permissions     = @()
+    }
+
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+
     if ($sqlServerObject)
     {
-        $currentEnsure = 'Absent'
-
         if ($sqlDatabaseObject = $sqlServerObject.Databases[$DatabaseName])
         {
-            if ($sqlServerObject.Logins[$Name])
+            $databasePermissionInfo = $sqlDatabaseObject.EnumDatabasePermissions($Name) |
+                Where-Object -FilterScript {
+                    $_.PermissionState -eq $PermissionState
+                }
+
+            if ($databasePermissionInfo)
             {
                 # Initialize variable permission
                 [System.String[]] $getSqlDatabasePermissionResult = @()
 
-                try
+                foreach ($currentDatabasePermissionInfo in $databasePermissionInfo)
                 {
-                    $databasePermissionInfo = $sqlDatabaseObject.EnumDatabasePermissions($Name) | Where-Object -FilterScript {
-                        $_.PermissionState -eq $PermissionState
-                    }
+                    $permissionProperty = ($currentDatabasePermissionInfo.PermissionType |
+                        Get-Member -MemberType Property).Name
 
-                    foreach ($currentDatabasePermissionInfo in $databasePermissionInfo)
+                    foreach ($currentPermissionProperty in $permissionProperty)
                     {
-                        $permissionProperty = ($currentDatabasePermissionInfo.PermissionType | Get-Member -MemberType Property).Name
-
-                        foreach ($currentPermissionProperty in $permissionProperty)
+                        if ($currentDatabasePermissionInfo.PermissionType."$currentPermissionProperty")
                         {
-                            if ($currentDatabasePermissionInfo.PermissionType."$currentPermissionProperty")
-                            {
-                                $getSqlDatabasePermissionResult += $currentPermissionProperty
-                            }
+                            $getSqlDatabasePermissionResult += $currentPermissionProperty
                         }
                     }
+
+                    # Remove any duplicate permissions.
+                    $getSqlDatabasePermissionResult = @(
+                        $getSqlDatabasePermissionResult |
+                            Sort-Object -Unique
+                    )
                 }
-                catch
+
+                if ($getSqlDatabasePermissionResult)
                 {
-                    $errorMessage = $script:localizedData.FailedToEnumDatabasePermissions -f $Name, $DatabaseName
-                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                    $returnValue['Permissions'] = $getSqlDatabasePermissionResult
+
+                    $compareObjectParameters = @{
+                        ReferenceObject = $Permissions
+                        DifferenceObject = $getSqlDatabasePermissionResult
+                    }
+
+                    $resultOfPermissionCompare = Compare-Object @compareObjectParameters |
+                        Where-Object -FilterScript {
+                            $_.SideIndicator -eq '<='
+                        }
+
+                    # If there are no missing permission then return 'Ensure' state as 'Present'.
+                    if ($null -eq $resultOfPermissionCompare)
+                    {
+                        $returnValue['Ensure'] = 'Present'
+                    }
                 }
-
-            }
-            else
-            {
-                $errorMessage = $script:localizedData.LoginNotFound -f $Name
-                New-ObjectNotFoundException -Message $errorMessage
-            }
-        }
-        else
-        {
-            $errorMessage = $script:localizedData.DatabaseNotFound -f $DatabaseName
-            New-ObjectNotFoundException -Message $errorMessage
-        }
-
-        if ($getSqlDatabasePermissionResult)
-        {
-            $resultOfPermissionCompare = Compare-Object -ReferenceObject $Permissions `
-                -DifferenceObject $getSqlDatabasePermissionResult
-            if ($null -eq $resultOfPermissionCompare)
-            {
-                $currentEnsure = 'Present'
             }
         }
     }
 
-    return @{
-        Ensure          = $currentEnsure
-        DatabaseName    = $DatabaseName
-        Name            = $Name
-        PermissionState = $PermissionState
-        Permissions     = $getSqlDatabasePermissionResult
-        ServerName      = $ServerName
-        InstanceName    = $InstanceName
-    }
+    return $returnValue
 }
 
 <#
@@ -178,12 +175,10 @@ function Set-TargetResource
         $Ensure,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $DatabaseName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
 
@@ -193,7 +188,6 @@ function Set-TargetResource
         $PermissionState,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String[]]
         $Permissions,
 
@@ -203,7 +197,6 @@ function Set-TargetResource
         $ServerName = $env:COMPUTERNAME,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $InstanceName = 'MSSQLSERVER'
     )
@@ -217,95 +210,72 @@ function Set-TargetResource
 
         if ($sqlDatabaseObject = $sqlServerObject.Databases[$DatabaseName])
         {
-            if ($sqlServerObject.Logins[$Name])
+            if ($sqlDatabaseObject.Users[$Name])
             {
-                if ( -not ($sqlDatabaseObject.Users[$Name]))
+                try
                 {
-                    try
-                    {
-                        Write-Verbose -Message (
-                            '{0} {1}' -f
-                                ($script:localizedData.LoginIsNotUser -f $Name, $DatabaseName),
-                                $script:localizedData.AddingLoginAsUser
-                        )
+                    $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
 
-                        $sqlDatabaseUser = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.User' -ArgumentList ($sqlDatabaseObject, $Name)
-                        $sqlDatabaseUser.Login = $Name
-                        $sqlDatabaseUser.Create()
-                    }
-                    catch
+                    foreach ($permission in $permissions)
                     {
-                        $errorMessage = $script:localizedData.FailedToAddUser -f $Name, $DatabaseName
-                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                        $permissionSet."$permission" = $true
+                    }
+
+                    switch ($Ensure)
+                    {
+                        'Present'
+                        {
+                            Write-Verbose -Message (
+                                $script:localizedData.AddPermission -f $PermissionState, ($Permissions -join ','), $DatabaseName
+                            )
+
+                            switch ($PermissionState)
+                            {
+                                'GrantWithGrant'
+                                {
+                                    $sqlDatabaseObject.Grant($permissionSet, $Name, $true)
+                                }
+
+                                'Grant'
+                                {
+                                    $sqlDatabaseObject.Grant($permissionSet, $Name)
+                                }
+
+                                'Deny'
+                                {
+                                    $sqlDatabaseObject.Deny($permissionSet, $Name)
+                                }
+                            }
+                        }
+
+                        'Absent'
+                        {
+                            Write-Verbose -Message (
+                                $script:localizedData.DropPermission -f $PermissionState, ($Permissions -join ','), $DatabaseName
+                            )
+
+                            if ($PermissionState -eq 'GrantWithGrant')
+                            {
+                                $sqlDatabaseObject.Revoke($permissionSet, $Name, $false, $true)
+                            }
+                            else
+                            {
+                                $sqlDatabaseObject.Revoke($permissionSet, $Name)
+                            }
+                        }
                     }
                 }
-
-                if ($sqlDatabaseObject.Users[$Name])
+                catch
                 {
-                    try
-                    {
-                        $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
-
-                        foreach ($permission in $permissions)
-                        {
-                            $permissionSet."$permission" = $true
-                        }
-
-                        switch ($Ensure)
-                        {
-                            'Present'
-                            {
-                                Write-Verbose -Message (
-                                    $script:localizedData.AddPermission -f $PermissionState, ($Permissions -join ','), $DatabaseName
-                                )
-
-                                switch ($PermissionState)
-                                {
-                                    'GrantWithGrant'
-                                    {
-                                        $sqlDatabaseObject.Grant($permissionSet, $Name, $true)
-                                    }
-
-                                    'Grant'
-                                    {
-                                        $sqlDatabaseObject.Grant($permissionSet, $Name)
-                                    }
-
-                                    'Deny'
-                                    {
-                                        $sqlDatabaseObject.Deny($permissionSet, $Name)
-                                    }
-                                }
-                            }
-
-                            'Absent'
-                            {
-                                Write-Verbose -Message (
-                                    $script:localizedData.DropPermission -f $PermissionState, ($Permissions -join ','), $DatabaseName
-                                )
-
-                                if ($PermissionState -eq 'GrantWithGrant')
-                                {
-                                    $sqlDatabaseObject.Revoke($permissionSet, $Name, $false, $true)
-                                }
-                                else
-                                {
-                                    $sqlDatabaseObject.Revoke($permissionSet, $Name)
-                                }
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        $errorMessage = $script:localizedData.FailedToSetPermissionDatabase -f $Name, $DatabaseName
-                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-                    }
+                    $errorMessage = $script:localizedData.FailedToSetPermissionDatabase -f $Name, $DatabaseName
+                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                 }
             }
             else
             {
-                $errorMessage = $script:localizedData.LoginNotFound -f $Name
-                New-ObjectNotFoundException -Message $errorMessage
+                $errorMessage = $script:localizedData.LoginIsNotUser -f $Name, $DatabaseName
+
+                New-InvalidOperationException -Message $errorMessage
             }
         }
         else
@@ -353,12 +323,10 @@ function Test-TargetResource
         $Ensure,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $DatabaseName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
 
@@ -368,7 +336,6 @@ function Test-TargetResource
         $PermissionState,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String[]]
         $Permissions,
 
@@ -378,7 +345,6 @@ function Test-TargetResource
         $ServerName = $env:COMPUTERNAME,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $InstanceName = 'MSSQLSERVER'
     )
