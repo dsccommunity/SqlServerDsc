@@ -48,16 +48,18 @@ try
         $mockServerName = 'localhost'
         $mockInstanceName = 'MSSQLSERVER'
         $mockSqlDatabaseName = 'AdventureWorks'
-        $mockSqlServerLogin = 'Zebes\SamusAran'
-        $mockSqlServerLoginUnknown = 'Elysia\Chozo'
+        $mockUserName = 'Zebes\SamusAran'
+        $mockRoleName = 'public'
+        $mockApplicationRoleName = 'MyAppRole'
+        $mockUserNameUnknown = 'Elysia\Chozo'
         $mockLoginType = 'WindowsUser'
         $mockInvalidOperationEnumDatabasePermissions = $false
         $mockInvalidOperationForCreateMethod = $false
         $mockExpectedSqlServerLogin = 'Zebes\SamusAran'
         $mockSqlPermissionState = 'Grant'
 
-        $mockSqlPermissionType01 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.DatabasePermissionSet -ArgumentList ($true, $false)
-        $mockSqlPermissionType02 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.DatabasePermissionSet -ArgumentList ($false, $true)
+        $mockSqlPermissionType01 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($true, $false)
+        $mockSqlPermissionType02 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $true)
 
         $script:mockMethodGrantRan = $false
         $script:mockMethodDenyRan = $false
@@ -75,133 +77,142 @@ try
             return @(
                 (
                     New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru |
-                        Add-Member -MemberType ScriptProperty -Name Databases -Value {
+                        Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
                         return @{
-                            $mockSqlDatabaseName = @((
+                            $mockSqlDatabaseName = @(
+                                (
                                     New-Object -TypeName Object |
-                                        Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
-                                        Add-Member -MemberType ScriptProperty -Name Users -Value {
-                                        return @{
-                                            $mockSqlServerLogin = @((
-                                                    New-Object -TypeName Object |
-                                                        Add-Member -MemberType ScriptMethod -Name IsMember -Value {
-                                                        return $true
-                                                    } -PassThru
-                                                ))
-                                        }
-                                    } -PassThru |
-                                        Add-Member -MemberType ScriptMethod -Name EnumDatabasePermissions -Value {
-                                        param
-                                        (
-                                            [Parameter()]
-                                            [System.String]
-                                            $SqlServerLogin
-                                        )
-                                        if ($mockInvalidOperationEnumDatabasePermissions)
-                                        {
-                                            throw 'Mock EnumDatabasePermissions Method was called with invalid operation.'
-                                        }
+                                        Add-Member -MemberType 'NoteProperty' -Name Name -Value $mockSqlDatabaseName -PassThru |
+                                        Add-Member -MemberType 'ScriptProperty' -Name 'Users' -Value {
+                                            return @{
+                                                $mockUserName = @(
+                                                    (
+                                                        New-Object -TypeName Object |
+                                                            Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value $mockUserName -PassThru -Force
+                                                    )
+                                                )
+                                            }
+                                        } -PassThru |
+                                        Add-Member -MemberType 'ScriptProperty' -Name 'ApplicationRoles' -Value {
+                                            return @{
+                                                $mockApplicationRoleName = @(
+                                                    (
+                                                        New-Object -TypeName Object |
+                                                            Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value $mockApplicationRoleName -PassThru -Force
+                                                    )
+                                                )
+                                            }
+                                        } -PassThru |
+                                        Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
+                                            return @{
+                                                $mockRoleName = @(
+                                                    (
+                                                        New-Object -TypeName Object |
+                                                            Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value $mockRoleName |
+                                                            Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $true -PassThru -Force
+                                                    )
+                                                )
+                                            }
+                                        } -PassThru |
+                                        Add-Member -MemberType 'ScriptMethod' -Name 'EnumDatabasePermissions' -Value {
+                                            param
+                                            (
+                                                [Parameter()]
+                                                [System.String]
+                                                $SqlServerLogin
+                                            )
+                                            if ($mockInvalidOperationEnumDatabasePermissions)
+                                            {
+                                                throw 'Mock EnumDatabasePermissions Method was called with invalid operation.'
+                                            }
 
-                                        if ( $SqlServerLogin -eq $mockExpectedSqlServerLogin )
-                                        {
-                                            $mockEnumDatabasePermissions = @()
-                                            $mockEnumDatabasePermissions += New-Object -TypeName Object |
-                                                Add-Member -MemberType NoteProperty -Name PermissionType -Value $mockSqlPermissionType01 -PassThru |
-                                                Add-Member -MemberType NoteProperty -Name PermissionState -Value $mockSqlPermissionState -PassThru |
-                                                Add-Member -MemberType NoteProperty -Name Grantee -Value $mockExpectedSqlServerLogin -PassThru |
-                                                Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                                                Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                                                Add-Member -MemberType NoteProperty -Name ObjectName -Value $mockSqlDatabaseName -PassThru
-                                            $mockEnumDatabasePermissions += New-Object -TypeName Object |
-                                                Add-Member -MemberType NoteProperty -Name PermissionType -Value $mockSqlPermissionType02 -PassThru |
-                                                Add-Member -MemberType NoteProperty -Name PermissionState -Value $mockSqlPermissionState -PassThru |
-                                                Add-Member -MemberType NoteProperty -Name Grantee -Value $mockExpectedSqlServerLogin -PassThru |
-                                                Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                                                Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                                                Add-Member -MemberType NoteProperty -Name ObjectName -Value $mockSqlDatabaseName -PassThru
+                                            if ( $SqlServerLogin -eq $mockExpectedSqlServerLogin )
+                                            {
+                                                $mockEnumDatabasePermissions = @()
+                                                $mockEnumDatabasePermissions += New-Object -TypeName Object |
+                                                    Add-Member -MemberType NoteProperty -Name PermissionType -Value $mockSqlPermissionType01 -PassThru |
+                                                    Add-Member -MemberType NoteProperty -Name PermissionState -Value $mockSqlPermissionState -PassThru |
+                                                    Add-Member -MemberType NoteProperty -Name Grantee -Value $mockExpectedSqlServerLogin -PassThru |
+                                                    Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                                                    Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                                                    Add-Member -MemberType NoteProperty -Name ObjectName -Value $mockSqlDatabaseName -PassThru
+                                                $mockEnumDatabasePermissions += New-Object -TypeName Object |
+                                                    Add-Member -MemberType NoteProperty -Name PermissionType -Value $mockSqlPermissionType02 -PassThru |
+                                                    Add-Member -MemberType NoteProperty -Name PermissionState -Value $mockSqlPermissionState -PassThru |
+                                                    Add-Member -MemberType NoteProperty -Name Grantee -Value $mockExpectedSqlServerLogin -PassThru |
+                                                    Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                                                    Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                                                    Add-Member -MemberType NoteProperty -Name ObjectName -Value $mockSqlDatabaseName -PassThru
 
-                                            $mockEnumDatabasePermissions
-                                        }
-                                        else
-                                        {
-                                            return $null
-                                        }
-                                    } -PassThru |
-                                        Add-Member -MemberType ScriptMethod -Name Grant -Value {
-                                        param
-                                        (
-                                            [Parameter()]
-                                            [System.Object]
-                                            $permissionSet,
+                                                $mockEnumDatabasePermissions
+                                            }
+                                            else
+                                            {
+                                                return $null
+                                            }
+                                        } -PassThru |
+                                        Add-Member -MemberType 'ScriptMethod' -Name 'Grant' -Value {
+                                            param
+                                            (
+                                                [Parameter()]
+                                                [System.Object]
+                                                $permissionSet,
 
-                                            [Parameter()]
-                                            [System.String]
-                                            $SqlServerLogin
-                                        )
+                                                [Parameter()]
+                                                [System.String]
+                                                $SqlServerLogin
+                                            )
 
-                                        $script:mockMethodGrantRan = $true
+                                            $script:mockMethodGrantRan = $true
 
-                                        if ( $SqlServerLogin -ne $mockExpectedSqlServerLogin )
-                                        {
-                                            throw "Called mocked Grant() method without setting the right login name. Expected '{0}'. But was '{1}'." `
-                                                -f $mockExpectedSqlServerLogin, $SqlServerLogin
-                                        }
-                                    } -PassThru |
-                                        Add-Member -MemberType ScriptMethod -Name Revoke -Value {
-                                        param
-                                        (
-                                            [Parameter()]
-                                            [System.Object]
-                                            $permissionSet,
+                                            if ( $SqlServerLogin -ne $mockExpectedSqlServerLogin )
+                                            {
+                                                throw "Called mocked Grant() method without setting the right login name. Expected '{0}'. But was '{1}'." `
+                                                    -f $mockExpectedSqlServerLogin, $SqlServerLogin
+                                            }
+                                        } -PassThru |
+                                        Add-Member -MemberType 'ScriptMethod' -Name 'Revoke' -Value {
+                                            param
+                                            (
+                                                [Parameter()]
+                                                [System.Object]
+                                                $permissionSet,
 
-                                            [Parameter()]
-                                            [System.String]
-                                            $SqlServerLogin
-                                        )
+                                                [Parameter()]
+                                                [System.String]
+                                                $SqlServerLogin
+                                            )
 
-                                        $script:mockMethodRevokeRan = $true
+                                            $script:mockMethodRevokeRan = $true
 
-                                        if ( $SqlServerLogin -ne $mockExpectedSqlServerLogin )
-                                        {
-                                            throw "Called mocked Revoke() method without setting the right login name. Expected '{0}'. But was '{1}'." `
-                                                -f $mockExpectedSqlServerLogin, $SqlServerLogin
-                                        }
-                                    } -PassThru |
-                                        Add-Member -MemberType ScriptMethod -Name Deny -Value {
-                                        param
-                                        (
-                                            [Parameter()]
-                                            [System.Object]
-                                            $permissionSet,
+                                            if ( $SqlServerLogin -ne $mockExpectedSqlServerLogin )
+                                            {
+                                                throw "Called mocked Revoke() method without setting the right login name. Expected '{0}'. But was '{1}'." `
+                                                    -f $mockExpectedSqlServerLogin, $SqlServerLogin
+                                            }
+                                        } -PassThru |
+                                        Add-Member -MemberType 'ScriptMethod' -Name 'Deny' -Value {
+                                            param
+                                            (
+                                                [Parameter()]
+                                                [System.Object]
+                                                $permissionSet,
 
-                                            [Parameter()]
-                                            [System.String]
-                                            $SqlServerLogin
-                                        )
+                                                [Parameter()]
+                                                [System.String]
+                                                $SqlServerLogin
+                                            )
 
-                                        $script:mockMethodDenyRan = $true
+                                            $script:mockMethodDenyRan = $true
 
-                                        if ( $SqlServerLogin -ne $mockExpectedSqlServerLogin )
-                                        {
-                                            throw "Called mocked Deny() method without setting the right login name. Expected '{0}'. But was '{1}'." `
-                                                -f $mockExpectedSqlServerLogin, $SqlServerLogin
-                                        }
-                                    } -PassThru -Force
-                                ))
-                        }
-                    } -PassThru -Force |
-                        Add-Member -MemberType ScriptProperty -Name Logins -Value {
-                        return @{
-                            $mockSqlServerLogin        = @((
-                                    New-Object -TypeName Object |
-                                        Add-Member -MemberType NoteProperty -Name LoginType -Value $mockLoginType -PassThru
-                                ))
-                            $mockSqlServerLoginUnknown = @((
-                                    New-Object -TypeName Object |
-                                        Add-Member -MemberType NoteProperty -Name LoginType -Value $mockLoginType -PassThru
-                                ))
+                                            if ( $SqlServerLogin -ne $mockExpectedSqlServerLogin )
+                                            {
+                                                throw "Called mocked Deny() method without setting the right login name. Expected '{0}'. But was '{1}'." `
+                                                    -f $mockExpectedSqlServerLogin, $SqlServerLogin
+                                            }
+                                        } -PassThru -Force
+                                )
+                            )
                         }
                     } -PassThru -Force
                 )
@@ -219,7 +230,7 @@ try
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         DatabaseName    = 'unknownDatabaseName'
-                        Name            = $mockSqlServerLogin
+                        Name            = $mockUserName
                         PermissionState = 'Grant'
                         Permissions     = @( 'Connect', 'Update' )
                     }
@@ -235,7 +246,7 @@ try
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     DatabaseName    = $mockSqlDatabaseName
-                    Name            = $mockSqlServerLogin
+                    Name            = $mockUserName
                     PermissionState = 'Grant'
                     Permissions     = @( 'Connect', 'Update', 'Select' )
                 }
@@ -261,7 +272,7 @@ try
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     DatabaseName    = $mockSqlDatabaseName
-                    Name            = $mockSqlServerLogin
+                    Name            = $mockUserName
                     PermissionState = 'Grant'
                     Permissions     = @( 'Connect', 'Update' )
                 }
@@ -287,7 +298,7 @@ try
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     DatabaseName    = $mockSqlDatabaseName
-                    Name            = $mockSqlServerLogin
+                    Name            = $mockUserName
                     PermissionState = 'Grant'
                     Permissions     = @( 'Connect', 'Update' )
                 }
@@ -313,7 +324,7 @@ try
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     DatabaseName    = $mockSqlDatabaseName
-                    Name            = $mockSqlServerLogin
+                    Name            = $mockUserName
                     PermissionState = 'Grant'
                     Permissions     = @( 'Connect', 'Update', 'Select' )
                 }
@@ -349,7 +360,7 @@ try
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         DatabaseName    = $mockSqlDatabaseName
-                        Name            = $mockSqlServerLogin
+                        Name            = $mockUserName
                         PermissionState = 'Grant'
                         Permissions     = @( 'Connect', 'Update' )
                         Ensure          = 'Present'
@@ -368,7 +379,7 @@ try
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         DatabaseName    = $mockSqlDatabaseName
-                        Name            = $mockSqlServerLogin
+                        Name            = $mockUserName
                         PermissionState = 'Grant'
                         Permissions     = @( 'Connect', 'Update', 'Select' )
                         Ensure          = 'Absent'
@@ -385,7 +396,7 @@ try
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         DatabaseName    = $mockSqlDatabaseName
-                        Name            = $mockSqlServerLogin
+                        Name            = $mockUserName
                         PermissionState = 'Grant'
                         Permissions     = @( 'Connect', 'Update' )
                         Ensure          = 'Absent'
@@ -402,7 +413,7 @@ try
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         DatabaseName    = $mockSqlDatabaseName
-                        Name            = $mockSqlServerLogin
+                        Name            = $mockUserName
                         PermissionState = 'Grant'
                         Permissions     = @( 'Connect', 'Update', 'Select' )
                         Ensure          = 'Present'
@@ -419,7 +430,7 @@ try
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         DatabaseName    = $mockSqlDatabaseName
-                        Name            = $mockSqlServerLogin
+                        Name            = $mockUserName
                         PermissionState = 'Grant'
                         Permissions     = @( 'Connect', 'Update' )
                         Ensure          = 'Present'
@@ -449,7 +460,7 @@ try
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         DatabaseName    = 'unknownDatabaseName'
-                        Name            = $mockSqlServerLogin
+                        Name            = $mockUserName
                         PermissionState = 'Grant'
                         Permissions     = @( 'Connect', 'Update' )
                         Ensure          = 'Present'
@@ -475,7 +486,7 @@ try
                     }
 
 
-                    $errorMessage = $script:localizedData.LoginIsNotUser -f $testParameters.Name, $mockSqlDatabaseName
+                    $errorMessage = $script:localizedData.NameIsMissing -f $testParameters.Name, $mockSqlDatabaseName
 
                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
 
@@ -488,14 +499,14 @@ try
                     BeforeAll {
                         $throwInvalidOperation = $script:localizedData.FailedToSetPermissionDatabase -f 'Zebes\SamusAran', 'AdventureWorks'
 
-                        $mockExpectedSqlServerLogin = $mockSqlServerLoginUnknown
+                        $mockExpectedSqlServerLogin = $mockUserNameUnknown
                     }
 
                     It 'Should throw the correct error when mock Grant() method is called' {
                         $testParameters = $mockDefaultParameters.Clone()
                         $testParameters += @{
                             DatabaseName    = $mockSqlDatabaseName
-                            Name            = $mockSqlServerLogin
+                            Name            = $mockUserName
                             PermissionState = 'Grant'
                             Permissions     = @( 'Connect', 'Update' )
                             Ensure          = 'Present'
@@ -512,7 +523,7 @@ try
                         $testParameters = $mockDefaultParameters.Clone()
                         $testParameters += @{
                             DatabaseName    = $mockSqlDatabaseName
-                            Name            = $mockSqlServerLogin
+                            Name            = $mockUserName
                             PermissionState = 'GrantWithGrant'
                             Permissions     = @( 'Connect', 'Update' )
                             Ensure          = 'Present'
@@ -530,7 +541,7 @@ try
                         $testParameters = $mockDefaultParameters.Clone()
                         $testParameters += @{
                             DatabaseName    = $mockSqlDatabaseName
-                            Name            = $mockSqlServerLogin
+                            Name            = $mockUserName
                             PermissionState = 'Deny'
                             Permissions     = @( 'Connect', 'Update' )
                             Ensure          = 'Present'
@@ -547,7 +558,7 @@ try
                         $testParameters = $mockDefaultParameters.Clone()
                         $testParameters += @{
                             DatabaseName    = $mockSqlDatabaseName
-                            Name            = $mockSqlServerLogin
+                            Name            = $mockUserName
                             PermissionState = 'Grant'
                             Permissions     = @( 'Connect', 'Update' )
                             Ensure          = 'Absent'
@@ -564,7 +575,7 @@ try
                         $testParameters = $mockDefaultParameters.Clone()
                         $testParameters += @{
                             DatabaseName    = $mockSqlDatabaseName
-                            Name            = $mockSqlServerLogin
+                            Name            = $mockUserName
                             PermissionState = 'GrantWithGrant'
                             Permissions     = @( 'Connect', 'Update' )
                             Ensure          = 'Absent'
@@ -580,11 +591,11 @@ try
 
                 Context 'When Ensure is set to Present' {
                     It 'Should call the method Grant() without throwing' {
-                        $mockExpectedSqlServerLogin = $mockSqlServerLogin
+                        $mockExpectedSqlServerLogin = $mockUserName
                         $testParameters = $mockDefaultParameters
                         $testParameters += @{
                             DatabaseName    = $mockSqlDatabaseName
-                            Name            = $mockSqlServerLogin
+                            Name            = $mockUserName
                             PermissionState = 'Grant'
                             Permissions     = @( 'Connect', 'Update' )
                             Ensure          = 'Present'
@@ -600,11 +611,11 @@ try
                     }
 
                     It 'Should call the method Grant() (WithGrant) without throwing' {
-                        $mockExpectedSqlServerLogin = $mockSqlServerLogin
+                        $mockExpectedSqlServerLogin = $mockUserName
                         $testParameters = $mockDefaultParameters
                         $testParameters += @{
                             DatabaseName    = $mockSqlDatabaseName
-                            Name            = $mockSqlServerLogin
+                            Name            = $mockUserName
                             PermissionState = 'GrantWithGrant'
                             Permissions     = @( 'Connect', 'Update' )
                             Ensure          = 'Present'
@@ -620,11 +631,11 @@ try
                     }
 
                     It 'Should call the method Deny() without throwing' {
-                        $mockExpectedSqlServerLogin = $mockSqlServerLogin
+                        $mockExpectedSqlServerLogin = $mockUserName
                         $testParameters = $mockDefaultParameters
                         $testParameters += @{
                             DatabaseName    = $mockSqlDatabaseName
-                            Name            = $mockSqlServerLogin
+                            Name            = $mockUserName
                             PermissionState = 'Deny'
                             Permissions     = @( 'Connect', 'Update' )
                             Ensure          = 'Present'
@@ -642,11 +653,11 @@ try
 
                 Context 'When Ensure is set to Absent' {
                     It 'Should call the method Revoke() for permission state ''Grant'' without throwing' {
-                        $mockExpectedSqlServerLogin = $mockSqlServerLogin
+                        $mockExpectedSqlServerLogin = $mockUserName
                         $testParameters = $mockDefaultParameters
                         $testParameters += @{
                             DatabaseName    = $mockSqlDatabaseName
-                            Name            = $mockSqlServerLogin
+                            Name            = $mockUserName
                             PermissionState = 'Grant'
                             Permissions     = @( 'Connect', 'Update' )
                             Ensure          = 'Absent'
@@ -662,11 +673,11 @@ try
                     }
 
                     It 'Should call the method Revoke() for permission state ''GrantWithGrant'' without throwing' {
-                        $mockExpectedSqlServerLogin = $mockSqlServerLogin
+                        $mockExpectedSqlServerLogin = $mockUserName
                         $testParameters = $mockDefaultParameters
                         $testParameters += @{
                             DatabaseName    = $mockSqlDatabaseName
-                            Name            = $mockSqlServerLogin
+                            Name            = $mockUserName
                             PermissionState = 'GrantWithGrant'
                             Permissions     = @( 'Connect', 'Update' )
                             Ensure          = 'Absent'
@@ -682,11 +693,11 @@ try
                     }
 
                     It 'Should call the method Revoke() for permission state ''Deny'' without throwing' {
-                        $mockExpectedSqlServerLogin = $mockSqlServerLogin
+                        $mockExpectedSqlServerLogin = $mockUserName
                         $testParameters = $mockDefaultParameters
                         $testParameters += @{
                             DatabaseName    = $mockSqlDatabaseName
-                            Name            = $mockSqlServerLogin
+                            Name            = $mockUserName
                             PermissionState = 'Deny'
                             Permissions     = @( 'Connect', 'Update' )
                             Ensure          = 'Absent'
