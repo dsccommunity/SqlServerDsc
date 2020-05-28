@@ -64,9 +64,12 @@ in a future release.
   - Added the properties `NpEnabled` and `TcpEnabled` ([issue #1161](https://github.com/dsccommunity/SqlServerDsc/issues/1161)).
   - Added the property `UseEnglish` ([issue #1473](https://github.com/dsccommunity/SqlServerDsc/issues/1473)).
 - SqlServerReplication
-  - Add integration tests ([issue #755](https://github.com/dsccommunity/SqlServerDsc/issues/755)
+  - Add integration tests ([issue #755](https://github.com/dsccommunity/SqlServerDsc/issues/755).
 - SqlDatabase
   - The property `OwnerName` was added.
+- SqlDatabasePermission
+  - Now possible to change permissions for database user-defined roles
+    (e.g. public) and database application roles ([issue #1498](https://github.com/dsccommunity/SqlServerDsc/issues/1498).
 - SqlServerDsc.Common
   - The helper function `Restart-SqlService` was improved to handle Failover
     Clusters better. Now the SQL Server service will only be taken offline

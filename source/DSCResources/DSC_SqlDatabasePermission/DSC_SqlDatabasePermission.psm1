@@ -210,7 +210,19 @@ function Set-TargetResource
 
         if ($sqlDatabaseObject = $sqlServerObject.Databases[$DatabaseName])
         {
-            if ($sqlDatabaseObject.Users[$Name])
+            $nameExist = $sqlDatabaseObject.Users[$Name] `
+                -or (
+                    <#
+                        Skip fixed roles like db_datareader as it is not possible to set
+                        permissions on those.
+                    #>
+                    $sqlDatabaseObject.Roles | Where-Object -FilterScript {
+                        -not $_.IsFixedRole -and $_.Name -eq $Name
+                    }
+                 ) `
+                -or $sqlDatabaseObject.ApplicationRoles[$Name]
+
+            if ($nameExist)
             {
                 try
                 {
@@ -273,7 +285,7 @@ function Set-TargetResource
             }
             else
             {
-                $errorMessage = $script:localizedData.LoginIsNotUser -f $Name, $DatabaseName
+                $errorMessage = $script:localizedData.NameIsMissing -f $Name, $DatabaseName
 
                 New-InvalidOperationException -Message $errorMessage
             }
