@@ -36,6 +36,8 @@ in a future release.
 
 ### Added
 
+- SqlSetup
+  - Added support for major version upgrade ([issue #1561](https://github.com/dsccommunity/SqlServerDsc/issues/1561)).
 - SqlServerDsc
   - Added new resource SqlServerProtocol ([issue #1377](https://github.com/dsccommunity/SqlServerDsc/issues/1377)).
   - Added new resource SqlServerProtocolTcpIp ([issue #1378](https://github.com/dsccommunity/SqlServerDsc/issues/1378)).
