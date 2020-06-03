@@ -1899,6 +1899,7 @@ Installs SQL Server on the target node.
   * SqlTempdbFileGrowth
   * SqlTempdbLogFileSize
   * SqlTempdbLogFileGrowth
+* Major version upgrades are supported if the action "upgrade" is specified.
 
 > **Note:** It is not possible to add or remove features to a SQL Server failover
 cluster. This is a limitation of SQL Server. See article
