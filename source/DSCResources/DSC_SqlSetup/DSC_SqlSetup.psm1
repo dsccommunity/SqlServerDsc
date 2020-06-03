@@ -2190,6 +2190,16 @@ function Test-TargetResource
         }
     }
 
+    if ($getTargetResourceParameters.Action -eq "Upgrade")
+   {
+       $InstallerSQLVersion = Get-SqlMajorVersion -Path $SourcePath\setup.exe
+       $InstanceSQLVersion = Get-SQLInstanceMajorVersion -InstanceName $InstanceName
+       if ($InstallerSQLVersion -gt $InstanceSQLVersion)
+           {
+               $result = $false
+           }
+   }
+
     return $result
 }
 
