@@ -2192,12 +2192,12 @@ function Test-TargetResource
 
     if ($getTargetResourceParameters.Action -eq "Upgrade")
     {
-       $installerSqlVersion = Get-SqlMajorVersion -Path $sourcePath\setup.exe
-       $instanceSqlVersion = Get-SQLInstanceMajorVersion -InstanceName $instanceName
-       if ($installerSQLVersion -gt $instanceSqlVersion)
-           {
-               $result = $false
-           }
+        $installerSqlVersion = Get-SqlMajorVersion -Path $sourcePath\setup.exe
+        $instanceSqlVersion = Get-SQLInstanceMajorVersion -InstanceName $instanceName
+        if ($installerSQLVersion -gt $instanceSqlVersion)
+        {
+            $result = $false
+        }
     }
 
     return $result
