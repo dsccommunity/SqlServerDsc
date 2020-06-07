@@ -163,7 +163,7 @@ stages:
                   'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'
                   # Group 5
-                  'tests/Integration/DSC_SqlServerSecureConnection.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlSecureConnection.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlProtocol.Integration.Tests.ps1'
                   # Group 6 (tests makes changes that could make SQL Server to loose connectivity)
@@ -230,7 +230,7 @@ stages:
                   'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'
                   # Group 5
-                  'tests/Integration/DSC_SqlServerSecureConnection.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlSecureConnection.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlProtocol.Integration.Tests.ps1'
                   # Group 6 (tests makes changes that could make SQL Server to loose connectivity)

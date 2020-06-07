@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Automated unit test for DSC_SqlServerSecureConnection DSC resource.
+        Automated unit test for DSC_SqlSecureConnection DSC resource.
 
 #>
 
@@ -12,7 +12,7 @@ if (-not (Test-BuildCategory -Type 'Unit'))
 }
 
 $script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceName = 'DSC_SqlServerSecureConnection'
+$script:dscResourceName = 'DSC_SqlSecureConnection'
 
 function Invoke-TestSetup
 {
@@ -82,7 +82,7 @@ try
         $mockThumbprint = '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'
         $mockServiceAccount = 'SqlSvc'
 
-        Describe 'SqlServerSecureConnection\Get-TargetResource' -Tag 'Get' {
+        Describe 'SqlSecureConnection\Get-TargetResource' -Tag 'Get' {
             BeforeAll {
                 $mockDynamic_SqlBuildVersion = '13.0.4001.0'
 
@@ -267,7 +267,7 @@ try
             }
         }
 
-        Describe 'SqlServerSecureConnection\Set-TargetResource' -Tag 'Set' {
+        Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
             BeforeAll {
                 $defaultParameters = @{
                     InstanceName    = $mockNamedInstanceName
@@ -429,7 +429,7 @@ try
             }
         }
 
-        Describe 'SqlServerSecureConnection\Test-TargetResource' -Tag 'Test' {
+        Describe 'SqlSecureConnection\Test-TargetResource' -Tag 'Test' {
             Context 'When the system is not in the desired state' {
                 Context 'When ForceEncryption is not configured properly' {
                     BeforeAll {
@@ -572,7 +572,7 @@ try
             }
         }
 
-        Describe 'SqlServerSecureConnection\Get-EncryptedConnectionSetting' -Tag 'Helper' {
+        Describe 'SqlSecureConnection\Get-EncryptedConnectionSetting' -Tag 'Helper' {
 
             Mock -CommandName 'Get-ItemProperty' -MockWith {
                 return @{
@@ -616,7 +616,7 @@ try
             }
         }
 
-        Describe 'SqlServerSecureConnection\Set-EncryptedConnectionSetting' -Tag 'Helper' {
+        Describe 'SqlSecureConnection\Set-EncryptedConnectionSetting' -Tag 'Helper' {
             Context 'When calling a method that execute successfully' {
                 BeforeAll {
                     Mock -CommandName 'Get-SqlEncryptionValue' -MockWith {
@@ -647,7 +647,7 @@ try
             }
         }
 
-        Describe 'SqlServerSecureConnection\Test-CertificatePermission' -Tag 'Helper' {
+        Describe 'SqlSecureConnection\Test-CertificatePermission' -Tag 'Helper' {
             Context 'When calling a method that execute successfully' {
                 BeforeAll {
                     Mock -CommandName 'Get-CertificateAcl' -MockWith {
@@ -709,7 +709,7 @@ try
             }
         }
 
-        Describe 'SqlServerSecureConnection\Set-CertificatePermission' -Tag 'Helper' {
+        Describe 'SqlSecureConnection\Set-CertificatePermission' -Tag 'Helper' {
             Context 'When calling a method that execute successfully' {
                 BeforeAll {
                     Mock -CommandName 'Get-CertificateAcl' -MockWith {
@@ -741,7 +741,7 @@ try
             }
         }
 
-        Describe 'SqlServerSecureConnection\Get-CertificateAcl' -Tag 'Helper' {
+        Describe 'SqlSecureConnection\Get-CertificateAcl' -Tag 'Helper' {
             Context 'When calling a method that execute successfully' {
                 BeforeAll {
                     Mock -CommandName 'Get-ChildItem' -MockWith {
@@ -760,7 +760,7 @@ try
             }
         }
 
-        Describe 'SqlServerSecureConnection\Get-SqlEncryptionValue' -Tag 'Helper' {
+        Describe 'SqlSecureConnection\Get-SqlEncryptionValue' -Tag 'Helper' {
             Context 'When calling a method that execute successfully' {
                 BeforeAll {
                     Mock -CommandName 'Get-ItemProperty' -MockWith {

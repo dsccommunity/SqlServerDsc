@@ -100,6 +100,7 @@ in a future release.
     - `SqlServerProtocolTcpIp` was renamed to `SqlProtocolTcpIp`.
     - `SqlServerReplication` was renamed to `SqlReplication`.
     - `SqlServerRole` was renamed to `SqlRole`.
+    - `SqlServerSecureConnection` was renamed to `SqlSecureConnection`.
   - Changed all resource prefixes from `MSFT_` to `DSC_` ([issue #1496](https://github.com/dsccommunity/SqlServerDsc/issues/1496)).
     _Deprecated resource has not changed prefix._
   - All resources are now using the common module DscResource.Common.

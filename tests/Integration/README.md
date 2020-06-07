@@ -384,7 +384,7 @@ Database name | Owner
 ScriptDatabase3 | $env:COMPUTERNAME\SqlAdmin
 ScriptDatabase4 | DscAdmin1
 
-## SqlServerSecureConnection
+## SqlSecureConnection
 
 **Run order:** 5
 

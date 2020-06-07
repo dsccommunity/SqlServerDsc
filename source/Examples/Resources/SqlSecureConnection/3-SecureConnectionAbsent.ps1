@@ -8,12 +8,11 @@ Configuration Example
 
     node localhost
     {
-        SqlServerSecureConnection 'ForceSecureConnection'
+        SqlSecureConnection 'SecureConnectionAbsent'
         {
             InstanceName    = 'MSSQLSERVER'
-            Thumbprint      = 'fb0b82c94b80da26cf0b86f10ec0c50ae7864a2c'
-            ForceEncryption = $true
-            Ensure          = 'Present'
+            Thumbprint      = ''
+            Ensure          = 'Absent'
             ServiceAccount  = 'SqlSvc'
         }
     }

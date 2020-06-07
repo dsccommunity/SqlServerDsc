@@ -35,13 +35,13 @@ else
     .SYNOPSIS
         Enable a secure connection, adding a correct certificate.
 #>
-Configuration DSC_SqlServerSecureConnection_AddSecureConnection_Config
+Configuration DSC_SqlSecureConnection_AddSecureConnection_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerSecureConnection 'Integration_Test'
+        SqlSecureConnection 'Integration_Test'
         {
             InstanceName = $Node.InstanceName
             Ensure = 'Present'
@@ -56,13 +56,13 @@ Configuration DSC_SqlServerSecureConnection_AddSecureConnection_Config
     .SYNOPSIS
         Remove the secure connection.
 #>
-Configuration DSC_SqlServerSecureConnection_RemoveSecureConnection_Config
+Configuration DSC_SqlSecureConnection_RemoveSecureConnection_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerSecureConnection 'Integration_Test'
+        SqlSecureConnection 'Integration_Test'
         {
             InstanceName = $Node.InstanceName
             Ensure = 'Absent'

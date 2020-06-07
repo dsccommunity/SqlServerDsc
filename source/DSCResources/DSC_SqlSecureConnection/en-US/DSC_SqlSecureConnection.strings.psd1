@@ -1,5 +1,5 @@
 <#
-    Localized resources for DSC_SqlServerSecureConnection
+    Localized resources for DSC_SqlSecureConnection
 #>
 
 ConvertFrom-StringData @'

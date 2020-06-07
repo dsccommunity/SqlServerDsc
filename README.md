@@ -133,7 +133,7 @@ in a future release.
 * [**SqlReplication**](#sqlreplication) resource to manage SQL Replication
   distribution and publishing.
 * [**SqlRole**](#sqlrole) resource to manage SQL server roles.
-* [**SqlServerSecureConnection**](#sqlserversecureconnection) resource to
+* [**SqlSecureConnection**](#sqlsecureconnection) resource to
   enable encrypted SQL connections.
 * [**SqlServiceAccount**](#sqlserviceaccount) Manage the service account
   for SQL Server services.
@@ -1773,7 +1773,7 @@ server roles, please read the below articles.
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlRole).
 
-### SqlServerSecureConnection
+### SqlSecureConnection
 
 Configures SQL connections to be encrypted.
 Read more about encrypted connections in this article [Enable Encrypted Connections](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/enable-encrypted-connections-to-the-database-engine).
@@ -1816,14 +1816,14 @@ In that case, the 'SYSTEM' service account can be used.
 
 #### Examples
 
-* [Force Secure Connection](/source/Examples/Resources/SqlServerSecureConnection/1-ForceSecureConnection.ps1).
-* [Secure Connection but not required](/source/Examples/Resources/SqlServerSecureConnection/2-SecureConnectionNotForced.ps1).
-* [Secure Connection disabled](/source/Examples/Resources/SqlServerSecureConnection/3-SecureConnectionAbsent.ps1).
-* [Secure Connection Using "SYSTEM" Account](/source/Examples/Resources/SqlServerSecureConnection/4-SecureConnectionUsingSYSTEMAccount.ps1).
+* [Force Secure Connection](/source/Examples/Resources/SqlSecureConnection/1-ForceSecureConnection.ps1).
+* [Secure Connection but not required](/source/Examples/Resources/SqlSecureConnection/2-SecureConnectionNotForced.ps1).
+* [Secure Connection disabled](/source/Examples/Resources/SqlSecureConnection/3-SecureConnectionAbsent.ps1).
+* [Secure Connection Using "SYSTEM" Account](/source/Examples/Resources/SqlSecureConnection/4-SecureConnectionUsingSYSTEMAccount.ps1).
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerSecureConnection).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlSecureConnection).
 
 ### SqlServiceAccount
 

@@ -71,7 +71,7 @@
         'SqlProtocolTcpIp'
         'SqlReplication'
         'SqlRole'
-        'SqlServerSecureConnection'
+        'SqlSecureConnection'
         'SqlServiceAccount'
         'SqlSetup'
         'SqlWaitForAG'

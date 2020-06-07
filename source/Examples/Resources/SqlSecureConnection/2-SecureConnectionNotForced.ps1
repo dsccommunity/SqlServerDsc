@@ -8,7 +8,7 @@ Configuration Example
 
     node localhost
     {
-        SqlServerSecureConnection 'SecureConnectionNotForced'
+        SqlSecureConnection 'SecureConnectionNotForced'
         {
             InstanceName    = 'MSSQLSERVER'
             Thumbprint      = 'fb0b82c94b80da26cf0b86f10ec0c50ae7864a2c'
