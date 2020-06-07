@@ -121,7 +121,7 @@ in a future release.
 * [**SqlEndpointPermission**](#sqlendpointpermission) Grant or revoke
   permission on the endpoint.
 * [**SqlLogin**](#sqllogin) resource to manage SQL logins.
-* [**SqlServerMaxDop**](#sqlservermaxdop) resource to manage MaxDegree of Parallelism
+* [**SqlMaxDop**](#sqlmaxdop) resource to manage MaxDegree of Parallelism
   for SQL Server.
 * [**SqlServerMemory**](#sqlservermemory) resource to manage Memory for SQL Server.
 * [**SqlServerPermission**](#sqlserverpermission) Grant or revoke permission on
@@ -1380,7 +1380,7 @@ No description.
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlLogin).
 
-### SqlServerMaxDop
+### SqlMaxDop
 
 This resource set the max degree of parallelism server configuration option.
 The max degree of parallelism option is used to limit the number of processors to
@@ -1430,13 +1430,13 @@ Read more about max degree of parallelism in this article
 
 #### Examples
 
-* [Set SQLServerMaxDop to 1](/source/Examples/Resources/SqlServerMaxDop/1-SetMaxDopToOne.ps1)
-* [Set SQLServerMaxDop to Auto](/source/Examples/Resources/SqlServerMaxDop/2-SetMaxDopToAuto.ps1)
-* [Set SQLServerMaxDop to Default](/source/Examples/Resources/SqlServerMaxDop/3-SetMaxDopToDefault.ps1)
+* [Set SqlMaxDop to 1](/source/Examples/Resources/SqlMaxDop/1-SetMaxDopToOne.ps1)
+* [Set SqlMaxDop to Auto](/source/Examples/Resources/SqlMaxDop/2-SetMaxDopToAuto.ps1)
+* [Set SqlMaxDop to Default](/source/Examples/Resources/SqlMaxDop/3-SetMaxDopToDefault.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerMaxDop).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlMaxDop).
 
 ### SqlServerMemory
 

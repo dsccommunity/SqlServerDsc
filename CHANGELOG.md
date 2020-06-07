@@ -93,6 +93,7 @@ in a future release.
     - `SqlServerEndpoint` was renamed to `SqlEndpoint`.
     - `SqlServerEndpointPermission` was renamed to `SqlEndpointPermission`.
     - `SqlServerLogin` was renamed to `SqlLogin`.
+    - `SqlServerMaxDop` was renamed to `SqlMaxDop`.
   - Changed all resource prefixes from `MSFT_` to `DSC_` ([issue #1496](https://github.com/dsccommunity/SqlServerDsc/issues/1496)).
     _Deprecated resource has not changed prefix._
   - All resources are now using the common module DscResource.Common.

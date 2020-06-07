@@ -21,7 +21,7 @@ Configuration Example
 
     node localhost
     {
-        SqlServerMaxDop 'Set_SQLServerMaxDop_ToAuto'
+        SqlMaxDop 'Set_SqlMaxDop_ToAuto'
         {
             Ensure                  = 'Present'
             DynamicAlloc            = $true
