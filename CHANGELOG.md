@@ -67,7 +67,7 @@ in a future release.
     if the instance is clustered.
   - Added the properties `NpEnabled` and `TcpEnabled` ([issue #1161](https://github.com/dsccommunity/SqlServerDsc/issues/1161)).
   - Added the property `UseEnglish` ([issue #1473](https://github.com/dsccommunity/SqlServerDsc/issues/1473)).
-- SqlServerReplication
+- SqlReplication
   - Add integration tests ([issue #755](https://github.com/dsccommunity/SqlServerDsc/issues/755).
 - SqlDatabase
   - The property `OwnerName` was added.
@@ -98,6 +98,7 @@ in a future release.
     - `SqlServerPermission` was renamed to `SqlPermission`.
     - `SqlServerProtocol` was renamed to `SqlProtocol`.
     - `SqlServerProtocolTcpIp` was renamed to `SqlProtocolTcpIp`.
+    - `SqlServerReplication` was renamed to `SqlReplication`.
   - Changed all resource prefixes from `MSFT_` to `DSC_` ([issue #1496](https://github.com/dsccommunity/SqlServerDsc/issues/1496)).
     _Deprecated resource has not changed prefix._
   - All resources are now using the common module DscResource.Common.
@@ -265,7 +266,7 @@ in a future release.
 - SqlPermission
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
-- SqlServerReplication
+- SqlReplication
   - Enhanced the exception handling so it shows the inner exception error
     message that have the actual error that occurred.
   - Corrected the examples.

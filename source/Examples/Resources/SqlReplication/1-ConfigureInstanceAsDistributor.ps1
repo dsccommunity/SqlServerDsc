@@ -15,7 +15,7 @@ Configuration Example
 
     node localhost
     {
-        SqlServerReplication 'distributor'
+        SqlReplication 'distributor'
         {
             Ensure               = 'Present'
             InstanceName         = 'DISTRIBUTOR' # Or 'MSSQLSERVER' for default instance.

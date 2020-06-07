@@ -1,7 +1,7 @@
 <#
     .N<#
     .SYNOPSIS
-        Automated unit test for DSC_SqlServerReplication DSC resource.
+        Automated unit test for DSC_SqlReplication DSC resource.
 
 #>
 
@@ -16,7 +16,7 @@ if (-not (Test-BuildCategory -Type 'Unit'))
 }
 
 $script:dscModuleName   = 'SqlServerDSC'
-$script:dscResourceName = 'DSC_SqlServerReplication'
+$script:dscResourceName = 'DSC_SqlReplication'
 
 try
 {

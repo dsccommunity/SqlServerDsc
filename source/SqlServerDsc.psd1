@@ -69,7 +69,7 @@
         'SqlPermission'
         'SqlProtocol'
         'SqlProtocolTcpIp'
-        'SqlServerReplication'
+        'SqlReplication'
         'SqlServerRole'
         'SqlServerSecureConnection'
         'SqlServiceAccount'

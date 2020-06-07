@@ -34,7 +34,7 @@ else
     .SYNOPSIS
         Starting the default instance because it is a prerequisites.
 #>
-Configuration DSC_SqlServerReplication_Prerequisites_Config
+Configuration DSC_SqlReplication_Prerequisites_Config
 {
     Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
 
@@ -69,13 +69,13 @@ Configuration DSC_SqlServerReplication_Prerequisites_Config
     .SYNOPSIS
         Adds the instance as a distributor.
 #>
-Configuration DSC_SqlServerReplication_AddDistributor_Config
+Configuration DSC_SqlReplication_AddDistributor_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerReplication 'Integration_Test'
+        SqlReplication 'Integration_Test'
         {
             Ensure               = 'Present'
             DistributorMode      = 'Local'
@@ -106,13 +106,13 @@ Configuration DSC_SqlServerReplication_AddDistributor_Config
     .SYNOPSIS
         Adds the instance as a publisher.
 #>
-Configuration DSC_SqlServerReplication_AddPublisher_Config
+Configuration DSC_SqlReplication_AddPublisher_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerReplication 'Integration_Test'
+        SqlReplication 'Integration_Test'
         {
             Ensure               = 'Present'
             DistributorMode      = 'Remote'
@@ -149,13 +149,13 @@ Configuration DSC_SqlServerReplication_AddPublisher_Config
     .SYNOPSIS
         Removes the instance as a publisher.
 #>
-Configuration DSC_SqlServerReplication_RemovePublisher_Config
+Configuration DSC_SqlReplication_RemovePublisher_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerReplication 'Integration_Test'
+        SqlReplication 'Integration_Test'
         {
             Ensure               = 'Absent'
             InstanceName         = $Node.InstanceName
@@ -182,13 +182,13 @@ Configuration DSC_SqlServerReplication_RemovePublisher_Config
     .SYNOPSIS
         Removes the instance as a distributor.
 #>
-Configuration DSC_SqlServerReplication_RemoveDistributor_Config
+Configuration DSC_SqlReplication_RemoveDistributor_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerReplication 'Integration_Test'
+        SqlReplication 'Integration_Test'
         {
             Ensure               = 'Absent'
             InstanceName         = $Node.InstanceName
@@ -210,7 +210,7 @@ Configuration DSC_SqlServerReplication_RemoveDistributor_Config
     .SYNOPSIS
         Stopping the default instance to save memory on the build worker.
 #>
-Configuration DSC_SqlServerReplication_Cleanup_Config
+Configuration DSC_SqlReplication_Cleanup_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
     Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'

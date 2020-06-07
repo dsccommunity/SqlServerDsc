@@ -331,7 +331,7 @@ AsymmetricKey1 | RSA_2048 | P@ssw0rd1
 
 The integration test will not leave anything on any instance.
 
-## SqlServerReplication
+## SqlReplication
 
 **Run order:** 3
 

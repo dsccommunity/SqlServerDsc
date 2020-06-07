@@ -32,7 +32,7 @@ These are the links to the examples for each individual resource.
 - [SqlMaxDop](Resources/SqlMaxDop)
 - [SqlMemory](Resources/SqlMemory)
 - [SqlPermission](Resources/SqlPermission)
-- [SqlServerReplication](Resources/SqlServerReplication)
+- [SqlReplication](Resources/SqlReplication)
 - [SqlServerRole](Resources/SqlServerRole)
 - [SqlServerSecureConnection](Resources/SqlServerSecureConnection)
 - [SqlServiceAccount](Resources/SqlServiceAccount)

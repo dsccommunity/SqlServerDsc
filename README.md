@@ -130,7 +130,7 @@ in a future release.
   protocols for a SQL Server instance.
 * [**SqlProtocolTcpIp**](#sqlprotocoltcpip) resource manage the TCP/IP
   protocol IP address groups for a SQL Server instance.
-* [**SqlServerReplication**](#sqlserverreplication) resource to manage SQL Replication
+* [**SqlReplication**](#sqlreplication) resource to manage SQL Replication
   distribution and publishing.
 * [**SqlServerRole**](#sqlserverrole) resource to manage SQL server roles.
 * [**SqlServerSecureConnection**](#sqlserversecureconnection) resource to
@@ -1686,7 +1686,7 @@ address groups for a SQL Server instance.
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlProtocolTcpIp).
 
-### SqlServerReplication
+### SqlReplication
 
 This resource manage SQL Replication distribution and publishing.
 
@@ -1719,12 +1719,12 @@ This resource manage SQL Replication distribution and publishing.
 
 #### Examples
 
-* [Configure a instance as the distributor](/source/Examples/Resources/SqlServerReplication/1-ConfigureInstanceAsDistributor.ps1)
-* [Configure a instance as the publisher](/source/Examples/Resources/SqlServerReplication/2-ConfigureInstanceAsPublisher.ps1)
+* [Configure a instance as the distributor](/source/Examples/Resources/SqlReplication/1-ConfigureInstanceAsDistributor.ps1)
+* [Configure a instance as the publisher](/source/Examples/Resources/SqlReplication/2-ConfigureInstanceAsPublisher.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerReplication).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlReplication).
 
 ### SqlServerRole
 
