@@ -1,7 +1,7 @@
 <#
     .DESCRIPTION
-        This example shows how to set the minimum memory to 2GB and the maximum memory
-        configuration option with the automatic configuration.
+        This example shows how to set the minimum and maximum memory
+        configuration option with the default configuration.
 #>
 Configuration Example
 {
@@ -16,13 +16,11 @@ Configuration Example
 
     node localhost
     {
-        SqlServerMemory 'Set_SQLServerMinAndMaxMemory_ToAuto'
+        SqlMemory 'Set_SQLServerMaxMemory_ToDefault'
         {
-            Ensure               = 'Present'
-            DynamicAlloc         = $true
+            Ensure               = 'Absent'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            MinMemory            = 2048
 
             PsDscRunAsCredential = $SqlAdministratorCredential
         }

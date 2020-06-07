@@ -21,7 +21,7 @@ Configuration Example
 
     node localhost
     {
-        SqlServerMemory 'Set_SQLServerMaxMemory_ToAuto'
+        SqlMemory 'Set_SQLServerMaxMemory_ToAuto'
         {
             Ensure                  = 'Present'
             DynamicAlloc            = $true

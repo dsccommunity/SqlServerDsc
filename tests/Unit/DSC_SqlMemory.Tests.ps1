@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Automated unit test for DSC_SqlServerMemory DSC resource.
+        Automated unit test for DSC_SqlMemory DSC resource.
 
 #>
 
@@ -12,7 +12,7 @@ if (-not (Test-BuildCategory -Type 'Unit'))
 }
 
 $script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceName = 'DSC_SqlServerMemory'
+$script:dscResourceName = 'DSC_SqlMemory'
 
 function Invoke-TestSetup
 {
@@ -106,7 +106,7 @@ try
 
         #endregion
 
-        Describe "DSC_SqlServerMemory\Get-TargetResource" -Tag 'Get' {
+        Describe "DSC_SqlMemory\Get-TargetResource" -Tag 'Get' {
             Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             Mock -CommandName Test-ActiveNode -MockWith { return $mockTestActiveNode } -Verifiable
 
@@ -140,7 +140,7 @@ try
             Assert-VerifiableMock
         }
 
-        Describe "DSC_SqlServerMemory\Test-TargetResource" -Tag 'Test' {
+        Describe "DSC_SqlMemory\Test-TargetResource" -Tag 'Test' {
             BeforeEach {
                 Mock -CommandName Get-SqlDscDynamicMaxMemory -MockWith {
                     return 8192 # MB
@@ -326,7 +326,7 @@ try
             Assert-VerifiableMock
         }
 
-        Describe "DSC_SqlServerMemory\Set-TargetResource" -Tag 'Set' {
+        Describe "DSC_SqlMemory\Set-TargetResource" -Tag 'Set' {
             $mockMinServerMemory = 0
             $mockMaxServerMemory = 2147483647
 
@@ -499,7 +499,7 @@ try
             Assert-VerifiableMock
         }
 
-        Describe 'DSC_SqlServerMemory\Get-SqlDscDynamicMaxMemory' -Tag 'Helper' {
+        Describe 'DSC_SqlMemory\Get-SqlDscDynamicMaxMemory' -Tag 'Helper' {
             Context 'When the physical memory should be calculated' {
                 BeforeEach {
                     Mock -CommandName Get-CimInstance -MockWith {

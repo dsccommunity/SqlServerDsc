@@ -30,7 +30,7 @@ These are the links to the examples for each individual resource.
 - [SqlEndpointPermission](Resources/SqlEndpointPermission)
 - [SqlLogin](Resources/SqlLogin)
 - [SqlMaxDop](Resources/SqlMaxDop)
-- [SqlServerMemory](Resources/SqlServerMemory)
+- [SqlMemory](Resources/SqlMemory)
 - [SqlServerPermission](Resources/SqlServerPermission)
 - [SqlServerReplication](Resources/SqlServerReplication)
 - [SqlServerRole](Resources/SqlServerRole)

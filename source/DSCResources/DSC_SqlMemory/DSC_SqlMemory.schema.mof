@@ -1,5 +1,5 @@
-[ClassVersion("1.0.0.0"), FriendlyName("SqlServerMemory")]
-class DSC_SqlServerMemory : OMI_BaseResource
+[ClassVersion("1.0.0.0"), FriendlyName("SqlMemory")]
+class DSC_SqlMemory : OMI_BaseResource
 {
     [Key, Description("The name of the SQL instance to be configured.")] String InstanceName;
     [Write, Description("The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.")] String ServerName;

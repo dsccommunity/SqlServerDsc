@@ -16,7 +16,7 @@ Configuration Example
 
     node localhost
     {
-        SqlServerMemory 'Set_SQLServerMaxMemory_To12GB'
+        SqlMemory 'Set_SQLServerMaxMemory_To12GB'
         {
             Ensure               = 'Present'
             DynamicAlloc         = $false

@@ -123,7 +123,7 @@ in a future release.
 * [**SqlLogin**](#sqllogin) resource to manage SQL logins.
 * [**SqlMaxDop**](#sqlmaxdop) resource to manage MaxDegree of Parallelism
   for SQL Server.
-* [**SqlServerMemory**](#sqlservermemory) resource to manage Memory for SQL Server.
+* [**SqlMemory**](#sqlmemory) resource to manage Memory for SQL Server.
 * [**SqlServerPermission**](#sqlserverpermission) Grant or revoke permission on
   the SQL Server.
 * [**SqlServerProtocol**](#sqlserverprotocol) resource manage the SQL Server
@@ -1438,7 +1438,7 @@ Read more about max degree of parallelism in this article
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlMaxDop).
 
-### SqlServerMemory
+### SqlMemory
 
 This resource sets the minimum server memory and maximum server memory configuration
 option.
@@ -1509,14 +1509,14 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
 
 #### Examples
 
-* [Set SQLServerMaxMemory to 12GB](/source/Examples/Resources/SqlServerMemory/1-SetMaxMemoryTo12GB.ps1)
-* [Set SQLServerMaxMemory to Auto](/source/Examples/Resources/SqlServerMemory/2-SetMaxMemoryToAuto.ps1)
-* [Set SQLServerMinMemory to 2GB and SQLServerMaxMemory to Auto](/source/Examples/Resources/SqlServerMemory/3-SetMinMemoryToFixedValueAndMaxMemoryToAuto.ps1)
-* [Set SQLServerMaxMemory to Default](/source/Examples/Resources/SqlServerMemory/4-SetMaxMemoryToDefault.ps1)
+* [Set SQLServerMaxMemory to 12GB](/source/Examples/Resources/SqlMemory/1-SetMaxMemoryTo12GB.ps1)
+* [Set SQLServerMaxMemory to Auto](/source/Examples/Resources/SqlMemory/2-SetMaxMemoryToAuto.ps1)
+* [Set SQLServerMinMemory to 2GB and SQLServerMaxMemory to Auto](/source/Examples/Resources/SqlMemory/3-SetMinMemoryToFixedValueAndMaxMemoryToAuto.ps1)
+* [Set SQLServerMaxMemory to Default](/source/Examples/Resources/SqlMemory/4-SetMaxMemoryToDefault.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerMemory).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlMemory).
 
 ### SqlServerPermission
 
