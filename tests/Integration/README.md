@@ -161,7 +161,7 @@ Data | Log | Backup
 --- | --- | ---
 C:\SQLData | C:\SQLLog | C:\Backups
 
-## SqlServerLogin
+## SqlLogin
 
 **Run order:** 2
 
@@ -273,7 +273,7 @@ DSCRS2016 | RS | The Reporting Services is initialized, and in a working state.
 
 **Run order:** 3
 
-**Depends on:** SqlSetup, SqlServerLogin
+**Depends on:** SqlSetup, SqlLogin
 
 The integration test will keep the following server roles on the SQL Server instance
 **DSCSQLTEST**.
@@ -287,7 +287,7 @@ DscServerRole2 | DscUser4
 
 **Run order:** 3
 
-**Depends on:** SqlSetup, SqlServerLogin, SqlDatabase
+**Depends on:** SqlSetup, SqlLogin, SqlDatabase
 
 The integration test will leave these database users for other integration tests
 to use.

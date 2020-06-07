@@ -62,7 +62,7 @@
         'SqlEndpoint'
         'SqlEndpointPermission'
         'SqlServerEndpointState'
-        'SqlServerLogin'
+        'SqlLogin'
         'SqlServerMaxDop'
         'SqlServerMemory'
         'SqlServerNetwork'

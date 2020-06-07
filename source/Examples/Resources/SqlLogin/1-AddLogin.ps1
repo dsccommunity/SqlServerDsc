@@ -21,7 +21,7 @@ Configuration Example
 
     node localhost
     {
-        SqlServerLogin 'Add_WindowsUser'
+        SqlLogin 'Add_WindowsUser'
         {
             Ensure               = 'Present'
             Name                 = 'CONTOSO\WindowsUser'
@@ -31,7 +31,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlServerLogin 'Add_DisabledWindowsUser'
+        SqlLogin 'Add_DisabledWindowsUser'
         {
             Ensure               = 'Present'
             Name                 = 'CONTOSO\WindowsUser2'
@@ -42,7 +42,7 @@ Configuration Example
             Disabled             = $true
         }
 
-        SqlServerLogin 'Add_WindowsUser_Set_Default_Database'
+        SqlLogin 'Add_WindowsUser_Set_Default_Database'
         {
             Ensure               = 'Present'
             Name                 = 'CONTOSO\WindowsUser3'
@@ -53,7 +53,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlServerLogin 'Add_WindowsGroup'
+        SqlLogin 'Add_WindowsGroup'
         {
             Ensure               = 'Present'
             Name                 = 'CONTOSO\WindowsGroup'
@@ -63,7 +63,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlServerLogin 'Add_SqlLogin'
+        SqlLogin 'Add_SqlLogin'
         {
             Ensure                         = 'Present'
             Name                           = 'SqlLogin'

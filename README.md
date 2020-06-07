@@ -120,7 +120,7 @@ in a future release.
   is present or absent.
 * [**SqlEndpointPermission**](#sqlendpointpermission) Grant or revoke
   permission on the endpoint.
-* [**SqlServerLogin**](#sqlserverlogin) resource to manage SQL logins.
+* [**SqlLogin**](#sqllogin) resource to manage SQL logins.
 * [**SqlServerMaxDop**](#sqlservermaxdop) resource to manage MaxDegree of Parallelism
   for SQL Server.
 * [**SqlServerMemory**](#sqlservermemory) resource to manage Memory for SQL Server.
@@ -1331,7 +1331,7 @@ This resource is used to give connect permission to an endpoint for a user (logi
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlEndpointPermission).
 
-### SqlServerLogin
+### SqlLogin
 
 No description.
 
@@ -1373,12 +1373,12 @@ No description.
 
 #### Examples
 
-* [Add a login](/source/Examples/Resources/SqlServerLogin/1-AddLogin.ps1)
-* [Remove a login](/source/Examples/Resources/SqlServerLogin/2-RemoveLogin.ps1)
+* [Add a login](/source/Examples/Resources/SqlLogin/1-AddLogin.ps1)
+* [Remove a login](/source/Examples/Resources/SqlLogin/2-RemoveLogin.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerLogin).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlLogin).
 
 ### SqlServerMaxDop
 

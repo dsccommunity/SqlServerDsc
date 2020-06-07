@@ -22,7 +22,7 @@ Configuration Example
     Node $AllNodes.NodeName
     {
         # Adding the required service account to allow the cluster to log into SQL
-        SqlServerLogin 'AddNTServiceClusSvc'
+        SqlLogin 'AddNTServiceClusSvc'
         {
             Ensure               = 'Present'
             Name                 = 'NT SERVICE\ClusSvc'
@@ -35,7 +35,7 @@ Configuration Example
         # Add the required permissions to the cluster service login
         SqlServerPermission 'AddNTServiceClusSvcPermissions'
         {
-            DependsOn            = '[SqlServerLogin]AddNTServiceClusSvc'
+            DependsOn            = '[SqlLogin]AddNTServiceClusSvc'
             Ensure               = 'Present'
             ServerName           = $Node.NodeName
             InstanceName         = 'MSSQLSERVER'

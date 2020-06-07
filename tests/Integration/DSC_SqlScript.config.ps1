@@ -154,7 +154,7 @@ Configuration DSC_SqlScript_CreateDependencies_Config
             }
         }
 
-        SqlServerLogin ('Create{0}' -f $Node.SqlLogin_UserName)
+        SqlLogin ('Create{0}' -f $Node.SqlLogin_UserName)
         {
             Ensure                         = 'Present'
             Name                           = $Node.SqlLogin_UserName
@@ -190,7 +190,7 @@ Configuration DSC_SqlScript_CreateDependencies_Config
                 -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
 
             DependsOn            = @(
-                ('[SqlServerLogin]Create{0}' -f $Node.SqlLogin_UserName)
+                ('[SqlLogin]Create{0}' -f $Node.SqlLogin_UserName)
             )
         }
     }

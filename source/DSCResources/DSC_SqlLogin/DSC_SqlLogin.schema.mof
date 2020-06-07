@@ -1,5 +1,5 @@
-[ClassVersion("1.0.0.0"), FriendlyName("SqlServerLogin")]
-class DSC_SqlServerLogin : OMI_BaseResource
+[ClassVersion("1.0.0.0"), FriendlyName("SqlLogin")]
+class DSC_SqlLogin : OMI_BaseResource
 {
     [Key, Description("The name of the login.")] String Name;
     [Key, Description("Name of the SQL instance to be configured.")] String InstanceName;

@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Automated unit test for DSC_SqlServerLogin DSC resource.
+        Automated unit test for DSC_SqlLogin DSC resource.
 
 #>
 
@@ -16,7 +16,7 @@ if (-not (Test-BuildCategory -Type 'Unit'))
 }
 
 $script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceName = 'DSC_SqlServerLogin'
+$script:dscResourceName = 'DSC_SqlLogin'
 
 function Invoke-TestSetup
 {
@@ -263,7 +263,7 @@ try
 
         #endregion Pester Test Initialization
 
-        Describe 'DSC_SqlServerLogin\Get-TargetResource' {
+        Describe 'DSC_SqlLogin\Get-TargetResource' {
             Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
             Context 'When the login is Absent' {
@@ -339,7 +339,7 @@ try
             }
         }
 
-        Describe 'DSC_SqlServerLogin\Test-TargetResource' {
+        Describe 'DSC_SqlLogin\Test-TargetResource' {
             Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
             Context 'When the desired state is Absent' {
@@ -738,7 +738,7 @@ try
             }
         }
 
-        Describe 'DSC_SqlServerLogin\Set-TargetResource' {
+        Describe 'DSC_SqlLogin\Set-TargetResource' {
             Mock -CommandName Update-SQLServerLogin -ModuleName $script:dscResourceName
             Mock -CommandName New-SQLServerLogin -ModuleName $script:dscResourceName
             Mock -CommandName Remove-SQLServerLogin -ModuleName $script:dscResourceName
@@ -1168,7 +1168,7 @@ try
             }
         }
 
-        Describe 'DSC_SqlServerLogin\Update-SQLServerLogin' {
+        Describe 'DSC_SqlLogin\Update-SQLServerLogin' {
             Context 'When the Login is altered' {
                 It 'Should silently alter the login' {
                     $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Domain\User')
@@ -1189,7 +1189,7 @@ try
             }
         }
 
-        Describe 'DSC_SqlServerLogin\New-SQLServerLogin' {
+        Describe 'DSC_SqlLogin\New-SQLServerLogin' {
             Context 'When the Login is created' {
                 It 'Should silently create a Windows login' {
                     $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Domain\User')
@@ -1270,7 +1270,7 @@ try
             }
         }
 
-        Describe 'DSC_SqlServerLogin\Remove-SQLServerLogin' {
+        Describe 'DSC_SqlLogin\Remove-SQLServerLogin' {
             Context 'When the Login is dropped' {
                 It 'Should silently drop the login' {
                     $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @('Server', 'Domain\User')
@@ -1291,7 +1291,7 @@ try
             }
         }
 
-        Describe 'DSC_SqlServerLogin\Set-SQLServerLoginPassword' {
+        Describe 'DSC_SqlLogin\Set-SQLServerLoginPassword' {
             Context 'When the password is set on an existing login' {
                 It 'Should silently set the password' {
                     $setPasswordParameters = @{

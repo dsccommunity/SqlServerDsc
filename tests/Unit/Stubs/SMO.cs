@@ -14,7 +14,7 @@ namespace Microsoft.SqlServer.Management.Smo
 
     // TypeName: Microsoft.SqlServer.Management.Smo.LoginCreateOptions
     // Used by:
-    //  DSC_SqlServerLogin.Tests.ps1
+    //  DSC_SqlLogin.Tests.ps1
     public enum LoginCreateOptions
     {
         None = 0,
@@ -25,7 +25,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.LoginType
     // BaseType: Microsoft.SqlServer.Management.Smo.ScriptNameObjectBase
     // Used by:
-    //  DSC_SqlServerLogin
+    //  DSC_SqlLogin
     public enum LoginType
     {
         AsymmetricKey = 4,
@@ -232,7 +232,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // BaseType: Microsoft.SqlServer.Management.Smo.SqlSmoObject
     // Used by:
     //  SqlServerPermission
-    //  DSC_SqlServerLogin
+    //  DSC_SqlLogin
     public class Server
     {
         public string MockGranteeName;
@@ -340,7 +340,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.Login
     // BaseType: Microsoft.SqlServer.Management.Smo.ScriptNameObjectBase
     // Used by:
-    //  DSC_SqlServerLogin
+    //  DSC_SqlLogin
     public class Login
     {
         private bool _mockPasswordPassed = false;
@@ -659,7 +659,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.SqlServerManagementException
     // BaseType: System.Exception
     // Used by:
-    //  SqlServerLogin.Tests.ps1
+    //  SqlLogin.Tests.ps1
     public class SqlServerManagementException : Exception
     {
         public SqlServerManagementException () : base () {}
@@ -672,7 +672,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.SmoException
     // BaseType: Microsoft.SqlServer.Management.Smo.SqlServerManagementException
     // Used by:
-    //  SqlServerLogin.Tests.ps1
+    //  SqlLogin.Tests.ps1
     public class SmoException : SqlServerManagementException
     {
         public SmoException () : base () {}
@@ -685,7 +685,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.FailedOperationException
     // BaseType: Microsoft.SqlServer.Management.Smo.SmoException
     // Used by:
-    //  SqlServerLogin.Tests.ps1
+    //  SqlLogin.Tests.ps1
     public class FailedOperationException : SmoException
     {
         public FailedOperationException () : base () {}

@@ -51,7 +51,7 @@ else
     .SYNOPSIS
         Creates the logins that are dependencies.
 #>
-Configuration DSC_SqlServerLogin_CreateDependencies_Config
+Configuration DSC_SqlLogin_CreateDependencies_Config
 {
     Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
     Import-DscResource -ModuleName 'SqlServerDsc'
@@ -121,13 +121,13 @@ Configuration DSC_SqlServerLogin_CreateDependencies_Config
     .SYNOPSIS
         Adds a Windows User login.
 #>
-Configuration DSC_SqlServerLogin_AddLoginDscUser1_Config
+Configuration DSC_SqlLogin_AddLoginDscUser1_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerLogin 'Integration_Test'
+        SqlLogin 'Integration_Test'
         {
             Ensure               = 'Present'
             Name                 = $Node.DscUser1Name
@@ -147,13 +147,13 @@ Configuration DSC_SqlServerLogin_AddLoginDscUser1_Config
     .SYNOPSIS
         Adds a second Windows User login.
 #>
-Configuration DSC_SqlServerLogin_AddLoginDscUser2_Config
+Configuration DSC_SqlLogin_AddLoginDscUser2_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerLogin 'Integration_Test'
+        SqlLogin 'Integration_Test'
         {
             Ensure               = 'Present'
             Name                 = $Node.DscUser2Name
@@ -174,13 +174,13 @@ Configuration DSC_SqlServerLogin_AddLoginDscUser2_Config
     .SYNOPSIS
         Adds a third Windows User login, and creates it as disabled.
 #>
-Configuration DSC_SqlServerLogin_AddLoginDscUser3_Disabled_Config
+Configuration DSC_SqlLogin_AddLoginDscUser3_Disabled_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerLogin 'Integration_Test'
+        SqlLogin 'Integration_Test'
         {
             Ensure               = 'Present'
             Name                 = $Node.DscUser3Name
@@ -201,13 +201,13 @@ Configuration DSC_SqlServerLogin_AddLoginDscUser3_Disabled_Config
     .SYNOPSIS
         Adds a SQL login.
 #>
-Configuration DSC_SqlServerLogin_AddLoginDscUser4_Config
+Configuration DSC_SqlLogin_AddLoginDscUser4_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerLogin 'Integration_Test'
+        SqlLogin 'Integration_Test'
         {
             Ensure                         = 'Present'
             Name                           = $Node.DscUser4Name
@@ -233,13 +233,13 @@ Configuration DSC_SqlServerLogin_AddLoginDscUser4_Config
     .SYNOPSIS
         Adds a Windows Group login.
 #>
-Configuration DSC_SqlServerLogin_AddLoginDscSqlUsers1_Config
+Configuration DSC_SqlLogin_AddLoginDscSqlUsers1_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerLogin 'Integration_Test'
+        SqlLogin 'Integration_Test'
         {
             Ensure               = 'Present'
             Name                 = $Node.DscSqlUsers1Name
@@ -259,13 +259,13 @@ Configuration DSC_SqlServerLogin_AddLoginDscSqlUsers1_Config
     .SYNOPSIS
         Removes the third Windows User login that was created.
 #>
-Configuration DSC_SqlServerLogin_RemoveLoginDscUser3_Config
+Configuration DSC_SqlLogin_RemoveLoginDscUser3_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerLogin 'Integration_Test'
+        SqlLogin 'Integration_Test'
         {
             Ensure               = 'Absent'
             Name                 = $Node.DscUser3Name
@@ -286,7 +286,7 @@ Configuration DSC_SqlServerLogin_RemoveLoginDscUser3_Config
         Clean up test resources so they are not interfering with
         the other integration tests.
 #>
-Configuration DSC_SqlServerLogin_CleanupDependencies_Config
+Configuration DSC_SqlLogin_CleanupDependencies_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 

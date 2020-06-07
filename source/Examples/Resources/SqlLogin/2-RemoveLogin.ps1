@@ -10,7 +10,7 @@ Configuration Example
 
     node localhost
     {
-        SqlServerLogin 'Remove_WindowsUser'
+        SqlLogin 'Remove_WindowsUser'
         {
             Ensure       = 'Absent'
             Name         = 'CONTOSO\WindowsUser'
@@ -19,7 +19,7 @@ Configuration Example
             InstanceName = 'DSC'
         }
 
-        SqlServerLogin 'Remove_WindowsGroup'
+        SqlLogin 'Remove_WindowsGroup'
         {
             Ensure       = 'Absent'
             Name         = 'CONTOSO\WindowsGroup'
@@ -28,7 +28,7 @@ Configuration Example
             InstanceName = 'DSC'
         }
 
-        SqlServerLogin 'Remove_SqlLogin'
+        SqlLogin 'Remove_SqlLogin'
         {
             Ensure       = 'Absent'
             Name         = 'SqlLogin'
