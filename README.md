@@ -112,7 +112,7 @@ in a future release.
   functionality to T-SQL.
 * [**SqlScriptQuery**](#sqlscriptquery) resource to extend DSC Get/Set/Test
   functionality to T-SQL.
-* [**SqlServerConfiguration**](#sqlserverconfiguration) resource to manage
+* [**SqlConfiguration**](#SqlConfiguration) resource to manage
   [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx).
 * [**SqlServerDatabaseMail**](#sqlserverdatabasemail) resource
   to manage SQL Server Database Mail.
@@ -1161,7 +1161,7 @@ The Set T-SQL script performs the actual change when Test T-SQL script fails.
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlScript).
 
-### SqlServerConfiguration
+### SqlConfiguration
 
 This resource manage the [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
 on a SQL Server instance.
@@ -1188,18 +1188,18 @@ on a SQL Server instance.
 
 #### Examples
 
-* [Configure two instances on the same server to have CLR enabled](/source/Examples/Resources/SqlServerConfiguration/1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1)
-* [Configure a instance to have 'Priority Boost' enabled](/source/Examples/Resources/SqlServerConfiguration/2-ConfigureInstanceToEnablePriorityBoost.ps1)
+* [Configure two instances on the same server to have CLR enabled](/source/Examples/Resources/SqlConfiguration/1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1)
+* [Configure a instance to have 'Priority Boost' enabled](/source/Examples/Resources/SqlConfiguration/2-ConfigureInstanceToEnablePriorityBoost.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerConfiguration).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlConfiguration).
 
 ### SqlServerDatabaseMail
 
 Resource to manage SQL Server Database Mail.
 
->**Note:** Database Mail XPs can be enabled using the resource SqlServerConfiguration.
+>**Note:** Database Mail XPs can be enabled using the resource SqlConfiguration.
 
 #### Requirements
 

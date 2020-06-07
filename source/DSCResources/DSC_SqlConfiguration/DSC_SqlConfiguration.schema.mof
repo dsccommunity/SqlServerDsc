@@ -1,5 +1,5 @@
-[ClassVersion("1.0.0.0"), FriendlyName("SqlServerConfiguration")]
-class DSC_SqlServerConfiguration : OMI_BaseResource
+[ClassVersion("1.0.0.0"), FriendlyName("SqlConfiguration")]
+class DSC_SqlConfiguration : OMI_BaseResource
 {
     [Key, Description("Name of the SQL instance to be configured.")] String InstanceName;
     [Key, Description("The name of the SQL configuration option to be checked.")] String OptionName;

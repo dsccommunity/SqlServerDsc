@@ -1,4 +1,4 @@
-# Localized resources for SqlServerConfiguration
+# Localized resources for SqlConfiguration
 
 ConvertFrom-StringData @'
     CurrentOptionValue = Configuration option '{0}' has a current value of '{1}'.

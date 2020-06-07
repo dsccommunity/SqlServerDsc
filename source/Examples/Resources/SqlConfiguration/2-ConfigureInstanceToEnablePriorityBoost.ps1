@@ -14,7 +14,7 @@ Configuration Example
 
     node localhost
     {
-        SqlServerConfiguration 'SQLConfigPriorityBoost'
+        SqlConfiguration 'SQLConfigPriorityBoost'
         {
 
             ServerName     = 'localhost'

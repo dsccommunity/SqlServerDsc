@@ -18,7 +18,7 @@ Configuration Example
 
     node localhost
     {
-        SqlServerConfiguration 'EnableDatabaseMailXPs'
+        SqlConfiguration 'EnableDatabaseMailXPs'
         {
 
             ServerName     = $Node.NodeName

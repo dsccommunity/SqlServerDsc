@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Automated unit test for DSC_SqlServerConfiguration DSC resource.
+        Automated unit test for DSC_SqlConfiguration DSC resource.
 
 #>
 
@@ -12,7 +12,7 @@ if (-not (Test-BuildCategory -Type 'Unit'))
 }
 
 $script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceName = 'DSC_SqlServerConfiguration'
+$script:dscResourceName = 'DSC_SqlConfiguration'
 
 try
 {

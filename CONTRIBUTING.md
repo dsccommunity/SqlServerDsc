@@ -114,14 +114,14 @@ This is to make those folders more user friendly, to resemble the name the user
 would use in the configuration file.
 
 ```Text
-DSCResources/DSC_SqlServerConfiguration/DSC_SqlServerConfiguration.psm1
-DSCResources/DSC_SqlServerConfiguration/DSC_SqlServerConfiguration.schema.mof
-DSCResources/DSC_SqlServerConfiguration/en-US/DSC_SqlServerConfiguration.strings.psd1
+DSCResources/DSC_SqlConfiguration/DSC_SqlConfiguration.psm1
+DSCResources/DSC_SqlConfiguration/DSC_SqlConfiguration.schema.mof
+DSCResources/DSC_SqlConfiguration/en-US/DSC_SqlConfiguration.strings.psd1
 
-Tests/Unit/DSC_SqlServerConfiguration.Tests.ps1
+Tests/Unit/DSC_SqlConfiguration.Tests.ps1
 
-Examples/Resources/SqlServerConfiguration/1-AddConfigurationOption.ps1
-Examples/Resources/SqlServerConfiguration/2-RemoveConfigurationOption.ps1
+Examples/Resources/SqlConfiguration/1-AddConfigurationOption.ps1
+Examples/Resources/SqlConfiguration/2-RemoveConfigurationOption.ps1
 ```
 
 ##### Schema mof file
@@ -130,8 +130,8 @@ Please note that the `FriendlyName` in the schema mof file should not contain th
 prefix `DSC\_`.
 
 ```powershell
-[ClassVersion("1.0.0.0"), FriendlyName("SqlServerConfiguration")]
-class DSC_SqlServerConfiguration : OMI_BaseResource
+[ClassVersion("1.0.0.0"), FriendlyName("SqlConfiguration")]
+class DSC_SqlConfiguration : OMI_BaseResource
 {
     # Properties removed for readability.
 };

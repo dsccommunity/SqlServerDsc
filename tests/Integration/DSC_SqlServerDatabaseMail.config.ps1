@@ -51,7 +51,7 @@ Configuration DSC_SqlServerDatabaseMail_Add_Config
 
     node $AllNodes.NodeName
     {
-        SqlServerConfiguration 'EnableDatabaseMailXPs'
+        SqlConfiguration 'EnableDatabaseMailXPs'
         {
             ServerName     = $Node.ServerName
             InstanceName   = $Node.InstanceName
@@ -110,7 +110,7 @@ Configuration DSC_SqlServerDatabaseMail_Remove_Config
                 -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
 
-        SqlServerConfiguration 'DisableDatabaseMailXPs'
+        SqlConfiguration 'DisableDatabaseMailXPs'
         {
             ServerName     = $Node.ServerName
             InstanceName   = $Node.InstanceName

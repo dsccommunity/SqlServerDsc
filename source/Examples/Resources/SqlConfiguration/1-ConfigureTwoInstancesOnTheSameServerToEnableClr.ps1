@@ -16,7 +16,7 @@ Configuration Example
     {
         foreach ($sqlInstance in @('CONTENT', 'DIST'))
         {
-            SqlServerConfiguration ('SQLConfigCLR_{0}' -f $sqlInstance)
+            SqlConfiguration ('SQLConfigCLR_{0}' -f $sqlInstance)
             {
                 ServerName   = $Node.NodeName
                 InstanceName = $sqlInstance

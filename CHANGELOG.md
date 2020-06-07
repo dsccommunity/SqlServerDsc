@@ -87,6 +87,8 @@ in a future release.
 ### Changed
 
 - SqlServerDsc
+  - BREAKING CHANGE: Some DSC resources have been renamed ([issue #1540](https://github.com/dsccommunity/SqlServerDsc/issues/1540)).
+    - `SqlServerConfiguration` was renamed to `SqlConfiguration`.
   - Changed all resource prefixes from `MSFT_` to `DSC_` ([issue #1496](https://github.com/dsccommunity/SqlServerDsc/issues/1496)).
     _Deprecated resource has not changed prefix._
   - All resources are now using the common module DscResource.Common.
@@ -165,7 +167,7 @@ in a future release.
     parameters `ServerName` and `InstanceName`. The parameter `InstanceName`
     is the only one mandatory which fixes the issue that it was possible to
     run the same query using different host names ([issue #925](https://github.com/dsccommunity/SqlServerDsc/issues/925)).
-- SqlServerConfiguration
+- SqlConfiguration
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
   - Normalize parameter descriptive text for default values.

@@ -34,7 +34,7 @@ Configuration Example
             Don't disable the Database Mail XPs if there are still mail accounts
             left configured.
         #>
-        SqlServerConfiguration 'DisableDatabaseMailXPs'
+        SqlConfiguration 'DisableDatabaseMailXPs'
         {
 
             ServerName     = $Node.NodeName

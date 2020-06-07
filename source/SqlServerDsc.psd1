@@ -56,7 +56,7 @@
         'SqlRSSetup'
         'SqlScript'
         'SqlScriptQuery'
-        'SqlServerConfiguration'
+        'SqlConfiguration'
         'SqlServerDatabaseMail'
         'SqlServerEndpoint'
         'SqlServerEndpointPermission'
