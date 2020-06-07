@@ -27,7 +27,7 @@ These are the links to the examples for each individual resource.
 - [SqlConfiguration](Resources/SqlConfiguration)
 - [SqlDatabaseMail](Resources/SqlDatabaseMail)
 - [SqlEndpoint](Resources/SqlEndpoint)
-- [SqlServerEndpointPermission](Resources/SqlServerEndpointPermission)
+- [SqlEndpointPermission](Resources/SqlEndpointPermission)
 - [SqlServerLogin](Resources/SqlServerLogin)
 - [SqlServerMaxDop](Resources/SqlServerMaxDop)
 - [SqlServerMemory](Resources/SqlServerMemory)

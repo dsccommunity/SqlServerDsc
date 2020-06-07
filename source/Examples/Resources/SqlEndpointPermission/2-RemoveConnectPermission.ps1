@@ -20,9 +20,9 @@ Configuration Example
 
     node localhost
     {
-        SqlServerEndpointPermission 'SQLConfigureEndpointPermission'
+        SqlEndpointPermission 'SQLConfigureEndpointPermission'
         {
-            Ensure               = 'Present'
+            Ensure               = 'Absent'
             ServerName           = 'SQLTEST'
             InstanceName         = 'DSCINSTANCE'
             Name                 = 'DefaultMirrorEndpoint'

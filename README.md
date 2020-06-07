@@ -118,7 +118,7 @@ in a future release.
   to manage SQL Server Database Mail.
 * [**SqlEndpoint**](#sqlendpoint) resource to ensure database endpoint
   is present or absent.
-* [**SqlServerEndpointPermission**](#sqlserverendpointpermission) Grant or revoke
+* [**SqlEndpointPermission**](#sqlendpointpermission) Grant or revoke
   permission on the endpoint.
 * [**SqlServerLogin**](#sqlserverlogin) resource to manage SQL logins.
 * [**SqlServerMaxDop**](#sqlservermaxdop) resource to manage MaxDegree of Parallelism
@@ -1253,7 +1253,7 @@ a database mirror endpoint which can be used by, for example, AlwaysOn.
 >Note: The endpoint will be started after creation, but will not be enforced
 >unless the the parameter `State` is specified.
 >To set connect permission to the endpoint, please use
->the resource [**SqlServerEndpointPermission**](#sqlserverendpointpermission).
+>the resource [**SqlEndpointPermission**](#sqlendpointpermission).
 
 #### Requirements
 
@@ -1299,7 +1299,7 @@ a database mirror endpoint which can be used by, for example, AlwaysOn.
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlEndpoint).
 
-### SqlServerEndpointPermission
+### SqlEndpointPermission
 
 This resource is used to give connect permission to an endpoint for a user (login).
 
@@ -1322,14 +1322,14 @@ This resource is used to give connect permission to an endpoint for a user (logi
 
 #### Examples
 
-* [Add connect permission to an Endpoint](/source/Examples/Resources/SqlServerEndpointPermission/1-AddConnectPermission.ps1)
-* [Remove the connect permission for an Endpoint](/source/Examples/Resources/SqlServerEndpointPermission/2-RemoveConnectPermission.ps1)
-* [Add connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/source/Examples/Resources/SqlServerEndpointPermission/3-AddConnectPermissionToTwoReplicasEachWithDifferentServiceAccount.ps1)
-* [Remove connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/source/Examples/Resources/SqlServerEndpointPermission/4-RemoveConnectPermissionForTwoReplicasEachWithDifferentServiceAccount.ps1)
+* [Add connect permission to an Endpoint](/source/Examples/Resources/SqlEndpointPermission/1-AddConnectPermission.ps1)
+* [Remove the connect permission for an Endpoint](/source/Examples/Resources/SqlEndpointPermission/2-RemoveConnectPermission.ps1)
+* [Add connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/source/Examples/Resources/SqlEndpointPermission/3-AddConnectPermissionToTwoReplicasEachWithDifferentServiceAccount.ps1)
+* [Remove connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/source/Examples/Resources/SqlEndpointPermission/4-RemoveConnectPermissionForTwoReplicasEachWithDifferentServiceAccount.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpointPermission).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlEndpointPermission).
 
 ### SqlServerLogin
 

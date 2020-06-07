@@ -89,6 +89,9 @@ in a future release.
 - SqlServerDsc
   - BREAKING CHANGE: Some DSC resources have been renamed ([issue #1540](https://github.com/dsccommunity/SqlServerDsc/issues/1540)).
     - `SqlServerConfiguration` was renamed to `SqlConfiguration`.
+    - `SqlServerDatabaseMail` was renamed to `SqlDatabaseMail`.
+    - `SqlServerEndpoint` was renamed to `SqlEndpoint`.
+    - `SqlServerEndpointPermission` was renamed to `SqlEndpointPermission`.
   - Changed all resource prefixes from `MSFT_` to `DSC_` ([issue #1496](https://github.com/dsccommunity/SqlServerDsc/issues/1496)).
     _Deprecated resource has not changed prefix._
   - All resources are now using the common module DscResource.Common.
@@ -177,7 +180,7 @@ in a future release.
   - BREAKING CHANGE: Now the properties are only enforced if they are
     specified in the configuration.
   - Normalize parameter descriptive text for default values.
-- SqlServerEndpointPermission
+- SqlEndpointPermission
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
   - Normalize parameter descriptive text for default values.

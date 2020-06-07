@@ -127,7 +127,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // Typename: Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionSetBase
     // Used by:
-    //  SqlServerEndpointPermission.Tests.ps1
+    //  SqlEndpointPermission.Tests.ps1
     public class ObjectPermissionSet
     {
         public ObjectPermissionSet(){}

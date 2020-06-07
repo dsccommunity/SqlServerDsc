@@ -89,7 +89,7 @@ not limited to the names in this list.
 
 #### Example of Resource Naming
 
-The `SqlServerEndpointPermission` resource name is built using the defined
+The `SqlEndpointPermission` resource name is built using the defined
 naming structure using the following components.
 
 - **Module Identifier**: Sql

@@ -60,7 +60,7 @@
         'SqlConfiguration'
         'SqlDatabaseMail'
         'SqlEndpoint'
-        'SqlServerEndpointPermission'
+        'SqlEndpointPermission'
         'SqlServerEndpointState'
         'SqlServerLogin'
         'SqlServerMaxDop'

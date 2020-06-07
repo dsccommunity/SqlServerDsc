@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Automated unit test for DSC_SqlServerEndpointPermission DSC resource.
+        Automated unit test for DSC_SqlEndpointPermission DSC resource.
 
 #>
 
@@ -12,7 +12,7 @@ if (-not (Test-BuildCategory -Type 'Unit'))
 }
 
 $script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceName = 'DSC_SqlServerEndpointPermission'
+$script:dscResourceName = 'DSC_SqlEndpointPermission'
 
 function Invoke-TestSetup
 {
@@ -101,7 +101,7 @@ try
             Principal    = $mockPrincipal
         }
 
-        Describe 'DSC_SqlServerEndpointPermission\Get-TargetResource' -Tag 'Get' {
+        Describe 'DSC_SqlEndpointPermission\Get-TargetResource' -Tag 'Get' {
             BeforeEach {
                 $testParameters = $defaultParameters.Clone()
 
@@ -177,7 +177,7 @@ try
             Assert-VerifiableMock
         }
 
-        Describe 'DSC_SqlServerEndpointPermission\Test-TargetResource' -Tag 'Test' {
+        Describe 'DSC_SqlEndpointPermission\Test-TargetResource' -Tag 'Test' {
             BeforeEach {
                 $testParameters = $defaultParameters.Clone()
 
@@ -239,7 +239,7 @@ try
             Assert-VerifiableMock
         }
 
-        Describe 'DSC_SqlServerEndpointPermission\Set-TargetResource' -Tag 'Set' {
+        Describe 'DSC_SqlEndpointPermission\Set-TargetResource' -Tag 'Set' {
             BeforeEach {
                 $testParameters = $defaultParameters.Clone()
 

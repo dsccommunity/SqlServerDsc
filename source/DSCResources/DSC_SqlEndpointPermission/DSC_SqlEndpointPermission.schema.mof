@@ -1,6 +1,6 @@
 
-[ClassVersion("1.0.0.0"), FriendlyName("SqlServerEndpointPermission")]
-class DSC_SqlServerEndpointPermission : OMI_BaseResource
+[ClassVersion("1.0.0.0"), FriendlyName("SqlEndpointPermission")]
+class DSC_SqlEndpointPermission : OMI_BaseResource
 {
     [Key, Description("The name of the SQL instance to be configured.")] String InstanceName;
     [Key, Description("The login to which permission will be set.")] String Principal;

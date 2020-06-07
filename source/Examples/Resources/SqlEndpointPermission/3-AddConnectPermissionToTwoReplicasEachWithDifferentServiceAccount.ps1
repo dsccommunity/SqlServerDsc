@@ -48,7 +48,7 @@ Configuration Example
 
     node $AllNodes.Where{$_.Role -eq 'PrimaryReplica' }.NodeName
     {
-        SqlServerEndpointPermission 'SQLConfigureEndpointPermissionPrimary'
+        SqlEndpointPermission 'SQLConfigureEndpointPermissionPrimary'
         {
             Ensure               = 'Present'
             ServerName           = $Node.NodeName
@@ -60,7 +60,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlServerEndpointPermission 'SQLConfigureEndpointPermissionSecondary'
+        SqlEndpointPermission 'SQLConfigureEndpointPermissionSecondary'
         {
             Ensure               = 'Present'
             ServerName           = $Node.NodeName
@@ -75,7 +75,7 @@ Configuration Example
 
     Node $AllNodes.Where{ $_.Role -eq 'SecondaryReplica' }.NodeName
     {
-        SqlServerEndpointPermission 'SQLConfigureEndpointPermissionPrimary'
+        SqlEndpointPermission 'SQLConfigureEndpointPermissionPrimary'
         {
             Ensure               = 'Present'
             ServerName           = $Node.NodeName
@@ -87,7 +87,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlServerEndpointPermission 'SQLConfigureEndpointPermissionSecondary'
+        SqlEndpointPermission 'SQLConfigureEndpointPermissionSecondary'
         {
             Ensure               = 'Present'
             ServerName           = $Node.NodeName
