@@ -59,7 +59,6 @@ not limited to the names in this list.
 - **Scope** - Where the action, feature, or property is being applied.
   - **AG** (AvailabilityGroup)
   - **Database**
-  - **Server**
   - **ServiceAccount**
   - **Windows**
 - **Feature**
