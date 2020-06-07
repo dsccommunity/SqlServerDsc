@@ -45,7 +45,7 @@ else
     .NOTES
         This also enables the option 'Database Mail XPs'.
 #>
-Configuration DSC_SqlServerDatabaseMail_Add_Config
+Configuration DSC_SqlDatabaseMail_Add_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -60,7 +60,7 @@ Configuration DSC_SqlServerDatabaseMail_Add_Config
             RestartService = $false
         }
 
-        SqlServerDatabaseMail 'Integration_Test'
+        SqlDatabaseMail 'Integration_Test'
         {
             Ensure               = 'Present'
             ServerName           = $Node.ServerName
@@ -89,13 +89,13 @@ Configuration DSC_SqlServerDatabaseMail_Add_Config
     .NOTES
         This also disables the option 'Database Mail XPs'.
 #>
-Configuration DSC_SqlServerDatabaseMail_Remove_Config
+Configuration DSC_SqlDatabaseMail_Remove_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerDatabaseMail 'Integration_Test'
+        SqlDatabaseMail 'Integration_Test'
         {
             Ensure               = 'Absent'
             ServerName           = $Node.ServerName

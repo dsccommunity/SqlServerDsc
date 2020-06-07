@@ -17,7 +17,7 @@ Configuration Example
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost {
-        SqlServerDatabaseMail 'DisableDatabaseMail'
+        SqlDatabaseMail 'DisableDatabaseMail'
         {
             Ensure               = 'Absent'
             ServerName           = $Node.NodeName

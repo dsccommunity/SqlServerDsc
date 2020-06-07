@@ -171,7 +171,7 @@ in a future release.
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
   - Normalize parameter descriptive text for default values.
-- SqlServerDatabaseMail
+- SqlDatabaseMail
   - Normalize parameter descriptive text for default values.
 - SqlServerEndpoint
   - BREAKING CHANGE: Now the properties are only enforced if they are
@@ -244,7 +244,7 @@ in a future release.
 - SqlRs
   - Fix typo in the schema parameter `SuppressRestart` description
     and in the parameter description in the `README.md`.
-- SqlServerDatabaseMail
+- SqlDatabaseMail
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
 - SqlServerEndpoint

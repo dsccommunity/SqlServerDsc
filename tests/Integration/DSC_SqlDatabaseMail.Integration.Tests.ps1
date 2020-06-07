@@ -6,7 +6,7 @@ if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL201
 }
 
 $script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceFriendlyName = 'SqlServerDatabaseMail'
+$script:dscResourceFriendlyName = 'SqlDatabaseMail'
 $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 
 try

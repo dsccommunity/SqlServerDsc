@@ -28,7 +28,7 @@ Configuration Example
             RestartService = $false
         }
 
-        SqlServerDatabaseMail 'EnableDatabaseMail'
+        SqlDatabaseMail 'EnableDatabaseMail'
         {
             Ensure               = 'Present'
             ServerName           = $Node.NodeName

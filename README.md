@@ -114,7 +114,7 @@ in a future release.
   functionality to T-SQL.
 * [**SqlConfiguration**](#SqlConfiguration) resource to manage
   [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx).
-* [**SqlServerDatabaseMail**](#sqlserverdatabasemail) resource
+* [**SqlDatabaseMail**](#SqlDatabaseMail) resource
   to manage SQL Server Database Mail.
 * [**SqlServerEndpoint**](#sqlserverendpoint) resource to ensure database endpoint
   is present or absent.
@@ -1195,7 +1195,7 @@ on a SQL Server instance.
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlConfiguration).
 
-### SqlServerDatabaseMail
+### SqlDatabaseMail
 
 Resource to manage SQL Server Database Mail.
 
@@ -1238,12 +1238,12 @@ Resource to manage SQL Server Database Mail.
 
 #### Examples
 
-* [Enable Database Mail](/source/Examples/Resources/SqlServerDatabaseMail/1-EnableDatabaseMail.ps1)
-* [Disable Database Mail](/source/Examples/Resources/SqlServerDatabaseMail/2-DisableDatabaseMail.ps1)
+* [Enable Database Mail](/source/Examples/Resources/SqlDatabaseMail/1-EnableDatabaseMail.ps1)
+* [Disable Database Mail](/source/Examples/Resources/SqlDatabaseMail/2-DisableDatabaseMail.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerDatabaseMail).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseMail).
 
 ### SqlServerEndpoint
 

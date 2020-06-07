@@ -214,7 +214,7 @@ worker.*
 *The integration tests will clean up and not leave anything on the build
 worker.*
 
-## SqlServerDatabaseMail
+## SqlDatabaseMail
 
 **Run order:** 2
 
